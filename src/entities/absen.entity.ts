@@ -3,11 +3,11 @@ import { User } from "./user.entity";
 import { Pertemuan } from "./pertemuan.entity";
 
 export enum Status {
-    Hadir = 'hadir',
-    Izin = 'izin',
-    Sakit = 'sakit',
-    Alfa = 'alfa',
-    TidakAdaKeterangan = 'tidak ada keterangan'
+  IZIN = 'izin',
+  HADIR = 'hadir',
+  SAKIT = 'sakit',
+  ALFA = 'alfa',
+  TidakAdaKeterangan = 'tidak ada keterangan'
 }
 
 @Entity()
@@ -16,7 +16,7 @@ export class Absen {
     id: number
 
     @Column({
-        type: "set",
+        type: "enum",
         enum: Status,
         default: [Status.TidakAdaKeterangan],
     })

@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany, ManyToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany, ManyToOne, CreateDateColumn , UpdateDateColumn} from "typeorm";
 import { Absen } from "./absen.entity";
 import { Kelas } from "./kelas.entity";
 
@@ -12,6 +12,12 @@ export class Pertemuan{
 
     @Column()
     tanggal: Date
+
+        @CreateDateColumn()
+        createdAt: Date;
+        
+        @UpdateDateColumn()
+        updatedAt: Date;
 
     @OneToMany(() => Absen, absen => absen.pertemuan)
     absen: Absen[];

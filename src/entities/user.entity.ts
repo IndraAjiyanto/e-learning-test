@@ -2,7 +2,7 @@ import { BeforeInsert, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,
 import * as bcrypt from "bcrypt";
 import { Absen } from './absen.entity';
 
-export type UserRole = 'admin' | 'user';
+export type UserRole = 'super_admin' |'admin' | 'user';
 
 @Entity('users')
 export class User {
@@ -18,7 +18,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ type: 'enum', enum: ['admin', 'user'], default: 'user' })
+  @Column({ type: 'enum', enum: ['super_admin', 'admin', 'user'], default: 'user' })
   role: UserRole;
 
   @Column({ default: true })

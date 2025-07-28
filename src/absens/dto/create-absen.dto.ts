@@ -1,15 +1,25 @@
-import { IsEnum, IsOptional, IsString } from "class-validator";
-
-export enum StatusAbsensi {
-  IZIN = 'izin',
-  HADIR = 'hadir',
-  AKIT = 'akit',
-  ALFA = 'alfa',
-  TIDAK_HADIR = 'tidak_hadir',
-}
+import { IsEnum, IsOptional, IsString, IsArray, IsDateString, IsNumber } from "class-validator";
+import { Status } from "src/entities/absen.entity";
 
 export class CreateAbsenDto {
-    @IsEnum(StatusAbsensi)
+    @IsEnum(Status, { each: true }) 
+    @IsArray()
     @IsOptional()
-    status?: StatusAbsensi =  StatusAbsensi.TIDAK_HADIR;
+    status?: Status[] = [Status.TidakAdaKeterangan];
+
+    @IsDateString()
+    @IsOptional()
+    waktu_absen?: Date;
+
+    @IsString()
+    @IsOptional()
+    Keterangan?: string;
+
+    @IsNumber()
+    @IsOptional()
+    userId?: number;
+
+    @IsNumber()
+    @IsOptional()
+    pertemuanId?: number;
 }
