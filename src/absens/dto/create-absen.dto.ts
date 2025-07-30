@@ -2,15 +2,15 @@ import { IsEnum, IsOptional, IsString, IsArray, IsDateString, IsNumber } from "c
 import { Status } from "src/entities/absen.entity";
 
 export class CreateAbsenDto {
-    @IsEnum(Status, { each: true }) 
-    @IsArray()
-    status: Status[] = [Status.TidakAdaKeterangan];
+  @IsEnum(['izin', 'hadir', 'sakit', 'alfa', 'tidak ada keterangan'])
+  @IsOptional()
+  role?: Status;
 
     @IsDateString()
     waktu_absen: Date;
 
     @IsString()
-    Keterangan: string;
+    keterangan: string;
 
     @IsNumber()
     userId: number;

@@ -5,7 +5,7 @@ import { Kelas } from './kelas.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
-@Entity('users')
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -41,5 +41,5 @@ export class User {
 
     @ManyToMany(() => Kelas)
     @JoinTable()
-    kelass: Kelas[]
+    kelas: Kelas[]
 }

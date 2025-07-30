@@ -4,7 +4,7 @@ export class Kelas1753670172780 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table({
-            name: 'kelass',
+            name: 'kelas',
             columns: [{
                 name: 'id',
                 type: 'int',

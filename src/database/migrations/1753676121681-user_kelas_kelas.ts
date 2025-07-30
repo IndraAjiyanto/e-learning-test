@@ -4,7 +4,7 @@ export class KelasUser1753676121681 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table({
-            name: 'kelas_user',
+            name: 'user_kelas_kelas',
             columns: [
                 {
                     name: 'userId',
@@ -17,16 +17,16 @@ export class KelasUser1753676121681 implements MigrationInterface {
             ]
         }))
 
-        await queryRunner.createForeignKey('kelas_user', new TableForeignKey({
+        await queryRunner.createForeignKey('user_kelas_kelas', new TableForeignKey({
             columnNames: ['userId'],
-            referencedTableName: 'users',
+            referencedTableName: 'user',
             referencedColumnNames: ['id'],
             onDelete: 'RESTRICT',
         }));
 
-        await queryRunner.createForeignKey('kelas_user', new TableForeignKey({
+        await queryRunner.createForeignKey('user_kelas_kelas', new TableForeignKey({
             columnNames: ['kelasId'],
-            referencedTableName: 'kelass',
+            referencedTableName: 'kelas',
             referencedColumnNames: ['id'],
             onDelete: 'RESTRICT',
         }));
@@ -34,21 +34,21 @@ export class KelasUser1753676121681 implements MigrationInterface {
     }
 
 public async down(queryRunner: QueryRunner): Promise<void> {
-  const table = await queryRunner.getTable('kelas_user');
+  const table = await queryRunner.getTable('user_kelas_kelas');
   if (!table) return;
 
   const userFk = table.foreignKeys.find(fk => fk.columnNames.includes('userId'));
   const kelasFk = table.foreignKeys.find(fk => fk.columnNames.includes('kelasId'));
 
   if (userFk) {
-    await queryRunner.dropForeignKey('kelas_user', userFk);
+    await queryRunner.dropForeignKey('user_kelas_kelas', userFk);
   }
 
   if (kelasFk) {
-    await queryRunner.dropForeignKey('kelas_user', kelasFk);
+    await queryRunner.dropForeignKey('user_kelas_kelas', kelasFk);
   }
 
-  await queryRunner.dropTable('kelas_user');
+  await queryRunner.dropTable('user_kelas_kelas');
 }
 
 }

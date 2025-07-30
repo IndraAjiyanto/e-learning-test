@@ -2,31 +2,21 @@ import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { User } from "./user.entity";
 import { Pertemuan } from "./pertemuan.entity";
 
-export enum Status {
-  IZIN = 'izin',
-  HADIR = 'hadir',
-  SAKIT = 'sakit',
-  ALFA = 'alfa',
-  TidakAdaKeterangan = 'tidak ada keterangan'
-}
+export type Status = 'izin' | 'hadir' | 'sakit' | 'alfa' | 'tidak ada keterangan';
 
 @Entity()
 export class Absen {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({
-        type: "enum",
-        enum: Status,
-        default: [Status.TidakAdaKeterangan],
-    })
-    status: Status[]
+  @Column({ type: 'enum', enum: ['izin', 'hadir', 'sakit', 'alfa', 'tidak ada keterangan'], default: 'tidak ada keterangan' })
+  status: Status;
 
     @Column()
     waktu_absen: Date
 
     @Column()
-    Keterangan: string
+    keterangan: string
 
     @CreateDateColumn()
     createdAt: Date;

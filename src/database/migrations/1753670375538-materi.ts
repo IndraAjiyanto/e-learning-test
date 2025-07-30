@@ -4,7 +4,7 @@ export class Materi1753670375538 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table({
-            name: 'materis',
+            name: 'materi',
             columns: [
                 {
                     name: 'id',
@@ -42,25 +42,25 @@ export class Materi1753670375538 implements MigrationInterface {
             ]
         }))
 
-        await queryRunner.createForeignKey('materis', new TableForeignKey({
+        await queryRunner.createForeignKey('materi', new TableForeignKey({
             columnNames: ['kelasId'],
-            referencedTableName: 'kelass',
+            referencedTableName: 'kelas',
             referencedColumnNames: ['id'],
             onDelete: 'RESTRICT',
         }))
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-                  const table = await queryRunner.getTable('materis');
+                  const table = await queryRunner.getTable('materi');
   if (!table) return;
 
   const kelasFk = table.foreignKeys.find(fk => fk.columnNames.includes('kelasId'));
 
   if (kelasFk) {
-    await queryRunner.dropForeignKey('materis', kelasFk);
+    await queryRunner.dropForeignKey('materi', kelasFk);
   }
 
-  await queryRunner.dropTable('materis');
+  await queryRunner.dropTable('materi');
     }
 
 }

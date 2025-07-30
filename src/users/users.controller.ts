@@ -12,6 +12,12 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Post(':userId/kelas/:kelasId')
+  addUserToKelas(@Param('userId') userId: number, @Param('kelasId') kelasId: number) {
+  return this.usersService.addUserToKelas(userId, kelasId);
+}
+
+
   @Get()
   findAll() {
     return this.usersService.findAll();

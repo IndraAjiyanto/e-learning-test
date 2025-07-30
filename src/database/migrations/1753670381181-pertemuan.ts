@@ -4,7 +4,7 @@ export class Pertemuan1753670381181 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table ({
-            name: 'pertemuans',
+            name: 'pertemuan',
             columns: [
                 {
                     name: 'id',
@@ -38,9 +38,9 @@ export class Pertemuan1753670381181 implements MigrationInterface {
             ]
         }))
 
-        await queryRunner.createForeignKey('pertemuans', new TableForeignKey({
+        await queryRunner.createForeignKey('pertemuan', new TableForeignKey({
             columnNames: ['kelasId'],
-            referencedTableName: 'kelass',
+            referencedTableName: 'kelas',
             referencedColumnNames: ['id'],
             onDelete: 'RESTRICT',
         }));

@@ -34,7 +34,7 @@ export class AbsensService {
       pertemuan: pertemuan,
       user: user
     })
-    return await this.absenRepository.save(user)
+    return await this.absenRepository.save(absen)
   }
 
   async findAll() {

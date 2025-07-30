@@ -21,8 +21,7 @@ export class Kelas {
     updatedAt: Date;
 
     @ManyToMany(() => User)
-    @JoinTable()
-    users: User[]
+    user: User[]
 
     @OneToMany(() => Materi, (materi) => materi.kelas)
     materi: Materi[]

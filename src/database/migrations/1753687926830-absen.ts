@@ -4,7 +4,7 @@ export class Absen1753687926830 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table({
-            name: 'absens',
+            name: 'absen',
             columns: [
                 {
                     name: 'id',
@@ -48,37 +48,37 @@ export class Absen1753687926830 implements MigrationInterface {
             ]
         }))
         
-        await queryRunner.createForeignKey('absens', new TableForeignKey({
+        await queryRunner.createForeignKey('absen', new TableForeignKey({
             columnNames: ['userId'],
-            referencedTableName: 'users',
+            referencedTableName: 'user',
             referencedColumnNames: ['id'],
             onDelete: 'RESTRICT',
         }))
 
-        await queryRunner.createForeignKey('absens', new TableForeignKey({
+        await queryRunner.createForeignKey('absen', new TableForeignKey({
             columnNames: ['pertemuanId'],
-            referencedTableName: 'pertemuans',
+            referencedTableName: 'pertemuan',
             referencedColumnNames: ['id'],
             onDelete: 'RESTRICT',
         }))
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-          const table = await queryRunner.getTable('absens');
+          const table = await queryRunner.getTable('absen');
   if (!table) return;
 
   const userFk = table.foreignKeys.find(fk => fk.columnNames.includes('userId'));
   const kelasFk = table.foreignKeys.find(fk => fk.columnNames.includes('pertemuanId'));
 
   if (userFk) {
-    await queryRunner.dropForeignKey('absens', userFk);
+    await queryRunner.dropForeignKey('absen', userFk);
   }
 
   if (kelasFk) {
-    await queryRunner.dropForeignKey('absens', kelasFk);
+    await queryRunner.dropForeignKey('absen', kelasFk);
   }
 
-  await queryRunner.dropTable('absens');
+  await queryRunner.dropTable('absen');
     }
 
 }
