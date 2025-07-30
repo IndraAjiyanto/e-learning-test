@@ -1,0 +1,18 @@
+  <div class="container mt-5">
+    <h2 class="mb-4">Ubah Kelas</h2>
+    
+    <form method="POST" action="/kelass/{{kelas.id}}?_method=PATCH">
+      <div class="mb-3">
+        <label for="nama" class="form-label">Nama Kelas</label>
+        <input type="text" class="form-control" id="nama" name="nama_kelas" value="{{kelas.nama_kelas}}" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="deskripsi" class="form-label">Deskripsi</label>
+        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3">{{kelas.deskripsi}}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Ubah</button>
+      <a href="/kelass" class="btn btn-secondary">Batal</a>
+    </form>
+  </div>

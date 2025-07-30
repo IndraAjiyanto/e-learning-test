@@ -1,0 +1,19 @@
+
+  <div class="container mt-5">
+    <h2 class="mb-4">Tambah Kelas Baru</h2>
+    
+    <form method="POST" action="/kelass">
+      <div class="mb-3">
+        <label for="nama" class="form-label">Nama Kelas</label>
+        <input type="text" class="form-control" id="nama" name="nama_kelas" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="deskripsi" class="form-label">Deskripsi</label>
+        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Simpan</button>
+      <a href="/kelass" class="btn btn-secondary">Batal</a>
+    </form>
+  </div>

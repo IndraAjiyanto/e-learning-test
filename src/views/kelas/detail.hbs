@@ -1,0 +1,22 @@
+ <div class="container mt-5">
+    <h2 class="mb-4">Detail Kelas</h2>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Nama Kelas:</h5>
+        <p class="card-text">{{kelas.nama_kelas}}</p>
+
+        <h5 class="card-title">Deskripsi:</h5>
+        <p class="card-text">{{kelas.deskripsi}}</p>
+
+        <h5 class="card-title">Dibuat Pada:</h5>
+        <p class="card-text">{{kelas.createdAt}}</p>
+
+        <a href="/kelass" class="btn btn-secondary mt-3">Kembali ke Daftar</a>
+        <a href="/kelass/edit/{{kelas.id}}" class="btn btn-primary mt-3">Edit</a>
+        <form action="/kelass/{{kelas.id}}?_method=DELETE" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-danger mt-3">Hapus</button>
+        </form>
+      </div>
+    </div>
+  </div>

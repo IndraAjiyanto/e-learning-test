@@ -39,7 +39,8 @@ export class User {
 @OneToMany(() => Absen, (absen) => absen.user)
   absen: Absen[];
 
-    @ManyToMany(() => Kelas)
-    @JoinTable()
-    kelas: Kelas[]
+@ManyToMany(() => Kelas, (kelas) => kelas.user)
+@JoinTable()
+kelas: Kelas[];
+
 }

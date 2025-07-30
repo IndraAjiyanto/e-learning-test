@@ -20,8 +20,9 @@ export class Kelas {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToMany(() => User)
-    user: User[]
+@ManyToMany(() => User, (user) => user.kelas)
+user: User[];
+
 
     @OneToMany(() => Materi, (materi) => materi.kelas)
     materi: Materi[]
