@@ -13,15 +13,17 @@ export class Pertemuan{
     @Column()
     tanggal: Date
 
-        @CreateDateColumn()
-        createdAt: Date;
-        
-        @UpdateDateColumn()
-        updatedAt: Date;
-
-    @OneToMany(() => Absen, absen => absen.pertemuan)
+    @OneToMany(() => Absen, (absen) => absen.pertemuan)
     absen: Absen[];
 
-    @ManyToOne(() => Pertemuan, pertemuan => pertemuan.kelas)
-    kelas: Kelas[]
+    @ManyToOne(() => Kelas, (kelas) => kelas.pertemuan)
+    kelas: Kelas
+
+    @CreateDateColumn()
+    createdAt: Date;
+        
+    @UpdateDateColumn()
+    updatedAt: Date;
+
+
 }

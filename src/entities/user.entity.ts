@@ -1,6 +1,7 @@
-import { BeforeInsert, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { BeforeInsert, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { Absen } from './absen.entity';
+import { Kelas } from './kelas.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -35,6 +36,10 @@ export class User {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-@OneToMany(() => Absen, absen => absen.user)
+@OneToMany(() => Absen, (absen) => absen.user)
   absen: Absen[];
+
+    @ManyToMany(() => Kelas)
+    @JoinTable()
+    kelass: Kelas[]
 }

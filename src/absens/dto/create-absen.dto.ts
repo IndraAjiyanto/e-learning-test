@@ -4,22 +4,17 @@ import { Status } from "src/entities/absen.entity";
 export class CreateAbsenDto {
     @IsEnum(Status, { each: true }) 
     @IsArray()
-    @IsOptional()
-    status?: Status[] = [Status.TidakAdaKeterangan];
+    status: Status[] = [Status.TidakAdaKeterangan];
 
     @IsDateString()
-    @IsOptional()
-    waktu_absen?: Date;
+    waktu_absen: Date;
 
     @IsString()
-    @IsOptional()
-    Keterangan?: string;
+    Keterangan: string;
 
     @IsNumber()
-    @IsOptional()
-    userId?: number;
+    userId: number;
 
     @IsNumber()
-    @IsOptional()
-    pertemuanId?: number;
+    pertemuanId: number;
 }
