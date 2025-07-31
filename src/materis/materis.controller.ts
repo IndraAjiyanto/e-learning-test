@@ -73,11 +73,11 @@ async updatePdf(
   const materi = await this.materisService.findOne(id);
 
   if (file) {
-    await this.materisService.deleteOldFile(materi.file, file.destination);
+    await this.materisService.deleteFileIfExists(materi.file);
     updateMaterisDto.file = file.filename; 
   } 
 
-  return await this.materisService.update(+id, updateMaterisDto);
+  return await this.materisService.update(id, updateMaterisDto);
 }
 
 @Patch('video/:id')
@@ -90,11 +90,11 @@ async updateVideo(
   const materi = await this.materisService.findOne(id);
 
   if (file) {
-    await this.materisService.deleteOldFile(materi.file, file.destination);
+    await this.materisService.deleteFileIfExists(materi.file);
     updateMaterisDto.file = file.filename; 
   } 
 
-  return await this.materisService.update(+id, updateMaterisDto);
+  return await this.materisService.update(id, updateMaterisDto);
 }
 
 
@@ -108,25 +108,15 @@ async updatePpt(
   const materi = await this.materisService.findOne(id);
 
   if (file) {
-    await this.materisService.deleteOldFile(materi.file, file.destination);
+    await this.materisService.deleteFileIfExists(materi.file);
     updateMaterisDto.file = file.filename; 
   } 
 
-  return await this.materisService.update(+id, updateMaterisDto);
+  return await this.materisService.update(id, updateMaterisDto);
 }
 
-  @Delete('pdf/:id')
+  @Delete(':id')
   removePdf(@Param('id') id: number) {
-    return this.materisService.remove(id, './uploads/pdf');
-  }
-
-  @Delete('video/:id')
-  removeVideo(@Param('id') id: number) {
-    return this.materisService.remove(id, './uploads/videos');
-  }
-
-  @Delete('ppt/:id')
-  removePpt(@Param('id') id: number) {
-    return this.materisService.remove(id, './uploads/ppt');
+    return this.materisService.remove(id);
   }
 }
