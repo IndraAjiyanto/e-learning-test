@@ -2,9 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMaterisDto } from './dto/create-materis.dto';
 import { UpdateMaterisDto } from './dto/update-materis.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Materi } from 'src/entities/materi.entity';
+import { JenisFile, Materi } from 'src/entities/materi.entity';
 import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class MaterisService {
@@ -26,10 +28,18 @@ export class MaterisService {
         return await this.materiRepository.save(materi)
   }
 
-  async findAll() {
-      return await this.materiRepository.find({
-      relations: ['kelas']
+  async findMateriBykelas(kelasId: number){
+    return await this.materiRepository.find({
+      where: {kelas: {id: kelasId}},
+      relations: ['kelas']  
     })
+  }
+
+  async findIdentityMateri(jenis_file: JenisFile, kelasId: number) {
+      return await this.materiRepository.find({
+      where: {jenis_file: jenis_file, kelas: {id: kelasId}},
+      relations: ['kelas'],
+    });
   }
 
   async findOne(id: number) {
@@ -48,6 +58,30 @@ export class MaterisService {
     return materi;
   }
 
+  // async findMateri(id: number){
+  //   return await this.materiRepository.find({
+  //     where: {id}
+  //   })
+  // }
+
+  // async findMateri(id: number){
+  //     return await this.materiRepository.find({
+  //     select: ['jenis_file'],
+  //     where: {id},
+  //     relations: ['kelas']
+  //   })
+  // }
+
+  
+async deleteOldFile(fileName: string, folderPath: string) {
+  if (!fileName) return;
+
+  const fullPath = path.join(folderPath, fileName);
+  if (fs.existsSync(fullPath)) {
+    fs.unlinkSync(fullPath); 
+  }
+}
+
   async update(id: number, updateMaterisDto: UpdateMaterisDto) {
     const materi = await this.findOne(id)
     if(!materi){
@@ -57,11 +91,12 @@ export class MaterisService {
     return await this.materiRepository.save(materi)
   }
 
-  async remove(id: number) {
+  async remove(id: number, folderPath: string) {
     const materi = await this.findOne(id)
     if(!materi){
       throw new NotFoundException('materi tidak ditemukan')
     }
+    await this.deleteOldFile(materi.file, folderPath)
     return await this.materiRepository.remove(materi)
   }
 }

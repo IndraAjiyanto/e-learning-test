@@ -1,14 +1,13 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { JenisFile } from "src/entities/materi.entity";
 
 export class CreateMaterisDto {
     @IsString()
-    pdf: string
+    file: string
 
-    @IsString()
-    video: string
-
-    @IsString()
-    ppt: string
+  @IsEnum(['video', 'pdf', 'ppt'])
+  @IsOptional()
+  jenis_file: JenisFile;
 
     @IsNumber()
     kelasId: number

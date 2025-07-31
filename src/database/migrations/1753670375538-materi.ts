@@ -14,16 +14,13 @@ export class Materi1753670375538 implements MigrationInterface {
                     generationStrategy: 'increment'
                 },
                 {
-                    name: 'pdf',
+                    name: 'file',
                     type: 'varchar'
                 },
                 {
-                    name: 'video',
-                    type: 'varchar'
-                },
-                {
-                    name: 'ppt',
-                    type: 'varchar'
+                    name: 'jenis_file',
+                    type: 'enum',
+                    enum: ['video', 'pdf', 'ppt']
                 },
                 {
                     name: 'kelasId',
