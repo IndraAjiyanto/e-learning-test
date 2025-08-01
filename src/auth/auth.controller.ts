@@ -26,7 +26,7 @@ export class AuthController {
       if (err) {
         res.status(500).send({ message: 'Login gagal', error: err });
       }
-      res.redirect('/protected');
+      res.redirect('/dashboard');
     });
   }
 
@@ -38,8 +38,8 @@ export class AuthController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get('protected')
+  @Get('dashboard')
   getProtected(@Req() req: any, @Res() res: Response) {
-    res.send(`Halo ${req.user.username}, kamu sudah login!`);
+    res.render('dashboard', { user: req.user });
   }
 }

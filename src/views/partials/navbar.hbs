@@ -4,8 +4,17 @@
       <div class="flex items-center">
         <a href="/" class="text-white font-bold text-xl">E-Learning</a>
         <div class="ml-10 flex items-baseline space-x-4">
-          <a href="/kelass" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Kelas</a>
+          {{#hasRole user "super_admin"}}
           <a href="/users" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">User</a>
+          {{/hasRole}}
+          {{#hasAnyRole user (array "admin" "user")}}
+          <a href="/kelass" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Kelas</a>
+          <a href="/pertemuans" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Pertemuan</a>
+          <a href="/materis" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Materi</a>
+          {{/hasAnyRole}}
+          {{#hasRole user "user"}}
+          <a href="/absens" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Absen</a>
+          {{/hasAnyRole}}
         </div>
       </div>
     </div>

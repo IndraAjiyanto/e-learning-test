@@ -32,6 +32,25 @@ async function bootstrap() {
   app.use(passport.session());
   app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
 
+
+  hbs.registerHelper('hasRole', function (user, role, options) {
+  if (user && user.role === role) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+hbs.registerHelper('hasAnyRole', function (user, roles, options) {
+  if (user && roles.includes(user.role)) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+hbs.registerHelper('array', function (...args) {
+  return args.slice(0, -1); 
+});
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
