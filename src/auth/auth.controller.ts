@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 
 @Controller()
 export class AuthController {
@@ -23,9 +24,9 @@ export class AuthController {
 
     req.login(req.user, (err) => {
       if (err) {
-        return res.status(500).send({ message: 'Login gagal', error: err });
+        res.status(500).send({ message: 'Login gagal', error: err });
       }
-      return res.redirect('/protected');
+      res.redirect('/protected');
     });
   }
 
@@ -36,11 +37,9 @@ export class AuthController {
     });
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Get('protected')
   getProtected(@Req() req: any, @Res() res: Response) {
-    if (!req.isAuthenticated()) {
-      return res.redirect('/login');
-    }
     res.send(`Halo ${req.user.username}, kamu sudah login!`);
   }
 }

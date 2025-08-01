@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
@@ -6,6 +6,7 @@ import * as methodOverride from 'method-override';
 import * as hbs from 'hbs';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { RolesGuard } from './common/guards/roles.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
@@ -29,6 +30,8 @@ async function bootstrap() {
 
   app.use(passport.initialize());
   app.use(passport.session());
+  app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
