@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, UseGuards, Res, Req } from '@nestjs/common';
 import { MaterisService } from './materis.service';
 import { CreateMaterisDto } from './dto/create-materis.dto';
 import { UpdateMaterisDto } from './dto/update-materis.dto';
@@ -7,6 +7,7 @@ import { multerConfigPdf, multerConfigPpt, multerConfigVideo } from 'src/common/
 import { JenisFile, Materi } from 'src/entities/materi.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
+import { Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('materis')
@@ -60,8 +61,9 @@ return this.materisService.findMateriBykelas(kelasId)
 
   @Roles('admin', 'user')
   @Get(':jenis_file/:kelasId')
-  findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('kelasId') kelasId: number){
-    return this.materisService.findIdentityMateri(jenis_file, kelasId)
+  async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: any){
+    const materi = await this.materisService.findIdentityMateri(jenis_file, kelasId)
+    res.render('materi/materi', {materi, user: req.user, kelas: req.kelas})
   }
 
   // @Get('edit/materi/:id')

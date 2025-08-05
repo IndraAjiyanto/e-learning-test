@@ -1,22 +1,23 @@
-<nav class="bg-gray-800">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <div class="flex items-center">
-        <a href="/" class="text-white font-bold text-xl">E-Learning</a>
-        <div class="ml-10 flex items-baseline space-x-4">
-          {{#hasRole user "super_admin"}}
-          <a href="/users" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">User</a>
-          {{/hasRole}}
-          {{#hasAnyRole user (array "admin" "user")}}
-          <a href="/kelass" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Kelas</a>
-          <a href="/pertemuans" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Pertemuan</a>
-          <a href="/materis" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Materi</a>
-          {{/hasAnyRole}}
-          {{#hasRole user "user"}}
-          <a href="/absens" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Absen</a>
-          {{/hasAnyRole}}
-        </div>
+ <nav class="flex items-center justify-between px-6 py-4 border-b bg-white shadow-sm">
+      <div class="flex items-center gap-2">
+        <img src="../../common/public/image/logo.png" alt="Logo" class="h-6 w-6" />
+        <span class="text-lg font-semibold">Satria Kode</span>
       </div>
-    </div>
-  </div>
-</nav>
+
+{{#if user}}
+      <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
+        <a href="/kelass/kelas_saya/{{user.id}}" class="text-sm text-gray-700 hover:text-blue-600">My Course</a>
+        <a href="#" class="text-sm text-gray-700 hover:text-blue-600">Pertemuan</a>
+      </div>
+
+<a class="text-lg font-semibold">{{user.username}}</a>
+{{else}}
+      <div class="flex items-center gap-4">
+        <a href="/login" class="text-sm hover:underline">Log In</a>
+        <a href="/registrasi" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+          Sign Up
+        </a>
+      </div>
+{{/if}}
+
+          </nav>

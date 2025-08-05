@@ -1,0 +1,32 @@
+<div class="max-w-5xl mx-auto px-6 py-10">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">Materi PDF - {{kelas.nama_kelas}}</h1>
+    <p class="text-gray-700 mb-4">{{kelas.deskripsi}}</p>
+
+    <a href="/kelas/{{kelas.id}}" class="text-blue-600 hover:underline text-sm">&larr; Kembali ke Detail Kelas</a>
+  </div>
+
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold mb-4">Daftar Materi PDF</h2>
+
+    {{#if materi}}
+    <ul class="space-y-4">
+      {{#each materi}}
+        <li class="bg-white p-4 rounded shadow hover:shadow-md transition">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-lg font-medium text-gray-800">{{file}}</p>
+              <p class="text-sm text-gray-500">{{jenis_file}}</p>
+            </div>
+            <a href="{{file}}" target="_blank" class="text-blue-600 hover:underline font-semibold">
+              Lihat {{jenis_file}}
+            </a>
+          </div>
+        </li>
+      {{/each}}
+    </ul>
+    {{else}}
+      <p class="text-gray-500">Belum ada materi PDF yang tersedia.</p>
+    {{/if}}
+  </div>
+</div>

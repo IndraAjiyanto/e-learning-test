@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('users')
@@ -14,6 +15,16 @@ export class UsersController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Get('profile')
+  profile(@Res() res: Response ){
+    return res.render('profile/index');
+  }
+
+  @Get('profile/mycourse')
+  Mycourse(@Res() res: Response ){
+    return res.render('profile/course');
   }
 
   @Roles('admin')

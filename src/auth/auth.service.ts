@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from '../entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { KelassService } from 'src/kelass/kelass.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UsersService) {}
+  constructor(private userService: UsersService, private kelasService: KelassService) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.userService.findByEmail(email);
@@ -13,5 +14,9 @@ export class AuthService {
       return user;
     }
     return null;
+  }
+
+  async findAllKelas(){
+    return await this.kelasService.findAll()
   }
 }

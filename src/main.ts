@@ -2,6 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
+import * as express from 'express';
 import * as methodOverride from 'method-override';
 import * as hbs from 'hbs';
 import * as session from 'express-session';
@@ -13,7 +14,8 @@ async function bootstrap() {
     AppModule,
   );
 
-  app.useStaticAssets(join(__dirname, '..','src', 'public'));
+  app.useStaticAssets(join(__dirname, '..','src', 'common','public'));
+  app.use('/public', express.static(join(__dirname, '..','src', 'common','public', 'image')));
   app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
   app.setViewEngine('hbs');
   hbs.registerPartials(join(__dirname, '..', 'src','views', 'partials'));

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, Req } from '@nestjs/common';
 import { KelassService } from './kelass.service';
 import { CreateKelassDto } from './dto/create-kelass.dto';
 import { UpdateKelassDto } from './dto/update-kelass.dto';
@@ -38,15 +38,22 @@ export class KelassController {
   }
 
   @Get(':id')
-  async detail(@Param('id') id: string, @Res() res: Response) {
+  async detail(@Param('id') id: string, @Res() res: Response, @Req() req: any) {
     const kelas = await this.kelassService.findOne(+id);
-    return res.render('kelas/detail', { layout: 'layouts/main', kelas })
+   res.render('kelas/detail', {user: req.user, kelas})
+  }
+
+  @Roles('user')
+  @Get('kelas_saya/:id')
+  async myCourse(@Param('id') id: number, @Res() res: Response, @Req() req: any){
+    const kelas = await this.kelassService.findMyCourse(id)
+    res.render('pengguna/mycourse', {kelas, user: req.user})
   }
 
   @Roles('admin')
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateKelassDto: UpdateKelassDto, @Res() res: Response) {
-    await this.kelassService.update(+id, updateKelassDto);
+  async update(@Param('id') id: number, @Body() updateKelassDto: UpdateKelassDto, @Res() res: Response) {
+    await this.kelassService.update(id, updateKelassDto);
     return res.redirect('/kelass');
   }
 

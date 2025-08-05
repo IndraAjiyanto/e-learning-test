@@ -1,14 +1,28 @@
+<div class="min-h-screen flex">
+  <div class="w-full md:w-1/2 flex items-center justify-center p-8">
+    <div class="w-full max-w-md">
+      <h2 class="text-3xl font-semibold mb-6 text-center">Sign in to your account</h2>
 
-  <h2>Login</h2>
-  <form action="/login" method="POST">
-    <div>
-      <label>Email:</label>
-      <input type="email" name="email" required />
-    </div>
-    <div>
-      <label>Password:</label>
-      <input type="password" name="password" required />
-    </div>
-    <button type="submit">Login</button>
-  </form>
+      <form action="/login" method="post">
+        <div class="mb-4">
+          <label class="block mb-1 text-sm">Email</label>
+          <input type="email" name="email" placeholder="Username or Email ID" class="w-full p-3 border rounded" />
+        </div>
 
+        <div class="mb-4">
+          <label class="block mb-1 text-sm">Password</label>
+          <input type="password" name="password" placeholder="Enter Password" class="w-full p-3 border rounded" />
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">
+          Sign in
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <div class="hidden md:flex w-1/2 items-center justify-center bg-gray-100">
+    <img src="/images/login-side.jpg" alt="Reading" class="rounded shadow-xl max-w-full h-auto">
+  </div>
+</div>

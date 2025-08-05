@@ -1,22 +1,40 @@
- <div class="container mt-5">
-    <h2 class="mb-4">Detail Kelas</h2>
+  <div class="max-w-5xl mx-auto px-6 py-10">
+    <div class="mb-8">
+      <img src="/images/web-dev.jpg" alt="Web Dev" class="w-full h-64 object-cover rounded shadow mb-4" />
+      <h1 class="text-3xl font-bold mb-2">{{kelas.nama_kelas}}</h1>
+      {{!-- <p class="text-gray-600 mb-2">Kategori: <span class="text-blue-600">Development</span></p> --}}
+      <p class="text-gray-700 mb-4">
+        {{kelas.deskripsi}}
+      </p>
 
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Nama Kelas:</h5>
-        <p class="card-text">{{kelas.nama_kelas}}</p>
+      {{!-- <button id="daftarBtn" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+        Daftar Kelas
+      </button> --}}
+    </div>
 
-        <h5 class="card-title">Deskripsi:</h5>
-        <p class="card-text">{{kelas.deskripsi}}</p>
+    <div class="mb-10">
+      <h2 class="text-2xl font-semibold mb-4">Materi Kelas</h2>
+      <ul class="space-y-3">
+        <li class="flex items-center gap-2">
+          📄 <a href="/materis/pdf/{{kelas.id}}" class="text-blue-600 hover:underline">PDF</a>
+        </li>
+        <li class="flex items-center gap-2">
+          🎞️ <a href="/materis/video/{{kelas.id}}" class="text-blue-600 hover:underline">Video</a>
+        </li>
+        <li class="flex items-center gap-2">
+          📊 <a href="/materis/ppt/{{kelas.id}}" class="text-blue-600 hover:underline">PPT</a>
+        </li>
+      </ul>
+    </div>
 
-        <h5 class="card-title">Dibuat Pada:</h5>
-        <p class="card-text">{{kelas.createdAt}}</p>
-
-        <a href="/kelass" class="btn btn-secondary mt-3">Kembali ke Daftar</a>
-        <a href="/kelass/edit/{{kelas.id}}" class="btn btn-primary mt-3">Edit</a>
-        <form action="/kelass/{{kelas.id}}?_method=DELETE" method="POST" class="d-inline">
-          <button type="submit" class="btn btn-danger mt-3">Hapus</button>
-        </form>
-      </div>
+    <div id="pertemuanSection" class="hidden">
+      <h2 class="text-2xl font-semibold mb-4">Pertemuan</h2>
+      <ol class="list-decimal pl-5 space-y-2 text-gray-800">
+        <li>Pertemuan 1 - Pengenalan Web dan HTML</li>
+        <li>Pertemuan 2 - CSS dan Layouting</li>
+        <li>Pertemuan 3 - JavaScript Dasar</li>
+        <li>Pertemuan 4 - Node.js & Express</li>
+        <li>Pertemuan 5 - Proyek Akhir</li>
+      </ol>
     </div>
   </div>
