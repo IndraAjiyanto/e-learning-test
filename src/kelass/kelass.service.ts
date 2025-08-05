@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
+import { Absen } from 'src/entities/absen.entity';
 
 @Injectable()
 export class KelassService {
@@ -13,6 +15,10 @@ export class KelassService {
     private readonly kelasRepository: Repository<Kelas>, 
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        @InjectRepository(Pertemuan)
+        private readonly pertemuanRepository: Repository<Pertemuan>,
+        @InjectRepository(Absen)
+        private readonly absenRepository: Repository<Absen>,
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -32,6 +38,24 @@ async findMyCourse(userId: number) {
     },
     relations: ['user'], 
   });
+}
+
+async findPertemuan(kelasId: number){
+    const kelas = await this.findOne(kelasId);
+  if (!kelas) {
+    throw new NotFoundException(`User with ID ${kelasId} not found`);
+  }
+  return await this.pertemuanRepository.find({
+    where: {
+      kelas: { id: kelasId }
+    },
+    relations: ['kelas', 'absen'], 
+  });
+}
+
+async findAbsen(kelasId: number, userId: number){
+  const pertemuan = await this.findPertemuan(kelasId); 
+  const absen = await this.absenRepository.find({where: {user: {id: userId}}});
 }
 
   async findAll() {

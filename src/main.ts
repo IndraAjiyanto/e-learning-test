@@ -2,11 +2,12 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
-import * as express from 'express';
 import * as methodOverride from 'method-override';
 import * as hbs from 'hbs';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
 import { RolesGuard } from './common/guards/roles.guard';
 
 async function bootstrap() {
@@ -15,9 +16,17 @@ async function bootstrap() {
   );
 
   app.useStaticAssets(join(__dirname, '..','src', 'common','public'));
-  app.use('/public', express.static(join(__dirname, '..','src', 'common','public', 'image')));
   app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
   app.setViewEngine('hbs');
+  hbs.registerHelper('addOne', function (index: number) {
+  return index + 1;
+});
+  hbs.registerHelper('formatTanggal', function (tanggal: string) {
+    return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale: id });
+  });
+  hbs.registerHelper('isSameUser', function (a, b, options) {
+  return a === b ? options.fn(this) : options.inverse(this);
+  });
   hbs.registerPartials(join(__dirname, '..', 'src','views', 'partials'));
   app.set('view options', { layout: 'layouts/main' });
   app.use(methodOverride('_method'));

@@ -38,9 +38,10 @@ export class KelassController {
   }
 
   @Get(':id')
-  async detail(@Param('id') id: string, @Res() res: Response, @Req() req: any) {
-    const kelas = await this.kelassService.findOne(+id);
-   res.render('kelas/detail', {user: req.user, kelas})
+  async detail(@Param('id') id: number, @Res() res: Response, @Req() req: any) {
+    const kelas = await this.kelassService.findOne(id);
+    const pertemuan = await this.kelassService.findPertemuan(id);
+   res.render('kelas/detail', {user: req.user, kelas, pertemuan})
   }
 
   @Roles('user')

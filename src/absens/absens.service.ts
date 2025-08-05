@@ -43,6 +43,10 @@ export class AbsensService {
     })
   }
 
+  async findPertemuan(pertemuanId: number){
+    return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['kelas']})
+  }
+
   async findOne(id: number) {
     const absen = await this.absenRepository.findOne({
       where: {id},

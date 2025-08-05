@@ -5,12 +5,12 @@ import { UpdatePertemuanDto } from './dto/update-pertemuan.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
-@UseGuards(AuthenticatedGuard)
+// @UseGuards(AuthenticatedGuard)
 @Controller('pertemuans')
 export class PertemuansController {
   constructor(private readonly pertemuansService: PertemuansService) {}
 
-  @Roles('admin')
+  // @Roles('admin')
   @Post()
   create(@Body() createPertemuanDto: CreatePertemuanDto) {
     return this.pertemuansService.create(createPertemuanDto);

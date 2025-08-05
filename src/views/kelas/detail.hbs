@@ -1,40 +1,65 @@
-  <div class="max-w-5xl mx-auto px-6 py-10">
-    <div class="mb-8">
-      <img src="/images/web-dev.jpg" alt="Web Dev" class="w-full h-64 object-cover rounded shadow mb-4" />
-      <h1 class="text-3xl font-bold mb-2">{{kelas.nama_kelas}}</h1>
-      {{!-- <p class="text-gray-600 mb-2">Kategori: <span class="text-blue-600">Development</span></p> --}}
-      <p class="text-gray-700 mb-4">
-        {{kelas.deskripsi}}
-      </p>
+<div class="max-w-5xl mx-auto px-6 py-10">
+  <div class="mb-8">
+    <img src="/image/logo.png" alt="Web Dev" class="w-full h-64 object-cover rounded shadow mb-4" />
+    <h1 class="text-3xl font-bold mb-2">{{kelas.nama_kelas}}</h1>
+    <p class="text-gray-700 mb-4">{{kelas.deskripsi}}</p>
+  </div>
 
-      {{!-- <button id="daftarBtn" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-        Daftar Kelas
-      </button> --}}
-    </div>
-
-    <div class="mb-10">
-      <h2 class="text-2xl font-semibold mb-4">Materi Kelas</h2>
-      <ul class="space-y-3">
-        <li class="flex items-center gap-2">
-          📄 <a href="/materis/pdf/{{kelas.id}}" class="text-blue-600 hover:underline">PDF</a>
-        </li>
-        <li class="flex items-center gap-2">
-          🎞️ <a href="/materis/video/{{kelas.id}}" class="text-blue-600 hover:underline">Video</a>
-        </li>
-        <li class="flex items-center gap-2">
-          📊 <a href="/materis/ppt/{{kelas.id}}" class="text-blue-600 hover:underline">PPT</a>
-        </li>
-      </ul>
-    </div>
-
-    <div id="pertemuanSection" class="hidden">
-      <h2 class="text-2xl font-semibold mb-4">Pertemuan</h2>
-      <ol class="list-decimal pl-5 space-y-2 text-gray-800">
-        <li>Pertemuan 1 - Pengenalan Web dan HTML</li>
-        <li>Pertemuan 2 - CSS dan Layouting</li>
-        <li>Pertemuan 3 - JavaScript Dasar</li>
-        <li>Pertemuan 4 - Node.js & Express</li>
-        <li>Pertemuan 5 - Proyek Akhir</li>
-      </ol>
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold mb-4">Materi Kelas</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="bg-white shadow-lg rounded-xl p-4 flex flex-col items-center text-center">
+        <div class="text-3xl mb-2">📄</div>
+        <h3 class="text-lg font-bold mb-1">Materi PDF</h3>
+        <a href="/materis/pdf/{{kelas.id}}" class="text-blue-600 hover:underline">Lihat PDF</a>
+      </div>
+      <div class="bg-white shadow-lg rounded-xl p-4 flex flex-col items-center text-center">
+        <div class="text-3xl mb-2">🎞️</div>
+        <h3 class="text-lg font-bold mb-1">Materi Video</h3>
+        <a href="/materis/video/{{kelas.id}}" class="text-blue-600 hover:underline">Lihat Video</a>
+      </div>
+      <div class="bg-white shadow-lg rounded-xl p-4 flex flex-col items-center text-center">
+        <div class="text-3xl mb-2">📊</div>
+        <h3 class="text-lg font-bold mb-1">Materi PPT</h3>
+        <a href="/materis/ppt/{{kelas.id}}" class="text-blue-600 hover:underline">Lihat PPT</a>
+      </div>
     </div>
   </div>
+
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold mb-4">Pertemuan</h2>
+
+    {{#if pertemuan.length}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {{#each pertemuan}}
+      <div class="bg-gray-100 p-4 rounded-xl shadow flex flex-col justify-between">
+        <div>
+          <h3 class="font-semibold text-gray-800 mb-1">Pertemuan {{addOne @index}}</h3>
+          <p class="text-gray-600 mb-1">{{topik}}</p>
+          <p class="text-gray-500 text-sm mb-3">📅 {{formatTanggal tanggal}}</p>
+        </div>
+        {{#if absen.length}}
+        {{#each absen}}
+        {{#isSameUser absen.user.id ../user.id }}
+          <button class="mt-auto px-3 py-1.5 bg-green-500 text-white text-sm rounded shadow cursor-default" disabled>
+            ✅ Sudah Absen
+          </button>
+        {{else}}
+        <a href="/absens/form/{{id}}" class="mt-auto w-fit px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+          Absen
+        </a>
+        {{/isSameUser}}
+  {{/each}}
+  {{else}}
+<a href="/absens/form/{{id}}" class="mt-auto w-full px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition text-center">
+  Absen
+</a>
+  {{/if}}
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <p class="text-gray-600 italic">Belum ada pertemuan yang tersedia.</p>
+    {{/if}}
+  </div>
+</div>

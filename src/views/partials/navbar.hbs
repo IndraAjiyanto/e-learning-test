@@ -1,23 +1,22 @@
- <nav class="flex items-center justify-between px-6 py-4 border-b bg-white shadow-sm">
-      <div class="flex items-center gap-2">
-        <img src="../../common/public/image/logo.png" alt="Logo" class="h-6 w-6" />
-        <span class="text-lg font-semibold">Satria Kode</span>
-      </div>
+<nav class="flex items-center justify-between px-6 py-4 border-b bg-gray-900 text-white shadow-sm">
+  <div class="flex items-center gap-2">
+    <img src="/image/logo.png" alt="Logo" class="h-6 w-6" />
+    <span class="text-lg font-semibold">Kesatria Academy</span>
+  </div>
 
-{{#if user}}
-      <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
-        <a href="/kelass/kelas_saya/{{user.id}}" class="text-sm text-gray-700 hover:text-blue-600">My Course</a>
-        <a href="#" class="text-sm text-gray-700 hover:text-blue-600">Pertemuan</a>
-      </div>
+  {{#if user}}
+  <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
+    <a href="/kelass/kelas_saya/{{user.id}}" class="text-sm text-gray-300 hover:text-white">My Course</a>
+    <a href="#" class="text-sm text-gray-300 hover:text-white">Pertemuan</a>
+  </div>
 
-<a class="text-lg font-semibold">{{user.username}}</a>
-{{else}}
-      <div class="flex items-center gap-4">
-        <a href="/login" class="text-sm hover:underline">Log In</a>
-        <a href="/registrasi" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
-          Sign Up
-        </a>
-      </div>
-{{/if}}
-
-          </nav>
+  <a class="text-sm font-medium">{{user.username}}</a>
+  {{else}}
+  <div class="flex items-center gap-4">
+    <a href="/login" class="text-sm text-gray-300 hover:text-white">Log In</a>
+    <a href="/registrasi" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+      Sign Up
+    </a>
+  </div>
+  {{/if}}
+</nav>

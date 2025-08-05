@@ -5,9 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { PertemuansModule } from 'src/pertemuans/pertemuans.module';
 import { User } from 'src/entities/user.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
+import { Absen } from 'src/entities/absen.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, User])],
+  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen])],
   controllers: [KelassController],
   providers: [KelassService],
   exports: [KelassService],
