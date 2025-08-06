@@ -11,10 +11,11 @@ import { Response } from 'express';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Roles('super_admin', 'admin')
+  @Roles('super_admin')
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+    await this.usersService.create(createUserDto);
+    res.redirect('/users')
   }
 
   @Get('profile')
@@ -35,8 +36,22 @@ export class UsersController {
 
 @Roles('super_admin')
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(@Res() res: Response, @Req() req: any) {
+    const users = await this.usersService.findAll();
+    res.render('user/index', {user: req.user, users})
+  }
+
+  @Roles('super_admin')
+  @Get('formEdit/:id')
+  async formEdit(@Param('id') id: number, @Res() res: Response, @Req() req: any) {
+    const users = await this.usersService.findOne(id);
+    res.render('user/edit', {user: req.user, users});
+  }
+
+  @Roles('super_admin')
+  @Get('formCreate')
+  async formCreate(@Res() res: Response, @Req() req: any) {
+    res.render('user/create', {user: req.user});
   }
 
   @Roles('super_admin', 'admin')
@@ -47,8 +62,9 @@ export class UsersController {
 
   @Roles('super_admin', 'admin')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  async update(@Param('id') id: number, @Res() res: Response, @Req() req: any, @Body() updateUserDto: UpdateUserDto) {
+    await this.usersService.update(id, updateUserDto);
+    res.redirect('/users')
   }
 
   @Roles('super_admin')

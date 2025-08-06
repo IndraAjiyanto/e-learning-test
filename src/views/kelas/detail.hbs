@@ -8,15 +8,15 @@
   <div class="mb-10">
     <h2 class="text-2xl font-semibold mb-4">Materi Kelas</h2>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-      <div class="bg-white shadow-lg rounded-xl p-4 flex flex-col items-center text-center">
-        <a href="/materis/pdf/{{kelas.id}}" class="text-blue-600 hover:underline">PDF</a>
-      </div>
-      <div class="bg-white shadow-lg rounded-xl p-4 flex flex-col items-center text-center">
-        <a href="/materis/video/{{kelas.id}}" class="text-blue-600 hover:underline">Video</a>
-      </div>
-      <div class="bg-white shadow-lg rounded-xl p-4 flex flex-col items-center text-center">
-        <a href="/materis/ppt/{{kelas.id}}" class="text-blue-600 hover:underline">PPT</a>
-      </div>
+      <a href="/materis/pdf/{{kelas.id}}" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center transition transform hover:shadow-xl hover:bg-gray-500 ">
+        <span class="text-lg font-medium">Materi PDF</span>
+      </a>
+      <a href="/materis/video/{{kelas.id}}" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center transition transform hover:shadow-xl hover:bg-gray-500 ">
+        <span class="text-lg font-medium">Materi Video</span>
+      </a>
+      <a href="/materis/ppt/{{kelas.id}}" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center transition transform hover:shadow-xl hover:bg-gray-500 ">
+        <span class="text-lg font-medium">Materi PPT</span>
+      </a>
     </div>
   </div>
 
@@ -24,32 +24,46 @@
     <h2 class="text-2xl font-semibold mb-4">Pertemuan</h2>
 
     {{#if pertemuan.length}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       {{#each pertemuan}}
-      <div class="bg-gray-100 p-4 rounded-xl shadow flex flex-col justify-between">
-        <div>
-          <h3 class="font-semibold text-gray-800 mb-1">Pertemuan {{addOne @index}}</h3>
-          <p class="text-gray-600 mb-1">{{topik}}</p>
-          <p class="text-gray-500 text-sm mb-3">📅 {{formatTanggal tanggal}}</p>
-        </div>
         {{#if absen.length}}
-        {{#each absen}}
-        {{#isSameUser absen.user.id ../user.id }}
-          <button class="mt-auto px-3 py-1.5 bg-green-500 text-white text-sm rounded shadow cursor-default" disabled>
-            ✅ Sudah Absen
-          </button>
+          {{#each absen}}
+            {{#isSameUser absen.user.id ../user.id}}
+              <div class="bg-gray-200 shadow-lg rounded-xl p-6 flex flex-col justify-between transition transform">
+                <div class="mb-4">
+                  <h3 class="text-lg font-semibold mb-1">Pertemuan {{addOne @index}}</h3>
+                  <p class="text-sm mb-1">{{../topik}}</p>
+                  <p class="text-xs  ">{{formatTanggal ../tanggal}}</p>
+                </div>
+                <p class="text-green-700 text-sm cursor-default">
+                  Sudah Absen
+                </p>
+              </div>
+            {{else}}
+              <a href="/absens/form/{{id}}" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col justify-between transition transform hover:shadow-xl hover:bg-gray-500">
+                <div class="mb-4">
+                  <h3 class="text-lg font-semibold mb-1">Pertemuan {{addOne @index}}</h3>
+                  <p class="text-sm mb-1">{{../topik}}</p>
+                  <p class="text-xs ">{{formatTanggal ../tanggal}}</p>
+                </div>
+                <p class="text-red-700 text-sm cursor-default">
+                  Belum Absen
+                </p>
+              </a>
+            {{/isSameUser}}
+          {{/each}}
         {{else}}
-        <a href="/absens/form/{{id}}" class="mt-auto w-fit px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
-          Absen
-        </a>
-        {{/isSameUser}}
-  {{/each}}
-  {{else}}
-<a href="/absens/form/{{id}}" class="mt-auto w-full px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition text-center">
-  Absen
-</a>
-  {{/if}}
-      </div>
+          <a href="/absens/form/{{id}}" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col justify-between transition transform hover:shadow-xl hover:bg-gray-500">
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold mb-1">Pertemuan {{addOne @index}}</h3>
+              <p class="text-sm mb-1">{{topik}}</p>
+              <p class="text-xs ">{{formatTanggal tanggal}}</p>
+            </div>
+            <p class="text-red-700 text-sm cursor-default">
+              Belum Absen
+            </p>
+          </a>
+        {{/if}}
       {{/each}}
     </div>
     {{else}}

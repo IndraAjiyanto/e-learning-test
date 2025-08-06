@@ -14,6 +14,10 @@ export class Pertemuan1753670381181 implements MigrationInterface {
                     generationStrategy: 'increment'
                 },
                 {
+                    name: 'pertemuan_ke',
+                    type: 'int'
+                },
+                {
                     name: 'topik',
                     type: 'varchar'
                 },

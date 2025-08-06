@@ -20,8 +20,4 @@ export class CreateUserDto {
   @IsEnum(['super_admin', 'admin', 'user'])
   @IsOptional()
   role?: UserRole;
-
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
 }

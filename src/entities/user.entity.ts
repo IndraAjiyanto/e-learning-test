@@ -1,4 +1,4 @@
-import { BeforeInsert, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { BeforeInsert, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable, BeforeUpdate } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { Absen } from './absen.entity';
 import { Kelas } from './kelas.entity';
@@ -22,9 +22,6 @@ export class User {
   @Column({ type: 'enum', enum: ['super_admin', 'admin', 'user'], default: 'user' })
   role: UserRole;
 
-  @Column({ default: true })
-  isActive: boolean;
-
   @CreateDateColumn()
   createdAt: Date;
 
@@ -34,6 +31,13 @@ export class User {
   @BeforeInsert()
   async hashPassword(){
     this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  @BeforeUpdate()
+  async hashPasswordBeforeUpdate() {
+    if (this.password && !this.password.startsWith('$2b$')) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
   }
 
 @OneToMany(() => Absen, (absen) => absen.user)

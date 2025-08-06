@@ -18,25 +18,27 @@ export class KelassController {
     return res.redirect('/kelass');
   }
 
+  @Roles('admin')
   @Get()
-  async findAll(@Res() res: Response) {
+  async findAll(@Res() res: Response, @Req() req: any) {
     const kelas = await this.kelassService.findAll();
-    return res.render('kelas/index', { layout: 'layouts/main', kelas });
+    return res.render('kelas/index',{user: req.user, kelas});
   }
 
   @Roles('admin')
   @Get("/create")
-  async formCreate(@Res() res: Response){
-    return res.render('kelas/create', { layout: 'layouts/main' });
+  async formCreate(@Res() res: Response, @Req() req:any){
+    return res.render('kelas/create',{user: req.user});
   }
 
   @Roles('admin')
   @Get("/edit/:id")
-  async formEdit(@Res() res: Response, @Param('id') id: number){
+  async formEdit(@Res() res: Response, @Param('id') id: number, @Req() req: any){
     const kelas = await this.kelassService.findOne(id)
-    return res.render('kelas/edit', { layout: 'layouts/main', kelas });
+    return res.render('kelas/edit', {user: req.user, kelas});
   }
 
+  @Roles('admin','user')
   @Get(':id')
   async detail(@Param('id') id: number, @Res() res: Response, @Req() req: any) {
     const kelas = await this.kelassService.findOne(id);
@@ -44,7 +46,7 @@ export class KelassController {
    res.render('kelas/detail', {user: req.user, kelas, pertemuan})
   }
 
-  @Roles('user')
+  @Roles('user', 'admin')
   @Get('kelas_saya/:id')
   async myCourse(@Param('id') id: number, @Res() res: Response, @Req() req: any){
     const kelas = await this.kelassService.findMyCourse(id)

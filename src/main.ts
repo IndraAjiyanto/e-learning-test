@@ -27,6 +27,7 @@ async function bootstrap() {
   hbs.registerHelper('isSameUser', function (a, b, options) {
   return a === b ? options.fn(this) : options.inverse(this);
   });
+  hbs.registerHelper('roles', (a, b) => a === b);
   hbs.registerPartials(join(__dirname, '..', 'src','views', 'partials'));
   app.set('view options', { layout: 'layouts/main' });
   app.use(methodOverride('_method'));

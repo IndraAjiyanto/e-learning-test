@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
-export class Materi1753670375538 implements MigrationInterface {
+export class Materi1753670395538 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table({
@@ -26,6 +26,10 @@ export class Materi1753670375538 implements MigrationInterface {
                     name: 'kelasId',
                     type: 'int'
                 },
+                         {
+                    name: 'pertemuanId',
+                    type: 'int'
+                },
                 {
                     name: 'createdAt',
                     type: 'timestamp',
@@ -45,6 +49,13 @@ export class Materi1753670375538 implements MigrationInterface {
             referencedColumnNames: ['id'],
             onDelete: 'RESTRICT',
         }))
+
+        await queryRunner.createForeignKey('materi', new TableForeignKey({
+            columnNames: ['pertemuanId'],
+            referencedTableName: 'pertemuan',
+            referencedColumnNames: ['id'],
+            onDelete: 'RESTRICT',
+        }))
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
@@ -52,9 +63,14 @@ export class Materi1753670375538 implements MigrationInterface {
   if (!table) return;
 
   const kelasFk = table.foreignKeys.find(fk => fk.columnNames.includes('kelasId'));
+  const pertemuanFk = table.foreignKeys.find(fk => fk.columnNames.includes('pertemuanId'));
 
   if (kelasFk) {
     await queryRunner.dropForeignKey('materi', kelasFk);
+  }
+
+    if (pertemuanFk) {
+    await queryRunner.dropForeignKey('pertemuan', pertemuanFk);
   }
 
   await queryRunner.dropTable('materi');
