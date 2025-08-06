@@ -4,7 +4,7 @@ import { CreateMaterisDto } from './dto/create-materis.dto';
 import { UpdateMaterisDto } from './dto/update-materis.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigPdf, multerConfigPpt, multerConfigVideo } from 'src/common/config/multer.config';
-import { JenisFile, Materi } from 'src/entities/materi.entity';
+import { JenisFile } from 'src/entities/materi.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Response } from 'express';
@@ -62,8 +62,9 @@ return this.materisService.findMateriBykelas(kelasId)
   @Roles('admin', 'user')
   @Get(':jenis_file/:kelasId')
   async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: any){
+    const pertemuan = await this.materisService.findPertemuanByKelas(kelasId)
     const materi = await this.materisService.findIdentityMateri(jenis_file, kelasId)
-    res.render('materi/materi', {materi, user: req.user, kelas: req.kelas})
+    res.render('materi/materi', {materi, user: req.user, pertemuan})
   }
 
   // @Get('edit/materi/:id')

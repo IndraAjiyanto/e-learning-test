@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import * as fs from 'fs';
 import { join } from 'path';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 const foldersToSearch = [
   './uploads/pdf',
@@ -21,7 +22,9 @@ export class MaterisService {
     @InjectRepository(Materi)
     private readonly materiRepository: Repository<Materi>,
     @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>
+    private readonly kelasRepository: Repository<Kelas>,
+    @InjectRepository(Pertemuan)
+    private readonly pertemuanRepository: Repository<Pertemuan>
   ){}
   async create(createMaterisDto: CreateMaterisDto) {
         const kelas = await this.kelasRepository.findOne({where: {id: createMaterisDto.kelasId}})
@@ -40,6 +43,10 @@ export class MaterisService {
       where: {kelas: {id: kelasId}},
       relations: ['kelas']  
     })
+  }
+
+  async findPertemuanByKelas(kelasId: number){
+    return await this.pertemuanRepository.find({where: {kelas: {id: kelasId}}})
   }
 
   async findIdentityMateri(jenis_file: JenisFile, kelasId: number) {

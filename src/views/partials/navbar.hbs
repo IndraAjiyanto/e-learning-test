@@ -10,13 +10,34 @@
     <a href="#" class="text-sm text-gray-300 hover:text-white">Pertemuan</a>
   </div>
 
-  <a class="text-sm font-medium">{{user.username}}</a>
+  
+<div x-data="{ open: false }" class="relative">
+  <button @click="open = !open"
+          class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-gray-800 rounded hover:bg-gray-700 transition duration-200">
+    {{user.username}}
+    <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+
+  <div x-show="open"
+       x-transition
+       @click.away="open = false"
+       class="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg z-50">
+      <a href="/logout" class="block px-4 py-2 hover:bg-red-50 text-red-600 hover:text-red-700 transition">
+        Logout
+      </a>
+    </div>
+  </div>
+</div>
+
+
   {{else}}
   <div class="flex items-center gap-4">
     <a href="/login" class="text-sm text-gray-300 hover:text-white">Log In</a>
-    <a href="/registrasi" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+    {{!-- <a href="/registrasi" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
       Sign Up
-    </a>
+    </a> --}}
   </div>
   {{/if}}
 </nav>

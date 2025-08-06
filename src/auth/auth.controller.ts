@@ -37,12 +37,20 @@ export class AuthController {
     });
   }
 
-  @Get('logout')
-  logout(@Req() req: any, @Res() res: Response) {
-    req.logout(() => {
+@Get('logout')
+logout(@Req() req: any, @Res() res: Response) {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).send({ message: 'Logout gagal', error: err });
+    }
+
+    req.session.destroy(() => {
+      res.clearCookie('connect.sid');
       res.redirect('/login');
     });
-  }
+  });
+}
+
 
   @Get('dashboard')
   async getProtected(@Req() req: any, @Res() res: Response) {

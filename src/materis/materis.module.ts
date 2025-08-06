@@ -4,9 +4,10 @@ import { MaterisController } from './materis.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Materi } from 'src/entities/materi.entity';
 import { Kelas } from 'src/entities/kelas.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Materi, Kelas])],
+  imports: [TypeOrmModule.forFeature([Materi, Kelas, Pertemuan])],
   controllers: [MaterisController],
   providers: [MaterisService],
   exports: [MaterisService],
