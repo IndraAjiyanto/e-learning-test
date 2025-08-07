@@ -1,18 +1,28 @@
-  <div class="container mt-5">
-    <h2 class="mb-4">Ubah Kelas</h2>
-    
-    <form method="POST" action="/kelass/{{kelas.id}}?_method=PATCH">
-      <div class="mb-3">
-        <label for="nama" class="form-label">Nama Kelas</label>
-        <input type="text" class="form-control" id="nama" name="nama_kelas" value="{{kelas.nama_kelas}}" required>
-      </div>
+<div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+  <h2 class="text-2xl font-semibold mb-6">Ubah Kelas</h2>
 
-      <div class="mb-3">
-        <label for="deskripsi" class="form-label">Deskripsi</label>
-        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3">{{kelas.deskripsi}}</textarea>
-      </div>
+  <form method="POST" action="/kelass/{{kelas.id}}?_method=PATCH" class="space-y-6">
+    <div>
+      <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Kelas</label>
+      <input type="text" id="nama" name="nama_kelas" value="{{kelas.nama_kelas}}" required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+    </div>
 
-      <button type="submit" class="btn btn-primary">Ubah</button>
-      <a href="/kelass" class="btn btn-secondary">Batal</a>
-    </form>
-  </div>
+    <div>
+      <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+      <textarea id="deskripsi" name="deskripsi" rows="3"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">{{kelas.deskripsi}}</textarea>
+    </div>
+
+    <div class="flex space-x-4">
+      <button type="submit"
+        class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Ubah
+      </button>
+      <a href="/kelass"
+        class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+        Batal
+      </a>
+    </div>
+  </form>
+</div>

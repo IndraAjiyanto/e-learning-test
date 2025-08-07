@@ -1,28 +1,37 @@
-  <h1>Daftar Kelas</h1>
-<a href="/kelass/create" class="btn btn-primary mb-3">Tambah Kelas</a>
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nama Kelas</th>
-      <th>Deskripsi</th>
-      <th>Aksi</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each kelas}}
-    <tr>
-      <td>{{this.id}}</td>
-      <td>{{this.nama_kelas}}</td>
-      <td>{{this.deskripsi}}</td>
-      <td>
-        <a href="/kelass/{{this.id}}" class="btn btn-info btn-sm">Lihat</a>
-        <a href="/kelass/edit/{{this.id}}" class="btn btn-warning btn-sm">Edit</a>
-        <form action="/kelass/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-          <button class="btn btn-danger btn-sm" type="submit" onclick="return confirm('Yakin ingin menghapus produk ini?')">Hapus</button>
-        </form>
-      </td>
-    </tr>
-    {{/each}}
-  </tbody>
-</table>
+<div class="max-w-5xl mx-auto px-6 py-10">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Daftar Kelas</h1>
+    <a href="/kelass/create" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+      Tambah Kelas
+    </a>
+  </div>
+
+  <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama Kelas</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Deskripsi</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {{#each kelas}}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-6 py-4 text-sm text-gray-800">{{this.id}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{this.nama_kelas}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{this.deskripsi}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
+            <a href="/kelass/{{this.id}}" class="inline-block text-blue-600 hover:underline">Lihat</a>
+            <a href="/kelass/edit/{{this.id}}" class="inline-block text-yellow-600 hover:underline">Edit</a>
+            <form action="/kelass/{{this.id}}?_method=DELETE" method="POST" class="inline">
+              <button type="submit" onclick="return confirm('Yakin ingin menghapus data?')" class="text-red-600 hover:underline">Hapus</button>
+            </form>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
