@@ -34,6 +34,24 @@ export class PertemuansService {
     })
   }
 
+  async findAllKelas(){
+    return await this.kelasRepository.find();
+  }
+
+  async findPertemuanKelas(id: number){
+    const pertemuan = await this.pertemuanRepository.findOne({where: {kelas: {id: id}}, order: {createdAt: 'DESC'}})
+    if(!pertemuan){
+      return 0
+    }
+    return pertemuan.pertemuan_ke
+  }
+
+  async noPertemuan(id: number){
+    const pertemuanTerakhir = await this.findPertemuanKelas(id)
+    const pertemuanBaru = pertemuanTerakhir + 1
+    return pertemuanBaru
+  }
+
   // async findByKelas(id: number){
   //       const pertemuan = await this.pertemuanRepository.find({
   //     where: {id},
@@ -75,11 +93,30 @@ export class PertemuansService {
     return await this.pertemuanRepository.save(pertemuan)
   }
 
-  async remove(id: number) {
+  // async remove(id: number) {
+  //   const pertemuan = await this.findOne(id)
+  //   if(!pertemuan){
+  //     throw new NotFoundException('pertemuan tidak ditemukan')
+  //   }
+  //   return await this.pertemuanRepository.remove(pertemuan)
+  // }
+
+  async remove(id: number, kelasId: number) {
     const pertemuan = await this.findOne(id)
     if(!pertemuan){
       throw new NotFoundException('pertemuan tidak ditemukan')
     }
-    return await this.pertemuanRepository.remove(pertemuan)
+    await this.pertemuanRepository.remove(pertemuan)
+  const semuaPertemuan = await this.pertemuanRepository.find({
+    where: { kelas: { id: kelasId } },
+    order: { createdAt: 'ASC' }
+  });
+
+  for (let i = 0; i < semuaPertemuan.length; i++) {
+    semuaPertemuan[i].pertemuan_ke = i + 1;
+    await this.pertemuanRepository.save(semuaPertemuan[i]);
   }
+
+}
+
 }

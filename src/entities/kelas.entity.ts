@@ -23,10 +23,6 @@ export class Kelas {
 @ManyToMany(() => User, (user) => user.kelas)
 user: User[];
 
-
-    @OneToMany(() => Materi, (materi) => materi.kelas)
-    materi: Materi[]
-
     @OneToMany(() => Pertemuan, (pertemuan) => pertemuan.kelas)
     pertemuan: Pertemuan[]
 }

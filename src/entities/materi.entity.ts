@@ -21,9 +21,6 @@ export class Materi {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => Kelas, (kelas) => kelas.materi)
-    kelas: Kelas
-
     @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.materi)
     pertemuan: Pertemuan
 }

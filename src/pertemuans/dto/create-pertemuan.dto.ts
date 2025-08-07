@@ -4,6 +4,9 @@ export class CreatePertemuanDto {
   @IsString()
   topik: string;
 
+  @IsInt()
+  pertemuan_ke: number;
+
   @IsDateString()
   tanggal: Date;
 

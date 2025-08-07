@@ -21,6 +21,10 @@ async function bootstrap() {
   hbs.registerHelper('addOne', function (index: number) {
   return index + 1;
 });
+hbs.registerHelper('formDate', function(date) {
+  return new Date(date).toISOString().split('T')[0];
+});
+
   hbs.registerHelper('formatTanggal', function (tanggal: string) {
     return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale: id });
   });

@@ -27,46 +27,49 @@ export class MaterisService {
     private readonly pertemuanRepository: Repository<Pertemuan>
   ){}
   async create(createMaterisDto: CreateMaterisDto) {
-        const kelas = await this.kelasRepository.findOne({where: {id: createMaterisDto.kelasId}})
-        if(!kelas){
-          throw new NotFoundException('kelas ini tidak ada')
+        const pertemuan = await this.pertemuanRepository.findOne({where: {id: createMaterisDto.pertemuanId}})
+        if(!pertemuan){
+          throw new NotFoundException('pertemuan ini tidak ada')
         }
         const materi = await this.materiRepository.create({
           ...createMaterisDto,
-          kelas: kelas,
+          pertemuan: pertemuan,
         })
         return await this.materiRepository.save(materi)
   }
 
-  async findMateriBykelas(kelasId: number){
+  async findMateriBypertemuan(pertemuanId: number){
     return await this.materiRepository.find({
-      where: {kelas: {id: kelasId}},
-      relations: ['kelas']  
+      where: {pertemuan: {id: pertemuanId}},
+      relations: ['pertemuan']  
     })
   }
 
   async findPertemuanByKelas(kelasId: number){
-    return await this.pertemuanRepository.find({where: {kelas: {id: kelasId}}})
+    return await this.pertemuanRepository.find({where: {kelas: {id: kelasId}}, relations: ['materi']})
+  }
+  async findMateriByJenisAndPertemuan(kelasId: number, jenis_file: JenisFile){
+    return await this.materiRepository.find({where: {jenis_file: jenis_file, pertemuan: {kelas: {id: kelasId}}}, })
   }
 
-  async findIdentityMateri(jenis_file: JenisFile, kelasId: number) {
+  async findIdentityMateri(jenis_file: JenisFile, pertemuanId: number) {
       return await this.materiRepository.find({
-      where: {jenis_file: jenis_file, kelas: {id: kelasId}},
-      relations: ['kelas'],
+      where: {jenis_file: jenis_file, pertemuan: {id: pertemuanId}},
+      relations: ['pertemuan'],
     });
   }
 
   async findOne(id: number) {
       const materi = await this.materiRepository.findOne({
       where: {id},
-      relations: ['kelas']
+      relations: ['pertemuan']
     })
     if (!materi) {
       throw new NotFoundException(`materi tidak ditemukan`);
     }
 
-    if (!materi.kelas) {
-      throw new NotFoundException('kelas tidak ditemukan');
+    if (!materi.pertemuan) {
+      throw new NotFoundException('pertemuan tidak ditemukan');
     }
 
     return materi;

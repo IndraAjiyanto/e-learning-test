@@ -54,16 +54,16 @@ createVideo(
   }
 
   @Roles('admin', 'user')
-@Get('/kelas/:kelasId')
-findMateriByKelas(@Param('kelasId') kelasId: number){
-return this.materisService.findMateriBykelas(kelasId)
+@Get('/kelas/:pertemuanId')
+findMateriByKelas(@Param('pertemuanId') pertemuanId: number){
+return this.materisService.findMateriBypertemuan(pertemuanId)
 }
 
   @Roles('admin', 'user')
   @Get(':jenis_file/:kelasId')
   async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: any){
     const pertemuan = await this.materisService.findPertemuanByKelas(kelasId)
-    const materi = await this.materisService.findIdentityMateri(jenis_file, kelasId)
+    const materi = await this.materisService.findMateriByJenisAndPertemuan(kelasId, jenis_file)
     res.render('materi/materi', {materi, user: req.user, pertemuan})
   }
 

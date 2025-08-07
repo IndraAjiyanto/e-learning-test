@@ -14,6 +14,7 @@ export class PertemuansController {
   @Roles('admin')
   @Post()
   async create(@Body() createPertemuanDto: CreatePertemuanDto, @Res() res:Response) {
+    createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(createPertemuanDto.kelasId)
     await this.pertemuansService.create(createPertemuanDto);
     res.redirect('pertemuans')
   }
@@ -23,6 +24,21 @@ export class PertemuansController {
   async findAll(@Res() res:Response, @Req() req:any) {
     const pertemuan = await this.pertemuansService.findAll();
     res.render('pertemuan/index', {user: req.user, pertemuan})
+  }
+
+  @Roles('admin')
+  @Get('formCreate')
+  async formCreate(@Res() res:Response, @Req() req:any){
+    const kelas = await this.pertemuansService.findAllKelas()
+    res.render('pertemuan/create', {user: req.user, kelas})
+  }
+
+  @Roles('admin')
+  @Get('formEdit/:id')
+  async formEdit(@Res() res:Response, @Req() req:any, @Param('id') id: number){
+    const pertemuan = await this.pertemuansService.findOne(id)
+    const kelas = await this.pertemuansService.findAllKelas()
+    res.render('pertemuan/edit', {user: req.user, kelas, pertemuan})
   }
 
   @Roles('user', 'admin')
@@ -35,14 +51,13 @@ export class PertemuansController {
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updatePertemuanDto: UpdatePertemuanDto, @Res() res:Response) {
     await this.pertemuansService.update(id, updatePertemuanDto);
-    res.redirect('pertemuans')
+    res.redirect('/pertemuans')
   }
 
   @Roles('admin')
-  @Delete(':id')
-  async remove(@Param('id') id: number, @Res() res:Response) {
-    await this.pertemuansService.remove(id);
-    res.redirect('pertemuans')
-
+  @Delete(':id/:kelasId')
+  async remove(@Param('id') id: number,@Param('kelasId') kelasId: number, @Res() res:Response) {
+    await this.pertemuansService.remove(id, kelasId);
+    res.redirect('/pertemuans')
   }
 }

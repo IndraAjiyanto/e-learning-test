@@ -10,5 +10,5 @@ export class CreateMaterisDto {
   jenis_file: JenisFile;
 
     @IsNumber()
-    kelasId: number
+    pertemuanId: number
 }

@@ -22,10 +22,6 @@ export class Materi1753670395538 implements MigrationInterface {
                     type: 'enum',
                     enum: ['video', 'pdf', 'ppt']
                 },
-                {
-                    name: 'kelasId',
-                    type: 'int'
-                },
                          {
                     name: 'pertemuanId',
                     type: 'int'
@@ -44,13 +40,6 @@ export class Materi1753670395538 implements MigrationInterface {
         }))
 
         await queryRunner.createForeignKey('materi', new TableForeignKey({
-            columnNames: ['kelasId'],
-            referencedTableName: 'kelas',
-            referencedColumnNames: ['id'],
-            onDelete: 'RESTRICT',
-        }))
-
-        await queryRunner.createForeignKey('materi', new TableForeignKey({
             columnNames: ['pertemuanId'],
             referencedTableName: 'pertemuan',
             referencedColumnNames: ['id'],
@@ -62,12 +51,7 @@ export class Materi1753670395538 implements MigrationInterface {
                   const table = await queryRunner.getTable('materi');
   if (!table) return;
 
-  const kelasFk = table.foreignKeys.find(fk => fk.columnNames.includes('kelasId'));
   const pertemuanFk = table.foreignKeys.find(fk => fk.columnNames.includes('pertemuanId'));
-
-  if (kelasFk) {
-    await queryRunner.dropForeignKey('materi', kelasFk);
-  }
 
     if (pertemuanFk) {
     await queryRunner.dropForeignKey('pertemuan', pertemuanFk);

@@ -20,7 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migrate:run": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
     "migrate:revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
-    "build:css": "tailwindcss -i ./src/common/public/style.css -o ./src/common/public/output.css --watch"
+    "build:css": "tailwindcss -i ./src/common/public/style.css -o ./src/common/public/output.css --watch",
+    "seed": "node dist/database/seeds/user.seed.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
