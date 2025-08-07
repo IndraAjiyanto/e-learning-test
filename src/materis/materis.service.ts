@@ -45,6 +45,24 @@ export class MaterisService {
     })
   }
 
+  async findMateriPdf(pertemuanId: number){
+    return await this.materiRepository.find({
+      where: {pertemuan:{id:pertemuanId}, jenis_file: "pdf"}
+    })
+  }
+
+  async findMateriPpt(pertemuanId: number){
+    return await this.materiRepository.find({
+      where: {pertemuan:{id:pertemuanId}, jenis_file: "ppt"}
+    })
+  }
+
+  async findMateriVideo(pertemuanId: number){
+    return await this.materiRepository.find({
+      where: {pertemuan:{id:pertemuanId}, jenis_file: "video"}
+    })
+  }
+
   async findPertemuanByKelas(kelasId: number){
     return await this.pertemuanRepository.find({where: {kelas: {id: kelasId}}, relations: ['materi']})
   }

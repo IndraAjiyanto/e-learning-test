@@ -29,9 +29,28 @@ export class PertemuansService {
   }
 
   async findAll() {
-    return await this.pertemuanRepository.find({
-      relations: ['kelas']
-    })
+const pertemuans = await this.pertemuanRepository
+    .createQueryBuilder('pertemuan')
+    .leftJoin('pertemuan.kelas', 'kelas')
+    .leftJoin('pertemuan.materi', 'materi')
+    .select([
+      'pertemuan.id AS id',
+      'pertemuan.pertemuan_ke AS pertemuan_ke',
+      'pertemuan.topik AS topik',
+      'pertemuan.tanggal AS tanggal',
+      'kelas.id AS kelas_id',
+      'kelas.nama_kelas AS nama_kelas',
+    ])
+    .addSelect([
+      `SUM(CASE WHEN materi.jenis_file = 'pdf' THEN 1 ELSE 0 END) AS jumlah_pdf`,
+      `SUM(CASE WHEN materi.jenis_file = 'video' THEN 1 ELSE 0 END) AS jumlah_video`,
+      `SUM(CASE WHEN materi.jenis_file = 'ppt' THEN 1 ELSE 0 END) AS jumlah_ppt`,
+    ])
+    .groupBy('pertemuan.id')
+    .addGroupBy('kelas.id')
+    .getRawMany();
+
+  return pertemuans;
   }
 
   async findAllKelas(){

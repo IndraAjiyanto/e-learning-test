@@ -15,36 +15,60 @@ export class MaterisController {
   constructor(private readonly materisService: MaterisService) {}
 
   @Roles('admin')
-@Post('pdf')
+@Post('pdf/:id')
 @UseInterceptors(FileInterceptor('file', multerConfigPdf))
-createPdf(
+async createPdf(
   @Body() createMaterisDto: CreateMaterisDto,
   @UploadedFile() file: Express.Multer.File,
+  @Res() res:Response,
+  @Param('id') id: number,
 ) {
   createMaterisDto.file = file.filename; 
-  return this.materisService.create(createMaterisDto);
+  createMaterisDto.pertemuanId = id; 
+  createMaterisDto.jenis_file = "pdf"
+  await this.materisService.create(createMaterisDto);
+  res.redirect('/pertemuans')
 }
 
   @Roles('admin')
-@Post('ppt')
+@Post('ppt/:id')
 @UseInterceptors(FileInterceptor('file', multerConfigPpt))
-createPpt(
+async createPpt(
   @Body() createMaterisDto: CreateMaterisDto,
   @UploadedFile() file: Express.Multer.File,
+  @Res() res:Response,
+  @Param('id') id:number
 ) {
   createMaterisDto.file = file.filename; 
-  return this.materisService.create(createMaterisDto);
+  createMaterisDto.pertemuanId = id
+  createMaterisDto.jenis_file = "ppt"
+  await this.materisService.create(createMaterisDto);
+  res.redirect('/pertemuans')
 }
 
   @Roles('admin')
-@Post('video')
+@Post('video/:id')
 @UseInterceptors(FileInterceptor('file', multerConfigVideo))
-createVideo(
+async createVideo(
   @Body() createMaterisDto: CreateMaterisDto,
   @UploadedFile() file: Express.Multer.File,
+  @Res() res:Response,
+  @Param('id') id:number
 ) {
   createMaterisDto.file = file.filename; 
-  return this.materisService.create(createMaterisDto);
+  createMaterisDto.pertemuanId = id; 
+  createMaterisDto.jenis_file = "video"
+  await this.materisService.create(createMaterisDto);
+  res.redirect('/pertemuans')
+}
+
+@Roles('admin')
+@Get('formCreate/:id')
+async formCreate(@Param('id') id: number, @Req() req:any, @Res() res:Response){
+  const materipdf = await this.materisService.findMateriPdf(id)
+  const materivideo = await this.materisService.findMateriVideo(id)
+  const materippt = await this.materisService.findMateriPpt(id)
+  res.render('materi/index',{user: req.user, id, materipdf, materippt, materivideo})
 }
 
   @Roles('admin', 'user')
@@ -134,7 +158,8 @@ async updatePpt(
 
   @Roles('admin')
   @Delete(':id')
-  removePdf(@Param('id') id: number) {
-    return this.materisService.remove(id);
+  async remove(@Param('id') id: number, @Res() res:Response) {
+    await this.materisService.remove(id);
+    res.redirect('/pertemuans')
   }
 }
