@@ -15,7 +15,12 @@ async function bootstrap() {
     AppModule,
   );
 
-  app.useStaticAssets(join(__dirname, '..','src', 'common','public'));
+  app.useStaticAssets(join(__dirname, '..','src', 'common','public'), {
+    prefix: '/public/'
+  });
+  app.useStaticAssets(join(__dirname, '..','uploads'), {
+    prefix: '/uploads/'
+  });
   app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
   app.setViewEngine('hbs');
   hbs.registerHelper('addOne', function (index: number) {

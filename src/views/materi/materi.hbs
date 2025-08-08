@@ -1,10 +1,11 @@
-<div class="max-w-7xl mx-auto px-4 py-10">
+<div class="max-w-7xl mx-auto px-4 py-10" x-data="{ videoSrc: '' }">
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <div class="col-span-2">
-      <img src="/images/sample-video.jpg" alt="Course Thumbnail" class="rounded-lg w-full mb-4">
-      <div class="flex justify-between items-center">
+      <video controls class="h-[300px] rounded-lg" x-bind:src="videoSrc"></video>
+      <div class="flex justify-between items-center mt-4">
         <h1 class="text-3xl font-bold">Introduction to User Experience Design</h1>
+        <input type="text" x-bind:value="videoSrc">
       </div>
     </div>
 
@@ -17,13 +18,23 @@
                   class="w-full text-left bg-white px-4 py-2 rounded shadow hover:bg-gray-50">
             {{topik}}
           </button>
+
           <div x-show="open"
                x-transition
                @click.away="open = false"
                class="mt-2 bg-white border rounded shadow w-full">
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Item 1</a>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Item 2</a>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100">Item 3</a>
+               
+               {{#if materiVideo.length}}
+               {{#each materiVideo}}
+               <button  
+                 class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                 @click="videoSrc = '/uploads/videos/{{file}}'">
+                 {{file}}
+               </button>
+               {{/each}}
+               {{else}}
+               <p class="px-4 py-2 text-gray-500">Belum ada materi</p>
+               {{/if}}
           </div>
         </li>
         {{/each}}

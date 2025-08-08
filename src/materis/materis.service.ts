@@ -64,10 +64,23 @@ export class MaterisService {
   }
 
   async findPertemuanByKelas(kelasId: number){
-    return await this.pertemuanRepository.find({where: {kelas: {id: kelasId}}, relations: ['materi']})
+    const pertemuan = await this.pertemuanRepository.find({
+    where: { kelas: { id: kelasId } },
+    relations: ['materi'], 
+    order: { id: 'ASC' } 
+  });
+
+  return pertemuan.map(p => ({
+    ...p,
+    materiPdf: p.materi.filter(m => m.jenis_file === 'pdf'),
+    materiVideo: p.materi.filter(m => m.jenis_file === 'video'),
+    materiPpt: p.materi.filter(m => m.jenis_file === 'ppt'),
+  }));
   }
+
   async findMateriByJenisAndPertemuan(kelasId: number, jenis_file: JenisFile){
     return await this.materiRepository.find({where: {jenis_file: jenis_file, pertemuan: {kelas: {id: kelasId}}}, })
+
   }
 
   async findIdentityMateri(jenis_file: JenisFile, pertemuanId: number) {
