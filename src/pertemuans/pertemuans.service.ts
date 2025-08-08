@@ -29,7 +29,7 @@ export class PertemuansService {
   }
 
   async findAll() {
-const pertemuans = await this.pertemuanRepository
+ return await this.pertemuanRepository
     .createQueryBuilder('pertemuan')
     .leftJoin('pertemuan.kelas', 'kelas')
     .leftJoin('pertemuan.materi', 'materi')
@@ -49,8 +49,6 @@ const pertemuans = await this.pertemuanRepository
     .groupBy('pertemuan.id')
     .addGroupBy('kelas.id')
     .getRawMany();
-
-  return pertemuans;
   }
 
   async findAllKelas(){

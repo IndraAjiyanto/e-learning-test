@@ -7,7 +7,6 @@
   {{#if (roles user.role "user")}}
   <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
     <a href="/kelass/kelas_saya/{{user.id}}" class="text-sm text-gray-300 hover:text-white">My Course</a>
-    <a href="#" class="text-sm text-gray-300 hover:text-white">Pertemuan</a>
   </div>
 
   
@@ -61,7 +60,6 @@
   <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
     <a href="/kelass" class="text-sm text-gray-300 hover:text-white">Kelas</a>
     <a href="/pertemuans" class="text-sm text-gray-300 hover:text-white">Pertemuan</a>
-    <a href="/materis" class="text-sm text-gray-300 hover:text-white">Materi</a>
   </div>
   
 <div x-data="{ open: false }" class="relative">

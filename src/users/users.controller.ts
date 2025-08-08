@@ -28,12 +28,6 @@ export class UsersController {
     return res.render('profile/course');
   }
 
-  @Roles('admin')
-  @Post(':userId/kelas/:kelasId')
-  addUserToKelas(@Param('userId') userId: number, @Param('kelasId') kelasId: number) {
-  return this.usersService.addUserToKelas(userId, kelasId);
-}
-
 @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: any) {
@@ -72,4 +66,6 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
+
+
 }

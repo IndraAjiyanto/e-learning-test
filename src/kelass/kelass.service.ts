@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateKelassDto } from './dto/create-kelass.dto';
 import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,6 +24,30 @@ export class KelassService {
   async create(createKelassDto: CreateKelassDto) {
     const kelas = await this.kelasRepository.create(createKelassDto)
     return await this.kelasRepository.save(kelas)
+  }
+
+  async addUserToKelas(userId: number, kelasId: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['kelas'],
+    });
+  
+    if (!user) {
+      throw new NotFoundException('User tidak ada');
+    }
+  
+    const kelas = await this.kelasRepository.findOneBy({ id: kelasId });
+    if (!kelas) {
+      throw new NotFoundException('Kelas tidak ada');
+    }
+  
+    const sudahGabung = user.kelas.some((k) => k.id === kelas.id);
+    if (sudahGabung) {
+      throw new BadRequestException('User sudah tergabung dalam kelas');
+    }
+  
+    user.kelas.push(kelas);
+    return await this.userRepository.save(user);
   }
 
 async findMyCourse(userId: number) {
@@ -53,13 +77,28 @@ async findPertemuan(kelasId: number){
   });
 }
 
-async findAbsen(kelasId: number, userId: number){
-  const pertemuan = await this.findPertemuan(kelasId); 
-  const absen = await this.absenRepository.find({where: {user: {id: userId}}});
+async findUser(){
+  return await this.userRepository.find({where: {role: 'user'}})
 }
+
+// async findAbsen(kelasId: number, userId: number){
+//   const pertemuan = await this.findPertemuan(kelasId); 
+//   const absen = await this.absenRepository.find({where: {user: {id: userId}}});
+// }
 
   async findAll() {
     return await this.kelasRepository.find()
+  }
+
+  async findMurid(id: number){
+    return await this.userRepository.find({where: {kelas: {id: id}}})
+  }
+
+  async allKelas(){
+   return await this.kelasRepository
+  .createQueryBuilder("kelas")
+  .loadRelationCountAndMap("kelas.jumlahPendaftar", "kelas.user")
+  .getMany();
   }
 
   async findOne(id: number) {
@@ -81,5 +120,13 @@ async findAbsen(kelasId: number, userId: number){
       throw new NotFoundException()
     }
     return await this.kelasRepository.remove(kelas)
+  }
+
+    async removeUserKelas(userId:number, kelasId:number){
+    return await this.kelasRepository  
+    .createQueryBuilder()
+  .relation(Kelas, "user")
+  .of(kelasId)
+  .remove(userId);
   }
 }

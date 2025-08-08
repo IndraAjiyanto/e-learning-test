@@ -1,0 +1,57 @@
+<div class="max-w-3xl mx-auto px-6 py-10 space-y-8">
+
+  <!-- Judul -->
+  <h2 class="text-3xl font-bold mb-6">Murid Kelas</h2>
+
+  <!-- Daftar Murid -->
+  <div class="bg-white p-6 rounded-lg shadow space-y-4">
+    <h3 class="text-lg font-semibold border-b pb-2">Daftar Murid</h3>
+
+    {{#if murid.length}}
+      <ul class="divide-y divide-gray-200">
+        {{#each murid}}
+        <li class="flex items-center justify-between py-3">
+          <div class="flex items-center space-x-3">
+            <!-- Avatar -->
+            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+              <span class="text-sm font-bold">{{email.[0]}}</span>
+            </div>
+            <span class="text-gray-800">{{email}}</span>
+          </div>
+
+          <!-- Tombol hapus -->
+          <form action="/kelass/{{id}}/kelas/{{../kelas.id}}?_method=DELETE" method="post">
+            <button type="submit" 
+              class="text-red-600 hover:text-red-800 font-medium text-sm transition">
+              Hapus
+            </button>
+          </form>
+        </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p class="text-gray-500 italic">Belum ada murid terdaftar.</p>
+    {{/if}}
+  </div>
+
+  <!-- Form Tambah Murid -->
+  <div class="bg-white p-6 rounded-lg shadow">
+    <h3 class="text-lg font-semibold mb-4 border-b pb-2">Tambah Murid</h3>
+    <form action="/kelass/tambahMurid/{{kelas.id}}" method="POST" class="space-y-4">
+      <div>
+        <label for="userId" class="block text-sm font-medium text-gray-700 mb-1">Pilih Murid</label>
+        <select name="userId" id="userId" 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+          {{#each users}}
+            <option value="{{id}}">{{email}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <button type="submit" 
+        class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+        + Tambah Murid
+      </button>
+    </form>
+  </div>
+
+</div>
