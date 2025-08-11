@@ -24,7 +24,7 @@ export class AbsensController {
   @Get('form/:id')
   async formAbsen(@Res() res: Response, @Param('id') id: number,  @Req() req: any){
     const pertemuan = await this.absensService.findPertemuan(id);
-    res.render('absen/create',{pertemuan, user: req.user})
+    res.render('user/absen/create',{pertemuan, user: req.user})
   }
 
   @Roles('user')

@@ -73,7 +73,7 @@ async findPertemuan(kelasId: number){
     where: {
       kelas: { id: kelasId }
     },
-    relations: ['kelas', 'absen'], 
+    relations: ['kelas', 'absen.user'], 
   });
 }
 

@@ -23,6 +23,9 @@
        x-transition
        @click.away="open = false"
        class="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg z-50">
+        <a href="/users/profile" class="block px-4 py-2 hover:bg-gray-100 text-gray-700 transition">
+        Profile
+      </a>
       <a href="/logout" class="block px-4 py-2 hover:bg-red-50 text-red-600 hover:text-red-700 transition">
         Logout
       </a>
@@ -50,11 +53,17 @@
        x-transition
        @click.away="open = false"
        class="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg z-50">
+      
+      <a href="/users/profile" class="block px-4 py-2 hover:bg-gray-100 text-gray-700 transition">
+        Profile
+      </a>
+
       <a href="/logout" class="block px-4 py-2 hover:bg-red-50 text-red-600 hover:text-red-700 transition">
         Logout
       </a>
     </div>
-  </div>
+</div>
+
 </div>
   {{else if (roles user.role "admin")}}
   <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
@@ -75,6 +84,9 @@
        x-transition
        @click.away="open = false"
        class="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg z-50">
+        <a href="/users/profile" class="block px-4 py-2 hover:bg-gray-100 text-gray-700 transition">
+        Profile
+      </a>
       <a href="/logout" class="block px-4 py-2 hover:bg-red-50 text-red-600 hover:text-red-700 transition">
         Logout
       </a>
@@ -84,9 +96,6 @@
   {{else}}
   <div class="flex items-center gap-4">
     <a href="/login" class="text-sm text-gray-300 hover:text-white">Log In</a>
-    {{!-- <a href="/registrasi" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
-      Sign Up
-    </a> --}}
   </div>
   {{/if}}
 </nav>

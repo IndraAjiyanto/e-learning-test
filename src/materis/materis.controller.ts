@@ -68,7 +68,7 @@ async formCreate(@Param('id') id: number, @Req() req:any, @Res() res:Response){
   const materipdf = await this.materisService.findMateriPdf(id)
   const materivideo = await this.materisService.findMateriVideo(id)
   const materippt = await this.materisService.findMateriPpt(id)
-  res.render('materi/index',{user: req.user, id, materipdf, materippt, materivideo})
+  res.render('admin/materi/index',{user: req.user, id, materipdf, materippt, materivideo})
 }
 
   @Roles('admin', 'user')

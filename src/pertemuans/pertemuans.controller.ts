@@ -23,14 +23,14 @@ export class PertemuansController {
   @Get()
   async findAll(@Res() res:Response, @Req() req:any) {
     const pertemuan = await this.pertemuansService.findAll();
-    res.render('pertemuan/index', {user: req.user, pertemuan})
+    res.render('admin/pertemuan/index', {user: req.user, pertemuan})
   }
 
   @Roles('admin')
   @Get('formCreate')
   async formCreate(@Res() res:Response, @Req() req:any){
     const kelas = await this.pertemuansService.findAllKelas()
-    res.render('pertemuan/create', {user: req.user, kelas})
+    res.render('admin/pertemuan/create', {user: req.user, kelas})
   }
 
   @Roles('admin')
@@ -38,7 +38,7 @@ export class PertemuansController {
   async formEdit(@Res() res:Response, @Req() req:any, @Param('id') id: number){
     const pertemuan = await this.pertemuansService.findOne(id)
     const kelas = await this.pertemuansService.findAllKelas()
-    res.render('pertemuan/edit', {user: req.user, kelas, pertemuan})
+    res.render('admin/pertemuan/edit', {user: req.user, kelas, pertemuan})
   }
 
   @Roles('user', 'admin')
