@@ -27,10 +27,12 @@ export class AbsensController {
     res.render('user/absen/create',{pertemuan, user: req.user})
   }
 
-  @Roles('user')
+  @Roles('admin')
   @Get()
-  findAll() {
-    return this.absensService.findAll();
+  async findAll(@Res() res: Response,  @Req() req: any) {
+    const absen = await this.absensService.findAll();
+    console.log(absen)
+    res.render('admin/absen/index', {user: req.user, absen})
   }
 
   @Roles('user')

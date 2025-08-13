@@ -39,7 +39,7 @@ export class AbsensService {
 
   async findAll() {
       return await this.absenRepository.find({
-      relations: ['pertemuan','user']
+      relations: ['pertemuan','user','pertemuan.kelas']
     })
   }
 

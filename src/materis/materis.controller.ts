@@ -87,13 +87,14 @@ return this.materisService.findMateriBypertemuan(pertemuanId)
   @Get(':jenis_file/:kelasId')
   async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: any){
     const pertemuan = await this.materisService.findPertemuanByKelas(kelasId)
-    res.render('materi/materi', { user: req.user, pertemuan})
+    if(jenis_file === "video"){
+    res.render('materi/video', { user: req.user, pertemuan})
+    } else if(jenis_file === "pdf"){
+    res.render('materi/pdf', { user: req.user, pertemuan})
+    }else if(jenis_file === "ppt"){
+    res.render('materi/ppt', { user: req.user, pertemuan})
+    }
   }
-
-  // @Get('edit/materi/:id')
-  // formEditMateri(@Param('id') id: string) {
-  //   return this.materisService.findMateri(+id);
-  // }
 
   @Roles('admin')
   @Get('edit/materi/:id')

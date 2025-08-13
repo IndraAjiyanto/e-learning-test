@@ -20,6 +20,15 @@ export class PertemuansController {
   }
 
   @Roles('admin')
+  @Post(':id')
+  async createPertemuan(@Body() createPertemuanDto: CreatePertemuanDto, @Res() res:Response, @Param('id') id:number){
+    createPertemuanDto.kelasId = id
+    createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(id)
+    await this.pertemuansService.create(createPertemuanDto);
+    res.redirect(`/kelass/detail/kelas/admin/${id}`)
+  }
+
+  @Roles('admin')
   @Get()
   async findAll(@Res() res:Response, @Req() req:any) {
     const pertemuan = await this.pertemuansService.findAll();
@@ -31,6 +40,12 @@ export class PertemuansController {
   async formCreate(@Res() res:Response, @Req() req:any){
     const kelas = await this.pertemuansService.findAllKelas()
     res.render('admin/pertemuan/create', {user: req.user, kelas})
+  }
+
+  @Roles('admin')
+  @Get('formAdd/:id')
+  async formAdd(@Res() res:Response, @Req() req:any, @Param('id') id: number){
+    res.render('admin/kelas/createPertemuan', {user: req.user, id})
   }
 
   @Roles('admin')

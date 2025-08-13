@@ -31,7 +31,7 @@
             {{#isSameUser user.id ../../user.id}}
               <div class="bg-gray-200 shadow-lg rounded-xl p-6 flex flex-col justify-between transition transform">
                 <div class="mb-4">
-                  <h3 class="text-lg font-semibold mb-1">Pertemuan {{addOne @index}}</h3>
+                  <h3 class="text-lg font-semibold mb-1">Pertemuan {{../pertemuan_ke}}</h3>
                   <p class="text-sm mb-1">{{../topik}}</p>
                   <p class="text-xs  ">{{formatTanggal ../tanggal}}</p>
                 </div>
@@ -42,7 +42,7 @@
             {{else}}
               <a href="/absens/form/{{id}}" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col justify-between transition transform hover:shadow-xl hover:bg-gray-500">
                 <div class="mb-4">
-                  <h3 class="text-lg font-semibold mb-1">Pertemuan {{addOne @index}}</h3>
+                  <h3 class="text-lg font-semibold mb-1">Pertemuan {{../pertemuan_ke}}</h3>
                   <p class="text-sm mb-1">{{../topik}}</p>
                   <p class="text-xs ">{{formatTanggal ../tanggal}}</p>
                 </div>
@@ -55,7 +55,7 @@
         {{else}}
           <a href="/absens/form/{{id}}" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col justify-between transition transform hover:shadow-xl hover:bg-gray-500">
             <div class="mb-4">
-              <h3 class="text-lg font-semibold mb-1">Pertemuan {{addOne @index}}</h3>
+              <h3 class="text-lg font-semibold mb-1">Pertemuan {{pertemuan_ke}}</h3>
               <p class="text-sm mb-1">{{topik}}</p>
               <p class="text-xs ">{{formatTanggal tanggal}}</p>
             </div>

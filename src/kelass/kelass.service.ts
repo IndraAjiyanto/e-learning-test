@@ -133,8 +133,6 @@ await this.kelasRepository
   .relation(Kelas, "user")
   .of(kelasId)
   .remove(userId);
-
-
 }
 
 
