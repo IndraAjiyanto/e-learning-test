@@ -1,0 +1,52 @@
+<div class="max-w-6xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold mb-1">{{kelas.nama_kelas}}</h1>
+      <p class="text-gray-700">{{kelas.deskripsi}}</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/kelass/edit/{{kelas.id}}" 
+         class="bg-gray-700 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-800 transition">
+        Edit Kelas
+      </a>
+      <form action="/kelass/{{id}}?_method=DELETE" method="post">
+        <button 
+          class="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition"
+          onclick="return confirm('Yakin hapus kelas ini?')">
+          Hapus
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-semibold">Pertemuan</h2>
+      <a href="/admin/pertemuan/add/{{kelas.id}}" 
+         class="bg-gray-700 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-800 transition">
+        Tambah Pertemuan
+      </a>
+    </div>
+
+    {{#if pertemuan.length}}
+      <ul class="space-y-3">
+        {{#each pertemuan}}
+          <li class="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-sm">
+            <div>
+              <p class="font-semibold">Pertemuan {{addOne @index}}: {{this.topik}}</p>
+              <p class="text-sm text-gray-600">{{formatTanggal this.tanggal}}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <a href="/pertemuans/{{this.id}}" 
+                 class="text-gray-600 hover:text-gray-800 font-medium">
+                Lihat
+              </a>
+            </div>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p class="text-gray-600 italic">Belum ada pertemuan yang tersedia.</p>
+    {{/if}}
+  </div>
+</div>

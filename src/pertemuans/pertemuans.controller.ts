@@ -41,10 +41,12 @@ export class PertemuansController {
     res.render('admin/pertemuan/edit', {user: req.user, kelas, pertemuan})
   }
 
-  @Roles('user', 'admin')
+  @Roles('admin')
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pertemuansService.findOne(+id);
+  async findOne(@Param('id') id: number, @Res() res:Response, @Req() req:any) {
+    const pertemuan = await this.pertemuansService.findOne(id);
+    const murid = await this.pertemuansService.findMuridInKelas(pertemuan.kelas.id, id)
+    res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid})
   }
 
   @Roles('admin')

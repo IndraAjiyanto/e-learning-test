@@ -25,12 +25,8 @@
           <td class="px-6 py-4 text-sm text-gray-800">{{deskripsi}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{jumlahPendaftar}}</td>
           <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
-            <a href="/kelass/{{id}}" class="inline-block text-blue-600 hover:underline">Lihat</a>
-            <a href="/kelass/edit/{{id}}" class="inline-block text-yellow-600 hover:underline">Edit</a>
-            <form action="/kelass/{{id}}?_method=DELETE" method="POST" class="inline">
-              <button type="submit" onclick="return confirm('Yakin ingin menghapus data?')" class="text-red-600 hover:underline">Hapus</button>
-            </form>
-            <a href="/kelass/addUser/{{id}}" class="inline-block text-green-600 hover:underline">Tambah murid</a>
+            <a href="/kelass/detail/kelas/admin/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">Lihat Kelas</a>
+            <a href="/kelass/addUser/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">Lihat murid</a>
           </td>
         </tr>
         {{/each}}

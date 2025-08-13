@@ -19,4 +19,8 @@ export class AuthService {
   async findAllKelas(){
     return await this.kelasService.findAll()
   }
+
+  async findKelas(id: number){
+    return await this.kelasService.findOne(id)
+  }
 }

@@ -6,7 +6,6 @@ import { Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
-@UseGuards(AuthenticatedGuard)
 @Controller('kelass')
 export class KelassController {
   constructor(private readonly kelassService: KelassService) {}
@@ -18,12 +17,12 @@ export class KelassController {
     return res.redirect('/kelass');
   }
 
-    @Roles('admin')
+  @Roles('admin')
   @Post('tambahMurid/:kelasId')
   async addUserToKelas( @Param('kelasId') kelasId: number, @Res() res:Response,   @Body('userId') userId: number, ) {
   await this.kelassService.addUserToKelas(userId, kelasId);
   res.redirect('/kelass')
-}
+  }
 
   @Roles('admin')
   @Get()
@@ -54,12 +53,37 @@ export class KelassController {
     return res.render('admin/kelas/edit', {user: req.user, kelas});
   }
 
-  @Roles('admin','user')
+  @Roles('admin')
+  @Get("/detail/kelas/admin/:id")
+  async detailKelas(@Param('id') id: number, @Res() res: Response, @Req() req: any){
+    const kelas = await this.kelassService.findOne(id);
+    const pertemuan = await this.kelassService.findPertemuan(id);
+    res.render('admin/kelas/detail', {user: req.user, kelas, pertemuan})
+  }
+
+  // @Roles('admin','user')
   @Get(':id')
   async detail(@Param('id') id: number, @Res() res: Response, @Req() req: any) {
     const kelas = await this.kelassService.findOne(id);
     const pertemuan = await this.kelassService.findPertemuan(id);
-   res.render('kelas/detail', {user: req.user, kelas, pertemuan})
+  let isUserInKelas = false;
+  if(!kelas){
+    return "tidak ada kelas"
+  }else if(!req.user){
+    res.render('kelas/Bdetail', { kelas});
+  } else {
+          for (const u of kelas.user) {
+    if (u.id === req.user.id) {
+      isUserInKelas = true;
+      break;
+    }
+  }
+    if (isUserInKelas) {
+    res.render('kelas/detail', { user: req.user, kelas, pertemuan });
+  } else {
+    res.render('kelas/Bdetail', {user: req.user, kelas});
+  }
+  }
   }
 
   @Roles('user')
@@ -83,7 +107,7 @@ export class KelassController {
     return res.redirect('/kelass');
   }
 
-    @Roles('admin')
+  @Roles('admin')
   @Delete(':userId/kelas/:kelasId')
   async removeUserKelas(@Param('userId') userId: number, @Param('kelasId') kelasId: number, @Res() res:Response) {
   await this.kelassService.removeUserKelas(userId, kelasId);

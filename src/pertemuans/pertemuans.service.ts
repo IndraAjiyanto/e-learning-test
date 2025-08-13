@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class PertemuansService {
@@ -13,7 +14,10 @@ export class PertemuansService {
     private readonly pertemuanRepository: Repository<Pertemuan>,
 
     @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>
+    private readonly kelasRepository: Repository<Kelas>,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ){}
 
   async create(createPertemuanDto: CreatePertemuanDto) {
@@ -69,26 +73,26 @@ export class PertemuansService {
     return pertemuanBaru
   }
 
-  // async findByKelas(id: number){
-  //       const pertemuan = await this.pertemuanRepository.find({
-  //     where: {id},
-  //     relations: ['kelas']
-  //   })
-  //   if (!pertemuan) {
-  //     throw new NotFoundException(`Pertemuan tidak ditemukan`);
-  //   }
+async findMuridInKelas(kelasId: number, pertemuanId: number) {
+  const users = await this.userRepository
+    .createQueryBuilder('user')
+    .leftJoinAndSelect('user.kelas', 'kelas') 
+    .leftJoinAndSelect('user.absen', 'absen')
+    .leftJoinAndSelect('absen.pertemuan', 'pertemuan')
+    .where('kelas.id = :kelasId', { kelasId }) 
+    .andWhere('pertemuan.id = :pertemuanId', { pertemuanId })
+    .getMany();
 
-  //   if (!pertemuan.kelas) {
-  //     throw new NotFoundException('kelas tidak ditemukan');
-  //   }
+  return users;
+}
 
-  //   return pertemuan;
-  // }
+
+
 
   async findOne(id: number) {
     const pertemuan = await this.pertemuanRepository.findOne({
       where: {id},
-      relations: ['kelas']
+      relations: ['kelas', 'absen', 'materi']
     })
     if (!pertemuan) {
       throw new NotFoundException(`Pertemuan tidak ditemukan`);
@@ -109,14 +113,6 @@ export class PertemuansService {
     Object.assign(pertemuan, updatePertemuanDto)
     return await this.pertemuanRepository.save(pertemuan)
   }
-
-  // async remove(id: number) {
-  //   const pertemuan = await this.findOne(id)
-  //   if(!pertemuan){
-  //     throw new NotFoundException('pertemuan tidak ditemukan')
-  //   }
-  //   return await this.pertemuanRepository.remove(pertemuan)
-  // }
 
   async remove(id: number, kelasId: number) {
     const pertemuan = await this.findOne(id)

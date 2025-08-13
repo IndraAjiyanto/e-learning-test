@@ -1,114 +1,122 @@
-<div class="max-w-3xl mx-auto px-6 py-10">
-  <h2 class="text-2xl font-semibold mb-6">Materi untuk Pertemuan</h2>
+<div class="max-w-5xl mx-auto px-6 py-10 space-y-12">
+  <h2 class="text-2xl font-bold mb-6">Materi untuk Pertemuan</h2>
 
-    <div class="space-y-10">
-    <div>
-      <h3 class="text-lg font-semibold mb-2">Materi PDF</h3>
-      {{#if materipdf.length}}
-      <table class="w-full table-auto border border-gray-300">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="border px-4 py-2 text-left">Nama File</th>
-            <th class="border px-4 py-2">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each materipdf}}
-          <tr>
-            <td class="border px-4 py-2">{{file}}</td>
-            <td class="border px-4 py-2 text-center">
-              <a href="/materis/{{id}}/download" class="text-blue-600 hover:underline">Download</a>
-              <form action="/materis/{{id}}?_method=DELETE" method="post">
-              <button type="submit" class="text-red-600 hover:underline">Hapus</button>
-              </form>
-            </td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
-      {{else}}
-      <p class="text-gray-500">Belum ada file PDF.</p>
-      {{/if}}
-    </div>
-
-    <div>
-      <h3 class="text-lg font-semibold mb-2">Materi Video</h3>
-      {{#if materivideo.length}}
-      <ul class="list-disc pl-5 space-y-1">
-        {{#each materivideo}}
-        <li>
-          <a href="/materis/{{id}}/download" class="text-blue-600 hover:underline">{{file}}</a>
-        </li>
-        {{/each}}
-      </ul>
-      {{else}}
-      <p class="text-gray-500">Belum ada video.</p>
-      {{/if}}
-    </div>
-
-    <div>
-      <h3 class="text-lg font-semibold mb-2">Materi PPT</h3>
-      {{#if materippt.length}}
-      <ul class="list-disc pl-5 space-y-1">
-        {{#each materippt}}
-        <li>
-          <a href="/materis/{{id}}/download" class="text-blue-600 hover:underline">{{file}}</a>
-        </li>
-        {{/each}}
-      </ul>
-      {{else}}
-      <p class="text-gray-500">Belum ada file PPT.</p>
-      {{/if}}
-    </div>
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    <h3 class="text-lg font-semibold mb-4">Materi Pdf</h3>
+    {{#if materipdf.length}}
+    <ul class="space-y-2">
+      {{#each materipdf}}
+      <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+        <span class="text-gray-800">{{file}}</span>
+        <div class="flex space-x-2">
+          <a href="/materis/{{id}}/download" 
+             class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
+          <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
+            <button type="submit" 
+                    onclick="return confirm('Yakin hapus materi ini?')"
+                    class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
+          </form>
+        </div>
+      </li>
+      {{/each}}
+    </ul>
+    {{else}}
+      <p class="text-gray-500 italic">Belum ada pdf.</p>
+    {{/if}}
   </div>
 
-
-  <h2 class="text-2xl font-semibold mb-6">Tambah Materi</h2>
-
-  <div x-data="{ tab: 'pdf' }" class="mb-6">
-    <div class="flex space-x-4 mb-4">
-      <button @click="tab = 'pdf'" :class="tab === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow">PDF</button>
-      <button @click="tab = 'video'" :class="tab === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow">Video</button>
-      <button @click="tab = 'ppt'" :class="tab === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow">PPT</button>
-    </div>
-
-    <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow">
-      <form action="/materis/pdf/{{id}}" method="POST" enctype="multipart/form-data">
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-1">Upload File PDF</label>
-          <input type="file" name="file" accept=".pdf" class="w-full" required>
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    <h3 class="text-lg font-semibold mb-4">Materi Video</h3>
+    {{#if materivideo.length}}
+    <ul class="space-y-2">
+      {{#each materivideo}}
+      <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+        <span class="text-gray-800">{{file}}</span>
+        <div class="flex space-x-2">
+          <a href="/materis/{{id}}/download" 
+             class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
+          <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
+            <button type="submit" 
+                    onclick="return confirm('Yakin hapus materi ini?')"
+                    class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
+          </form>
         </div>
-
-        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded shadow hover:bg-gray-700">Simpan PDF</button>
-      </form>
-    </div>
-
-    <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow">
-      <form action="/materis/video/{{id}}" method="POST" enctype="multipart/form-data">
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-1">Upload Video</label>
-          <input type="file" name="file" accept="video/*" class="w-full" required>
-        </div>
-
-        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded shadow hover:bg-gray-700">Simpan Video</button>
-      </form>
-    </div>
-
-    <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow">
-      <form action="/materis/ppt/{{id}}" method="POST" enctype="multipart/form-data">
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-1">Upload File PPT</label>
-          <input type="file" name="file" accept=".ppt,.pptx" class="w-full" required>
-        </div>
-
-        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded shadow hover:bg-gray-700">Simpan PPT</button>
-      </form>
-    </div>
+      </li>
+      {{/each}}
+    </ul>
+    {{else}}
+      <p class="text-gray-500 italic">Belum ada video.</p>
+    {{/if}}
   </div>
 
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    <h3 class="text-lg font-semibold mb-4">Materi PPT</h3>
+    {{#if materippt.length}}
+    <ul class="space-y-2">
+      {{#each materippt}}
+      <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+        <span class="text-gray-800">{{file}}</span>
+        <div class="flex space-x-2">
+          <a href="/materis/{{id}}/download" 
+             class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
+          <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
+            <button type="submit" 
+                    onclick="return confirm('Yakin hapus materi ini?')"
+                    class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
+          </form>
+        </div>
+      </li>
+      {{/each}}
+    </ul>
+    {{else}}
+      <p class="text-gray-500 italic">Belum ada file PPT.</p>
+    {{/if}}
+  </div>
 
+  <div>
+    <h2 class="text-2xl font-bold mb-6">Tambah Materi</h2>
+    <div x-data="{ tab: 'pdf' }" class="space-y-6">
+      <div class="flex space-x-4">
+        <button @click="tab = 'pdf'" 
+                :class="tab === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                class="px-4 py-2 rounded-lg shadow transition">PDF</button>
+        <button @click="tab = 'video'" 
+                :class="tab === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                class="px-4 py-2 rounded-lg shadow transition">Video</button>
+        <button @click="tab = 'ppt'" 
+                :class="tab === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                class="px-4 py-2 rounded-lg shadow transition">PPT</button>
+      </div>
 
+      <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow">
+        <form action="/materis/pdf/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Upload File PDF</label>
+            <input type="file" name="file" accept=".pdf" class="w-full border rounded-lg p-2" required>
+          </div>
+          <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Simpan PDF</button>
+        </form>
+      </div>
+
+      <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow">
+        <form action="/materis/video/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Upload Video</label>
+            <input type="file" name="file" accept="video/*" class="w-full border rounded-lg p-2" required>
+          </div>
+          <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Simpan Video</button>
+        </form>
+      </div>
+
+      <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow">
+        <form action="/materis/ppt/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Upload File PPT</label>
+            <input type="file" name="file" accept=".ppt,.pptx" class="w-full border rounded-lg p-2" required>
+          </div>
+          <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Simpan PPT</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>

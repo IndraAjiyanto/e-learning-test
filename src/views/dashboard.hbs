@@ -1,25 +1,27 @@
-<div class="px-8 py-10">
-  <h2 class="text-3xl font-bold mb-6">Courses Satria Kode</h2>
+<div class="px-8 py-10 bg-gray-50 min-h-screen">
+  <h2 class="text-3xl font-bold text-gray-800 mb-8">Courses</h2>
 
-  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-{{#each kelas}}
-    <div class="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition">
-      <img src="/images/web-dev.jpg" alt="Web Development" class="w-full h-40 object-cover" />
-      <div class="p-4">
-        <h3 class="text-xl font-semibold mb-2">{{nama_kelas}}</h3>
+  <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {{#each kelas}}
+    <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform">
+      <img src="/images/web-dev.jpg" alt="Web Development" class="w-full h-40 object-cover rounded-t-2xl" />
+
+      <div class="p-5">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">{{nama_kelas}}</h3>
         <p class="text-gray-600 text-sm mb-4">
           {{deskripsi}}
         </p>
-        <div class="flex justify-between items-center">
-          {{!-- <span class="text-blue-600 font-medium">Development</span>   --}}
-          <a href="/kelass/{{id}}" class="text-sm text-white bg-blue-600 hover:bg-blue-700 px-4 py-1 rounded">
-            View
+
+        <div class="flex justify-end">
+          <a
+            href="/kelass/{{id}}"
+            class="text-sm font-medium text-white bg-gray-900 hover:bg-gray-700 px-4 py-2 rounded-md transition"
+          >
+            View Details
           </a>
         </div>
       </div>
     </div>
-
-{{/each}}
+    {{/each}}
   </div>
-
 </div>

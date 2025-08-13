@@ -87,9 +87,6 @@ return this.materisService.findMateriBypertemuan(pertemuanId)
   @Get(':jenis_file/:kelasId')
   async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: any){
     const pertemuan = await this.materisService.findPertemuanByKelas(kelasId)
-    // const materi = await this.materisService.findMateriByJenisAndPertemuan(kelasId, jenis_file)
-    // console.log(materi)
-    console.log(pertemuan)
     res.render('materi/materi', { user: req.user, pertemuan})
   }
 

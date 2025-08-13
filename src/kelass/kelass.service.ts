@@ -3,7 +3,7 @@ import { CreateKelassDto } from './dto/create-kelass.dto';
 import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Absen } from 'src/entities/absen.entity';
@@ -102,7 +102,11 @@ async findUser(){
   }
 
   async findOne(id: number) {
-    return await this.kelasRepository.findOne({where: {id}})
+    const kelas =  this.kelasRepository.findOne({where: {id}, relations: ['user']})
+    if(!kelas){
+      throw new NotFoundException()
+    }
+    return kelas
   }
 
   async update(id: number, updateKelassDto: UpdateKelassDto) {
@@ -122,11 +126,17 @@ async findUser(){
     return await this.kelasRepository.remove(kelas)
   }
 
-    async removeUserKelas(userId:number, kelasId:number){
-    return await this.kelasRepository  
+async removeUserKelas(userId: number, kelasId: number) {
+
+await this.kelasRepository  
     .createQueryBuilder()
   .relation(Kelas, "user")
   .of(kelasId)
   .remove(userId);
-  }
+
+
+}
+
+
+
 }

@@ -6,6 +6,7 @@ import {
   UseGuards,
   Res,
   Req,
+  Param,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,9 +21,14 @@ export class AuthController {
     res.render('login');
   }
 
-  @Get('registrasi')
-  getRegistrasi(@Res() res: Response) {
-    res.render('registrasi');
+  @Get('daftar/:id')
+  async daftarKelas(@Param('id') id:number ,@Res() res: Response, @Req() req:any) {
+    const kelas = await this.authService.findKelas(id)
+    if(!req.user){
+    res.render('login');
+    }else{
+    res.render('daftarKelas', {user: req.user, kelas});
+    }
   }
 
 @UseGuards(AuthGuard('local'))

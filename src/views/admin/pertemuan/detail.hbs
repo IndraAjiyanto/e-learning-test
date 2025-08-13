@@ -1,0 +1,59 @@
+<div class="max-w-5xl mx-auto px-6 py-10">
+  <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
+    <div class="flex items-start justify-between">
+      <div>
+        <h1 class="text-3xl font-bold mb-2">Pertemuan {{pertemuan.pertemuan_ke}}</h1>
+        <p class="text-gray-600 mb-1"><span class="font-semibold">Topik:</span> {{pertemuan.topik}}</p>
+        <p class="text-gray-600 mb-1"><span class="font-semibold">Tanggal:</span> {{formatTanggal pertemuan.tanggal}}</p>
+        <p class="text-gray-600"><span class="font-semibold">Kelas:</span> {{pertemuan.kelas.nama_kelas}}</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="/pertemuans/formEdit/{{pertemuan.id}}" 
+           class="bg-gray-700 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-800 transition">
+          Edit
+        </a>
+        <form action="/pertemuans/{{pertemuan.id}}/{{pertemuan.kelas.id}}?_method=DELETE" method="post">
+          <button class="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition"
+                  onclick="return confirm('Yakin hapus pertemuan ini?')">
+            Hapus
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <a href="/materis/formCreate/{{pertemuan.id}}" 
+         class="inline-block bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Lihat Materi
+      </a>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="text-2xl font-semibold mb-4">Kehadiran Peserta</h2>
+    <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {{#each murid}}
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4 text-sm text-gray-800">{{username}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
+            <td class="px-6 py-4 text-sm">
+              {{#each absen}}
+              <span class="font-medium">{{status}}</span>
+              {{/each}}
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
