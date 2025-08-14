@@ -61,7 +61,6 @@ export class KelassController {
     res.render('admin/kelas/detail', {user: req.user, kelas, pertemuan})
   }
 
-  // @Roles('admin','user')
   @Get(':id')
   async detail(@Param('id') id: number, @Res() res: Response, @Req() req: any) {
     const kelas = await this.kelassService.findOne(id);
@@ -102,8 +101,8 @@ export class KelassController {
 
   @Roles('admin')
   @Delete(':id')
-  async remove(@Param('id') id: string, @Res() res:Response) {
-    await this.kelassService.remove(+id);
+  async remove(@Param('id') id: number, @Res() res:Response) {
+    await this.kelassService.remove(id);
     return res.redirect('/kelass');
   }
 

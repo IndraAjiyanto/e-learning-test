@@ -74,15 +74,7 @@ export class PertemuansService {
   }
 
 async findMuridInKelas(kelasId: number, pertemuanId: number) {
-  const users = await this.userRepository
-    .createQueryBuilder('user')
-    .leftJoinAndSelect('user.kelas', 'kelas') 
-    .leftJoinAndSelect('user.absen', 'absen')
-    .leftJoinAndSelect('absen.pertemuan', 'pertemuan')
-    .where('kelas.id = :kelasId', { kelasId }) 
-    .andWhere('pertemuan.id = :pertemuanId', { pertemuanId })
-    .getMany();
-
+  const users = await this.userRepository.find({where: {kelas: {id: kelasId}, absen: {pertemuan: {id: pertemuanId}}}})
   return users;
 }
 

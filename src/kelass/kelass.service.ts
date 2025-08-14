@@ -81,10 +81,6 @@ async findUser(){
   return await this.userRepository.find({where: {role: 'user'}})
 }
 
-// async findAbsen(kelasId: number, userId: number){
-//   const pertemuan = await this.findPertemuan(kelasId); 
-//   const absen = await this.absenRepository.find({where: {user: {id: userId}}});
-// }
 
   async findAll() {
     return await this.kelasRepository.find()
@@ -95,10 +91,7 @@ async findUser(){
   }
 
   async allKelas(){
-   return await this.kelasRepository
-  .createQueryBuilder("kelas")
-  .loadRelationCountAndMap("kelas.jumlahPendaftar", "kelas.user")
-  .getMany();
+   return await this.kelasRepository.find({relations: ['user']})
   }
 
   async findOne(id: number) {
