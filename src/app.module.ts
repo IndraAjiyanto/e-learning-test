@@ -16,7 +16,6 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, 
-      // load: [jwtConfig], 
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
     UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule],

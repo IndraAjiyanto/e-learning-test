@@ -31,7 +31,6 @@ export class AbsensController {
   @Get()
   async findAll(@Res() res: Response,  @Req() req: any) {
     const absen = await this.absensService.findAll();
-    console.log(absen)
     res.render('admin/absen/index', {user: req.user, absen})
   }
 

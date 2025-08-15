@@ -2,6 +2,10 @@ import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { JenisFile } from "src/entities/materi.entity";
 
 export class CreateMaterisDto {
+
+  @IsString()
+  judul: string
+
     @IsString()
     file: string
 

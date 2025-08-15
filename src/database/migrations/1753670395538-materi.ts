@@ -14,6 +14,10 @@ export class Materi1753670395538 implements MigrationInterface {
                     generationStrategy: 'increment'
                 },
                 {
+                    name: 'judul',
+                    type: 'varchar',
+                },
+                {
                     name: 'file',
                     type: 'varchar'
                 },

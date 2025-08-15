@@ -13,7 +13,7 @@
             <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
               <span class="text-sm font-bold">{{email.[0]}}</span>
             </div>
-            <span class="text-gray-800">{{email}}</span>
+            <span class="text-gray-800">{{username}}</span>
           </div>
 
           <form action="/kelass/{{id}}/kelas/{{../kelas.id}}?_method=DELETE" method="post">
@@ -38,7 +38,7 @@
         <select name="userId" id="userId" 
           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
           {{#each users}}
-            <option value="{{id}}">{{email}}</option>
+            <option value="{{id}}">{{username}}</option>
           {{/each}}
         </select>
       </div>

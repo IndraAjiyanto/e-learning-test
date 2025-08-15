@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,6 +6,9 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response } from 'express';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfigImage } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('users')
@@ -14,7 +17,9 @@ export class UsersController {
 
   @Roles('super_admin')
   @Post()
-  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  @UseInterceptors(FileInterceptor('profile', multerConfigImage)) 
+  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response, @UploadedFile() profile: Express.Multer.File) {
+    createUserDto.profile = profile.filename;
     await this.usersService.create(createUserDto);
     res.redirect('/users')
   }
@@ -69,6 +74,18 @@ export class UsersController {
   @Patch('password/:id')
   async updatePassword(@Param('id') id: number, @Res() res: Response, @Body() updatePaaswordDto: UpdatePasswordDto){
     await this.usersService.updatePassword(id, updatePaaswordDto);
+    res.redirect('/users/profile')
+  }
+
+  @Patch('update/profile/:id')
+  @UseInterceptors(FileInterceptor('profile', multerConfigImage)) 
+  async updateProfile(@Param('id') id: number, @Res() res:Response, @Body() updateProfileDto: UpdateProfileDto, @UploadedFile() profile: Express.Multer.File ){
+    const user = await this.usersService.findOne(id)
+    if (profile) {
+      await this.usersService.deleteProfileIfExists(user.profile);
+      updateProfileDto.profile = profile.filename; 
+    } 
+    await this.usersService.updateProfile(id, updateProfileDto)
     res.redirect('/users/profile')
   }
 

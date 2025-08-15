@@ -1,6 +1,27 @@
 <div class="max-w-5xl mx-auto px-6 py-10">
   <div class="mb-8 flex items-center gap-6">
-    {{!-- <img src="/image/profile-default.png" alt="Foto Profil" class="w-28 h-28 rounded-full border-4 border-gray-300 shadow" /> --}}
+    <div class="relative">
+      <img src="/uploads/images/{{user.profile}}" alt="Foto Profil"
+           class="w-28 h-28 rounded-full border-4 border-gray-300 shadow" />
+
+      <label for="profile-upload"
+             class="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow cursor-pointer hover:bg-gray-100 transition">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-5 w-5 text-gray-600"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15.232 5.232l3.536 3.536M9 11l6.586-6.586
+                   a2 2 0 012.828 0l1.172 1.172a2 2 0 010 2.828L13 15
+                   m-4 0h4m-4 0v4m0-4H5m4 0v-4" />
+        </svg>
+      </label>
+      <form action="/users/update/profile/{{user.id}}?_method=PATCH" method="post" enctype="multipart/form-data">
+      <input id="profile-upload" type="file" name="profile" accept="image/*" class="hidden" onchange="this.form.submit()"/>
+      </form>
+    </div>
+
     <div>
       <h1 class="text-3xl font-bold mb-1">{{user.username}}</h1>
       <p class="text-gray-600">{{user.email}}</p>
@@ -11,11 +32,11 @@
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-semibold">Informasi Akun</h2>
       <div class="flex gap-2">
-        <a href="/users/profile/info_akun" 
+        <a href="/users/profile/info_akun"
            class="bg-gray-900 text-white rounded-lg px-3 py-1 text-sm shadow hover:bg-gray-500 transition">
           Edit Info
         </a>
-        <a href="/users/profile/password" 
+        <a href="/users/profile/password"
            class="bg-gray-900 text-white rounded-lg px-3 py-1 text-sm shadow hover:bg-gray-500 transition">
           Ganti Password
         </a>
@@ -32,4 +53,21 @@
       </div>
     </div>
   </div>
+  {{#if (roles user.role "user")}}
+  <div class="mb-10">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-semibold">Portofolio</h2>
+      <a href="/users/profile/portofolio"
+         class="bg-gray-900 text-white rounded-lg px-3 py-1 text-sm shadow hover:bg-gray-500 transition">
+        Lihat Portofolio
+      </a>
+    </div>
+    <div class="bg-gray-100 rounded-xl shadow p-6">
+      <p class="text-gray-600">
+        Kamu belum menambahkan portofolio.
+      </p>
+    </div>
+  </div>
+  {{/if}}
+
 </div>

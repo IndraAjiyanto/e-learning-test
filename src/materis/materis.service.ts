@@ -106,21 +106,6 @@ export class MaterisService {
     return materi;
   }
 
-  // async findMateri(id: number){
-  //   return await this.materiRepository.find({
-  //     where: {id}
-  //   })
-  // }
-
-  // async findMateri(id: number){
-  //     return await this.materiRepository.find({
-  //     select: ['jenis_file'],
-  //     where: {id},
-  //     relations: ['kelas']
-  //   })
-  // }
-
-
 async deleteFileIfExists(filename: string) {
   for (const folder of foldersToSearch) {
     const fullPath = join(folder, filename);

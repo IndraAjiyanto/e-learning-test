@@ -21,6 +21,10 @@ export class Kelas1753670172780 implements MigrationInterface {
                 type: 'varchar'
             },
             {
+                name: 'gambar',
+                type: 'varchar'
+            },
+            {
                 name: 'createdAt',
                 type: 'timestamp',
                 default: 'CURRENT_TIMESTAMP',

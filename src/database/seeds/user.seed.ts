@@ -16,6 +16,7 @@ async function bootstrap() {
     {
       username: 'super admin',
       email: 'super@gmail.com',
+      profile: 'logo_wiratek.png',
       password: hashedPassword,
       role: 'super_admin'
     }

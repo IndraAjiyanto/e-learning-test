@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
-import { Kelas } from "./kelas.entity";
 import { Pertemuan } from "./pertemuan.entity";
 
 export type JenisFile = 'video'| 'pdf'| 'ppt';
@@ -8,6 +7,9 @@ export type JenisFile = 'video'| 'pdf'| 'ppt';
 export class Materi {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column()
+    judul: string;
 
     @Column()
     file: string;

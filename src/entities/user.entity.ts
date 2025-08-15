@@ -19,6 +19,9 @@ export class User {
   @Column()
   password: string;
 
+  @Column()
+  profile: string;
+
   @Column({ type: 'enum', enum: ['super_admin', 'admin', 'user'], default: 'user' })
   role: UserRole;
 
@@ -40,7 +43,7 @@ export class User {
     }
   }
 
-@OneToMany(() => Absen, (absen) => absen.user)
+@OneToMany(() => Absen, (absen) => absen.user, { cascade: true })
   absen: Absen[];
 
 @ManyToMany(() => Kelas, (kelas) => kelas.user)

@@ -1,6 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany} from "typeorm";
 import { User } from "./user.entity";
-import { Materi } from "./materi.entity";
 import { Pertemuan } from "./pertemuan.entity";
 
 @Entity()
@@ -13,6 +12,9 @@ export class Kelas {
 
     @Column()
     deskripsi: string;
+
+    @Column()
+    gambar: string;
 
     @CreateDateColumn()
     createdAt: Date;

@@ -7,7 +7,7 @@
     <ul class="space-y-2">
       {{#each materipdf}}
       <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-        <span class="text-gray-800">{{file}}</span>
+        <span class="text-gray-800">{{judul}}</span>
         <div class="flex space-x-2">
           <a href="/materis/{{id}}/download" 
              class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
@@ -31,7 +31,7 @@
     <ul class="space-y-2">
       {{#each materivideo}}
       <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-        <span class="text-gray-800">{{file}}</span>
+        <span class="text-gray-800">{{judul}}</span>
         <div class="flex space-x-2">
           <a href="/materis/{{id}}/download" 
              class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
@@ -55,7 +55,7 @@
     <ul class="space-y-2">
       {{#each materippt}}
       <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-        <span class="text-gray-800">{{file}}</span>
+        <span class="text-gray-800">{{judul}}</span>
         <div class="flex space-x-2">
           <a href="/materis/{{id}}/download" 
              class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
@@ -91,6 +91,10 @@
       <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow">
         <form action="/materis/pdf/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
+            <label class="block text-sm font-medium mb-1">Judul Materi</label>
+            <input type="text" name="judul"  class="w-full border rounded-lg p-2" required>
+          </div>
+          <div>
             <label class="block text-sm font-medium mb-1">Upload File PDF</label>
             <input type="file" name="file" accept=".pdf" class="w-full border rounded-lg p-2" required>
           </div>
@@ -101,6 +105,10 @@
       <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow">
         <form action="/materis/video/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
+            <label class="block text-sm font-medium mb-1">Judul Materi</label>
+            <input type="text" name="judul"  class="w-full border rounded-lg p-2" required>
+          </div>
+          <div>
             <label class="block text-sm font-medium mb-1">Upload Video</label>
             <input type="file" name="file" accept="video/*" class="w-full border rounded-lg p-2" required>
           </div>
@@ -110,6 +118,10 @@
 
       <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow">
         <form action="/materis/ppt/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Judul Materi</label>
+            <input type="text" name="judul"  class="w-full border rounded-lg p-2" required>
+          </div>
           <div>
             <label class="block text-sm font-medium mb-1">Upload File PPT</label>
             <input type="file" name="file" accept=".ppt,.pptx" class="w-full border rounded-lg p-2" required>

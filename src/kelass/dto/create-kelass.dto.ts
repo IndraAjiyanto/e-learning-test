@@ -5,5 +5,8 @@ export class CreateKelassDto {
     nama_kelas: string
 
     @IsString()
+    gambar: string
+
+    @IsString()
     deskripsi: string
 }

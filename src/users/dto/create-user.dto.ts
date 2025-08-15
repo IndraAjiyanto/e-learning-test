@@ -11,6 +11,9 @@ export class CreateUserDto {
 
   @IsString()
   password: string;
+
+  @IsString()
+  profile: string
   
   @IsOptional()
   @IsArray()

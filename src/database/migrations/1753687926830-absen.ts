@@ -52,14 +52,12 @@ export class Absen1753687926830 implements MigrationInterface {
             columnNames: ['userId'],
             referencedTableName: 'user',
             referencedColumnNames: ['id'],
-            onDelete: 'RESTRICT',
         }))
 
         await queryRunner.createForeignKey('absen', new TableForeignKey({
             columnNames: ['pertemuanId'],
             referencedTableName: 'pertemuan',
             referencedColumnNames: ['id'],
-            onDelete: 'RESTRICT',
         }))
     }
 

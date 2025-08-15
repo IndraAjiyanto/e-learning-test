@@ -1,5 +1,5 @@
 <div class="max-w-7xl mx-auto px-4 py-10" 
-     x-data="{ pdfSrc: '' }">
+     x-data="{ pdfSrc: '', materiJudul: '' }">
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <div class="col-span-2">
@@ -10,8 +10,7 @@
       </iframe>
 
       <div class="flex justify-between items-center mt-4">
-        {{!-- <h1 class="text-3xl font-bold">Introduction to User Experience Design</h1>
-        <input type="text" x-bind:value="pdfSrc" readonly class="border p-1 rounded w-1/2 text-sm"> --}}
+        <h1 class="text-3xl font-bold" x-text="materiJudul"></h1>
       </div>
     </div>
 
@@ -34,8 +33,8 @@
                {{#each materiPdf}}
                <button  
                  class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                 @click="pdfSrc = '/uploads/pdf/{{file}}'">
-                 📄 {{file}}
+                 @click="pdfSrc = '/uploads/pdf/{{file}}'; materiJudul = '{{judul}}'">
+                 {{judul}}
                </button>
                {{/each}}
                {{else}}

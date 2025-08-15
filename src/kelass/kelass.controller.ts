@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, UseGuards, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { KelassService } from './kelass.service';
 import { CreateKelassDto } from './dto/create-kelass.dto';
 import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfigImage } from 'src/common/config/multer.config';
 
 @Controller('kelass')
 export class KelassController {
@@ -12,7 +14,9 @@ export class KelassController {
 
   @Roles('admin')
   @Post()
-  async create(@Body() createKelassDto: CreateKelassDto, @Res() res: Response) {
+  @UseInterceptors(FileInterceptor('gambar', multerConfigImage)) 
+  async create(@Body() createKelassDto: CreateKelassDto, @Res() res: Response, @UploadedFile() gambar: Express.Multer.File) {
+    createKelassDto.gambar = gambar.filename
     await this.kelassService.create(createKelassDto);
     return res.redirect('/kelass');
   }

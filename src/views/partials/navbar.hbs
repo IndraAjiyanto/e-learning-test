@@ -4,10 +4,9 @@
     <span class="text-lg font-semibold">E-Learning</span>
   </div>
 
+  {{#if (roles user.role "user")}}
   <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
     <a href="/dashboard" class="text-sm text-gray-300 hover:text-white">Home</a>
-
-  {{#if (roles user.role "user")}}
     <a href="/kelass/kelas_saya/{{user.id}}" class="text-sm text-gray-300 hover:text-white">My Course</a>
   </div>
 
@@ -37,6 +36,7 @@
 
 
   {{else if (roles user.role "super_admin")}}
+  <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
     <a href="/users" class="text-sm text-gray-300 hover:text-white">Users</a>
   </div>
 
@@ -67,6 +67,7 @@
 
 </div>
   {{else if (roles user.role "admin")}}
+  <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
     <a href="/kelass" class="text-sm text-gray-300 hover:text-white">Kelas</a>
     <a href="/pertemuans" class="text-sm text-gray-300 hover:text-white">Pertemuan</a>
     <a href="/absens" class="text-sm text-gray-300 hover:text-white">Absen</a>
@@ -95,6 +96,8 @@
   </div>
 </div>
   {{else}}
+    <div class="hidden md:flex items-center gap-4 flex-1 ml-10">
+    <a href="/dashboard" class="text-sm text-gray-300 hover:text-white">Home</a>
   </div>
   <div class="flex items-center gap-4">
     <a href="/login" class="text-sm text-gray-300 hover:text-white">Log In</a>

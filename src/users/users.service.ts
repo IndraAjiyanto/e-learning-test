@@ -7,6 +7,9 @@ import { Not, Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import * as bcrypt from "bcrypt";
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { join } from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class UsersService {
@@ -28,21 +31,20 @@ export class UsersService {
     return this.userRepository.findOne({where: {email}, relations: ['kelas', 'absen']});
   }
 
-
-
   async findAll() {
     return await this.userRepository.find({where: {email: Not('super@gmail.com')}})
   }
 
   async findOne(id: number) {
-    return await this.userRepository.findOne({where: {id}})
+    const user = await this.userRepository.findOne({where: {id}})
+    if(!user){
+      throw new NotFoundException()
+    }
+    return user
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id)
-    if(!user){
-      throw new NotFoundException()
-    }
     Object.assign(user, updateUserDto)
     return await this.userRepository.save(user)
   }
@@ -69,6 +71,22 @@ async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
 
   return { message: 'Password berhasil diubah' };
 }
+
+async updateProfile(id: number, updateProfileDto: UpdateProfileDto){
+  const user = await this.findOne(id)
+  Object.assign(user, updateProfileDto)
+  return await this.userRepository.save(user)
+}
+
+async deleteProfileIfExists(filename: string) {
+    const fullPath = join('./uploads/images', filename);
+
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+      return ; 
+    }
+  console.log('File not found in any folder.');
+  }
 
   async remove(id: number) {
     const user = await this.findOne(id)
