@@ -74,7 +74,7 @@ export class PertemuansService {
   }
 
 async findMuridInKelas(kelasId: number, pertemuanId: number) {
-  const users = await this.userRepository.find({where: {kelas: {id: kelasId}, absen: {pertemuan: {id: pertemuanId}}}})
+  const users = await this.userRepository.find({where: {kelas: {id: kelasId}, absen: {pertemuan: {id: pertemuanId}}}, relations: ['kelas', 'absen', 'absen.pertemuan']})
   return users;
 }
 

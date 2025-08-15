@@ -61,6 +61,7 @@ export class PertemuansController {
   async findOne(@Param('id') id: number, @Res() res:Response, @Req() req:any) {
     const pertemuan = await this.pertemuansService.findOne(id);
     const murid = await this.pertemuansService.findMuridInKelas(pertemuan.kelas.id, id)
+    console.log(murid)
     res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid})
   }
 
