@@ -3,9 +3,10 @@ import { CreateAbsenDto } from './dto/create-absen.dto';
 import { UpdateAbsenDto } from './dto/update-absen.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Absen } from 'src/entities/absen.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { User } from 'src/entities/user.entity';
+import { Kelas } from 'src/entities/kelas.entity';
 
 @Injectable()
 export class AbsensService {
@@ -17,7 +18,10 @@ export class AbsensService {
     private readonly pertemuanRepository: Repository<Pertemuan>,
 
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+
+    @InjectRepository(Kelas)
+    private readonly kelasRepository: Repository<Kelas>
   ){}
 
   async create(CreateAbsenDto: CreateAbsenDto) {
@@ -45,6 +49,14 @@ export class AbsensService {
 
   async findPertemuan(pertemuanId: number){
     return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['kelas']})
+  }
+
+  async findUsers(){
+    return await this.userRepository.find({where: {id: Not(1)}})
+  }
+
+  async findKelas(){
+    return await this.kelasRepository.find({relations: ['pertemuan']})
   }
 
   async findOne(id: number) {

@@ -1,9 +1,21 @@
-<div class="max-w-5xl mx-auto px-6 py-10">
-  <div class="mb-6 flex justify-between items-center">
+<div class="max-w-5xl mx-auto px-6 py-10" 
+     x-data="{ search: '' }">
+  
+  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
     <h2 class="text-2xl font-semibold">Daftar Pertemuan</h2>
-    <a href="/pertemuans/formCreate" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-      Tambah Pertemuan
-    </a>
+    
+    <div class="flex items-center gap-3">
+      <input 
+        type="text" 
+        placeholder="Cari pertemuan" 
+        x-model="search"
+        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+      />
+      <a href="/pertemuans/formCreate" 
+         class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Tambah Pertemuan
+      </a>
+    </div>
   </div>
 
   <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
@@ -11,8 +23,8 @@
       <thead class="bg-gray-100">
         <tr>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Pertemuan ke</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">topik</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">tanggal</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Topik</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Jumlah Materi</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
@@ -20,7 +32,8 @@
       </thead>
       <tbody class="divide-y divide-gray-200">
         {{#each pertemuan}}
-        <tr class="hover:bg-gray-50 transition">
+        <tr class="hover:bg-gray-50 transition"
+            x-show="'{{topik}} {{nama_kelas}} {{pertemuan_ke}} {{formatTanggal tanggal}}'.toLowerCase().includes(search.toLowerCase())">
           <td class="px-6 py-4 text-sm text-gray-800">{{pertemuan_ke}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{topik}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{formatTanggal tanggal}}</td>
@@ -28,7 +41,7 @@
           <td class="px-6 py-4 text-sm text-gray-800">{{jumlah_pdf}} pdf, {{jumlah_video}} video, {{jumlah_ppt}} ppt</td>
           <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
             <a href="/pertemuans/{{id}}" class="text-gray-600 font-medium hover:underline">Lihat</a>
-              <a href="/materis/formCreate/{{id}}" class="text-gray-600 font-medium hover:underline">Lihat Materi</a>
+            <a href="/materis/formCreate/{{id}}" class="text-gray-600 font-medium hover:underline">Lihat Materi</a>
           </td>
         </tr>
         {{/each}}
@@ -36,5 +49,3 @@
     </table>
   </div>
 </div>
-
-

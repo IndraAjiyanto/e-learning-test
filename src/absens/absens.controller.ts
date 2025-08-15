@@ -20,6 +20,13 @@ export class AbsensController {
     res.redirect(`/kelass/${kelasId}`)
   }
 
+  @Roles('admin')
+  @Post('')
+  async createAbsen(@Res() res: Response,@Body() createAbsenDto: CreateAbsenDto, @Req() req: any) {
+    await this.absensService.create(createAbsenDto);
+    res.redirect('/absens')
+  }
+
   @Roles('user')
   @Get('form/:id')
   async formAbsen(@Res() res: Response, @Param('id') id: number,  @Req() req: any){
@@ -32,6 +39,14 @@ export class AbsensController {
   async findAll(@Res() res: Response,  @Req() req: any) {
     const absen = await this.absensService.findAll();
     res.render('admin/absen/index', {user: req.user, absen})
+  }
+
+  @Roles('admin')
+  @Get('create')
+  async absenCreate(@Res() res: Response,  @Req() req: any){
+    const kelas = await this.absensService.findKelas()
+    const users = await this.absensService.findUsers()
+    res.render('admin/absen/create', {user: req.user, kelas, users})
   }
 
   @Roles('user')

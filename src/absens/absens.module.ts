@@ -8,7 +8,7 @@ import { Kelas } from 'src/entities/kelas.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Absen, User, Pertemuan])],
+  imports: [TypeOrmModule.forFeature([Absen, User, Pertemuan, Kelas])],
   controllers: [AbsensController],
   providers: [AbsensService],
   exports: [AbsensService],
