@@ -18,6 +18,7 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..','src', 'common','public'), {
     prefix: '/public/'
   });
+
   app.useStaticAssets(join(__dirname, '..','uploads'), {
     prefix: '/uploads/'
   });

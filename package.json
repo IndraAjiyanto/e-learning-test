@@ -1,7 +1,7 @@
 {
   "name": "e-learning_test",
   "version": "0.0.1",
-  "description": "",
+  "description": "<p align=\"center\">\r   <a href=\"http://nestjs.com/\" target=\"blank\"><img src=\"https://nestjs.com/img/logo-small.svg\" width=\"120\" alt=\"Nest Logo\" /></a>\r </p>",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migrate:run": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
     "migrate:revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
-    "build:css": "tailwindcss -i ./src/common/public/style.css -o ./src/common/public/output.css --watch",
+    "build:css": "tailwindcss -i ./src/common/public/tailwind.css -o ./src/common/public/output.css --watch",
     "seed": "node dist/database/seeds/user.seed.js"
   },
   "dependencies": {
@@ -30,6 +30,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.5",
+    "@nestjs/serve-static": "^5.0.3",
     "@nestjs/typeorm": "^11.0.0",
     "@tailwindcss/cli": "^4.1.11",
     "@types/express-session": "^1.18.2",
@@ -66,6 +67,7 @@
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
     "autoprefixer": "^10.4.21",
+    "daisyui": "^5.0.50",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
@@ -75,7 +77,7 @@
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
-    "tailwindcss": "^3.4.3",
+    "tailwindcss": "^3.4.17",
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
@@ -100,5 +102,18 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "main": "postcss.config.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IndraAjiyanto/e-learning-test.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/IndraAjiyanto/e-learning-test/issues"
+  },
+  "homepage": "https://github.com/IndraAjiyanto/e-learning-test#readme"
 }
