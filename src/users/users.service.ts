@@ -36,7 +36,7 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const user = await this.userRepository.findOne({where: {id}})
+    const user = await this.userRepository.findOne({where: {id}, relations: ['biodata']})
     if(!user){
       throw new NotFoundException()
     }

@@ -20,7 +20,16 @@ export class Portfolio1755662755475 implements MigrationInterface {
             },{
                 name: 'kelasId',
                 type: 'int'
-            }
+            },                {
+                    name: 'createdAt',
+                    type: 'timestamp',
+                    default: 'CURRENT_TIMESTAMP',
+                },
+                {
+                    name: 'updatedAt',
+                    type: 'timestamp',
+                    default: 'CURRENT_TIMESTAMP',
+                }
         ]
         }))
 

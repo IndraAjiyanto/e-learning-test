@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from "class-validator"
+import { IsEnum, IsInt, IsOptional, IsString } from "class-validator"
 import { JenisKelamin, Pendidikan } from "src/entities/biodata.entity";
 
 export class CreateBiodataDto {
@@ -21,4 +21,7 @@ export class CreateBiodataDto {
 
         @IsString()
         program_studi: string
+        
+        @IsInt()
+        userId: number
 }

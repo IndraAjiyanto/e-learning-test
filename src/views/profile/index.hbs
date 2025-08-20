@@ -2,7 +2,7 @@
   <div class="mb-8 flex items-center gap-6">
     <div class="relative">
       <img src="/uploads/images/{{user.profile}}" alt="Foto Profil"
-           class="w-28 h-28 rounded-full border-4 border-gray-300 shadow" />
+           class="w-28 h-28 rounded-full border-4 border-base-300 shadow" />
 
       <label for="profile-upload"
              class="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow cursor-pointer hover:bg-gray-100 transition">
@@ -18,7 +18,7 @@
         </svg>
       </label>
       <form action="/users/update/profile/{{user.id}}?_method=PATCH" method="post" enctype="multipart/form-data">
-      <input id="profile-upload" type="file" name="profile" accept="image/*" class="hidden" onchange="this.form.submit()"/>
+        <input id="profile-upload" type="file" name="profile" accept="image/*" class="hidden" onchange="this.form.submit()" />
       </form>
     </div>
 
@@ -32,44 +32,82 @@
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-semibold">Informasi Akun</h2>
       <div class="flex gap-2">
-        {{#if user.biodata}}
-        <a href="/users/profile/info_akun"
-           class="bg-gray-900 text-white rounded-lg px-3 py-1 text-sm shadow hover:bg-gray-500 transition">
-          Tambah
-        </a>
-        {{/if}}
-        <a href="/users/profile/info_akun"
-           class="bg-gray-900 text-white rounded-lg px-3 py-1 text-sm shadow hover:bg-gray-500 transition">
-          Edit Info
-        </a>
-        <a href="/users/profile/password"
-           class="bg-gray-900 text-white rounded-lg px-3 py-1 text-sm shadow hover:bg-gray-500 transition">
-          Ganti Password
-        </a>
+        <a href="/users/profile/info_akun" class="btn btn-sm bg-gray-900 text-white  hover:bg-gray-700">Edit Info</a>
+        <a href="/users/profile/password" class="btn btn-sm bg-gray-900 text-white  hover:bg-gray-700">Ganti Password</a>
       </div>
     </div>
-    <div class="bg-gray-100 rounded-xl shadow p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-      <div>
-        <p class="text-sm text-gray-500">Username</p>
-        <p class="text-lg font-medium">{{user.username}}</p>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500">Email</p>
-        <p class="text-lg font-medium">{{user.email}}</p>
+
+    <div class="card bg-base-200 shadow">
+      <div class="card-body grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm text-gray-500">Username</p>
+          <p class="text-lg font-medium">{{user.username}}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Email</p>
+          <p class="text-lg font-medium">{{user.email}}</p>
+        </div>
+
+        {{#if (roles user.role "user")}}
+          {{#if user.biodata}}
+            <div>
+              <p class="text-sm text-gray-500">Nama Lengkap</p>
+              <p class="text-lg font-medium">{{user.biodata.nama_lengkap}}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">No</p>
+              <p class="text-lg font-medium">{{user.biodata.no}}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Jenis Kelamin</p>
+              <p class="text-lg font-medium">{{user.biodata.jenis_kelamin}}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Domisili Kota/Kabupaten</p>
+              <p class="text-lg font-medium">{{user.biodata.kota}}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Pendidikan Terakhir</p>
+              <p class="text-lg font-medium">{{user.biodata.pendidikan}}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Program Studi</p>
+              <p class="text-lg font-medium">{{user.biodata.program_studi}}</p>
+            </div>
+          {{else}}
+            <a href="/biodatas/create" class="btn btn-sm bg-gray-900 text-white  hover:bg-gray-700">Lengkapi Biodata</a>
+            <div>
+              <p class="text-sm text-gray-500">Nama Lengkap</p>
+              <p class="text-lg font-medium">belum ada</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Pendidikan</p>
+              <p class="text-lg font-medium">belum ada</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Program Studi</p>
+              <p class="text-lg font-medium">belum ada</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Kota</p>
+              <p class="text-lg font-medium">belum ada</p>
+            </div>
+          {{/if}}
+        {{/if}}
       </div>
     </div>
   </div>
+
   {{#if (roles user.role "user")}}
   <div class="mb-10">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-semibold">Portofolio</h2>
     </div>
-    <div class="bg-gray-100 rounded-xl shadow p-6">
-      <p class="text-gray-600">
-        Kamu belum menambahkan portofolio.
-      </p>
+    <div class="card bg-base-200 shadow">
+      <div class="card-body">
+        <p class="text-gray-600">Kamu belum menambahkan portofolio.</p>
+      </div>
     </div>
   </div>
   {{/if}}
-
 </div>

@@ -35,7 +35,10 @@ export class Biodata{
         updatedAt: Date;
 
     @OneToOne(() => User, (user) => user.biodata)
-    @JoinColumn()
+    @JoinColumn({ name: 'userId' })
     user: User
+
+      @Column()
+  userId: number;
 
 }

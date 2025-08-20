@@ -25,8 +25,9 @@ export class UsersController {
   }
 
   @Get('profile')
-  profile(@Res() res: Response, @Req() req:any){
-    return res.render('profile/index', {user: req.user});
+  async profile(@Res() res: Response, @Req() req:any){
+    const user = await this.usersService.findOne(req.user.id) 
+    return res.render('profile/index', {user: user});
   }
 
   @Get('profile/password')

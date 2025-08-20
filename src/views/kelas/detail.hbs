@@ -25,9 +25,6 @@
   </div>
 </div>
 
-
-
-
 <div class="mb-10">
   <h2 class="text-2xl font-semibold mb-4">Pertemuan</h2>
 
@@ -45,32 +42,27 @@
             <span class="badge badge-success">Sudah Absen</span>
           </li>
         {{else}}
-          <li class="list-row p-2 rounded-lg bg-gray-900 text-white shadow flex justify-between items-center hover:bg-gray-700 transition">
+          <li class="list-row p-2 rounded-lg bg-gray-100 shadow flex justify-between items-center">
             <div>
               <div class="font-semibold">Pertemuan {{../pertemuan_ke}} - {{../topik}}</div>
-              <div class="text-xs text-gray-200">{{formatTanggal ../tanggal}}</div>
+              <div class="text-xs text-gray-500">{{formatTanggal ../tanggal}}</div>
             </div>
             <a href="/absens/form/{{id}}" class="btn btn-sm btn-square btn-ghost">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3L20 12 6 21 6 3z" />
-              </svg>
+            <span class="badge badge-error">Belum Absen</span>
             </a>
           </li>
         {{/isSameUser}}
       {{/each}}
     {{else}}
-      <!-- Belum Absen -->
-      <li class="list-row p-2 rounded-lg bg-gray-900 text-white shadow flex justify-between items-center hover:bg-gray-700 transition">
-        <div>
-          <div class="font-semibold">Pertemuan {{pertemuan_ke}} - {{topik}}</div>
-          <div class="text-xs text-gray-200">{{formatTanggal tanggal}}</div>
-        </div>
-        <a href="/absens/form/{{id}}" class="btn btn-sm btn-square btn-ghost">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 3L20 12 6 21 6 3z" />
-          </svg>
-        </a>
-      </li>
+          <li class="list-row p-2 rounded-lg bg-gray-100 shadow flex justify-between items-center">
+            <div>
+              <div class="font-semibold">Pertemuan {{pertemuan_ke}} - {{topik}}</div>
+              <div class="text-xs text-gray-500">{{formatTanggal tanggal}}</div>
+            </div>
+            <a href="/absens/form/{{id}}" class="badge badge-error">
+            Belum Absen
+            </a>
+          </li>
     {{/if}}
   {{/each}}
 

@@ -1,0 +1,47 @@
+<div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg pt-28">
+  <h2 class="text-2xl font-semibold mb-6">Lengkapi Biodata</h2>
+
+  <form action="/biodatas" method="POST" class="space-y-6">
+    
+    <div>
+      <label for="nama_lengkap" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+      <input type="text" id="nama_lengkap" name="nama_lengkap"  required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+    </div>
+    <div>
+      <label for="no" class="block text-sm font-medium text-gray-700 mb-1">No WA</label>
+      <input type="text" id="no" name="no"  required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+    </div>
+    <div>
+      <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-1">jenis_kelamin</label>
+      <input type="text" id="jenis_kelamin" name="jenis_kelamin"  required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+    </div>
+    <div>
+      <label for="kota" class="block text-sm font-medium text-gray-700 mb-1">kota</label>
+      <input type="text" id="kota" name="kota"  required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+    </div>
+    <div>
+      <label for="pendidikan" class="block text-sm font-medium text-gray-700 mb-1">pendidikan</label>
+      <input type="text" id="pendidikan" name="pendidikan"  required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+    </div>
+    <div>
+      <label for="program_studi" class="block text-sm font-medium text-gray-700 mb-1">program_studi</label>
+      <input type="text" id="program_studi" name="program_studi"  required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+    </div>
+
+    <div>
+      <button type="submit" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Simpan
+      </button>
+      <a href="/users/profile" 
+        class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+        Batal
+      </a>
+    </div>
+  </form>
+</div>

@@ -34,7 +34,16 @@ export class Biodata1755659388490 implements MigrationInterface {
             },{
                 name: 'userId',
                 type: 'int'
-            }
+            },                {
+                    name: 'createdAt',
+                    type: 'timestamp',
+                    default: 'CURRENT_TIMESTAMP',
+                },
+                {
+                    name: 'updatedAt',
+                    type: 'timestamp',
+                    default: 'CURRENT_TIMESTAMP',
+                }
         ]
         }))
 

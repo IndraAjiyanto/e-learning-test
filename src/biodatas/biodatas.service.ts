@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBiodataDto } from './dto/create-biodata.dto';
 import { UpdateBiodataDto } from './dto/update-biodata.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Biodata } from 'src/entities/biodata.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BiodatasService {
-  create(createBiodataDto: CreateBiodataDto) {
-    return 'This action adds a new biodata';
+    constructor(
+      @InjectRepository(Biodata)
+      private readonly biodataRepository: Repository<Biodata>
+    ) {}
+  async create(createBiodataDto: CreateBiodataDto) {
+    const biodata = await this.biodataRepository.create(createBiodataDto)
+    return await this.biodataRepository.save(biodata)
   }
 
   findAll() {
