@@ -1,7 +1,9 @@
-import { BeforeInsert, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable, BeforeUpdate } from 'typeorm';
+import { BeforeInsert, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable, BeforeUpdate, OneToOne, JoinColumn } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { Absen } from './absen.entity';
 import { Kelas } from './kelas.entity';
+import { Biodata } from './biodata.entity';
+import { Portfolio } from './portfolio.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -46,8 +48,16 @@ export class User {
 @OneToMany(() => Absen, (absen) => absen.user, { cascade: true })
   absen: Absen[];
 
+@OneToMany(() => Portfolio, (portfolio) => portfolio.user, { cascade: true })
+  portfolio: Portfolio[];
+
 @ManyToMany(() => Kelas, (kelas) => kelas.user)
 @JoinTable()
 kelas: Kelas[];
 
+
+
+
+    @OneToOne(() => Biodata, (biodata) => biodata.user) 
+    biodata: Biodata
 }

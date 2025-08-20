@@ -18,7 +18,7 @@ async function bootstrap() {
       email: 'super@gmail.com',
       profile: 'logo_wiratek.png',
       password: hashedPassword,
-      role: 'super_admin'
+      role: 'super_admin',
     }
   ]);
 

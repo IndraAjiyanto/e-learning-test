@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany} from "typeorm";
 import { User } from "./user.entity";
 import { Pertemuan } from "./pertemuan.entity";
+import { Portfolio } from "./portfolio.entity";
 
 @Entity()
 export class Kelas {
@@ -27,4 +28,7 @@ user: User[];
 
     @OneToMany(() => Pertemuan, (pertemuan) => pertemuan.kelas)
     pertemuan: Pertemuan[]
+
+    @OneToMany(() => Portfolio, (portfolio) => portfolio.kelas, { cascade: true })
+      portfolio: Portfolio[];
 }

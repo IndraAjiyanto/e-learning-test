@@ -12,6 +12,8 @@ import { dataSourceOptions } from './data-source';
 import { AuthModule } from './auth/auth.module';
 // import { ServeStaticModule } from '@nestjs/serve-static';
 // import { join } from 'path';
+import { BiodatasModule } from './biodatas/biodatas.module';
+import { PortfoliosModule } from './portfolios/portfolios.module';
 
 @Module({
   imports: [
@@ -22,7 +24,7 @@ import { AuthModule } from './auth/auth.module';
     // ServeStaticModule.forRoot({
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
-    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule],
+    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule],
   controllers: [AppController],
   providers: [AppService],
 })

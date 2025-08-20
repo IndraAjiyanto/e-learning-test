@@ -1,27 +1,29 @@
-<div class="px-8 py-10 bg-gray-50 min-h-screen">
-  <h2 class="text-3xl font-bold text-gray-800 mb-8">My Courses</h2>
+<div class="px-6 py-10 pt-28 bg-gray-50 min-h-screen">
+  <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">My Courses</h2>
 
-  <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-    {{#each kelas}}
-    <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform">
-      <img src="/uploads/images/{{gambar}}" alt="Web Development" class="w-full h-40 object-cover rounded-t-2xl" />
+  <div class="flex justify-center py-6">
+    <label class="input input-bordered flex items-center gap-2 w-full max-w-md rounded-xl shadow-lg">
+      <input type="text" class="grow focus:outline-none" placeholder="Cari kelas..." />
+      <button class="btn bg-gray-900 btn-sm text-white rounded-lg hover:bg-gray-700 transition">Search</button>
+    </label>
+  </div>
 
-      <div class="p-5">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">{{nama_kelas}}</h3>
-        <p class="text-gray-600 text-sm mb-4">
-          {{deskripsi}}
-        </p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8 justify-items-center">
 
-        <div class="flex justify-end">
-          <a
-            href="/kelass/{{id}}"
-            class="text-sm font-medium text-white bg-gray-900 hover:bg-gray-700 px-4 py-2 rounded-md transition"
-          >
-            View Details
-          </a>
-        </div>
+{{#each kelas}}
+  <div class="card bg-base-100 w-80 shadow-md hover:shadow-xl transition-all rounded-xl">
+    <figure class="px-8 pt-8">
+      <img src="/uploads/images/{{gambar}}"
+        alt="Shoes" class="rounded-xl" />
+    </figure>
+    <div class="card-body items-center text-center">
+      <h2 class="card-title text-gray-900">{{nama_kelas}}</h2>
+      <p class="text-gray-700">{{deskripsi}}</p>
+      <div class="card-actions">
+          <a href="/kelass/{{id}}" class="btn bg-gray-900 text-white rounded-lg hover:bg-gray-700">View details</a>
       </div>
     </div>
-    {{/each}}
   </div>
+  {{/each}}
+</div>
 </div>
