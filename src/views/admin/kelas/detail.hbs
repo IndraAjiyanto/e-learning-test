@@ -1,3 +1,4 @@
+<div class="pt-28">
 <div class="max-w-6xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
   <div class="flex items-center justify-between mb-6">
     <div>
@@ -35,6 +36,8 @@
             <div>
               <p class="font-semibold">Pertemuan {{this.pertemuan_ke}}: {{this.topik}}</p>
               <p class="text-sm text-gray-600">{{formatTanggal this.tanggal}}</p>
+              {{!-- <p class="text-sm text-gray-600">{{formatWaktu this.waktu_awal}}</p>
+              <p class="text-sm text-gray-600">{{formatWaktu this.waktu_akhir}}</p> --}}
             </div>
             <div class="flex items-center gap-3">
               <a href="/pertemuans/{{this.id}}" 
@@ -49,4 +52,5 @@
       <p class="text-gray-600 italic">Belum ada pertemuan yang tersedia.</p>
     {{/if}}
   </div>
+</div>
 </div>

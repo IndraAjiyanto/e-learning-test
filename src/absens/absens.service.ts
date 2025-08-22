@@ -62,7 +62,7 @@ export class AbsensService {
   async findOne(id: number) {
     const absen = await this.absenRepository.findOne({
       where: {id},
-      relations: ['pertemuan','user']
+      relations: ['pertemuan','user', 'pertemuan.kelas']
     })
     if (!absen) {
       throw new NotFoundException(`absen tidak ditemukan`);

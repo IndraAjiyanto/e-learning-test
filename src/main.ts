@@ -2,13 +2,14 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
-import * as methodOverride from 'method-override';
-import * as hbs from 'hbs';
-import * as session from 'express-session';
-import * as passport from 'passport';
+import methodOverride from 'method-override';
+import hbs from 'hbs';
+import session from 'express-session';
+import passport from 'passport';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { RolesGuard } from './common/guards/roles.guard';
+import  flash from 'connect-flash';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
@@ -30,6 +31,24 @@ async function bootstrap() {
 hbs.registerHelper('formDate', function(date) {
   return new Date(date).toISOString().split('T')[0];
 });
+hbs.registerHelper('isNowBetween', function(tanggal, waktu_mulai, waktu_akhir, options) {
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+
+  if (todayStr !== tanggal) {
+    return options.inverse(this);
+  }
+
+  const start = new Date(`${tanggal}T${waktu_mulai}`);
+  const end = new Date(`${tanggal}T${waktu_akhir}`);
+
+  if (now >= start && now <= end) {
+    return options.fn(this);
+  } else {
+    return options.inverse(this);
+  }
+});
+
 
   hbs.registerHelper('formatTanggal', function (tanggal: string) {
     return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale: id });
@@ -49,6 +68,7 @@ hbs.registerHelper('formDate', function(date) {
       cookie: { maxAge: 3600000 }, 
     }),
   );
+  app.use(flash());
 
   app.use(passport.initialize());
   app.use(passport.session());

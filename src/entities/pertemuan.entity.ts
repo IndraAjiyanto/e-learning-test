@@ -17,6 +17,12 @@ export class Pertemuan{
     @Column()
     tanggal: Date
 
+    @Column()
+    waktu_awal: string
+
+    @Column()
+    waktu_akhir: string
+
     @OneToMany(() => Absen, (absen) => absen.pertemuan)
     absen: Absen[];
 

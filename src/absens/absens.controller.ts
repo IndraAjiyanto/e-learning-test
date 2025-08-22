@@ -21,8 +21,9 @@ export class AbsensController {
   }
 
   @Roles('admin')
-  @Post('')
+  @Post()
   async createAbsen(@Res() res: Response,@Body() createAbsenDto: CreateAbsenDto, @Req() req: any) {
+    createAbsenDto.waktu_absen = new Date()
     await this.absensService.create(createAbsenDto);
     res.redirect('/absens')
   }
@@ -49,10 +50,12 @@ export class AbsensController {
     res.render('admin/absen/create', {user: req.user, kelas, users})
   }
 
-  @Roles('user')
+  @Roles('admin')
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.absensService.findOne(+id);
+  async findOne(@Param('id') id: number, @Res() res:Response, @Req() req:any) {
+    const absen = await this.absensService.findOne(id);
+    console.log(absen)
+    res.render('admin/absen/detail', {user: req.user, absen})
   }
 
   @Roles('user')

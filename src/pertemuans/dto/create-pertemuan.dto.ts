@@ -10,6 +10,12 @@ export class CreatePertemuanDto {
   @IsDateString()
   tanggal: Date;
 
+  @IsString()
+  waktu_awal: string;
+
+  @IsString()
+  waktu_akhir: string;
+
   @IsInt()
   kelasId: number;
 }

@@ -1,0 +1,60 @@
+<div class="pt-28 py-20">
+<div class="max-w-3xl mx-auto px-6 py-10">
+  <div class="card bg-white shadow-xl rounded-xl">
+    <div class="card-body">
+      <h2 class="card-title text-2xl font-bold mb-6">Detail Absen</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm text-gray-500">User</p>
+          <p class="text-lg font-semibold text-gray-900">{{absen.user.username}}</p>
+        </div>
+
+        <div>
+          <p class="text-sm text-gray-500">Kelas</p>
+          <a href="/kelass/detail/kelas/admin/{{absen.pertemuan.kelas.id}}" class="text-lg font-semibold text-gray-900">{{absen.pertemuan.kelas.nama_kelas}}</a>
+        </div>
+
+        <div>
+          <p class="text-sm text-gray-500">Pertemuan Ke</p>
+          <a href="/pertemuans/{{absen.pertemuan.id}}" class="text-lg font-semibold text-gray-900">{{absen.pertemuan.pertemuan_ke}}</a>
+        </div>
+
+        <div>
+          <p class="text-sm text-gray-500">Tanggal</p>
+          <p class="text-lg font-semibold text-gray-900">{{formatTanggal absen.pertemuan.tanggal}}</p>
+        </div>
+
+        <div>
+          <p class="text-sm text-gray-500">Waktu Awal</p>
+          <p class="text-lg font-semibold text-gray-900">{{formatTanggal absen.pertemuan.waktu_awal}}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Waktu Akhir</p>
+          <p class="text-lg font-semibold text-gray-900">{{formatTanggal absen.pertemuan.waktu_akhir}}</p>
+        </div>
+
+        <div>
+          <p class="text-sm text-gray-500">Status</p>
+          <span class="badge px-4 py-2 rounded-lg 
+            {{#if (roles absen.status "Hadir")}} badge-success 
+            {{else if (roles absen.status "Izin")}} badge-warning 
+            {{else}} badge-error {{/if}}">
+            {{absen.status}}
+          </span>
+        </div>
+
+        <div>
+          <p class="text-sm text-gray-500">Keterangan</p>
+          <p class="text-lg text-gray-800">{{absen.keterangan}}</p>
+        </div>
+      </div>
+
+      <div class="mt-8 flex justify-end gap-4">
+        <a href="/absens" class="btn btn-outline">Kembali</a>
+        <a href="/absens/{{absen.id}}/edit" class="btn btn-primary">Edit Absen</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

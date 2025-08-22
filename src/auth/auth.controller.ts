@@ -7,6 +7,7 @@ import {
   Res,
   Req,
   Param,
+  Body,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -17,8 +18,8 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor (private readonly authService: AuthService){}
   @Get('login')
-  getLogin(@Res() res: Response) {
-    res.render('login');
+  async getLogin(@Res() res: Response, @Req() req:any) {
+    res.render('login', {error: req.flash('error')});
   }
 
   @Get('daftar/:id')
@@ -31,16 +32,27 @@ export class AuthController {
     }
   }
 
-@UseGuards(AuthGuard('local'))
-  @Post('login')
-  async login(@Request() req, @Res() res: Response) {
-
-    req.login(req.user, (err) => {
-      if (err) {
-        res.status(500).send({ message: 'Login gagal', error: err });
+@Post('login')
+  async login(@Body() body: any, @Request() req: any, @Res() res: Response) {
+    try {
+      const user = await this.authService.validateUser(body.email, body.password);
+      
+      if (!user) {
+        req.flash('error', 'Email atau password salah');
+        return res.redirect('/login');
       }
-      res.redirect('/dashboard');
-    });
+
+      req.login(user, (err) => {
+        if (err) {
+          req.flash('error', 'Terjadi kesalahan saat login');
+          return res.redirect('/login');
+        }
+        res.redirect('/dashboard');
+      });
+    } catch (error) {
+      req.flash('error', 'Email atau password salah');
+      return res.redirect('/login');
+    }
   }
 
 @Get('logout')

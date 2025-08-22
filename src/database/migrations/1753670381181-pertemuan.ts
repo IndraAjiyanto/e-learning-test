@@ -26,6 +26,14 @@ export class Pertemuan1753670381181 implements MigrationInterface {
                     type: 'date'
                 },
                 {
+                    name: 'waktu_awal',
+                    type: 'varchar'
+                },
+                {
+                    name: 'waktu_akhir',
+                    type: 'varchar'
+                },
+                {
                     name: 'kelasId',
                     type: 'int'
                 },

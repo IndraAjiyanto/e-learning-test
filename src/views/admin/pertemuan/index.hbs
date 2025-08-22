@@ -1,8 +1,9 @@
-<div class="max-w-5xl mx-auto px-6 py-10" 
+<div class="max-w-5xl mx-auto px-6 py-10 pt-28" 
      x-data="{ search: '' }">
   
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-2xl font-semibold">Daftar Pertemuan</h2>
+    <h2 class="text-3xl font-bold text-centertext-gray-800">Daftar Pertemuan</h2>
+
     
     <div class="flex items-center gap-3">
       <input 
@@ -25,6 +26,7 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Pertemuan ke</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Topik</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Jam</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Jumlah Materi</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
@@ -37,6 +39,7 @@
           <td class="px-6 py-4 text-sm text-gray-800">{{pertemuan_ke}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{topik}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{formatTanggal tanggal}}</td>
+          {{!-- <td class="px-6 py-4 text-sm text-gray-800">{{formatWaktu waktu}}</td> --}}
           <td class="px-6 py-4 text-sm text-gray-800">{{nama_kelas}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{jumlah_pdf}} pdf, {{jumlah_video}} video, {{jumlah_ppt}} ppt</td>
           <td class="px-6 py-4 text-sm text-gray-800 space-x-2">

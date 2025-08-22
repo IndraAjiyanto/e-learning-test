@@ -3,11 +3,12 @@
     <img src="/public/image/logo_kotak_putih.png" alt="Logo" class="h-8 w-auto" />
   </div>
 
+  <!-- Desktop Menu -->
   <div class="hidden lg:flex">
     <ul class="menu menu-horizontal px-1 text-white font-medium gap-4">
       {{#if (roles user.role "user")}}
-        <li><a href="/dashboard" class="hover:text-indigo-400 transition">Home</a></li>
-        <li><a href="/kelass/kelas_saya/{{user.id}}" class="hover:text-indigo-400 transition">My Course</a></li>
+        <li><a href="/dashboard" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Home</a></li>
+        <li><a href="/kelass/kelas_saya/{{user.id}}" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">My Course</a></li>
 
         <li>
           <details class="dropdown dropdown-end">
@@ -15,63 +16,52 @@
               <span class="font-medium">{{user.username}}</span>
             </summary>
             <ul class="menu dropdown-content mt-3 p-2 shadow-lg bg-gray-800 rounded-lg w-48 text-white">
-              <li>
-                <a href="/users/profile" class="hover:bg-gray-700 rounded-md transition">Profile</a>
-              </li>
-              <li>
-                <a href="/logout" class="text-red-400 hover:bg-gray-700 rounded-md transition">Logout</a>
-              </li>
+              <li><a href="/users/profile" class="px-2 py-1 rounded-md hover:bg-gray-700 transition">Profile</a></li>
+              <li><a href="/logout" class="text-red-400 px-2 py-1 rounded-md hover:bg-gray-700 transition">Logout</a></li>
             </ul>
           </details>
         </li>
 
       {{else if (roles user.role "super_admin")}}
-        <li><a href="/users" class="hover:text-indigo-400 transition">Users</a></li>
-               <li>
+        <li><a href="/users" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Users</a></li>
+        <li>
           <details class="dropdown dropdown-end">
             <summary class="btn btn-ghost text-white px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition cursor-pointer">
               <span class="font-medium">{{user.username}}</span>
             </summary>
             <ul class="menu dropdown-content mt-3 p-2 shadow-lg bg-gray-800 rounded-lg w-48 text-white">
-              <li>
-                <a href="/users/profile" class="hover:bg-gray-700 rounded-md transition">Profile</a>
-              </li>
-              <li>
-                <a href="/logout" class="text-red-400 hover:bg-gray-700 rounded-md transition">Logout</a>
-              </li>
+              <li><a href="/users/profile" class="px-2 py-1 rounded-md hover:bg-gray-700 transition">Profile</a></li>
+              <li><a href="/logout" class="text-red-400 px-2 py-1 rounded-md hover:bg-gray-700 transition">Logout</a></li>
             </ul>
           </details>
         </li>
 
       {{else if (roles user.role "admin")}}
-        <li><a href="/kelass" class="hover:text-indigo-400 transition">Class</a></li>
-        <li><a href="/pertemuans" class="hover:text-indigo-400 transition">Meet</a></li>
-        <li><a href="/absens" class="hover:text-indigo-400 transition">Absens</a></li>
-               <li>
+        <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
+        <li><a href="/pertemuans" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Meet</a></li>
+        <li><a href="/absens" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Absens</a></li>
+        <li>
           <details class="dropdown dropdown-end">
             <summary class="btn btn-ghost text-white px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition cursor-pointer">
               <span class="font-medium">{{user.username}}</span>
             </summary>
             <ul class="menu dropdown-content mt-3 p-2 shadow-lg bg-gray-800 rounded-lg w-48 text-white">
-              <li>
-                <a href="/users/profile" class="hover:bg-gray-700 rounded-md transition">Profile</a>
-              </li>
-              <li>
-                <a href="/logout" class="text-red-400 hover:bg-gray-700 rounded-md transition">Logout</a>
-              </li>
+              <li><a href="/users/profile" class="px-2 py-1 rounded-md hover:bg-gray-700 transition">Profile</a></li>
+              <li><a href="/logout" class="text-red-400 px-2 py-1 rounded-md hover:bg-gray-700 transition">Logout</a></li>
             </ul>
           </details>
         </li>
 
       {{else}}
-        <li><a href="/dashboard" class="hover:text-indigo-400 transition">Home</a></li>
-        <li><a href="/login" class="hover:text-indigo-400 transition">Login</a></li>
+        <li><a href="/dashboard" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Home</a></li>
+        <li><a href="/login" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Login</a></li>
       {{/if}}
     </ul>
   </div>
 
+  <!-- Mobile Menu -->
   <div class="dropdown dropdown-end lg:hidden">
-    <label tabindex="0" class="btn btn-ghost text-white">
+    <label tabindex="0" class="btn btn-ghost text-white px-3 py-2 rounded-lg">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
            viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -80,22 +70,22 @@
     </label>
     <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-gray-800 rounded-lg w-52 text-white">
       {{#if (roles user.role "user")}}
-        <li><a href="/dashboard">Home</a></li>
-        <li><a href="/kelass/kelas_saya/{{user.id}}">My Course</a></li>
-        <li><a href="/users/profile">Profile</a></li>
-        <li><a href="/logout" class="text-red-400">Logout</a></li>
+        <li><a href="/dashboard" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Home</a></li>
+        <li><a href="/kelass/kelas_saya/{{user.id}}" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">My Course</a></li>
+        <li><a href="/users/profile" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Profile</a></li>
+        <li><a href="/logout" class="text-red-400 px-3 py-2 rounded-lg hover:bg-gray-700 transition">Logout</a></li>
 
       {{else if (roles user.role "super_admin")}}
-        <li><a href="/users">Users</a></li>
+        <li><a href="/users" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Users</a></li>
 
       {{else if (roles user.role "admin")}}
-        <li><a href="/kelass">Class</a></li>
-        <li><a href="/pertemuans">Meet</a></li>
-        <li><a href="/absens">Absens</a></li>
+        <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
+        <li><a href="/pertemuans" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Meet</a></li>
+        <li><a href="/absens" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Absens</a></li>
 
       {{else}}
-        <li><a href="/dashboard">Home</a></li>
-        <li><a href="/login">Login</a></li>
+        <li><a href="/dashboard" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Home</a></li>
+        <li><a href="/login" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Login</a></li>
       {{/if}}
     </ul>
   </div>

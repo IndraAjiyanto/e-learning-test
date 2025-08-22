@@ -88,7 +88,7 @@
                 class="px-4 py-2 rounded-lg shadow transition">PPT</button>
       </div>
 
-      <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow">
+      <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow-lg">
         <form action="/materis/pdf/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Judul Materi</label>
@@ -102,7 +102,7 @@
         </form>
       </div>
 
-      <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow">
+      <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow-lg">
         <form action="/materis/video/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Judul Materi</label>
@@ -116,7 +116,7 @@
         </form>
       </div>
 
-      <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow">
+      <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow-lg">
         <form action="/materis/ppt/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Judul Materi</label>

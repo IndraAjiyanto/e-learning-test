@@ -1,10 +1,12 @@
-<div class="max-w-5xl mx-auto px-6 py-10">
+<div class="max-w-5xl mx-auto px-6 py-10 pt-28">
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
     <div class="flex items-start justify-between">
       <div>
         <h1 class="text-3xl font-bold mb-2">Pertemuan {{pertemuan.pertemuan_ke}}</h1>
         <p class="text-gray-600 mb-1"><span class="font-semibold">Topik:</span> {{pertemuan.topik}}</p>
         <p class="text-gray-600 mb-1"><span class="font-semibold">Tanggal:</span> {{formatTanggal pertemuan.tanggal}}</p>
+        {{!-- <p class="text-gray-600 mb-1"><span class="font-semibold">Waktu Awal:</span> {{formatWaktu pertemuan.waktu_awal}}</p>
+        <p class="text-gray-600 mb-1"><span class="font-semibold">Waktu Akhir:</span> {{formatWaktu pertemuan.waktu_akhir}}</p> --}}
         <p class="text-gray-600"><span class="font-semibold">Kelas:</span> {{pertemuan.kelas.nama_kelas}}</p>
       </div>
       <div class="flex gap-3">
