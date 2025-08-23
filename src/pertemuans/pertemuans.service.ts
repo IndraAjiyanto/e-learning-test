@@ -42,6 +42,8 @@ export class PertemuansService {
       'pertemuan.pertemuan_ke AS pertemuan_ke',
       'pertemuan.topik AS topik',
       'pertemuan.tanggal AS tanggal',
+      'pertemuan.waktu_awal AS waktu_awal',
+      'pertemuan.waktu_akhir AS waktu_akhir',
       'kelas.id AS kelas_id',
       'kelas.nama_kelas AS nama_kelas',
     ])

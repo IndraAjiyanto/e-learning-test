@@ -1,20 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
+import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Response } from 'express';
 
+@UseGuards(AuthenticatedGuard)
 @Controller('portfolios')
 export class PortfoliosController {
   constructor(private readonly portfoliosService: PortfoliosService) {}
 
+  @Roles('admin')
   @Post()
-  create(@Body() createPortfolioDto: CreatePortfolioDto) {
+  async create(@Body() createPortfolioDto: CreatePortfolioDto) {
     return this.portfoliosService.create(createPortfolioDto);
   }
 
+  @Roles('admin')
   @Get()
-  findAll() {
-    return this.portfoliosService.findAll();
+  async findAll(@Req() req:any, @Res() res:Response) {
+    const users = await this.portfoliosService.findAll();
+    res.render('/admin/', {})
   }
 
   @Get(':id')

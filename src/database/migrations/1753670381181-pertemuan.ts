@@ -27,11 +27,11 @@ export class Pertemuan1753670381181 implements MigrationInterface {
                 },
                 {
                     name: 'waktu_awal',
-                    type: 'varchar'
+                    type: 'time'
                 },
                 {
                     name: 'waktu_akhir',
-                    type: 'varchar'
+                    type: 'time'
                 },
                 {
                     name: 'kelasId',

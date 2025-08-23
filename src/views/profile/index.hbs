@@ -1,4 +1,5 @@
 <div class="max-w-5xl mx-auto px-6 py-10 pt-28">
+
   <div class="mb-8 flex items-center gap-6">
     <div class="relative">
       <img src="/uploads/images/{{user.profile}}" alt="Foto Profil"
@@ -32,8 +33,8 @@
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-semibold">Informasi Akun</h2>
       <div class="flex gap-2">
-        <a href="/users/profile/info_akun" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">Edit Info</a>
-        <a href="/users/profile/password" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">Ganti Password</a>
+        <a href="/users/profile/info_akun" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">Edit Info</a>
+        <a href="/users/profile/password" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">Ganti Password</a>
       </div>
     </div>
 
@@ -75,22 +76,14 @@
               <p class="text-lg font-medium">{{user.biodata.program_studi}}</p>
             </div>
           {{else}}
-            <a href="/biodatas/create" class="btn btn-sm bg-gray-900 text-white  hover:bg-gray-700">Lengkapi Biodata</a>
-            <div>
-              <p class="text-sm text-gray-500">Nama Lengkap</p>
-              <p class="text-lg font-medium">belum ada</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Pendidikan</p>
-              <p class="text-lg font-medium">belum ada</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Program Studi</p>
-              <p class="text-lg font-medium">belum ada</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Kota</p>
-              <p class="text-lg font-medium">belum ada</p>
+            <div class="col-span-2">
+              <div class="p-4 rounded-lg bg-yellow-100 text-yellow-800 flex items-center justify-between">
+                <div>
+                  <p class="font-semibold">Biodata belum lengkap</p>
+                  <p class="text-sm">Lengkapi biodata agar profilmu lebih profesional.</p>
+                </div>
+                <a href="/biodatas/create" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">Lengkapi Biodata</a>
+              </div>
             </div>
           {{/if}}
         {{/if}}

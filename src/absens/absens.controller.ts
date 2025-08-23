@@ -16,14 +16,15 @@ export class AbsensController {
   async create(@Param('pertemuanId') pertemuanId: number,@Param('kelasId') kelasId: number, @Param('userId') userId: number,@Res() res: Response,@Body() createAbsenDto: CreateAbsenDto, @Req() req: any) {
     createAbsenDto.pertemuanId = pertemuanId
     createAbsenDto.userId = userId
+    createAbsenDto.waktu_absen = new Date()
     await this.absensService.create(createAbsenDto);
     res.redirect(`/kelass/${kelasId}`)
   }
 
   @Roles('admin')
-  @Post()
-  async createAbsen(@Res() res: Response,@Body() createAbsenDto: CreateAbsenDto, @Req() req: any) {
-    createAbsenDto.waktu_absen = new Date()
+  @Post(':pertemuanId')
+  async createAbsen(@Param('pertemuanId') pertemuanId: number, @Res() res: Response,@Body() createAbsenDto: CreateAbsenDto, @Req() req: any) {
+    createAbsenDto.pertemuanId = pertemuanId
     await this.absensService.create(createAbsenDto);
     res.redirect('/absens')
   }
@@ -43,30 +44,37 @@ export class AbsensController {
   }
 
   @Roles('admin')
-  @Get('create')
-  async absenCreate(@Res() res: Response,  @Req() req: any){
-    const kelas = await this.absensService.findKelas()
-    const users = await this.absensService.findUsers()
-    res.render('admin/absen/create', {user: req.user, kelas, users})
+  @Get('create/:pertemuanId')
+  async absenCreate(@Res() res: Response,  @Req() req: any, @Param('pertemuanId') pertemuanId: number){
+    const users = await this.absensService.findUsers(pertemuanId)
+    res.render('admin/absen/create', {user: req.user, users, pertemuanId})
   }
 
   @Roles('admin')
   @Get(':id')
   async findOne(@Param('id') id: number, @Res() res:Response, @Req() req:any) {
     const absen = await this.absensService.findOne(id);
-    console.log(absen)
     res.render('admin/absen/detail', {user: req.user, absen})
   }
 
-  @Roles('user')
+  @Roles('admin')
+  @Get('formEdit/:id')
+  async formEdit(@Param('id') id: number, @Res() res:Response, @Req() req:any){
+    const absen = await this.absensService.findOne(id);
+    res.render('admin/absen/edit', {user: req.user, absen})
+  }
+
+  @Roles('user', 'admin')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAbsenDto: UpdateAbsenDto) {
-    return this.absensService.update(+id, updateAbsenDto);
+  async update(@Param('id') id: number, @Body() updateAbsenDto: UpdateAbsenDto, @Res() res:Response, @Req() req:any) {
+    await this.absensService.update(id, updateAbsenDto);
+    res.redirect('/absens')
   }
 
   @Roles('admin')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.absensService.remove(+id);
+  async remove(@Param('id') id: number, @Res() res:Response, @Req() req:any) {
+    await this.absensService.remove(id);
+    res.redirect('/absens')
   }
 }

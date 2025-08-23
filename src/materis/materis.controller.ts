@@ -88,11 +88,11 @@ return this.materisService.findMateriBypertemuan(pertemuanId)
   async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: any){
     const pertemuan = await this.materisService.findPertemuanByKelas(kelasId)
     if(jenis_file === "video"){
-    res.render('materi/video', { user: req.user, pertemuan})
+    res.render('materi/video', { user: req.user, pertemuan, kelasId})
     } else if(jenis_file === "pdf"){
-    res.render('materi/pdf', { user: req.user, pertemuan})
+    res.render('materi/pdf', { user: req.user, pertemuan, kelasId})
     }else if(jenis_file === "ppt"){
-    res.render('materi/ppt', { user: req.user, pertemuan})
+    res.render('materi/ppt', { user: req.user, pertemuan, kelasId})
     }
   }
 

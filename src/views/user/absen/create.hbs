@@ -1,3 +1,4 @@
+<div class="pt-28 py-20">
 <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
   <h2 class="text-2xl font-semibold mb-6">Form Absen</h2>
 
@@ -7,14 +8,11 @@
       <select id="status" name="status" required
         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
 
-        {{#if (isNowBetween pertemuan.tanggal pertemuan.waktu_awal pertemuan.waktu_akhir)}}
-        <option value="alfa">Alfa</option>
-        <option value="tidak ada keterangan">Tidak Ada Keterangan</option>
-        {{else}}
         <option value="hadir">Hadir</option>
         <option value="izin">Izin</option>
         <option value="sakit">Sakit</option>
-        {{/if}}
+        <option value="alfa">Alfa</option>
+        <option value="tidak ada keterangan">Tidak Ada Keterangan</option>
       </select>
     </div>
 
@@ -35,4 +33,5 @@
       </a>
     </div>
   </form>
+</div>
 </div>

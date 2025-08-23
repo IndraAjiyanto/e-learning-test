@@ -1,0 +1,43 @@
+<div class="pt-28 py-20">
+<div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+  <h2 class="text-2xl font-semibold mb-6">Form Absen</h2>
+
+  <form action="/absens/{{absen.id}}?_method=PATCH" method="POST" class="space-y-6">
+
+    <div>
+      <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+      <select id="status" name="status" required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+        <option value="hadir">Hadir</option>
+        <option value="izin">Izin</option>
+        <option value="sakit">Sakit</option>
+        <option value="alfa">Alfa</option>
+        <option value="tidak ada keterangan">Tidak Ada Keterangan</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="waktu_absen" class="block text-sm font-medium text-gray-700 mb-1">Waktu Absen</label>
+      <input type="date" id="waktu_absen" name="waktu_absen" required 
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900" />
+    </div>
+
+    <div>
+      <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+      <input type="text" id="keterangan" name="keterangan" required  placeholder="Masukkan keterangan..."
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900" />
+    </div>
+
+    <div class="flex space-x-4">
+      <button type="submit"
+        class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Simpan Absen
+      </button>
+      <a href="/pertemuans/{{absen.pertemuan.id}}"
+        class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+        Batal
+      </a>
+    </div>
+  </form>
+</div>
+</div>

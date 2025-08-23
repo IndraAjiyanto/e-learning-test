@@ -31,31 +31,34 @@ async function bootstrap() {
 hbs.registerHelper('formDate', function(date) {
   return new Date(date).toISOString().split('T')[0];
 });
-hbs.registerHelper('isNowBetween', function(tanggal, waktu_mulai, waktu_akhir, options) {
+hbs.registerHelper('isNowBetween', function (tanggal: string, waktu_awal: string, waktu_akhir: string) {
   const now = new Date();
-  const todayStr = now.toISOString().split('T')[0];
 
-  if (todayStr !== tanggal) {
-    return options.inverse(this);
-  }
-
-  const start = new Date(`${tanggal}T${waktu_mulai}`);
+  const start = new Date(`${tanggal}T${waktu_awal}`);
   const end = new Date(`${tanggal}T${waktu_akhir}`);
 
-  if (now >= start && now <= end) {
-    return options.fn(this);
-  } else {
-    return options.inverse(this);
-  }
+  return now >= start && now <= end;
 });
+
 
 
   hbs.registerHelper('formatTanggal', function (tanggal: string) {
     return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale: id });
   });
-  hbs.registerHelper('isSameUser', function (a, b, options) {
-  return a === b ? options.fn(this) : options.inverse(this);
+
+hbs.registerHelper("formatTime", function (waktu: string) {
+  return waktu.slice(0,5);
+});
+
+hbs.registerHelper('hasUserAbsen', function(absenList, userId) {
+  if (!absenList || !Array.isArray(absenList)) {
+    return false;
+  }
+  
+  return absenList.some(absen => {
+    return absen.user && absen.user.id === userId;
   });
+});
   hbs.registerHelper('roles', (a, b) => a === b);
   hbs.registerPartials(join(__dirname, '..', 'src','views', 'partials'));
   app.set('view options', { layout: 'layouts/main' });

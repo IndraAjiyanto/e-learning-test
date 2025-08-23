@@ -27,26 +27,26 @@
         value="{{formDate pertemuan.tanggal}}">
     </div>
 
-    {{!-- <div>
+    <div>
       <label for="waktu_awal" class="block text-sm font-medium text-gray-700 mb-1">Waktu awal</label>
-      <input type="date" id="waktu_awal" name="waktu_awal" required
+      <input type="time" id="waktu_awal" name="waktu_awal" required
         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-        value="{{formDate pertemuan.waktu_awal}}">
+        value="{{formatTime pertemuan.waktu_awal}}">
     </div>
 
     <div>
-      <label for="wakyu_akhir" class="block text-sm font-medium text-gray-700 mb-1">Waktu akhir</label>
-      <input type="date" id="wakyu_akhir" name="wakyu_akhir" required
+      <label for="waktu_akhir" class="block text-sm font-medium text-gray-700 mb-1">Waktu akhir</label>
+      <input type="time" id="waktu_akhir" name="waktu_akhir" required
         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-        value="{{formDate pertemuan.wakyu_akhir}}">
-    </div> --}}
+        value="{{formatTime pertemuan.waktu_akhir}}">
+    </div>
 
     <div class="flex space-x-4">
       <button type="submit"
         class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
         Perbarui
       </button>
-      <a href="/pertemuans"
+      <a href="/pertemuans/{{pertemuan.id}}"
         class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
         Batal
       </a>

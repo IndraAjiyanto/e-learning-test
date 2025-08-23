@@ -2,21 +2,11 @@
 <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
   <h2 class="text-2xl font-semibold mb-6">Form Absen</h2>
 
-  <form action="/absens" method="POST" class="space-y-6">
+  <form action="/absens/{{pertemuanId}}" method="POST" class="space-y-6">
 
     <div>
-      <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
-      <select id="kelas" name="kelas" required
-        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
-        {{#each kelas}}
-        <option value="{{id}}">{{nama_kelas}}</option>
-        {{/each}}
-      </select>
-    </div>
-
-    <div>
-      <label for="user" class="block text-sm font-medium text-gray-700 mb-1">User</label>
-      <select id="user" name="user" required
+      <label for="userId" class="block text-sm font-medium text-gray-700 mb-1">User</label>
+      <select id="userId" name="userId" required
         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
         {{#each users}}
         <option value="{{id}}">{{username}}</option>
@@ -53,7 +43,7 @@
         class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
         Simpan Absen
       </button>
-      <a href="/kelass/{{pertemuan.kelas.id}}"
+      <a href="/pertemuans/{{pertemuanId}}"
         class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
         Batal
       </a>

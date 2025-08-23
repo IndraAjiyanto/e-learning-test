@@ -1,12 +1,27 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28">
+<div class="max-w-5xl mx-auto px-6 py-10 pt-28" x-data="{ search: '' }">
+
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
+  <div class="mb-4">
+    <a href="/pertemuans" 
+       class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
+      <svg xmlns="http://www.w3.org/2000/svg" 
+           class="h-5 w-5 mr-1" fill="none" 
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" 
+              stroke-linejoin="round" 
+              stroke-width="2" 
+              d="M15 19l-7-7 7-7" />
+      </svg>
+      Kembali
+    </a>
+  </div>
+
     <div class="flex items-start justify-between">
       <div>
         <h1 class="text-3xl font-bold mb-2">Pertemuan {{pertemuan.pertemuan_ke}}</h1>
         <p class="text-gray-600 mb-1"><span class="font-semibold">Topik:</span> {{pertemuan.topik}}</p>
         <p class="text-gray-600 mb-1"><span class="font-semibold">Tanggal:</span> {{formatTanggal pertemuan.tanggal}}</p>
-        {{!-- <p class="text-gray-600 mb-1"><span class="font-semibold">Waktu Awal:</span> {{formatWaktu pertemuan.waktu_awal}}</p>
-        <p class="text-gray-600 mb-1"><span class="font-semibold">Waktu Akhir:</span> {{formatWaktu pertemuan.waktu_akhir}}</p> --}}
+        <p class="text-gray-600 mb-1"><span class="font-semibold">Waktu :</span> {{formatTime pertemuan.waktu_awal}}-{{formatTime pertemuan.waktu_akhir}}</p>
         <p class="text-gray-600"><span class="font-semibold">Kelas:</span> {{pertemuan.kelas.nama_kelas}}</p>
       </div>
       <div class="flex gap-3">
@@ -31,8 +46,21 @@
     </div>
   </div>
 
-  <div>
+  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
     <h2 class="text-2xl font-semibold mb-4">Kehadiran Peserta</h2>
+        <div class="flex items-center gap-3">
+      <input 
+        type="text" 
+        placeholder="Cari peserta" 
+        x-model="search"
+        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+      />
+      <a href="/absens/create/{{pertemuan.id}}"
+         class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Tambah Absen
+      </a>
+    </div>
+  </div>
     <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-100">
@@ -40,17 +68,28 @@
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
           {{#each murid}}
-          <tr class="hover:bg-gray-50 transition">
+          <tr class="hover:bg-gray-50 transition" x-show="'{{username}} {{email}} {{status}}'.toLowerCase().includes(search.toLowerCase())">
             <td class="px-6 py-4 text-sm text-gray-800">{{username}}</td>
             <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
             <td class="px-6 py-4 text-sm">
               {{#each absen}}
               <span class="font-medium">{{status}}</span>
               {{/each}}
+            </td>
+            <td>
+            {{#each absen}}
+            <a href="/absens/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
+            <form action="/absens/{{id}}?_method=DELETE" method="post" class="inline">
+              {{/each}}
+              <button type="submit" class=" text-gray-600 font-medium hover:underline">
+                Hapus
+              </button>
+            </form>
             </td>
           </tr>
           {{/each}}

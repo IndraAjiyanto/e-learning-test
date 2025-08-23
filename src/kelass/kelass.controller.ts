@@ -12,7 +12,7 @@ import { multerConfigImage } from 'src/common/config/multer.config';
 export class KelassController {
   constructor(private readonly kelassService: KelassService) {}
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post()
   @UseInterceptors(FileInterceptor('gambar', multerConfigImage)) 
   async create(@Body() createKelassDto: CreateKelassDto, @Res() res: Response, @UploadedFile() gambar: Express.Multer.File) {
@@ -28,14 +28,14 @@ export class KelassController {
   res.redirect('/kelass')
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: any) {
     const kelas = await this.kelassService.allKelas();
     return res.render('admin/kelas/index',{user: req.user, kelas});
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get("/create")
   async formCreate(@Res() res: Response, @Req() req:any){
     return res.render('admin/kelas/create',{user: req.user});
@@ -50,7 +50,7 @@ export class KelassController {
     return res.render('admin/kelas/addUser',{user: req.user, kelas, users, murid});
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get("/edit/:id")
   async formEdit(@Res() res: Response, @Param('id') id: number, @Req() req: any){
     const kelas = await this.kelassService.findOne(id)
@@ -96,14 +96,14 @@ export class KelassController {
     res.render('user/mycourse', {kelas, user: req.user})
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateKelassDto: UpdateKelassDto, @Res() res: Response) {
     await this.kelassService.update(id, updateKelassDto);
     return res.redirect('/kelass');
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':id')
   async remove(@Param('id') id: number, @Res() res:Response) {
     await this.kelassService.remove(id);

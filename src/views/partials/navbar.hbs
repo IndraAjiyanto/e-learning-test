@@ -3,7 +3,6 @@
     <img src="/public/image/logo_kotak_putih.png" alt="Logo" class="h-8 w-auto" />
   </div>
 
-  <!-- Desktop Menu -->
   <div class="hidden lg:flex">
     <ul class="menu menu-horizontal px-1 text-white font-medium gap-4">
       {{#if (roles user.role "user")}}
@@ -24,6 +23,7 @@
 
       {{else if (roles user.role "super_admin")}}
         <li><a href="/users" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Users</a></li>
+        <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
         <li>
           <details class="dropdown dropdown-end">
             <summary class="btn btn-ghost text-white px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition cursor-pointer">
@@ -39,7 +39,7 @@
       {{else if (roles user.role "admin")}}
         <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
         <li><a href="/pertemuans" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Meet</a></li>
-        <li><a href="/absens" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Absens</a></li>
+        <li><a href="/portfolios" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Portfolio</a></li>
         <li>
           <details class="dropdown dropdown-end">
             <summary class="btn btn-ghost text-white px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition cursor-pointer">
@@ -59,7 +59,6 @@
     </ul>
   </div>
 
-  <!-- Mobile Menu -->
   <div class="dropdown dropdown-end lg:hidden">
     <label tabindex="0" class="btn btn-ghost text-white px-3 py-2 rounded-lg">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
@@ -77,11 +76,12 @@
 
       {{else if (roles user.role "super_admin")}}
         <li><a href="/users" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Users</a></li>
+        <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
 
       {{else if (roles user.role "admin")}}
         <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
         <li><a href="/pertemuans" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Meet</a></li>
-        <li><a href="/absens" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Absens</a></li>
+        <li><a href="/portfolios" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Portofolio</a></li>
 
       {{else}}
         <li><a href="/dashboard" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Home</a></li>

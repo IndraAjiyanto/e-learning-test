@@ -17,10 +17,10 @@ export class Pertemuan{
     @Column()
     tanggal: Date
 
-    @Column()
+    @Column({type: 'time'})
     waktu_awal: string
 
-    @Column()
+    @Column({type: 'time'})
     waktu_akhir: string
 
     @OneToMany(() => Absen, (absen) => absen.pertemuan)
