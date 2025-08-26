@@ -50,15 +50,12 @@
     </table>
   </div>
 
-  <!-- Pagination -->
   <div class="w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center" 
        x-show="pageCount() > 1">
-    <!-- Prev -->
     <button @click="prevPage" :disabled="pageNumber==0"
-      class="px-3 py-1 rounded border"
+      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
       :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }">Prev</button>
 
-    <!-- Page numbers -->
     <template x-for="(page,index) in pages()" :key="index">
       <button @click="viewPage(index)" 
         class="px-3 py-1 rounded"
@@ -66,9 +63,8 @@
         x-text="index+1"></button>
     </template>
 
-    <!-- Next -->
     <button @click="nextPage" :disabled="pageNumber >= pageCount()-1"
-      class="px-3 py-1 rounded border"
+      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
       :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
   </div>
 </div>
@@ -81,7 +77,6 @@ function userTable({ users }) {
     size: 5,
     users,
     get filteredUsers() {
-      // filter
       let filtered = this.users.filter(u =>
         (`${u.username} ${u.email} ${u.role}`).toLowerCase()
           .includes(this.search.toLowerCase())
@@ -89,7 +84,6 @@ function userTable({ users }) {
 
       this.total = filtered.length;
 
-      // paginate
       const start = this.pageNumber * this.size;
       const end = start + this.size;
       return filtered.slice(start, end).map(u => u.id.toString());

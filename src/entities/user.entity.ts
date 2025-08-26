@@ -4,6 +4,8 @@ import { Absen } from './absen.entity';
 import { Kelas } from './kelas.entity';
 import { Biodata } from './biodata.entity';
 import { Portfolio } from './portfolio.entity';
+import { Pembayaran } from './pembayaran.entity';
+import { Jawaban } from './jawaban.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -50,6 +52,12 @@ export class User {
 
 @OneToMany(() => Portfolio, (portfolio) => portfolio.user, { cascade: true })
   portfolio: Portfolio[];
+
+@OneToMany(() => Pembayaran, (pembayaran) => pembayaran.user, { cascade: true })
+  pembayaran: Pembayaran[];
+
+@OneToMany(() => Jawaban, (jawaban) => jawaban.user, { cascade: true })
+  jawaban: Jawaban[];
 
 @ManyToMany(() => Kelas, (kelas) => kelas.user)
 @JoinTable()

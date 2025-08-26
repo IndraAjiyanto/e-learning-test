@@ -22,5 +22,4 @@ export class Portfolio{
                 @ManyToOne(() => Kelas, (kelas) => kelas.portfolio)
                 kelas: Kelas
 
-
 }

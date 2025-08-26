@@ -2,6 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn, OneToMany, ManyToOne, CreateDat
 import { Absen } from "./absen.entity";
 import { Kelas } from "./kelas.entity";
 import { Materi } from "./materi.entity";
+import { Tugas } from "./tugas.entity";
 
 @Entity()
 export class Pertemuan{
@@ -23,11 +24,19 @@ export class Pertemuan{
     @Column({type: 'time'})
     waktu_akhir: string
 
+    @Column({default: false})
+    akhir: boolean
+
     @OneToMany(() => Absen, (absen) => absen.pertemuan)
     absen: Absen[];
 
     @OneToMany(() => Materi, (materi) => materi.pertemuan)
     materi: Materi[];
+
+    @OneToMany(() => Tugas, (tugas) => tugas.pertemuan)
+    tugas: Tugas[];
+
+
 
     @ManyToOne(() => Kelas, (kelas) => kelas.pertemuan)
     kelas: Kelas
