@@ -7,6 +7,7 @@ import { In, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Absen } from 'src/entities/absen.entity';
+import { Kategori } from 'src/entities/kategori.entity';
 
 @Injectable()
 export class KelassService {
@@ -19,10 +20,19 @@ export class KelassService {
         private readonly pertemuanRepository: Repository<Pertemuan>,
         @InjectRepository(Absen)
         private readonly absenRepository: Repository<Absen>,
+        @InjectRepository(Kategori)
+        private readonly kategoriRepository: Repository<Kategori>
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
-    const kelas = await this.kelasRepository.create(createKelassDto)
+    const kategori = await this.kategoriRepository.findOne({where: {id: createKelassDto.kategoriId}})
+    if(!kategori){
+      throw new NotFoundException('kategori ini tidak ada')
+    }
+    const kelas = await this.kelasRepository.create({
+      ...createKelassDto,
+      kategori: kategori,
+    })
     return await this.kelasRepository.save(kelas)
   }
 
@@ -81,6 +91,10 @@ async findUser(){
   return await this.userRepository.find({where: {role: 'user'}})
 }
 
+async findKategori(){
+  return await this.kategoriRepository.find()
+}
+
 
   async findAll() {
     return await this.kelasRepository.find()
@@ -91,7 +105,7 @@ async findUser(){
   }
 
   async allKelas(){
-   return await this.kelasRepository.find({relations: ['user']})
+   return await this.kelasRepository.find({relations: ['user', 'kategori']})
   }
 
   async findOne(id: number) {

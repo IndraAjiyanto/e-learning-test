@@ -38,7 +38,8 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Get("/create")
   async formCreate(@Res() res: Response, @Req() req:any){
-    return res.render('admin/kelas/create',{user: req.user});
+    const kategori = await this.kelassService.findKategori()
+    return res.render('admin/kelas/create',{user: req.user, kategori});
   }
 
   @Roles('admin')

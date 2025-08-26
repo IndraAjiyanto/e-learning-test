@@ -16,7 +16,7 @@ async function bootstrap() {
     AppModule,
   );
 
-  app.useStaticAssets(join(__dirname, '..','src', 'common','public'), {
+  app.useStaticAssets(join(__dirname, '..', 'src', 'common','public'), {
     prefix: '/public/'
   });
 
@@ -73,6 +73,12 @@ hbs.registerHelper('hasUserAbsen', function(absenList, userId) {
   );
   app.use(flash());
 
+  app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  next();
+    });
+
   app.use(passport.initialize());
   app.use(passport.session());
   app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
@@ -95,6 +101,8 @@ hbs.registerHelper('hasAnyRole', function (user, roles, options) {
 hbs.registerHelper('array', function (...args) {
   return args.slice(0, -1); 
 });
+hbs.registerHelper("json", (context) => JSON.stringify(context));
+
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 // import { join } from 'path';
 import { BiodatasModule } from './biodatas/biodatas.module';
 import { PortfoliosModule } from './portfolios/portfolios.module';
+import { KategorisModule } from './kategoris/kategoris.module';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { PortfoliosModule } from './portfolios/portfolios.module';
     // ServeStaticModule.forRoot({
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
-    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule],
+    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule],
   controllers: [AppController],
   providers: [AppService],
 })

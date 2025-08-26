@@ -1,12 +1,12 @@
 <div class="max-w-5xl mx-auto px-6 py-10 pt-28" x-data="{ search: '' }">
   <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold text-centertext-gray-800">Daftar Kelas</h2>
+        <h2 class="text-3xl font-bold text-gray-900">Daftar Kelas</h2>
         <div class="flex items-center gap-3">
       <input 
         type="text" 
         placeholder="Cari kelas" 
         x-model="search"
-        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+        class="border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
       />
     <a href="/kelass/create" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
       Tambah Kelas
@@ -20,6 +20,7 @@
         <tr>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama Kelas</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kategori Kelas</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Deskripsi</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Jumlah Murid</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
@@ -27,9 +28,10 @@
       </thead>
       <tbody class="divide-y divide-gray-200">
         {{#each kelas}}
-                <tr class="hover:bg-gray-50 transition"
-            x-show="'{{deskripsi}} {{nama_kelas}}'.toLowerCase().includes(search.toLowerCase())">
+          <tr class="hover:bg-gray-50 transition"
+            x-show="'{{deskripsi}} {{nama_kelas}} {{kategori.nama_kategori}}'.toLowerCase().includes(search.toLowerCase())">
           <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{kategori.nama_kategori}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{nama_kelas}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{deskripsi}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.length}}</td>

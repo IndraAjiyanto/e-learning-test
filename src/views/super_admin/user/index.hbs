@@ -1,13 +1,14 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28" x-data="{ search: '' }">
+<div class="max-w-5xl mx-auto px-6 py-10 pt-28" 
+     x-data="userTable({ users: {{json users}} })">
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-3xl font-bold text-gray-800 text-center md:text-left">Daftar User</h2>
+    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Daftar User</h2>
 
     <div class="flex items-center gap-3">
       <input 
         type="text" 
         placeholder="Cari user..." 
         x-model="search"
-        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+        class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
       />
       <a href="/users/formCreate" 
          class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
@@ -30,7 +31,7 @@
       <tbody class="divide-y divide-gray-200">
         {{#each users}}
         <tr class="hover:bg-gray-50 transition"
-            x-show="'{{username}} {{email}} {{role}}'.toLowerCase().includes(search.toLowerCase())">
+            x-show="filteredUsers.includes('{{id}}')">
           <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{username}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
@@ -38,7 +39,7 @@
           <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
             <a href="/users/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
             <form action="/users/{{id}}?_method=DELETE" method="post" class="inline">
-              <button type="submit" class=" text-gray-600 font-medium hover:underline">
+              <button type="button" class="text-gray-600 font-medium hover:underline" onclick="confirmDelete(this)">
                 Hapus
               </button>
             </form>
@@ -48,4 +49,61 @@
       </tbody>
     </table>
   </div>
+
+  <!-- Pagination -->
+  <div class="w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center" 
+       x-show="pageCount() > 1">
+    <!-- Prev -->
+    <button @click="prevPage" :disabled="pageNumber==0"
+      class="px-3 py-1 rounded border"
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }">Prev</button>
+
+    <!-- Page numbers -->
+    <template x-for="(page,index) in pages()" :key="index">
+      <button @click="viewPage(index)" 
+        class="px-3 py-1 rounded"
+        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
+        x-text="index+1"></button>
+    </template>
+
+    <!-- Next -->
+    <button @click="nextPage" :disabled="pageNumber >= pageCount()-1"
+      class="px-3 py-1 rounded border"
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
+  </div>
 </div>
+
+<script>
+function userTable({ users }) {
+  return {
+    search: "",
+    pageNumber: 0,
+    size: 5,
+    users,
+    get filteredUsers() {
+      // filter
+      let filtered = this.users.filter(u =>
+        (`${u.username} ${u.email} ${u.role}`).toLowerCase()
+          .includes(this.search.toLowerCase())
+      );
+
+      this.total = filtered.length;
+
+      // paginate
+      const start = this.pageNumber * this.size;
+      const end = start + this.size;
+      return filtered.slice(start, end).map(u => u.id.toString());
+    },
+    total: 0,
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
+    pageCount() {
+      return Math.ceil(this.total / this.size);
+    },
+    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
+    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
+    viewPage(index) { this.pageNumber = index; }
+  }
+}
+</script>

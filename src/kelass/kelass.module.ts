@@ -6,9 +6,10 @@ import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Absen } from 'src/entities/absen.entity';
+import { Kategori } from 'src/entities/kategori.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen])],
+  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori])],
   controllers: [KelassController],
   providers: [KelassService],
   exports: [KelassService],

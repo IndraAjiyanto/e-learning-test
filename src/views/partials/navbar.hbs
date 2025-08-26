@@ -1,92 +1,172 @@
-<div class="navbar bg-gray-900 shadow-lg px-6 fixed top-0 left-0 right-0 z-50">
-  <div class="flex-1">
-    <img src="/public/image/logo_kotak_putih.png" alt="Logo" class="h-8 w-auto" />
-  </div>
+<div class="w-full shadow-lg fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white dark-mode:text-gray-200 dark-mode:bg-gray-800">
+  <div x-data="{ open: false }" class="flex flex-col max-w-screen-xl px-4 mx-auto md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
+    <div class="flex flex-row items-center justify-between p-4">
+      <img src="/public/image/logo_kotak_putih.png" alt="Logo" class="h-8 w-auto tracking-widest uppercase rounded-lg focus:outline-none focus:shadow-outline">
+      <button class="rounded-lg md:hidden focus:outline-none focus:shadow-outline" @click="open = !open">
+        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+          <path x-show="!open" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+          <path x-show="open" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
 
-  <div class="hidden lg:flex">
-    <ul class="menu menu-horizontal px-1 text-white font-medium gap-4">
+    <nav 
+      :class="{'flex': open, 'hidden': !open}" 
+      class="flex-col flex-grow hidden pb-4 md:pb-0 md:flex md:justify-end md:flex-row"
+      x-data="{ active: window.location.pathname }"
+    >
       {{#if (roles user.role "user")}}
-        <li><a href="/dashboard" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Home</a></li>
-        <li><a href="/kelass/kelas_saya/{{user.id}}" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">My Course</a></li>
+        <a 
+          href="/dashboard"
+          @click="active='/dashboard'"
+          :class="active === '/dashboard' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0"
+        >
+          Home
+        </a>
 
-        <li>
-          <details class="dropdown dropdown-end">
-            <summary class="btn btn-ghost text-white px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition cursor-pointer">
-              <span class="font-medium">{{user.username}}</span>
-            </summary>
-            <ul class="menu dropdown-content mt-3 p-2 shadow-lg bg-gray-800 rounded-lg w-48 text-white">
-              <li><a href="/users/profile" class="px-2 py-1 rounded-md hover:bg-gray-700 transition">Profile</a></li>
-              <li><a href="/logout" class="text-red-400 px-2 py-1 rounded-md hover:bg-gray-700 transition">Logout</a></li>
-            </ul>
-          </details>
-        </li>
+        <a 
+          href="/kelass/kelas_saya/{{user.id}}"
+          @click="active='/kelass/kelas_saya/{{user.id}}'"
+          :class="active === '/kelass/kelas_saya/{{user.id}}' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >
+          My Course
+        </a>
+
+        <div @click.away="open = false" class="relative" x-data="{ open: false }">
+          <button @click="open = !open" class="flex flex-row items-center w-full px-4 py-2 mt-2 text-sm font-semibold text-left bg-transparent rounded-lg md:w-auto md:inline md:mt-0 md:ml-4 hover:text-gray-900 hover:bg-gray-200  focus:outline-none focus:shadow-outline">
+            <span>{{user.username}}</span>
+            <svg fill="currentColor" viewBox="0 0 20 20" :class="{'rotate-180': open, 'rotate-0': !open}" class="inline w-4 h-4 mt-1 ml-1 transition-transform duration-200 transform md:-mt-1"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+          </button>
+          <div x-show="open" class="absolute right-0 w-full mt-2 origin-top-right rounded-md shadow-lg md:w-48 z-30">
+            <div class="px-2 py-2 bg-white rounded-md shadow dark-mode:bg-gray-700">
+              <a href="/users/profile" class="block px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg">Profile</a>
+              <a href="/logout" class="block px-4 py-2 mt-2 text-sm font-semibold text-red-400 hover:bg-gray-200 rounded-lg">Log out</a>
+            </div>
+          </div>
+        </div>  
 
       {{else if (roles user.role "super_admin")}}
-        <li><a href="/users" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Users</a></li>
-        <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
-        <li>
-          <details class="dropdown dropdown-end">
-            <summary class="btn btn-ghost text-white px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition cursor-pointer">
-              <span class="font-medium">{{user.username}}</span>
-            </summary>
-            <ul class="menu dropdown-content mt-3 p-2 shadow-lg bg-gray-800 rounded-lg w-48 text-white">
-              <li><a href="/users/profile" class="px-2 py-1 rounded-md hover:bg-gray-700 transition">Profile</a></li>
-              <li><a href="/logout" class="text-red-400 px-2 py-1 rounded-md hover:bg-gray-700 transition">Logout</a></li>
-            </ul>
-          </details>
-        </li>
+        <a 
+          href="/users"
+          @click="active='/users'"
+          :class="active === '/users' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0"
+        >
+          Users
+        </a>
+
+        <a 
+          href="/kelass"
+          @click="active='/kelass'"
+          :class="active === '/kelass' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >
+          Class
+        </a>
+
+        <a 
+          href="/riwayats"
+          @click="active='/riwayats'"
+          :class="active === '/riwayats' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >
+          Riwayat
+        </a>
+
+        <div @click.away="open = false" class="relative" x-data="{ open: false }">
+          <button @click="open = !open" class="flex flex-row items-center w-full px-4 py-2 mt-2 text-sm font-semibold text-left bg-transparent rounded-lg md:w-auto md:inline md:mt-0 md:ml-4 hover:text-gray-900 hover:bg-gray-200  focus:outline-none focus:shadow-outline">
+            <span>{{user.username}}</span>
+            <svg fill="currentColor" viewBox="0 0 20 20" :class="{'rotate-180': open, 'rotate-0': !open}" class="inline w-4 h-4 mt-1 ml-1 transition-transform duration-200 transform md:-mt-1"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+          </button>
+          <div x-show="open" class="absolute right-0 w-full mt-2 origin-top-right rounded-md shadow-lg md:w-48 z-30">
+            <div class="px-2 py-2 bg-white rounded-md shadow dark-mode:bg-gray-700">
+              <a href="/users/profile" class="block px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg">Profile</a>
+              <a href="/logout" class="block px-4 py-2 mt-2 text-sm font-semibold text-red-400 hover:bg-gray-200 rounded-lg">Log out</a>
+            </div>
+          </div>
+        </div>  
 
       {{else if (roles user.role "admin")}}
-        <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
-        <li><a href="/pertemuans" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Meet</a></li>
-        <li><a href="/portfolios" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Portfolio</a></li>
-        <li>
-          <details class="dropdown dropdown-end">
-            <summary class="btn btn-ghost text-white px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition cursor-pointer">
-              <span class="font-medium">{{user.username}}</span>
-            </summary>
-            <ul class="menu dropdown-content mt-3 p-2 shadow-lg bg-gray-800 rounded-lg w-48 text-white">
-              <li><a href="/users/profile" class="px-2 py-1 rounded-md hover:bg-gray-700 transition">Profile</a></li>
-              <li><a href="/logout" class="text-red-400 px-2 py-1 rounded-md hover:bg-gray-700 transition">Logout</a></li>
-            </ul>
-          </details>
-        </li>
+        <a 
+          href="/kelass"
+          @click="active='/kelass'"
+          :class="active === '/kelass' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-gray-200 hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0"
+        >
+          Class
+        </a>
+
+        <a 
+          href="/pertemuans"
+          @click="active='/pertemuans'"
+          :class="active === '/pertemuans' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-gray-200 hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >
+          Meet
+        </a>
+
+        <a 
+          href="/portofolios"
+          @click="active='/portofolios'"
+          :class="active === '/portofolios' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-gray-200 hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >
+          Portofolio
+        </a>
+
+        <div @click.away="open = false" class="relative" x-data="{ open: false }">
+          <button @click="open = !open" class="flex flex-row items-center w-full px-4 py-2 mt-2 text-sm font-semibold text-left bg-transparent rounded-lg md:w-auto md:inline md:mt-0 md:ml-4 hover:text-gray-900 focus:outline-none focus:shadow-outline">
+            <span>{{user.username}}</span>
+            <svg fill="currentColor" viewBox="0 0 20 20" :class="{'rotate-180': open, 'rotate-0': !open}" class="inline w-4 h-4 mt-1 ml-1 transition-transform duration-200 transform md:-mt-1"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+          </button>
+          <div x-show="open" class="absolute right-0 w-full mt-2 origin-top-right rounded-md shadow-lg md:w-48 z-30">
+            <div class="px-2 py-2 bg-white rounded-md shadow dark-mode:bg-gray-700">
+              <a href="/users/profile" class="block px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg">Profile</a>
+              <a href="/logout" class="block px-4 py-2 mt-2 text-sm font-semibold text-red-400 hover:bg-gray-200 rounded-lg">Log out</a>
+            </div>
+          </div>
+        </div>  
 
       {{else}}
-        <li><a href="/dashboard" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Home</a></li>
-        <li><a href="/login" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Login</a></li>
+        <a 
+          href="/dashboard"
+          @click="active='/dashboard'"
+          :class="active === '/dashboard' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-gray-200 hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0"
+        >
+          Home
+        </a>
+        <a 
+          href="/login"
+          @click="active='/login'"
+          :class="active === '/login' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-gray-200 hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >
+          Login
+        </a>
       {{/if}}
-    </ul>
-  </div>
-
-  <div class="dropdown dropdown-end lg:hidden">
-    <label tabindex="0" class="btn btn-ghost text-white px-3 py-2 rounded-lg">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </label>
-    <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-gray-800 rounded-lg w-52 text-white">
-      {{#if (roles user.role "user")}}
-        <li><a href="/dashboard" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Home</a></li>
-        <li><a href="/kelass/kelas_saya/{{user.id}}" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">My Course</a></li>
-        <li><a href="/users/profile" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Profile</a></li>
-        <li><a href="/logout" class="text-red-400 px-3 py-2 rounded-lg hover:bg-gray-700 transition">Logout</a></li>
-
-      {{else if (roles user.role "super_admin")}}
-        <li><a href="/users" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Users</a></li>
-        <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
-
-      {{else if (roles user.role "admin")}}
-        <li><a href="/kelass" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Class</a></li>
-        <li><a href="/pertemuans" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Meet</a></li>
-        <li><a href="/portfolios" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Portofolio</a></li>
-
-      {{else}}
-        <li><a href="/dashboard" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Home</a></li>
-        <li><a href="/login" class="px-3 py-2 rounded-lg hover:bg-gray-700 transition">Login</a></li>
-      {{/if}}
-    </ul>
+    </nav>
   </div>
 </div>

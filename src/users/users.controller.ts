@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,10 +18,16 @@ export class UsersController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(FileInterceptor('profile', multerConfigImage)) 
-  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response, @UploadedFile() profile: Express.Multer.File) {
-    createUserDto.profile = profile.filename;
-    await this.usersService.create(createUserDto);
-    res.redirect('/users')
+  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response, @UploadedFile() profile: Express.Multer.File, @Req() req:any) {
+    try {
+      createUserDto.profile = profile.filename;
+      await this.usersService.create(createUserDto);
+      req.flash('success', 'User berhasil dibuat');
+      res.redirect('/users')
+    } catch (error) {
+      req.flash('error', 'Gagal membuat user');
+      res.redirect('/users')
+    }
   }
 
   @Get('profile')
@@ -41,11 +47,11 @@ export class UsersController {
   }
 
 @Roles('super_admin')
-  @Get()
-  async findAll(@Res() res: Response, @Req() req: any) {
-    const users = await this.usersService.findAll();
-    res.render('super_admin/user/index', {user: req.user, users})
-  }
+@Get()
+async findAll(@Res() res: Response, @Req() req: any) {
+  const users = await this.usersService.findAll();
+  res.render('super_admin/user/index', { user: req.user, users});
+}
 
   @Roles('super_admin')
   @Get('formEdit/:id')
@@ -72,6 +78,18 @@ export class UsersController {
     res.redirect('/users/profile')
   }
 
+  @Patch('admin/:id')
+  async updateAdmin(@Param('id') id: number, @Res() res: Response, @Body() updateUserDto: UpdateUserDto, @Req()  req:any) {
+    try {
+      await this.usersService.update(id, updateUserDto);
+      req.flash('success', 'Berhasil di update');
+      res.redirect('/users')
+    } catch (error) {
+      req.flash('error', 'Gagal di update');
+      res.redirect('/users')
+    }
+  }
+
   @Patch('password/:id')
   async updatePassword(@Param('id') id: number, @Res() res: Response, @Body() updatePaaswordDto: UpdatePasswordDto){
     await this.usersService.updatePassword(id, updatePaaswordDto);
@@ -92,9 +110,18 @@ export class UsersController {
 
   @Roles('super_admin')
   @Delete(':id')
-  async remove(@Param('id') id: number, @Res() res: Response) {
-    await this.usersService.remove(id);
-    res.redirect('/users')
+  async remove(@Param('id') id: number, @Res() res: Response, @Req() req:any) {
+    try {
+      await this.usersService.remove(id);
+      const user = await this.usersService.findOne(id)
+      await this.usersService.deleteProfileIfExists(user.profile);
+      req.flash('success', 'User berhasil dibuat');
+      res.redirect('/users')
+    } catch (error) {
+      req.flash('error', 'Gagal membuat user');
+      res.redirect('/users')
+    }
+
   }
 
 }

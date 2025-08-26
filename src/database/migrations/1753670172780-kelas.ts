@@ -25,6 +25,10 @@ export class Kelas1753670172780 implements MigrationInterface {
                 type: 'varchar'
             },
             {
+                name: 'kategoriId',
+                type: 'int'
+            },
+            {
                 name: 'createdAt',
                 type: 'timestamp',
                 default: 'CURRENT_TIMESTAMP',
@@ -36,11 +40,27 @@ export class Kelas1753670172780 implements MigrationInterface {
             }
             ]
         }))
+    await queryRunner.createForeignKey('kelas', new TableForeignKey({
+            columnNames: ['kategoriId'],
+            referencedTableName: 'kategori',
+            referencedColumnNames: ['id'],
+            onDelete: 'RESTRICT',
+        }));
 
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+                  const table = await queryRunner.getTable('kelass');
+  if (!table) return;
+
+  const kategoriFk = table.foreignKeys.find(fk => fk.columnNames.includes('kategoriId'));
+
+  if (kategoriFk) {
+    await queryRunner.dropForeignKey('kelass', kategoriFk);
+  }
+
         await queryRunner.dropTable('kelass');
+        
     }
 
 }
