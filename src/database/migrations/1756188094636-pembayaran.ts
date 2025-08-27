@@ -13,9 +13,10 @@ export class Pembayaran1756188094636 implements MigrationInterface {
                         generationStrategy: 'increment'
                     },{
                         name: 'file',
-                        type: 'varchar'
+                        type: 'varchar',
+                        isNullable: true
                     },
-                                    {
+                {
                     name: 'proses',
                     type: 'enum',
                     enum: ['acc', 'proces', 'rejected'],

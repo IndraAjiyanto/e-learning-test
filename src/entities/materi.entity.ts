@@ -1,6 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from "typeorm";
 import { Pertemuan } from "./pertemuan.entity";
-import { Pertanyaan } from "./pertanyaan.entity";
 
 export type JenisFile = 'video'| 'pdf'| 'ppt';
 
@@ -23,9 +22,6 @@ export class Materi {
     
     @UpdateDateColumn()
     updatedAt: Date;
-
-        @OneToMany(() => Pertanyaan, (pertanyaan) => pertanyaan.materi)
-        pertanyaan: Pertanyaan[];
 
     @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.materi)
     pertemuan: Pertemuan

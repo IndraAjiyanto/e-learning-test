@@ -3,6 +3,7 @@ import { Absen } from "./absen.entity";
 import { Kelas } from "./kelas.entity";
 import { Materi } from "./materi.entity";
 import { Tugas } from "./tugas.entity";
+import { Pertanyaan } from "./pertanyaan.entity";
 
 @Entity()
 export class Pertemuan{
@@ -36,7 +37,8 @@ export class Pertemuan{
     @OneToMany(() => Tugas, (tugas) => tugas.pertemuan)
     tugas: Tugas[];
 
-
+    @OneToMany(() => Pertanyaan, (pertanyaan) => pertanyaan.pertemuan)
+    pertanyaan: Pertanyaan[];
 
     @ManyToOne(() => Kelas, (kelas) => kelas.pertemuan)
     kelas: Kelas
@@ -46,6 +48,4 @@ export class Pertemuan{
         
     @UpdateDateColumn()
     updatedAt: Date;
-
-
 }

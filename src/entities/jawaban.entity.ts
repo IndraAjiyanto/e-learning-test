@@ -1,6 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Pertanyaan } from "./pertanyaan.entity";
-import { User } from "./user.entity";
 
 @Entity()
 export class Jawaban{
@@ -8,7 +7,7 @@ export class Jawaban{
     id: number
 
     @Column()
-    jawaban_user: string
+    jawaban: string
 
 @Column({ default: false })
 jawaban_benar: boolean;
@@ -21,7 +20,4 @@ jawaban_benar: boolean;
 
                               @ManyToOne(() => Pertanyaan, (pertanyaan) => pertanyaan.jawaban)
                               pertanyaan: Pertanyaan
-
-                              @ManyToOne(() => User, (user) => user.jawaban)
-                              user: User
 }

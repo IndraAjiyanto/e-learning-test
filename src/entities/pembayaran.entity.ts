@@ -9,7 +9,7 @@ export class Pembayaran{
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    @Column({ nullable: true })
     file: string
 
     @Column({ type: 'enum', enum: ['acc' , 'proces' , 'rejected'], default: 'rejected' })

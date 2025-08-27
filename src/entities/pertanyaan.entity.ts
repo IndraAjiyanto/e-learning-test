@@ -1,6 +1,8 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Jawaban } from "./jawaban.entity";
 import { Materi } from "./materi.entity";
+import { JawabanUser } from "./jawaban_user.entity";
+import { Pertemuan } from "./pertemuan.entity";
 
 @Entity()
 export class Pertanyaan{
@@ -10,18 +12,18 @@ export class Pertanyaan{
     @Column()
     pertanyaan_soal:string
 
-    @Column()
-    nilai: number
-
       @CreateDateColumn()
       createdAt: Date;
     
       @UpdateDateColumn()
       updatedAt: Date;
 
-      @ManyToOne(() => Materi, (materi) => materi.pertanyaan)
-      materi: Materi
+      @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.pertanyaan)
+      pertemuan: Pertemuan
 
       @OneToMany(() => Jawaban, (jawaban) => jawaban.pertanyaan, { cascade: true })
       jawaban: Jawaban[];
+
+      @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.pertanyaan, { cascade: true })
+      jawaban_user: JawabanUser[];
 }

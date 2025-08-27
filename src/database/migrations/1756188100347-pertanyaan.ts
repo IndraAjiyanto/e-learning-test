@@ -15,12 +15,8 @@ export class Pertanyaan1756188100347 implements MigrationInterface {
                                 name: 'pertanyaan_soal',
                                 type: 'varchar'
                             },
-                            {
-                                name: 'nilai',
-                                type: 'int'
-                            },
                                 {
-                                name: 'materiId',
+                                name: 'pertemuanId',
                                 type: 'int'
                             },{
                                     name: 'createdAt',
@@ -36,8 +32,8 @@ export class Pertanyaan1756188100347 implements MigrationInterface {
                         }))
                 
                         await queryRunner.createForeignKey('pertanyaan', new TableForeignKey({
-                            columnNames: ['materiId'],
-                            referencedTableName: 'materi',
+                            columnNames: ['pertemuanId'],
+                            referencedTableName: 'pertemuan',
                             referencedColumnNames: ['id'],
                             onDelete: 'RESTRICT',
                         }));
@@ -47,10 +43,10 @@ export class Pertanyaan1756188100347 implements MigrationInterface {
                                   const table = await queryRunner.getTable('pertanyaan');
   if (!table) return;
 
-  const materiFk = table.foreignKeys.find(fk => fk.columnNames.includes('materiId'));
+  const pertemuanFk = table.foreignKeys.find(fk => fk.columnNames.includes('pertemuanId'));
 
-  if (materiFk) {
-    await queryRunner.dropForeignKey('pertanyaan', materiFk);
+  if (pertemuanFk) {
+    await queryRunner.dropForeignKey('pertanyaan', pertemuanFk);
   }
 
 

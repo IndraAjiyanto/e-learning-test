@@ -12,7 +12,7 @@ export class Jawaban1756188174312 implements MigrationInterface {
                                         isGenerated: true,
                                         generationStrategy: 'increment'
                                     },{
-                                        name: 'jawaban_user',
+                                        name: 'jawaban',
                                         type: 'varchar'
                                     },
                                     {
@@ -22,10 +22,6 @@ export class Jawaban1756188174312 implements MigrationInterface {
                                     },
                                     {
                                         name: 'pertanyaanId',
-                                        type: 'int'
-                                    },
-                                    {
-                                        name: 'userId',
                                         type: 'int'
                                     },
                                     {
@@ -47,24 +43,13 @@ export class Jawaban1756188174312 implements MigrationInterface {
                                     referencedColumnNames: ['id'],
                                     onDelete: 'RESTRICT',
                                 }));
-                                await queryRunner.createForeignKey('jawaban', new TableForeignKey({
-                                    columnNames: ['userId'],
-                                    referencedTableName: 'user',
-                                    referencedColumnNames: ['id'],
-                                    onDelete: 'RESTRICT',
-                                }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
                                   const table = await queryRunner.getTable('jawaban');
   if (!table) return;
 
-  const userFk = table.foreignKeys.find(fk => fk.columnNames.includes('userId'));
   const pertanyaanFk = table.foreignKeys.find(fk => fk.columnNames.includes('pertanyaanId'));
-
-  if (userFk) {
-    await queryRunner.dropForeignKey('jawaban', userFk);
-  }
 
   if (pertanyaanFk) {
     await queryRunner.dropForeignKey('jawaban', pertanyaanFk);

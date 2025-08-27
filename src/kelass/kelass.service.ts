@@ -70,7 +70,7 @@ async findMyCourse(userId: number) {
     where: {
       user: { id: userId }  
     },
-    relations: ['user'], 
+    relations: ['user', 'kategori'], 
   });
 }
 
@@ -97,7 +97,7 @@ async findKategori(){
 
 
   async findAll() {
-    return await this.kelasRepository.find()
+    return await this.kelasRepository.find({relations: ['kategori']})
   }
 
   async findMurid(id: number){
@@ -109,7 +109,7 @@ async findKategori(){
   }
 
   async findOne(id: number) {
-    const kelas =  this.kelasRepository.findOne({where: {id}, relations: ['user']})
+    const kelas =  this.kelasRepository.findOne({where: {id}, relations: ['user', 'kategori']})
     if(!kelas){
       throw new NotFoundException()
     }

@@ -3,6 +3,7 @@ import { Proses } from "src/entities/pembayaran.entity";
 
 export class CreatePembayaranDto {
       @IsString()
+      @IsOptional()
       file: string
     
       @IsEnum(['acc' , 'proces' , 'rejected'])
