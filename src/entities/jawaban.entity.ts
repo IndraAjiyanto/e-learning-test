@@ -10,6 +10,9 @@ export class Jawaban{
     @Column()
     jawaban_user: string
 
+@Column({ default: false })
+jawaban_benar: boolean;
+
         @CreateDateColumn()
         createdAt: Date;
         

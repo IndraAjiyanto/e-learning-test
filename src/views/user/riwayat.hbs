@@ -1,0 +1,39 @@
+<div class="max-w-5xl mx-auto px-6 py-10 pt-28">
+  <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center md:text-left">Riwayat Pembayaran</h2>
+
+  {{#if pembayaran.length}}
+    <ul class="space-y-4">
+      {{#each pembayaran}}
+        <li class="p-4 rounded-xl shadow flex justify-between items-center 
+          {{#if (roles this.proses 'acc')}} bg-green-100 border-l-4 border-green-500 
+          {{else if (roles this.proses 'proces')}} bg-yellow-100 border-l-4 border-yellow-500 
+          {{else}} bg-red-100 border-l-4 border-red-500 {{/if}}">
+
+          <div>
+            <div class="font-semibold text-lg">Kelas: {{this.kelas.nama_kelas}}</div>
+            <div class="text-sm text-gray-700">Tanggal: {{this.createdAt}}</div>
+            <div class="text-sm">
+              Status: 
+              {{#if (roles this.proses 'acc')}}
+                <span class="text-green-700 font-bold">ACC</span>
+              {{else if (roles this.proses 'proces')}}
+                <span class="text-yellow-700 font-bold">PROCES</span>
+              {{else}}
+                <span class="text-red-700 font-bold">REJECTED</span>
+              {{/if}}
+            </div>
+          </div>
+
+          <div>
+            <a href="/uploads/{{this.file}}" target="_blank" 
+               class="px-4 py-2 rounded-lg shadow bg-white border hover:bg-gray-50 text-sm font-medium">
+              Lihat Bukti
+            </a>
+          </div>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <div class="text-center text-gray-600">Belum ada riwayat pembayaran.</div>
+  {{/if}}
+</div>

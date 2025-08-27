@@ -10,6 +10,9 @@ export class Pertanyaan{
     @Column()
     pertanyaan_soal:string
 
+    @Column()
+    nilai: number
+
       @CreateDateColumn()
       createdAt: Date;
     
@@ -18,7 +21,7 @@ export class Pertanyaan{
 
       @ManyToOne(() => Materi, (materi) => materi.pertanyaan)
       materi: Materi
-      
+
       @OneToMany(() => Jawaban, (jawaban) => jawaban.pertanyaan, { cascade: true })
       jawaban: Jawaban[];
 }

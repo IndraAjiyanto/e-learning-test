@@ -18,6 +18,11 @@ export class JawabanTugas1756190944609 implements MigrationInterface {
                                                         name: 'tugasId',
                                                         type: 'int'
                                                     },
+                                                                                        {
+                                        name: 'jawaban_benar',
+                                        type: 'boolean',
+                                        default: false
+                                    },
                                                     {
                                                             name: 'createdAt',
                                                             type: 'timestamp',

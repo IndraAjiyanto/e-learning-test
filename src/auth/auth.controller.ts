@@ -28,8 +28,13 @@ export class AuthController {
     if(!req.user){
     res.render('login');
     }else{
-    res.render('daftarKelas', {user: req.user, kelas});
+    res.render('user/daftarKelas', {user: req.user, kelas});
     }
+  }
+
+  @Get('coba')
+  async coba(@Res() res: Response,){
+    res.render('user/pembayaran')
   }
 
 @Post('login')

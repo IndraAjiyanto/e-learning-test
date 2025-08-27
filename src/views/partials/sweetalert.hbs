@@ -12,6 +12,19 @@ Swal.fire({
 });
 {{/if}}
 
+{{#if info}}
+Swal.fire({
+    icon: 'info',
+    title: 'info!',
+    text: '{{info}}',
+    toast: true,
+    position: 'bottom-start',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+});
+{{/if}}
+
 {{#if error}}
 Swal.fire({
     icon: 'error',

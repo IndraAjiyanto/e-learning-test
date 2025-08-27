@@ -14,7 +14,12 @@ export class Pertanyaan1756188100347 implements MigrationInterface {
                             },{
                                 name: 'pertanyaan_soal',
                                 type: 'varchar'
-                            },{
+                            },
+                            {
+                                name: 'nilai',
+                                type: 'int'
+                            },
+                                {
                                 name: 'materiId',
                                 type: 'int'
                             },{

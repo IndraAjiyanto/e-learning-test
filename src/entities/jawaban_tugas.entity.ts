@@ -9,6 +9,9 @@ export class JawabanTugas{
     @Column()
     file: string
 
+@Column({ default: false })
+jawaban_benar: boolean;
+
             @CreateDateColumn()
             createdAt: Date;
             

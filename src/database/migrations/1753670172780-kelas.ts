@@ -17,6 +17,27 @@ export class Kelas1753670172780 implements MigrationInterface {
                 type: 'varchar',
             },
             {
+                name: 'harga',
+                type: 'int'
+            },
+            {
+                name: 'informasi_kelas',
+                type: 'varchar'
+            },
+            {
+                name: 'launch',
+                type: 'boolean',
+                default: false
+            },
+            {
+                name: 'teknologi',
+                type: 'varchar'
+            },
+            {
+                name: 'target_pembelajaran',
+                type: 'varchar'
+            },
+            {
                 name: 'deskripsi',
                 type: 'varchar'
             },

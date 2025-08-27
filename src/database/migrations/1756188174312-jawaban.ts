@@ -14,7 +14,13 @@ export class Jawaban1756188174312 implements MigrationInterface {
                                     },{
                                         name: 'jawaban_user',
                                         type: 'varchar'
-                                    },{
+                                    },
+                                    {
+                                        name: 'jawaban_benar',
+                                        type: 'boolean',
+                                        default: false
+                                    },
+                                    {
                                         name: 'pertanyaanId',
                                         type: 'int'
                                     },

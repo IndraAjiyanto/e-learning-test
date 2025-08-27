@@ -13,6 +13,9 @@ export class Tugas{
     @Column()
     judul: string
 
+    @Column()
+    nilai: number
+
       @CreateDateColumn()
       createdAt: Date;
     

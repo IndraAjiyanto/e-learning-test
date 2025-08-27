@@ -19,6 +19,21 @@ export class Kelas {
     @Column()
     gambar: string;
 
+    @Column()
+    harga: number;
+
+@Column({ default: false })
+launch: boolean;
+
+    @Column()
+    teknologi: string
+
+    @Column()
+    informasi_kelas: string
+
+    @Column()
+    target_pembelajaran: string
+
     @CreateDateColumn()
     createdAt: Date;
     

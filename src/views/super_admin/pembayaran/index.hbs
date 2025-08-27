@@ -1,0 +1,63 @@
+<div class="max-w-5xl mx-auto px-6 py-10 pt-28" x-data="{ open: false, imageSrc: '' }">
+  <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center md:text-left">Riwayat Pembayaran</h2>
+
+  {{#if pembayaran.length}}
+    <ul class="space-y-4">
+      {{#each pembayaran}}
+        <li class="p-4 rounded-xl shadow flex justify-between items-center 
+          {{#if (roles this.proses 'acc')}} bg-green-100 border-l-4 border-green-500 
+          {{else if (roles this.proses 'proces')}} bg-yellow-100 border-l-4 border-yellow-500 
+          {{else}} bg-red-100 border-l-4 border-red-500 {{/if}}">
+
+          <div>
+            <div class="font-semibold text-lg">Kelas: {{this.kelas.nama_kelas}}</div>
+            <div class="font-semibold text-lg">Nama: {{this.user.username}}</div>
+            <div class="text-sm text-gray-700">Tanggal: {{this.createdAt}}</div>
+            <div class="text-sm">
+              Status: 
+              {{#if (roles this.proses 'acc')}}
+                <span class="text-green-700 font-bold">ACC</span>
+              {{else if (roles this.proses 'proces')}}
+                <span class="text-yellow-700 font-bold">PROCES</span>
+              {{else}}
+                <span class="text-red-700 font-bold">REJECTED</span>
+              {{/if}}
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button 
+              @click="open = true; imageSrc = '/uploads/{{this.file}}'" 
+              class="px-4 py-2 rounded-lg shadow bg-white border hover:bg-gray-50 text-sm font-medium">
+              Lihat Bukti
+            </button>
+
+            {{#if (roles this.proses 'proces')}}
+              <form action="/pembayarans/{{this.id}}?_method=PATCH" method="post">
+                <button type="submit"
+                  class="px-4 py-2 rounded-lg shadow bg-white border hover:bg-gray-50 text-sm font-medium">
+                  ACC
+                </button>
+              </form>
+            {{/if}}
+          </div>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <div class="text-center text-gray-600">Belum ada riwayat pembayaran.</div>
+  {{/if}}
+
+  <div x-show="open" 
+       class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+       x-transition
+       @click.self="open = false">
+
+    <div class="bg-white rounded-xl shadow-lg max-w-3xl w-full p-4 relative">
+      <button @click="open = false" 
+              class="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl">&times;</button>
+
+      <img :src="imageSrc" alt="Bukti Pembayaran" class="rounded-lg w-full max-h-[80vh] object-contain">
+    </div>
+  </div>
+</div>

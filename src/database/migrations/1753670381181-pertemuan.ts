@@ -30,6 +30,11 @@ export class Pertemuan1753670381181 implements MigrationInterface {
                     type: 'time'
                 },
                 {
+                    name: 'akhir',
+                    type: 'boolean',
+                    default: false
+                },
+                {
                     name: 'waktu_akhir',
                     type: 'time'
                 },

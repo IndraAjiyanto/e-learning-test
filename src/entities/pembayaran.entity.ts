@@ -2,6 +2,8 @@ import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Up
 import { User } from "./user.entity";
 import { Kelas } from "./kelas.entity";
 
+export type Proses = 'acc' | 'proces' | 'rejected';
+
 @Entity()
 export class Pembayaran{
     @PrimaryGeneratedColumn()
@@ -9,6 +11,9 @@ export class Pembayaran{
 
     @Column()
     file: string
+
+    @Column({ type: 'enum', enum: ['acc' , 'proces' , 'rejected'], default: 'rejected' })
+    proses: Proses
 
        @CreateDateColumn()
        createdAt: Date;
