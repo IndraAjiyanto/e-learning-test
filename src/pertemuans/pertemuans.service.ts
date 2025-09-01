@@ -6,6 +6,7 @@ import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
+import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 
 @Injectable()
 export class PertemuansService {
@@ -17,7 +18,10 @@ export class PertemuansService {
     private readonly kelasRepository: Repository<Kelas>,
 
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+
+    @InjectRepository(Pertanyaan)
+    private readonly pertanyaanRepository: Repository<Pertanyaan>
   ){}
 
   async create(createPertemuanDto: CreatePertemuanDto) {
@@ -78,6 +82,10 @@ export class PertemuansService {
 async findMuridInKelas(kelasId: number, pertemuanId: number) {
   const users = await this.userRepository.find({where: {kelas: {id: kelasId}, absen: {pertemuan: {id: pertemuanId}}}, relations: ['kelas', 'absen', 'absen.pertemuan']})
   return users;
+}
+
+async findPertanyaan(pertemuanId: number){
+  return await this.pertanyaanRepository.find({where: {pertemuan: {id:pertemuanId}}, relations: ['jawaban']})
 }
 
 

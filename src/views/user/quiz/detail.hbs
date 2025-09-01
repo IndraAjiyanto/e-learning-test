@@ -1,0 +1,38 @@
+<div class="max-w-4xl mx-auto pt-28 px-6">
+  <h2 class="text-2xl font-bold mb-6">
+    Detail Quiz Pertemuan {{pertemuan_ke}}
+  </h2>
+
+  {{#each pertanyaan}}
+  <div class="p-6 mb-6 border rounded-xl bg-white shadow">
+    <p class="font-medium text-gray-800 mb-4">
+       {{pertanyaan_soal}}
+    </p>
+
+    <div class="space-y-2">
+      {{#each jawaban}}
+      <div
+        class="px-4 py-2 rounded-lg
+        {{#each ../../jawaban_user}}
+            {{#if (roles jawaban.id ../id)}}
+                {{#if this.jawaban.jawaban_benar }} 
+                bg-green-100 text-green-800 font-semibold 
+                {{else}}
+                 bg-red-100 text-red-800 font-semibold 
+                 {{/if}}
+            {{/if}}
+        {{/each}}
+            {{#if jawaban_benar }} bg-green-100 text-green-800 font-semibold{{/if}}">
+        {{jawaban}}
+      </div>
+      {{/each}}
+    </div>
+  </div>
+  {{/each}}
+
+  <div class="p-6 border-t text-right">
+    <p class="text-xl font-bold">
+      Nilai Kamu: {{nilai}}
+    </p>
+  </div>
+</div>

@@ -8,6 +8,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigImage } from 'src/common/config/multer.config';
 
+
 @Controller('kelass')
 export class KelassController {
   constructor(private readonly kelassService: KelassService) {}
@@ -69,7 +70,6 @@ export class KelassController {
   @Get(':id')
   async detail(@Param('id') id: number, @Res() res: Response, @Req() req: any) {
     const kelas = await this.kelassService.findOne(id);
-    const pertemuan = await this.kelassService.findPertemuan(id);
   let isUserInKelas = false;
   if(!kelas){
     return "tidak ada kelas"
@@ -83,12 +83,16 @@ export class KelassController {
     }
   }
     if (isUserInKelas) {
-    res.render('kelas/detail', { user: req.user, kelas, pertemuan });
+    const pertemuans = await this.kelassService.findPertemuanAndPertanyaan(id, req.user.id);
+    res.render('kelas/detail', { user: req.user, kelas, pertemuans });
   } else {
     res.render('kelas/Bdetail', {user: req.user, kelas});
   }
   }
   }
+
+
+
 
   @Roles('user')
   @Get('kelas_saya/:id')

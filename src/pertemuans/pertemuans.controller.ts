@@ -5,11 +5,12 @@ import { UpdatePertemuanDto } from './dto/update-pertemuan.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response } from 'express';
+import { MaterisService } from 'src/materis/materis.service';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('pertemuans')
 export class PertemuansController {
-  constructor(private readonly pertemuansService: PertemuansService) {}
+  constructor(private readonly pertemuansService: PertemuansService, private readonly materisService: MaterisService) {}
 
   @Roles('admin')
   @Post()
@@ -57,12 +58,15 @@ export class PertemuansController {
   }
 
   @Roles('admin')
-  @Get(':id')
-  async findOne(@Param('id') id: number, @Res() res:Response, @Req() req:any) {
-    const pertemuan = await this.pertemuansService.findOne(id);
-    const murid = await this.pertemuansService.findMuridInKelas(pertemuan.kelas.id, id)
-    console.log(murid)
-    res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid})
+  @Get(':pertemuanId')
+  async findOne(@Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:any) {
+    const pertemuan = await this.pertemuansService.findOne(pertemuanId);
+    const murid = await this.pertemuansService.findMuridInKelas(pertemuan.kelas.id, pertemuanId)
+    const pertanyaan = await this.pertemuansService.findPertanyaan(pertemuanId)
+      const materipdf = await this.materisService.findMateriPdf(pertemuanId)
+  const materivideo = await this.materisService.findMateriVideo(pertemuanId)
+  const materippt = await this.materisService.findMateriPpt(pertemuanId)
+    res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid, pertanyaan, materipdf, materippt, materivideo })
   }
 
   @Roles('admin')

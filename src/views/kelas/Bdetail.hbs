@@ -1,3 +1,4 @@
+{{#if user}}
 <div class="max-w-5xl mx-auto px-6 py-10 pt-28">
   <div class="mb-8">
     <img src="/uploads/images/{{kelas.gambar}}" alt="Web Dev" class="w-full h-64 object-cover rounded shadow mb-4" />
@@ -28,3 +29,35 @@
   <div class="mb-10">
   </div>
 </div>
+{{else}}
+<div class="max-w-5xl mx-auto px-6 py-10 pt-28">
+  <div class="mb-8">
+    <img src="/uploads/images/{{kelas.gambar}}" alt="Web Dev" class="w-full h-64 object-cover rounded shadow mb-4" />
+    <h1 class="text-3xl font-bold mb-2">{{kelas.nama_kelas}}</h1>
+    <p class="text-gray-700 mb-4">{{kelas.deskripsi}}</p>
+
+    <a href="/login" 
+       class="inline-block bg-gray-900 text-white shadow-lg rounded-xl px-6 py-3 text-lg font-medium transition transform hover:shadow-xl hover:bg-gray-500">
+      Daftar Kelas
+    </a>
+  </div>
+
+  <div class="mb-10">
+    <h2 class="text-2xl font-semibold mb-4">Materi Kelas</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <a href="/login" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center transition transform hover:shadow-xl hover:bg-gray-500">
+        <span class="text-lg font-medium">Materi PDF</span>
+      </a>
+      <a href="/login" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center transition transform hover:shadow-xl hover:bg-gray-500">
+        <span class="text-lg font-medium">Materi Video</span>
+      </a>
+      <a href="/login" class="bg-gray-900 text-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center transition transform hover:shadow-xl hover:bg-gray-500">
+        <span class="text-lg font-medium">Materi PPT</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="mb-10">
+  </div>
+</div>
+{{/if}}

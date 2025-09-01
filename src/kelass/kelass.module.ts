@@ -7,9 +7,11 @@ import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Absen } from 'src/entities/absen.entity';
 import { Kategori } from 'src/entities/kategori.entity';
+import { PertanyaansModule } from 'src/pertanyaans/pertanyaans.module';
+import { JawabanUsersModule } from 'src/jawaban_users/jawaban_users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori])],
+  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori]), PertanyaansModule, JawabanUsersModule],
   controllers: [KelassController],
   providers: [KelassService],
   exports: [KelassService],

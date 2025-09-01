@@ -8,6 +8,8 @@ import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Absen } from 'src/entities/absen.entity';
 import { Kategori } from 'src/entities/kategori.entity';
+import { JawabanUsersService } from 'src/jawaban_users/jawaban_users.service';
+import { PertanyaansService } from 'src/pertanyaans/pertanyaans.service';
 
 @Injectable()
 export class KelassService {
@@ -21,7 +23,8 @@ export class KelassService {
         @InjectRepository(Absen)
         private readonly absenRepository: Repository<Absen>,
         @InjectRepository(Kategori)
-        private readonly kategoriRepository: Repository<Kategori>
+        private readonly kategoriRepository: Repository<Kategori>,
+        private readonly jawabanUsersService: JawabanUsersService, private readonly pertanyaansService: PertanyaansService
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -74,6 +77,41 @@ async findMyCourse(userId: number) {
   });
 }
 
+async findPertemuanAndPertanyaan(kelasId: number, userId: number) {
+  const kelas = await this.findOne(kelasId);
+  if (!kelas) {
+    throw new NotFoundException(`Kelas dengan ID ${kelasId} tidak ditemukan`);
+  }
+
+  const pertemuan = await this.pertemuanRepository.find({
+    where: { kelas: { id: kelasId } },
+    relations: [
+      'kelas',
+      'absen.user',
+      'pertanyaan',
+      'pertanyaan.jawaban',
+      'pertanyaan.jawaban_user',
+      'pertanyaan.jawaban_user.user', 
+    ],
+  });
+
+  const detailPertemuan = pertemuan.map((p) => {
+    const answeredCount = p.pertanyaan.filter((q) =>
+      q.jawaban_user.some((ju) => ju.user.id === userId)
+    ).length;
+
+    return {
+      ...p,
+      answeredCount,
+      totalPertanyaan: p.pertanyaan.length,
+      isAnswered: answeredCount > 0,
+    };
+  });
+
+  return detailPertemuan;
+}
+
+
 async findPertemuan(kelasId: number){
     const kelas = await this.findOne(kelasId);
   if (!kelas) {
@@ -83,7 +121,7 @@ async findPertemuan(kelasId: number){
     where: {
       kelas: { id: kelasId }
     },
-    relations: ['kelas', 'absen.user'], 
+    relations: ['kelas', 'absen.user', 'pertanyaan', 'pertanyaan.jawaban', 'pertanyaan.jawaban_user'], 
   });
 }
 

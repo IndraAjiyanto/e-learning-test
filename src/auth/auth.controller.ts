@@ -19,7 +19,7 @@ export class AuthController {
   constructor (private readonly authService: AuthService){}
   @Get('login')
   async getLogin(@Res() res: Response, @Req() req:any) {
-    res.render('login', {error: req.flash('error')});
+    res.render('login');
   }
 
   @Get('daftar/:id')

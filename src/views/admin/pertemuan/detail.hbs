@@ -1,29 +1,38 @@
 <div class="max-w-5xl mx-auto px-6 py-10 pt-28" x-data="{ search: '' }">
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
-  <div class="mb-4">
-    <a href="/pertemuans" 
-       class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           class="h-5 w-5 mr-1" fill="none" 
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" 
-              stroke-linejoin="round" 
-              stroke-width="2" 
-              d="M15 19l-7-7 7-7" />
-      </svg>
-      Kembali
-    </a>
-  </div>
+    <div class="mb-4">
+      <a href="/pertemuans" 
+         class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="h-5 w-5 mr-1" fill="none" 
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M15 19l-7-7 7-7" />
+        </svg>
+        Kembali
+      </a>
+    </div>  
 
     <div class="flex items-start justify-between">
       <div>
         <h1 class="text-3xl font-bold mb-2">Pertemuan {{pertemuan.pertemuan_ke}}</h1>
-        <p class="text-gray-600 mb-1"><span class="font-semibold">Topik:</span> {{pertemuan.topik}}</p>
-        <p class="text-gray-600 mb-1"><span class="font-semibold">Tanggal:</span> {{formatTanggal pertemuan.tanggal}}</p>
-        <p class="text-gray-600 mb-1"><span class="font-semibold">Waktu :</span> {{formatTime pertemuan.waktu_awal}}-{{formatTime pertemuan.waktu_akhir}}</p>
-        <p class="text-gray-600"><span class="font-semibold">Kelas:</span> {{pertemuan.kelas.nama_kelas}}</p>
+        <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Topik:</span> {{pertemuan.topik}}
+        </p>
+        <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Tanggal:</span> {{formatTanggal pertemuan.tanggal}}
+        </p>
+        <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Waktu :</span> {{formatTime pertemuan.waktu_awal}} - {{formatTime pertemuan.waktu_akhir}}
+        </p>
+        <p class="text-gray-600">
+          <span class="font-semibold">Kelas:</span> {{pertemuan.kelas.nama_kelas}}
+        </p>
       </div>
+
       <div class="flex gap-3">
         <a href="/pertemuans/formEdit/{{pertemuan.id}}" 
            class="bg-gray-700 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-800 transition">
@@ -37,30 +46,45 @@
         </form>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="mt-4">
-      <a href="/materis/formCreate/{{pertemuan.id}}" 
-         class="inline-block bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-        Lihat Materi
-      </a>
-    </div>
+
+<div class="max-w-5xl mx-auto px-6" x-data="{ tab: 'absen', search: '' }">
+
+    <div class="flex space-x-4 mb-6">
+    <button @click="tab = 'absen'" 
+            :class="tab === 'absen' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Absensi
+    </button>
+    <button @click="tab = 'materi'" 
+            :class="tab === 'materi' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Materi
+    </button>
+    <button @click="tab = 'pertanyaan'" 
+            :class="tab === 'pertanyaan' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Pertanyaan
+    </button>
   </div>
 
-  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-2xl font-semibold mb-4">Kehadiran Peserta</h2>
-        <div class="flex items-center gap-3">
-      <input 
-        type="text" 
-        placeholder="Cari peserta" 
-        x-model="search"
-        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-      />
-      <a href="/absens/create/{{pertemuan.id}}"
-         class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-        Tambah Absen
-      </a>
+  <div x-show="tab === 'absen'">
+    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+      <h2 class="text-2xl font-semibold mb-4">Kehadiran Peserta</h2>
+      <div class="flex items-center gap-3">
+        <input type="text" 
+               placeholder="Cari peserta" 
+               x-model="search"
+               class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"/>
+        <a href="/absens/create/{{pertemuan.id}}"
+           class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+          Tambah Absen
+        </a>
+      </div>
     </div>
-  </div>
+
     <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-100">
@@ -73,23 +97,22 @@
         </thead>
         <tbody class="divide-y divide-gray-200">
           {{#each murid}}
-          <tr class="hover:bg-gray-50 transition" x-show="'{{username}} {{email}} {{status}}'.toLowerCase().includes(search.toLowerCase())">
+          <tr class="hover:bg-gray-50 transition" 
+              x-show="'{{username}} {{email}} {{status}}'.toLowerCase().includes(search.toLowerCase())">
             <td class="px-6 py-4 text-sm text-gray-800">{{username}}</td>
             <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
             <td class="px-6 py-4 text-sm">
               {{#each absen}}
-              <span class="font-medium">{{status}}</span>
+                <span class="font-medium">{{status}}</span>
               {{/each}}
             </td>
             <td>
-            {{#each absen}}
-            <a href="/absens/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
-            <form action="/absens/{{id}}?_method=DELETE" method="post" class="inline">
+              {{#each absen}}
+              <a href="/absens/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
+              <form action="/absens/{{id}}?_method=DELETE" method="post" class="inline">
               {{/each}}
-              <button type="submit" class=" text-gray-600 font-medium hover:underline">
-                Hapus
-              </button>
-            </form>
+                <button type="submit" class="text-gray-600 font-medium hover:underline">Hapus</button>
+              </form>
             </td>
           </tr>
           {{/each}}
@@ -97,4 +120,206 @@
       </table>
     </div>
   </div>
+
+  <div x-show="tab === 'materi'" class="space-y-12 py-6">
+
+    <h2 class="text-2xl font-bold mb-6">Materi untuk Pertemuan</h2>
+
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <h3 class="text-lg font-semibold mb-4">Materi PDF</h3>
+      {{#if materipdf.length}}
+      <ul class="space-y-2">
+        {{#each materipdf}}
+        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+          <span class="text-gray-800">{{judul}}</span>
+          <div class="flex space-x-2">
+            <a href="/materis/{{id}}/download" 
+               class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
+            <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
+              <button type="submit" 
+                      onclick="return confirm('Yakin hapus materi ini?')"
+                      class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
+            </form>
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+        <p class="text-gray-500 italic">Belum ada PDF.</p>
+      {{/if}}
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <h3 class="text-lg font-semibold mb-4">Materi Video</h3>
+      {{#if materivideo.length}}
+      <ul class="space-y-2">
+        {{#each materivideo}}
+        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+          <span class="text-gray-800">{{judul}}</span>
+          <div class="flex space-x-2">
+            <a href="/materis/{{id}}/download" 
+               class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
+            <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
+              <button type="submit" 
+                      onclick="return confirm('Yakin hapus materi ini?')"
+                      class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
+            </form>
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+        <p class="text-gray-500 italic">Belum ada Video.</p>
+      {{/if}}
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <h3 class="text-lg font-semibold mb-4">Materi PPT</h3>
+      {{#if materippt.length}}
+      <ul class="space-y-2">
+        {{#each materippt}}
+        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+          <span class="text-gray-800">{{judul}}</span>
+          <div class="flex space-x-2">
+            <a href="/materis/{{id}}/download" 
+               class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
+            <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
+              <button type="submit" 
+                      onclick="return confirm('Yakin hapus materi ini?')"
+                      class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
+            </form>
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+        <p class="text-gray-500 italic">Belum ada PPT.</p>
+      {{/if}}
+    </div>
+
+
+    <div>
+      <h2 class="text-2xl font-bold mb-6">Tambah Materi</h2>
+      <div x-data="{ tab: 'pdf' }" class="space-y-6">
+        
+        <div class="flex space-x-4">
+          <button @click="tab = 'pdf'" 
+                  :class="tab === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                  class="px-4 py-2 rounded-lg shadow transition">PDF</button>
+          <button @click="tab = 'video'" 
+                  :class="tab === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                  class="px-4 py-2 rounded-lg shadow transition">Video</button>
+          <button @click="tab = 'ppt'" 
+                  :class="tab === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                  class="px-4 py-2 rounded-lg shadow transition">PPT</button>
+        </div>
+
+        <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow-lg">
+          <form action="/materis/pdf/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Judul Materi</label>
+              <input type="text" name="judul" class="w-full border rounded-lg p-2" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Upload File PDF</label>
+              <input type="file" name="file" accept=".pdf" class="w-full border rounded-lg p-2" required>
+            </div>
+            <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Simpan PDF</button>
+          </form>
+        </div>
+
+        <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow-lg">
+          <form action="/materis/video/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Judul Materi</label>
+              <input type="text" name="judul" class="w-full border rounded-lg p-2" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Upload Video</label>
+              <input type="file" name="file" accept="video/*" class="w-full border rounded-lg p-2" required>
+            </div>
+            <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Simpan Video</button>
+          </form>
+        </div>
+
+        <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow-lg">
+          <form action="/materis/ppt/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Judul Materi</label>
+              <input type="text" name="judul" class="w-full border rounded-lg p-2" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Upload File PPT</label>
+              <input type="file" name="file" accept=".ppt,.pptx" class="w-full border rounded-lg p-2" required>
+            </div>
+            <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Simpan PPT</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+<div x-show="tab === 'pertanyaan'" class="mb-8 p-6">
+  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <h2 class="text-2xl font-semibold mb-4">Daftar Pertanyaan</h2>
+    <div class="flex items-center gap-3">
+      <a href="/pertanyaans/Formcreate/{{pertemuan.id}}"
+         class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Tambah Pertanyaan
+      </a>
+    </div>
+  </div>
+
+  {{#each pertanyaan}}
+  <div class="space-y-4">
+    <div x-data="{ open: false }" class="bg-gray-50 rounded-lg shadow">
+      <button @click="open = !open" 
+              class="w-full flex justify-between items-center px-6 py-4 text-left">
+        <span class="font-semibold text-gray-800">Pertanyaan</span>
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             :class="{'rotate-180': open}" 
+             class="h-5 w-5 transform transition-transform" 
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <div x-show="open" x-collapse class="px-6 pb-4">
+        <p class="mb-3 text-gray-700">{{this.pertanyaan_soal}}</p>
+        <ul class="space-y-2">
+          {{#each this.jawaban}}
+          <li class="flex items-center gap-3 p-2 border rounded-lg {{#if this.jawaban_benar}}bg-green-100 border-green-400{{else}}bg-white{{/if}}">
+            <span>{{this.jawaban}}</span>
+            {{#if this.jawaban_benar}}
+            <span class="ml-auto text-green-600 font-semibold text-sm">Benar</span>
+            {{/if}}
+          </li>
+          {{/each}}
+        </ul>
+
+        <div class="mt-4 flex gap-3">
+          <a href="/pertanyaans/formEdit/{{this.id}}" 
+             class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition">
+            Edit
+          </a>
+          <form action="/pertanyaans/{{this.id}}/{{../pertemuan.id}}?_method=DELETE" method="post">
+            <button onclick="return confirm('Yakin hapus pertanyaan ini?')" 
+                    class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+              Hapus
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/each}}
+</div>
+
+
+
+
 </div>

@@ -108,20 +108,32 @@ async findAll(@Res() res: Response, @Req() req: any) {
     res.redirect('/users/profile')
   }
 
-  @Roles('super_admin')
-  @Delete(':id')
-  async remove(@Param('id') id: number, @Res() res: Response, @Req() req:any) {
-    try {
-      await this.usersService.remove(id);
-      const user = await this.usersService.findOne(id)
-      await this.usersService.deleteProfileIfExists(user.profile);
-      req.flash('success', 'User berhasil dibuat');
-      res.redirect('/users')
-    } catch (error) {
-      req.flash('error', 'Gagal membuat user');
-      res.redirect('/users')
-    }
+@Roles('super_admin')
+@Delete(':id')
+async remove(
+  @Param('id') id: number,
+  @Res() res: Response,
+  @Req() req: any,
+) {
+  try {
 
+    const user = await this.usersService.findOne(id);
+    if (!user) {
+      req.flash('error', 'User tidak ditemukan');
+      return res.redirect('/users');
+    }
+    await this.usersService.deleteProfileIfExists(user.profile);
+
+
+    await this.usersService.remove(id); 
+
+    req.flash('success', 'User berhasil dihapus');
+    return res.redirect('/users');
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Gagal menghapus user');
+    return res.redirect('/users');
   }
+}
 
 }

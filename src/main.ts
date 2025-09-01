@@ -10,12 +10,14 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { RolesGuard } from './common/guards/roles.guard';
 import  flash from 'connect-flash';
+import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
   );
 
+   app.useGlobalFilters(new ForbiddenExceptionFilter());
   app.useStaticAssets(join(__dirname, '..', 'src', 'common','public'), {
     prefix: '/public/'
   });
@@ -59,6 +61,7 @@ hbs.registerHelper('hasUserAbsen', function(absenList, userId) {
     return absen.user && absen.user.id === userId;
   });
 });
+
   hbs.registerHelper('roles', (a, b) => a === b);
   hbs.registerPartials(join(__dirname, '..', 'src','views', 'partials'));
   app.set('view options', { layout: 'layouts/main' });
