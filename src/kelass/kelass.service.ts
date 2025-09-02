@@ -146,12 +146,26 @@ async findKategori(){
    return await this.kelasRepository.find({relations: ['user', 'kategori']})
   }
 
-  async findOne(id: number) {
-    const kelas =  this.kelasRepository.findOne({where: {id}, relations: ['user', 'kategori']})
+  async findOne(kelasId: number) {
+    const kelas =  await this.kelasRepository.findOne({where: {id: kelasId}, relations: ['user', 'kategori']})
     if(!kelas){
       throw new NotFoundException()
     }
     return kelas
+  }
+
+  async updateLaunch(kelasId: number, updateKelassDto: UpdateKelassDto){
+    const kelas = await this.findOne(kelasId)
+    if(!kelas){
+      throw new NotFoundException()
+    }
+    if(kelas.launch === true){
+      updateKelassDto.launch = false
+    } else if (kelas.launch === false){
+      updateKelassDto.launch = true
+    }
+    Object.assign(kelas, updateKelassDto)
+    return await this.kelasRepository.save(kelas)
   }
 
   async update(id: number, updateKelassDto: UpdateKelassDto) {

@@ -9,9 +9,10 @@ import { Absen } from 'src/entities/absen.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { PertanyaansModule } from 'src/pertanyaans/pertanyaans.module';
 import { JawabanUsersModule } from 'src/jawaban_users/jawaban_users.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori]), PertanyaansModule, JawabanUsersModule],
+  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori]), PertanyaansModule, JawabanUsersModule, UsersModule],
   controllers: [KelassController],
   providers: [KelassService],
   exports: [KelassService],

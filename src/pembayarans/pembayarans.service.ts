@@ -3,9 +3,12 @@ import { CreatePembayaranDto } from './dto/create-pembayaran.dto';
 import { UpdatePembayaranDto } from './dto/update-pembayaran.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pembayaran } from 'src/entities/pembayaran.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
+import { join } from 'path';
+import * as fs from 'fs';
+
 
 @Injectable()
 export class PembayaransService {
@@ -67,7 +70,7 @@ export class PembayaransService {
     }
 
   async checkPembayaran(userId:number, kelasId:number){
-    const pembayaran = await this.pembayaranRepository.find({where: {user: {id:userId}, kelas:{id:kelasId}}})
+    const pembayaran = await this.pembayaranRepository.find({where: {user: {id:userId}, kelas:{id:kelasId}, proses: Not('rejected'),}})
     if(pembayaran.length){
       return false
     }else{
@@ -94,7 +97,7 @@ export class PembayaransService {
   }
 
   async findAll() {
-    const pembayaran = await this.pembayaranRepository.find({relations: ['user', 'kelas']})
+    const pembayaran = await this.pembayaranRepository.find({relations: ['user', 'kelas', 'kelas.kategori']})
     if(!pembayaran){
       return
     }else{
@@ -119,6 +122,16 @@ export class PembayaransService {
         Object.assign(pembayaran, updatePembayaranDto)
         return await this.pembayaranRepository.save(pembayaran)
       }
+
+      async deletePaymentIfExists(filename: string) {
+          const fullPath = join('./uploads/images/payment', filename);
+      
+          if (fs.existsSync(fullPath)) {
+            fs.unlinkSync(fullPath);
+            return ; 
+          }
+        console.log('File not found in any folder.');
+        }
 
   remove(id: number) {
     return `This action removes a #${id} pembayaran`;

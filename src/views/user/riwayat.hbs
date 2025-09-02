@@ -1,43 +1,78 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28">
-  <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center md:text-left">Riwayat Pembayaran</h2>
+<section class="py-16 bg-gray-100" x-data="{ open: false, imageSrc: '' }">
+  <div class="container mx-auto px-4 max-w-5xl">
+    <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">
+      History Payment
+    </h2>
 
-  {{#if pembayaran.length}}
-    <ul class="space-y-4">
-      {{#each pembayaran}}
-        <li class="p-4 rounded-xl shadow flex justify-between items-center 
-          {{#if (roles this.proses 'acc')}} bg-green-100 border-l-4 border-green-500 
-          {{else if (roles this.proses 'proces')}} bg-yellow-100 border-l-4 border-yellow-500 
-          {{else}} bg-red-100 border-l-4 border-red-500 {{/if}}">
+    {{#if pembayaran.length}}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {{#each pembayaran}}
+          <div 
+            class="rounded-2xl shadow-md overflow-hidden border transition transform hover:scale-105 hover:shadow-lg
+              {{#if (roles this.proses 'acc')}} bg-green-50 border-green-300
+              {{else if (roles this.proses 'proces')}} bg-yellow-50 border-yellow-300
+              {{else}} bg-red-50 border-red-300 {{/if}}">
 
-          <div>
-            <div class="font-semibold text-lg">Kelas: {{this.kelas.nama_kelas}}</div>
-            <div class="text-sm text-gray-700">Tanggal: {{this.createdAt}}</div>
-            <div class="text-sm">
-              Status: 
-              {{#if (roles this.proses 'acc')}}
-                <span class="text-green-700 font-bold">ACC</span>
-              {{else if (roles this.proses 'proces')}}
-                <span class="text-yellow-700 font-bold">PROCES</span>
-              {{else}}
-                <span class="text-red-700 font-bold">REJECTED</span>
-              {{/if}}
+            <div class="p-6 space-y-3">
+              <h3 class="text-lg font-bold text-gray-900">
+                {{this.kelas.nama_kelas}}
+              </h3>
+              <p class="text-sm text-gray-600">
+                Date: {{this.createdAt}}
+              </p>
+
+              <p class="text-sm font-medium">
+                Status:
+                {{#if (roles this.proses 'acc')}}
+                  <span class="text-green-700 font-bold">ACC</span>
+                {{else if (roles this.proses 'proces')}}
+                  <span class="text-yellow-700 font-bold">PROCES</span>
+                {{else}}
+                  <span class="text-red-700 font-bold">REJECTED</span>
+                {{/if}}
+              </p>
+
+              <div class="flex gap-3 pt-4">
+                <button 
+                  @click="open = true; imageSrc = '/uploads/images/payment/{{this.file}}'" 
+                  class="flex-1 py-2 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-700 transition transform hover:scale-105">
+                  View proof of payment
+                </button>
+                <a 
+                  href="/kelass/{{this.kelas.id}}" 
+                  class="flex-1 py-2 rounded-lg bg-white text-gray-800 border font-medium text-sm hover:bg-gray-50 transition transform hover:scale-105 text-center">
+                  View class
+                </a>
+              </div>
             </div>
           </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="text-center text-gray-600">
+        No payment history yet
+      </div>
+    {{/if}}
+  </div>
 
-          <div>
-            <a href="/uploads/{{this.file}}" target="_blank" 
-               class="px-4 py-2 rounded-lg shadow bg-white border hover:bg-gray-50 text-sm font-medium">
-              Lihat Bukti
-            </a>
-            <a href="/kelass/{{this.kelas.id}}" target="_blank" 
-               class="px-4 py-2 rounded-lg shadow bg-white border hover:bg-gray-50 text-sm font-medium">
-              Lihat Kelas
-            </a>
-          </div>
-        </li>
-      {{/each}}
-    </ul>
-  {{else}}
-    <div class="text-center text-gray-600">Belum ada riwayat pembayaran.</div>
-  {{/if}}
-</div>
+  <div 
+    x-show="open" 
+    class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+    x-transition
+    @click.self="open = false"
+    x-cloak>
+
+    <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-4 relative">
+      <button 
+        @click="open = false" 
+        class="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-2xl">
+        &times;
+      </button>
+
+      <img 
+        :src="imageSrc" 
+        alt="Bukti Pembayaran" 
+        class="rounded-lg w-full max-h-[80vh] object-contain">
+    </div>
+  </div>
+</section>

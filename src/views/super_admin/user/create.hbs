@@ -1,12 +1,12 @@
 <div class="pt-28 py-20">
   <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Tambah User Baru</h2>
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Create new users</h2>
 
     <form action="/users" method="post" class="space-y-6" enctype="multipart/form-data">
 
  <div x-data="{ previewUrl: null }" class="space-y-3">
   <label for="profile" class="block text-sm font-medium text-gray-700 mb-1">
-    Foto Profile
+    Photos Profile
   </label>
   <input 
     type="file" 
@@ -22,7 +22,7 @@
     <div class="relative w-32 h-32">
       <img 
         :src="previewUrl" 
-        alt="Preview Foto" 
+        alt="Preview Photos" 
         class="w-32 h-32 object-cover rounded-lg border border-gray-300"
       >
 
@@ -53,11 +53,11 @@
       </div>
 
 <div>
-  <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Pilih Role</label>
+  <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
   <select name="role" id="role" 
     class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
     
-    <option value="" selected disabled>-- Pilih Role --</option>
+    <option value="" selected disabled>-- Select Role --</option>
     <option value="admin">Admin</option>
     <option value="user">User</option>
     <option value="super_admin">Super Admin</option>
@@ -67,11 +67,11 @@
 
       <div class="flex gap-3">
         <button type="submit" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-          Tambah
+          Create
         </button>
         <a href="/users"
           class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-          Batal
+          Cancel
         </a>
       </div>
     </form>

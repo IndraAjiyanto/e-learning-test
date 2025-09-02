@@ -1,63 +1,78 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28" x-data="{ open: false, imageSrc: '' }">
-  <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center md:text-left">Riwayat Pembayaran</h2>
+<div class="max-w-6xl mx-auto px-6 py-10 pt-28" 
+     x-data="{ open: false, imageSrc: '' }">
 
-  {{#if pembayaran.length}}
-    <ul class="space-y-4">
-      {{#each pembayaran}}
-        <li class="p-4 rounded-xl shadow flex justify-between items-center 
-          {{#if (roles this.proses 'acc')}} bg-green-100 border-l-4 border-green-500 
-          {{else if (roles this.proses 'proces')}} bg-yellow-100 border-l-4 border-yellow-500 
-          {{else}} bg-red-100 border-l-4 border-red-500 {{/if}}">
+  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Payment History</h2>
+  </div>
 
-          <div>
-            <div class="font-semibold text-lg">Kelas: {{this.kelas.nama_kelas}}</div>
-            <div class="font-semibold text-lg">Nama: {{this.user.username}}</div>
-            <div class="text-sm text-gray-700">Tanggal: {{this.createdAt}}</div>
-            <div class="text-sm">
-              Status: 
+  <div class="overflow-x-auto bg-white shadow-lg rounded-xl p-6">
+    {{#if pembayaran.length}}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{#each pembayaran}}
+          <div 
+            class="rounded-xl border p-6 relative transition hover:shadow-lg hover:scale-[1.01]
+              {{#if (roles this.proses 'acc')}} bg-green-50 border-green-300
+              {{else if (roles this.proses 'proces')}} bg-yellow-50 border-yellow-300
+              {{else}} bg-red-50 border-red-300 {{/if}}">
+
+            <!-- Status badge -->
+            <div class="absolute top-3 right-3">
               {{#if (roles this.proses 'acc')}}
-                <span class="text-green-700 font-bold">ACC</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-200 text-green-800">ACC</span>
               {{else if (roles this.proses 'proces')}}
-                <span class="text-yellow-700 font-bold">PROCES</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-200 text-yellow-800">PROCES</span>
               {{else}}
-                <span class="text-red-700 font-bold">REJECTED</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-200 text-red-800">REJECTED</span>
+              {{/if}}
+            </div>
+
+            <!-- Content -->
+            <h3 class="text-lg font-bold text-gray-900">{{this.kelas.nama_kelas}}</h3>
+            <p class="text-sm text-gray-600">Category: {{this.kelas.kategori.nama_kategori}}</p>
+            <p class="text-sm text-gray-600">Name: {{this.user.username}}</p>
+            <p class="text-sm text-gray-600">Date: {{this.createdAt}}</p>
+
+            <div class="flex flex-wrap gap-3 pt-4">
+              <button 
+                @click="open = true; imageSrc = '/uploads/images/payment/{{this.file}}'" 
+                class="flex-1 py-2 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-700 transition">
+                View Proof
+              </button>
+
+              {{#if (roles this.proses 'proces')}}
+                <form action="/pembayarans/acc/{{this.id}}?_method=PATCH" method="post" class="flex-1">
+                  <button type="submit"
+                    class="w-full py-2 rounded-lg bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition">
+                    ACC
+                  </button>
+                </form>
+                <form action="/pembayarans/rejected/{{this.id}}?_method=PATCH" method="post" class="flex-1">
+                  <button type="submit"
+                    class="w-full py-2 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition">
+                    Reject
+                  </button>
+                </form>
               {{/if}}
             </div>
           </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="text-center text-gray-600 py-10">No payment history yet</div>
+    {{/if}}
+  </div>
 
-          <div class="flex gap-2">
-            <button 
-              @click="open = true; imageSrc = '/uploads/{{this.file}}'" 
-              class="px-4 py-2 rounded-lg shadow bg-white border hover:bg-gray-50 text-sm font-medium">
-              Lihat Bukti
-            </button>
-
-            {{#if (roles this.proses 'proces')}}
-              <form action="/pembayarans/{{this.id}}?_method=PATCH" method="post">
-                <button type="submit"
-                  class="px-4 py-2 rounded-lg shadow bg-white border hover:bg-gray-50 text-sm font-medium">
-                  ACC
-                </button>
-              </form>
-            {{/if}}
-          </div>
-        </li>
-      {{/each}}
-    </ul>
-  {{else}}
-    <div class="text-center text-gray-600">Belum ada riwayat pembayaran.</div>
-  {{/if}}
-
+  <!-- Modal -->
   <div x-show="open" 
        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
        x-transition
        @click.self="open = false">
 
-    <div class="bg-white rounded-xl shadow-lg max-w-3xl w-full p-4 relative">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-4 relative">
       <button @click="open = false" 
-              class="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl">&times;</button>
+              class="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
 
-      <img :src="imageSrc" alt="Bukti Pembayaran" class="rounded-lg w-full max-h-[80vh] object-contain">
+      <img :src="imageSrc" alt="Payment Proof" class="rounded-lg w-full max-h-[80vh] object-contain">
     </div>
   </div>
 </div>

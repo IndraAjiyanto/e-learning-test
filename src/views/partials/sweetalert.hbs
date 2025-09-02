@@ -2,7 +2,7 @@
 {{#if success}}
 Swal.fire({
     icon: 'success',
-    title: 'Berhasil!',
+    title: 'Success!',
     text: '{{success}}',
     toast: true,
     position: 'bottom-start',
@@ -28,7 +28,7 @@ Swal.fire({
 {{#if error}}
 Swal.fire({
     icon: 'error',
-    title: 'Gagal!',
+    title: 'Fail!',
     text: '{{error}}',
     toast: true,
     position: 'bottom-start',
@@ -42,13 +42,13 @@ Swal.fire({
           function confirmDelete(button) {
     const form = button.closest("form");
 Swal.fire({
-  title: "Apakah kamu yakin?",
-  text: "Data ini akan dihapus!",
+  title: "Are you sure?",
+  text: "This data will be deleted!",
   icon: "warning",
   showCancelButton: true,
   buttonsStyling: false,
-  confirmButtonText: "Ya, hapus!",
-  cancelButtonText: "Batal",
+  confirmButtonText: "Yes, delete!",
+  cancelButtonText: "cancel",
   customClass: {
     confirmButton: "px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition",
     cancelButton: "px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition",

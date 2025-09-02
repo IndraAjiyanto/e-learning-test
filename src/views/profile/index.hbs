@@ -1,106 +1,145 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28">
+<div class="max-w-5xl mx-auto px-6 py-10 pt-28" x-data="profilePreview()">
 
-  <div class="mb-8 flex items-center gap-6">
+  <div class="mb-10 flex flex-col sm:flex-row items-center gap-6">
     <div class="relative">
-      <img src="/uploads/images/{{user.profile}}" alt="Foto Profil"
-           class="w-28 h-28 rounded-full border-4 border-base-300 shadow" />
+      <img :src="previewUrl || '/uploads/images/profile/{{user.profile}}'" 
+           alt="Foto Profil"
+           class="w-28 h-28 rounded-full border-4 border-gray-200 shadow-lg object-cover" />
 
       <label for="profile-upload"
              class="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow cursor-pointer hover:bg-gray-100 transition">
         <svg xmlns="http://www.w3.org/2000/svg"
              class="h-5 w-5 text-gray-600"
              fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M15.232 5.232l3.536 3.536M9 11l6.586-6.586
                    a2 2 0 012.828 0l1.172 1.172a2 2 0 010 2.828L13 15
                    m-4 0h4m-4 0v4m0-4H5m4 0v-4" />
         </svg>
       </label>
-      <form action="/users/update/profile/{{user.id}}?_method=PATCH" method="post" enctype="multipart/form-data">
-        <input id="profile-upload" type="file" name="profile" accept="image/*" class="hidden" onchange="this.form.submit()" />
+
+      <form x-ref="profileForm" action="/users/update/profile/{{user.id}}?_method=PATCH" method="post" enctype="multipart/form-data">
+        <input id="profile-upload" type="file" name="profile" accept="image/*" class="hidden"
+               x-ref="fileInput"
+               @change="
+                 previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : '';
+                 if(previewUrl) open = true;
+               " />
       </form>
     </div>
 
-    <div>
-      <h1 class="text-3xl font-bold mb-1">{{user.username}}</h1>
+    <div class="text-center sm:text-left">
+      <h1 class="text-3xl text-gray-900 font-bold mb-1">{{user.username}}</h1>
       <p class="text-gray-600">{{user.email}}</p>
+    </div>
+  </div>
+
+  <div x-show="open" 
+       class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
+       x-transition
+       @click.self="closeModal()">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-4 relative">
+      <button @click="closeModal()" 
+              class="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
+
+      <img :src="previewUrl" alt="Preview Profile" 
+           class="rounded-lg w-full object-contain max-h-[70vh] mt-4">
+
+      <div class="flex justify-end gap-3 mt-4">
+        <button @click="closeModal()"
+                class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          Batal
+        </button>
+
+        <button @click="$refs.profileForm.submit()" 
+                class="px-6 py-2 rounded-lg bg-gray-900 text-white shadow hover:bg-gray-700 transition">
+          Simpan
+        </button>
+      </div>
     </div>
   </div>
 
   <div class="mb-10">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-semibold">Informasi Akun</h2>
+      <h2 class="text-2xl font-semibold text-gray-900">Account Information</h2>
       <div class="flex gap-2">
-        <a href="/users/profile/info_akun" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">Edit Info</a>
-        <a href="/users/profile/password" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">Ganti Password</a>
+        <a href="/users/profile/info_akun" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">Edit Info</a>
+        <a href="/users/profile/password" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">Change Password</a>
       </div>
     </div>
 
-    <div class="card bg-base-200 shadow-lg">
-      <div class="card-body grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <p class="text-sm text-gray-500">Username</p>
-          <p class="text-lg font-medium">{{user.username}}</p>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500">Email</p>
-          <p class="text-lg font-medium">{{user.email}}</p>
-        </div>
-
-        {{#if (roles user.role "user")}}
-          {{#if user.biodata}}
-            <div>
-              <p class="text-sm text-gray-500">Nama Lengkap</p>
-              <p class="text-lg font-medium">{{user.biodata.nama_lengkap}}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">No</p>
-              <p class="text-lg font-medium">{{user.biodata.no}}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Jenis Kelamin</p>
-              <p class="text-lg font-medium">{{user.biodata.jenis_kelamin}}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Domisili Kota/Kabupaten</p>
-              <p class="text-lg font-medium">{{user.biodata.kota}}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Pendidikan Terakhir</p>
-              <p class="text-lg font-medium">{{user.biodata.pendidikan}}</p>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Program Studi</p>
-              <p class="text-lg font-medium">{{user.biodata.program_studi}}</p>
-            </div>
-          {{else}}
-            <div class="col-span-2">
-              <div class="p-4 rounded-lg bg-yellow-100 text-yellow-800 flex items-center justify-between">
-                <div>
-                  <p class="font-semibold">Biodata belum lengkap</p>
-                  <p class="text-sm">Lengkapi biodata agar profilmu lebih profesional.</p>
-                </div>
-                <a href="/biodatas/create" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">Lengkapi Biodata</a>
-              </div>
-            </div>
-          {{/if}}
-        {{/if}}
+    <div class="bg-white shadow-lg rounded-xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <p class="text-sm text-gray-500">Username</p>
+        <p class="text-lg text-gray-900 font-medium">{{user.username}}</p>
       </div>
+      <div>
+        <p class="text-sm text-gray-500">Email</p>
+        <p class="text-lg text-gray-900 font-medium">{{user.email}}</p>
+      </div>
+
+      {{#if (roles user.role "user")}}
+        {{#if user.biodata}}
+          <div>
+            <p class="text-sm text-gray-500">Nama Lengkap</p>
+            <p class="text-lg font-medium">{{user.biodata.nama_lengkap}}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">No</p>
+            <p class="text-lg font-medium">{{user.biodata.no}}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Jenis Kelamin</p>
+            <p class="text-lg font-medium">{{user.biodata.jenis_kelamin}}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Domisili</p>
+            <p class="text-lg font-medium">{{user.biodata.kota}}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Pendidikan Terakhir</p>
+            <p class="text-lg font-medium">{{user.biodata.pendidikan}}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Program Studi</p>
+            <p class="text-lg font-medium">{{user.biodata.program_studi}}</p>
+          </div>
+        {{else}}
+          <div class="col-span-2">
+            <div class="p-4 rounded-lg bg-yellow-100 text-yellow-800 flex items-center justify-between">
+              <div>
+                <p class="font-semibold">Biodata belum lengkap</p>
+                <p class="text-sm">Lengkapi biodata agar profilmu lebih profesional.</p>
+              </div>
+              <a href="/biodatas/create" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">Lengkapi Biodata</a>
+            </div>
+          </div>
+        {{/if}}
+      {{/if}}
     </div>
   </div>
 
   {{#if (roles user.role "user")}}
   <div class="mb-10">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-semibold">Portofolio</h2>
-    </div>
-    <div class="card bg-base-200 shadow-lg">
-      <div class="card-body">
-        <p class="text-gray-600">Kamu belum menambahkan portofolio.</p>
-      </div>
+    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Portfolio</h2>
+    <div class="bg-white shadow-lg rounded-xl p-6">
+      <p class="text-gray-600">Kamu belum menambahkan portofolio.</p>
     </div>
   </div>
   {{/if}}
+
 </div>
+
+<script>
+function profilePreview() {
+  return {
+    previewUrl: '',
+    open: false,
+    closeModal() {
+      this.open = false;
+      this.previewUrl = '';
+      this.$refs.fileInput.value = null;
+    }
+  }
+}
+</script>

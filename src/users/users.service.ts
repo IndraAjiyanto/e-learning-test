@@ -35,16 +35,19 @@ export class UsersService {
     return await this.userRepository.find({where: {email: Not('super@gmail.com')}})
   }
 
-  async findOne(id: number) {
-    const user = await this.userRepository.findOne({where: {id}, relations: ['biodata']})
+  async findOne(userId: number) {
+    const user = await this.userRepository.findOne({where: {id: userId}, relations: ['biodata']})
     if(!user){
       throw new NotFoundException()
     }
     return user
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.findOne(id)
+  async update(userId: number, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(userId)
+    if(!user){
+      throw new NotFoundException()
+    }
     Object.assign(user, updateUserDto)
     return await this.userRepository.save(user)
   }
@@ -72,14 +75,14 @@ async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
   return { message: 'Password berhasil diubah' };
 }
 
-async updateProfile(id: number, updateProfileDto: UpdateProfileDto){
-  const user = await this.findOne(id)
+async updateProfile(userId: number, updateProfileDto: UpdateProfileDto){
+  const user = await this.findOne(userId)
   Object.assign(user, updateProfileDto)
   return await this.userRepository.save(user)
 }
 
 async deleteProfileIfExists(filename: string) {
-    const fullPath = join('./uploads/images', filename);
+    const fullPath = join('./uploads/images/profile', filename);
 
     if (fs.existsSync(fullPath)) {
       fs.unlinkSync(fullPath);

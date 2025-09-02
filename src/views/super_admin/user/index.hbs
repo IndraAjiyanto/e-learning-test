@@ -1,18 +1,30 @@
 <div class="max-w-5xl mx-auto px-6 py-10 pt-28" 
      x-data="userTable({ users: {{json users}} })">
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Daftar User</h2>
+    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Users</h2>
 
     <div class="flex items-center gap-3">
-      <input 
-        type="text" 
-        placeholder="Cari user..." 
-        x-model="search"
-        class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-      />
+      <div class="relative w-full md:w-64">
+        <input 
+          type="text" 
+          placeholder="Search user..." 
+          x-model="searchInput"
+          @input="search = searchInput; pageNumber=0"
+          class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
+        />
+        <button 
+          @click="search = searchInput; pageNumber=0"
+          class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+          </svg>
+        </button>
+      </div>
+
       <a href="/users/formCreate" 
          class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-        Tambah User
+        Create User
       </a>
     </div>
   </div>
@@ -22,10 +34,11 @@
       <thead class="bg-gray-100">
         <tr>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Profile</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">action</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
@@ -33,6 +46,11 @@
         <tr class="hover:bg-gray-50 transition"
             x-show="filteredUsers.includes('{{id}}')">
           <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
+                    <td class="px-6 py-4 text-sm text-gray-800">
+  <img src="/uploads/images/profile/{{profile}}" 
+       alt="{{username}}" 
+       class="w-12 h-12 rounded-full object-cover border" />
+</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{username}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{role}}</td>
@@ -40,7 +58,7 @@
             <a href="/users/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
             <form action="/users/{{id}}?_method=DELETE" method="post" class="inline">
               <button type="button" class="text-gray-600 font-medium hover:underline" onclick="confirmDelete(this)">
-                Hapus
+                Delete
               </button>
             </form>
           </td>
@@ -72,32 +90,29 @@
 <script>
 function userTable({ users }) {
   return {
+    searchInput: "",
     search: "",
     pageNumber: 0,
     size: 5,
     users,
+    amount: 0,
     get filteredUsers() {
       let filtered = this.users.filter(u =>
         (`${u.username} ${u.email} ${u.role}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
 
-      this.total = filtered.length;
+      this.amount = filtered.length;
 
       const start = this.pageNumber * this.size;
       const end = start + this.size;
       return filtered.slice(start, end).map(u => u.id.toString());
     },
-    total: 0,
-    pages() {
-      return Array.from({ length: this.pageCount() });
-    },
-    pageCount() {
-      return Math.ceil(this.total / this.size);
-    },
+    pages() { return Array.from({ length: this.pageCount() }); },
+    pageCount() { return Math.ceil(this.amount / this.size); },
     nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
     prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
-    viewPage(index) { this.pageNumber = index; }
+    viewPage(index) { this.pageNumber = index; },
   }
 }
 </script>

@@ -6,7 +6,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigPayment } from 'src/common/config/multer.config';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('pembayarans')
@@ -16,7 +16,7 @@ export class PembayaransController {
   @Roles('user')
   @Post(':userId/:kelasId')
   @UseInterceptors(FileInterceptor('file', multerConfigPayment))
-  async create(@Param('userId') userId: number, @Param('kelasId') kelasId: number, @Body() createPembayaranDto: CreatePembayaranDto,   @UploadedFile() file: Express.Multer.File, @Res() res:Response, @Req() req:any
+  async create(@Param('userId') userId: number, @Param('kelasId') kelasId: number, @Body() createPembayaranDto: CreatePembayaranDto,   @UploadedFile() file: Express.Multer.File, @Res() res:Response, @Req() req:Request
   ) {
     try {
     const kelas = await this.pembayaransService.findKelas(kelasId)
@@ -46,6 +46,7 @@ export class PembayaransController {
     createPembayaranDto.proses = 'proces'
     const pembayaran = await this.pembayaransService.create(createPembayaranDto);
     if(pembayaran == false){
+        await this.pembayaransService.deletePaymentIfExists(createPembayaranDto.file);
         req.flash('info', 'anda sudah mengirimkan bukti pembayaran, silahkan tunggu info selanjutnya dari admin')
         res.redirect(`/pembayarans/riwayat/${userId}`)
     }else{
@@ -61,14 +62,14 @@ export class PembayaransController {
 
   @Roles('user')
   @Get('riwayat/:userId')
-  async riwayat(@Param('userId') userId: number, @Res() res:Response, @Req() req:any){
+  async riwayat(@Param('userId') userId: number, @Res() res:Response, @Req() req:Request){
     const pembayaran = await this.pembayaransService.findPembayaran(userId)
     res.render('user/riwayat', {user: req.user, pembayaran}) 
   }
 
   @Roles('user')
   @Get('detail/:kelasId')
-  async detail(@Param('kelasId') kelasId:number, @Res() res:Response, @Req() req:any){
+  async detail(@Param('kelasId') kelasId:number, @Res() res:Response, @Req() req:Request){
     const kelas = await this.pembayaransService.findKelas(kelasId)
     res.render('user/pembayaran', {user: req.user, kelas})
   }
@@ -88,21 +89,31 @@ export class PembayaransController {
   }
 
   @Roles('super_admin')
-  @Patch(':pembayaranId')
-  async update(@Param('pembayaranId') pembayaranId: number, @Body() updatePembayaranDto: UpdatePembayaranDto, @Res() res:Response, @Req() req:any) {
+  @Patch(':proses/:pembayaranId')
+  async update(@Param('pembayaranId') pembayaranId: number, @Param('proses') proses: string, @Body() updatePembayaranDto: UpdatePembayaranDto, @Res() res:Response, @Req() req:Request) {
     try {
     const pembayaran = await this.pembayaransService.findOne(pembayaranId)
     if(!pembayaran){
       return null
     }
+    if(proses === 'acc'){
     updatePembayaranDto.file = pembayaran['file']
     updatePembayaranDto.userId = pembayaran['user']['id']
     updatePembayaranDto.kelasId = pembayaran['kelas']['id']
     updatePembayaranDto.proses = 'acc'
     await this.pembayaransService.update(pembayaranId,updatePembayaranDto)
-  await this.pembayaransService.addUserToKelas(pembayaran['user']['id'], pembayaran['kelas']['id']);
-    req.flash('success', 'proses pembayaran berhasil diubah')
+    await this.pembayaransService.addUserToKelas(pembayaran['user']['id'], pembayaran['kelas']['id']);
+    req.flash('success', 'proces successfully change acc')
     res.redirect('/pembayarans')
+    } else if (proses === 'rejected'){
+      updatePembayaranDto.file = pembayaran['file']
+      updatePembayaranDto.userId = pembayaran['user']['id']
+      updatePembayaranDto.kelasId = pembayaran['kelas']['id']
+      updatePembayaranDto.proses = 'rejected'
+      await this.pembayaransService.update(pembayaranId,updatePembayaranDto)
+      req.flash('success', 'proces successfully change rejected')
+      res.redirect('/pembayarans')
+    }
     } catch (error) {
         req.flash('error', 'proses pembayaran gagal diubah')
         res.redirect('/pembayarans')
@@ -110,7 +121,7 @@ export class PembayaransController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.pembayaransService.remove(+id);
   }
 }
