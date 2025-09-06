@@ -12,25 +12,26 @@
               stroke-width="2" 
               d="M15 19l-7-7 7-7" />
       </svg>
-      Kembali
+      Back
     </a>
   </div>
 
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-3xl font-bold mb-1">{{kelas.nama_kelas}}</h1>
+        <h1 class="text-3xl text-gray-900 font-bold mb-1">{{kelas.nama_kelas}}</h1>
         <p class="text-gray-700">{{kelas.deskripsi}}</p>
       </div>
       <div class="flex items-center gap-3">
         <a href="/kelass/edit/{{kelas.id}}" 
-           class="bg-gray-700 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-800 transition">
-          Edit Kelas
+           class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+          Edit Class
         </a>
-        <form action="/kelass/{{id}}?_method=DELETE" method="post">
+        <form action="/kelass/{{kelas.id}}?_method=DELETE" method="post">
           <button 
-            class="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition"
-            onclick="return confirm('Yakin hapus kelas ini?')">
-            Hapus
+          type="button"
+            class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-400 transition"
+            onclick="confirmDelete(this)">
+            Delete
           </button>
         </form>
       </div>
@@ -38,11 +39,15 @@
 
     <div>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-semibold">Pertemuan</h2>
+        <h2 class="text-2xl text-gray-900 font-semibold">Session</h2>
+        {{#if pertemuanTerakhir}}
+        tidak bisa menambhakan seesion lagi karena sudah pertemuan teralhir
+        {{else}}
         <a href="/pertemuans/formAdd/{{kelas.id}}" 
-           class="bg-gray-700 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-800 transition">
-          Tambah Pertemuan
+           class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+          Create session
         </a>
+        {{/if}}
       </div>
 
       {{#if pertemuan.length}}
@@ -50,21 +55,21 @@
           {{#each pertemuan}}
             <li class="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-sm">
               <div>
-                <p class="font-semibold">Pertemuan {{this.pertemuan_ke}}: {{this.topik}}</p>
+                <p class="font-semibold text-gray-900">Session {{this.pertemuan_ke}}: {{this.topik}}</p>
                 <p class="text-sm text-gray-600">{{formatTanggal this.tanggal}}</p>
                 <p class="text-sm text-gray-600">{{formatTime this.waktu_awal}} - {{formatTime this.waktu_akhir}}</p>
               </div>
               <div class="flex items-center gap-3">
                 <a href="/pertemuans/{{this.id}}" 
                    class="text-gray-600 hover:text-gray-800 font-medium">
-                  Lihat
+                  view
                 </a>
               </div>
             </li>
           {{/each}}
         </ul>
       {{else}}
-        <p class="text-gray-600 italic">Belum ada pertemuan yang tersedia.</p>
+        <p class="text-gray-600 italic">No sessions are available yet</p>
       {{/if}}
     </div>
   </div>

@@ -4,7 +4,7 @@ import { CreatePertemuanDto } from './dto/create-pertemuan.dto';
 import { UpdatePertemuanDto } from './dto/update-pertemuan.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { MaterisService } from 'src/materis/materis.service';
 
 @UseGuards(AuthenticatedGuard)
@@ -14,19 +14,33 @@ export class PertemuansController {
 
   @Roles('admin')
   @Post()
-  async create(@Body() createPertemuanDto: CreatePertemuanDto, @Res() res:Response) {
-    createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(createPertemuanDto.kelasId)
-    await this.pertemuansService.create(createPertemuanDto);
-    res.redirect('pertemuans')
+  async create(@Body() createPertemuanDto: CreatePertemuanDto, @Res() res:Response, @Req() req:Request) {
+    try {
+        createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(createPertemuanDto.kelasId)
+        await this.pertemuansService.create(createPertemuanDto);
+        req.flash('success', 'session succesfuly create')
+        res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.kelasId}`)
+    } catch (error) {
+              req.flash('error', 'session unsucces create')
+        res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.kelasId}`)
+    }
+
   }
 
   @Roles('admin')
-  @Post(':id')
-  async createPertemuan(@Body() createPertemuanDto: CreatePertemuanDto, @Res() res:Response, @Param('id') id:number){
-    createPertemuanDto.kelasId = id
-    createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(id)
+  @Post(':kelasId')
+  async createPertemuan(@Body() createPertemuanDto: CreatePertemuanDto, @Res() res:Response, @Param('kelasId') kelasId:number, @Req() req:Request){
+    try {
+          createPertemuanDto.kelasId = kelasId
+    createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(kelasId)
     await this.pertemuansService.create(createPertemuanDto);
-    res.redirect(`/kelass/detail/kelas/admin/${id}`)
+    req.flash('success', 'session succesfuly create')
+    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
+    } catch (error) {
+              req.flash('error', 'session unsucces create')
+    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
+    }
+
   }
 
   @Roles('admin')

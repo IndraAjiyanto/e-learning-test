@@ -29,11 +29,22 @@ export class PertemuansService {
     if(!kelas){
       throw new NotFoundException('kelas ini tidak ada')
     }
+    const pertemuan = await this.pertemuanRepository.findOne({where: {pertemuan_ke: createPertemuanDto.pertemuan_ke - 1, kelas: {id: kelas.id}}})
+    if(!pertemuan){
+      throw new NotFoundException('pertemuan ini tidak ada')
+    }
+    if(!pertemuan.akhir){
+      if(createPertemuanDto.akhir_check === 'true'){
+        createPertemuanDto.akhir = true
+      }
     const user = await this.pertemuanRepository.create({
       ...createPertemuanDto,
       kelas: kelas,
     })
     return await this.pertemuanRepository.save(user)
+    }else{
+      throw new Error('tidak dapat menambahkan pertemuan lagi')
+    }
   }
 
   async findAll() {
@@ -94,7 +105,7 @@ async findPertanyaan(pertemuanId: number){
   async findOne(id: number) {
     const pertemuan = await this.pertemuanRepository.findOne({
       where: {id},
-      relations: ['kelas', 'absen', 'materi']
+      relations: ['kelas', 'absen', 'materi', 'tugas']
     })
     if (!pertemuan) {
       throw new NotFoundException(`Pertemuan tidak ditemukan`);

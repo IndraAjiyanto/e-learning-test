@@ -1,4 +1,5 @@
-import { IsString, IsDateString, IsOptional, IsInt } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsString, IsDateString, IsInt, IsBooleanString } from 'class-validator';
 
 export class CreatePertemuanDto {
   @IsString()
@@ -15,6 +16,12 @@ export class CreatePertemuanDto {
 
   @IsString()
   waktu_akhir: string;
+
+  @IsBooleanString()
+  akhir: boolean
+
+  @IsString()
+  akhir_check: string
 
   @IsInt()
   kelasId: number;

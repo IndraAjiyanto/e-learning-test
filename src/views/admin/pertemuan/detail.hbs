@@ -2,7 +2,7 @@
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
     <div class="mb-4">
-      <a href="/pertemuans" 
+      <a href="/kelass/detail/kelas/admin/{{pertemuan.kelas.id}}" 
          class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
         <svg xmlns="http://www.w3.org/2000/svg" 
              class="h-5 w-5 mr-1" fill="none" 
@@ -68,6 +68,13 @@
             class="px-4 py-2 rounded-lg shadow transition">
       Pertanyaan
     </button>
+    {{#if pertemuan.akhir}}
+    <button @click="tab = 'tugas'" 
+            :class="tab === 'tugas' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Tugas
+    </button>
+    {{/if}}
   </div>
 
   <div x-show="tab === 'absen'">
@@ -261,6 +268,86 @@
 
   </div>
 
+<div x-show="tab === 'tugas'" class="space-y-12 py-6">
+
+  <!-- Bagian Info & Upload Tugas -->
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    <h2 class="text-2xl font-bold mb-6">Tugas Pertemuan</h2>
+
+    {{#if pertemuan.tugas.length}}
+    {{#each pertemuan.tugas}}
+      <div class="mb-6">
+        <p class="text-gray-800"><span class="font-semibold">Judul:</span> {{file}}</p>
+        <a href="/tugas/{{id}}/download" 
+           class="mt-2 inline-block bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">
+          Download Tugas
+        </a>
+      </div>
+      {{/each}}
+    {{else}}
+      <p class="text-gray-500 italic">Belum ada tugas untuk pertemuan ini.</p>
+    {{/if}}
+  </div>
+
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    <h3 class="text-lg font-semibold mb-4">Create Submission</h3>
+    <form action="/tugass/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1">Upload File Submission</label>
+        <input type="file" name="file" accept=".pdf,.doc,.docx,.zip,.rar" 
+               class="w-full border rounded-lg p-2" required>
+      </div>
+      <button type="submit" 
+              class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+        Create Submission
+      </button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    <h3 class="text-lg font-semibold mb-4">Daftar Pengumpulan</h3>
+
+    {{#if jawaban_tugas.length}}
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">File</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            {{#each jawaban_tugas}}
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4">{{user.username}}</td>
+                <td class="px-6 py-4">{{user.email}}</td>
+                <td class="px-6 py-4">
+                  <a href="/tugas/submission/{{id}}/download" 
+                     class="text-blue-600 hover:underline">Download</a>
+                </td>
+                <td class="px-6 py-4">{{formatTanggal created_at}}</td>
+                <td class="px-6 py-4">
+                  {{#if status}}
+                    <span class="text-green-600 font-medium">Diterima</span>
+                  {{else}}
+                    <span class="text-yellow-600 font-medium">Belum dinilai</span>
+                  {{/if}}
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <p class="text-gray-500 italic">Belum ada yang mengumpulkan tugas.</p>
+    {{/if}}
+  </div>
+
+</div>
+
 
 <div x-show="tab === 'pertanyaan'" class="mb-8 p-6">
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -318,8 +405,6 @@
   </div>
   {{/each}}
 </div>
-
-
 
 
 </div>

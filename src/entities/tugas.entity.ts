@@ -11,9 +11,6 @@ export class Tugas{
     file: string
 
     @Column()
-    judul: string
-
-    @Column()
     nilai: number
 
       @CreateDateColumn()

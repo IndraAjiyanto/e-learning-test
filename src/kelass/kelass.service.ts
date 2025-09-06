@@ -89,6 +89,7 @@ async findPertemuanAndPertanyaan(kelasId: number, userId: number) {
       'kelas',
       'absen.user',
       'pertanyaan',
+      'tugas',
       'pertanyaan.jawaban',
       'pertanyaan.jawaban_user',
       'pertanyaan.jawaban_user.user', 
@@ -123,6 +124,15 @@ async findPertemuan(kelasId: number){
     },
     relations: ['kelas', 'absen.user', 'pertanyaan', 'pertanyaan.jawaban', 'pertanyaan.jawaban_user'], 
   });
+}
+
+async findPertemuanTerakhir(kelasId: number){
+  const pertemuan = await this.pertemuanRepository.find({where: {kelas: {id: kelasId}, akhir: true}})
+  if(pertemuan.length){
+    return true
+  }else{
+    return false
+  }
 }
 
 async findUser(){

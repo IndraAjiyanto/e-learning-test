@@ -77,15 +77,16 @@ export class KelassController {
   async detailKelas(@Param('id') id: number, @Res() res: Response, @Req() req: any){
     const kelas = await this.kelassService.findOne(id);
     const pertemuan = await this.kelassService.findPertemuan(id);
-    res.render('admin/kelas/detail', {user: req.user, kelas, pertemuan})
+    const pertemuanTerakhir = await this.kelassService.findPertemuanTerakhir(id)
+    res.render('admin/kelas/detail', {user: req.user, kelas, pertemuan, pertemuanTerakhir})
   }
 
   @Get(':id')
-  async detail(@Param('id') id: number, @Res() res: Response, @Req() req: any) {
+  async detail(@Param('id') id: number, @Res() res: Response, @Req() req: Request) {
     const kelas = await this.kelassService.findOne(id);
   let isUserInKelas = false;
   if(!kelas){
-    return "tidak ada kelas"
+    req.flash('info', 'not found class')
   }else if(!req.user){
     res.render('kelas/Bdetail', { kelas});
   } else {
@@ -106,7 +107,7 @@ export class KelassController {
 
   @Roles('user')
   @Get('kelas_saya/:id')
-  async myCourse(@Param('id') id: number, @Res() res: Response, @Req() req: any){
+  async myCourse(@Param('id') id: number, @Res() res: Response, @Req() req: Request){
     const kelas = await this.kelassService.findMyCourse(id)
     res.render('user/mycourse', {kelas, user: req.user})
   }
@@ -124,7 +125,11 @@ export class KelassController {
       } 
       await this.kelassService.update(kelasId, updateKelassDto);
       req.flash('success', 'Successfully update kelas')
-      res.redirect('/kelass');
+      if(req.user?.role == 'super_admin'){
+        res.redirect('/kelass');
+      } else {
+        res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      }
     } catch (error) {
       req.flash('error', 'failed update kelas')
       res.redirect('/kelass');
@@ -157,18 +162,23 @@ export class KelassController {
     }
     await this.usersService.deleteProfileIfExists(kelas.gambar);
     await this.kelassService.remove(kelasId);
-    req.flash('success', 'Kelas successfully removed');
+    req.flash('success', 'Class successfully removed');
     res.redirect('/kelass');
     } catch (error) {
-      req.flash('error', 'Kelas failed removed');
+      req.flash('error', 'Class failed removed');
       res.redirect('/kelass');
     }
   }
 
   @Roles('admin')
   @Delete(':userId/kelas/:kelasId')
-  async removeUserKelas(@Param('userId') userId: number, @Param('kelasId') kelasId: number, @Res() res:Response) {
-  await this.kelassService.removeUserKelas(userId, kelasId);
-  res.redirect('/kelass')
+  async removeUserKelas(@Param('userId') userId: number, @Param('kelasId') kelasId: number, @Res() res:Response, @Req() req:Request) {
+    try {
+        await this.kelassService.removeUserKelas(userId, kelasId);
+        res.redirect('/kelass')
+    } catch (error) {
+      
+    }
+
 }
 }

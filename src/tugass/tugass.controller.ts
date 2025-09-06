@@ -1,15 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { TugassService } from './tugass.service';
 import { CreateTugassDto } from './dto/create-tugass.dto';
 import { UpdateTugassDto } from './dto/update-tugass.dto';
+import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Request, Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfigPdf } from 'src/common/config/multer.config';
 
+@UseGuards(AuthenticatedGuard)
 @Controller('tugass')
 export class TugassController {
   constructor(private readonly tugassService: TugassService) {}
 
-  @Post()
-  create(@Body() createTugassDto: CreateTugassDto) {
-    return this.tugassService.create(createTugassDto);
+  @Roles('user', 'admin')
+  @Post(':pertemuanId')
+  @UseInterceptors(FileInterceptor('file', multerConfigPdf)) 
+  async create(@Body() createTugassDto: CreateTugassDto, @UploadedFile() file: Express.Multer.File, @Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:Request) {
+    try {
+          createTugassDto.pertemuanId = pertemuanId
+    createTugassDto.file = file.filename
+    createTugassDto.nilai = 0
+    await this.tugassService.create(createTugassDto);
+    req.flash('success', 'submission successfuly create')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    } catch (error) {
+      console.log(error)
+      req.flash('error', 'submission unsecces create')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    }
+
   }
 
   @Get()
