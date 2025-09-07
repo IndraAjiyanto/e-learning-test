@@ -14,15 +14,28 @@ export class JawabanTugas1756190944609 implements MigrationInterface {
                                                     },{
                                                         name: 'file',
                                                         type: 'varchar'
-                                                    },{
+                                                    },
+                                                    {
+                                                        name: 'nilai',
+                                                        type: 'int'
+                                                    },
+                                                    {
                                                         name: 'tugasId',
+                                                        type: 'int'
+                                                    },{
+                                                        name: 'userId',
                                                         type: 'int'
                                                     },
                                                                                         {
                                         name: 'jawaban_benar',
                                         type: 'boolean',
                                         default: false
-                                    },
+                                    },       {
+                    name: 'proses',
+                    type: 'enum',
+                    enum: ['acc', 'proces', 'rejected'],
+                    default: `'rejected'`,
+                },
                                                     {
                                                             name: 'createdAt',
                                                             type: 'timestamp',
@@ -42,6 +55,12 @@ export class JawabanTugas1756190944609 implements MigrationInterface {
                                                     referencedColumnNames: ['id'],
                                                     onDelete: 'RESTRICT',
                                                 }));
+                                                await queryRunner.createForeignKey('jawaban_tugas', new TableForeignKey({
+                                                    columnNames: ['userId'],
+                                                    referencedTableName: 'user',
+                                                    referencedColumnNames: ['id'],
+                                                    onDelete: 'RESTRICT',
+                                                }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
@@ -49,9 +68,13 @@ export class JawabanTugas1756190944609 implements MigrationInterface {
   if (!table) return;
 
   const tugasFk = table.foreignKeys.find(fk => fk.columnNames.includes('tugasId'));
+  const userFk = table.foreignKeys.find(fk => fk.columnNames.includes('userId'));
 
   if (tugasFk) {
     await queryRunner.dropForeignKey('jawaban_tugas', tugasFk);
+  }
+  if (userFk) {
+    await queryRunner.dropForeignKey('jawaban_tugas', userFk);
   }
 
 

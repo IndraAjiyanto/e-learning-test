@@ -15,8 +15,8 @@ export class Tugas1756188186972 implements MigrationInterface {
                                                 name: 'file',
                                                 type: 'varchar'
                                             },{
-                                                name: 'nilai',
-                                                type: 'int'
+                                                name: 'judul',
+                                                type: 'varchar'
                                             },{
                                                 name: 'pertemuanId',
                                                 type: 'int'

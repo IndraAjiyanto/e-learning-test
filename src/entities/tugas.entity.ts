@@ -7,11 +7,11 @@ export class Tugas{
     @PrimaryGeneratedColumn()
     id: number
 
+        @Column()
+    judul: string;
+    
     @Column()
     file: string
-
-    @Column()
-    nilai: number
 
       @CreateDateColumn()
       createdAt: Date;

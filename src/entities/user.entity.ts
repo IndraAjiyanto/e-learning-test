@@ -6,6 +6,8 @@ import { Biodata } from './biodata.entity';
 import { Portfolio } from './portfolio.entity';
 import { Pembayaran } from './pembayaran.entity';
 import { JawabanUser } from './jawaban_user.entity';
+import { BiodataMentor } from './biodata_mentor.entity';
+import { JawabanTugas } from './jawaban_tugas.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -59,6 +61,9 @@ export class User {
 @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.user, { cascade: true })
   jawaban_user: JawabanUser[];
 
+@OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.user, { cascade: true })
+  jawaban_tugas: JawabanTugas[];
+
 @ManyToMany(() => Kelas, (kelas) => kelas.user)
 @JoinTable()
 kelas: Kelas[];
@@ -68,4 +73,7 @@ kelas: Kelas[];
 
     @OneToOne(() => Biodata, (biodata) => biodata.user) 
     biodata: Biodata
+
+    @OneToOne(() => BiodataMentor, (biodata_mentor) => biodata_mentor.user) 
+    biodata_mentor: BiodataMentor
 }
