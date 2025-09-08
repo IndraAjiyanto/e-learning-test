@@ -51,7 +51,7 @@
           class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
           <option value="" disabled>-- Select Category --</option>
           {{#each kategori}}
-            <option value="{{id}}" {{#if (roles id ../kelas.kategoriId)}}selected{{/if}}>
+            <option value="{{id}}" {{#if (roles id ../kelas.kategori.id)}}selected{{/if}}>
               {{nama_kategori}}
             </option>
           {{/each}}

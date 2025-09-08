@@ -37,6 +37,7 @@ export class PertemuansController {
     req.flash('success', 'session succesfuly create')
     res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
     } catch (error) {
+      console.log(error)
               req.flash('error', 'session unsucces create')
     res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
     }

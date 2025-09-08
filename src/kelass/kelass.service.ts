@@ -179,12 +179,26 @@ async findKategori(){
   }
 
   async update(id: number, updateKelassDto: UpdateKelassDto) {
-    const kelas = await this.findOne(id)
-    if(!kelas){
-      throw new NotFoundException()
+  const kelas = await this.findOne(id);
+  if (!kelas) {
+    throw new NotFoundException(`Kelas dengan ID ${id} tidak ditemukan`);
+  }
+
+  if (updateKelassDto.kategoriId) {
+    const kategori = await this.kategoriRepository.findOne({
+      where: { id: updateKelassDto.kategoriId }
+    });
+    
+    if (!kategori) {
+      throw new NotFoundException(`Kategori dengan ID ${updateKelassDto.kategoriId} tidak ditemukan`);
     }
-    Object.assign(kelas, updateKelassDto)
-    return await this.kelasRepository.save(kelas)
+    
+    kelas.kategori = kategori;
+  }
+  const { kategoriId, ...otherProperties } = updateKelassDto;
+  Object.assign(kelas, otherProperties);
+
+  return await this.kelasRepository.save(kelas);
   }
 
   async remove(id: number) {

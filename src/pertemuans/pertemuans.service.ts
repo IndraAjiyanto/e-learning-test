@@ -30,10 +30,8 @@ export class PertemuansService {
       throw new NotFoundException('kelas ini tidak ada')
     }
     const pertemuan = await this.pertemuanRepository.findOne({where: {pertemuan_ke: createPertemuanDto.pertemuan_ke - 1, kelas: {id: kelas.id}}})
-    if(!pertemuan){
-      throw new NotFoundException('pertemuan ini tidak ada')
-    }
-    if(!pertemuan.akhir){
+
+    if(!pertemuan?.akhir){
       if(createPertemuanDto.akhir_check === 'true'){
         createPertemuanDto.akhir = true
       }

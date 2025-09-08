@@ -8,11 +8,15 @@ import { JenisFile } from 'src/entities/materi.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Response } from 'express';
+import { join } from 'path';
+const spire = require('spire.presentation').default;
+import { promises as fs } from 'fs';
+import { ConvertApiService } from 'src/common/config/convertapi.service';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('materis')
 export class MaterisController {
-  constructor(private readonly materisService: MaterisService) {}
+  constructor(private readonly materisService: MaterisService, private readonly convertApiService: ConvertApiService) {}
 
   @Roles('admin')
 @Post('pdf/:id')
@@ -30,21 +34,40 @@ async createPdf(
   res.redirect('/pertemuans')
 }
 
-  @Roles('admin')
-@Post('ppt/:id')
-@UseInterceptors(FileInterceptor('file', multerConfigPpt))
-async createPpt(
-  @Body() createMaterisDto: CreateMaterisDto,
-  @UploadedFile() file: Express.Multer.File,
-  @Res() res:Response,
-  @Param('id') id:number
-) {
-  createMaterisDto.file = file.filename; 
-  createMaterisDto.pertemuanId = id
-  createMaterisDto.jenis_file = "ppt"
-  await this.materisService.create(createMaterisDto);
-  res.redirect('/pertemuans')
-}
+ @Roles('admin')
+  @Post('ppt/:id')
+  @UseInterceptors(FileInterceptor('file', multerConfigPpt))
+  async createPpt(
+    @Body() createMaterisDto: CreateMaterisDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+    @Param('id') id: number
+  ) {
+    try {
+      createMaterisDto.file = file.filename;
+      createMaterisDto.pertemuanId = id;
+      createMaterisDto.jenis_file = "ppt";
+      
+      await this.materisService.create(createMaterisDto);
+
+      const inputPath = join(process.cwd(), file.path);
+      const outputDir = join(process.cwd(), 'uploads', 'ppt', file.filename + '_slides');
+
+      const slideUrls = await this.convertApiService.pptToPng(inputPath, outputDir);
+
+      await fs.unlink(inputPath);
+
+      console.log('Conversion completed. Slide URLs:', slideUrls);
+      
+      res.redirect('/pertemuans');
+    } catch (error) {
+      console.error('Error in createPpt:', error);
+      res.status(500).json({ 
+        message: 'Failed to process PPT file',
+        error: error.message 
+      });
+    }
+  }
 
   @Roles('admin')
 @Post('video/:id')
