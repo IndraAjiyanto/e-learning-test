@@ -12,11 +12,12 @@ import { join } from 'path';
 const spire = require('spire.presentation').default;
 import { promises as fs } from 'fs';
 import { ConvertApiService } from 'src/common/config/convertapi.service';
+import { PertemuansService } from 'src/pertemuans/pertemuans.service';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('materis')
 export class MaterisController {
-  constructor(private readonly materisService: MaterisService, private readonly convertApiService: ConvertApiService) {}
+  constructor(private readonly materisService: MaterisService,private readonly convertApiService: ConvertApiService) {}
 
   @Roles('admin')
 @Post('pdf/:id')
@@ -44,7 +45,7 @@ async createPdf(
     @Param('id') id: number
   ) {
     try {
-      createMaterisDto.file = file.filename;
+      createMaterisDto.file = file.filename + '_slides';
       createMaterisDto.pertemuanId = id;
       createMaterisDto.jenis_file = "ppt";
       
@@ -107,15 +108,21 @@ return this.materisService.findMateriBypertemuan(pertemuanId)
 }
 
   @Roles('admin', 'user')
-  @Get(':jenis_file/:kelasId')
-  async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: any){
-    const pertemuan = await this.materisService.findPertemuanByKelas(kelasId)
+  @Get(':jenis_file/:pertemuanId')
+  async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('pertemuanId') pertemuanId: number, @Res() res: Response, @Req() req: any){
+    const pertemuan = await this.materisService.findPertemuan(pertemuanId)
     if(jenis_file === "video"){
-    res.render('materi/video', { user: req.user, pertemuan, kelasId})
+      const materi = await this.materisService.findMateriVideo(pertemuanId)
+    res.render('materi/video', { user: req.user, materi, pertemuan})
     } else if(jenis_file === "pdf"){
-    res.render('materi/pdf', { user: req.user, pertemuan, kelasId})
+      const materi = await this.materisService.findMateriPdf(pertemuanId)
+    res.render('materi/pdf', { user: req.user, materi, pertemuan})
     }else if(jenis_file === "ppt"){
-    res.render('materi/ppt', { user: req.user, pertemuan, kelasId})
+      const materi = await this.materisService.findMateriPpt(pertemuanId)
+      for(const mat of materi){
+      console.log(mat.slides)
+      }
+    res.render('materi/ppt', { user: req.user, materi, pertemuan})
     }
   }
 

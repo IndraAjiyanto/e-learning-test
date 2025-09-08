@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import * as fs from 'fs';
 import { join } from 'path';
+import * as path from 'path';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 const foldersToSearch = [
@@ -40,7 +41,7 @@ export class MaterisService {
 
   async findMateriBypertemuan(pertemuanId: number){
     return await this.materiRepository.find({
-      where: {pertemuan: {id: pertemuanId}},
+      where: { pertemuan: {id: pertemuanId} },
       relations: ['pertemuan']  
     })
   }
@@ -51,17 +52,50 @@ export class MaterisService {
     })
   }
 
-  async findMateriPpt(pertemuanId: number){
-    return await this.materiRepository.find({
-      where: {pertemuan:{id:pertemuanId}, jenis_file: "ppt"}
-    })
+async findMateriPpt(pertemuanId: number) {
+  const materiList = await this.materiRepository.find({
+    where: { pertemuan: { id: pertemuanId }, jenis_file: "ppt" }
+  });
+
+  const result: { materiId: number; judul: string; slides: string[] }[] = [];
+
+  for (const materi of materiList) {
+    const slides = await this.getSlide(materi.file);
+
+    result.push({
+      materiId: materi.id,
+      judul: materi.judul, 
+      slides: slides
+    });
   }
+
+  return result;
+}
+
+
+async findPertemuan(pertemuanId: number){
+  return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['kelas', 'absen', 'materi', 'tugas']})
+}
+
 
   async findMateriVideo(pertemuanId: number){
     return await this.materiRepository.find({
       where: {pertemuan:{id:pertemuanId}, jenis_file: "video"}
     })
   }
+
+  async getSlide(file: string){
+    const folderPath = path.join(process.cwd(), 'uploads', 'ppt', file);
+    
+    if (!fs.existsSync(folderPath)) {
+      return [];
+    }
+
+    return fs.readdirSync(folderPath)
+      .filter(png => /\.(png|jpg|jpeg)$/i.test(png))
+      .map(png => `/uploads/ppt/${file}/${png}`);
+  }
+
 
   async findPertemuanByKelas(kelasId: number){
     const pertemuan = await this.pertemuanRepository.find({

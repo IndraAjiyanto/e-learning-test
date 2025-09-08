@@ -1,67 +1,62 @@
-<div class="max-w-7xl mx-auto px-4 py-10 pt-28" 
-     x-data="{ pptSrc: '' }">
-            <div class="mb-4">
-    <a href="/kelass/{{kelasId}}" 
-       class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           class="h-5 w-5 mr-1" fill="none" 
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" 
-              stroke-linejoin="round" 
-              stroke-width="2" 
-              d="M15 19l-7-7 7-7" />
-      </svg>
-      Kembali
+<div class="max-w-7xl mx-auto px-6 py-12 pt-28" 
+     x-data="{ slides: [] }"
+     x-init="initReveal()">
+
+  <!-- Tombol kembali -->
+  <div class="mb-8">
+    <a href="/kelass/{{pertemuan.kelas.id}}" 
+       class="inline-flex items-center text-blue-600 text-base font-medium hover:underline">
+      ← Kembali
     </a>
   </div>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
     
-    <div class="col-span-2">
-      <iframe 
-        class="h-[500px] w-full rounded-lg border" 
-        x-bind:src="pptSrc" 
-        frameborder="0">
-      </iframe>
-
-      <div class="flex justify-between items-center mt-4">
-        <h1 class="text-3xl font-bold">Presentation Viewer</h1>
-        <input type="text" x-bind:value="pptSrc" readonly class="border p-1 rounded w-1/2 text-sm">
+    <!-- Slideshow Area -->
+    <div class="col-span-2 bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div class="reveal">
+        <div class="slides">
+          <template x-for="slide in slides" :key="slide">
+            <section>
+              <img :src="slide" class="w-full h-[550px] object-contain bg-gray-50" />
+            </section>
+          </template>
+        </div>
       </div>
+
+      <!-- Placeholder kalau belum pilih -->
+      <template x-if="slides.length === 0">
+        <div class="flex items-center justify-center h-[550px] bg-gray-50 text-gray-400 text-lg">
+          Pilih materi untuk melihat slide 📑
+        </div>
+      </template>
     </div>
 
-    <div class="bg-gray-100 p-6 rounded-lg shadow">
-      <h2 class="text-xl font-semibold mb-4">Materi Kelas</h2>
-      <ul class="space-y-2">
-        {{#each pertemuan}}
-        <li x-data="{ open: false }" class="relative">
-          <button @click="open = !open"
-                  class="w-full text-left bg-white px-4 py-2 rounded shadow hover:bg-gray-50">
-            {{topik}}
-          </button>
-
-          <div x-show="open"
-               x-transition
-               @click.away="open = false"
-               class="mt-2 bg-white border rounded shadow w-full">
-               
-               {{#if materiPpt.length}}
-               {{#each materiPpt}}
-               <button  
-                 class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                 @click="
-                   pptSrc = 'https://docs.google.com/viewer?url=' + encodeURIComponent('https://example.com/uploads/ppt/{{file}}') + '&embedded=true'
-                 ">
-                {{file}}
-               </button>
-               {{/each}}
-               {{else}}
-               <p class="px-4 py-2 text-gray-500">Belum ada materi</p>
-               {{/if}}
-          </div>
-        </li>
-        {{/each}}
-      </ul>
-    </div>
-
+    <!-- Sidebar Materi -->
+    <aside class="bg-gray-50 p-6 rounded-2xl shadow-md space-y-4">
+      <h2 class="text-lg font-semibold text-gray-800 border-b pb-3">📚 Materi Kelas</h2>
+      {{#if materi.length}}
+        <ul class="space-y-2">
+          {{#each materi}}
+            <li>
+              <button  
+                class="w-full text-left px-4 py-3 rounded-lg bg-white shadow-sm hover:bg-blue-50 hover:text-blue-600 transition"
+                @click="
+                  slides = {{json this.slides}};
+                  $nextTick(() => {
+                    Reveal.sync();
+                    Reveal.slide(0);
+                  });
+                "
+              >
+                {{judul}}
+              </button>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="text-gray-500 italic">Belum ada materi tersedia</p>
+      {{/if}}
+    </aside>
   </div>
 </div>

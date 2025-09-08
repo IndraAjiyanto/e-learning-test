@@ -34,8 +34,7 @@ export class ConvertApiService {
         const outPath = join(outputDir, fileName);
         await result.files[i].save(outPath);
         
-        // Buat URL path yang sesuai dengan struktur folder Anda
-        const urlPath = `/uploads/ppt/${inputPath.split('/').pop()}_slides/${fileName}`;
+        const urlPath = `/uploads/ppt/${inputPath.split('/').pop()}/${fileName}`;
         slideUrls.push(urlPath);
       }
 

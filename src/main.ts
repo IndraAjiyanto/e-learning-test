@@ -23,6 +23,10 @@ async function bootstrap() {
     prefix: '/public/'
   });
 
+    app.useStaticAssets(join(__dirname, '..', 'node_modules/reveal.js'), {
+    prefix: '/reveal',
+  });
+
   app.useStaticAssets(join(__dirname, '..','uploads'), {
     prefix: '/uploads/'
   });
