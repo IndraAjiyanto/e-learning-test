@@ -26,15 +26,10 @@ export class JawabanTugas1756190944609 implements MigrationInterface {
                                                         name: 'userId',
                                                         type: 'int'
                                                     },
-                                                                                        {
-                                        name: 'jawaban_benar',
-                                        type: 'boolean',
-                                        default: false
-                                    },       {
+                                                         {
                     name: 'proses',
                     type: 'enum',
-                    enum: ['acc', 'proces', 'rejected'],
-                    default: `'rejected'`,
+                    enum: ['acc', 'proces', 'rejected']
                 },
                                                     {
                                                             name: 'createdAt',

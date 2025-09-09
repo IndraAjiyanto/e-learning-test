@@ -5,6 +5,8 @@ import { Materi } from "./materi.entity";
 import { Tugas } from "./tugas.entity";
 import { Pertanyaan } from "./pertanyaan.entity";
 
+export type Metode = 'online' | 'offline';
+
 @Entity()
 export class Pertemuan{
     @PrimaryGeneratedColumn()
@@ -18,6 +20,12 @@ export class Pertemuan{
 
     @Column()
     tanggal: Date
+
+    @Column()
+    lokasi: string
+
+    @Column({ type: 'enum', enum: ['online' , 'offline'] })
+    metode: Metode
 
     @Column({type: 'time'})
     waktu_awal: string

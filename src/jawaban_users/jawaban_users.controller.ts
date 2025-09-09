@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards } from '@nestjs/common';
 import { JawabanUsersService } from './jawaban_users.service';
 import { CreateJawabanUserDto } from './dto/create-jawaban_user.dto';
 import { UpdateJawabanUserDto } from './dto/update-jawaban_user.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response } from 'express';
+import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 
+@UseGuards(AuthenticatedGuard)
 @Controller('jawaban-users')
 export class JawabanUsersController {
   constructor(private readonly jawabanUsersService: JawabanUsersService) {}

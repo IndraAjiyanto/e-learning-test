@@ -19,9 +19,6 @@ export class JawabanTugas{
     @Column({ type: 'enum', enum: ['acc' , 'proces' , 'rejected'], default: 'rejected' })
     proses: Proses
 
-@Column({ default: false })
-jawaban_benar: boolean;
-
             @CreateDateColumn()
             createdAt: Date;
             

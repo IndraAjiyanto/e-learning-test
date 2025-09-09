@@ -252,7 +252,7 @@
         <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow-lg">
           <form action="/materis/ppt/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium mb-1">Judul Materi</label>
+              <label class="block text-sm font-medium mb-1">Judul Tugas</label>
               <input type="text" name="judul" class="w-full border rounded-lg p-2" required>
             </div>
             <div>
@@ -282,6 +282,7 @@
            class="mt-2 inline-block bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">
           Download Tugas
         </a>
+        <a href="/jawaban-tugass/{{id}}">view submission</a>
       </div>
       {{/each}}
     {{else}}
@@ -293,6 +294,10 @@
     <h3 class="text-lg font-semibold mb-4">Create Submission</h3>
     <form action="/tugass/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
       <div>
+                    <div>
+              <label class="block text-sm font-medium mb-1">Judul Materi</label>
+              <input type="text" name="judul" class="w-full border rounded-lg p-2" required>
+            </div>
         <label class="block text-sm font-medium mb-1">Upload File Submission</label>
         <input type="file" name="file" accept=".pdf,.doc,.docx,.zip,.rar" 
                class="w-full border rounded-lg p-2" required>
@@ -330,7 +335,7 @@
                 </td>
                 <td class="px-6 py-4">{{formatTanggal created_at}}</td>
                 <td class="px-6 py-4">
-                  {{#if status}}
+                  {{#if (roles proses 'acc')}}
                     <span class="text-green-600 font-medium">Diterima</span>
                   {{else}}
                     <span class="text-yellow-600 font-medium">Belum dinilai</span>

@@ -90,82 +90,15 @@
 
             <!-- Tugas -->
 {{#if akhir}}
-  <div x-data="{ showTugas: false }" class="mt-4">
-    <button 
-      @click="showTugas = !showTugas"
+  <div class="mt-4">
+{{#each tugas}}
+    <a 
+      href="/jawaban-tugass/{{../id}}/{{this.id}}"
       class="px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow-lg hover:scale-105 transform transition"
     >
       Lihat Tugas
-    </button>
-
-    <div class="mt-4 p-4 border rounded-lg bg-gray-50 shadow-inner">
-      <h4 class="font-semibold text-gray-800 mb-2">Kirim Tugas Anda</h4>
-      <p class="text-sm text-gray-600 mb-3">
-        Masukkan link GitHub, Google Drive, atau file online.
-      </p>
-
-      <!-- form kirim jawaban -->
-      <form action="/tugas/submit/{{id}}" method="POST" class="space-y-3 mb-4">
-        <input 
-          type="text" 
-          name="file" 
-          placeholder="https://drive.google.com/..." 
-          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-700"
-        >
-        <button 
-          type="submit" 
-          class="px-4 py-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition"
-        >
-          Kirim Jawaban
-        </button>
-      </form>
-
-      <!-- list jawaban -->
-      <div>
-        <h5 class="font-semibold text-gray-700 mb-2">Jawaban Anda</h5>
-        {{#if jawabanTugas.length}}
-          <ul class="space-y-2">
-            {{#each jawabanTugas}}
-              <li class="flex items-center justify-between p-3 bg-white rounded-lg shadow border">
-                <button 
-                  type="button"
-                  @click="previewLink='{{this.link}}'"
-                  class="text-blue-600 hover:underline truncate text-left"
-                >
-                  {{this.link}}
-                </button>
-                <span class="text-xs text-gray-500">
-                  {{formatTanggal this.createdAt}}
-                </span>
-              </li>
-            {{/each}}
-          </ul>
-        {{else}}
-          <p class="text-sm text-gray-500 italic">Belum ada jawaban yang dikirim.</p>
-        {{/if}}
-      </div>
-    </div>
-
-    <!-- modal preview -->
-    <div 
-      x-show="showTugas"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div class="bg-white rounded-xl shadow-lg max-w-3xl w-full p-4 relative">
-        <button 
-          @click="showTugas = !showTugas" 
-          class="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
-        >
-          ✕
-        </button>
-        <h3 class="text-lg font-semibold mb-3">Preview Jawaban {{#each tugas}}'/uploads/pdf/{{file}}'{{/each}}</h3>
-        <iframe 
-          :src={{#each tugas}}'/uploads/pdf/{{file}}'{{/each}}
-          class="w-full h-[500px] border rounded"
-          type="application/pdf"
-        ></iframe>
-      </div>
-    </div>
+    </a>
+  {{/each}}
   </div>
 {{/if}}
 

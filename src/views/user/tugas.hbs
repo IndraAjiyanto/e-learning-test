@@ -1,0 +1,75 @@
+<div class="mt-6 p-6 bg-gray-50 border rounded-xl shadow-inner space-y-6">
+  <!-- Preview Tugas -->
+  <div>
+    <h3 class="text-lg font-semibold text-gray-900 mb-3">Materi Tugas</h3>
+    <div class="overflow-hidden rounded-lg border shadow bg-white">
+      <iframe 
+        src="/uploads/pdf/{{tugas.file}}" 
+        class="w-full h-[450px]" 
+        type="application/pdf"
+      ></iframe>
+    </div>
+  </div>
+
+  <!-- Form Kirim Jawaban -->
+     {{#if jawabanExists.length}}
+      {{else}}
+  <div>
+    <h3 class="text-lg font-semibold text-gray-900 mb-3">Kirim Jawaban Anda</h3>
+    <p class="text-sm text-gray-600 mb-4">
+      Masukkan link GitHub, Google Drive, atau file online.
+    </p>
+    <form 
+      action="/jawaban-tugass/{{tugas.id}}/{{tugas.pertemuan.id}}" 
+      method="POST" 
+      class="flex gap-3"
+    >
+      <input 
+        type="text" 
+        name="file" 
+        placeholder="https://drive.google.com/..." 
+        class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+      >
+   
+            <button 
+        type="submit" 
+        class="px-5 py-2 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow hover:scale-105 transform transition"
+      >
+        Kirim
+      </button>
+    </form>
+  </div>
+  {{/if}}
+
+  <!-- List Jawaban -->
+  <div>
+    <h3 class="text-lg font-semibold text-gray-900 mb-3">Jawaban Anda</h3>
+    {{#if jawaban_tugas.length}}
+      <ul class="space-y-4">
+        {{#each jawaban_tugas}}
+          <li class="p-4 bg-white border rounded-lg shadow hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+              <a 
+                href="{{this.file}}" 
+                target="_blank"
+                class="text-blue-600 font-medium hover:underline truncate max-w-xs"
+              >
+                {{this.file}}
+              </a>
+              <span class="text-xs text-gray-500">
+                {{formatTanggal this.createdAt}}
+              </span>
+            </div>
+            <span class="inline-block px-3 py-1 text-xs font-medium rounded-full 
+              {{#if (roles this.proses 'acc')}} bg-green-100 text-green-700
+              {{else}} bg-yellow-100 text-yellow-700 {{/if}}">
+              {{this.proses}}
+            </span>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p class="text-sm text-gray-500 italic">Belum ada jawaban yang dikirim.</p>
+    {{/if}}
+  </div>
+</div>

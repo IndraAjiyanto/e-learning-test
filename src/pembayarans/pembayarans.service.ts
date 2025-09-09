@@ -70,7 +70,7 @@ export class PembayaransService {
     }
 
   async checkPembayaran(userId:number, kelasId:number){
-    const pembayaran = await this.pembayaranRepository.find({where: {user: {id:userId}, kelas:{id:kelasId}, proses: Not('rejected'),}})
+    const pembayaran = await this.pembayaranRepository.find({where: {user: {id:userId}, kelas:{id:kelasId}, proses: Not('rejected')}})
     if(pembayaran.length){
       return false
     }else{

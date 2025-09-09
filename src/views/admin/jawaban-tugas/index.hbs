@@ -1,0 +1,58 @@
+<div class="px-6 py-10 pt-28 bg-gray-50 border rounded-xl shadow-inner space-y-6">
+  <h3 class="text-lg font-semibold text-gray-900 mb-3">Jawaban user</h3>
+
+  {{#if jawaban_tugas.length}}
+    <ul class="space-y-4">
+      {{#each jawaban_tugas}}
+        <li class="p-4 bg-white border rounded-lg shadow hover:shadow-md transition">
+          <div class="flex items-center justify-between mb-3">
+            <a 
+              href="{{this.file}}" 
+              target="_blank"
+              class="text-blue-600 font-medium hover:underline truncate max-w-xs"
+            >
+              {{this.file}}
+            </a>
+            <span class="text-xs text-gray-500">
+              {{formatTanggal this.createdAt}}
+            </span>
+          </div>
+
+          <div class="text-sm text-gray-700 mb-3">
+            <span class="font-semibold">{{this.user.username}}</span>
+            <span class="text-gray-500 text-xs">({{this.user.email}})</span>
+          </div>
+
+          <span class="inline-block px-3 py-1 text-xs font-medium rounded-full 
+            {{#if (roles this.proses 'acc')}} bg-green-100 text-green-700
+            {{else if (roles this.proses 'rejected')}} bg-red-100 text-red-700
+            {{else}} bg-yellow-100 text-yellow-700 {{/if}}">
+            {{this.proses}}
+          </span>
+
+          <form action="/komentar/{{tugas.id}}/{{this.id}}" method="POST" class="mt-4 space-y-3">
+            <textarea 
+              name="komentar" 
+              rows="2" 
+              class="w-full px-3 py-2 text-sm border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400"
+              placeholder="Tulis komentar untuk jawaban ini..."
+            ></textarea>
+
+            <div class="flex space-x-2">
+              <button type="submit" name="proses" value="acc"
+                class="px-3 py-1 text-xs font-medium rounded-lg bg-green-500 text-white hover:bg-green-600">
+                ACC
+              </button>
+              <button type="submit" name="proses" value="rejected"
+                class="px-3 py-1 text-xs font-medium rounded-lg bg-red-500 text-white hover:bg-red-600">
+                Rejected
+              </button>
+            </div>
+          </form>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p class="text-sm text-gray-500 italic">Belum ada jawaban yang dikirim.</p>
+  {{/if}}
+</div>

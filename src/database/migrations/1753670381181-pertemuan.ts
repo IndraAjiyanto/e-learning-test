@@ -22,6 +22,15 @@ export class Pertemuan1753670381181 implements MigrationInterface {
                     type: 'varchar'
                 },
                 {
+                    name: 'lokasi',
+                    type: 'varchar'
+                },
+                {
+                    name: 'metode',
+                    type: 'enum',
+                    enum: ['online', 'offline']
+                },
+                {
                     name: 'tanggal',
                     type: 'date'
                 },
