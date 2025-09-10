@@ -34,7 +34,7 @@ export class Komentar1757156385470 implements MigrationInterface {
                                                                          columnNames: ['jawaban_tugasId'],
                                                                          referencedTableName: 'jawaban_tugas',
                                                                          referencedColumnNames: ['id'],
-                                                                         onDelete: 'RESTRICT',
+                                                                         onDelete: "CASCADE",
                                                                      }));
 
     }

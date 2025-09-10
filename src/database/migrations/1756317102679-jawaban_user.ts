@@ -40,19 +40,19 @@ export class JawabanUser1756317102679 implements MigrationInterface {
                                             columnNames: ['pertanyaanId'],
                                             referencedTableName: 'pertanyaan',
                                             referencedColumnNames: ['id'],
-                                            onDelete: 'RESTRICT',
+                                            onDelete: "CASCADE",
                                         }));
                                         await queryRunner.createForeignKey('jawaban_user', new TableForeignKey({
                                             columnNames: ['jawabanId'],
                                             referencedTableName: 'jawaban',
                                             referencedColumnNames: ['id'],
-                                            onDelete: 'RESTRICT',
+                                            onDelete: "CASCADE",
                                         }));
                                         await queryRunner.createForeignKey('jawaban_user', new TableForeignKey({
                                             columnNames: ['userId'],
                                             referencedTableName: 'user',
                                             referencedColumnNames: ['id'],
-                                            onDelete: 'RESTRICT',
+                                            onDelete: "CASCADE",
                                         }));
     }
 

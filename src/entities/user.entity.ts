@@ -64,16 +64,16 @@ export class User {
 @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.user, { cascade: true, onDelete: 'CASCADE' })
   jawaban_tugas: JawabanTugas[];
 
-@ManyToMany(() => Kelas, (kelas) => kelas.user)
+@ManyToMany(() => Kelas, (kelas) => kelas.user, { cascade: true, onDelete: 'CASCADE' })
 @JoinTable()
 kelas: Kelas[];
 
 
 
 
-    @OneToOne(() => Biodata, (biodata) => biodata.user) 
+    @OneToOne(() => Biodata, (biodata) => biodata.user, { cascade: true, onDelete: 'CASCADE' }) 
     biodata: Biodata
 
-    @OneToOne(() => BiodataMentor, (biodata_mentor) => biodata_mentor.user) 
+    @OneToOne(() => BiodataMentor, (biodata_mentor) => biodata_mentor.user, { cascade: true, onDelete: 'CASCADE' }) 
     biodata_mentor: BiodataMentor
 }

@@ -18,12 +18,12 @@ export class Pertanyaan{
       @UpdateDateColumn()
       updatedAt: Date;
 
-      @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.pertanyaan)
+      @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.pertanyaan, {onDelete : 'CASCADE'})
       pertemuan: Pertemuan
 
-      @OneToMany(() => Jawaban, (jawaban) => jawaban.pertanyaan, { cascade: true })
+      @OneToMany(() => Jawaban, (jawaban) => jawaban.pertanyaan, { cascade: true , onDelete : 'CASCADE' })
       jawaban: Jawaban[];
 
-      @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.pertanyaan, { cascade: true })
+      @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.pertanyaan, { cascade: true, onDelete : 'CASCADE'})
       jawaban_user: JawabanUser[];
 }

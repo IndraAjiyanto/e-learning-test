@@ -44,14 +44,14 @@ export class Pembayaran1756188094636 implements MigrationInterface {
                     columnNames: ['userId'],
                     referencedTableName: 'user',
                     referencedColumnNames: ['id'],
-                    onDelete: 'RESTRICT',
+                    onDelete: "CASCADE",
                 }));
         
                 await queryRunner.createForeignKey('pembayaran', new TableForeignKey({
                     columnNames: ['kelasId'],
                     referencedTableName: 'kelas',
                     referencedColumnNames: ['id'],
-                    onDelete: 'RESTRICT',
+                    onDelete: "CASCADE",
                 }));
     }
 

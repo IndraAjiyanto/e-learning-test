@@ -19,9 +19,9 @@ export class Tugas{
       @UpdateDateColumn()
       updatedAt: Date;
 
-          @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.tugas)
+          @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.tugas, {onDelete : 'CASCADE'})
           pertemuan: Pertemuan
 
-                @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.tugas, { cascade: true })
+                @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.tugas, { cascade: true, onDelete : 'CASCADE' })
                 jawaban_tugas: JawabanTugas[];
 }

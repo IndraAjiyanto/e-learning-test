@@ -16,10 +16,10 @@ export class Portfolio{
             @UpdateDateColumn()
             updatedAt: Date;
 
-                @ManyToOne(() => User, (user) => user.portfolio)
+                @ManyToOne(() => User, (user) => user.portfolio, {onDelete : 'CASCADE'})
                 user: User
 
-                @ManyToOne(() => Kelas, (kelas) => kelas.portfolio)
+                @ManyToOne(() => Kelas, (kelas) => kelas.portfolio, {onDelete : 'CASCADE'})
                 kelas: Kelas
 
 }

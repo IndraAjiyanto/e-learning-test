@@ -21,14 +21,14 @@ export class KelasUser1753676121681 implements MigrationInterface {
             columnNames: ['userId'],
             referencedTableName: 'user',
             referencedColumnNames: ['id'],
-            onDelete: 'RESTRICT',
+            onDelete: "CASCADE",
         }));
 
         await queryRunner.createForeignKey('user_kelas_kelas', new TableForeignKey({
             columnNames: ['kelasId'],
             referencedTableName: 'kelas',
             referencedColumnNames: ['id'],
-            onDelete: 'RESTRICT',
+            onDelete: "CASCADE",
         }));
 
     }

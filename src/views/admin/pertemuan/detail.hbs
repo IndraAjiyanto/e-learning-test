@@ -79,13 +79,11 @@
             class="px-4 py-2 rounded-lg shadow transition">
       Pertanyaan
     </button>
-    {{#if pertemuan.akhir}}
     <button @click="tab = 'tugas'" 
             :class="tab === 'tugas' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Tugas
     </button>
-    {{/if}}
   </div>
 
   <div x-show="tab === 'absen'" >
@@ -337,7 +335,7 @@
         {{#each pertemuan.tugas}}
           <div class="border rounded-lg p-4 bg-gray-50">
             <p class="text-gray-800 mb-3">
-              <span class="font-semibold">Judul:</span> {{file}}
+              <span class="font-semibold">Judul:</span> {{judul}}
             </p>
             <div class="flex flex-wrap gap-3">
               <a href="/tugas/{{id}}/download" 

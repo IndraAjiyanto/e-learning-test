@@ -8,11 +8,11 @@ export class JawabanUser{
     @PrimaryGeneratedColumn()
     id: number
 
-                                  @ManyToOne(() => Pertanyaan, (pertanyaan) => pertanyaan.jawaban_user)
+                                  @ManyToOne(() => Pertanyaan, (pertanyaan) => pertanyaan.jawaban_user, {onDelete : 'CASCADE'})
                                   pertanyaan: Pertanyaan
-                                  @ManyToOne(() => Jawaban, (jawaban) => jawaban.jawaban_user)
+                                  @ManyToOne(() => Jawaban, (jawaban) => jawaban.jawaban_user, {onDelete : 'CASCADE'})
                                   jawaban: Jawaban
     
-                                  @ManyToOne(() => User, (user) => user.jawaban_user)
+                                  @ManyToOne(() => User, (user) => user.jawaban_user, {onDelete : 'CASCADE'})
                                   user: User
 }

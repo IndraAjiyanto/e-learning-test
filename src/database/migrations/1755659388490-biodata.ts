@@ -51,7 +51,7 @@ export class Biodata1755659388490 implements MigrationInterface {
                     columnNames: ['userId'],
                     referencedTableName: 'user',
                     referencedColumnNames: ['id'],
-                    onDelete: 'RESTRICT',
+                    onDelete: "CASCADE",
                 }));
     }
 

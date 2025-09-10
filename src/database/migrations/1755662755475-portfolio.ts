@@ -37,14 +37,14 @@ export class Portfolio1755662755475 implements MigrationInterface {
             columnNames: ['userId'],
             referencedTableName: 'user',
             referencedColumnNames: ['id'],
-            onDelete: 'RESTRICT',
+            onDelete: "CASCADE",
         }));
 
         await queryRunner.createForeignKey('portfolio', new TableForeignKey({
             columnNames: ['kelasId'],
             referencedTableName: 'kelas',
             referencedColumnNames: ['id'],
-            onDelete: 'RESTRICT',
+            onDelete: "CASCADE",
         }));
     }
 

@@ -21,9 +21,9 @@ export class Pembayaran{
        @UpdateDateColumn()
        updatedAt: Date;
 
-                    @ManyToOne(() => User, (user) => user.pembayaran)
+                    @ManyToOne(() => User, (user) => user.pembayaran, {onDelete : 'CASCADE'})
                     user: User
     
-                    @ManyToOne(() => Kelas, (kelas) => kelas.pembayaran)
+                    @ManyToOne(() => Kelas, (kelas) => kelas.pembayaran, {onDelete : 'CASCADE'})
                     kelas: Kelas
 }

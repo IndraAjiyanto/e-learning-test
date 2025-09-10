@@ -40,16 +40,16 @@ launch: boolean;
     @UpdateDateColumn()
     updatedAt: Date;
 
-@ManyToMany(() => User, (user) => user.kelas)
+@ManyToMany(() => User, (user) => user.kelas, {onDelete : 'CASCADE'})
 user: User[];
 
-    @OneToMany(() => Pertemuan, (pertemuan) => pertemuan.kelas)
+    @OneToMany(() => Pertemuan, (pertemuan) => pertemuan.kelas, {cascade: true, onDelete : 'CASCADE'})
     pertemuan: Pertemuan[]
 
-    @OneToMany(() => Portfolio, (portfolio) => portfolio.kelas, { cascade: true })
+    @OneToMany(() => Portfolio, (portfolio) => portfolio.kelas, { cascade: true , onDelete : 'CASCADE'})
       portfolio: Portfolio[];
 
-    @OneToMany(() => Pembayaran, (pembayaran) => pembayaran.kelas, { cascade: true })
+    @OneToMany(() => Pembayaran, (pembayaran) => pembayaran.kelas, { cascade: true, onDelete : 'CASCADE' })
     pembayaran: Pembayaran[];
 
           @ManyToOne(() => Kategori, (kategori) => kategori.kelas)

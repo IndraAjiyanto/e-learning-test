@@ -100,8 +100,15 @@ export class PertemuansController {
 
   @Roles('admin')
   @Delete(':id/:kelasId')
-  async remove(@Param('id') id: number,@Param('kelasId') kelasId: number, @Res() res:Response) {
-    await this.pertemuansService.remove(id, kelasId);
-    res.redirect('/pertemuans')
+  async remove(@Param('id') id: number,@Param('kelasId') kelasId: number, @Res() res:Response, @Req() req:Request) {
+    try {
+          await this.pertemuansService.remove(id, kelasId);
+          req.flash('success', 'session successfuly delete')
+    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
+    } catch (error) {
+      req.flash('error', 'session unsucces delete')
+    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
+    }
+
   }
 }

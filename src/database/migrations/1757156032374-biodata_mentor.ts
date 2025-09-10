@@ -34,7 +34,7 @@ export class BiodataMentor1757156032374 implements MigrationInterface {
                            columnNames: ['userId'],
                            referencedTableName: 'user',
                            referencedColumnNames: ['id'],
-                           onDelete: 'RESTRICT',
+                           onDelete: "CASCADE",
                        }));
     }
 

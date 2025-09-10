@@ -23,6 +23,6 @@ export class Materi {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.materi)
+    @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.materi, {onDelete : 'CASCADE'})
     pertemuan: Pertemuan
 }

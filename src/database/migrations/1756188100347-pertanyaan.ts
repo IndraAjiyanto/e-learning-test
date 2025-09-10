@@ -35,7 +35,7 @@ export class Pertanyaan1756188100347 implements MigrationInterface {
                             columnNames: ['pertemuanId'],
                             referencedTableName: 'pertemuan',
                             referencedColumnNames: ['id'],
-                            onDelete: 'RESTRICT',
+                            onDelete: "CASCADE",
                         }));
     }
 

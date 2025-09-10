@@ -19,8 +19,8 @@ jawaban_benar: boolean;
         @UpdateDateColumn()
         updatedAt: Date;
 
-                              @ManyToOne(() => Pertanyaan, (pertanyaan) => pertanyaan.jawaban)
+                              @ManyToOne(() => Pertanyaan, (pertanyaan) => pertanyaan.jawaban, {onDelete : 'CASCADE'})
                               pertanyaan: Pertanyaan
-                    @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.jawaban)
+                    @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.jawaban, {cascade: true, onDelete : 'CASCADE'})
                     jawaban_user: JawabanUser[]
 }

@@ -38,7 +38,7 @@ export class Tugas1756188186972 implements MigrationInterface {
                                             columnNames: ['pertemuanId'],
                                             referencedTableName: 'pertemuan',
                                             referencedColumnNames: ['id'],
-                                            onDelete: 'RESTRICT',
+                                            onDelete: "CASCADE",
                                         }));
     }
 

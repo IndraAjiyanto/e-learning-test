@@ -25,9 +25,9 @@ export class Absen {
     updatedAt: Date;
 
     
-  @ManyToOne(() => User, user => user.absen, {onDelete : 'CASCADE'})
+  @ManyToOne(() => User, user => user.absen, {onDelete : 'CASCADE'})  
   user: User;
 
-  @ManyToOne(() => Pertemuan, pertemuan => pertemuan.absen)
+  @ManyToOne(() => Pertemuan, pertemuan => pertemuan.absen, {onDelete : 'CASCADE'})
   pertemuan: Pertemuan;
 }

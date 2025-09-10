@@ -36,19 +36,19 @@ export class Pertemuan{
     @Column({default: false})
     akhir: boolean
 
-    @OneToMany(() => Absen, (absen) => absen.pertemuan)
+    @OneToMany(() => Absen, (absen) => absen.pertemuan, {cascade: true, onDelete : 'CASCADE'})
     absen: Absen[];
 
-    @OneToMany(() => Materi, (materi) => materi.pertemuan)
+    @OneToMany(() => Materi, (materi) => materi.pertemuan, {cascade: true, onDelete : 'CASCADE'})
     materi: Materi[];
 
-    @OneToMany(() => Tugas, (tugas) => tugas.pertemuan)
+    @OneToMany(() => Tugas, (tugas) => tugas.pertemuan, {cascade: true, onDelete : 'CASCADE'})
     tugas: Tugas[];
 
-    @OneToMany(() => Pertanyaan, (pertanyaan) => pertanyaan.pertemuan)
+    @OneToMany(() => Pertanyaan, (pertanyaan) => pertanyaan.pertemuan, {cascade: true, onDelete : 'CASCADE'})
     pertanyaan: Pertanyaan[];
 
-    @ManyToOne(() => Kelas, (kelas) => kelas.pertemuan)
+    @ManyToOne(() => Kelas, (kelas) => kelas.pertemuan, {onDelete : 'CASCADE'})
     kelas: Kelas
 
     @CreateDateColumn()

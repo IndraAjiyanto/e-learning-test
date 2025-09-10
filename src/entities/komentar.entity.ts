@@ -9,7 +9,7 @@ export class Komentar{
     @Column()
     komentar: string
 
-@ManyToOne(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.komentar)
+@ManyToOne(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.komentar, {onDelete : 'CASCADE'})
 @JoinColumn({ name: "jawaban_tugasId" }) 
 jawaban_tugas: JawabanTugas
 

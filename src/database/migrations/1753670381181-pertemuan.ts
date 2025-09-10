@@ -68,22 +68,22 @@ export class Pertemuan1753670381181 implements MigrationInterface {
             columnNames: ['kelasId'],
             referencedTableName: 'kelas',
             referencedColumnNames: ['id'],
-            onDelete: 'RESTRICT',
+            onDelete: "CASCADE",
         }));
 
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-          const table = await queryRunner.getTable('pertemuans');
+          const table = await queryRunner.getTable('pertemuan');
   if (!table) return;
 
   const kelasFk = table.foreignKeys.find(fk => fk.columnNames.includes('kelasId'));
 
   if (kelasFk) {
-    await queryRunner.dropForeignKey('pertemuans', kelasFk);
+    await queryRunner.dropForeignKey('pertemuan', kelasFk);
   }
 
-  await queryRunner.dropTable('pertemuans');
+  await queryRunner.dropTable('pertemuan');
     }
 
 }
