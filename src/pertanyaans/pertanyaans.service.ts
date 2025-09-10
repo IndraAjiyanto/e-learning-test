@@ -37,18 +37,53 @@ export class PertanyaansService {
   }
 
   async findOne(pertanyaanId: number) {
-    return await this.pertanyaanRepository.findOne({where: {id: pertanyaanId}})
+    return await this.pertanyaanRepository.findOne({where: {id: pertanyaanId}, relations: ['jawaban', 'pertemuan']})
   }
 
-  update(id: number, updatePertanyaanDto: UpdatePertanyaanDto) {
-    return `This action updates a #${id} pertanyaan`;
+async update(pertanyaanId: number, updatePertanyaanDto: UpdatePertanyaanDto) {
+  const pertanyaan = await this.findOne(pertanyaanId);
+  if (!pertanyaan) {
+    throw new NotFoundException('Pertanyaan tidak ditemukan');
   }
+
+  // update pertanyaan_soal
+  pertanyaan.pertanyaan_soal = updatePertanyaanDto.pertanyaan_soal;
+  await this.pertanyaanRepository.save(pertanyaan);
+
+  // ambil jawaban lama
+  const jawabanLama = await this.jawabanRepository.find({
+    where: { pertanyaan: { id: pertanyaanId } },
+  });
+
+  if (!jawabanLama || jawabanLama.length === 0) {
+    throw new NotFoundException('Jawaban tidak ditemukan');
+  }
+
+  // hapus jawaban lama
+  await this.jawabanRepository.remove(jawabanLama);
+
+  // insert jawaban baru
+  const jawabanBaru = updatePertanyaanDto.pilihan.map((pilihan, index) => {
+    return this.jawabanRepository.create({
+      jawaban: pilihan,
+      jawaban_benar: Number(updatePertanyaanDto.jawaban) === index, // true kalau index sesuai jawaban benar
+      pertanyaan: pertanyaan,
+    });
+  });
+
+  return await this.jawabanRepository.save(jawabanBaru);
+}
 
   async remove(pertanyaanId: number) {
     const pertanyaan = await this.findOne(pertanyaanId)
+    const jawaban = await this.jawabanRepository.find({where: {pertanyaan: {id: pertanyaanId}}})
+    if(!jawaban){
+      throw new NotFoundException('jawaban tidak ditemukan')
+    }
     if(!pertanyaan){
       throw new NotFoundException('pertanyaan tidak ditemukan')
     }
+    await this.jawabanRepository.remove(jawaban)
     await this.pertanyaanRepository.remove(pertanyaan)
   }
 }

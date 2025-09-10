@@ -47,8 +47,17 @@ export class TugassController {
     return this.tugassService.update(+id, updateTugassDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tugassService.remove(+id);
+  @Roles('admin')
+  @Delete(':tugasId/:pertemuanId')
+  async remove(@Param('pertemuanId') pertemuanId: number, @Param('tugasId') tugasId: number, @Req() req:Request, @Res() res:Response) {
+    try {
+    await this.tugassService.remove(tugasId);
+      req.flash('success', 'successfuly delete assignment')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    } catch (error) {
+      req.flash('error', 'unsuccess delete assignment')
+      console.log(error)
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    }
   }
 }

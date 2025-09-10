@@ -7,7 +7,7 @@ import { multerConfigPdf, multerConfigPpt, multerConfigVideo } from 'src/common/
 import { JenisFile } from 'src/entities/materi.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { join } from 'path';
 const spire = require('spire.presentation').default;
 import { promises as fs } from 'fs';
@@ -20,33 +20,42 @@ export class MaterisController {
   constructor(private readonly materisService: MaterisService,private readonly convertApiService: ConvertApiService) {}
 
   @Roles('admin')
-@Post('pdf/:id')
+@Post('pdf/:pertemuanId')
 @UseInterceptors(FileInterceptor('file', multerConfigPdf))
 async createPdf(
   @Body() createMaterisDto: CreateMaterisDto,
   @UploadedFile() file: Express.Multer.File,
   @Res() res:Response,
-  @Param('id') id: number,
+  @Param('pertemuanId') pertemuanId: number,
+  @Req() req: Request
 ) {
-  createMaterisDto.file = file.filename; 
-  createMaterisDto.pertemuanId = id; 
+  try {
+      createMaterisDto.file = file.filename; 
+  createMaterisDto.pertemuanId = pertemuanId; 
   createMaterisDto.jenis_file = "pdf"
   await this.materisService.create(createMaterisDto);
-  res.redirect('/pertemuans')
+  req.flash('success', 'successfuly create materi pdf')
+  res.redirect(`/pertemuans/${pertemuanId}`)
+  } catch (error) {
+      req.flash('error', 'failed create materi pdf')
+  res.redirect(`/pertemuans/${pertemuanId}`)
+  }
+
 }
 
  @Roles('admin')
-  @Post('ppt/:id')
+  @Post('ppt/:pertemuanId')
   @UseInterceptors(FileInterceptor('file', multerConfigPpt))
   async createPpt(
     @Body() createMaterisDto: CreateMaterisDto,
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
-    @Param('id') id: number
+    @Param('pertemuanId') pertemuanId: number,
+    @Req() req:Request
   ) {
     try {
       createMaterisDto.file = file.filename + '_slides';
-      createMaterisDto.pertemuanId = id;
+      createMaterisDto.pertemuanId = pertemuanId;
       createMaterisDto.jenis_file = "ppt";
       
       await this.materisService.create(createMaterisDto);
@@ -58,32 +67,37 @@ async createPdf(
 
       await fs.unlink(inputPath);
 
-      console.log('Conversion completed. Slide URLs:', slideUrls);
       
-      res.redirect('/pertemuans');
+        req.flash('success', 'successfuly create materi ppt')
+  res.redirect(`/pertemuans/${pertemuanId}`)
     } catch (error) {
-      console.error('Error in createPpt:', error);
-      res.status(500).json({ 
-        message: 'Failed to process PPT file',
-        error: error.message 
-      });
+  req.flash('error', 'failed create materi pdf')
+  res.redirect(`/pertemuans/${pertemuanId}`)
     }
   }
 
   @Roles('admin')
-@Post('video/:id')
+@Post('video/:pertemuanId')
 @UseInterceptors(FileInterceptor('file', multerConfigVideo))
 async createVideo(
   @Body() createMaterisDto: CreateMaterisDto,
   @UploadedFile() file: Express.Multer.File,
   @Res() res:Response,
-  @Param('id') id:number
+  @Param('pertemuanId') pertemuanId:number,
+  @Req() req:Request
 ) {
-  createMaterisDto.file = file.filename; 
-  createMaterisDto.pertemuanId = id; 
+  try {
+      createMaterisDto.file = file.filename; 
+  createMaterisDto.pertemuanId = pertemuanId; 
   createMaterisDto.jenis_file = "video"
   await this.materisService.create(createMaterisDto);
-  res.redirect('/pertemuans')
+          req.flash('success', 'successfuly create materi video')
+  res.redirect(`/pertemuans/${pertemuanId}`)
+  } catch (error) {
+      req.flash('error', 'failed create materi video')
+  res.redirect(`/pertemuans/${pertemuanId}`)
+  }
+
 }
 
 @Roles('admin')
@@ -109,7 +123,7 @@ return this.materisService.findMateriBypertemuan(pertemuanId)
 
   @Roles('admin', 'user')
   @Get(':jenis_file/:pertemuanId')
-  async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('pertemuanId') pertemuanId: number, @Res() res: Response, @Req() req: any){
+  async findMateriByJenisFile(@Param('jenis_file') jenis_file: JenisFile, @Param('pertemuanId') pertemuanId: number, @Res() res: Response, @Req() req: Request){
     const pertemuan = await this.materisService.findPertemuan(pertemuanId)
     if(jenis_file === "video"){
       const materi = await this.materisService.findMateriVideo(pertemuanId)
@@ -187,9 +201,16 @@ async updatePpt(
 }
 
   @Roles('admin')
-  @Delete(':id')
-  async remove(@Param('id') id: number, @Res() res:Response) {
-    await this.materisService.remove(id);
-    res.redirect('/pertemuans')
+  @Delete(':materiId/:pertemuanId')
+  async remove(@Param('materiId') materiId: number,@Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:Request) {
+    try {
+          await this.materisService.remove(materiId);
+              req.flash('success', 'successfully delete materi')
+      res.redirect(`/pertemuans/${pertemuanId}`)
+    } catch (error) {
+      req.flash('error', 'failed delete materi')
+      res.redirect(`/pertemuans/${pertemuanId}`)
+    }
+
   }
 }

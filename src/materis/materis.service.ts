@@ -162,10 +162,32 @@ async deleteFileIfExists(filename: string) {
     return await this.materiRepository.save(materi)
   }
 
-  async remove(id: number) {
-    const materi = await this.findOne(id)
+
+async deleteFolder(folderName: string) {
+
+const BASE_PATH = join(__dirname, '..', '..', 'uploads', 'ppt');
+
+
+  const fullPath = join(BASE_PATH, folderName);
+
+  if (fs.existsSync(fullPath)) {
+    fs.rmSync(fullPath, { recursive: true, force: true });
+    console.log(BASE_PATH)
+    console.log(`Folder ${folderName} berhasil dihapus`);
+  } else {
+    console.log(BASE_PATH)
+    console.log(fullPath)
+    console.log(`Folder ${folderName} tidak ditemukan`);
+  }
+}
+
+  async remove(materiId: number) {
+    const materi = await this.findOne(materiId)
     if(!materi){
       throw new NotFoundException('materi tidak ditemukan')
+    }
+    if(materi.jenis_file === "ppt"){
+      await this.deleteFolder(materi.file)
     }
     await this.deleteFileIfExists(materi.file)
     return await this.materiRepository.remove(materi)

@@ -1,4 +1,5 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28" x-data="{ search: '' }">
+<div class="px-6 py-10 pt-28">
+<div class="max-w-5xl mx-auto" x-data="{ search: '' }">
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
     <div class="mb-4">
@@ -12,36 +13,46 @@
                 stroke-width="2" 
                 d="M15 19l-7-7 7-7" />
         </svg>
-        Kembali
+        Back
       </a>
     </div>  
 
     <div class="flex items-start justify-between">
       <div>
-        <h1 class="text-3xl font-bold mb-2">Pertemuan {{pertemuan.pertemuan_ke}}</h1>
+        <h1 class="text-3xl font-bold mb-2 text-gray-900">Session {{pertemuan.pertemuan_ke}}</h1>
+
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Topik:</span> {{pertemuan.topik}}
-        </p>
-        <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Tanggal:</span> {{formatTanggal pertemuan.tanggal}}
+          <span class="font-semibold">Class:</span> {{pertemuan.kelas.nama_kelas}}
         </p>
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Waktu :</span> {{formatTime pertemuan.waktu_awal}} - {{formatTime pertemuan.waktu_akhir}}
+          <span class="font-semibold">Metode:</span> {{pertemuan.metode}}
         </p>
-        <p class="text-gray-600">
-          <span class="font-semibold">Kelas:</span> {{pertemuan.kelas.nama_kelas}}
+        <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Location:</span> {{pertemuan.lokasi}}
+        </p class="text-gray-600">
+        <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Topic:</span> {{pertemuan.topik}}
         </p>
+        <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Date:</span> {{formatTanggal pertemuan.tanggal}}
+        </p>
+        <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Time :</span> {{formatTime pertemuan.waktu_awal}} - {{formatTime pertemuan.waktu_akhir}}
+        </p>
+
       </div>
 
       <div class="flex gap-3">
         <a href="/pertemuans/formEdit/{{pertemuan.id}}" 
-           class="bg-gray-700 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-800 transition">
+           class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
           Edit
         </a>
-        <form action="/pertemuans/{{pertemuan.id}}/{{pertemuan.kelas.id}}?_method=DELETE" method="post">
-          <button class="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition"
-                  onclick="return confirm('Yakin hapus pertemuan ini?')">
-            Hapus
+                <form action="/pertemuans/{{pertemuan.id}}/{{pertemuan.kelas.id}}?_method=DELETE" method="post">
+          <button 
+            type="button"
+            onclick="confirmDelete(this)"
+            class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-400 transition">
+            Delete
           </button>
         </form>
       </div>
@@ -50,7 +61,7 @@
 </div>
 
 
-<div class="max-w-5xl mx-auto px-6" x-data="{ tab: 'absen', search: '' }">
+<div class="max-w-5xl mx-auto" x-data="{ tab: 'absen', search: '' }">
 
     <div class="flex space-x-4 mb-6">
     <button @click="tab = 'absen'" 
@@ -77,339 +88,420 @@
     {{/if}}
   </div>
 
-  <div x-show="tab === 'absen'">
-    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-      <h2 class="text-2xl font-semibold mb-4">Kehadiran Peserta</h2>
-      <div class="flex items-center gap-3">
-        <input type="text" 
-               placeholder="Cari peserta" 
-               x-model="search"
-               class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"/>
-        <a href="/absens/create/{{pertemuan.id}}"
-           class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-          Tambah Absen
-        </a>
-      </div>
-    </div>
+  <div x-show="tab === 'absen'" >
+<div 
+     x-data="absenTable({ peserta: {{json murid}} })">
+  
+  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <h2 class="text-2xl font-semibold mb-4 text-gray-900">
+      Participants Attendance
+    </h2>
 
-    <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          {{#each murid}}
-          <tr class="hover:bg-gray-50 transition" 
-              x-show="'{{username}} {{email}} {{status}}'.toLowerCase().includes(search.toLowerCase())">
-            <td class="px-6 py-4 text-sm text-gray-800">{{username}}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
-            <td class="px-6 py-4 text-sm">
-              {{#each absen}}
-                <span class="font-medium">{{status}}</span>
-              {{/each}}
-            </td>
-            <td>
-              {{#each absen}}
-              <a href="/absens/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
-              <form action="/absens/{{id}}?_method=DELETE" method="post" class="inline">
-              {{/each}}
-                <button type="submit" class="text-gray-600 font-medium hover:underline">Hapus</button>
-              </form>
-            </td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
+    <div class="flex items-center gap-3">
+      <!-- Search -->
+      <div class="relative w-full md:w-64">
+        <input 
+          type="text" 
+          placeholder="Search perticipant..." 
+          x-model="searchInput"
+          @input="search = searchInput; pageNumber=0"
+          class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
+        />
+        <button 
+          @click="search = searchInput; pageNumber=0"
+          class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Tambah Absen -->
+      <a href="/absens/create/{{pertemuan.id}}"
+         class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Create Attendance
+      </a>
     </div>
   </div>
 
-  <div x-show="tab === 'materi'" class="space-y-12 py-6">
+  <!-- Table -->
+  <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {{#each murid}}
+        <tr class="hover:bg-gray-50 transition"
+            x-show="filteredPeserta.includes('{{id}}')">
+          <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{username}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
+          <td class="px-6 py-4 text-sm">
+            {{#each absen}}
+              <span class="font-medium">{{status}}</span>
+            {{/each}}
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
+            {{#each absen}}
+              <a href="/absens/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
+              <form action="/absens/{{id}}/{{../../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+                <button type="button" onclick="confirmDelete(this)" class="text-gray-600 font-medium hover:underline">Delete</button>
+              </form>
+            {{/each}}
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
 
-    <h2 class="text-2xl font-bold mb-6">Materi untuk Pertemuan</h2>
+  <!-- Pagination -->
+  <div class="w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center" 
+       x-show="pageCount() > 1">
+    <button @click="prevPage" :disabled="pageNumber==0"
+      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }">Prev</button>
 
-    <div class="bg-white rounded-xl shadow-lg p-6">
-      <h3 class="text-lg font-semibold mb-4">Materi PDF</h3>
-      {{#if materipdf.length}}
+    <template x-for="(page,index) in pages()" :key="index">
+      <button @click="viewPage(index)" 
+        class="px-3 py-1 rounded"
+        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
+        x-text="index+1"></button>
+    </template>
+
+    <button @click="nextPage" :disabled="pageNumber >= pageCount()-1"
+      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
+  </div>
+</div>
+  </div>
+
+<div x-show="tab === 'materi'">
+  <!-- List Materi -->
+  <h2 class="text-2xl font-semibold mb-6 text-gray-900">Materi Session</h2>
+
+  <!-- Materi PDF -->
+  <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <h3 class="text-lg font-semibold mb-4 text-gray-900">Materi PDF</h3>
+    {{#if materipdf.length}}
       <ul class="space-y-2">
         {{#each materipdf}}
-        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-          <span class="text-gray-800">{{judul}}</span>
-          <div class="flex space-x-2">
-            <a href="/materis/{{id}}/download" 
-               class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
-            <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
-              <button type="submit" 
-                      onclick="return confirm('Yakin hapus materi ini?')"
-                      class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
-            </form>
-          </div>
-        </li>
+          <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+            <span class="text-gray-800">{{judul}}</span>
+            <div class="flex space-x-2">
+              <a href="/materis/{{id}}/download" 
+                 class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
+              <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+                <button type="button" 
+                        onclick="confirmDelete(this)"
+                        class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Delete</button>
+              </form>
+            </div>
+          </li>
         {{/each}}
       </ul>
-      {{else}}
-        <p class="text-gray-500 italic">Belum ada PDF.</p>
-      {{/if}}
-    </div>
-
-    <div class="bg-white rounded-xl shadow-lg p-6">
-      <h3 class="text-lg font-semibold mb-4">Materi Video</h3>
-      {{#if materivideo.length}}
-      <ul class="space-y-2">
-        {{#each materivideo}}
-        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-          <span class="text-gray-800">{{judul}}</span>
-          <div class="flex space-x-2">
-            <a href="/materis/{{id}}/download" 
-               class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
-            <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
-              <button type="submit" 
-                      onclick="return confirm('Yakin hapus materi ini?')"
-                      class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
-            </form>
-          </div>
-        </li>
-        {{/each}}
-      </ul>
-      {{else}}
-        <p class="text-gray-500 italic">Belum ada Video.</p>
-      {{/if}}
-    </div>
-
-    <div class="bg-white rounded-xl shadow-lg p-6">
-      <h3 class="text-lg font-semibold mb-4">Materi PPT</h3>
-      {{#if materippt.length}}
-      <ul class="space-y-2">
-        {{#each materippt}}
-        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-          <span class="text-gray-800">{{judul}}</span>
-          <div class="flex space-x-2">
-            <a href="/materis/{{id}}/download" 
-               class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
-            <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
-              <button type="submit" 
-                      onclick="return confirm('Yakin hapus materi ini?')"
-                      class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
-            </form>
-          </div>
-        </li>
-        {{/each}}
-      </ul>
-      {{else}}
-        <p class="text-gray-500 italic">Belum ada PPT.</p>
-      {{/if}}
-    </div>
-
-
-    <div>
-      <h2 class="text-2xl font-bold mb-6">Tambah Materi</h2>
-      <div x-data="{ tab: 'pdf' }" class="space-y-6">
-        
-        <div class="flex space-x-4">
-          <button @click="tab = 'pdf'" 
-                  :class="tab === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-                  class="px-4 py-2 rounded-lg shadow transition">PDF</button>
-          <button @click="tab = 'video'" 
-                  :class="tab === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-                  class="px-4 py-2 rounded-lg shadow transition">Video</button>
-          <button @click="tab = 'ppt'" 
-                  :class="tab === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-                  class="px-4 py-2 rounded-lg shadow transition">PPT</button>
-        </div>
-
-        <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow-lg">
-          <form action="/materis/pdf/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Judul Materi</label>
-              <input type="text" name="judul" class="w-full border rounded-lg p-2" required>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Upload File PDF</label>
-              <input type="file" name="file" accept=".pdf" class="w-full border rounded-lg p-2" required>
-            </div>
-            <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Simpan PDF</button>
-          </form>
-        </div>
-
-        <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow-lg">
-          <form action="/materis/video/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Judul Materi</label>
-              <input type="text" name="judul" class="w-full border rounded-lg p-2" required>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Upload Video</label>
-              <input type="file" name="file" accept="video/*" class="w-full border rounded-lg p-2" required>
-            </div>
-            <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Simpan Video</button>
-          </form>
-        </div>
-
-        <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow-lg">
-          <form action="/materis/ppt/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Judul Tugas</label>
-              <input type="text" name="judul" class="w-full border rounded-lg p-2" required>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Upload File PPT</label>
-              <input type="file" name="file" accept=".ppt,.pptx" class="w-full border rounded-lg p-2" required>
-            </div>
-            <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Simpan PPT</button>
-          </form>
-        </div>
-
-      </div>
-    </div>
-
+    {{else}}
+      <p class="text-gray-500 italic">Not found PDF.</p>
+    {{/if}}
   </div>
 
-<div x-show="tab === 'tugas'" class="space-y-12 py-6">
+  <!-- Materi Video -->
+  <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <h3 class="text-lg font-semibold mb-4 text-gray-900">Materi Video</h3>
+    {{#if materivideo.length}}
+      <ul class="space-y-2">
+        {{#each materivideo}}
+          <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+            <span class="text-gray-800">{{judul}}</span>
+            <div class="flex space-x-2">
+              <a href="/materis/{{id}}/download" 
+                 class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
+              <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+                <button type="button" 
+                        onclick="confirmDelete(this)"
+                        class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Delete</button>
+              </form>
+            </div>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p class="text-gray-500 italic">Not found Video.</p>
+    {{/if}}
+  </div>
 
-  <!-- Bagian Info & Upload Tugas -->
+  <!-- Materi PPT -->
+  <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <h3 class="text-lg font-semibold mb-4 text-gray-900">Materi PPT</h3>
+    {{#if materippt.length}}
+      <ul class="space-y-2">
+        {{#each materippt}}
+          <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+            <span class="text-gray-800">{{judul}}</span>
+            <div class="flex space-x-2">
+              <a href="/materis/{{materiId}}/download" 
+                 class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
+              <form action="/materis/{{materiId}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+                <button type="button" 
+                        onclick="confirmDelete(this)"
+                        class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Delete</button>
+              </form>
+            </div>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p class="text-gray-500 italic">Not found PPT.</p>
+    {{/if}}
+  </div>
+
   <div class="bg-white rounded-xl shadow-lg p-6">
-    <h2 class="text-2xl font-bold mb-6">Tugas Pertemuan</h2>
+    
+    <div x-data="{ tab: 'pdf' }" class="space-y-6">
+      <div class="flex space-x-4">
+        <button @click="tab = 'pdf'" 
+                :class="tab === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                class="px-4 py-2 rounded-lg shadow transition">PDF</button>
+        <button @click="tab = 'video'" 
+                :class="tab === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                class="px-4 py-2 rounded-lg shadow transition">Video</button>
+        <button @click="tab = 'ppt'" 
+                :class="tab === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                class="px-4 py-2 rounded-lg shadow transition">PPT</button>
+      </div>
+
+      <!-- Form PDF -->
+      <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow-lg">
+        <form action="/materis/pdf/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700">Judul Materi</label>
+            <input type="text" name="judul" class="w-full border rounded-lg p-2 bg-white text-gray-700" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700">Upload File PDF</label>
+            <input type="file" name="file" accept=".pdf" class="w-full border rounded-lg p-2 text-gray-700" required>
+          </div>
+          <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Create PDF</button>
+        </form>
+      </div>
+
+      <!-- Form Video -->
+      <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow-lg">
+        <form action="/materis/video/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700">Judul Materi</label>
+            <input type="text" name="judul" class="w-full border rounded-lg p-2 bg-white text-gray-700" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700">Upload Video</label>
+            <input type="file" name="file" accept="video/*" class="w-full border rounded-lg p-2 text-gray-700" required>
+          </div>
+          <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Create Video</button>
+        </form>
+      </div>
+
+      <!-- Form PPT -->
+      <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow-lg">
+        <form action="/materis/ppt/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700">Judul Materi</label>
+            <input type="text" name="judul" class="w-full border rounded-lg p-2 bg-white text-gray-700" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700">Upload File PPT</label>
+            <input type="file" name="file" accept=".ppt,.pptx" class="w-full border rounded-lg p-2 text-gray-700" required>
+          </div>
+          <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Create PPT</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div x-show="tab === 'tugas'">
+
+  <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Tugas Pertemuan</h2>
 
     {{#if pertemuan.tugas.length}}
-    {{#each pertemuan.tugas}}
-      <div class="mb-6">
-        <p class="text-gray-800"><span class="font-semibold">Judul:</span> {{file}}</p>
-        <a href="/tugas/{{id}}/download" 
-           class="mt-2 inline-block bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">
-          Download Tugas
-        </a>
-        <a href="/jawaban-tugass/{{id}}">view submission</a>
+      <div class="space-y-6">
+        {{#each pertemuan.tugas}}
+          <div class="border rounded-lg p-4 bg-gray-50">
+            <p class="text-gray-800 mb-3">
+              <span class="font-semibold">Judul:</span> {{file}}
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <a href="/tugas/{{id}}/download" 
+                 class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+                Download
+              </a>
+              <a href="/jawaban-tugass/{{id}}"
+                 class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-500 transition">
+                View Submission
+              </a>
+              <form action="/tugass/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+                <button type="button" onclick="confirmDelete(this)" 
+                        class="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-500 transition">
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        {{/each}}
       </div>
-      {{/each}}
     {{else}}
       <p class="text-gray-500 italic">Belum ada tugas untuk pertemuan ini.</p>
     {{/if}}
   </div>
 
   <div class="bg-white rounded-xl shadow-lg p-6">
-    <h3 class="text-lg font-semibold mb-4">Create Submission</h3>
-    <form action="/tugass/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <h3 class="text-xl font-semibold mb-6 text-gray-900">Create Submission</h3>
+
+    <form action="/tugass/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-5">
+      
       <div>
-                    <div>
-              <label class="block text-sm font-medium mb-1">Judul Materi</label>
-              <input type="text" name="judul" class="w-full border rounded-lg p-2" required>
-            </div>
-        <label class="block text-sm font-medium mb-1">Upload File Submission</label>
-        <input type="file" name="file" accept=".pdf,.doc,.docx,.zip,.rar" 
-               class="w-full border rounded-lg p-2" required>
+        <label class="block text-sm font-medium mb-1 text-gray-700">Judul Materi</label>
+        <input type="text" name="judul" 
+               class="w-full border rounded-lg p-3 bg-white text-gray-700 focus:ring-2 focus:ring-gray-900 focus:outline-none" 
+               required>
       </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1 text-gray-700">Upload File Submission</label>
+        <input type="file" name="file" accept=".pdf,.doc,.docx,.zip,.rar"
+               class="w-full border rounded-lg p-3 text-gray-700 focus:ring-2 focus:ring-gray-900 focus:outline-none" 
+               required>
+      </div>
+
       <button type="submit" 
-              class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+              class="bg-gray-900 text-white px-6 py-2.5 rounded-lg shadow hover:bg-gray-700 transition">
         Create Submission
       </button>
     </form>
   </div>
 
-  <div class="bg-white rounded-xl shadow-lg p-6">
-    <h3 class="text-lg font-semibold mb-4">Daftar Pengumpulan</h3>
-
-    {{#if jawaban_tugas.length}}
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
-              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">File</th>
-              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal</th>
-              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            {{#each jawaban_tugas}}
-              <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4">{{user.username}}</td>
-                <td class="px-6 py-4">{{user.email}}</td>
-                <td class="px-6 py-4">
-                  <a href="/tugas/submission/{{id}}/download" 
-                     class="text-blue-600 hover:underline">Download</a>
-                </td>
-                <td class="px-6 py-4">{{formatTanggal created_at}}</td>
-                <td class="px-6 py-4">
-                  {{#if (roles proses 'acc')}}
-                    <span class="text-green-600 font-medium">Diterima</span>
-                  {{else}}
-                    <span class="text-yellow-600 font-medium">Belum dinilai</span>
-                  {{/if}}
-                </td>
-              </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    {{else}}
-      <p class="text-gray-500 italic">Belum ada yang mengumpulkan tugas.</p>
-    {{/if}}
-  </div>
-
 </div>
 
-
-<div x-show="tab === 'pertanyaan'" class="mb-8 p-6">
-  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-2xl font-semibold mb-4">Daftar Pertanyaan</h2>
-    <div class="flex items-center gap-3">
-      <a href="/pertanyaans/Formcreate/{{pertemuan.id}}"
-         class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-        Tambah Pertanyaan
-      </a>
-    </div>
+<div x-show="tab === 'pertanyaan'" class="space-y-6">
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <h2 class="text-2xl font-semibold text-gray-900">List Quiz</h2>
+    <a href="/pertanyaans/Formcreate/{{pertemuan.id}}"
+       class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+      Create Quiz
+    </a>
   </div>
 
-  {{#each pertanyaan}}
-  <div class="space-y-4">
-    <div x-data="{ open: false }" class="bg-gray-50 rounded-lg shadow">
-      <button @click="open = !open" 
-              class="w-full flex justify-between items-center px-6 py-4 text-left">
-        <span class="font-semibold text-gray-800">Pertanyaan</span>
-        <svg xmlns="http://www.w3.org/2000/svg" 
-             :class="{'rotate-180': open}" 
-             class="h-5 w-5 transform transition-transform" 
-             fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+  {{#if pertanyaan.length}}
+    <div class="space-y-4">
+      {{#each pertanyaan}}
+      <div x-data="{ open: false }" class="bg-white border rounded-lg shadow">
+        <button @click="open = !open"
+                class="w-full flex justify-between items-center px-6 py-4 text-left">
+          <span class="font-semibold text-gray-800">Pertanyaan</span>
+          <svg xmlns="http://www.w3.org/2000/svg"
+               :class="{'rotate-180': open}"
+               class="h-5 w-5 transform transition-transform"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
 
-      <div x-show="open" x-collapse class="px-6 pb-4">
-        <p class="mb-3 text-gray-700">{{this.pertanyaan_soal}}</p>
-        <ul class="space-y-2">
-          {{#each this.jawaban}}
-          <li class="flex items-center gap-3 p-2 border rounded-lg {{#if this.jawaban_benar}}bg-green-100 border-green-400{{else}}bg-white{{/if}}">
-            <span>{{this.jawaban}}</span>
-            {{#if this.jawaban_benar}}
-            <span class="ml-auto text-green-600 font-semibold text-sm">Benar</span>
-            {{/if}}
-          </li>
-          {{/each}}
-        </ul>
+        <!-- Content -->
+        <div x-show="open" x-collapse class="px-6 pb-6 space-y-4">
+          <!-- Soal -->
+          <p class="text-gray-700">{{this.pertanyaan_soal}}</p>
 
-        <div class="mt-4 flex gap-3">
-          <a href="/pertanyaans/formEdit/{{this.id}}" 
-             class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition">
-            Edit
-          </a>
-          <form action="/pertanyaans/{{this.id}}/{{../pertemuan.id}}?_method=DELETE" method="post">
-            <button onclick="return confirm('Yakin hapus pertanyaan ini?')" 
-                    class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
-              Hapus
-            </button>
-          </form>
+          <!-- Jawaban -->
+          <ul class="space-y-2">
+            {{#each this.jawaban}}
+            <li
+              class="flex items-center gap-3 p-2 rounded-lg border 
+                     {{#if this.jawaban_benar}}
+                       bg-green-50 border-green-400
+                     {{else}}
+                       bg-gray-50 border-gray-200
+                     {{/if}}">
+              <span class="text-gray-700">{{this.jawaban}}</span>
+              {{#if this.jawaban_benar}}
+              <span class="ml-auto text-green-600 font-semibold text-sm">Benar</span>
+              {{/if}}
+            </li>
+            {{/each}}
+          </ul>
+
+          <!-- Actions -->
+          <div class="flex gap-3 pt-2">
+            <a href="/pertanyaans/FormEdit/{{this.id}}"
+               class="px-4 py-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition">
+              Edit
+            </a>
+            <form action="/pertanyaans/{{this.id}}/{{../pertemuan.id}}?_method=DELETE" method="post">
+              <button type="button" 
+                          onclick="confirmDelete(this)"
+                      class="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-400 transition">
+                Hapus
+              </button>
+            </form>
+          </div>
         </div>
       </div>
+      {{/each}}
     </div>
-  </div>
-  {{/each}}
+  {{else}}
+    <!-- Pesan jika belum ada pertanyaan -->
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+      </svg>
+      <p class="text-gray-600 font-medium">Belum ada pertanyaan</p>
+      <p class="text-gray-500 text-sm mt-1">Klik tombol <span class="font-semibold">Create Quiz</span> untuk menambahkan pertanyaan baru.</p>
+    </div>
+  {{/if}}
 </div>
 
 
+
 </div>
+</div>
+
+
+<script>
+function absenTable({ peserta }) {
+  return {
+    searchInput: "",
+    search: "",
+    pageNumber: 0,
+    size: 5,
+    peserta,
+    amount: 0,
+    get filteredPeserta() {
+      let filtered = this.peserta.filter(u =>
+        (`${u.username} ${u.email} ${u.status || ''}`).toLowerCase()
+          .includes(this.search.toLowerCase())
+      );
+      this.amount = filtered.length;
+
+      const start = this.pageNumber * this.size;
+      const end = start + this.size;
+      return filtered.slice(start, end).map(u => u.id.toString());
+    },
+    pages() { return Array.from({ length: this.pageCount() }); },
+    pageCount() { return Math.ceil(this.amount / this.size); },
+    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
+    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
+    viewPage(index) { this.pageNumber = index; },
+  }
+}
+</script>

@@ -121,6 +121,12 @@ async findPertanyaan(pertemuanId: number){
     if(!pertemuan){
       throw new NotFoundException('pertemuan tidak ditemukan');
     }
+
+    if(updatePertemuanDto.akhir_check === 'true'){
+        updatePertemuanDto.akhir = true
+      }else{
+        updatePertemuanDto.akhir = false
+      }
     Object.assign(pertemuan, updatePertemuanDto)
     return await this.pertemuanRepository.save(pertemuan)
   }

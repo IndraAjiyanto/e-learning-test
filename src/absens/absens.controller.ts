@@ -4,7 +4,7 @@ import { CreateAbsenDto } from './dto/create-absen.dto';
 import { UpdateAbsenDto } from './dto/update-absen.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('absens')
@@ -13,20 +13,34 @@ export class AbsensController {
 
   @Roles('user')
   @Post(':pertemuanId/:userId/:kelasId')
-  async create(@Param('pertemuanId') pertemuanId: number,@Param('kelasId') kelasId: number, @Param('userId') userId: number,@Res() res: Response,@Body() createAbsenDto: CreateAbsenDto, @Req() req: any) {
-    createAbsenDto.pertemuanId = pertemuanId
+  async create(@Param('pertemuanId') pertemuanId: number,@Param('kelasId') kelasId: number, @Param('userId') userId: number,@Res() res: Response,@Body() createAbsenDto: CreateAbsenDto, @Req() req: Request) {
+    try {
+          createAbsenDto.pertemuanId = pertemuanId
     createAbsenDto.userId = userId
     createAbsenDto.waktu_absen = new Date()
     await this.absensService.create(createAbsenDto);
+    req.flash('success', 'Successfully submitted attendance');
     res.redirect(`/kelass/${kelasId}`)
+    } catch (error) {
+    req.flash('error', 'You have already submitted attendance for this meeting');
+    res.redirect(`/kelass/${kelasId}`)
+    }
+
   }
 
   @Roles('admin')
   @Post(':pertemuanId')
-  async createAbsen(@Param('pertemuanId') pertemuanId: number, @Res() res: Response,@Body() createAbsenDto: CreateAbsenDto, @Req() req: any) {
-    createAbsenDto.pertemuanId = pertemuanId
+  async createAbsen(@Param('pertemuanId') pertemuanId: number, @Res() res: Response,@Body() createAbsenDto: CreateAbsenDto, @Req() req: Request) {
+    try {
+          createAbsenDto.pertemuanId = pertemuanId
     await this.absensService.create(createAbsenDto);
-    res.redirect('/absens')
+    req.flash('success', 'Successfully added attendance');
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    } catch (error) {
+    req.flash('success', 'Failed to add attendance, user has already submitted attendance for this session');
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    }
+
   }
 
   @Roles('user')
@@ -65,16 +79,30 @@ export class AbsensController {
   }
 
   @Roles('user', 'admin')
-  @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateAbsenDto: UpdateAbsenDto, @Res() res:Response, @Req() req:any) {
-    await this.absensService.update(id, updateAbsenDto);
-    res.redirect('/absens')
+  @Patch(':absenId')
+  async update(@Param('absenId') absenId: number, @Body() updateAbsenDto: UpdateAbsenDto, @Res() res:Response, @Req() req:Request) {
+    try {
+        await this.absensService.update(absenId, updateAbsenDto);
+        req.flash('success', 'Successfully updated attendance');
+        res.redirect(`/pertemuans/${updateAbsenDto.pertemuanId}`)
+    } catch (error) {
+        req.flash('error', 'Failed to update attendance');
+        res.redirect(`/pertemuans/${updateAbsenDto.pertemuanId}`)
+    }
+
   }
 
   @Roles('admin')
-  @Delete(':id')
-  async remove(@Param('id') id: number, @Res() res:Response, @Req() req:any) {
-    await this.absensService.remove(id);
-    res.redirect('/absens')
+  @Delete(':absenId/:pertemuanId')
+  async remove(@Param('absenId') absenId: number, @Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:Request) {
+    try {
+    await this.absensService.remove(absenId);
+    req.flash('success','Successfully delete attendace')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    } catch (error) {
+          req.flash('error','Failed to delete attendance')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    }
+
   }
 }

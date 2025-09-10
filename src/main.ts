@@ -47,6 +47,10 @@ hbs.registerHelper('isNowBetween', function (tanggal: string, waktu_awal: string
   return now >= start && now <= end;
 });
 
+hbs.registerHelper('lookup', function(str, index) {
+  return str[index];
+});
+
 
 
   hbs.registerHelper('formatTanggal', function (tanggal: string) {

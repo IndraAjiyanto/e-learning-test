@@ -85,10 +85,17 @@ export class PertemuansController {
   }
 
   @Roles('admin')
-  @Patch(':id')
-  async update(@Param('id') id: number, @Body() updatePertemuanDto: UpdatePertemuanDto, @Res() res:Response) {
-    await this.pertemuansService.update(id, updatePertemuanDto);
-    res.redirect('/pertemuans')
+  @Patch(':pertemuanId')
+  async update(@Param('pertemuanId') pertemuanId: number, @Body() updatePertemuanDto: UpdatePertemuanDto, @Res() res:Response, @Req() req:Request) {
+    try {
+          await this.pertemuansService.update(pertemuanId, updatePertemuanDto);
+          req.flash('success', 'Session successfuly update')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    } catch (error) {
+                req.flash('error', 'Session unsuccess update')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    }
+
   }
 
   @Roles('admin')

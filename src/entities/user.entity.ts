@@ -49,19 +49,19 @@ export class User {
     }
   }
 
-@OneToMany(() => Absen, (absen) => absen.user, { cascade: true })
+@OneToMany(() => Absen, (absen) => absen.user, { cascade: true, onDelete: 'CASCADE' })
   absen: Absen[];
 
-@OneToMany(() => Portfolio, (portfolio) => portfolio.user, { cascade: true })
+@OneToMany(() => Portfolio, (portfolio) => portfolio.user, { cascade: true, onDelete: 'CASCADE'  })
   portfolio: Portfolio[];
 
-@OneToMany(() => Pembayaran, (pembayaran) => pembayaran.user, { cascade: true })
+@OneToMany(() => Pembayaran, (pembayaran) => pembayaran.user, { cascade: true,  onDelete: 'CASCADE' })
   pembayaran: Pembayaran[];
 
-@OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.user, { cascade: true })
+@OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.user, { cascade: true, onDelete: 'CASCADE' })
   jawaban_user: JawabanUser[];
 
-@OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.user, { cascade: true })
+@OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.user, { cascade: true, onDelete: 'CASCADE' })
   jawaban_tugas: JawabanTugas[];
 
 @ManyToMany(() => Kelas, (kelas) => kelas.user)

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards 
 import { PertanyaansService } from './pertanyaans.service';
 import { CreatePertanyaanDto } from './dto/create-pertanyaan.dto';
 import { UpdatePertanyaanDto } from './dto/update-pertanyaan.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { PertemuansService } from 'src/pertemuans/pertemuans.service';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { JawabansService } from 'src/jawabans/jawabans.service';
@@ -30,7 +30,6 @@ async create(
   try {
     createPertanyaanDto.pertemuanId = pertemuanId;
     const pertanyaan = await this.pertanyaansService.create(createPertanyaanDto);
-    console.log(createPertanyaanDto)
     for (let i = 0; i < createPertanyaanDto.pilihan.length; i++) {
       await this.jawabansService.create({
         pertanyaanId: pertanyaan['id'],
@@ -56,10 +55,10 @@ async create(
   }
 
   @Roles('admin')
-  @Get(':pertemuanId')
-  async findPertanyaan(@Req() req:any, @Res() res:Response, @Param('pertemuanId') pertemuanId:number) {
-    const pertanyaan = await this.pertanyaansService.findPertanyaan(pertemuanId);
-    res.render('admin/quiz/index', {user: req.user, pertanyaan})
+  @Get('FormEdit/:pertanyaanId')
+  async findPertanyaan(@Req() req:Request, @Res() res:Response, @Param('pertanyaanId') pertanyaanId:number) {
+    const pertanyaan = await this.pertanyaansService.findOne(pertanyaanId);
+    res.render('admin/quiz/edit', {user: req.user, pertanyaan})
   }
 
   @Get(':id')
@@ -86,15 +85,30 @@ async create(
     res.render('user/quiz/detail', {user: req.user, pertanyaan, pertemuan, jawaban_user, nilai})
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePertanyaanDto: UpdatePertanyaanDto) {
-    return this.pertanyaansService.update(+id, updatePertanyaanDto);
+  @Roles('admin')
+  @Patch(':pertanyaanId/:pertemuanId')
+  async update(@Param('pertanyaanId') pertanyaanId: number, @Param('pertemuanId') pertemuanId: number, @Body() updatePertanyaanDto: UpdatePertanyaanDto, @Req() req:Request, @Res() res:Response) {
+    try {
+    await this.pertanyaansService.update(pertanyaanId, updatePertanyaanDto);
+    req.flash('success', 'successfuly update question')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    } catch (error) {
+          req.flash('error', 'unsuccess update question')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    }
   }
 
   @Roles('admin')
   @Delete(':pertanyaanId/:pertemuanId')
-  async remove(@Param('pertemuanId') pertemuanId: number,@Param('pertanyaanId') pertanyaanId: number, @Req() req:any, @Res() res:Response) {
-    await this.pertanyaansService.remove(pertanyaanId);
+  async remove(@Param('pertemuanId') pertemuanId: number,@Param('pertanyaanId') pertanyaanId: number, @Req() req:Request, @Res() res:Response) {
+    try {
+          await this.pertanyaansService.remove(pertanyaanId);
+          req.flash('success', 'successfuly delete question')
     res.redirect(`/pertemuans/${pertemuanId}`)
+    } catch (error) {
+      req.flash('error', 'unsuccess delete question')
+    res.redirect(`/pertemuans/${pertemuanId}`)
+    }
+
   }
 }
