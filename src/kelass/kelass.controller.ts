@@ -121,7 +121,7 @@ export class KelassController {
       const kelas = await this.kelassService.findOne(kelasId)
       if (gambar) {
       await this.usersService.getPublicIdFromUrl(kelas.gambar);
-      updateKelassDto.gambar = gambar.filename; 
+      updateKelassDto.gambar = gambar.path; 
       } 
       await this.kelassService.update(kelasId, updateKelassDto);
       req.flash('success', 'Successfully update kelas')

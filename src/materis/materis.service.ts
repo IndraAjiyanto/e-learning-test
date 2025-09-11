@@ -7,15 +7,8 @@ import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import * as fs from 'fs';
 import { join } from 'path';
-import * as path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
-
-const foldersToSearch = [
-  './uploads/pdf',
-  './uploads/images',
-  './uploads/videos',
-  './uploads/ppt',
-];
 
 @Injectable()
 export class MaterisService {
@@ -72,18 +65,6 @@ async findPertemuan(pertemuanId: number){
     })
   }
 
-  async getSlide(file: string){
-    const folderPath = path.join(process.cwd(), 'uploads', 'ppt', file);
-    
-    if (!fs.existsSync(folderPath)) {
-      return [];
-    }
-
-    return fs.readdirSync(folderPath)
-      .filter(png => /\.(png|jpg|jpeg)$/i.test(png))
-      .map(png => `/uploads/ppt/${file}/${png}`);
-  }
-
 
   async findPertemuanByKelas(kelasId: number){
     const pertemuan = await this.pertemuanRepository.find({
@@ -128,17 +109,40 @@ async findPertemuan(pertemuanId: number){
     return materi;
   }
 
-async deleteFileIfExists(filename: string) {
-  for (const folder of foldersToSearch) {
-    const fullPath = join(folder, filename);
-
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
-      return; 
-    }
+async getPublicIdFromUrl(url: string) {
+  // Pisahkan berdasarkan "/upload/"
+  const parts = url.split('/upload/');
+  if (parts.length < 2) {
+    return null;
   }
 
-  console.log('File not found in any folder.');
+  // Ambil bagian setelah upload/
+  let path = parts[1];
+
+  // Hapus "v1234567890/" (versi auto Cloudinary)
+  path = path.replace(/^v[0-9]+\/?/, '');
+
+  // Buang extension (.jpg, .png, .pdf, dll)
+  path = path.replace(/\.[^.]+$/, '');
+
+  console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
+
+  await this.deleteFileIfExists(path);
+}
+
+async deleteFileIfExists(publicId: string) {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+
+    if (result.result === 'not found') {
+      console.log('File not found in Cloudinary.');
+    } else {
+      console.log('File deleted from Cloudinary:', result);
+    }
+  } catch (error) {
+    console.error('Error deleting file from Cloudinary:', error);
+    throw error;
+  }
 }
 
   async update(id: number, updateMaterisDto: UpdateMaterisDto) {
@@ -150,34 +154,12 @@ async deleteFileIfExists(filename: string) {
     return await this.materiRepository.save(materi)
   }
 
-
-async deleteFolder(folderName: string) {
-
-const BASE_PATH = join(__dirname, '..', '..', 'uploads', 'ppt');
-
-
-  const fullPath = join(BASE_PATH, folderName);
-
-  if (fs.existsSync(fullPath)) {
-    fs.rmSync(fullPath, { recursive: true, force: true });
-    console.log(BASE_PATH)
-    console.log(`Folder ${folderName} berhasil dihapus`);
-  } else {
-    console.log(BASE_PATH)
-    console.log(fullPath)
-    console.log(`Folder ${folderName} tidak ditemukan`);
-  }
-}
-
   async remove(materiId: number) {
     const materi = await this.findOne(materiId)
     if(!materi){
       throw new NotFoundException('materi tidak ditemukan')
     }
-    if(materi.jenis_file === "ppt"){
-      await this.deleteFolder(materi.file)
-    }
-    await this.deleteFileIfExists(materi.file)
+    await this.getPublicIdFromUrl(materi.file)
     return await this.materiRepository.remove(materi)
   }
 }

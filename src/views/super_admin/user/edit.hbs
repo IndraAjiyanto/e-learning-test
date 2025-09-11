@@ -7,7 +7,7 @@
 <div 
   x-data="{ 
     previewUrl: null, 
-    oldPhoto: '{{#if users.profile}}/uploads/images/profile/{{users.profile}}{{else}}/images/default-avatar.png{{/if}}' 
+    oldPhoto: '{{#if users.profile}}{{users.profile}}{{else}}/images/default-avatar.png{{/if}}' 
   }" 
   class="space-y-3"
 >

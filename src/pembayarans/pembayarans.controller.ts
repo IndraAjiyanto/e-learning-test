@@ -40,13 +40,13 @@ export class PembayaransController {
       }
 
     }else{
-    createPembayaranDto.file = file.filename
+    createPembayaranDto.file = file.path
     createPembayaranDto.kelasId = kelasId
     createPembayaranDto.userId = userId
     createPembayaranDto.proses = 'proces'
     const pembayaran = await this.pembayaransService.create(createPembayaranDto);
     if(pembayaran == false){
-        await this.pembayaransService.deletePaymentIfExists(createPembayaranDto.file);
+        await this.pembayaransService.getPublicIdFromUrl(createPembayaranDto.file);
         req.flash('info', 'anda sudah mengirimkan bukti pembayaran, silahkan tunggu info selanjutnya dari admin')
         res.redirect(`/pembayarans/riwayat/${userId}`)
     }else{

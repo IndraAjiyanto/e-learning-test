@@ -20,7 +20,7 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('profile', multerConfigImage)) 
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response, @UploadedFile() profile: Express.Multer.File, @Req() req:any) {
     try {
-      createUserDto.profile = profile.filename;
+      createUserDto.profile = profile.path;
       await this.usersService.create(createUserDto);
       req.flash('success', 'User created successfully');
       res.redirect('/users')
@@ -90,7 +90,7 @@ async findAll(@Res() res: Response, @Req() req: any) {
       const user = await this.usersService.findOne(userId)
       if (profile) {
       await this.usersService.getPublicIdFromUrl(user.profile);
-      updateUserDto.profile = profile.filename; 
+      updateUserDto.profile = profile.path; 
     } 
       await this.usersService.update(userId, updateUserDto);
       req.flash('success', 'User successfully updated');
@@ -113,7 +113,7 @@ async findAll(@Res() res: Response, @Req() req: any) {
     const user = await this.usersService.findOne(userId)
     if (profile) {
       await this.usersService.getPublicIdFromUrl(user.profile);
-      updateProfileDto.profile = profile.filename; 
+      updateProfileDto.profile = profile.path; 
     } 
     await this.usersService.updateProfile(userId, updateProfileDto)
     res.redirect('/users/profile')

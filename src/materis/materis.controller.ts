@@ -244,8 +244,8 @@ async updatePdf(
   const materi = await this.materisService.findOne(id);
 
   if (file) {
-    await this.materisService.deleteFileIfExists(materi.file);
-    updateMaterisDto.file = file.filename; 
+    await this.materisService.getPublicIdFromUrl(materi.file);
+    updateMaterisDto.file = file.path; 
   } 
 
   return await this.materisService.update(id, updateMaterisDto);
@@ -262,8 +262,8 @@ async updateVideo(
   const materi = await this.materisService.findOne(id);
 
   if (file) {
-    await this.materisService.deleteFileIfExists(materi.file);
-    updateMaterisDto.file = file.filename; 
+    await this.materisService.getPublicIdFromUrl(materi.file);
+    updateMaterisDto.file = file.path; 
   } 
 
   return await this.materisService.update(id, updateMaterisDto);
@@ -280,8 +280,8 @@ async updatePpt(
   const materi = await this.materisService.findOne(id);
 
   if (file) {
-    await this.materisService.deleteFileIfExists(materi.file);
-    updateMaterisDto.file = file.filename; 
+    await this.materisService.getPublicIdFromUrl(materi.file);
+    updateMaterisDto.file = file.path; 
   } 
 
   return await this.materisService.update(id, updateMaterisDto);

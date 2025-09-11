@@ -6,8 +6,7 @@ import { Pembayaran } from 'src/entities/pembayaran.entity';
 import { Not, Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
-import { join } from 'path';
-import * as fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
 
 
 @Injectable()
@@ -123,15 +122,41 @@ export class PembayaransService {
         return await this.pembayaranRepository.save(pembayaran)
       }
 
-      async deletePaymentIfExists(filename: string) {
-          const fullPath = join('./uploads/images/payment', filename);
-      
-          if (fs.existsSync(fullPath)) {
-            fs.unlinkSync(fullPath);
-            return ; 
-          }
-        console.log('File not found in any folder.');
-        }
+async getPublicIdFromUrl(url: string) {
+  // Pisahkan berdasarkan "/upload/"
+  const parts = url.split('/upload/');
+  if (parts.length < 2) {
+    return null;
+  }
+
+  // Ambil bagian setelah upload/
+  let path = parts[1];
+
+  // Hapus "v1234567890/" (versi auto Cloudinary)
+  path = path.replace(/^v[0-9]+\/?/, '');
+
+  // Buang extension (.jpg, .png, .pdf, dll)
+  path = path.replace(/\.[^.]+$/, '');
+
+  console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
+
+  await this.deleteFileIfExists(path);
+}
+
+async deleteFileIfExists(publicId: string) {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+
+    if (result.result === 'not found') {
+      console.log('File not found in Cloudinary.');
+    } else {
+      console.log('File deleted from Cloudinary:', result);
+    }
+  } catch (error) {
+    console.error('Error deleting file from Cloudinary:', error);
+    throw error;
+  }
+}
 
   remove(id: number) {
     return `This action removes a #${id} pembayaran`;

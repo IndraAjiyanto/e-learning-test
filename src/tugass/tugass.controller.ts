@@ -19,7 +19,7 @@ export class TugassController {
   async create(@Body() createTugassDto: CreateTugassDto, @UploadedFile() file: Express.Multer.File, @Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:Request) {
     try {
           createTugassDto.pertemuanId = pertemuanId
-    createTugassDto.file = file.filename
+    createTugassDto.file = file.path
     createTugassDto.nilai = 0
     await this.tugassService.create(createTugassDto);
     req.flash('success', 'submission successfuly create')
