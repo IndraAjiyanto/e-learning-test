@@ -1,142 +1,103 @@
-import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { Request } from 'express';
+// 3. Multer Config yang diperbaiki
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { Options as MulterOptions } from 'multer';
+import * as dotenv from 'dotenv';
 
-export const multerConfigImage = {
-  storage: diskStorage({
-    destination: './uploads/images/profile',
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const ext = extname(file.originalname);
-      cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-    },
-  }),
+dotenv.config();
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-  fileFilter: (req: Request, file, cb) => {
-    const { mimetype } = file;
+export default cloudinary;
 
-    if (mimetype.startsWith('image/')) {
-      if (['image/jpeg', 'image/png'].includes(mimetype)) {
-        cb(null, true);
-      } else {
-        cb(new Error('Only JPG and PNG images are allowed!'), false);
-      }
+// Untuk PPT, kita gunakan memory storage karena perlu convert dulu
+export const multerConfigPpt: MulterOptions = {
+  storage: new (require('multer')).memoryStorage(), // Gunakan memory storage
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Validasi file type
+    const allowedMimeTypes = [
+      'application/vnd.ms-powerpoint', // .ppt
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation' // .pptx
+    ];
+
+    const allowedExtensions = ['.ppt', '.pptx'];
+    const fileExtension = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf('.'));
+
+    if (allowedMimeTypes.includes(file.mimetype) && allowedExtensions.includes(fileExtension)) {
+      cb(null, true);
     } else {
-      cb(new Error('Unsupported file type!'), false);
+      cb(null, false);
     }
-  },
-
-  limits: {
-    fileSize: 1024 * 1024
   },
 };
 
-export const multerConfigPayment = {
-  storage: diskStorage({
-    destination: './uploads/images/payment',
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const ext = extname(file.originalname);
-      cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-    },
+// Config lainnya tetap sama
+export const multerConfigImage: MulterOptions = {
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: 'nestjs/images/profile',
+      allowed_formats: ['jpg', 'png', 'jpeg'],
+      transformation: [{ width: 500, height: 500, crop: 'limit' }],
+      public_id: (req, file) =>
+        `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+    } as any,
   }),
-
-
-  fileFilter: (req: Request, file, cb) => {
-    const { mimetype } = file;
-
-    if (mimetype.startsWith('image/')) {
-      if (['image/jpeg', 'image/png'].includes(mimetype)) {
-        cb(null, true);
-      } else {
-        cb(new Error('Only JPG and PNG images are allowed!'), false);
-      }
-    } else {
-      cb(new Error('Unsupported file type!'), false);
-    }
-  },
-
   limits: {
-    fileSize: 1024 * 1024
+    fileSize: 5 * 1024 * 1024, // 5MB
   },
 };
 
-export const multerConfigVideo = {
-  storage: diskStorage({
-    destination: './uploads/videos',
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const ext = extname(file.originalname);
-      cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-    },
+export const multerConfigPayment: MulterOptions = {
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: 'nestjs/images/payment',
+      allowed_formats: ['jpg', 'png', 'jpeg'],
+      public_id: (req, file) =>
+        `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+    } as any,
   }),
-
-  fileFilter: (req: Request, file, cb) => {
-    const { mimetype } = file;
-
-    if (mimetype.startsWith('video/')) {
-      if (mimetype === 'video/mp4') {
-        cb(null, true);
-      } else {
-        cb(new Error('Only MP4 videos are allowed!'), false);
-      }
-    }  else {
-      cb(new Error('Unsupported file type!'), false);
-    }
-  },
-
   limits: {
-    fileSize: 5 * 1024 * 1024, 
+    fileSize: 5 * 1024 * 1024, // 5MB
   },
 };
 
-export const multerConfigPdf = {
-  storage: diskStorage({
-    destination: './uploads/pdf',
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const ext = extname(file.originalname);
-      cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-    },
+export const multerConfigVideo: MulterOptions = {
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: 'nestjs/videos',
+      resource_type: 'video',
+      allowed_formats: ['mp4', 'avi', 'mov'],
+      public_id: (req, file) =>
+        `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+    } as any,
   }),
-
-  fileFilter: (req: Request, file, cb) => {
-    const { mimetype } = file;
-
-    if (mimetype === 'application/pdf') {
-      cb(null, true); 
-
-    }else {
-      cb(new Error('Unsupported file type!'), false);
-    }
-  },
-
   limits: {
-    fileSize: 5 * 1024 * 1024, 
+    fileSize: 100 * 1024 * 1024, // 100MB
   },
 };
 
-export const multerConfigPpt = {
-  storage: diskStorage({
-    destination: './uploads/ppt',
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const ext = extname(file.originalname);
-      cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-    },
+export const multerConfigPdf: MulterOptions = {
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: 'nestjs/pdf',
+      allowed_formats: ['pdf'],
+      resource_type: 'raw',
+      public_id: (req, file) =>
+        `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+    } as any,
   }),
-
-  fileFilter: (req: Request, file, cb) => {
-    const { mimetype } = file;
-     if(mimetype === 'application/vnd.ms-powerpoint' || mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'){
-        cb(null, true)
-    } else {
-      cb(new Error('Unsupported file type!'), false);
-    }
-  },
-
   limits: {
-    fileSize: 5 * 1024 * 1024 , 
+    fileSize: 20 * 1024 * 1024, // 20MB
   },
 };

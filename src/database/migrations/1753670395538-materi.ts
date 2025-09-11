@@ -22,6 +22,11 @@ export class Materi1753670395538 implements MigrationInterface {
                     type: 'varchar'
                 },
                 {
+                    name: 'slides',
+                    type: 'jsonb',
+                    isNullable: true
+                },
+                {
                     name: 'jenis_file',
                     type: 'enum',
                     enum: ['video', 'pdf', 'ppt']

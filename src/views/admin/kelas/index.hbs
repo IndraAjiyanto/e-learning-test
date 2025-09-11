@@ -51,7 +51,7 @@
             x-show="filteredKelas.includes('{{id}}')">
           <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">
-            <img src="/uploads/images/profile/{{gambar}}" 
+            <img src="{{gambar}}" 
                  alt="{{nama_kelas}}" 
                  class="w-12 h-12 rounded-full object-cover border" />
           </td>
@@ -73,8 +73,8 @@
           </td>
           <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
             {{#if (roles ../user.role "admin")}}
-              <a href="/kelass/detail/kelas/admin/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">Show Kelas</a>
-              <a href="/kelass/addUser/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">Show murid</a>
+              <a href="/kelass/detail/kelas/admin/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">View Kelas</a>
+              <a href="/kelass/addUser/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">View murid</a>
             {{else}}
               <a href="/kelass/edit/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">Edit</a>
               <form action="/kelass/{{id}}?_method=DELETE" method="post" class="inline">

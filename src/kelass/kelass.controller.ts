@@ -20,7 +20,7 @@ export class KelassController {
   @UseInterceptors(FileInterceptor('gambar', multerConfigImage)) 
   async create(@Body() createKelassDto: CreateKelassDto, @Res() res: Response, @UploadedFile() gambar: Express.Multer.File, @Req() req:Request) {
     try {
-        createKelassDto.gambar = gambar.filename
+        createKelassDto.gambar = gambar.path
         await this.kelassService.create(createKelassDto);
         req.flash('success', 'class successfully created')
         res.redirect('/kelass');
@@ -120,7 +120,7 @@ export class KelassController {
     try {
       const kelas = await this.kelassService.findOne(kelasId)
       if (gambar) {
-      await this.usersService.deleteProfileIfExists(kelas.gambar);
+      await this.usersService.getPublicIdFromUrl(kelas.gambar);
       updateKelassDto.gambar = gambar.filename; 
       } 
       await this.kelassService.update(kelasId, updateKelassDto);
@@ -160,7 +160,7 @@ export class KelassController {
       req.flash('error', 'Kelas not found');
       res.redirect('/kelass');
     }
-    await this.usersService.deleteProfileIfExists(kelas.gambar);
+    await this.usersService.getPublicIdFromUrl(kelas.gambar);
     await this.kelassService.remove(kelasId);
     req.flash('success', 'Class successfully removed');
     res.redirect('/kelass');
@@ -174,10 +174,14 @@ export class KelassController {
   @Delete(':userId/kelas/:kelasId')
   async removeUserKelas(@Param('userId') userId: number, @Param('kelasId') kelasId: number, @Res() res:Response, @Req() req:Request) {
     try {
+      const kelas = await this.kelassService.findOne(kelasId)
+      await this.usersService.getPublicIdFromUrl(kelas.gambar)
         await this.kelassService.removeUserKelas(userId, kelasId);
+        req.flash('success', 'class successfuly delete')
         res.redirect('/kelass')
     } catch (error) {
-      
+              req.flash('error', 'class unsuccess delete')
+        res.redirect('/kelass')
     }
 
 }

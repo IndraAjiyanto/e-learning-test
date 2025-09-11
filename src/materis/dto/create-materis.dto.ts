@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { JenisFile } from "src/entities/materi.entity";
 
 export class CreateMaterisDto {
@@ -8,6 +8,9 @@ export class CreateMaterisDto {
 
     @IsString()
     file: string
+
+    @IsArray()
+    slides: string[];
 
   @IsEnum(['video', 'pdf', 'ppt'])
   @IsOptional()

@@ -89,7 +89,7 @@ async findAll(@Res() res: Response, @Req() req: any) {
     try {
       const user = await this.usersService.findOne(userId)
       if (profile) {
-      await this.usersService.deleteProfileIfExists(user.profile);
+      await this.usersService.getPublicIdFromUrl(user.profile);
       updateUserDto.profile = profile.filename; 
     } 
       await this.usersService.update(userId, updateUserDto);
@@ -112,7 +112,7 @@ async findAll(@Res() res: Response, @Req() req: any) {
   async updateProfile(@Param('userId') userId: number, @Res() res:Response, @Body() updateProfileDto: UpdateProfileDto, @UploadedFile() profile: Express.Multer.File, @Req() req:Request ){
     const user = await this.usersService.findOne(userId)
     if (profile) {
-      await this.usersService.deleteProfileIfExists(user.profile);
+      await this.usersService.getPublicIdFromUrl(user.profile);
       updateProfileDto.profile = profile.filename; 
     } 
     await this.usersService.updateProfile(userId, updateProfileDto)
@@ -133,7 +133,7 @@ async remove(
       req.flash('error', 'User not found');
       return res.redirect('/users');
     }
-    await this.usersService.deleteProfileIfExists(user.profile);
+    await this.usersService.getPublicIdFromUrl(user.profile);
 
 
     await this.usersService.remove(id); 

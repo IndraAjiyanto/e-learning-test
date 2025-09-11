@@ -1,0 +1,108 @@
+{{#if (roles jenis_file "pdf")}}
+<div class="pt-28 py-20">
+  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Tambah Materi PDF</h2>
+
+    <form action="/materis/pdf/{{pertemuanId}}" method="POST" enctype="multipart/form-data" class="space-y-6">
+      
+      <div>
+        <label for="judul" class="block text-sm font-medium text-gray-700 mb-1">Judul Materi</label>
+        <input type="text" id="judul" name="judul" required
+          placeholder="Masukkan judul materi PDF..."
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900">
+      </div>
+
+      <div>
+        <label for="file" class="block text-sm font-medium text-gray-700 mb-1">Upload File PDF</label>
+        <input type="file" id="file" name="file" accept=".pdf" required
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900">
+        <p class="text-gray-500 text-xs mt-1">Hanya mendukung file PDF (maksimal 20MB)</p>
+      </div>
+
+      <div class="flex gap-3">
+        <button type="submit"
+          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+          Simpan PDF
+        </button>
+        <a href="/pertemuans/{{pertemuanId}}"
+          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          Batal
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{{else if (roles jenis_file "ppt")}}
+<div class="pt-28 py-20">
+  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Tambah Materi PPT</h2>
+
+    <form action="/materis/ppt/{{pertemuanId}}" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+      <div>
+        <label for="judul" class="block text-sm font-medium text-gray-700 mb-1">Judul Materi</label>
+        <input type="text" id="judul" name="judul" required
+          placeholder="Masukkan judul presentasi..."
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900">
+      </div>
+
+      <div>
+        <label for="file" class="block text-sm font-medium text-gray-700 mb-1">Upload File PPT</label>
+        <input type="file" id="file" name="file" accept=".ppt,.pptx" required
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900">
+        <p class="text-gray-500 text-xs mt-1">Format didukung: PPT, PPTX (maksimal 50MB)</p>
+      </div>
+
+      <div class="flex gap-3">
+        <button type="submit"
+          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+          Simpan PPT
+        </button>
+        <a href="/pertemuans/{{pertemuanId}}"
+          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          Batal
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{{else if (roles jenis_file "video")}}
+<div class="pt-28 py-20">
+  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Tambah Materi Video</h2>
+
+    <form action="/materis/video/{{pertemuanId}}" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+      <div>
+        <label for="judul" class="block text-sm font-medium text-gray-700 mb-1">Judul Materi</label>
+        <input type="text" id="judul" name="judul" required
+          placeholder="Masukkan judul video..."
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900">
+      </div>
+
+      <div>
+        <label for="file" class="block text-sm font-medium text-gray-700 mb-1">Upload Video</label>
+        <input type="file" id="file" name="file" accept="video/*" required
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900">
+        <p class="text-gray-500 text-xs mt-1">Format didukung: MP4, AVI, MOV (maksimal 100MB)</p>
+      </div>
+
+      <div class="flex gap-3">
+        <button type="submit"
+          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+          Simpan Video
+        </button>
+        <a href="/pertemuans/{{pertemuanId}}"
+          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          Batal
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+{{/if}}

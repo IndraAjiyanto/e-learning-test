@@ -32,6 +32,12 @@ export class TugassController {
 
   }
 
+  @Get('formCreate/:pertemuanId')
+  async formCreate(@Res() res:Response, @Req() req:Request, @Param('pertemuanId') pertemuanId: number){
+    res.render('admin/tugas/create', {user: req.user, pertemuanId})
+  }
+
+
   @Get()
   findAll() {
     return this.tugassService.findAll();

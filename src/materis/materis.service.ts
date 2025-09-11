@@ -57,19 +57,7 @@ async findMateriPpt(pertemuanId: number) {
     where: { pertemuan: { id: pertemuanId }, jenis_file: "ppt" }
   });
 
-  const result: { materiId: number; judul: string; slides: string[] }[] = [];
-
-  for (const materi of materiList) {
-    const slides = await this.getSlide(materi.file);
-
-    result.push({
-      materiId: materi.id,
-      judul: materi.judul, 
-      slides: slides
-    });
-  }
-
-  return result;
+  return materiList;
 }
 
 

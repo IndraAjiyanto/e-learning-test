@@ -3,7 +3,7 @@ import { MaterisService } from './materis.service';
 import { CreateMaterisDto } from './dto/create-materis.dto';
 import { UpdateMaterisDto } from './dto/update-materis.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigPdf, multerConfigPpt, multerConfigVideo } from 'src/common/config/multer.config';
+import cloudinary, { multerConfigPdf, multerConfigPpt, multerConfigVideo } from 'src/common/config/multer.config';
 import { JenisFile } from 'src/entities/materi.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -30,7 +30,7 @@ async createPdf(
   @Req() req: Request
 ) {
   try {
-      createMaterisDto.file = file.filename; 
+      createMaterisDto.file = file.path;
   createMaterisDto.pertemuanId = pertemuanId; 
   createMaterisDto.jenis_file = "pdf"
   await this.materisService.create(createMaterisDto);
@@ -43,38 +43,128 @@ async createPdf(
 
 }
 
- @Roles('admin')
-  @Post('ppt/:pertemuanId')
-  @UseInterceptors(FileInterceptor('file', multerConfigPpt))
-  async createPpt(
-    @Body() createMaterisDto: CreateMaterisDto,
-    @UploadedFile() file: Express.Multer.File,
-    @Res() res: Response,
-    @Param('pertemuanId') pertemuanId: number,
-    @Req() req:Request
-  ) {
-    try {
-      createMaterisDto.file = file.filename + '_slides';
-      createMaterisDto.pertemuanId = pertemuanId;
-      createMaterisDto.jenis_file = "ppt";
-      
-      await this.materisService.create(createMaterisDto);
-
-      const inputPath = join(process.cwd(), file.path);
-      const outputDir = join(process.cwd(), 'uploads', 'ppt', file.filename + '_slides');
-
-      const slideUrls = await this.convertApiService.pptToPng(inputPath, outputDir);
-
-      await fs.unlink(inputPath);
-
-      
-        req.flash('success', 'successfuly create materi ppt')
-  res.redirect(`/pertemuans/${pertemuanId}`)
-    } catch (error) {
-  req.flash('error', 'failed create materi pdf')
-  res.redirect(`/pertemuans/${pertemuanId}`)
+@Roles('admin')
+@Post('ppt/:pertemuanId')
+@UseInterceptors(FileInterceptor('file', multerConfigPpt))
+async createPpt(
+  @Body() createMaterisDto: CreateMaterisDto,
+  @UploadedFile() file: Express.Multer.File,
+  @Res() res: Response,
+  @Param('pertemuanId') pertemuanId: number,
+  @Req() req: Request,
+) {
+  try {
+    // Validasi file
+    if (!file) {
+      req.flash('error', 'No file uploaded');
+      return res.redirect(`/pertemuans/${pertemuanId}`);
     }
+
+    // Validasi format file
+    const allowedMimeTypes = [
+      'application/vnd.ms-powerpoint', // .ppt
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation' // .pptx
+    ];
+    
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      req.flash('error', 'Invalid file format. Only PPT and PPTX are allowed');
+      return res.redirect(`/pertemuans/${pertemuanId}`);
+    }
+
+    // 1️⃣ Simpan file sementara dengan ekstensi yang benar
+    const tmpDir = join(process.cwd(), 'tmp');
+    await fs.mkdir(tmpDir, { recursive: true });
+    
+    // Pastikan ekstensi file benar
+    const fileExtension = file.originalname.toLowerCase().endsWith('.pptx') ? '.pptx' : '.ppt';
+    const tmpFileName = `ppt-${Date.now()}${fileExtension}`;
+    const tmpPath = join(tmpDir, tmpFileName);
+    await fs.writeFile(tmpPath, file.buffer);
+
+    // 2️⃣ Convert PPTX → PNG (dengan error handling yang lebih baik)
+    const slideOutputDir = join(process.cwd(), 'tmp', `slides-${Date.now()}`);
+    let slidePaths: string[] = [];
+    
+    try {
+      slidePaths = await this.convertApiService.pptToPng(tmpPath, slideOutputDir);
+    } catch (convertError) {
+      console.error('Conversion error:', convertError);
+      await fs.unlink(tmpPath); // cleanup
+      req.flash('error', 'Failed to convert PPT to images');
+      return res.redirect(`/pertemuans/${pertemuanId}`);
+    }
+
+    // 3️⃣ Upload slide PNG ke Cloudinary dengan batch processing
+    const slideUrls: string[] = [];
+    const uploadPromises = slidePaths.map(async (slidePath, index) => {
+      try {
+        const uploadedSlide = await cloudinary.uploader.upload(slidePath, {
+          folder: 'nestjs/ppt/slides',
+          public_id: `slide-${pertemuanId}-${Date.now()}-${index}`,
+          resource_type: 'image'
+        });
+        return uploadedSlide.secure_url;
+      } catch (uploadError) {
+        console.error(`Failed to upload slide ${index}:`, uploadError);
+        return null;
+      } finally {
+        // Hapus file lokal slide
+        try {
+          await fs.unlink(slidePath);
+        } catch (unlinkError) {
+          console.error(`Failed to delete slide file ${slidePath}:`, unlinkError);
+        }
+      }
+    });
+
+    const uploadResults = await Promise.all(uploadPromises);
+    slideUrls.push(...uploadResults.filter(url => url !== null));
+
+    if (slideUrls.length === 0) {
+      await fs.unlink(tmpPath);
+      req.flash('error', 'Failed to upload slide images');
+      return res.redirect(`/pertemuans/${pertemuanId}`);
+    }
+
+    // 4️⃣ Upload file PPT asli ke Cloudinary
+    const cloudFile = await cloudinary.uploader.upload(tmpPath, {
+      folder: 'nestjs/ppt',
+      public_id: `materi-${pertemuanId}-${Date.now()}`,
+      resource_type: 'raw' // Penting untuk file non-image
+    });
+
+    // 5️⃣ Simpan ke database dengan slide URLs
+    createMaterisDto.file = cloudFile.secure_url;
+    createMaterisDto.pertemuanId = pertemuanId;
+    createMaterisDto.jenis_file = 'ppt';
+    createMaterisDto.slides = slideUrls;
+    // Tambahkan slide URLs ke DTO jika ada field untuk itu
+    // createMaterisDto.slideUrls = slideUrls;
+
+    const savedMateri = await this.materisService.create(createMaterisDto);
+
+    // 6️⃣ Cleanup file sementara
+    try {
+      await fs.unlink(tmpPath);
+      // Cleanup slide directory jika masih ada
+      try {
+        await fs.rmdir(slideOutputDir);
+      } catch (rmdirError) {
+        console.error('Failed to remove slide directory:', rmdirError);
+      }
+    } catch (unlinkError) {
+      console.error('Failed to cleanup temp file:', unlinkError);
+    }
+
+    req.flash('success', `Successfully created PPT with ${slideUrls.length} slides`);
+    res.redirect(`/pertemuans/${pertemuanId}`);
+
+  } catch (error) {
+    console.error('PPT upload error:', error);
+    req.flash('error', 'Failed to create materi PPT');
+    res.redirect(`/pertemuans/${pertemuanId}`);
   }
+}
 
   @Roles('admin')
 @Post('video/:pertemuanId')
@@ -87,7 +177,7 @@ async createVideo(
   @Req() req:Request
 ) {
   try {
-      createMaterisDto.file = file.filename; 
+      createMaterisDto.file = file.path
   createMaterisDto.pertemuanId = pertemuanId; 
   createMaterisDto.jenis_file = "video"
   await this.materisService.create(createMaterisDto);
@@ -133,17 +223,14 @@ return this.materisService.findMateriBypertemuan(pertemuanId)
     res.render('materi/pdf', { user: req.user, materi, pertemuan})
     }else if(jenis_file === "ppt"){
       const materi = await this.materisService.findMateriPpt(pertemuanId)
-      for(const mat of materi){
-      console.log(mat.slides)
-      }
     res.render('materi/ppt', { user: req.user, materi, pertemuan})
     }
   }
 
   @Roles('admin')
-  @Get('edit/materi/:id')
-  formEditMateri(@Param('id') id: number){
-    return this.materisService.findOne(id)
+  @Get('formCreate/:jenis_file/:pertemuanId')
+  async formEditMateri(@Param('pertemuanId') pertemuanId: number, @Param('jenis_file') jenis_file: string, @Req() req:Request, @Res() res:Response ){
+    res.render('admin/materi/create', {user:  req.user, pertemuanId, jenis_file})
   }
 
   @Roles('admin')

@@ -91,20 +91,10 @@
      x-data="absenTable({ peserta: {{json murid}} })">
   
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-2xl font-semibold mb-4 text-gray-900">
-      Participants Attendance
-    </h2>
 
     <div class="flex items-center gap-3">
       <!-- Search -->
       <div class="relative w-full md:w-64">
-        <input 
-          type="text" 
-          placeholder="Search perticipant..." 
-          x-model="searchInput"
-          @input="search = searchInput; pageNumber=0"
-          class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
-        />
         <button 
           @click="search = searchInput; pageNumber=0"
           class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900"
@@ -113,6 +103,13 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
           </svg>
         </button>
+        <input 
+          type="text" 
+          placeholder="Search perticipant..." 
+          x-model="searchInput"
+          @input="search = searchInput; pageNumber=0"
+          class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
+        />
       </div>
 
       <!-- Tambah Absen -->
@@ -183,84 +180,6 @@
   </div>
 
 <div x-show="tab === 'materi'">
-  <!-- List Materi -->
-  <h2 class="text-2xl font-semibold mb-6 text-gray-900">Materi Session</h2>
-
-  <!-- Materi PDF -->
-  <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-    <h3 class="text-lg font-semibold mb-4 text-gray-900">Materi PDF</h3>
-    {{#if materipdf.length}}
-      <ul class="space-y-2">
-        {{#each materipdf}}
-          <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-            <span class="text-gray-800">{{judul}}</span>
-            <div class="flex space-x-2">
-              <a href="/materis/{{id}}/download" 
-                 class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
-              <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
-                <button type="button" 
-                        onclick="confirmDelete(this)"
-                        class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Delete</button>
-              </form>
-            </div>
-          </li>
-        {{/each}}
-      </ul>
-    {{else}}
-      <p class="text-gray-500 italic">Not found PDF.</p>
-    {{/if}}
-  </div>
-
-  <!-- Materi Video -->
-  <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-    <h3 class="text-lg font-semibold mb-4 text-gray-900">Materi Video</h3>
-    {{#if materivideo.length}}
-      <ul class="space-y-2">
-        {{#each materivideo}}
-          <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-            <span class="text-gray-800">{{judul}}</span>
-            <div class="flex space-x-2">
-              <a href="/materis/{{id}}/download" 
-                 class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
-              <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
-                <button type="button" 
-                        onclick="confirmDelete(this)"
-                        class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Delete</button>
-              </form>
-            </div>
-          </li>
-        {{/each}}
-      </ul>
-    {{else}}
-      <p class="text-gray-500 italic">Not found Video.</p>
-    {{/if}}
-  </div>
-
-  <!-- Materi PPT -->
-  <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-    <h3 class="text-lg font-semibold mb-4 text-gray-900">Materi PPT</h3>
-    {{#if materippt.length}}
-      <ul class="space-y-2">
-        {{#each materippt}}
-          <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-            <span class="text-gray-800">{{judul}}</span>
-            <div class="flex space-x-2">
-              <a href="/materis/{{materiId}}/download" 
-                 class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
-              <form action="/materis/{{materiId}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
-                <button type="button" 
-                        onclick="confirmDelete(this)"
-                        class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Delete</button>
-              </form>
-            </div>
-          </li>
-        {{/each}}
-      </ul>
-    {{else}}
-      <p class="text-gray-500 italic">Not found PPT.</p>
-    {{/if}}
-  </div>
-
   <div class="bg-white rounded-xl shadow-lg p-6">
     
     <div x-data="{ tab: 'pdf' }" class="space-y-6">
@@ -276,122 +195,264 @@
                 class="px-4 py-2 rounded-lg shadow transition">PPT</button>
       </div>
 
-      <!-- Form PDF -->
-      <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow-lg">
-        <form action="/materis/pdf/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-1 text-gray-700">Judul Materi</label>
-            <input type="text" name="judul" class="w-full border rounded-lg p-2 bg-white text-gray-700" required>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1 text-gray-700">Upload File PDF</label>
-            <input type="file" name="file" accept=".pdf" class="w-full border rounded-lg p-2 text-gray-700" required>
-          </div>
-          <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Create PDF</button>
-        </form>
-      </div>
+<!-- Form PDF -->
+<div x-show="tab === 'pdf'">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-lg font-semibold text-gray-900">Daftar PDF</h3>
+    <a href="/materis/formCreate/pdf/{{pertemuan.id}}" 
+       class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+       + Create PDF
+    </a>
+  </div>
 
-      <!-- Form Video -->
-      <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow-lg">
-        <form action="/materis/video/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-1 text-gray-700">Judul Materi</label>
-            <input type="text" name="judul" class="w-full border rounded-lg p-2 bg-white text-gray-700" required>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1 text-gray-700">Upload Video</label>
-            <input type="file" name="file" accept="video/*" class="w-full border rounded-lg p-2 text-gray-700" required>
-          </div>
-          <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Create Video</button>
-        </form>
-      </div>
+  {{#if materipdf.length}}
+    <ul class="space-y-2">
+      {{#each materipdf}}
+<li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+  <span class="text-gray-800">{{judul}}</span>
+  <div class="flex space-x-2">
+    <!-- Download -->
+    <a href="/materis/{{id}}/download" 
+       class="p-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition"
+       title="Download">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+           stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 
+                 2.25 0 0021 18.75V16.5M16.5 10.5L12 15m0 0L7.5 
+                 10.5M12 15V3"/>
+      </svg>
+    </a>
 
-      <!-- Form PPT -->
-      <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow-lg">
-        <form action="/materis/ppt/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-1 text-gray-700">Judul Materi</label>
-            <input type="text" name="judul" class="w-full border rounded-lg p-2 bg-white text-gray-700" required>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1 text-gray-700">Upload File PPT</label>
-            <input type="file" name="file" accept=".ppt,.pptx" class="w-full border rounded-lg p-2 text-gray-700" required>
-          </div>
-          <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">Create PPT</button>
-        </form>
-      </div>
+    <!-- Delete -->
+    <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+      <button type="button" onclick="confirmDelete(this)"
+              class="p-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition"
+              title="Delete">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+             stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" 
+                d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</li>
+
+      {{/each}}
+    </ul>
+  {{else}}
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+      </svg>
+      <p class="text-gray-600 font-medium">Belum ada PDF</p>
+      <p class="text-gray-500 text-sm mt-1">Klik tombol <span class="font-semibold">Create PDF</span> untuk menambahkan materi baru.</p>
+    </div>
+  {{/if}}
+</div>
+
+<!-- Form Video -->
+<div x-show="tab === 'video'">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-lg font-semibold text-gray-900">Daftar Video</h3>
+    <a href="/materis/formCreate/video/{{pertemuan.id}}" 
+       class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+       + Create Video
+    </a>
+  </div>
+
+  {{#if materivideo.length}}
+    <ul class="space-y-2">
+      {{#each materivideo}}
+<li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+  <span class="text-gray-800">{{judul}}</span>
+  <div class="flex space-x-2">
+    <!-- Download -->
+    <a href="/materis/{{id}}/download" 
+       class="p-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition"
+       title="Download">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+           stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 
+                 2.25 0 0021 18.75V16.5M16.5 10.5L12 15m0 0L7.5 
+                 10.5M12 15V3"/>
+      </svg>
+    </a>
+
+    <!-- Delete -->
+    <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+      <button type="button" onclick="confirmDelete(this)"
+              class="p-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition"
+              title="Delete">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+             stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" 
+                d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</li>
+
+      {{/each}}
+    </ul>
+  {{else}}
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+      </svg>
+      <p class="text-gray-600 font-medium">Belum ada Video</p>
+      <p class="text-gray-500 text-sm mt-1">Klik tombol <span class="font-semibold">Create Video</span> untuk menambahkan materi baru.</p>
+    </div>
+  {{/if}}
+</div>
+
+<!-- Form PPT -->
+<div x-show="tab === 'ppt'">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-lg font-semibold text-gray-900">Daftar PPT</h3>
+    <a href="/materis/formCreate/ppt/{{pertemuan.id}}" 
+       class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+       + Create PPT
+    </a>
+  </div>
+
+  {{#if materippt.length}}
+    <ul class="space-y-2">
+      {{#each materippt}}
+<li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+  <span class="text-gray-800">{{judul}}</span>
+  <div class="flex space-x-2">
+    <!-- Download -->
+    <a href="/materis/{{id}}/download" 
+       class="p-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition"
+       title="Download">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+           stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 
+                 2.25 0 0021 18.75V16.5M16.5 10.5L12 15m0 0L7.5 
+                 10.5M12 15V3"/>
+      </svg>
+    </a>
+
+    <!-- Delete -->
+    <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+      <button type="button" onclick="confirmDelete(this)"
+              class="p-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition"
+              title="Delete">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+             stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" 
+                d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+      </svg>
+      <p class="text-gray-600 font-medium">Belum ada PPT</p>
+      <p class="text-gray-500 text-sm mt-1">Klik tombol <span class="font-semibold">Create PPT</span> untuk menambahkan materi baru.</p>
+    </div>
+  {{/if}}
+</div>
+
     </div>
   </div>
 </div>
 
 
 <div x-show="tab === 'tugas'">
+  <!-- Tugas List Section -->
+  <div class="flex justify-between items-center mb-4">
+    <a href="/tugass/formCreate/{{pertemuan.id}}" 
+       class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+       + Create Tugas
+    </a>
+  </div>
 
-  <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Tugas Pertemuan</h2>
+  {{#if pertemuan.tugas.length}}
+    <ul class="space-y-2 mb-6">
+      {{#each pertemuan.tugas}}
+        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+          <span class="text-gray-800">{{judul}}</span>
+          <div class="flex space-x-2">
+            <!-- Download -->
+            <a href="/tugas/{{id}}/download" 
+               class="p-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition"
+               title="Download">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                   stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" 
+                      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 
+                         2.25 0 0021 18.75V16.5M16.5 10.5L12 15m0 0L7.5 
+                         10.5M12 15V3"/>
+              </svg>
+            </a>
 
-    {{#if pertemuan.tugas.length}}
-      <div class="space-y-6">
-        {{#each pertemuan.tugas}}
-          <div class="border rounded-lg p-4 bg-gray-50">
-            <p class="text-gray-800 mb-3">
-              <span class="font-semibold">Judul:</span> {{judul}}
-            </p>
-            <div class="flex flex-wrap gap-3">
-              <a href="/tugas/{{id}}/download" 
-                 class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
-                Download
-              </a>
-              <a href="/jawaban-tugass/{{id}}"
-                 class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-500 transition">
-                View Submission
-              </a>
-              <form action="/tugass/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
-                <button type="button" onclick="confirmDelete(this)" 
-                        class="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-500 transition">
-                  Delete
-                </button>
-              </form>
-            </div>
+            <!-- View Submission -->
+            <a href="/jawaban-tugass/{{id}}"
+               class="p-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-500 transition"
+               title="View Submission">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                   stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" 
+                      d="M2.25 12c0-1.5 3.75-7.5 9.75-7.5s9.75 6 
+                         9.75 7.5-3.75 7.5-9.75 7.5S2.25 13.5 2.25 12z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" 
+                      d="M12 15.75a3.75 3.75 0 100-7.5 
+                         3.75 3.75 0 000 7.5z"/>
+              </svg>
+            </a>
+
+            <!-- Delete -->
+            <form action="/tugass/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+              <button type="button" onclick="confirmDelete(this)" 
+                      class="p-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition"
+                      title="Delete">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                     stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </form>
           </div>
-        {{/each}}
-      </div>
-    {{else}}
-      <p class="text-gray-500 italic">Belum ada tugas untuk pertemuan ini.</p>
-    {{/if}}
-  </div>
-
-  <div class="bg-white rounded-xl shadow-lg p-6">
-    <h3 class="text-xl font-semibold mb-6 text-gray-900">Create Submission</h3>
-
-    <form action="/tugass/{{pertemuan.id}}" method="POST" enctype="multipart/form-data" class="space-y-5">
-      
-      <div>
-        <label class="block text-sm font-medium mb-1 text-gray-700">Judul Materi</label>
-        <input type="text" name="judul" 
-               class="w-full border rounded-lg p-3 bg-white text-gray-700 focus:ring-2 focus:ring-gray-900 focus:outline-none" 
-               required>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1 text-gray-700">Upload File Submission</label>
-        <input type="file" name="file" accept=".pdf,.doc,.docx,.zip,.rar"
-               class="w-full border rounded-lg p-3 text-gray-700 focus:ring-2 focus:ring-gray-900 focus:outline-none" 
-               required>
-      </div>
-
-      <button type="submit" 
-              class="bg-gray-900 text-white px-6 py-2.5 rounded-lg shadow hover:bg-gray-700 transition">
-        Create Submission
-      </button>
-    </form>
-  </div>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <p class="text-gray-600 font-medium">Belum ada Tugas</p>
+      <p class="text-gray-500 text-sm mt-1">Klik tombol <span class="font-semibold">Create Tugas</span> untuk menambahkan tugas baru.</p>
+    </div>
+  {{/if}}
 
 </div>
 
+
+
 <div x-show="tab === 'pertanyaan'" class="space-y-6">
   <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-2xl font-semibold text-gray-900">List Quiz</h2>
     <a href="/pertanyaans/Formcreate/{{pertemuan.id}}"
        class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
       Create Quiz
