@@ -148,6 +148,10 @@ async findKategori(){
     return await this.kelasRepository.find({relations: ['kategori']})
   }
 
+  async findAllLaunch() {
+    return await this.kelasRepository.find({where: {launch: true}, relations: ['kategori']})
+  }
+
   async findMurid(id: number){
     return await this.userRepository.find({where: {kelas: {id: id}}})
   }

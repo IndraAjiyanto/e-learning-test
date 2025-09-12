@@ -1,50 +1,177 @@
-<div class="max-w-3xl mx-auto px-6 py-10 space-y-8">
+<div class="pt-28 py-20">
+  <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center space-x-4">
+        <div>
+          <a href="/kelass" 
+             class="inline-flex items-center text-gray-600 text-base font-medium hover:underline">
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 class="h-5 w-5 mr-1" fill="none" 
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" 
+                    stroke-linejoin="round" 
+                    stroke-width="2" 
+                    d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </a>
+        </div>
+      </div>
+    </div>
 
-  <h2 class="text-3xl font-bold mb-6">Murid Kelas</h2>
+    <div class="space-y-6">
+      <!-- Add User Form - dipindah ke atas -->
+      <div class="bg-gray-50 p-6 rounded-lg shadow-sm"
+           x-data="{ 
+             searchUser: '', 
+             open: false, 
+             selected: '', 
+             selectedName: '',
+             users: {{json users}},
+             get filteredUsers() {
+               return this.users.filter(u => 
+                 u.username.toLowerCase().includes(this.searchUser.toLowerCase()) && 
+                 u.id != this.selected
+               );
+             }
+           }"
+           @click.away="open = false">
+        
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">Add new user to class</h3>
+          <p class="text-gray-600 text-sm mt-1">Select the student to add to this class</p>
+        </div>
 
-  <div class="bg-white p-6 rounded-lg shadow-lg space-y-4">
-    <h3 class="text-lg font-semibold border-b pb-2">Daftar Murid</h3>
+        <form action="/kelass/tambahMurid/{{kelas.id}}" method="POST" class="space-y-4">
+          <div>
+            <div class="relative">
+              <input type="hidden" name="userId" x-model="selected" required>
 
-    {{#if murid.length}}
-      <ul class="divide-y divide-gray-200">
-        {{#each murid}}
-        <li class="flex items-center justify-between py-3">
-          <div class="flex items-center space-x-3">
-            <img src="{{profile}}" class="w-10 h-10 bg-gray-200 rounded-full border border-solid border-gray-900 flex items-center justify-center">
-            <span class="text-gray-800">{{username}}</span>
+              <input type="text" 
+                     placeholder="Enter student name to search..." 
+                     class="w-full border text-gray-700 bg-white border-gray-300 rounded-lg p-3 pr-10 focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
+                     x-model="searchUser"
+                     x-bind:value="selectedName"
+                     @focus="open = true"
+                     @input="open = true; selectedName = ''"
+                     autocomplete="off">
+
+              <div x-show="open && filteredUsers.length > 0" 
+                   x-transition:enter="transition ease-out duration-100"
+                   x-transition:enter-start="transform opacity-0 scale-95"
+                   x-transition:enter-end="transform opacity-100 scale-100"
+                   x-transition:leave="transition ease-in duration-75"
+                   x-transition:leave-start="transform opacity-100 scale-100"
+                   x-transition:leave-end="transform opacity-0 scale-95"
+                   class="absolute z-20 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto">
+                
+                <template x-for="user in filteredUsers" :key="user.id">
+                  <div @click="selected = user.id; selectedName = user.username; searchUser = user.username; open = false"
+                       class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0">
+                    <img x-bind:src="user.profile || 'https://via.placeholder.com/32/gray/white?text=' + user.username[0]" 
+                         x-bind:alt="user.username"
+                         class="w-8 h-8 bg-gray-200 rounded-full border border-gray-300 object-cover">
+                    <div>
+                      <p class="text-gray-800 font-medium" x-text="user.username"></p>
+                      <p class="text-gray-500 text-xs" x-text="user.email"></p>
+                    </div>
+                  </div>
+                </template>
+              </div>
+
+              <div x-show="open && searchUser !== '' && filteredUsers.length === 0"
+                   class="absolute z-20 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 p-4 text-center text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <p class="text-sm">Tidak ada murid ditemukan</p>
+              </div>
+            </div>
           </div>
 
-          <form action="/kelass/{{id}}/kelas/{{../kelas.id}}?_method=DELETE" method="post">
+          <div class="flex justify-start space-x-3 pt-2">
             <button type="submit" 
-              class="text-red-600 hover:text-red-800 font-medium text-sm transition">
-              Hapus
+                    x-bind:disabled="selected === ''"
+                    x-bind:class="selected === '' ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+                    class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+              Add user
             </button>
-          </form>
-        </li>
-        {{/each}}
-      </ul>
-    {{else}}
-      <p class="text-gray-500 italic">Belum ada murid terdaftar.</p>
-    {{/if}}
-  </div>
-
-  <div class="bg-white p-6 rounded-lg shadow-lg">
-    <h3 class="text-lg font-semibold mb-4 border-b pb-2">Tambah Murid</h3>
-    <form action="/kelass/tambahMurid/{{kelas.id}}" method="POST" class="space-y-4">
-      <div>
-        <label for="userId" class="block text-sm font-medium text-gray-700 mb-1">Pilih Murid</label>
-        <select name="userId" id="userId" 
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
-          {{#each users}}
-            <option value="{{id}}">{{username}}</option>
-          {{/each}}
-        </select>
+            <button type="button"
+                    @click="searchUser = ''; selectedName = ''; selected = ''; open = false"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+              Reset
+            </button>
+          </div>
+        </form>
       </div>
-      <button type="submit" 
-        class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
-        + Tambah Murid
-      </button>
-    </form>
-  </div>
 
+      <!-- List User - dengan search yang diperbaiki -->
+      <div class="bg-gray-50 p-6 rounded-lg shadow-sm"
+           x-data="{ searchMurid: '' }">
+        
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg text-gray-900">List user class <span class="font-bold">{{kelas.nama_kelas}}</span></h3>
+          <div class="relative w-full md:w-64">
+            <input type="text" 
+                   placeholder="Search user..." 
+                   x-model="searchMurid"
+                   class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 w-full" />
+            <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {{#if murid.length}}
+          <div class="max-h-40 overflow-y-auto">
+            <ul class="space-y-2">
+              {{#each murid}}
+              <li class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm hover:bg-gray-100 transition"
+                  x-show="'{{username}}'.toLowerCase().includes(searchMurid.toLowerCase()) || searchMurid === ''">
+                <div class="flex items-center space-x-3">
+                  <img src="{{profile}}" 
+                       alt="{{username}}"
+                       class="w-10 h-10 bg-gray-200 rounded-full border border-gray-300 object-cover"
+                       onerror="this.src='https://via.placeholder.com/40/gray/white?text={{username.[0]}}'">
+                  <div>
+                    <span class="text-gray-800 font-medium">{{username}}</span>
+                    <p class="text-gray-500 text-sm">{{email}}</p>
+                  </div>
+                </div>
+                <form action="/kelass/{{id}}/kelas/{{../kelas.id}}?_method=DELETE" method="post" class="inline">
+                  <button type="button"
+                          onclick="confirmDelete(this)"
+                          class="p-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition"
+                          title="Hapus {{username}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" 
+                            d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </form>
+              </li>
+              {{/each}}
+            </ul>
+          </div>
+        {{else}}
+          <div class="flex flex-col items-center justify-center text-center py-16 bg-white border border-dashed rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/>
+            </svg>
+            <p class="text-gray-600 font-medium">Belum ada murid</p>
+            <p class="text-gray-500 text-sm mt-1">Tambahkan murid baru dengan form di atas</p>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+</script>

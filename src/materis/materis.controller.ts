@@ -220,6 +220,8 @@ return this.materisService.findMateriBypertemuan(pertemuanId)
     res.render('materi/video', { user: req.user, materi, pertemuan})
     } else if(jenis_file === "pdf"){
       const materi = await this.materisService.findMateriPdf(pertemuanId)
+      console.log(pertemuan)
+      console.log(materi)
     res.render('materi/pdf', { user: req.user, materi, pertemuan})
     }else if(jenis_file === "ppt"){
       const materi = await this.materisService.findMateriPpt(pertemuanId)

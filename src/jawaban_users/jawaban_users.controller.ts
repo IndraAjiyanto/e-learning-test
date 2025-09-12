@@ -3,24 +3,38 @@ import { JawabanUsersService } from './jawaban_users.service';
 import { CreateJawabanUserDto } from './dto/create-jawaban_user.dto';
 import { UpdateJawabanUserDto } from './dto/update-jawaban_user.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
+import { UsersService } from 'src/users/users.service';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('jawaban-users')
 export class JawabanUsersController {
   constructor(private readonly jawabanUsersService: JawabanUsersService) {}
 
-@Roles('user')
-@Post()
-async create(@Body() createJawabanUserDto: CreateJawabanUserDto, @Req() req:any, @Res() res:Response) {
-  createJawabanUserDto.jawabanUser =  createJawabanUserDto.jawabanUser.map(j=>({
-    ...j,
-    userId: req.user.id
-  }))
-  await this.jawabanUsersService.create(createJawabanUserDto);
-  res.redirect('dashboard')
+  @Roles('user')
+@Post(':kelasId')
+async create(@Param('kelasId') kelasId:number, @Req() req: Request, @Res() res: Response) {
+  try {
+    const jawabanUser = Object.entries(req.body).map(([key, value]) => {
+      const pertanyaanId = Number(key.replace("q-", ""));
+      return {
+        pertanyaanId,
+        jawabanId: Number(value),
+        userId: req.user!.id,
+      };
+    });
+
+    await this.jawabanUsersService.create({ jawabanUser });
+
+    req.flash('success', 'berhasil menjawab pertanyaan');
+    return res.redirect(`/kelass/${kelasId}`);
+  } catch (error) {
+    req.flash('error', 'gagal menjawab pertanyaan');
+    return res.redirect(`/kelass/${kelasId}`);
+  }
 }
+
 
   @Get()
   findAll() {

@@ -13,7 +13,7 @@ import { multerConfigPdf } from 'src/common/config/multer.config';
 export class TugassController {
   constructor(private readonly tugassService: TugassService) {}
 
-  @Roles('user', 'admin')
+  @Roles('admin')
   @Post(':pertemuanId')
   @UseInterceptors(FileInterceptor('file', multerConfigPdf)) 
   async create(@Body() createTugassDto: CreateTugassDto, @UploadedFile() file: Express.Multer.File, @Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:Request) {

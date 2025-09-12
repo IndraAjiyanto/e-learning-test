@@ -1,7 +1,7 @@
 <div class="max-w-7xl mx-auto px-4 py-10 pt-28" 
      x-data="{ pdfSrc: '', materiJudul: '' }">
        <div class="mb-4">
-    <a href="/kelass/{{kelasId}}" 
+    <a href="/kelass/{{pertemuan.kelas.id}}" 
        class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
       <svg xmlns="http://www.w3.org/2000/svg" 
            class="h-5 w-5 mr-1" fill="none" 
@@ -17,11 +17,10 @@
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <div class="col-span-2">
-      <iframe 
-        class="h-[500px] w-full rounded-lg border" 
-        x-bind:src="pdfSrc" 
-        type="application/pdf">
-      </iframe>
+<iframe 
+  class="h-[500px] w-full rounded-lg border" 
+  x-bind:src="'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(pdfSrc)">
+</iframe>
 
       <div class="flex justify-between items-center mt-4">
         <h1 class="text-3xl font-bold" x-text="materiJudul"></h1>
@@ -30,21 +29,14 @@
 
     <div class="bg-gray-100 p-6 rounded-lg shadow">
       <h2 class="text-xl font-semibold mb-4">Materi Kelas</h2>
-      <ul class="space-y-2">
-        {{#each pertemuan}}
-        <li x-data="{ open: false }" class="relative">
-          <button @click="open = !open"
-                  class="w-full text-left bg-white px-4 py-2 rounded shadow hover:bg-gray-50">
-            {{topik}}
-          </button>
 
           <div x-show="open"
                x-transition
                @click.away="open = false"
                class="mt-2 bg-white border rounded shadow w-full">
                
-               {{#if materiPdf.length}}
-               {{#each materiPdf}}
+               {{#if materi.length}}
+               {{#each materi}}
                <button  
                  class="block w-full text-left px-4 py-2 hover:bg-gray-100"
                  @click="pdfSrc = '{{file}}'; materiJudul = '{{judul}}'">
@@ -55,9 +47,6 @@
                <p class="px-4 py-2 text-gray-500">Belum ada materi</p>
                {{/if}}
           </div>
-        </li>
-        {{/each}}
-      </ul>
     </div>
 
   </div>

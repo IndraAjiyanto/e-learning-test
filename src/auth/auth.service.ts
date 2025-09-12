@@ -17,7 +17,7 @@ export class AuthService {
   }
 
   async findAllKelas(){
-    return await this.kelasService.findAll()
+    return await this.kelasService.findAllLaunch()
   }
 
   async findKelas(id: number){

@@ -41,7 +41,6 @@ async create(
     req.flash('success', 'Berhasil membuat pertanyaan beserta jawabannya');
     return res.redirect(`/pertemuans/${pertemuanId}`);
   } catch (err) {
-    console.error(err);
     req.flash('error', 'Gagal membuat pertanyaan');
     return res.redirect(`/pertemuans/${pertemuanId}`);
   }
@@ -67,21 +66,20 @@ async create(
   }
 
   @Roles('user')
-  @Get('quiz/:pertemuanId')
-  async findPertanyaanByPertemuan(@Param('pertemuanId') pertemuanId: number, @Req() req:any, @Res() res:Response){
+  @Get('quiz/:pertemuanId/:kelasId')
+  async findPertanyaanByPertemuan(@Param('pertemuanId') pertemuanId: number, @Param('kelasId') kelasId: number,@Req() req:any, @Res() res:Response){
     const pertemuan = await this.pertemuanService.findOne(pertemuanId)
     const pertanyaan = await this.pertanyaansService.findPertanyaan(pertemuanId)
-    res.render('user/quiz/quiz', {user: req.user, pertanyaan, pertemuan})
+    res.render('user/quiz/quiz', {user: req.user, pertanyaan, pertemuan, kelasId})
   }
 
   @Roles('user')
-  @Get('quiz/:pertemuanId/:userId')
+  @Get('quiz/user/:pertemuanId/:userId')
   async findDetailPertanyaanByPertemuan(@Param('pertemuanId') pertemuanId: number,@Param('userId') userId: number, @Req() req:any, @Res() res:Response){
     const pertemuan = await this.pertemuanService.findOne(pertemuanId)
     const pertanyaan = await this.pertanyaansService.findPertanyaan(pertemuanId)
     const jawaban_user = await this.jawabanUsersService.findJawabanByUser(userId)
     const nilai = await this.jawabanUsersService.AmountNilai(pertemuanId, userId)
-    console.log(jawaban_user)
     res.render('user/quiz/detail', {user: req.user, pertanyaan, pertemuan, jawaban_user, nilai})
   }
 

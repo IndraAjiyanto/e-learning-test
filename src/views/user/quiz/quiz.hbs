@@ -1,6 +1,6 @@
 <form 
-  x-data="quizForm()" 
-  @submit.prevent="submitForm"
+  method="POST" 
+  action="/jawaban-users/{{kelasId}}" 
   class="space-y-6"
 >
   {{#each pertanyaan}}
@@ -12,9 +12,8 @@
       <label class="flex items-center space-x-3 cursor-pointer">
         <input 
           type="radio" 
-          name="q-{{../id}}" 
-          value="{{id}}" 
-          x-model="answers[{{../id}}]" 
+          name="q-{{../id}}"   
+          value="{{id}}"       
           class="accent-blue-600 w-5 h-5"
         >
         <span class="text-gray-700">{{jawaban}}</span>
@@ -33,28 +32,3 @@
     </button>
   </div>
 </form>
-
-<script>
-function quizForm() {
-  return {
-    // state untuk jawaban: { pertanyaanId: jawabanId }
-    answers: {},
-
-    async submitForm() {
-      const data = Object.entries(this.answers).map(([pertanyaanId, jawabanId]) => ({
-        pertanyaanId: Number(pertanyaanId),
-        jawabanId: Number(jawabanId),
-      }));
-
-      const res = await fetch("/jawaban-users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jawabanUser: data })
-      });
-
-      const result = await res.json();
-      console.log(result);
-    }
-  }
-}
-</script>

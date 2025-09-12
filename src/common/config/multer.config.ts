@@ -91,8 +91,8 @@ export const multerConfigPdf: MulterOptions = {
     cloudinary,
     params: {
       folder: 'nestjs/pdf',
-      allowed_formats: ['pdf'],
       resource_type: 'raw',
+      allowed_formats: ['pdf'],
       public_id: (req, file) =>
         `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
     } as any,
