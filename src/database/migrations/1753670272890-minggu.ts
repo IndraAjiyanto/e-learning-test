@@ -16,15 +16,15 @@ export class Minggu1753670272890 implements MigrationInterface {
                         name: 'keterangan',
                         type: 'varchar',
                     },
-                                                {
-                name: 'check',
-                type: 'boolean',
-                default: false
-            },
                     {
                         name: 'minggu_ke',
                         type: 'int'
                     },
+                                    {
+                    name: 'akhir',
+                    type: 'boolean',
+                    default: false
+                },
                     {
                         name: 'kelasId',
                         type: 'int'

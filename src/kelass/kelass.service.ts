@@ -3,13 +3,11 @@ import { CreateKelassDto } from './dto/create-kelass.dto';
 import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
-import { Absen } from 'src/entities/absen.entity';
 import { Kategori } from 'src/entities/kategori.entity';
-import { JawabanUsersService } from 'src/jawaban_users/jawaban_users.service';
-import { PertanyaansService } from 'src/pertanyaans/pertanyaans.service';
+import { Minggu } from 'src/entities/minggu.entity';
 
 @Injectable()
 export class KelassService {
@@ -20,11 +18,10 @@ export class KelassService {
         private readonly userRepository: Repository<User>,
         @InjectRepository(Pertemuan)
         private readonly pertemuanRepository: Repository<Pertemuan>,
-        @InjectRepository(Absen)
-        private readonly absenRepository: Repository<Absen>,
         @InjectRepository(Kategori)
         private readonly kategoriRepository: Repository<Kategori>,
-        private readonly jawabanUsersService: JawabanUsersService, private readonly pertanyaansService: PertanyaansService
+        @InjectRepository(Minggu)
+        private readonly mingguRepository: Repository<Minggu>,
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -99,22 +96,23 @@ async findPertemuanAndPertanyaan(mingguId: number, userId: number) {
 }
 
 
-async findPertemuan(mingguId: number){
-    const minggu = await this.findOne(mingguId);
+async findMinggu(kelasId: number){
+    const minggu = await this.findOne(kelasId);
   if (!minggu) {
-    throw new NotFoundException(`User with ID ${mingguId} not found`);
+    throw new NotFoundException(`User with ID ${kelasId} not found`);
   }
-  return await this.pertemuanRepository.find({
+  return await this.mingguRepository.find({
     where: {
-      minggu: { id: mingguId }
+      kelas: { id: kelasId }
     },
-    relations: ['minggu', 'absen.user', 'pertanyaan', 'pertanyaan.jawaban', 'pertanyaan.jawaban_user'], 
+    relations: ['quiz', 'pertemuan'], 
+    order: { minggu_ke: 'ASC' },
   });
 }
 
-async findPertemuanTerakhir(mingguId: number){
-  const pertemuan = await this.pertemuanRepository.find({where: {minggu: {id: mingguId}, akhir: true}})
-  if(pertemuan.length){
+async findMingguTerakhir(kelasId: number){
+  const minggu = await this.mingguRepository.find({where: {kelas: {id: kelasId}, akhir: true}})
+  if(minggu.length){
     return true
   }else{
     return false

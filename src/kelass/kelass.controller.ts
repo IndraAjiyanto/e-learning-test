@@ -73,12 +73,12 @@ export class KelassController {
   }
 
   @Roles('admin')
-  @Get("/detail/kelas/admin/:id")
-  async detailKelas(@Param('id') id: number, @Res() res: Response, @Req() req: any){
-    const kelas = await this.kelassService.findOne(id);
-    const pertemuan = await this.kelassService.findPertemuan(id);
-    const pertemuanTerakhir = await this.kelassService.findPertemuanTerakhir(id)
-    res.render('admin/kelas/detail', {user: req.user, kelas, pertemuan, pertemuanTerakhir})
+  @Get("/detail/kelas/admin/:kelasId")
+  async detailKelas(@Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: Request){
+    const kelas = await this.kelassService.findOne(kelasId);
+    const minggu = await this.kelassService.findMinggu(kelasId);
+    const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId)
+    res.render('admin/kelas/detail', {user: req.user, kelas, minggu, mingguTerakhir})
   }
 
   @Get(':id')

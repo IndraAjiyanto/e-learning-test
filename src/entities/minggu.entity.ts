@@ -14,8 +14,8 @@ export class Minggu {
     @Column()
     keterangan: string
 
-      @Column({ default: false })
-  check: boolean;
+    @Column({default: false})
+    akhir: boolean
 
            @CreateDateColumn()
             createdAt: Date;

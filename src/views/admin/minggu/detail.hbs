@@ -1,0 +1,181 @@
+<div class="px-6 py-10 pt-28">
+<div class="max-w-5xl mx-auto">
+
+  <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
+    <div class="mb-4">
+      <a href="/kelass/detail/kelas/admin/{{minggu.kelas.id}}" 
+         class="inline-flex items-center text-gray-700 text-base font-medium hover:underline">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="h-5 w-5 mr-1" fill="none" 
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
+      </a>
+    </div>  
+
+    <div class="flex items-start justify-between">
+      <div>
+        <h1 class="text-2xl font-bold mb-2 text-gray-900">Week {{minggu.minggu_ke}}</h1>
+
+        <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Class :</span> {{minggu.kelas.nama_kelas}}
+        </p>
+        <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Deskription :</span> {{minggu.keterangan}}
+        </p>
+
+      </div>
+
+      <div class="flex gap-3">
+        <a href="/minggu/formEdit/{{minggu.id}}" 
+           class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+          Edit
+        </a>
+                <form action="/minggu/{{minggu.id}}/{{minggu.kelas.id}}?_method=DELETE" method="post">
+          <button 
+            type="button"
+            onclick="confirmDelete(this)"
+            class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-400 transition">
+            Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="max-w-5xl mx-auto" x-data="{ tab: ''}">
+
+    <div class="flex space-x-4 mb-6">
+          <button @click="tab = 'session'" 
+            :class="tab === 'session' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Session
+    </button>
+      {{#each minggu.pertemuan}}
+      {{#if (roles this.pertemuan_ke 3)}}
+    <button @click="tab = 'quiz'" 
+            :class="tab === 'quiz' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Quiz
+    </button>
+    {{/if}}
+    {{/each}}
+
+  </div>
+
+
+<div x-show="tab === 'session'">
+  <!-- Assignment List Section -->
+  {{#if minggu.pertemuan.length}}
+    <ul class="space-y-3 mb-6">
+      {{#each minggu.pertemuan}}
+        <div class="bg-gray-50 p-4 rounded-xl shadow hover:bg-gray-100 transition">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-semibold text-gray-900 mb-1">
+                session {{this.pertemuan_ke}}: {{this.topik}}
+              </p>
+                              <div class="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-600">
+                    <p><span class="font-medium">Method:</span> {{this.metode}}</p>
+                    <p><span class="font-medium">Location:</span> {{this.lokasi}}</p>
+                    <p><span class="font-medium">Time:</span> {{formatTime this.waktu_awal}} - {{formatTime this.waktu_akhir}}</p>
+                    <p><span class="font-medium">Date:</span> {{formatTanggal this.tanggal}}</p>
+                  </div>
+            </div>
+            <a href="/minggu/{{this.id}}" 
+               class="text-indigo-600 hover:text-indigo-800 font-medium">
+              View
+            </a>
+          </div>
+        </div>
+      {{/each}}
+    </ul>
+  {{else}}
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-400 mb-4" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 
+                 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <p class="text-gray-700 font-medium text-lg">No Session yet</p>
+      <p class="text-gray-500 text-sm mt-1">
+        Click <span class="font-semibold">Add Session</span> to create a new one.
+      </p>
+    </div>
+  {{/if}}
+
+  <!-- Add Assignment -->
+  <a href="/pertemuans/formCreate/{{minggu.id}}" 
+     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" 
+         class="h-12 w-12 text-gray-400 mb-3" 
+         fill="none" viewBox="0 0 24 24" 
+         stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+    <span class="text-gray-700 font-medium">Add Session</span>
+  </a>
+</div>
+
+<div x-show="tab === 'quiz'">
+
+  {{#if minggu.quiz.length}}
+    <!-- Questions List -->
+        <ul class="space-y-3 mb-6">
+
+      {{#each quiz}}
+         <div class="bg-gray-50 p-4 rounded-xl shadow hover:bg-gray-100 transition">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-semibold text-gray-900 mb-1">
+                quiz : {{this.nama_quiz}}
+              </p>
+            </div>
+            <a href="/quiz/{{this.id}}" 
+               class="text-indigo-600 hover:text-indigo-800 font-medium">
+              View
+            </a>
+          </div>
+        </div>
+      {{/each}}
+    </ul>
+  {{else}}
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" 
+           class="h-12 w-12 text-gray-400 mb-4" 
+           fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+      </svg>
+      <p class="text-gray-600 font-medium">No quiz yet</p>
+      <p class="text-gray-500 text-sm mt-1">
+        Click the <span class="font-semibold">Create Quiz</span> button to add a new quiz.
+      </p>
+    </div>
+  {{/if}}
+
+  <!-- Add New Question -->
+  <a href="/Quiz/formCreate/{{minggu.id}}" 
+     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-lg hover:bg-gray-100 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" 
+         class="h-12 w-12 text-gray-400 mb-3" 
+         fill="none" viewBox="0 0 24 24" 
+         stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+    <span class="text-gray-600 font-medium">Add Quiz</span>
+  </a>
+</div>
+
+
+</div>
+</div>

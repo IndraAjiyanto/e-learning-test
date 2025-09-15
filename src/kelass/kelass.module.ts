@@ -10,9 +10,10 @@ import { Kategori } from 'src/entities/kategori.entity';
 import { PertanyaansModule } from 'src/pertanyaans/pertanyaans.module';
 import { JawabanUsersModule } from 'src/jawaban_users/jawaban_users.module';
 import { UsersModule } from 'src/users/users.module';
+import { Minggu } from 'src/entities/minggu.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori]), PertanyaansModule, JawabanUsersModule, UsersModule],
+  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori, Minggu]), PertanyaansModule, JawabanUsersModule, UsersModule],
   controllers: [KelassController],
   providers: [KelassService],
   exports: [KelassService],

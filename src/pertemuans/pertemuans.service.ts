@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
+import { Minggu } from 'src/entities/minggu.entity';
 
 @Injectable()
 export class PertemuansService {
@@ -17,6 +18,9 @@ export class PertemuansService {
     @InjectRepository(Kelas)
     private readonly kelasRepository: Repository<Kelas>,
 
+    @InjectRepository(Minggu)
+    private readonly mingguRepository: Repository<Minggu>,
+
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
@@ -25,11 +29,11 @@ export class PertemuansService {
   ){}
 
   async create(createPertemuanDto: CreatePertemuanDto) {
-    const kelas = await this.kelasRepository.findOne({where: {id: createPertemuanDto.kelasId}})
-    if(!kelas){
-      throw new NotFoundException('kelas ini tidak ada')
+    const minggu = await this.mingguRepository.findOne({where: {id: createPertemuanDto.mingguId}})
+    if(!minggu){
+      throw new NotFoundException('minggu ini tidak ada')
     }
-    const pertemuan = await this.pertemuanRepository.findOne({where: {pertemuan_ke: createPertemuanDto.pertemuan_ke - 1, minggu: {id: kelas.id}}})
+    const pertemuan = await this.pertemuanRepository.findOne({where: {pertemuan_ke: createPertemuanDto.pertemuan_ke - 1, minggu: {id: minggu.id}}})
 
     if(!pertemuan?.akhir){
       if(createPertemuanDto.akhir_check === 'true'){
@@ -37,7 +41,7 @@ export class PertemuansService {
       }
     const user = await this.pertemuanRepository.create({
       ...createPertemuanDto,
-      minggu: kelas,
+      minggu: minggu,
     })
     return await this.pertemuanRepository.save(user)
     }else{
@@ -74,16 +78,16 @@ export class PertemuansService {
     return await this.kelasRepository.find();
   }
 
-  async findPertemuanKelas(id: number){
-    const pertemuan = await this.pertemuanRepository.findOne({where: {minggu: {id: id}}, order: {createdAt: 'DESC'}})
+  async findPertemuanMinggu(mingguId: number){
+    const pertemuan = await this.pertemuanRepository.findOne({where: {minggu: {id: mingguId}}, order: {createdAt: 'DESC'}})
     if(!pertemuan){
       return 0
     }
     return pertemuan.pertemuan_ke
   }
 
-  async noPertemuan(id: number){
-    const pertemuanTerakhir = await this.findPertemuanKelas(id)
+  async noPertemuan(mingguId: number){
+    const pertemuanTerakhir = await this.findPertemuanMinggu(mingguId)
     const pertemuanBaru = pertemuanTerakhir + 1
     return pertemuanBaru
   }

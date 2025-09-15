@@ -1,116 +1,170 @@
 <div class="pt-28 py-20">
-<div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-  <h2 class="text-2xl font-semibold mb-6 text-gray-900">Create Class</h2>
+  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    <h2 class="text-2xl font-bold mb-6 text-gray-900">Create Class</h2>
 
-  <form method="POST" action="/kelass" class="space-y-6" enctype="multipart/form-data">
+    <form method="POST" action="/kelass" class="space-y-6" enctype="multipart/form-data">
 
-     <div x-data="{ previewUrl: null }" class="space-y-3">
-  <label for="gambar" class="block text-sm font-medium text-gray-700 mb-1">
-    Cover Class
-  </label>
-  <input 
-    type="file" 
-    id="gambar" 
-    name="gambar" 
-    accept="image/*" 
-    x-ref="fileInput"
-    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
-    @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-  >
+      <!-- Cover -->
+      <div x-data="{ previewUrl: null }" class="space-y-3">
+        <label for="gambar" class="block text-sm font-semibold text-gray-700 mb-1">Cover Class</label>
+        <input 
+          type="file" 
+          id="gambar" 
+          name="gambar" 
+          accept="image/*" 
+          x-ref="fileInput"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
+          @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+        >
 
-  <template x-if="previewUrl">
-    <div class="relative w-32 h-32">
-      <img 
-        :src="previewUrl" 
-        alt="Preview Photos" 
-        class="w-32 h-32 object-cover rounded-lg border border-gray-300"
-      >
+        <template x-if="previewUrl">
+          <div class="relative w-32 h-32">
+            <img 
+              :src="previewUrl" 
+              alt="Preview" 
+              class="w-32 h-32 object-cover rounded-lg border border-gray-300"
+            >
+            <button 
+              type="button" 
+              class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
+              @click="previewUrl = null; $refs.fileInput.value = null;">
+              &times;
+            </button>
+          </div>
+        </template>
+      </div>
 
-      <button 
-        type="button" 
-        class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
-        @click="previewUrl = null; $refs.fileInput.value = null;">
-        &times;
-      </button>
-    </div>
-  </template>
-</div>
-
-    <div>
-      <label for="kategoriId" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+      <!-- Category -->
+      <div>
+        <label for="kategoriId" class="block text-sm font-semibold text-gray-700 mb-1">Category</label>
         <select name="kategoriId" id="kategoriId" 
           class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-            <option value="" selected disabled>-- Select Category --</option>
+          <option value="" selected disabled>-- Select Category --</option>
           {{#each kategori}}
             <option value="{{id}}">{{nama_kategori}}</option>
           {{/each}}
         </select>
-    </div>
+      </div>
 
-    <div>
-      <label for="nama_kelas" class="block text-sm font-medium text-gray-700 mb-1">Name Class</label>
-      <input type="text" id="nama_kelas" name="nama_kelas" required
-        class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-    </div>
+      <!-- Name Class -->
+      <div>
+        <label for="nama_kelas" class="block text-sm font-semibold text-gray-700 mb-1">Class Name</label>
+        <input type="text" id="nama_kelas" name="nama_kelas" placeholder="Enter class name" required
+          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+      </div>
 
-    <div>
-      <label for="teknologi" class="block text-sm font-medium text-gray-700 mb-1">Tech</label>
-      <input type="text" id="teknologi" name="teknologi" required
-        class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-    </div>
+      <!-- Description -->
+      <div>
+        <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+        <textarea id="deskripsi" name="deskripsi" rows="3" placeholder="Write a brief description..."
+          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
+      </div>
 
-    <div>
-      <label for="informasi_kelas" class="block text-sm font-medium text-gray-700 mb-1">Information</label>
-      <textarea id="informasi_kelas" name="informasi_kelas" rows="3"
-        class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
-    </div>
+      <!-- Tech -->
+      <div x-data="{ techs: [''] }" class="space-y-4">
+        <label class="block text-sm font-semibold text-gray-700">Technologies</label>
 
-    <div>
-      <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-      <textarea id="deskripsi" name="deskripsi" rows="3"
-        class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
-    </div>
+        <template x-for="(tech, index) in techs" :key="index">
+          <div class="flex items-center gap-3">
+            <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter a technology"
+              class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
+                     focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
 
-    <div>
-      <label for="target_pembelajaran" class="block text-sm font-medium text-gray-700 mb-1">Learning Target</label>
-      <textarea id="target_pembelajaran" name="target_pembelajaran" rows="3"
-        class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
-    </div>
+            <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
+              class="text-red-500 hover:text-red-700 font-bold text-lg">
+              ✕
+            </button>
+          </div>
+        </template>
 
-    
-<div x-data="{
-        display: '',
-        value: '',
-        formatHarga(event) {
-            let angka = event.target.value.replace(/\D/g, ''); 
-            this.value = angka;
-            this.display = new Intl.NumberFormat('id-ID').format(angka);
-        }
-    }" class="relative mb-6">
-    <label for="harga1" class="block text-sm font-medium text-gray-700 mb-1">Price</label>
+        <button type="button" @click="techs.push('')"
+          class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
+                 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
+          +
+        </button>
+      </div>
 
-    <input type="text" 
-           id="harga1"
-           x-model="display" 
-           @input="formatHarga($event)" 
-           placeholder="0"
-           class="w-full border border-gray-300 bg-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-    
-    <input type="hidden" name="harga" x-model="value">
-</div>
+            <!-- Learning -->
+      <div x-data="{ materis: [''] }" class="space-y-4 mt-6">
+        <label class="block text-sm font-semibold text-gray-700">Lessons</label>
 
+        <template x-for="(materi, index) in materis" :key="index">
+          <div class="flex items-center gap-3">
+            <input type="text" x-model="materis[index]" name="materi[]" placeholder="Enter a lesson"
+              class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
+                     focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
 
+            <button type="button" @click="materis.splice(index,1)" x-show="materis.length > 1"
+              class="text-red-500 hover:text-red-700 font-bold text-lg">
+              ✕
+            </button>
+          </div>
+        </template>
 
-    <div class="flex space-x-4">
-      <button type="submit"
-        class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-        Create
-      </button>
-      <a href="/kelass"
-        class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-        Cancel
-      </a>
-    </div>
-  </form>
-</div>
+        <button type="button" @click="materis.push('')"
+          class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
+                 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
+          +
+        </button>
+      </div>
+
+      <!-- Learning Targets -->
+      <div x-data="{ targets: [''] }" class="space-y-4 mt-6">
+        <label class="block text-sm font-semibold text-gray-700">Learning Targets</label>
+
+        <template x-for="(target, index) in targets" :key="index">
+          <div class="flex items-center gap-3">
+            <input type="text" x-model="targets[index]" name="target_pembelajaran[]" placeholder="Enter a learning target"
+              class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
+                     focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+
+            <button type="button" @click="targets.splice(index,1)" x-show="targets.length > 1"
+              class="text-red-500 hover:text-red-700 font-bold text-lg">
+              ✕
+            </button>
+          </div>
+        </template>
+
+        <button type="button" @click="targets.push('')"
+          class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
+                 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
+          +
+        </button>
+      </div>
+
+      <!-- Price -->
+      <div x-data="{
+              display: '',
+              value: '',
+              formatHarga(event) {
+                  let angka = event.target.value.replace(/\D/g, ''); 
+                  this.value = angka;
+                  this.display = new Intl.NumberFormat('id-ID').format(angka);
+              }
+          }" class="relative mb-6">
+        <label for="harga1" class="block text-sm font-semibold text-gray-700 mb-1">Price</label>
+
+        <input type="text" 
+               id="harga1"
+               x-model="display" 
+               @input="formatHarga($event)" 
+               placeholder="Enter price"
+               class="w-full border border-gray-300 bg-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+        
+        <input type="hidden" name="harga" x-model="value">
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex space-x-4">
+        <button type="submit"
+          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+          Create
+        </button>
+        <a href="/kelass"
+          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
 </div>

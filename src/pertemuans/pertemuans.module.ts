@@ -7,9 +7,10 @@ import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { MaterisModule } from 'src/materis/materis.module';
+import { Minggu } from 'src/entities/minggu.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Pertemuan, Kelas, User, Pertanyaan]), MaterisModule],
+  imports: [TypeOrmModule.forFeature([Pertemuan, Kelas, User, Pertanyaan, Minggu]), MaterisModule],
   controllers: [PertemuansController],
   providers: [PertemuansService],
   exports: [PertemuansService]

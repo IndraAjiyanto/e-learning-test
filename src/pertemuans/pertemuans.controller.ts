@@ -16,30 +16,29 @@ export class PertemuansController {
   @Post()
   async create(@Body() createPertemuanDto: CreatePertemuanDto, @Res() res:Response, @Req() req:Request) {
     try {
-        createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(createPertemuanDto.kelasId)
+        createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(createPertemuanDto.mingguId)
         await this.pertemuansService.create(createPertemuanDto);
         req.flash('success', 'session succesfuly create')
-        res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.kelasId}`)
+        res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`)
     } catch (error) {
               req.flash('error', 'session unsucces create')
-        res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.kelasId}`)
+        res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`)
     }
 
   }
 
   @Roles('admin')
-  @Post(':kelasId')
-  async createPertemuan(@Body() createPertemuanDto: CreatePertemuanDto, @Res() res:Response, @Param('kelasId') kelasId:number, @Req() req:Request){
+  @Post(':mingguId')
+  async createPertemuan(@Body() createPertemuanDto: CreatePertemuanDto, @Res() res:Response, @Param('mingguId') mingguId:number, @Req() req:Request){
     try {
-          createPertemuanDto.kelasId = kelasId
-    createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(kelasId)
+          createPertemuanDto.mingguId = mingguId
+    createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(mingguId)
     await this.pertemuansService.create(createPertemuanDto);
     req.flash('success', 'session succesfuly create')
-    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
+    res.redirect(`/minggu/${mingguId}`)
     } catch (error) {
-      console.log(error)
               req.flash('error', 'session unsucces create')
-    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
+    res.redirect(`/minggu/${mingguId}`)
     }
 
   }
@@ -52,10 +51,9 @@ export class PertemuansController {
   }
 
   @Roles('admin')
-  @Get('formCreate')
-  async formCreate(@Res() res:Response, @Req() req:any){
-    const kelas = await this.pertemuansService.findAllKelas()
-    res.render('admin/pertemuan/create', {user: req.user, kelas})
+  @Get('formCreate/:mingguId')
+  async formCreate(@Param('mingguId') mingguId:number, @Res() res:Response, @Req() req:Request){
+    res.render('admin/pertemuan/create', {user: req.user, mingguId})
   }
 
   @Roles('admin')
