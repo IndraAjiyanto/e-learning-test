@@ -1,4 +1,4 @@
-import { IsBoolean, IsInt, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsInt, IsOptional, IsString } from "class-validator";
 
 export class CreateKelassDto {
     @IsString()
@@ -10,18 +10,18 @@ export class CreateKelassDto {
       @IsInt()
       harga: number;
 
-      @IsString()
-      informasi_kelas: string;
-
       @IsBoolean()
       @IsOptional()
       launch: boolean
 
-      @IsString()
-      teknologi: string;
+          @IsString()
+          teknologi: string[]
+      
+          @IsArray()
+          materi: string[];
 
-      @IsString()
-      target_pembelajaran: string;
+      @IsArray()
+      target_pembelajaran: string[];
 
     @IsString()
     gambar: string

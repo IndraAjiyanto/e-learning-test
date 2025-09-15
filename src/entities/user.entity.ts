@@ -8,6 +8,8 @@ import { Pembayaran } from './pembayaran.entity';
 import { JawabanUser } from './jawaban_user.entity';
 import { BiodataMentor } from './biodata_mentor.entity';
 import { JawabanTugas } from './jawaban_tugas.entity';
+import { Logbook } from './logbook.entity';
+import { Nilai } from './nilai.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -52,6 +54,9 @@ export class User {
 @OneToMany(() => Absen, (absen) => absen.user, { cascade: true, onDelete: 'CASCADE' })
   absen: Absen[];
 
+@OneToMany(() => Logbook, (logbook) => logbook.user, { cascade: true, onDelete: 'CASCADE' })
+  logbook: Logbook[];
+
 @OneToMany(() => Portfolio, (portfolio) => portfolio.user, { cascade: true, onDelete: 'CASCADE'  })
   portfolio: Portfolio[];
 
@@ -68,8 +73,8 @@ export class User {
 @JoinTable()
 kelas: Kelas[];
 
-
-
+@OneToMany(() => Nilai, (nilai) => nilai.user, { cascade: true, onDelete: 'CASCADE' })
+nilai: Nilai[];
 
     @OneToOne(() => Biodata, (biodata) => biodata.user, { cascade: true, onDelete: 'CASCADE' }) 
     biodata: Biodata

@@ -21,6 +21,11 @@ export class Materi1753670395538 implements MigrationInterface {
                     name: 'file',
                     type: 'varchar'
                 },
+                            {
+                name: 'check',
+                type: 'boolean',
+                default: false
+            },
                 {
                     name: 'slides',
                     type: 'jsonb',

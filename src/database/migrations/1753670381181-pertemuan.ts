@@ -21,6 +21,11 @@ export class Pertemuan1753670381181 implements MigrationInterface {
                     name: 'topik',
                     type: 'varchar'
                 },
+                                            {
+                name: 'check',
+                type: 'boolean',
+                default: false
+            },
                 {
                     name: 'lokasi',
                     type: 'varchar'
@@ -48,7 +53,7 @@ export class Pertemuan1753670381181 implements MigrationInterface {
                     type: 'time'
                 },
                 {
-                    name: 'kelasId',
+                    name: 'mingguId',
                     type: 'int'
                 },
                 {
@@ -65,8 +70,8 @@ export class Pertemuan1753670381181 implements MigrationInterface {
         }))
 
         await queryRunner.createForeignKey('pertemuan', new TableForeignKey({
-            columnNames: ['kelasId'],
-            referencedTableName: 'kelas',
+            columnNames: ['mingguId'],
+            referencedTableName: 'minggu',
             referencedColumnNames: ['id'],
             onDelete: "CASCADE",
         }));
@@ -77,10 +82,10 @@ export class Pertemuan1753670381181 implements MigrationInterface {
           const table = await queryRunner.getTable('pertemuan');
   if (!table) return;
 
-  const kelasFk = table.foreignKeys.find(fk => fk.columnNames.includes('kelasId'));
+  const mingguFk = table.foreignKeys.find(fk => fk.columnNames.includes('mingguId'));
 
-  if (kelasFk) {
-    await queryRunner.dropForeignKey('pertemuan', kelasFk);
+  if (mingguFk) {
+    await queryRunner.dropForeignKey('pertemuan', mingguFk);
   }
 
   await queryRunner.dropTable('pertemuan');

@@ -77,16 +77,16 @@ async findMyCourse(userId: number) {
   });
 }
 
-async findPertemuanAndPertanyaan(kelasId: number, userId: number) {
-  const kelas = await this.findOne(kelasId);
-  if (!kelas) {
-    throw new NotFoundException(`Kelas dengan ID ${kelasId} tidak ditemukan`);
+async findPertemuanAndPertanyaan(mingguId: number, userId: number) {
+  const minggu = await this.findOne(mingguId);
+  if (!minggu) {
+    throw new NotFoundException(`minggu dengan ID ${mingguId} tidak ditemukan`);
   }
 
-  const pertemuan = await this.pertemuanRepository.find({
-    where: { kelas: { id: kelasId } },
+  return await this.pertemuanRepository.find({
+    where: { minggu: { id: mingguId } },
     relations: [
-      'kelas',
+      'minggu',
       'absen.user',
       'pertanyaan',
       'tugas',
@@ -96,38 +96,24 @@ async findPertemuanAndPertanyaan(kelasId: number, userId: number) {
     ],
   });
 
-  const detailPertemuan = pertemuan.map((p) => {
-    const answeredCount = p.pertanyaan.filter((q) =>
-      q.jawaban_user.some((ju) => ju.user.id === userId)
-    ).length;
-
-    return {
-      ...p,
-      answeredCount,
-      totalPertanyaan: p.pertanyaan.length,
-      isAnswered: answeredCount > 0,
-    };
-  });
-
-  return detailPertemuan;
 }
 
 
-async findPertemuan(kelasId: number){
-    const kelas = await this.findOne(kelasId);
-  if (!kelas) {
-    throw new NotFoundException(`User with ID ${kelasId} not found`);
+async findPertemuan(mingguId: number){
+    const minggu = await this.findOne(mingguId);
+  if (!minggu) {
+    throw new NotFoundException(`User with ID ${mingguId} not found`);
   }
   return await this.pertemuanRepository.find({
     where: {
-      kelas: { id: kelasId }
+      minggu: { id: mingguId }
     },
-    relations: ['kelas', 'absen.user', 'pertanyaan', 'pertanyaan.jawaban', 'pertanyaan.jawaban_user'], 
+    relations: ['minggu', 'absen.user', 'pertanyaan', 'pertanyaan.jawaban', 'pertanyaan.jawaban_user'], 
   });
 }
 
-async findPertemuanTerakhir(kelasId: number){
-  const pertemuan = await this.pertemuanRepository.find({where: {kelas: {id: kelasId}, akhir: true}})
+async findPertemuanTerakhir(mingguId: number){
+  const pertemuan = await this.pertemuanRepository.find({where: {minggu: {id: mingguId}, akhir: true}})
   if(pertemuan.length){
     return true
   }else{

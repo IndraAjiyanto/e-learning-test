@@ -16,7 +16,7 @@ export class Pertanyaan1756188100347 implements MigrationInterface {
                                 type: 'varchar'
                             },
                                 {
-                                name: 'pertemuanId',
+                                name: 'quizId',
                                 type: 'int'
                             },{
                                     name: 'createdAt',
@@ -32,8 +32,8 @@ export class Pertanyaan1756188100347 implements MigrationInterface {
                         }))
                 
                         await queryRunner.createForeignKey('pertanyaan', new TableForeignKey({
-                            columnNames: ['pertemuanId'],
-                            referencedTableName: 'pertemuan',
+                            columnNames: ['quizId'],
+                            referencedTableName: 'quiz',
                             referencedColumnNames: ['id'],
                             onDelete: "CASCADE",
                         }));
@@ -43,10 +43,10 @@ export class Pertanyaan1756188100347 implements MigrationInterface {
                                   const table = await queryRunner.getTable('pertanyaan');
   if (!table) return;
 
-  const pertemuanFk = table.foreignKeys.find(fk => fk.columnNames.includes('pertemuanId'));
+  const quizFk = table.foreignKeys.find(fk => fk.columnNames.includes('quizId'));
 
-  if (pertemuanFk) {
-    await queryRunner.dropForeignKey('pertanyaan', pertemuanFk);
+  if (quizFk) {
+    await queryRunner.dropForeignKey('pertanyaan', quizFk);
   }
 
 

@@ -17,6 +17,9 @@ export class Materi {
   @Column("jsonb", { nullable: true })
   slides: string[];
 
+  @Column({ default: false })
+  check: boolean;
+
     @Column({ type: 'enum', enum: ['video', 'pdf', 'ppt'] })
     jenis_file: JenisFile;
 

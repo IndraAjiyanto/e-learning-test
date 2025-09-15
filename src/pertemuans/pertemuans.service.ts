@@ -29,7 +29,7 @@ export class PertemuansService {
     if(!kelas){
       throw new NotFoundException('kelas ini tidak ada')
     }
-    const pertemuan = await this.pertemuanRepository.findOne({where: {pertemuan_ke: createPertemuanDto.pertemuan_ke - 1, kelas: {id: kelas.id}}})
+    const pertemuan = await this.pertemuanRepository.findOne({where: {pertemuan_ke: createPertemuanDto.pertemuan_ke - 1, minggu: {id: kelas.id}}})
 
     if(!pertemuan?.akhir){
       if(createPertemuanDto.akhir_check === 'true'){
@@ -37,7 +37,7 @@ export class PertemuansService {
       }
     const user = await this.pertemuanRepository.create({
       ...createPertemuanDto,
-      kelas: kelas,
+      minggu: kelas,
     })
     return await this.pertemuanRepository.save(user)
     }else{
@@ -75,7 +75,7 @@ export class PertemuansService {
   }
 
   async findPertemuanKelas(id: number){
-    const pertemuan = await this.pertemuanRepository.findOne({where: {kelas: {id: id}}, order: {createdAt: 'DESC'}})
+    const pertemuan = await this.pertemuanRepository.findOne({where: {minggu: {id: id}}, order: {createdAt: 'DESC'}})
     if(!pertemuan){
       return 0
     }
@@ -94,7 +94,7 @@ async findMuridInKelas(kelasId: number, pertemuanId: number) {
 }
 
 async findPertanyaan(pertemuanId: number){
-  return await this.pertanyaanRepository.find({where: {pertemuan: {id:pertemuanId}}, relations: ['jawaban']})
+  return await this.pertanyaanRepository.find({where: {quiz: {id:pertemuanId}}, relations: ['jawaban']})
 }
 
 
@@ -109,7 +109,7 @@ async findPertanyaan(pertemuanId: number){
       throw new NotFoundException(`Pertemuan tidak ditemukan`);
     }
 
-    if (!pertemuan.kelas) {
+    if (!pertemuan.minggu) {
       throw new NotFoundException('kelas tidak ditemukan');
     }
 
@@ -138,7 +138,7 @@ async findPertanyaan(pertemuanId: number){
     }
     await this.pertemuanRepository.remove(pertemuan)
   const semuaPertemuan = await this.pertemuanRepository.find({
-    where: { kelas: { id: kelasId } },
+    where: { minggu: { id: kelasId } },
     order: { createdAt: 'ASC' }
   });
 

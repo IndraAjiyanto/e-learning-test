@@ -1,9 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany, ManyToOne, CreateDateColumn , UpdateDateColumn, JoinColumn} from "typeorm";
 import { Absen } from "./absen.entity";
-import { Kelas } from "./kelas.entity";
 import { Materi } from "./materi.entity";
 import { Tugas } from "./tugas.entity";
-import { Pertanyaan } from "./pertanyaan.entity";
+import { Minggu } from "./minggu.entity";
 
 export type Metode = 'online' | 'offline';
 
@@ -17,6 +16,9 @@ export class Pertemuan{
 
     @Column()
     pertemuan_ke: number
+
+      @Column({ default: false })
+  check: boolean;
 
     @Column()
     tanggal: Date
@@ -45,11 +47,8 @@ export class Pertemuan{
     @OneToMany(() => Tugas, (tugas) => tugas.pertemuan, {cascade: true, onDelete : 'CASCADE'})
     tugas: Tugas[];
 
-    @OneToMany(() => Pertanyaan, (pertanyaan) => pertanyaan.pertemuan, {cascade: true, onDelete : 'CASCADE'})
-    pertanyaan: Pertanyaan[];
-
-    @ManyToOne(() => Kelas, (kelas) => kelas.pertemuan, {onDelete : 'CASCADE'})
-    kelas: Kelas
+    @ManyToOne(() => Minggu, (minggu) => minggu.pertemuan, {onDelete : 'CASCADE'})
+    minggu: Minggu
 
     @CreateDateColumn()
     createdAt: Date;

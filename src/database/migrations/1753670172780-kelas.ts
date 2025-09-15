@@ -21,21 +21,21 @@ export class Kelas1753670172780 implements MigrationInterface {
                 type: 'int'
             },
             {
-                name: 'informasi_kelas',
-                type: 'varchar'
-            },
-            {
                 name: 'launch',
                 type: 'boolean',
                 default: false
             },
             {
                 name: 'teknologi',
-                type: 'varchar'
+                type: 'jsonb',
             },
             {
                 name: 'target_pembelajaran',
-                type: 'varchar'
+                type: 'jsonb',
+            },
+            {
+                name: 'materi',
+                type: 'jsonb',
             },
             {
                 name: 'deskripsi',

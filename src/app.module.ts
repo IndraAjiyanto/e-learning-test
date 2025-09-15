@@ -22,6 +22,7 @@ import { PertanyaansModule } from './pertanyaans/pertanyaans.module';
 import { JawabanTugassModule } from './jawaban_tugass/jawaban_tugass.module';
 import { JawabanUsersModule } from './jawaban_users/jawaban_users.module';
 import { KomentarModule } from './komentar/komentar.module';
+import { LogbookModule } from './logbook/logbook.module';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { KomentarModule } from './komentar/komentar.module';
     // ServeStaticModule.forRoot({
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
-    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule, JawabansModule, TugassModule, PembayaransModule, PertanyaansModule, JawabanTugassModule, JawabanUsersModule, KomentarModule],
+    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule, JawabansModule, TugassModule, PembayaransModule, PertanyaansModule, JawabanTugassModule, JawabanUsersModule, KomentarModule, LogbookModule],
   controllers: [AppController],
   providers: [AppService],
 })

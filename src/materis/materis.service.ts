@@ -66,9 +66,9 @@ async findPertemuan(pertemuanId: number){
   }
 
 
-  async findPertemuanByKelas(kelasId: number){
+  async findPertemuanByKelas(mingguId: number){
     const pertemuan = await this.pertemuanRepository.find({
-    where: { kelas: { id: kelasId } },
+    where: { minggu: { id: mingguId } },
     relations: ['materi'], 
     order: { id: 'ASC' } 
   });
@@ -81,8 +81,8 @@ async findPertemuan(pertemuanId: number){
   }));
   }
 
-  async findMateriByJenisAndPertemuan(kelasId: number, jenis_file: JenisFile){
-    return await this.materiRepository.find({where: {jenis_file: jenis_file, pertemuan: {kelas: {id: kelasId}}}, })
+  async findMateriByJenisAndPertemuan(mingguId: number, jenis_file: JenisFile){
+    return await this.materiRepository.find({where: {jenis_file: jenis_file, pertemuan: {minggu: {id: mingguId}}}, })
 
   }
 

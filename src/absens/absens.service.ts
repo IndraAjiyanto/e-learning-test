@@ -51,8 +51,8 @@ export class AbsensService {
     return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['kelas']})
   }
 
-  async findUsers(pertemuanId: number){
-    const kelas = await this.kelasRepository.find({where: {pertemuan: {id: pertemuanId}}})
+  async findUsers(mingguId: number){
+    const kelas = await this.kelasRepository.find({where: {minggu: {id: mingguId}}})
     if(!kelas){
       return ''
     }

@@ -76,7 +76,7 @@ export class PertemuansController {
   @Get(':pertemuanId')
   async findOne(@Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:any) {
     const pertemuan = await this.pertemuansService.findOne(pertemuanId);
-    const murid = await this.pertemuansService.findMuridInKelas(pertemuan.kelas.id, pertemuanId)
+    const murid = await this.pertemuansService.findMuridInKelas(pertemuan.minggu.id, pertemuanId)
     const pertanyaan = await this.pertemuansService.findPertanyaan(pertemuanId)
       const materipdf = await this.materisService.findMateriPdf(pertemuanId)
   const materivideo = await this.materisService.findMateriVideo(pertemuanId)

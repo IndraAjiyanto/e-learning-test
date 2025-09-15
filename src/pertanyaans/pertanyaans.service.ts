@@ -23,7 +23,7 @@ export class PertanyaansService {
 
           const pertanyaan = await this.pertanyaanRepository.create({
           pertanyaan_soal: createPertanyaanDto.pertanyaan_soal,
-          pertemuan: pertemuan
+          quiz: pertemuan
         })
         return await this.pertanyaanRepository.save(pertanyaan)
   }
@@ -32,12 +32,12 @@ export class PertanyaansService {
     return `This action returns all pertanyaans`;
   }
 
-  async findPertanyaan(pertemuanId: number){
-    return await this.pertanyaanRepository.find({where: {pertemuan: {id: pertemuanId}}, relations: ['jawaban.jawaban_user']})
+  async findPertanyaan(quizId: number){
+    return await this.pertanyaanRepository.find({where: {quiz: {id: quizId}}, relations: ['jawaban.jawaban_user']})
   }
 
   async findOne(pertanyaanId: number) {
-    return await this.pertanyaanRepository.findOne({where: {id: pertanyaanId}, relations: ['jawaban', 'pertemuan']})
+    return await this.pertanyaanRepository.findOne({where: {id: pertanyaanId}, relations: ['jawaban', 'quiz']})
   }
 
 async update(pertanyaanId: number, updatePertanyaanDto: UpdatePertanyaanDto) {

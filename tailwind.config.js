@@ -5,7 +5,11 @@ module.exports = {
     "./src/views/**/*.{html,hbs,ejs,pug}",
   ],
   theme: {
-    extend: {},
+    extend: {
+            fontFamily: {
+        montserrat: ['Montserrat', 'sans-serif'],
+      },
+    },
   },
   plugins: [
     require('daisyui'),

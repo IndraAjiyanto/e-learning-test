@@ -67,16 +67,19 @@ async findJawabanByUser(userId: number){
   return await this.jawabanUserRepository.find({where: {user : {id: userId} }, relations: ['jawaban']})
 }
 
-async AmountNilai(pertemuanId: number, userId: number){
-  const jawaban = await this.jawabanUserRepository.find({where: {pertanyaan: {pertemuan: {id: pertemuanId}}, user: {id: userId}}, relations: ['jawaban']})
-
+async AmountNilai(mingguId: number, userId: number){
+  const jawaban = await this.jawabanUserRepository.find({where: {pertanyaan: {quiz: {id: mingguId}}, user: {id: userId}}, relations: ['jawaban']})
   
-  const totalNilai = jawaban.reduce((sum, j) => {
-    if (j.jawaban.jawaban_benar) {
-      return sum + 10;
-    }
-    return sum;
-  }, 0);
+const jumlahSoal = jawaban.length; 
+const nilaiPerSoal = 100 / jumlahSoal;
+
+const totalNilai = jawaban.reduce((sum, j) => {     
+  if (j.jawaban.jawaban_benar) {       
+    return sum + nilaiPerSoal;     
+  }     
+  return sum;   
+}, 0);
+
 
   return totalNilai;
 }
