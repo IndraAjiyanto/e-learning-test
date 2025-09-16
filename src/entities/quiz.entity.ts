@@ -11,6 +11,9 @@ export class Quiz {
     @Column()
     nama_quiz: string
 
+    @Column()
+    nilai_minimal: number
+
                 @CreateDateColumn()
                 createdAt: Date;
                 

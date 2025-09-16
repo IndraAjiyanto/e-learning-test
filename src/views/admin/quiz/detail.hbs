@@ -22,10 +22,13 @@
         <h1 class="text-2xl font-bold mb-2 text-gray-900">Quiz {{quiz.nama_quzi}}</h1>
 
         <p class="text-gray-600 mb-1">
+          <span class="font-semibold">Minimum Score :</span> {{quiz.nilai_minimal}}
+        </p>
+        <p class="text-gray-600 mb-1">
           <span class="font-semibold">Class :</span> {{quiz.minggu.kelas.nama_kelas}}
         </p>
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Week :</span> {{quiz.minggu.keterangan}}
+          <span class="font-semibold">Week :</span> {{quiz.minggu.minggu_ke}}
         </p>
 
       </div>
@@ -49,31 +52,78 @@
 </div>
 
 
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl mx-auto" x-data="{ tab: ''}">
+
+      <div class="flex space-x-4 mb-6">
+          <button @click="tab = 'question'" 
+            :class="tab === 'question' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Question
+    </button>
+
+    <button @click="tab = 'answer'" 
+            :class="tab === 'answer' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Answer
+    </button>
+
+
+  </div>
+
+<div x-show="tab === 'question'">
   {{#if quiz.pertanyaan.length}}
-    <ul class="space-y-3 mb-6">
+   <div class="space-y-4 mb-6">
       {{#each quiz.pertanyaan}}
-        <div class="bg-gray-50 p-4 rounded-xl shadow hover:bg-gray-100 transition">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="font-semibold text-gray-900 mb-1">
-                Question : {{this.pertanyaan}}
-              </p>
-                              <div class="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-600">
-                    <p><span class="font-medium">Method:</span> {{this.metode}}</p>
-                    <p><span class="font-medium">Location:</span> {{this.lokasi}}</p>
-                    <p><span class="font-medium">Time:</span> {{formatTime this.waktu_awal}} - {{formatTime this.waktu_akhir}}</p>
-                    <p><span class="font-medium">Date:</span> {{formatTanggal this.tanggal}}</p>
-                  </div>
-            </div>
-            <a href="/pertemuans/{{this.id}}" 
-               class="text-indigo-600 hover:text-indigo-800 font-medium">
-              View
+      <div x-data="{ open: false }" class="bg-white border rounded-lg shadow">
+        
+        <button @click="open = !open"
+                class="w-full flex justify-between items-center px-6 py-4 text-left">
+          <span class="font-semibold text-gray-800">{{pertanyaan_soal}}</span>
+          <svg xmlns="http://www.w3.org/2000/svg"
+               :class="{'rotate-180': open}"
+               class="h-5 w-5 transform transition-transform"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div x-show="open" x-collapse class="px-6 pb-6 space-y-4">
+
+          <ul class="space-y-2">
+            {{#each this.jawaban}}
+            <li class="flex items-center gap-3 p-2 rounded-lg border 
+                       {{#if this.jawaban_benar}}
+                         bg-green-50 border-green-400
+                       {{else}}
+                         bg-gray-50 border-gray-200
+                       {{/if}}">
+              <span class="text-gray-700">{{this.jawaban}}</span>
+              {{#if this.jawaban_benar}}
+              <span class="ml-auto text-green-600 font-semibold text-sm">Correct</span>
+              {{/if}}
+            </li>
+            {{/each}}
+          </ul>
+
+          <div class="flex gap-3 pt-2">
+
+            <a href="/pertanyaans/FormEdit/{{this.id}}"
+               class="inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition">
+              Edit
             </a>
+            <form action="/pertanyaans/{{this.id}}/{{../quiz.id}}?_method=DELETE" method="post">
+              <button type="button" 
+                      onclick="confirmDelete(this)"
+                      class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-500 transition">
+                Delete
+              </button>
+            </form>
           </div>
         </div>
+      </div>
       {{/each}}
-    </ul>
+    </div>
   {{else}}
     <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-400 mb-4" fill="none"
@@ -90,7 +140,7 @@
   {{/if}}
 
   <!-- Add Assignment -->
-  <a href="/pertanyaans/formCreate/{{minggu.id}}" 
+  <a href="/pertanyaans/formCreate/{{quiz.id}}" 
      class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
     <svg xmlns="http://www.w3.org/2000/svg" 
          class="h-12 w-12 text-gray-400 mb-3" 
@@ -102,5 +152,52 @@
   </a>
 </div>
 
+<div x-show="tab === 'answer'">
+    {{#if quiz.nilai.length}}
+      <div class="overflow-hidden bg-white rounded-xl shadow-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">User</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Score</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            {{#each quiz.nilai}}
+            <tr>
+              <td class="px-6 py-4 text-gray-900 font-medium">{{this.user.username}}</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 rounded-lg text-sm font-semibold
+                  {{#if (gte this.nilai ../quiz.nilai_minimal)}}
+                    bg-green-100 text-green-700
+                  {{else if (gte this.nilai 60)}}
+                    bg-yellow-100 text-yellow-700
+                  {{else}}
+                    bg-red-100 text-red-700
+                  {{/if}}">
+                  {{this.nilai}}
+                </span>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-400 mb-4" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 
+                   5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <p class="text-gray-700 font-medium text-lg">No scores yet</p>
+        <p class="text-gray-500 text-sm mt-1">
+          No user has completed this quiz yet.
+        </p>
+      </div>
+    {{/if}}
+    </div>
 
+</div>
 </div>

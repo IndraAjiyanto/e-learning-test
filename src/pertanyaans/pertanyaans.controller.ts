@@ -8,6 +8,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { JawabansService } from 'src/jawabans/jawabans.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { JawabanUsersService } from 'src/jawaban_users/jawaban_users.service';
+import { QuizService } from 'src/quiz/quiz.service';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('pertanyaans')
@@ -15,20 +16,21 @@ export class PertanyaansController {
 constructor(
   private readonly pertanyaansService: PertanyaansService,
   private readonly pertemuanService: PertemuansService,
+  private readonly quizService: QuizService,
   private readonly jawabansService: JawabansService,
   private readonly jawabanUsersService: JawabanUsersService,
 ) {}
 
 @Roles('admin')
-@Post(':pertemuanId')
+@Post(':quizId')
 async create(
   @Res() res: Response,
-  @Req() req: any,
+  @Req() req: Request,
   @Body() createPertanyaanDto: CreatePertanyaanDto,
-  @Param('pertemuanId') pertemuanId: number,
+  @Param('quizId') quizId: number,
 ) {
   try {
-    createPertanyaanDto.pertemuanId = pertemuanId;
+    createPertanyaanDto.quizId = quizId;
     const pertanyaan = await this.pertanyaansService.create(createPertanyaanDto);
     for (let i = 0; i < createPertanyaanDto.pilihan.length; i++) {
       await this.jawabansService.create({
@@ -39,30 +41,25 @@ async create(
     }
 
     req.flash('success', 'Berhasil membuat pertanyaan beserta jawabannya');
-    return res.redirect(`/pertemuans/${pertemuanId}`);
+    return res.redirect(`/quiz/${quizId}`);
   } catch (err) {
     req.flash('error', 'Gagal membuat pertanyaan');
-    return res.redirect(`/pertemuans/${pertemuanId}`);
+    return res.redirect(`/quiz/${quizId}`);
   }
 }
 
   @Roles('admin')
-  @Get('Formcreate/:pertemuanId')
-  async formCreate(@Req() req:any, @Res() res:Response, @Param('pertemuanId') pertemuanId:number){
-    const pertemuan = await this.pertemuanService.findOne(pertemuanId)
-    res.render('admin/quiz/create', {user: req.user, pertemuan})
+  @Get('formCreate/:quizId')
+  async formCreate(@Req() req:Request, @Res() res:Response, @Param('quizId') quizId:number){
+    const quiz = await this.quizService.findOne(quizId)
+    res.render('admin/pertanyaan/create', {user: req.user, quiz})
   }
 
   @Roles('admin')
   @Get('FormEdit/:pertanyaanId')
   async findPertanyaan(@Req() req:Request, @Res() res:Response, @Param('pertanyaanId') pertanyaanId:number) {
     const pertanyaan = await this.pertanyaansService.findOne(pertanyaanId);
-    res.render('admin/quiz/edit', {user: req.user, pertanyaan})
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pertanyaansService.findOne(+id);
+    res.render('admin/pertanyaan/edit', {user: req.user, pertanyaan})
   }
 
   @Roles('user')
@@ -84,28 +81,28 @@ async create(
   }
 
   @Roles('admin')
-  @Patch(':pertanyaanId/:pertemuanId')
-  async update(@Param('pertanyaanId') pertanyaanId: number, @Param('pertemuanId') pertemuanId: number, @Body() updatePertanyaanDto: UpdatePertanyaanDto, @Req() req:Request, @Res() res:Response) {
+  @Patch(':pertanyaanId/:quizId')
+  async update(@Param('pertanyaanId') pertanyaanId: number, @Param('quizId') quizId: number, @Body() updatePertanyaanDto: UpdatePertanyaanDto, @Req() req:Request, @Res() res:Response) {
     try {
     await this.pertanyaansService.update(pertanyaanId, updatePertanyaanDto);
     req.flash('success', 'successfuly update question')
-    res.redirect(`/pertemuans/${pertemuanId}`)
+    res.redirect(`/quiz/${quizId}`)
     } catch (error) {
           req.flash('error', 'unsuccess update question')
-    res.redirect(`/pertemuans/${pertemuanId}`)
+    res.redirect(`/quiz/${quizId}`)
     }
   }
 
   @Roles('admin')
-  @Delete(':pertanyaanId/:pertemuanId')
-  async remove(@Param('pertemuanId') pertemuanId: number,@Param('pertanyaanId') pertanyaanId: number, @Req() req:Request, @Res() res:Response) {
+  @Delete(':pertanyaanId/:quizId')
+  async remove(@Param('quizId') quizId: number,@Param('pertanyaanId') pertanyaanId: number, @Req() req:Request, @Res() res:Response) {
     try {
           await this.pertanyaansService.remove(pertanyaanId);
           req.flash('success', 'successfuly delete question')
-    res.redirect(`/pertemuans/${pertemuanId}`)
+    res.redirect(`/quiz/${quizId}`)
     } catch (error) {
       req.flash('error', 'unsuccess delete question')
-    res.redirect(`/pertemuans/${pertemuanId}`)
+    res.redirect(`/quiz/${quizId}`)
     }
 
   }

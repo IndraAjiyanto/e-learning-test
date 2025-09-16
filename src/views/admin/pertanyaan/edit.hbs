@@ -2,7 +2,7 @@
   <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit Question</h2>
 
-    <form action="/pertanyaans/{{pertanyaan.id}}/{{pertanyaan.pertemuan.id}}?_method=PATCH" method="POST" class="space-y-6">
+    <form action="/pertanyaans/{{pertanyaan.id}}/{{pertanyaan.quiz.id}}?_method=PATCH" method="POST" class="space-y-6">
       
       <!-- Pertanyaan -->
       <div>
@@ -37,7 +37,7 @@
           class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">
           Update Question
         </button>
-        <a href="/pertemuans/{{pertanyaan.pertemuan.id}}"
+        <a href="/quiz/{{pertanyaan.quiz.id}}"
           class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
           Cancel
         </a>

@@ -32,7 +32,7 @@ export class QuizService {
   }
 
   async findOne(quizId: number) {
-    return await this.quizRepository.findOne({where: {id: quizId}, relations: ['minggu', 'minggu.kelas', 'pertanyaan']});
+    return await this.quizRepository.findOne({where: {id: quizId}, relations: ['minggu', 'minggu.kelas', 'pertanyaan', 'pertanyaan.jawaban', 'nilai']});
   }
 
   async update(quizId: number, updateQuizDto: UpdateQuizDto) {

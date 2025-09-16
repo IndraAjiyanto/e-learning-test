@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PertanyaansService } from './pertanyaans.service';
 import { PertanyaansController } from './pertanyaans.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,9 +8,11 @@ import { PertemuansModule } from 'src/pertemuans/pertemuans.module';
 import { JawabansModule } from 'src/jawabans/jawabans.module';
 import { Jawaban } from 'src/entities/jawaban.entity';
 import { JawabanUsersModule } from 'src/jawaban_users/jawaban_users.module';
+import { Quiz } from 'src/entities/quiz.entity';
+import { QuizModule } from 'src/quiz/quiz.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Pertanyaan, Pertemuan, Jawaban]), PertemuansModule, JawabansModule, JawabanUsersModule],
+  imports: [TypeOrmModule.forFeature([Pertanyaan, Pertemuan, Jawaban, Quiz]), PertemuansModule, JawabansModule, JawabanUsersModule, QuizModule ],
   controllers: [PertanyaansController],
   providers: [PertanyaansService],
   exports: [PertanyaansService]

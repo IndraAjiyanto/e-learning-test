@@ -6,6 +6,7 @@ import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { Repository } from 'typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Jawaban } from 'src/entities/jawaban.entity';
+import { Quiz } from 'src/entities/quiz.entity';
 
 @Injectable()
 export class PertanyaansService {
@@ -15,15 +16,18 @@ export class PertanyaansService {
       private readonly pertemuanRepository: Repository<Pertemuan>
       @InjectRepository(Jawaban)
       private readonly jawabanRepository: Repository<Jawaban>
+      @InjectRepository(Quiz)
+      private readonly quizRepository: Repository<Quiz>
+      
   async create(createPertanyaanDto: CreatePertanyaanDto) {
-          const pertemuan = await this.pertemuanRepository.findOne({where: {id: createPertanyaanDto.pertemuanId}})
-        if(!pertemuan){
-          throw new NotFoundException('pertemuan ini tidak ada')
+          const quiz = await this.quizRepository.findOne({where: {id: createPertanyaanDto.quizId}})
+        if(!quiz){
+          throw new NotFoundException('quiz ini tidak ada')
         }
 
           const pertanyaan = await this.pertanyaanRepository.create({
           pertanyaan_soal: createPertanyaanDto.pertanyaan_soal,
-          quiz: pertemuan
+          quiz: quiz
         })
         return await this.pertanyaanRepository.save(pertanyaan)
   }

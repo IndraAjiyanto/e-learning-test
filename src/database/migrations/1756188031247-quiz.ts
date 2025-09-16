@@ -17,6 +17,10 @@ export class Quiz1756188031247 implements MigrationInterface {
                                         type: 'varchar'
                                     },
                                     {
+                                        name: 'nilai_minimal',
+                                        type: 'int'
+                                    },
+                                    {
                                         name: 'mingguId',
                                         type: 'int'
                                     },

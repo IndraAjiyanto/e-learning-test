@@ -5,5 +5,8 @@ export class CreateQuizDto {
     nama_quiz: string;
 
     @IsInt()
+    nilai_minimal: number;
+
+    @IsInt()
     mingguId: number;
 }
