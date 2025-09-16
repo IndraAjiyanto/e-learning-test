@@ -1,43 +1,22 @@
 <div class="pt-28 py-20">
   <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit Question</h2>
+    <h2 class="text-2xl font-bold mb-6 text-gray-900">Edit quiz</h2>
 
-    <form action="/pertanyaans/{{pertanyaan.id}}/{{pertanyaan.pertemuan.id}}?_method=PATCH" method="POST" class="space-y-6">
-      
-      <!-- Pertanyaan -->
+    <form method="POST" action="/quiz/{{quiz.id}}?_method=PATCH" class="space-y-6">
+      <input type="hidden" name="_method" value="PUT">
+
       <div>
-        <label for="pertanyaan_soal" class="block text-sm font-medium text-gray-700 mb-1">
-          Pertanyaan
-        </label>
-        <textarea id="pertanyaan_soal" name="pertanyaan_soal" rows="4"
-          class="w-full border bg-white rounded-lg p-3 focus:ring-2 focus:ring-gray-900 text-gray-700"
-          placeholder="Tulis pertanyaan di sini..." required>{{pertanyaan.pertanyaan_soal}}</textarea>
+        <label for="nama_quiz" class="block text-sm font-semibold text-gray-700 mb-1">Quiz</label>
+        <textarea id="nama_quiz" name="nama_quiz" rows="3"
+          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">{{quiz.nama_quiz}}</textarea>
       </div>
 
-      <!-- Pilihan Jawaban -->
-      <div class="space-y-4">
-        {{#each pertanyaan.jawaban}}
-        <div class="flex items-center gap-3">
-          <input type="radio" name="jawaban" value="{{@index}}" required
-            class="h-5 w-5 border-gray-400 text-gray-900 focus:ring-gray-900"
-            {{#if this.jawaban_benar}}checked{{/if}} />
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Pilihan {{lookup "ABCD" @index}}</label>
-            <input type="text" name="pilihan[]" value="{{this.jawaban}}"
-              class="w-full border bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-900 text-gray-700"
-              placeholder="Tulis pilihan {{lookup "ABCD" @index}}" required />
-          </div>
-        </div>
-        {{/each}}
-      </div>
-
-      <!-- Tombol -->
-      <div class="flex justify-start gap-3 pt-4">
+      <div class="flex gap-3">
         <button type="submit"
-          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">
-          Update Question
+          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+          Update
         </button>
-        <a href="/pertemuans/{{pertanyaan.pertemuan.id}}"
+        <a href="/quiz/{{quiz.id}}"
           class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
           Cancel
         </a>

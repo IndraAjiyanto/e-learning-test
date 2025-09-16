@@ -14,7 +14,7 @@ export class Quiz1756188031247 implements MigrationInterface {
                                     },
                                     {
                                         name: 'nama_quiz',
-                                        type: 'int'
+                                        type: 'varchar'
                                     },
                                     {
                                         name: 'mingguId',

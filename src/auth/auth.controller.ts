@@ -34,7 +34,7 @@ export class AuthController {
 
   @Get('coba')
   async coba(@Res() res: Response,){
-    res.render('user/pembayaran')
+    res.render('user/dashboardlain')
   }
 
 @Post('login')

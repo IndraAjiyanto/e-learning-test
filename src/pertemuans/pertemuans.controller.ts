@@ -74,12 +74,11 @@ export class PertemuansController {
   @Get(':pertemuanId')
   async findOne(@Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:any) {
     const pertemuan = await this.pertemuansService.findOne(pertemuanId);
-    const murid = await this.pertemuansService.findMuridInKelas(pertemuan.minggu.id, pertemuanId)
-    const pertanyaan = await this.pertemuansService.findPertanyaan(pertemuanId)
+    const murid = await this.pertemuansService.findMuridInKelas(pertemuan.minggu.kelas.id, pertemuanId)
       const materipdf = await this.materisService.findMateriPdf(pertemuanId)
   const materivideo = await this.materisService.findMateriVideo(pertemuanId)
   const materippt = await this.materisService.findMateriPpt(pertemuanId)
-    res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid, pertanyaan, materipdf, materippt, materivideo })
+    res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid, materipdf, materippt, materivideo })
   }
 
   @Roles('admin')
@@ -97,15 +96,15 @@ export class PertemuansController {
   }
 
   @Roles('admin')
-  @Delete(':id/:kelasId')
-  async remove(@Param('id') id: number,@Param('kelasId') kelasId: number, @Res() res:Response, @Req() req:Request) {
+  @Delete(':id/:mingguId')
+  async remove(@Param('id') id: number,@Param('mingguId') mingguId: number, @Res() res:Response, @Req() req:Request) {
     try {
-          await this.pertemuansService.remove(id, kelasId);
+          await this.pertemuansService.remove(id, mingguId);
           req.flash('success', 'session successfuly delete')
-    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
+    res.redirect(`/minggu/${mingguId}`)
     } catch (error) {
       req.flash('error', 'session unsucces delete')
-    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
+    res.redirect(`/minggu/${mingguId}`)
     }
 
   }

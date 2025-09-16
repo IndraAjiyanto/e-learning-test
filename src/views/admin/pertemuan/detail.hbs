@@ -3,7 +3,7 @@
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
     <div class="mb-4">
-      <a href="/kelass/detail/kelas/admin/{{pertemuan.kelas.id}}" 
+      <a href="/minggu/{{pertemuan.minggu.id}}" 
          class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
         <svg xmlns="http://www.w3.org/2000/svg" 
              class="h-5 w-5 mr-1" fill="none" 
@@ -22,7 +22,7 @@
         <h1 class="text-3xl font-bold mb-2 text-gray-900">Session {{pertemuan.pertemuan_ke}}</h1>
 
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Class:</span> {{pertemuan.kelas.nama_kelas}}
+          <span class="font-semibold">Class:</span> {{pertemuan.minggu.kelas.nama_kelas}}
         </p>
         <p class="text-gray-600 mb-1">
           <span class="font-semibold">Metode:</span> {{pertemuan.metode}}
@@ -47,7 +47,7 @@
            class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
           Edit
         </a>
-                <form action="/pertemuans/{{pertemuan.id}}/{{pertemuan.kelas.id}}?_method=DELETE" method="post">
+                <form action="/pertemuans/{{pertemuan.id}}/{{pertemuan.minggu.id}}?_method=DELETE" method="post">
           <button 
             type="button"
             onclick="confirmDelete(this)"
@@ -61,7 +61,7 @@
 </div>
 
 
-<div class="max-w-5xl mx-auto" x-data="{ tab: 'absen', search: '' }">
+<div class="max-w-5xl mx-auto" x-data="{ tab: '', search: '' }">
 
     <div class="flex space-x-4 mb-6">
     <button @click="tab = 'absen'" 
@@ -73,11 +73,6 @@
             :class="tab === 'materi' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Materi
-    </button>
-    <button @click="tab = 'pertanyaan'" 
-            :class="tab === 'pertanyaan' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-            class="px-4 py-2 rounded-lg shadow transition">
-      Quiz
     </button>
     <button @click="tab = 'tugas'" 
             :class="tab === 'tugas' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
@@ -441,93 +436,6 @@
   </a>
 </div>
 
-<div x-show="tab === 'pertanyaan'" class="space-y-6">
-
-  {{#if pertanyaan.length}}
-    <!-- Questions List -->
-    <div class="space-y-4">
-      {{#each pertanyaan}}
-      <div x-data="{ open: false }" class="bg-white border rounded-lg shadow">
-        
-        <!-- Question Header -->
-        <button @click="open = !open"
-                class="w-full flex justify-between items-center px-6 py-4 text-left">
-          <span class="font-semibold text-gray-800">{{pertanyaan_soal}}</span>
-          <svg xmlns="http://www.w3.org/2000/svg"
-               :class="{'rotate-180': open}"
-               class="h-5 w-5 transform transition-transform"
-               fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-
-        <!-- Question Content -->
-        <div x-show="open" x-collapse class="px-6 pb-6 space-y-4">
-
-          <!-- Answers -->
-          <ul class="space-y-2">
-            {{#each this.jawaban}}
-            <li class="flex items-center gap-3 p-2 rounded-lg border 
-                       {{#if this.jawaban_benar}}
-                         bg-green-50 border-green-400
-                       {{else}}
-                         bg-gray-50 border-gray-200
-                       {{/if}}">
-              <span class="text-gray-700">{{this.jawaban}}</span>
-              {{#if this.jawaban_benar}}
-              <span class="ml-auto text-green-600 font-semibold text-sm">Correct</span>
-              {{/if}}
-            </li>
-            {{/each}}
-          </ul>
-
-          <!-- Actions -->
-          <div class="flex gap-3 pt-2">
-            <a href="/pertanyaans/FormEdit/{{this.id}}"
-               class="inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition">
-              Edit
-            </a>
-            <form action="/pertanyaans/{{this.id}}/{{../pertemuan.id}}?_method=DELETE" method="post">
-              <button type="button" 
-                      onclick="confirmDelete(this)"
-                      class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-500 transition">
-                Delete
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-      {{/each}}
-    </div>
-  {{else}}
-    <!-- Empty State -->
-    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg">
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           class="h-12 w-12 text-gray-400 mb-4" 
-           fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-      </svg>
-      <p class="text-gray-600 font-medium">No questions yet</p>
-      <p class="text-gray-500 text-sm mt-1">
-        Click the <span class="font-semibold">Create Quiz</span> button to add a new question.
-      </p>
-    </div>
-  {{/if}}
-
-  <!-- Add New Question -->
-  <a href="/pertanyaans/formCreate/{{pertemuan.id}}" 
-     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border border-dashed rounded-lg hover:bg-gray-100 transition">
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         class="h-12 w-12 text-gray-400 mb-3" 
-         fill="none" viewBox="0 0 24 24" 
-         stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-    </svg>
-    <span class="text-gray-600 font-medium">Add Question</span>
-  </a>
-</div>
 
 
 </div>

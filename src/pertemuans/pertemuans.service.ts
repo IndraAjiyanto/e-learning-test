@@ -101,13 +101,10 @@ async findPertanyaan(pertemuanId: number){
   return await this.pertanyaanRepository.find({where: {quiz: {id:pertemuanId}}, relations: ['jawaban']})
 }
 
-
-
-
   async findOne(id: number) {
     const pertemuan = await this.pertemuanRepository.findOne({
       where: {id},
-      relations: ['kelas', 'absen', 'materi', 'tugas']
+      relations: ['minggu', 'minggu.kelas', 'absen', 'materi', 'tugas']
     })
     if (!pertemuan) {
       throw new NotFoundException(`Pertemuan tidak ditemukan`);
@@ -135,14 +132,14 @@ async findPertanyaan(pertemuanId: number){
     return await this.pertemuanRepository.save(pertemuan)
   }
 
-  async remove(id: number, kelasId: number) {
-    const pertemuan = await this.findOne(id)
+  async remove(pertemuanId: number, mingguId: number) {
+    const pertemuan = await this.findOne(pertemuanId)
     if(!pertemuan){
       throw new NotFoundException('pertemuan tidak ditemukan')
     }
     await this.pertemuanRepository.remove(pertemuan)
   const semuaPertemuan = await this.pertemuanRepository.find({
-    where: { minggu: { id: kelasId } },
+    where: { minggu: { id: mingguId } },
     order: { createdAt: 'ASC' }
   });
 

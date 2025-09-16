@@ -1,26 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Quiz } from 'src/entities/quiz.entity';
+import { Repository } from 'typeorm';
+import { Minggu } from 'src/entities/minggu.entity';
 
 @Injectable()
 export class QuizService {
-  create(createQuizDto: CreateQuizDto) {
-    return 'This action adds a new quiz';
+  constructor(
+    @InjectRepository(Quiz)
+    private readonly quizRepository: Repository<Quiz>,
+    @InjectRepository(Minggu)
+    private readonly mingguRepository: Repository<Minggu>,
+  ){}
+
+  async create(createQuizDto: CreateQuizDto) {
+    const minggu = await this.mingguRepository.findOne({where: {id: createQuizDto.mingguId}});
+    if(!minggu){
+      throw new Error('Minggu not found');
+    }
+    const quiz = await this.quizRepository.create({
+      ...createQuizDto,
+      minggu: minggu, 
+    });
+    return await this.quizRepository.save(quiz);
   }
 
   findAll() {
     return `This action returns all quiz`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} quiz`;
+  async findOne(quizId: number) {
+    return await this.quizRepository.findOne({where: {id: quizId}, relations: ['minggu', 'minggu.kelas', 'pertanyaan']});
   }
 
-  update(id: number, updateQuizDto: UpdateQuizDto) {
-    return `This action updates a #${id} quiz`;
+  async update(quizId: number, updateQuizDto: UpdateQuizDto) {
+        const quiz = await this.findOne(quizId)
+    if(!quiz){
+      throw new NotFoundException('quiz not found');
+    }
+
+    Object.assign(quiz, updateQuizDto)
+    return await this.mingguRepository.save(quiz)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} quiz`;
+  async remove(quizId: number) {
+            const quiz = await this.findOne(quizId)
+    if(!quiz){
+      throw new NotFoundException('quiz not found')
+    }
+    await this.quizRepository.remove(quiz)
   }
 }

@@ -1,49 +1,326 @@
-    <section class="bg-gradient-to-br from-gray-900 to-gray-700 min-h-screen flex items-center" x-data="{ search: '' }">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-6xl font-bold mb-6 text-white">
-            {{#if user}}
-            Welcome {{user.username}}
-            {{else}}
-            Welcome to Kesatria Academy
-            {{/if}}
-            </h1>
-            <p class="text-xl mb-8 max-w-2xl mx-auto text-gray-200">
-                Program edukasi IT Development dan Artificial Intelligence dengan course dan bootcamp berkualitas untuk dunia kerja.
-            </p>
-            <a href="#courses" 
-               class="inline-block bg-gray-800 text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-600 transition transform hover:scale-105 shadow-lg">
-                Mulai Belajar
-            </a>
+
+<div class="hero px-4 py-10 bg-white min-h-screen">
+  <div class="hero-content flex-col lg:flex-row-reverse gap-10">
+    
+    <!-- Gambar -->
+    <img
+      src="https://w7.pngwing.com/pngs/203/325/png-transparent-graphy-men-fingers-pointing-upwards-microphone-photography-hand.png"
+      class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-lg shadow-2xl"
+    />
+
+    <!-- Konten -->
+    <div class="text-gray-900 text-center lg:text-left">
+
+      
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold">
+        Welcome to Kesatria Academy
+      </h1>
+
+      <p class="py-4 sm:py-6 text-lg sm:text-xl md:text-2xl">
+        Program edukasi IT Development dan Artificial Intelligence dengan course dan bootcamp berkualitas untuk dunia kerja.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+        <button class="btn bg-gray-900 text-white hover:text-gray-900 hover:bg-white px-8 sm:px-16 lg:px-28">
+          Mulai belajar
+        </button>
+        <button class="btn btn-outline hover:bg-gray-900 hover:text-white text-gray-900 px-8 sm:px-16 lg:px-28">
+          Konsultasi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bg-gray-900 rounded-t-[8vw] py-16 px-6 lg:px-20 ">
+  <!-- Judul -->
+  <div class="text-center max-w-4xl mx-auto mb-12">
+    <h2 class="text-3xl md:text-4xl font-bold text-white">
+      Bootcamp <span class="text-cyan-500">Kesatria Academy</span> telah berpengalaman membantu 
+      <span class="text-cyan-500">3400+ CAREER SHIFTER</span> selama pandemi 
+      <span class="font-bold">HINGGA SAAT INI</span>
+      dengan cara...
+    </h2>
+  </div>
+
+  <!-- Grid Card -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+    
+    <!-- Card 1 -->
+    <div class="p-6 bg-white border-b-white rounded-xl shadow hover:border-b-gray-700 border-b-8 hover:bg-gray-300 hover:shadow-md    transition">
+      <div class="flex justify-center mb-4">
+        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600">
+          📖
         </div>
-    </section>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900  mb-2">
+        Belajar Online di Akhir Pekan
+      </h3>
+      <p class="text-gray-600 text-sm">
+        Hilangkan rasa takut tidak bisa mengikuti kelas karena pekerjaan menuntutmu
+        untuk lembur sampai malam.
+      </p>
+    </div>
+    <div class="p-6 bg-white border-b-white rounded-xl shadow hover:border-b-gray-700 border-b-8 hover:bg-gray-300 hover:shadow-md    transition">
+      <div class="flex justify-center mb-4">
+        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600">
+          📖
+        </div>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900  mb-2">
+        Belajar Online di Akhir Pekan
+      </h3>
+      <p class="text-gray-600 text-sm">
+        Hilangkan rasa takut tidak bisa mengikuti kelas karena pekerjaan menuntutmu
+        untuk lembur sampai malam.
+      </p>
+    </div>
+    <div class="p-6 bg-white border-b-white rounded-xl shadow hover:border-b-gray-700 border-b-8 hover:bg-gray-300 hover:shadow-md    transition">
+      <div class="flex justify-center mb-4">
+        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-cyan-100 text-cyan-600">
+          📖
+        </div>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900  mb-2">
+        Belajar Online di Akhir Pekan
+      </h3>
+      <p class="text-gray-600 text-sm">
+        Hilangkan rasa takut tidak bisa mengikuti kelas karena pekerjaan menuntutmu
+        untuk lembur sampai malam.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<section class="bg-gray-50 py-16 px-6 lg:px-20">
+  <!-- Judul -->
+  <div class="text-center mb-12">
+    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">
+      Bayangkan!
+    </h2>
+    <p class="mt-2 text-lg text-gray-600">
+      Kamu akan dapatkan semua keuntungan ini setelah mengikuti bootcamp selama 4 bulan ke depan!
+    </p>
+  </div>
+
+  <!-- Grid utama -->
+  <div class="grid lg:grid-cols-2 gap-10 items-center">
+    <!-- Kiri: Benefit -->
+    <div class="space-y-8">
+      <!-- Item 1 -->
+      <div class="flex items-start gap-4">
+        <div class="text-cyan-600 text-3xl">
+          <i class="fa-solid fa-star"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900">
+            Mentor dan Networking yang Berkelas
+          </h3>
+          <p class="text-gray-600 mt-2">
+            Kamu akan dipandu langsung oleh para mentor-mentor expert dari Top Tech Companies
+            yang siap membimbingmu secara intensif.
+          </p>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="flex items-start gap-4">
+        <div class="text-cyan-600 text-3xl">
+          <i class="fa-solid fa-briefcase"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900">
+            Persiapan Karier Lebih Mantap!
+          </h3>
+          <p class="text-gray-600 mt-2">
+            CV, Portofolio, dan persiapan User Interview akan dibantu langsung oleh tim talent
+            support dari Dibimbing.id
+          </p>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="flex items-start gap-4">
+        <div class="text-cyan-600 text-3xl">
+          <i class="fa-solid fa-money-bill-wave"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900">
+            Gaji hingga Dua Digit!
+          </h3>
+          <p class="text-gray-600 mt-2">
+            Dapatkan gaji yang sangat kompetitif dari banyaknya perusahaan ternama yang bekerja
+            sama dengan Dibimbing.id.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kanan: Foto -->
+    <div class="grid grid-cols-2 gap-4">
+      <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+           class="rounded-xl shadow-lg col-span-2 h-60 object-cover" alt="Teamwork">
+
+      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+           class="rounded-xl shadow-lg h-48 object-cover" alt="Laptop Work">
+
+      <img src="https://images.unsplash.com/photo-1524492449090-1a065f3a95f3"
+           class="rounded-xl shadow-lg h-48 object-cover" alt="Meeting">
+
+      <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+           class="rounded-xl shadow-lg col-span-2 h-56 object-cover" alt="Coding">
+    </div>
+  </div>
+</section>
+
+<section 
+  class="bg-white py-16 px-6 lg:px-20"
+  x-data="{ active: 0, slides: [0,1,2] }"
+>
+  <!-- Judul -->
+  <div class="text-center mb-12">
+    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">
+      <span class="text-cyan-600">Cerita</span> Para Alumni Kesatria Academy    
+    </h2>
+  </div>
+
+  <!-- Carousel -->
+  <div class="relative w-full max-w-4xl mx-auto overflow-hidden">
+
+    <!-- Wrapper untuk slide -->
+    <div 
+      class="flex transition-transform duration-500"
+      :style="`transform: translateX(-${active * 100}%);`"
+    >
+      <!-- Slide 1 -->
+      <div class="w-full flex-shrink-0 flex justify-center px-4">
+        <div class="bg-orange-50 rounded-lg shadow p-8 max-w-2xl">
+          <span class="text-5xl text-cyan-600 font-bold">❝</span>
+          <p class="text-gray-800 text-lg leading-relaxed mb-6">
+            Sempet cari course di tempat lain, tapi pada mahal banget! 
+            Sampai akhirnya nemu Dibimbing.id yang harganya worth it 
+            dan punya jaminan kerjanya...
+          </p>
+          <div class="flex items-center gap-4">
+            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Alumni" class="w-12 h-12 rounded-full">
+            <div>
+              <p class="font-bold text-gray-900">Dina Oktavia</p>
+              <p class="text-gray-600 text-sm">Marketing and Branding at Candelula</p>
+              <p class="text-gray-600 text-sm">Bootcamp Digital Marketing Batch 3</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="w-full flex-shrink-0 flex justify-center px-4">
+        <div class="bg-orange-50 rounded-lg shadow p-8 max-w-2xl">
+          <span class="text-5xl text-cyan-600 font-bold">❝</span>
+          <p class="text-gray-800 text-lg leading-relaxed mb-6">
+            Mentor di Dibimbing.id ramah banget, silabusnya jelas, 
+            dan bener-bener ngebantu aku upgrade skill...
+          </p>
+          <div class="flex items-center gap-4">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Alumni" class="w-12 h-12 rounded-full">
+            <div>
+              <p class="font-bold text-gray-900">Andi Saputra</p>
+              <p class="text-gray-600 text-sm">Frontend Developer</p>
+              <p class="text-gray-600 text-sm">Bootcamp Web Development Batch 5</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="w-full flex-shrink-0 flex justify-center px-4">
+        <div class="bg-orange-50 rounded-lg shadow p-8 max-w-2xl">
+          <span class="text-5xl text-cyan-600 font-bold">❝</span>
+          <p class="text-gray-800 text-lg leading-relaxed mb-6">
+            Dibimbing.id bukan cuma ngajarin teori, tapi langsung praktek. 
+            Aku jadi punya portofolio keren buat apply kerja.
+          </p>
+          <div class="flex items-center gap-4">
+            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Alumni" class="w-12 h-12 rounded-full">
+            <div>
+              <p class="font-bold text-gray-900">Siti Marlina</p>
+              <p class="text-gray-600 text-sm">UI/UX Designer</p>
+              <p class="text-gray-600 text-sm">Bootcamp UI/UX Batch 2</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tombol navigasi -->
+    <button 
+      class="absolute left-0 top-1/2 -translate-y-1/2 btn btn-circle bg-white text-cyan-600 border-cyan-600"
+      @click="active = (active - 1 + slides.length) % slides.length"
+    >❮</button>
+    <button 
+      class="absolute right-0 top-1/2 -translate-y-1/2 btn btn-circle bg-white text-cyan-600 border-cyan-600"
+      @click="active = (active + 1) % slides.length"
+    >❯</button>
+  </div>
+
+  <!-- Indicator bulat -->
+  <div class="flex justify-center mt-6 gap-2">
+    <template x-for="(s, i) in slides" :key="i">
+      <button 
+        class="w-4 h-4 rounded-full"
+        :class="active === i ? 'bg-cyan-500' : 'bg-cyan-300'"
+        @click="active = i"
+      ></button>
+    </template>
+  </div>
+</section>
+
+<section class="bg-white py-16 px-6 lg:px-20">
+  <div class="text-center mb-12">
+    <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
+      Kesatria Academy telah bekerja sama dengan
+      <span class="text-cyan-600">840+ Hiring Partners</span>
+    </h2>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/BankNegaraIndonesia46-logo.svg/512px-BankNegaraIndonesia46-logo.svg.png" alt="BNI" class="h-12 mx-auto object-contain grayscale hover:grayscale-0 transition">
+    <img src="https://seeklogo.com/images/M/mceasy-logo-64ECA9C5E6-seeklogo.com.png" alt="McEasy" class="h-12 mx-auto object-contain grayscale hover:grayscale-0 transition">
+    <img src="https://seeklogo.com/images/D/domino-s-pizza-logo-FFC6334494-seeklogo.com.png" alt="Damessa" class="h-12 mx-auto object-contain grayscale hover:grayscale-0 transition">
+    <img src="https://seeklogo.com/images/I/iseller-logo-4F839B7E36-seeklogo.com.png" alt="iSeller" class="h-12 mx-auto object-contain grayscale hover:grayscale-0 transition">
+    <img src="https://seeklogo.com/images/G/google-2015-logo-65BBD07B6B-seeklogo.com.png" alt="Google" class="h-12 mx-auto object-contain grayscale hover:grayscale-0 transition">
+    <img src="https://seeklogo.com/images/L/lion-parcel-logo-1F7D5F8B07-seeklogo.com.png" alt="Lion Parcel" class="h-12 mx-auto object-contain grayscale hover:grayscale-0 transition">
+  </div>
+</section>
+
 
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">Teknologi yang Dipelajari</h2>
             <div class="flex justify-center gap-8 flex-wrap">
-                <div class="bg-gray-50 p-8 rounded-lg transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
+                <div class="bg-gray-50 p-8 rounded-xl transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
                     <img src="" class="w-20 h-20 mx-auto mb-4 bg-gray-300 rounded-lg flex items-center justify-center "/>
                     <h3 class="text-lg font-semibold text-gray-700">HTML5</h3>
                 </div>
-                <div class="bg-gray-50 p-8 rounded-lg transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
+                <div class="bg-gray-50 p-8 rounded-xl transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
                     <div class="w-20 h-20 mx-auto mb-4 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 font-bold text-lg">
                         JS
                     </div>
                     <h3 class="text-lg font-semibold text-gray-700">JavaScript</h3>
                 </div>
-                <div class="bg-gray-50 p-8 rounded-lg transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
+                <div class="bg-gray-50 p-8 rounded-xl transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
                     <div class="w-20 h-20 mx-auto mb-4 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 font-bold text-lg">
                         NODE
                     </div>
                     <h3 class="text-lg font-semibold text-gray-700">Node.js</h3>
                 </div>
-                <div class="bg-gray-50 p-8 rounded-lg transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
+                <div class="bg-gray-50 p-8 rounded-xl transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
                     <div class="w-20 h-20 mx-auto mb-4 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 font-bold text-lg">
                         PY
                     </div>
                     <h3 class="text-lg font-semibold text-gray-700">Python</h3>
                 </div>
-                <div class="bg-gray-50 p-8 rounded-lg transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
+                <div class="bg-gray-50 p-8 rounded-xl transition transform hover:scale-110 hover:shadow-lg border border-gray-200">
                     <div class="w-20 h-20 mx-auto mb-4 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 font-bold text-lg">
                         REACT
                     </div>
@@ -53,7 +330,41 @@
         </div>
     </section>
 
-    <section id="courses" class="py-16 bg-gray-100" x-data="{ search: '' }">
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-4 text-gray-800">Tim Mentor Berpengalaman</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+                Belajar langsung dari praktisi industri dengan pengalaman bertahun-tahun di bidang teknologi
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition transform hover:scale-105 border border-gray-200">
+                    <div class="relative">
+                        <div class="w-full h-64 bg-gradient-to-br from-gray-800 to-gray-600 flex items-center justify-center">
+                            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl font-bold text-gray-700">
+                                AR
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-gray-800">Ahmad Rizki</h3>
+                        <p class="text-gray-600 font-semibold mb-3">Senior Full Stack Developer</p>
+                        <p class="text-gray-600 text-sm mb-4">
+                            7+ tahun pengalaman di tech startup unicorn. Expert dalam React, Node.js, dan cloud architecture.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-xs">React</span>
+                            <span class="bg-gray-300 text-gray-800 px-3 py-1 rounded-full text-xs">Node.js</span>
+                            <span class="bg-gray-400 text-white px-3 py-1 rounded-full text-xs">AWS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-16 bg-white" x-data="{ search: '' }">
         <div class="container mx-auto px-4">
             <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">Pilih Kelas</h2>
             
@@ -71,53 +382,34 @@
                 </div>
             </div>
 
+            <!-- Sample Courses -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {{#each kelas}}
-
-<div 
-  class="bg-white rounded-2xl shadow-md overflow-hidden border hover:shadow-lg border-gray-200 transition transform hover:scale-105 "
-  x-data="{ text: '{{nama_kelas}} {{deskripsi}}'.toLowerCase() }"
-  x-show="text.includes(search.toLowerCase())"
->
-  <div class="relative w-full h-48">
-    <img 
-      src="{{gambar}}" 
-      alt="{{nama_kelas}}" 
-      class="w-full h-full object-cover"
-    />
-    <div class="absolute top-2 right-2 bg-gray-900/70 text-white text-xs px-3 py-1 rounded-full">
-      {{pertemuan.length}} Pertemuan
-    </div>
-  </div>
-
-  <div class="p-6 space-y-3">
-    <h3 class="text-lg font-bold text-gray-900 line-clamp-1">
-      {{nama_kelas}}
-    </h3>
-    <p class="text-gray-600 text-sm line-clamp-2">
-      {{deskripsi}}
-    </p>
-
-    <div class="flex items-center justify-between">
-      <span class="text-xl font-semibold text-gray-800">Rp {{harga}}</span>
-    </div>
-
-    <a 
-      href="/kelass/{{id}}"  
-      class="block w-full bg-gray-800 text-white py-3 rounded-lg text-center font-medium hover:bg-gray-700 transform hover:scale-110 transition"
-    >
-      Lihat Detail
-    </a>
-  </div>
-</div>
-
-            {{/each}}
-
+                <!-- Course 1 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition transform hover:scale-105 border border-gray-200">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-800 to-gray-600 flex items-center justify-center">
+                        <div class="text-white text-center">
+                            <div class="text-4xl mb-2">🚀</div>
+                            <div class="font-bold text-xl">Full Stack Development</div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-3 text-gray-800">Bootcamp Full Stack JavaScript</h3>
+                        <p class="text-gray-600 mb-4 text-sm">Pelajari pemrograman web modern dengan JavaScript, React, Node.js, dan database MongoDB.</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-2xl font-bold text-gray-800">Rp 2.999.000</span>
+                            <span class="text-sm text-gray-500">16 minggu</span>
+                        </div>
+                        <button class="w-full bg-gray-800 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition transform hover:scale-105">
+                            Lihat Detail
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="py-16 bg-white">
+    <!-- Portfolio Alumni Section -->
+    <section class="py-16 bg-gray-100">
         <div class="container mx-auto px-4">
             <h2 class="text-4xl font-bold text-center mb-4 text-gray-800">Portfolio Alumni</h2>
             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
@@ -125,7 +417,8 @@
             </p>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105 border border-gray-200">
+                <!-- Portfolio 1 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition transform hover:scale-105 border border-gray-200">
                     <div class="relative group">
                         <div class="w-full h-56 bg-gradient-to-br from-gray-700 to-gray-500 flex items-center justify-center">
                             <div class="text-white text-center">
@@ -156,69 +449,145 @@
         </div>
     </section>
 
-<section class="py-16 bg-gray-100">
-  <div class="container mx-auto px-4">
-    <h2 class="text-4xl font-bold text-center mb-4 text-gray-800">Tim Mentor Berpengalaman</h2>
-    <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-      Belajar langsung dari praktisi industri dengan pengalaman bertahun-tahun di bidang teknologi
-    </p>    
+    <!-- Testimonials Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-4 text-gray-800">Testimoni Alumni</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+                Dengarkan pengalaman mereka yang telah berhasil berkarir di dunia teknologi
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Testimonial 1 -->
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl shadow-lg transition transform hover:scale-105 border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-gray-600">
+                            <span class="text-2xl">⭐⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-6 italic">
+                        "Kesatria Academy memberikan pembelajaran yang sangat praktis. Setelah 4 bulan bootcamp, saya langsung diterima kerja sebagai Frontend Developer di startup unicorn!"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                            DS
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Dinda Safitri</h4>
+                            <p class="text-sm text-gray-600">Frontend Developer at Gojek</p>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="flex flex-wrap justify-center gap-8">
-      <div class="flex items-center gap-4 bg-white px-5 py-3 rounded-lg shadow hover:shadow-lg transition">
-        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-gray-800 to-gray-600 flex items-center justify-center text-white text-lg font-bold">
-          AR
-        </div>
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800">Ahmad Rizki</h3>
-          <p class="text-sm text-gray-600">Senior Full Stack Developer</p>
-        </div>
-      </div>
+                <!-- Testimonial 2 -->
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl shadow-lg transition transform hover:scale-105 border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-gray-600">
+                            <span class="text-2xl">⭐⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-6 italic">
+                        "Mentor-mentornya sangat berpengalaman dan supportif. Dari background non-IT, sekarang saya sudah menjadi Machine Learning Engineer. Terima kasih Kesatria Academy!"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                            FA
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Fajar Aditya</h4>
+                            <p class="text-sm text-gray-600">ML Engineer at Tokopedia</p>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="flex items-center gap-4 bg-white px-5 py-3 rounded-lg shadow hover:shadow-lg transition">
-        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white text-lg font-bold">
-          DN
-        </div>
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800">Dewi Nur</h3>
-          <p class="text-sm text-gray-600">UI/UX Designer</p>
-        </div>
-      </div>
+                <!-- Testimonial 3 -->
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl shadow-lg transition transform hover:scale-105 border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-gray-600">
+                            <span class="text-2xl">⭐⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-6 italic">
+                        "Kurikulumnya selalu update dengan teknologi terbaru. Job placement programnya juga sangat membantu dalam mencari kerja. Highly recommended!"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                            LN
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Lina Nurhasanah</h4>
+                            <p class="text-sm text-gray-600">Full Stack Developer at Bukalapak</p>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="flex items-center gap-4 bg-white px-5 py-3 rounded-lg shadow hover:shadow-lg transition">
-        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-white text-lg font-bold">
-          BF
-        </div>
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800">Bima Fajar</h3>
-          <p class="text-sm text-gray-600">Mobile Engineer</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+                <!-- Testimonial 4 -->
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl shadow-lg transition transform hover:scale-105 border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-gray-600">
+                            <span class="text-2xl">⭐⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-6 italic">
+                        "Project-based learning yang diterapkan sangat efektif. Portfolio yang dibangun selama bootcamp menjadi nilai plus saat interview kerja."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                            RH
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Rudi Hartono</h4>
+                            <p class="text-sm text-gray-600">Backend Developer at Shopee</p>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Testimonial 5 -->
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl shadow-lg transition transform hover:scale-105 border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-gray-600">
+                            <span class="text-2xl">⭐⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-6 italic">
+                        "Kesatria Academy tidak hanya mengajarkan coding, tapi juga soft skills yang dibutuhkan di industri. Sekarang gaji saya naik 300%!"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                            SM
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">Siti Maryam</h4>
+                                               <p class="text-sm text-gray-600">Frontend Engineer at Traveloka</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- FAQ Section -->
     <section class="py-16 bg-gray-100">
         <div class="container mx-auto px-4">
             <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">Pertanyaan yang Sering Diajukan</h2>
             
             <div class="max-w-3xl mx-auto space-y-6">
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Apakah program ini cocok untuk pemula?</h3>
                     <p class="text-gray-600">Ya! Program kami dirancang untuk semua level, mulai dari pemula hingga yang sudah berpengalaman. Mentor akan membimbing dari dasar sampai ke tingkat lanjut.</p>
                 </div>
 
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Apakah ada sertifikat?</h3>
                     <p class="text-gray-600">Setiap peserta yang menyelesaikan program akan mendapatkan sertifikat resmi dari Kesatria Academy yang dapat digunakan untuk portfolio dan karier.</p>
                 </div>
 
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Bagaimana sistem belajarnya?</h3>
                     <p class="text-gray-600">Belajar dilakukan secara online dengan kombinasi video pembelajaran, live session bersama mentor, dan project nyata yang bisa dijadikan portfolio.</p>
                 </div>
 
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Apakah ada bantuan mencari kerja?</h3>
                     <p class="text-gray-600">Ya, kami memiliki job placement program yang bekerja sama dengan berbagai perusahaan teknologi di Indonesia untuk membantu alumni mendapatkan pekerjaan.</p>
                 </div>
