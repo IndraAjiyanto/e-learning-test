@@ -10,6 +10,8 @@ import { BiodataMentor } from './biodata_mentor.entity';
 import { JawabanTugas } from './jawaban_tugas.entity';
 import { Logbook } from './logbook.entity';
 import { Nilai } from './nilai.entity';
+import { ProgresMinggu } from './progres_minggu.entity';
+import { ProgresPertemuan } from './progres_pertemuan.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -75,6 +77,12 @@ kelas: Kelas[];
 
 @OneToMany(() => Nilai, (nilai) => nilai.user, { cascade: true, onDelete: 'CASCADE' })
 nilai: Nilai[];
+
+@OneToMany(() => ProgresMinggu, (progres_minggu) => progres_minggu.user, { cascade: true, onDelete: 'CASCADE' })
+progres_minggu: ProgresMinggu[];
+
+@OneToMany(() => ProgresPertemuan, (progres_pertemuan) => progres_pertemuan.user, { cascade: true, onDelete: 'CASCADE' })
+progres_pertemuan: ProgresPertemuan[];
 
     @OneToOne(() => Biodata, (biodata) => biodata.user, { cascade: true, onDelete: 'CASCADE' }) 
     biodata: Biodata

@@ -3,6 +3,7 @@ import { Absen } from "./absen.entity";
 import { Materi } from "./materi.entity";
 import { Tugas } from "./tugas.entity";
 import { Minggu } from "./minggu.entity";
+import { ProgresPertemuan } from "./progres_pertemuan.entity";
 
 export type Metode = 'online' | 'offline';
 
@@ -49,6 +50,9 @@ export class Pertemuan{
 
     @ManyToOne(() => Minggu, (minggu) => minggu.pertemuan, {onDelete : 'CASCADE'})
     minggu: Minggu
+
+    @OneToMany(() => ProgresPertemuan, (progres_pertemuan) => progres_pertemuan.pertemuan, { cascade: true, onDelete: 'CASCADE' })
+    progres_pertemuan: ProgresPertemuan[];
 
     @CreateDateColumn()
     createdAt: Date;

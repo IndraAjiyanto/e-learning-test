@@ -99,7 +99,7 @@ export class KelassController {
   }
     if (isUserInKelas) {
       const minggu = await this.kelassService.findMinggu(id, req.user.id);
-      console.log(minggu)
+      await this.kelassService.createProgresMinggu(req.user.id, minggu)
     res.render('kelas/detail', { user: req.user, kelas, minggu });
   } else {
     res.render('kelas/Bdetail', {user: req.user, kelas, kelass});

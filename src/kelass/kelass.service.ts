@@ -8,6 +8,7 @@ import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { Minggu } from 'src/entities/minggu.entity';
+import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 
 @Injectable()
 export class KelassService {
@@ -22,6 +23,8 @@ export class KelassService {
         private readonly kategoriRepository: Repository<Kategori>,
         @InjectRepository(Minggu)
         private readonly mingguRepository: Repository<Minggu>,
+        @InjectRepository(ProgresMinggu)
+        private readonly progresMingguRepository: Repository<ProgresMinggu>,
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -99,77 +102,31 @@ async findPertemuanAndPertanyaan(mingguId: number, userId: number) {
 async findMinggu(kelasId: number, userId: number) {
   const kelas = await this.findOne(kelasId);
   if (!kelas) {
-    throw new NotFoundException(`Kelas with ID ${kelasId} not found`);
+    throw new NotFoundException(`Kelas dengan ID ${kelasId} tidak ditemukan`);
   }
 
-  // Ambil semua minggu dengan relasi lengkap
-  const allMinggu = await this.mingguRepository.find({
-    where: {
-      kelas: { id: kelasId }
-    },
-    relations: [
-      'quiz', 
-      'pertemuan', 
-      'pertemuan.absen',
-      'pertemuan.absen.user', 
-      'pertemuan.tugas', 
-      'quiz.pertanyaan',
-      'quiz.nilai', 
-      'quiz.pertanyaan.jawaban', 
-      'quiz.pertanyaan.jawaban_user', 
-      'quiz.pertanyaan.jawaban_user.user'
-    ],
-    order: { minggu_ke: 'ASC' } // Asumsikan ada field urutan untuk mengurutkan minggu
-  });
-
-  // Proses setiap minggu untuk menentukan akses
-  const processedMinggu = allMinggu.map((minggu, index) => {
-    let canAccess = false;
-    let accessMessage = '';
-
-    if (index === 0) {
-      // Minggu pertama selalu bisa diakses
-      canAccess = true;
-      accessMessage = 'Akses tersedia';
-    } else {
-      // Cek apakah quiz minggu sebelumnya memenuhi nilai minimum
-      const previousMinggu = allMinggu[index - 1];
-      const userQuizNilai = this.getUserQuizScore(previousMinggu.quiz, userId);
-      const minimumScore = previousMinggu.quiz['nilai_minimal'] || 0;
-
-      if (userQuizNilai !== null && userQuizNilai >= minimumScore) {
-        canAccess = true;
-        accessMessage = 'Akses tersedia';
-      } else if (userQuizNilai === null) {
-        canAccess = false;
-        accessMessage = `Selesaikan quiz minggu ${index} terlebih dahulu`;
-      } else {
-        canAccess = false;
-        accessMessage = `Nilai quiz minggu ${index} tidak memenuhi minimum (${userQuizNilai}/${minimumScore})`;
-      }
-    }
-
-    return {
-      ...minggu,
-      canAccess,
-      accessMessage,
-      // Jika tidak bisa akses, sembunyikan detail pertemuan
-      pertemuan: canAccess ? minggu.pertemuan : [],
-    };
-  });
-
-  return processedMinggu;
+  return await this.mingguRepository
+    .createQueryBuilder('minggu')
+    .leftJoinAndSelect(
+      'minggu.progres_minggu',
+      'progres_minggu',
+      'progres_minggu.userId = :userId',
+      { userId }
+    )
+    .leftJoinAndSelect('minggu.quiz', 'quiz')
+    .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
+    .leftJoinAndSelect('pertemuan.absen', 'absen')
+    .leftJoinAndSelect('absen.user', 'user')
+    .leftJoinAndSelect('pertemuan.tugas', 'tugas')
+    .leftJoinAndSelect('quiz.pertanyaan', 'pertanyaan')
+    .leftJoinAndSelect('quiz.nilai', 'nilai')
+    .leftJoinAndSelect('pertanyaan.jawaban', 'jawaban')
+    .leftJoinAndSelect('pertanyaan.jawaban_user', 'jawaban_user', 'jawaban_user.userId = :userId', { userId }) // <- filter jawaban user juga
+    .leftJoinAndSelect('jawaban_user.user', 'jawaban_user_user')
+    .where('minggu.kelasId = :kelasId', { kelasId })
+    .getMany();
 }
 
-// Helper method untuk mendapatkan nilai quiz user
-private getUserQuizScore(quiz: any, userId: number): number | null {
-  if (!quiz || !quiz.nilai) {
-    return null;
-  }
-
-  const userNilai = quiz.nilai.find((nilai: any) => nilai.user_id === userId);
-  return userNilai ? userNilai.score : null;
-}
 
 async findMingguClass(  kelasId: number) {
     const kelas = await this.findOne(kelasId);
@@ -182,6 +139,36 @@ async findMingguClass(  kelasId: number) {
     },
     relations: ['quiz', 'pertemuan', 'pertemuan.absen', 'pertemuan.tugas', 'quiz.pertanyaan','quiz.nilai', 'quiz.pertanyaan.jawaban', 'quiz.pertanyaan.jawaban_user', 'quiz.pertanyaan.jawaban_user.user']
   });
+}
+
+async createProgresMinggu(userId: number, mingguList: Minggu[]) {
+  const progres: ProgresMinggu[] = [];
+
+  for (const m of mingguList) {
+    const existingProgres = await this.progresMingguRepository.findOne({where: {minggu: {id: m.id}, user: {id: userId}}})
+    if(existingProgres){
+
+    }else if(m.minggu_ke === 1){
+      const data = await this.progresMingguRepository.create({
+  user: { id: userId },
+  minggu: { id: m.id },
+  quiz: true
+});
+
+    progres.push(data);
+    }else{
+            const data = await this.progresMingguRepository.create({
+  user: { id: userId },
+  minggu: { id: m.id },
+  quiz: false
+});
+
+    progres.push(data);
+    }
+
+  }
+
+  return await this.progresMingguRepository.save(progres);
 }
 
 async findMingguTerakhir(kelasId: number){

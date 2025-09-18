@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Minggu } from 'src/entities/minggu.entity';
 import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class MingguService {
@@ -15,9 +14,6 @@ export class MingguService {
   
       @InjectRepository(Kelas)
       private readonly kelasRepository: Repository<Kelas>,
-  
-      @InjectRepository(User)
-      private readonly userRepository: Repository<User>,
     ){}
 
   async create(createMingguDto: CreateMingguDto, kelasId: number) {

@@ -9,6 +9,8 @@ import { Jawaban } from 'src/entities/jawaban.entity';
 import { User } from 'src/entities/user.entity';
 import { Nilai } from 'src/entities/nilai.entity';
 import { Quiz } from 'src/entities/quiz.entity';
+import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
+import { Minggu } from 'src/entities/minggu.entity';
 
 @Injectable()
 export class JawabanUsersService {
@@ -24,6 +26,11 @@ export class JawabanUsersService {
     private readonly nilaiRepository: Repository<Nilai>
     @InjectRepository(Quiz)
     private readonly quizRepository: Repository<Quiz>
+    @InjectRepository(ProgresMinggu)
+    private readonly progresMingguRepository: Repository<ProgresMinggu>
+    @InjectRepository(Minggu)
+    private readonly mingguRepository: Repository<Minggu>
+
 
   
 async create(createJawabanUserDto: CreateJawabanUserDto) {
@@ -87,9 +94,13 @@ async nilaiCreate(createJawabanUserDto: CreateJawabanUserDto) {
     relations: ['quiz'],
   }).then(p => p?.quiz.id);
 
-  const quiz = await this.quizRepository.findOne({where: {id: quizId}})
+  const quiz = await this.quizRepository.findOne({where: {id: quizId}, relations: ['minggu']})
   if(!quiz){
     throw new NotFoundException('quiz not found')
+  }
+
+  if(nilai >= quiz.nilai_minimal ){
+    await this.progresMinggu(quiz.minggu.id, userId)
   }
 
   await this.nilaiRepository.save({
@@ -100,6 +111,34 @@ async nilaiCreate(createJawabanUserDto: CreateJawabanUserDto) {
 
 }
 
+
+async progresMinggu(mingguId: number, userId: number) {
+  const minggu_sebelum = await this.mingguRepository.findOne({where: {id: mingguId}, relations: ['kelas']})
+    if(!minggu_sebelum){
+    throw new NotFoundException('minggu_sebelum not found')
+  }
+  const minggu = await this.mingguRepository.findOne({where: {minggu_ke: minggu_sebelum.minggu_ke + 1, kelas: {id: minggu_sebelum.kelas.id}}})
+  if(!minggu){
+    throw new NotFoundException('minggu not found')
+  }else if(minggu.akhir === true){
+    return 
+  }
+  const user = await this.userRepository.findOne({where: {id: userId}})
+  if(!user){
+    throw new NotFoundException('user not found')
+  }
+  const existingProgres = await this.progresMingguRepository.findOne({where: {minggu: {id: minggu.id}, user: {id: userId}}})
+  if(existingProgres){
+    await this.progresMingguRepository.update(existingProgres.id, {quiz: true})
+  } else {
+    const newProgres = await this.progresMingguRepository.create({
+      minggu: minggu,
+      user: user,
+      quiz: true
+    })
+    await this.progresMingguRepository.save(newProgres)
+  }
+}
 
 
 async findByUserAndPertanyaan(userId: number, pertanyaanId: number) {
