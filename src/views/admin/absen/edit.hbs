@@ -2,7 +2,7 @@
   <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit Attendance</h2>
 
-    <form action="/absens/{{absen.id}}?_method=PATCH" method="POST" class="space-y-6">
+    <form action="/absens/{{absen.id}}/{{absen.pertemuan.id}}?_method=PATCH" method="POST" class="space-y-6">
 
       <!-- Status -->
       <div>

@@ -1,0 +1,47 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res } from '@nestjs/common';
+import { DashboardService } from './dashboard.service';
+import { CreateDashboardDto } from './dto/create-dashboard.dto';
+import { UpdateDashboardDto } from './dto/update-dashboard.dto';
+import { Request, Response } from 'express';
+
+@Controller('dashboard')
+export class DashboardController {
+  constructor(private readonly dashboardService: DashboardService) {}
+
+    @Get('')
+  async getProtected(@Req() req: Request, @Res() res: Response) {
+    const kelas =  await this.dashboardService.findAllKelas();
+    if(req.user){
+    if(req.user.role === "super_admin"){
+      res.redirect('/users');
+    } else if(req.user.role === "admin"){
+      res.redirect('/kelass');
+    }else if(req.user.role === "user"){
+      res.render('dashboard', { user: req.user, kelas });
+    }
+    }else{
+      res.render('dashboard', { user: req.user, kelas });
+    }
+  }
+
+  @Get('portofolio')
+  async portfolio(@Req() req: Request, @Res() res: Response) {
+    res.render('portofolio', { user: req.user });
+  }
+
+  @Get('alumni')
+  async alumni(@Req() req: Request, @Res() res: Response) {
+    res.render('alumni', { user: req.user });
+  }
+
+  @Get('about')
+  async about(@Req() req: Request, @Res() res: Response) {
+    res.render('tentang', { user: req.user });
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.dashboardService.findOne(+id);
+  }
+
+}

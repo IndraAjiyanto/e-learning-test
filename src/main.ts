@@ -71,6 +71,14 @@ hbs.registerHelper('hasUserAbsen', function(absenList, userId) {
   });
 });
 
+hbs.registerHelper('formatRupiah', function (angka: number) {
+  return angka.toLocaleString('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  });
+});
+
   hbs.registerHelper('roles', (a, b) => a === b);
   hbs.registerHelper('gte', (a, b) => a >= b)
   hbs.registerPartials(join(__dirname, '..', 'src','views', 'partials'));

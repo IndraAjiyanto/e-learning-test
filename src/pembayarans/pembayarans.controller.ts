@@ -35,6 +35,7 @@ export class PembayaransController {
               res.redirect(`/pembayarans/riwayat/${userId}`)
             }
       } catch (error) {
+        console.log(error)
         req.flash('error', 'anda gagal terdaftar kelas')
         res.redirect(`/pembayarans/riwayat/${userId}`)
       }
@@ -55,6 +56,7 @@ export class PembayaransController {
     }
     }
     } catch (error) {
+    console.log(error)
     req.flash('error', 'bukti pembayaran gagal dikirim ')
     res.redirect(`/pembayarans/riwayat/${userId}`)
     }

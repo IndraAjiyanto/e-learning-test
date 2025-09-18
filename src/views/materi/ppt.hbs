@@ -4,21 +4,24 @@
 
   <!-- Tombol kembali -->
   <div class="mb-8">
-    <a href="/kelass/{{pertemuan.kelas.id}}" 
-       class="inline-flex items-center text-blue-600 text-base font-medium hover:underline">
-      ← Kembali
+    <a href="/kelass/{{pertemuan.minggu.kelas.id}}" 
+       class="inline-flex items-center text-gray-700 text-base font-medium hover:underline">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back
     </a>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
     
     <!-- Slideshow Area -->
-    <div class="col-span-2 bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div class="col-span-2 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
       <div class="reveal">
         <div class="slides">
           <template x-for="slide in slides" :key="slide">
             <section>
-              <img :src="slide" class="w-full h-[550px] object-contain bg-gray-50" />
+              <img :src="slide" class="w-full h-[550px] object-contain bg-gray-50 rounded-lg" />
             </section>
           </template>
         </div>
@@ -26,21 +29,22 @@
 
       <!-- Placeholder kalau belum pilih -->
       <template x-if="slides.length === 0">
-        <div class="flex items-center justify-center h-[550px] bg-gray-50 text-gray-400 text-lg">
+        <div class="flex items-center justify-center h-[550px] bg-gray-50 text-gray-400 text-lg font-medium">
           Pilih materi untuk melihat slide 📑
         </div>
       </template>
     </div>
 
     <!-- Sidebar Materi -->
-    <aside class="bg-gray-50 p-6 rounded-2xl shadow-md space-y-4">
-      <h2 class="text-lg font-semibold text-gray-800 border-b pb-3">📚 Materi Kelas</h2>
+    <aside class="bg-white border border-gray-200 p-6 rounded-2xl shadow space-y-4">
+      <h2 class="text-lg font-semibold text-gray-900 border-b pb-3">Materi Kelas</h2>
+      
       {{#if materi.length}}
-        <ul class="space-y-2">
+        <ul class="space-y-3">
           {{#each materi}}
             <li>
               <button  
-                class="w-full text-left px-4 py-3 rounded-lg bg-white shadow-sm hover:bg-blue-50 hover:text-blue-600 transition"
+                class="w-full text-left px-4 py-3 rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-gray-900 hover:text-white transition"
                 @click="
                   slides = {{json this.slides}};
                   $nextTick(() => {

@@ -96,17 +96,91 @@ async findPertemuanAndPertanyaan(mingguId: number, userId: number) {
 }
 
 
-async findMinggu(kelasId: number){
-    const minggu = await this.findOne(kelasId);
-  if (!minggu) {
+async findMinggu(kelasId: number, userId: number) {
+  const kelas = await this.findOne(kelasId);
+  if (!kelas) {
+    throw new NotFoundException(`Kelas with ID ${kelasId} not found`);
+  }
+
+  // Ambil semua minggu dengan relasi lengkap
+  const allMinggu = await this.mingguRepository.find({
+    where: {
+      kelas: { id: kelasId }
+    },
+    relations: [
+      'quiz', 
+      'pertemuan', 
+      'pertemuan.absen',
+      'pertemuan.absen.user', 
+      'pertemuan.tugas', 
+      'quiz.pertanyaan',
+      'quiz.nilai', 
+      'quiz.pertanyaan.jawaban', 
+      'quiz.pertanyaan.jawaban_user', 
+      'quiz.pertanyaan.jawaban_user.user'
+    ],
+    order: { minggu_ke: 'ASC' } // Asumsikan ada field urutan untuk mengurutkan minggu
+  });
+
+  // Proses setiap minggu untuk menentukan akses
+  const processedMinggu = allMinggu.map((minggu, index) => {
+    let canAccess = false;
+    let accessMessage = '';
+
+    if (index === 0) {
+      // Minggu pertama selalu bisa diakses
+      canAccess = true;
+      accessMessage = 'Akses tersedia';
+    } else {
+      // Cek apakah quiz minggu sebelumnya memenuhi nilai minimum
+      const previousMinggu = allMinggu[index - 1];
+      const userQuizNilai = this.getUserQuizScore(previousMinggu.quiz, userId);
+      const minimumScore = previousMinggu.quiz['nilai_minimal'] || 0;
+
+      if (userQuizNilai !== null && userQuizNilai >= minimumScore) {
+        canAccess = true;
+        accessMessage = 'Akses tersedia';
+      } else if (userQuizNilai === null) {
+        canAccess = false;
+        accessMessage = `Selesaikan quiz minggu ${index} terlebih dahulu`;
+      } else {
+        canAccess = false;
+        accessMessage = `Nilai quiz minggu ${index} tidak memenuhi minimum (${userQuizNilai}/${minimumScore})`;
+      }
+    }
+
+    return {
+      ...minggu,
+      canAccess,
+      accessMessage,
+      // Jika tidak bisa akses, sembunyikan detail pertemuan
+      pertemuan: canAccess ? minggu.pertemuan : [],
+    };
+  });
+
+  return processedMinggu;
+}
+
+// Helper method untuk mendapatkan nilai quiz user
+private getUserQuizScore(quiz: any, userId: number): number | null {
+  if (!quiz || !quiz.nilai) {
+    return null;
+  }
+
+  const userNilai = quiz.nilai.find((nilai: any) => nilai.user_id === userId);
+  return userNilai ? userNilai.score : null;
+}
+
+async findMingguClass(  kelasId: number) {
+    const kelas = await this.findOne(kelasId);
+  if (!kelas) {
     throw new NotFoundException(`User with ID ${kelasId} not found`);
   }
   return await this.mingguRepository.find({
     where: {
       kelas: { id: kelasId }
     },
-    relations: ['quiz', 'pertemuan'], 
-    order: { minggu_ke: 'ASC' },
+    relations: ['quiz', 'pertemuan', 'pertemuan.absen', 'pertemuan.tugas', 'quiz.pertanyaan','quiz.nilai', 'quiz.pertanyaan.jawaban', 'quiz.pertanyaan.jawaban_user', 'quiz.pertanyaan.jawaban_user.user']
   });
 }
 

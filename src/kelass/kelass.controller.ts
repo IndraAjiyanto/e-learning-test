@@ -76,7 +76,7 @@ export class KelassController {
   @Get("/detail/kelas/admin/:kelasId")
   async detailKelas(@Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: Request){
     const kelas = await this.kelassService.findOne(kelasId);
-    const minggu = await this.kelassService.findMinggu(kelasId);
+    const minggu = await this.kelassService.findMingguClass(kelasId);
     const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId)
     res.render('admin/kelas/detail', {user: req.user, kelas, minggu, mingguTerakhir})
   }
@@ -84,11 +84,12 @@ export class KelassController {
   @Get(':id')
   async detail(@Param('id') id: number, @Res() res: Response, @Req() req: Request) {
     const kelas = await this.kelassService.findOne(id);
+    const kelass = await this.kelassService.allKelas();
   let isUserInKelas = false;
   if(!kelas){
     req.flash('info', 'not found class')
   }else if(!req.user){
-    res.render('kelas/Bdetail', { kelas});
+    res.render('kelas/Bdetail', { kelas, kelass});
   } else {
           for (const u of kelas.user) {
     if (u.id === req.user.id) {
@@ -97,10 +98,11 @@ export class KelassController {
     }
   }
     if (isUserInKelas) {
-    const pertemuans = await this.kelassService.findPertemuanAndPertanyaan(id, req.user.id);
-    res.render('kelas/detail', { user: req.user, kelas, pertemuans });
+      const minggu = await this.kelassService.findMinggu(id, req.user.id);
+      console.log(minggu)
+    res.render('kelas/detail', { user: req.user, kelas, minggu });
   } else {
-    res.render('kelas/Bdetail', {user: req.user, kelas});
+    res.render('kelas/Bdetail', {user: req.user, kelas, kelass});
   }
   }
   }

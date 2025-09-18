@@ -3,10 +3,12 @@ import { CreateJawabanUserDto } from './dto/create-jawaban_user.dto';
 import { UpdateJawabanUserDto } from './dto/update-jawaban_user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JawabanUser } from 'src/entities/jawaban_user.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, In, Repository } from 'typeorm';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { Jawaban } from 'src/entities/jawaban.entity';
 import { User } from 'src/entities/user.entity';
+import { Nilai } from 'src/entities/nilai.entity';
+import { Quiz } from 'src/entities/quiz.entity';
 
 @Injectable()
 export class JawabanUsersService {
@@ -18,6 +20,10 @@ export class JawabanUsersService {
     private readonly jawabanRepository: Repository<Jawaban>
     @InjectRepository(User)
     private readonly userRepository: Repository<User>
+    @InjectRepository(Nilai)
+    private readonly nilaiRepository: Repository<Nilai>
+    @InjectRepository(Quiz)
+    private readonly quizRepository: Repository<Quiz>
 
   
 async create(createJawabanUserDto: CreateJawabanUserDto) {
@@ -32,18 +38,6 @@ async create(createJawabanUserDto: CreateJawabanUserDto) {
     if (!jawaban) throw new NotFoundException(`Jawaban id ${j.jawabanId} tidak ditemukan`);
     if (!user) throw new NotFoundException(`User id ${j.userId} tidak ditemukan`);
 
-    const existing = await this.jawabanUserRepository.findOne({
-      where: {
-        pertanyaan: { id: j.pertanyaanId },
-        user: { id: j.userId }
-      },
-      relations: ['pertanyaan', 'user']
-    });
-
-    if (existing) {
-      throw new Error(`User id ${j.userId} sudah menjawab pertanyaan id ${j.pertanyaanId}`);
-    }
-
     const jawabanUser = this.jawabanUserRepository.create({
       pertanyaan,
       jawaban,
@@ -55,6 +49,57 @@ async create(createJawabanUserDto: CreateJawabanUserDto) {
 
   return this.jawabanUserRepository.save(jawabanToInsert);
 }
+
+async nilaiCreate(createJawabanUserDto: CreateJawabanUserDto) {
+  // ambil array jawabanUser
+  const jawabanUser = createJawabanUserDto.jawabanUser;
+
+  // 1. Ambil semua id jawaban yg dipilih user
+  const jawabanIds = jawabanUser.map(j => j.jawabanId);
+
+  // 2. Ambil data jawaban dari DB, beserta apakah benar/salah
+  const jawabanBenar = await this.jawabanRepository.findBy({
+    id: In(jawabanIds),
+  });
+
+  // 3. Hitung jumlah benar
+  let benar = 0;
+  jawabanBenar.forEach(j => {
+    if (j.jawaban_benar) {
+      benar++;
+    }
+  });
+
+  // 4. Hitung nilai
+  const totalSoal = jawabanUser.length;
+  const nilai = Math.round((benar / totalSoal) * 100);
+
+  // 5. Simpan ke tabel nilai / riwayat
+  const userId = jawabanUser[0].userId;
+  const user = await this.userRepository.findOne({where: {id: userId}})
+  if(!user){
+    throw new NotFoundException('user not found')
+  }
+
+  // ambil quizId dari pertanyaan pertama
+  const quizId = await this.pertanyaanRepository.findOne({
+    where: { id: jawabanUser[0].pertanyaanId },
+    relations: ['quiz'],
+  }).then(p => p?.quiz.id);
+
+  const quiz = await this.quizRepository.findOne({where: {id: quizId}})
+  if(!quiz){
+    throw new NotFoundException('quiz not found')
+  }
+
+  await this.nilaiRepository.save({
+    user: user,
+    quiz: quiz,
+    nilai
+  });
+
+}
+
 
 
 async findByUserAndPertanyaan(userId: number, pertanyaanId: number) {

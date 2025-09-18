@@ -6,10 +6,11 @@ import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { Jawaban } from 'src/entities/jawaban.entity';
 import { User } from 'src/entities/user.entity';
 import { JawabanUser } from 'src/entities/jawaban_user.entity';
-import { PertanyaansModule } from 'src/pertanyaans/pertanyaans.module';
+import { Nilai } from 'src/entities/nilai.entity';
+import { Quiz } from 'src/entities/quiz.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Pertanyaan, Jawaban, User, JawabanUser])],
+  imports: [TypeOrmModule.forFeature([Pertanyaan, Jawaban, User, JawabanUser, Nilai, Quiz])],
   controllers: [JawabanUsersController],
   providers: [JawabanUsersService],
   exports: [JawabanUsersService]

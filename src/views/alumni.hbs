@@ -1,0 +1,77 @@
+<div class="pt-28">
+<div class="container mx-auto px-6 py-16" x-data="{ tab: 'Semua Fakultas' }">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+
+    <!-- Sidebar Fakultas -->
+    <div class="space-y-4">
+      <button 
+        @click="tab = 'Semua Fakultas'" 
+        :class="tab === 'Semua Fakultas' ? 'bg-cyan-500 text-white' : 'bg-white border text-gray-800'" 
+        class="w-full px-4 py-3 rounded-lg font-medium shadow-sm transition">
+        Semua Fakultas
+      </button>
+      <button 
+        @click="tab = 'Finance'" 
+        :class="tab === 'Finance' ? 'bg-cyan-500 text-white' : 'bg-white border text-gray-800'" 
+        class="w-full px-4 py-3 rounded-lg font-medium shadow-sm transition">
+        Finance
+      </button>
+      <button 
+        @click="tab = 'Data'" 
+        :class="tab === 'Data' ? 'bg-cyan-500 text-white' : 'bg-white border text-gray-800'" 
+        class="w-full px-4 py-3 rounded-lg font-medium shadow-sm transition">
+        Data
+      </button>
+      <button 
+        @click="tab = 'IT'" 
+        :class="tab === 'IT' ? 'bg-cyan-500 text-white' : 'bg-white border text-gray-800'" 
+        class="w-full px-4 py-3 rounded-lg font-medium shadow-sm transition">
+        IT & Software Development
+      </button>
+      <button 
+        @click="tab = 'Bisnis'" 
+        :class="tab === 'Bisnis' ? 'bg-cyan-500 text-white' : 'bg-white border text-gray-800'" 
+        class="w-full px-4 py-3 rounded-lg font-medium shadow-sm transition">
+        Bisnis & Marketing
+      </button>
+    </div>
+
+    <!-- Card Bootcamp -->
+    <div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Card -->
+      <div 
+        class="bg-white border rounded-xl shadow p-6 flex flex-col items-center text-center transition hover:shadow-lg"
+        x-show="tab === 'Semua Fakultas' || tab === 'Finance'">
+        <span class="px-3 py-1 text-xs rounded-full bg-cyan-100 text-cyan-600 font-medium">Bootcamp</span>
+        <p class="mt-2 text-sm text-gray-500">Finance</p>
+        <img src="https://via.placeholder.com/200x250" class="h-52 object-contain my-4" alt="Bootcamp">
+        <h3 class="text-lg font-bold text-gray-900">Bootcamp Finance & Accounting</h3>
+        <p class="text-sm text-gray-600 mt-2">
+          Gabung di bootcamp yang siap #BimbingSampeJadi kariermu dengan silabus lengkap, langsung kerja setelah lulus. Gratis mengulang kelas!
+        </p>
+        <button class="mt-4 border border-cyan-500 text-cyan-600 px-5 py-2 rounded-lg font-medium hover:bg-cyan-500 hover:text-white transition">
+          Pelajari Selengkapnya
+        </button>
+      </div>
+
+      <!-- Card -->
+      <div 
+        class="bg-white border rounded-xl shadow p-6 flex flex-col items-center text-center transition hover:shadow-lg"
+        x-show="tab === 'Semua Fakultas' || tab === 'Finance'">
+        <span class="px-3 py-1 text-xs rounded-full bg-cyan-100 text-cyan-600 font-medium">Bootcamp</span>
+        <p class="mt-2 text-sm text-gray-500">Finance</p>
+        <img src="https://via.placeholder.com/200x250" class="h-52 object-contain my-4" alt="Bootcamp">
+        <h3 class="text-lg font-bold text-gray-900">Bootcamp Audit</h3>
+        <p class="text-sm text-gray-600 mt-2">
+          Gabung di bootcamp yang siap #BimbingSampeJadi kariermu dengan silabus lengkap, langsung kerja setelah lulus. Gratis mengulang kelas!
+        </p>
+        <button class="mt-4 border border-cyan-500 text-cyan-600 px-5 py-2 rounded-lg font-medium hover:bg-cyan-500 hover:text-white transition">
+          Pelajari Selengkapnya
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>

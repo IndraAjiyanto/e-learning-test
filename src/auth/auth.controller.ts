@@ -75,19 +75,5 @@ logout(@Req() req: any, @Res() res: Response) {
 }
 
 
-  @Get('dashboard')
-  async getProtected(@Req() req: any, @Res() res: Response) {
-    const kelas =  await this.authService.findAllKelas();
-    if(req.user){
-    if(req.user.role === "super_admin"){
-      res.redirect('/users');
-    } else if(req.user.role === "admin"){
-      res.redirect('/kelass');
-    }else if(req.user.role === "user"){
-      res.render('dashboard', { user: req.user, kelas });
-    }
-    }else{
-      res.render('dashboard', { user: req.user, kelas });
-    }
-  }
+
 }

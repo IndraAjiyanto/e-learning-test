@@ -1,134 +1,135 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28">
-  <!-- Header Kelas -->
-  <div class="mb-8 text-center">
-    <img 
-      src="{{kelas.gambar}}" 
-      alt="{{kelas.nama_kelas}}" 
-      class="mx-auto w-full max-w-md h-auto object-contain rounded shadow mb-4" 
-    />
-    <h1 class="text-3xl font-bold mb-2">{{kelas.nama_kelas}}</h1>
-    <p class="text-gray-700">{{kelas.deskripsi}}</p>
-  </div>
-
-  <!-- Pertemuan -->
-  <div class="mb-10">
-    <h2 class="text-2xl font-semibold mb-4">Pertemuan</h2>
-
-    <div class="space-y-4">
-      {{#each this.pertemuans}}
-      <div 
-        x-data="{ open: false }" 
-        class="border rounded-xl shadow bg-white overflow-hidden"
-      >
-        <!-- Tombol Toggle Pertemuan -->
-        <button 
-          @click="open = !open" 
-          class="w-full flex justify-between items-center px-6 py-4 text-left hover:bg-gray-50 transition"
-        >
-          <div>
-            <h3 class="font-bold text-lg text-gray-800">
-              Pertemuan {{pertemuan_ke}} - {{topik}}
-            </h3>
-            <p class="text-sm text-gray-500">
-              {{formatTanggal tanggal}} | {{formatTime waktu_awal}} - {{formatTime waktu_akhir}}
-            </p>
-          </div>
-          <svg 
-            :class="{'rotate-180': open}" 
-            class="w-5 h-5 text-gray-600 transition-transform" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-          </svg>
-        </button>
-
-        <!-- Konten Pertemuan -->
-        <div x-show="open" x-collapse class="px-6 pb-6">
-          {{#if (hasUserAbsen absen ../user.id)}}
-            <!-- Sudah Absen -->
-            <span class="inline-block mb-4 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-              Sudah Absen
-            </span>
-
-            <!-- Materi -->
-            <div class="mb-4">
-              <h4 class="font-semibold text-gray-700 mb-2">Materi</h4>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <a href="/materis/pdf/{{id}}" 
-                   class="block bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow p-4 text-center hover:scale-105 transform transition">
-                  PDF
-                </a>
-                <a href="/materis/video/{{id}}" 
-                   class="block bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow p-4 text-center hover:scale-105 transform transition">
-                  Video
-                </a>
-                <a href="/materis/ppt/{{id}}" 
-                   class="block bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow p-4 text-center hover:scale-105 transform transition">
-                  PPT
-                </a>
-              </div>
-            </div>
-
-            <!-- Quiz -->
-            {{#if totalPertanyaan}}
-              {{#if isAnswered}}
-                <a href="/pertanyaans/quiz/user/{{id}}/{{../user.id}}" 
-                   class="inline-block px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow-lg hover:scale-105 transform transition">
-                  Lihat Quiz
-                </a>  
-              {{else}}
-                <a href="/pertanyaans/quiz/{{id}}/{{../kelas.id}}" 
-                   class="inline-block px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow-lg hover:scale-105 transform transition">
-                  Mulai Quiz
-                </a>
-              {{/if}}
-            {{else}}
-              <p class="text-gray-500 text-sm italic">Belum ada quiz</p>
-            {{/if}}
-
-            <!-- Tugas -->
-  <div class="mt-4">
-{{#each tugas}}
-    <a 
-      href="/jawaban-tugass/{{../id}}/{{this.id}}"
-      class="px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow-lg hover:scale-105 transform transition"
+<div class="space-y-4">
+  {{#each minggu}}
+  <div x-data="{ openMinggu: false }" class="border rounded-2xl shadow bg-white overflow-hidden">
+    
+    <!-- Tombol Toggle Minggu -->
+    <button 
+      @click="openMinggu = !openMinggu" 
+      class="w-full flex justify-between items-center px-6 py-4 bg-white  hover:bg-gray-200 transition text-left"
     >
-      Lihat Tugas
-    </a>
-  {{/each}}
-  </div>
+      <h2 class="font-bold text-xl text-gray-900">
+        week {{this.minggu_ke}} : {{this.keterangan}}
+      </h2>
+      <svg 
+        :class="{'rotate-180': openMinggu}" 
+        class="w-6 h-6 text-gray-600 transition-transform" 
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </button>
 
+    <!-- Isi Minggu -->
+    <div x-show="openMinggu" x-collapse class="px-6 pb-6 space-y-6">
+      
+      <!-- List Pertemuan -->
+      <div class="space-y-4">
+        {{#each this.pertemuan}}
+        <div x-data="{ open: false }" class="border rounded-xl shadow bg-white overflow-hidden">
+          <!-- Tombol Toggle Pertemuan -->
+          <button 
+            @click="open = !open" 
+            class="w-full flex justify-between items-center px-6 py-4 text-left hover:bg-gray-50 transition"
+          >
+            <div>
+              <h3 class="font-bold text-lg text-gray-800">
+                Pertemuan {{pertemuan_ke}} - {{topik}}
+              </h3>
+              <p class="text-sm text-gray-500">
+                {{formatTanggal tanggal}} | {{formatTime waktu_awal}} - {{formatTime waktu_akhir}}
+              </p>
+            </div>
+            <svg 
+              :class="{'rotate-180': open}" 
+              class="w-5 h-5 text-gray-600 transition-transform" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
 
+          <!-- Konten Pertemuan -->
+          <div x-show="open" x-collapse class="px-6 pb-6">
+            {{#if (hasUserAbsen absen ../../user.id)}}
+              <!-- Sudah Absen -->
+              <span class="inline-block mb-4 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                Sudah Absen
+              </span>
 
-          {{else}}
-            <span class="inline-block mb-4 px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
-              Belum Absen
-            </span>
-
-            <a href="/absens/form/{{id}}" 
-              class="block w-full mb-4 px-4 py-2 bg-gray-900 text-white text-center rounded-lg hover:bg-gray-700 transition">
-              Isi Absen Dulu
-            </a>
-
-            <div class="opacity-50 pointer-events-none">
-              <h4 class="font-semibold text-gray-700 mb-2">Materi</h4>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <button class="block bg-gray-200 text-gray-500 rounded-lg shadow p-4 text-center cursor-not-allowed">PDF</button>
-                <button class="block bg-gray-200 text-gray-500 rounded-lg shadow p-4 text-center cursor-not-allowed">Video</button>
-                <button class="block bg-gray-200 text-gray-500 rounded-lg shadow p-4 text-center cursor-not-allowed">PPT</button>
+              <!-- Materi -->
+              <div class="mb-4">
+                <h4 class="font-semibold text-gray-700 mb-2">Materi</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <a href="/materis/pdf/{{id}}" 
+                     class="block bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow p-4 text-center hover:scale-105 transform transition">
+                    PDF
+                  </a>
+                  <a href="/materis/video/{{id}}" 
+                     class="block bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow p-4 text-center hover:scale-105 transform transition">
+                    Video
+                  </a>
+                  <a href="/materis/ppt/{{id}}" 
+                     class="block bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow p-4 text-center hover:scale-105 transform transition">
+                    PPT
+                  </a>
+                </div>
               </div>
 
-              <h4 class="font-semibold text-gray-700 mt-4 mb-2">Quiz</h4>
-              <button class="inline-block px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed">
-                Mulai Quiz
-              </button>
-            </div>
-          {{/if}}
+              <!-- Tugas -->
+              <div class="mt-4">
+                {{#each tugas}}
+                <a 
+                  href="/jawaban-tugass/{{../id}}/{{this.id}}"
+                  class="px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow-lg hover:scale-105 transform transition"
+                >
+                  Lihat Tugas
+                </a>
+                {{/each}}
+              </div>
+
+            {{else}}
+              <span class="inline-block mb-4 px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
+                Belum Absen
+              </span>
+
+              <a href="/absens/form/{{id}}" 
+                class="block w-full mb-4 px-4 py-2 bg-gray-900 text-white text-center rounded-lg hover:bg-gray-700 transition">
+                Isi Absen Dulu
+              </a>
+
+              <div class="opacity-50 pointer-events-none">
+                <h4 class="font-semibold text-gray-700 mb-2">Materi</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <button class="block bg-gray-200 text-gray-500 rounded-lg shadow p-4 text-center cursor-not-allowed">PDF</button>
+                  <button class="block bg-gray-200 text-gray-500 rounded-lg shadow p-4 text-center cursor-not-allowed">Video</button>
+                  <button class="block bg-gray-200 text-gray-500 rounded-lg shadow p-4 text-center cursor-not-allowed">PPT</button>
+                </div>
+              </div>
+            {{/if}}
+          </div>
         </div>
+        {{/each}}
       </div>
-      {{/each}}
+
+      <!-- List Quiz -->
+      <div class="mt-6">
+        {{#each this.quiz}}
+          {{#if this.pertanyaan.length}}
+              <a href="/quiz/form/{{id}}" 
+                 class="block w-full text-center px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow-lg hover:scale-105 transform transition">
+                Quiz
+              </a>
+          {{else}}
+            <p class="text-gray-500 text-center text-sm italic">Belum ada quiz</p>
+          {{/if}}
+        {{/each}}
+      </div>
+
     </div>
   </div>
+  {{/each}}
 </div>

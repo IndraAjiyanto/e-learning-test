@@ -1,52 +1,54 @@
 <div class="max-w-7xl mx-auto px-4 py-10 pt-28" 
      x-data="{ pdfSrc: '', materiJudul: '' }">
-       <div class="mb-4">
-    <a href="/kelass/{{pertemuan.kelas.id}}" 
+
+  <!-- Tombol Kembali -->
+  <div class="mb-6">
+    <a href="/kelass/{{pertemuan.minggu.kelas.id}}" 
        class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
       <svg xmlns="http://www.w3.org/2000/svg" 
-           class="h-5 w-5 mr-1" fill="none" 
+           class="h-5 w-5 mr-2" fill="none" 
            viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" 
               stroke-linejoin="round" 
               stroke-width="2" 
               d="M15 19l-7-7 7-7" />
       </svg>
-      Kembali
+      Back
     </a>
   </div>
+
+  <!-- Layout Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
+    <!-- Bagian PDF Viewer -->
     <div class="col-span-2">
-<iframe 
-  class="h-[500px] w-full rounded-lg border" 
-  x-bind:src="'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(pdfSrc)">
-</iframe>
+      <iframe 
+        class="h-[500px] w-full rounded-lg border shadow"
+        x-bind:src="'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(pdfSrc)">
+      </iframe>
 
-      <div class="flex justify-between items-center mt-4">
-        <h1 class="text-3xl font-bold" x-text="materiJudul"></h1>
+      <div class="mt-4">
+        <h1 class="text-2xl font-bold text-gray-900" x-text="materiJudul"></h1>
       </div>
     </div>
 
-    <div class="bg-gray-100 p-6 rounded-lg shadow">
-      <h2 class="text-xl font-semibold mb-4">Materi Kelas</h2>
+    <!-- Daftar Materi -->
+    <div class="bg-white border border-gray-200 p-6 rounded-lg shadow">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Materi Kelas</h2>
 
-          <div x-show="open"
-               x-transition
-               @click.away="open = false"
-               class="mt-2 bg-white border rounded shadow w-full">
-               
-               {{#if materi.length}}
-               {{#each materi}}
-               <button  
-                 class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                 @click="pdfSrc = '{{file}}'; materiJudul = '{{judul}}'">
-                 {{judul}}
-               </button>
-               {{/each}}
-               {{else}}
-               <p class="px-4 py-2 text-gray-500">Belum ada materi</p>
-               {{/if}}
-          </div>
+      {{#if materi.length}}
+        <div class="space-y-2">
+          {{#each materi}}
+          <button  
+            class="w-full text-left px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition"
+            @click="pdfSrc = '{{file}}'; materiJudul = '{{judul}}'">
+            {{judul}}
+          </button>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="px-4 py-2 text-gray-500 text-sm">Belum ada materi</p>
+      {{/if}}
     </div>
 
   </div>

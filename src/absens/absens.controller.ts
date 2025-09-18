@@ -45,7 +45,7 @@ export class AbsensController {
 
   @Roles('user')
   @Get('form/:id')
-  async formAbsen(@Res() res: Response, @Param('id') id: number,  @Req() req: any){
+  async formAbsen(@Res() res: Response, @Param('id') id: number,  @Req() req: Request){
     const pertemuan = await this.absensService.findPertemuan(id);
     res.render('user/absen/create',{pertemuan, user: req.user})
   }
@@ -73,21 +73,21 @@ export class AbsensController {
 
   @Roles('admin')
   @Get('formEdit/:id')
-  async formEdit(@Param('id') id: number, @Res() res:Response, @Req() req:any){
+  async formEdit(@Param('id') id: number, @Res() res:Response, @Req() req:Request){
     const absen = await this.absensService.findOne(id);
     res.render('admin/absen/edit', {user: req.user, absen})
   }
 
-  @Roles('user', 'admin')
-  @Patch(':absenId')
-  async update(@Param('absenId') absenId: number, @Body() updateAbsenDto: UpdateAbsenDto, @Res() res:Response, @Req() req:Request) {
+  @Roles('admin')
+  @Patch(':absenId/:pertemuanId')
+  async update(@Param('pertemuanId') pertemuanId: number,@Param('absenId') absenId: number, @Body() updateAbsenDto: UpdateAbsenDto, @Res() res:Response, @Req() req:Request) {
     try {
         await this.absensService.update(absenId, updateAbsenDto);
         req.flash('success', 'Successfully updated attendance');
-        res.redirect(`/pertemuans/${updateAbsenDto.pertemuanId}`)
+        res.redirect(`/pertemuans/${pertemuanId}`)
     } catch (error) {
         req.flash('error', 'Failed to update attendance');
-        res.redirect(`/pertemuans/${updateAbsenDto.pertemuanId}`)
+        res.redirect(`/pertemuans/${pertemuanId}`)
     }
 
   }

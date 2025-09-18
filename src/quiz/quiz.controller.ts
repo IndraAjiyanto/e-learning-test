@@ -24,7 +24,6 @@ export class QuizController {
       req.flash('error', 'Failed to create quiz');
       res.redirect(`/minggu/${mingguId}`);
     }
-
   }
 
   @Roles('admin')
@@ -45,6 +44,22 @@ export class QuizController {
   async formEdit(@Param('quizId') quizId:number, @Res() res:Response, @Req() req:Request){
     const quiz = await this.quizService.findOne(quizId)
     res.render('admin/quiz/edit', {user:req.user, quiz})
+  }
+
+  @Roles('user')
+  @Get('form/:quizId')
+  async formQuiz(@Param('quizId') quizId:number, @Res() res:Response, @Req() req:Request){
+    const quiz = await this.quizService.findOne(quizId)
+    const nilai = await this.quizService.findNilaiUser(req.user!.id, quizId)
+
+    res.render('user/quiz/quiz', {user: req.user, quiz, nilai})
+  }
+
+  @Roles('user')
+  @Get('start/:quizId')
+  async startQuiz(@Param('quizId') quizId:number, @Res() res:Response, @Req() req:Request){
+    const pertanyaan = await this.quizService.findPertanyaan(quizId)
+    res.render('user/quiz/start', {user: req.user, quizId, pertanyaan})
   }
 
   @Roles('admin')

@@ -13,8 +13,8 @@ export class JawabanUsersController {
   constructor(private readonly jawabanUsersService: JawabanUsersService) {}
 
   @Roles('user')
-@Post(':kelasId')
-async create(@Param('kelasId') kelasId:number, @Req() req: Request, @Res() res: Response) {
+@Post(':quizId')
+async create(@Param('quizId') quizId:number, @Req() req: Request, @Res() res: Response) {
   try {
     const jawabanUser = Object.entries(req.body).map(([key, value]) => {
       const pertanyaanId = Number(key.replace("q-", ""));
@@ -26,12 +26,14 @@ async create(@Param('kelasId') kelasId:number, @Req() req: Request, @Res() res: 
     });
 
     await this.jawabanUsersService.create({ jawabanUser });
+    await this.jawabanUsersService.nilaiCreate({jawabanUser})
 
     req.flash('success', 'berhasil menjawab pertanyaan');
-    return res.redirect(`/kelass/${kelasId}`);
+    return res.redirect(`/quiz/form/${quizId}`);
   } catch (error) {
+    console.log(error)
     req.flash('error', 'gagal menjawab pertanyaan');
-    return res.redirect(`/kelass/${kelasId}`);
+    return res.redirect(`/quiz/form/${quizId}`);
   }
 }
 

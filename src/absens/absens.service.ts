@@ -48,7 +48,7 @@ export class AbsensService {
   }
 
   async findPertemuan(pertemuanId: number){
-    return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['kelas']})
+    return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['minggu', 'minggu.kelas']})
   }
 
   async findUsers(mingguId: number){
@@ -66,7 +66,7 @@ export class AbsensService {
   async findOne(id: number) {
     const absen = await this.absenRepository.findOne({
       where: {id},
-      relations: ['pertemuan','user', 'pertemuan.kelas']
+      relations: ['pertemuan','user', 'pertemuan.minggu.kelas']
     })
     if (!absen) {
       throw new NotFoundException(`absen tidak ditemukan`);

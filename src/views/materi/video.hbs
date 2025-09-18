@@ -1,6 +1,9 @@
-<div class="max-w-7xl mx-auto px-4 py-10 pt-28" x-data="{ videoSrc: '' }">
-         <div class="mb-4">
-    <a href="/kelass/{{kelasId}}" 
+<div class="max-w-7xl mx-auto px-4 py-10 pt-28" 
+     x-data="{ videoSrc: '', videoTitle: '' }">
+
+  <!-- Tombol kembali -->
+  <div class="mb-6">
+    <a href="/kelass/{{pertemuan.minggu.kelas.id}}" 
        class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
       <svg xmlns="http://www.w3.org/2000/svg" 
            class="h-5 w-5 mr-1" fill="none" 
@@ -10,50 +13,44 @@
               stroke-width="2" 
               d="M15 19l-7-7 7-7" />
       </svg>
-      Kembali
+      Back
     </a>
   </div>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
     
+    <!-- Area Video -->
     <div class="col-span-2">
-      <video controls class="h-[300px] w-full rounded-lg" x-bind:src="videoSrc"></video>
+      <div class="bg-white border border-gray-200 rounded-2xl shadow overflow-hidden">
+        <video controls 
+               class="w-full h-[450px] bg-gray-100"
+               x-bind:src="videoSrc"></video>
+      </div>
+
+      <!-- Judul Video -->
       <div class="flex justify-between items-center mt-4">
-        <h1 class="text-3xl font-bold">Introduction to User Experience Design</h1>
-        <input type="text" x-bind:value="videoSrc">
+        <h1 class="text-3xl font-bold text-gray-900" 
+            x-text="videoTitle"></h1>
       </div>
     </div>
 
-    <div class="bg-gray-100 p-6 rounded-lg shadow">
-      <h2 class="text-xl font-semibold mb-4">Materi Kelas</h2>
-      <ul class="space-y-2">
-        {{#each pertemuan}}
-        <li x-data="{ open: false }" class="relative">
-          <button @click="open = !open"
-                  class="w-full text-left bg-white px-4 py-2 rounded shadow hover:bg-gray-50">
-            {{topik}}
+    <!-- Sidebar Materi -->
+    <div class="bg-white border border-gray-200 p-6 rounded-lg shadow">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Materi Kelas</h2>
+
+      {{#if materi.length}}
+        <div class="space-y-2">
+          {{#each materi}}
+          <button  
+            class="w-full text-left px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition"
+            @click="videoSrc = '{{file}}'; videoTitle = '{{judul}}'">
+            {{judul}}
           </button>
-
-          <div x-show="open"
-               x-transition
-               @click.away="open = false"
-               class="mt-2 bg-white border rounded shadow w-full">
-               
-               {{#if materiVideo.length}}
-               {{#each materiVideo}}
-               <button  
-                 class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                 @click="videoSrc = '{{file}}'">
-                 {{judul}}
-               </button>
-               {{/each}}
-               {{else}}
-               <p class="px-4 py-2 text-gray-500">Belum ada materi</p>
-               {{/if}}
-          </div>
-        </li>
-        {{/each}}
-      </ul>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="px-4 py-2 text-gray-500 text-sm">Belum ada materi</p>
+      {{/if}}
     </div>
-
   </div>
 </div>

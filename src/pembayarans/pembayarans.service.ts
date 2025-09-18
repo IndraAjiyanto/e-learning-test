@@ -78,7 +78,7 @@ export class PembayaransService {
   }
 
   async findKelas(kelasId: number){
-    const kelas = await this.kelasRepository.findOne({where: {id:kelasId}, relations: ['pertemuan', 'kategori']})
+    const kelas = await this.kelasRepository.findOne({where: {id:kelasId}, relations: ['minggu', 'kategori']})
     if(!kelas){
       return
     }else{

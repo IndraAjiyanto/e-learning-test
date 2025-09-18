@@ -55,7 +55,7 @@ async findMateriPpt(pertemuanId: number) {
 
 
 async findPertemuan(pertemuanId: number){
-  return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['kelas', 'absen', 'materi', 'tugas']})
+  return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: [ 'absen', 'materi', 'tugas', 'minggu', 'minggu.kelas']})
 }
 
 
