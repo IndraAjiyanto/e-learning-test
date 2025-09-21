@@ -1,11 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards } from '@nestjs/common';
 import { JawabanUsersService } from './jawaban_users.service';
-import { CreateJawabanUserDto } from './dto/create-jawaban_user.dto';
 import { UpdateJawabanUserDto } from './dto/update-jawaban_user.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
-import { UsersService } from 'src/users/users.service';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('jawaban-users')
@@ -36,7 +34,6 @@ async create(@Param('quizId') quizId:number, @Req() req: Request, @Res() res: Re
     return res.redirect(`/quiz/form/${quizId}`);
   }
 }
-
 
   @Get()
   findAll() {

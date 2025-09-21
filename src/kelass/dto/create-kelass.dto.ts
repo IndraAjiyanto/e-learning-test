@@ -6,6 +6,8 @@ export class CreateKelassDto {
 
       @IsInt()
       kategoriId: number;
+      @IsInt()
+      jenis_kelasId: number;
       
       @IsInt()
       harga: number;

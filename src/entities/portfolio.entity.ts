@@ -8,7 +8,17 @@ export class Portfolio{
     id: number
 
     @Column()
-    sertif: string
+    gambar: string
+
+    @Column()
+    judul: string
+
+    @Column()
+    deskripsi: string
+
+      @Column("jsonb")
+  teknologi: string[];
+
 
             @CreateDateColumn()
             createdAt: Date;

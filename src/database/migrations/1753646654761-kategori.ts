@@ -31,7 +31,7 @@ export class Kategori1753646654761 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('kategoris');
+        await queryRunner.dropTable('kategori');
     }
 
 }

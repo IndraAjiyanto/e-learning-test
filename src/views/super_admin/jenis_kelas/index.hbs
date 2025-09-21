@@ -1,0 +1,87 @@
+<div class="max-w-5xl mx-auto px-6 py-10 pt-28"
+     x-data="jenisKelasTable({ jenisKelas: {{json jenis_kelas}} })">
+  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Jenis Kelas</h2>
+    <div class="flex items-center gap-3">
+      <div class="relative w-full md:w-64">
+        <input type="text" placeholder="Search jenis kelas..."
+               x-model="searchInput"
+               @input="search = searchInput; pageNumber=0"
+               class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"/>
+        <button @click="search = searchInput; pageNumber=0"
+                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+          </svg>
+        </button>
+      </div>
+      <a href="/jenis-kelas/formCreate"
+         class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Create Class Type
+      </a>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+      <tr>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Class type</th>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Updated At</th>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
+      </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+      {{#each jenis_kelas}}
+      <tr class="hover:bg-gray-50 transition"
+          x-show="filteredJenisKelas.includes('{{id}}')">
+        <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
+        <td class="px-6 py-4 text-sm text-gray-800">{{nama_jenis_kelas}}</td>
+        <td class="px-6 py-4 text-sm text-gray-800">{{createdAt}}</td>
+        <td class="px-6 py-4 text-sm text-gray-800">{{updatedAt}}</td>
+        <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
+          <a href="/jenis-kelas/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
+          <form action="/jenis-kelas/{{id}}?_method=DELETE" method="post" class="inline">
+            <button type="button" class="text-gray-600 font-medium hover:underline"
+                    onclick="confirmDelete(this)">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function jenisKelasTable({ jenisKelas }) {
+  return {
+    searchInput: "",
+    search: "",
+    pageNumber: 0,
+    size: 5,
+    jenisKelas,
+    amount: 0,
+    get filteredJenisKelas() {
+      let filtered = this.jenisKelas.filter(j =>
+        (`${j.nama_jenis_kelas}`).toLowerCase()
+          .includes(this.search.toLowerCase())
+      );
+      this.amount = filtered.length;
+      const start = this.pageNumber * this.size;
+      const end = start + this.size;
+      return filtered.slice(start, end).map(j => j.id.toString());
+    },
+    pages() { return Array.from({ length: this.pageCount() }); },
+    pageCount() { return Math.ceil(this.amount / this.size); },
+    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
+    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
+    viewPage(index) { this.pageNumber = index; },
+  }
+}
+</script>

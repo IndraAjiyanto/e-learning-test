@@ -2,52 +2,62 @@
   <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
     
     <!-- Left Content -->
-    <div class="lg:col-span-2 space-y-8">
-      <!-- Course Preview -->
-      <div class="w-full rounded-xl overflow-hidden shadow">
-        <img src="{{kelas.gambar}}" alt="Course Preview" class="w-full object-cover">
-      </div>
+<div class="lg:col-span-2 space-y-8">
+  <!-- Course Preview -->
+  <div class="w-full rounded-xl overflow-hidden shadow">
+    <img src="{{kelas.gambar}}" alt="{{kelas.nama_kelas}}" class="w-full object-cover">
+  </div>
 
-      <!-- Tabs -->
-      <div class="border-b flex gap-6 text-sm font-medium">
-        <button class="pb-3 border-b-2 border-gray-900">Course Info</button>
-        <button class="pb-3 text-gray-500 hover:text-gray-900">Reviews</button>
-      </div>
+  <!-- Tabs -->
+  <div class="border-b flex gap-6 text-sm font-medium">
+    <button class="pb-3 border-b-2 border-gray-900">Course Info</button>
+    <button class="pb-3 text-gray-500 hover:text-gray-900">Reviews</button>
+  </div>
 
-      <!-- Description -->
-      <div>
-        <h3 class="text-xl font-semibold mb-3">{{kelas.nama_kelas}}</h3>
-        <p class="text-gray-700 mb-6">
-          {{kelas.deskripsi}}
-        </p>
-      </div>
+  <!-- Description -->
+  <div>
+    <h3 class="text-2xl font-bold mb-3 text-gray-900">{{kelas.nama_kelas}}</h3>
+    <p class="text-gray-700 leading-relaxed">
+      {{kelas.deskripsi}}
+    </p>
+  </div>
 
-      <!-- Course Content (Accordion) -->
-      <div class="space-y-3">
-        <details class="collapse collapse-arrow border rounded-lg">
-          <summary class="collapse-title font-medium">UX/UI Introduction</summary>
-          <div class="collapse-content text-sm space-y-2">
-            <p>Introduction – 05:34</p>
-            <p>Practice File</p>
-          </div>
-        </details>
-        <details class="collapse collapse-arrow border rounded-lg">
-          <summary class="collapse-title font-medium">Section 1</summary>
-        </details>
-        <details class="collapse collapse-arrow border rounded-lg">
-          <summary class="collapse-title font-medium">Section 2</summary>
-        </details>
-        <details class="collapse collapse-arrow border rounded-lg">
-          <summary class="collapse-title font-medium">Section 3</summary>
-        </details>
-        <details class="collapse collapse-arrow border rounded-lg">
-          <summary class="collapse-title font-medium">Section 4</summary>
-        </details>
-        <details class="collapse collapse-arrow border rounded-lg">
-          <summary class="collapse-title font-medium">Section 5</summary>
-        </details>
+  <!-- Course Content (Accordion Style) -->
+  <div class="space-y-6 divide-y divide-gray-200">
+    
+    <!-- Material Includes -->
+    <div class="pt-4">
+      <h4 class="text-lg font-semibold mb-2 text-gray-900">Material Includes</h4>
+      <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+        {{#each kelas.materi}}
+        <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+
+    <!-- What You'll Learn -->
+    <div class="pt-4">
+      <h4 class="text-lg font-semibold mb-2 text-gray-900">What You'll Learn</h4>
+      <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
+        {{#each kelas.target_pembelajaran}}
+        <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+
+
+    <!-- Tags -->
+    <div class="pt-4">
+      <h4 class="text-lg font-semibold mb-2 text-gray-900">Tech</h4>
+      <div class="flex gap-2 flex-wrap">
+        {{#each kelas.teknologi}}
+        <span class="badge badge-outline">{{this}}</span>
+        {{/each}}
       </div>
     </div>
+
+  </div>
+</div>
 
     <!-- Right Sidebar -->
 <aside class="space-y-6" x-data="{ previewUrl: null }">
@@ -61,7 +71,7 @@
               {{#if (roles kelas.kategori.nama_kategori "free class")}}
               {{else}}
                           <div class="bank-card p-5 flex flex-col gap-4">
-                    <p class="text-xs text-gray-300 mb-1">Account Number</p>
+                    <p class="text-xs text-gray-900 mb-1">Account Number</p>
                     <div class="flex items-center justify-between">
                         <p class="account-number text-xl font-bold tracking-wider">2847 9237 4298 1234</p>
                         <button @click="copyToClipboard" 
@@ -73,12 +83,12 @@
                 
                 <div class="flex justify-between items-center mt-4">
                     <div>
-                        <p class="text-xs text-gray-300">Account Holder</p>
-                        <p class="text-sm font-medium">KESATRIA ACADEMY</p>
+                        <p class="text-xs text-gray-900">Account Holder</p>
+                        <p class="text-sm font-semibold">KESATRIA ACADEMY</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-300">Bank Name</p>
-                        <p class="text-sm font-medium">BANK CENTRAL</p>
+                        <p class="text-xs text-gray-900">Bank Name</p>
+                        <p class="text-sm font-semibold">BANK BCA</p>
                     </div>
                 </div>
             </div>
@@ -110,10 +120,10 @@
     </form>
           {{else if (roles kelas.kategori.nama_kategori "course")}}
            <form action="/pembayarans/{{user.id}}/{{kelas.id}}"  enctype="multipart/form-data" method="post" class="space-y-3">
-      <label class="block text-sm font-medium text-gray-700">Upload Bukti Transfer</label>
+      <label class="block text-sm font-medium text-gray-700">Upload Payment Proof</label>
       <input 
         type="file" name="file"
-        class="file-input file-input-bordered w-full border-gray-300 rounded-lg"
+        class="file-input file-input-bordered w-full bg-white border-gray-300 rounded-lg"
         @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
       />
 
@@ -134,7 +144,7 @@
       <label class="block text-sm font-medium text-gray-700">Upload Bukti Transfer</label>
       <input 
         type="file" name="file"
-        class="file-input file-input-bordered w-full border-gray-300 rounded-lg"
+        class="file-input file-input-bordered w-full bg-white border-gray-300 rounded-lg"
         @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
       />
 
@@ -159,50 +169,10 @@
           {{/if}}
 
 
-    <p class="text-xs text-gray-500 mt-2">No any hidden charge</p>
 
-    <!-- What You'll Learn -->
-    <div>
-      <h4 class="font-semibold mb-2 text-gray-900">What You'll Learn</h4>
-      <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
-        <li>Improve design skill and understanding design theory</li>
-        <li>Access real projects & case studies</li>
-        <li>Work with modern design tools</li>
-      </ul>
-    </div>
 
-    <!-- Material Includes -->
-    <div>
-      <h4 class="font-semibold mb-2 text-gray-900">Material Includes</h4>
-      <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
-        <li>12+ hours on-demand video</li>
-        <li>Full lifetime access</li>
-        <li>Access on mobile and TV</li>
-        <li>1 downloadable resource</li>
-      </ul>
-    </div>
 
-    <!-- Requirements -->
-    <div>
-      <h4 class="font-semibold mb-2 text-gray-900">Requirements</h4>
-      <p class="text-sm text-gray-700">No prior experience required.</p>
-    </div>
 
-    <!-- Tags -->
-    <div>
-      <h4 class="font-semibold mb-2 text-gray-900">Tags</h4>
-      <div class="flex gap-2 flex-wrap">
-        <span class="badge badge-outline">UX</span>
-        <span class="badge badge-outline">Design</span>
-        <span class="badge badge-outline">User Interface</span>
-      </div>
-    </div>
-
-    <!-- Audience -->
-    <div>
-      <h4 class="font-semibold mb-2 text-gray-900">Audience</h4>
-      <p class="text-sm text-gray-700">You'll also be enrolled in this Specialization.</p>
-    </div>
   </div>
 </aside>
 

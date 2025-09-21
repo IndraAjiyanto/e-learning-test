@@ -13,6 +13,9 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
+  confirm_password: string;
+
+  @IsString()
   profile: string
   
   @IsOptional()

@@ -3,12 +3,15 @@ import { CreateKelassDto } from './dto/create-kelass.dto';
 import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { Minggu } from 'src/entities/minggu.entity';
 import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
+import { JenisKelas } from 'src/entities/jenis_kelas.entity';
+import { Nilai } from 'src/entities/nilai.entity';
+import { Quiz } from 'src/entities/quiz.entity';
 
 @Injectable()
 export class KelassService {
@@ -21,10 +24,16 @@ export class KelassService {
         private readonly pertemuanRepository: Repository<Pertemuan>,
         @InjectRepository(Kategori)
         private readonly kategoriRepository: Repository<Kategori>,
+        @InjectRepository(JenisKelas)
+        private readonly jenisKelasRepository: Repository<JenisKelas>,
         @InjectRepository(Minggu)
         private readonly mingguRepository: Repository<Minggu>,
         @InjectRepository(ProgresMinggu)
         private readonly progresMingguRepository: Repository<ProgresMinggu>,
+        @InjectRepository(Nilai)
+        private readonly nilaiRepository: Repository<Nilai>,
+        @InjectRepository(Quiz)
+        private readonly quizRepository: Repository<Quiz>,
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -32,9 +41,14 @@ export class KelassService {
     if(!kategori){
       throw new NotFoundException('kategori ini tidak ada')
     }
+    const jenis_kelas = await this.jenisKelasRepository.findOne({where: {id: createKelassDto.jenis_kelasId}})
+        if(!jenis_kelas){
+      throw new NotFoundException('jenis_kelas ini tidak ada')
+    }
     const kelas = await this.kelasRepository.create({
       ...createKelassDto,
       kategori: kategori,
+      jenis_kelas: jenis_kelas
     })
     return await this.kelasRepository.save(kelas)
   }
@@ -113,6 +127,7 @@ async findMinggu(kelasId: number, userId: number) {
       'progres_minggu.userId = :userId',
       { userId }
     )
+    .leftJoinAndSelect('minggu.kelas', 'kelas')
     .leftJoinAndSelect('minggu.quiz', 'quiz')
     .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
     .leftJoinAndSelect('pertemuan.absen', 'absen')
@@ -121,11 +136,19 @@ async findMinggu(kelasId: number, userId: number) {
     .leftJoinAndSelect('quiz.pertanyaan', 'pertanyaan')
     .leftJoinAndSelect('quiz.nilai', 'nilai')
     .leftJoinAndSelect('pertanyaan.jawaban', 'jawaban')
-    .leftJoinAndSelect('pertanyaan.jawaban_user', 'jawaban_user', 'jawaban_user.userId = :userId', { userId }) // <- filter jawaban user juga
+    .leftJoinAndSelect(
+      'pertanyaan.jawaban_user',
+      'jawaban_user',
+      'jawaban_user.userId = :userId',
+      { userId }
+    )
     .leftJoinAndSelect('jawaban_user.user', 'jawaban_user_user')
     .where('minggu.kelasId = :kelasId', { kelasId })
+    .orderBy('minggu.minggu_ke', 'ASC')
+    .addOrderBy('pertemuan.pertemuan_ke', 'ASC')
     .getMany();
 }
+
 
 
 async findMingguClass(  kelasId: number) {
@@ -136,7 +159,7 @@ async findMingguClass(  kelasId: number) {
   return await this.mingguRepository.find({
     where: {
       kelas: { id: kelasId }
-    },
+    }, order: {minggu_ke: 'ASC'},
     relations: ['quiz', 'pertemuan', 'pertemuan.absen', 'pertemuan.tugas', 'quiz.pertanyaan','quiz.nilai', 'quiz.pertanyaan.jawaban', 'quiz.pertanyaan.jawaban_user', 'quiz.pertanyaan.jawaban_user.user']
   });
 }
@@ -145,31 +168,85 @@ async createProgresMinggu(userId: number, mingguList: Minggu[]) {
   const progres: ProgresMinggu[] = [];
 
   for (const m of mingguList) {
-    const existingProgres = await this.progresMingguRepository.findOne({where: {minggu: {id: m.id}, user: {id: userId}}})
-    if(existingProgres){
+    const existingProgres = await this.progresMingguRepository.findOne({
+      where: { minggu: { id: m.id }, user: { id: userId } }
+    });
 
-    }else if(m.minggu_ke === 1){
-      const data = await this.progresMingguRepository.create({
-  user: { id: userId },
-  minggu: { id: m.id },
-  quiz: true
-});
+    if (existingProgres) {
+      // Pastikan minggu ini punya quiz
+      if (!m.quiz || m.quiz.length === 0) {
+        continue;
+      }
 
-    progres.push(data);
-    }else{
-            const data = await this.progresMingguRepository.create({
-  user: { id: userId },
-  minggu: { id: m.id },
-  quiz: false
-});
+      
+      const nilai = await this.nilaiRepository.find({
+        where: { user: { id: userId }, quiz: { id: m.quiz[0].id } }
+      });
 
-    progres.push(data);
+      const quiz = await this.quizRepository.findOne({
+        where: { minggu: { id: m.id } }
+      });
+
+      if (!quiz) {
+        continue;
+      }
+
+      if (!nilai.length) {
+        continue;
+      }
+
+      // Cek apakah ada nilai yang lulus
+      const hasPassingScore = nilai.some(n => n.nilai >= quiz.nilai_minimal);
+      
+      // Cari minggu selanjutnya
+      const mingguSelanjutnya = await this.mingguRepository.findOne({
+        where: { kelas: { id: m.kelas.id }, minggu_ke: m.minggu_ke + 1 }
+      });
+
+      if (mingguSelanjutnya) {
+        // Cek apakah sudah ada progres untuk minggu selanjutnya
+        const existingNextProgres = await this.progresMingguRepository.findOne({
+          where: { user: { id: userId }, minggu: { id: mingguSelanjutnya.id } }
+        });
+
+        // Save progres untuk minggu selanjutnya
+        const data = await this.progresMingguRepository.save({
+          id: existingNextProgres?.id, // Jika ada ID = update, jika null = insert
+          user: { id: userId },
+          minggu: { id: mingguSelanjutnya.id },
+          quiz: hasPassingScore // true jika lulus, false jika tidak
+        });
+
+        progres.push(data);
+      }
+
+    } else {
+      // Belum ada progres untuk minggu ini
+      if (m.minggu_ke === 1) {
+        // Minggu pertama - langsung bisa akses quiz
+        const data = this.progresMingguRepository.create({
+          user: { id: userId },
+          minggu: { id: m.id },
+          quiz: true
+        });
+        progres.push(data);
+        
+      } else {
+        // Minggu selain pertama - belum bisa akses quiz
+        const data = this.progresMingguRepository.create({
+          user: { id: userId },
+          minggu: { id: m.id },
+          quiz: false
+        });
+        progres.push(data);
+      }
     }
-
   }
 
+  // Save semua progres yang belum di-save
   return await this.progresMingguRepository.save(progres);
 }
+
 
 async findMingguTerakhir(kelasId: number){
   const minggu = await this.mingguRepository.find({where: {kelas: {id: kelasId}, akhir: true}})
@@ -186,6 +263,9 @@ async findUser(){
 
 async findKategori(){
   return await this.kategoriRepository.find()
+}
+async findJenisKelas(){
+  return await this.jenisKelasRepository.find()
 }
 
 
@@ -241,10 +321,25 @@ async findKategori(){
     if (!kategori) {
       throw new NotFoundException(`Kategori dengan ID ${updateKelassDto.kategoriId} tidak ditemukan`);
     }
+
     
     kelas.kategori = kategori;
   }
-  const { kategoriId, ...otherProperties } = updateKelassDto;
+  
+  if (updateKelassDto.jenis_kelasId) {
+    const jenis_kelas = await this.jenisKelasRepository.findOne({
+      where: { id: updateKelassDto.jenis_kelasId }
+    });
+
+      if (!jenis_kelas) {
+      throw new NotFoundException(`Jenis kelas dengan ID ${updateKelassDto.jenis_kelasId} tidak ditemukan`);
+    }
+
+    kelas.jenis_kelas = jenis_kelas
+
+  }
+
+  const { jenis_kelasId, kategoriId, ...otherProperties } = updateKelassDto;
   Object.assign(kelas, otherProperties);
 
   return await this.kelasRepository.save(kelas);

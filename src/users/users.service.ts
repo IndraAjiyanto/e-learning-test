@@ -22,8 +22,15 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    const cekEmail = await this.userRepository.findOne({where: {email: createUserDto.email}})
+    if(!cekEmail){
     const user = await this.userRepository.create(createUserDto)
     return await this.userRepository.save(user)
+    }else{
+      throw new NotFoundException()
+
+    }
+
   }
 
     async findByEmail(email: string): Promise<User | null>{

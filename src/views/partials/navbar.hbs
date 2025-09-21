@@ -64,7 +64,7 @@
           </button>
           <div x-show="open" class="absolute right-0 w-48 mt-2 rounded-md shadow-lg z-30">
             <div class="px-2 py-2 bg-white rounded-md shadow">
-              <a href="/pembayarans/riwayat/{{user.id}}" class="block px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg">Riwayat Pembayaran</a>
+              <a href="/pembayarans/riwayat/{{user.id}}" class="block px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg">History payment</a>
               <a href="/users/profile" class="block px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg">Profile</a>
               <a href="/logout" class="block px-4 py-2 mt-2 text-sm font-semibold text-red-400 hover:bg-gray-200 rounded-lg">Log out</a>
             </div>
@@ -91,6 +91,15 @@
         >Class</a>
 
         <a 
+          href="/jenis-kelas"
+          @click="setActive('/jenis-kelas')"
+          :class="active === '/jenis-kelas' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >Class Type</a>
+
+        <a 
           href="/pembayarans"
           @click="setActive('/pembayarans')"
           :class="active === '/pembayarans' 
@@ -98,6 +107,15 @@
             : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
           class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
         >Payment</a>
+
+                <a 
+          href="/pertanyaan-umum"
+          @click="setActive('/pertanyaan-umum')"
+          :class="active === '/pertanyaan-umum' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >FAQ</a>
 
         <!-- Dropdown Super Admin -->
         <div @click.away="open = false" class="relative" x-data="{ open: false }">
@@ -183,7 +201,7 @@
                               </div>
                               <div class="ml-3">
                                 <p class="font-semibold text-gray-900">Bootcamp</p>
-                                <p class="text-sm text-gray-900">Easy customization</p>
+                                {{!-- <p class="text-sm text-gray-900">Easy customization</p> --}}
                               </div>
                             </a>
 
@@ -193,7 +211,7 @@
                               </div>
                               <div class="ml-3">
                                 <p class="font-semibold text-gray-900">Course</p>
-                                <p class="text-sm text-gray-900">Check your latest comments</p>
+                                {{!-- <p class="text-sm text-gray-900">Check your latest comments</p> --}}
                               </div>
                             </a>
 
@@ -203,7 +221,7 @@
                               </div>
                               <div class="ml-3">
                                 <p class="font-semibold text-gray-900">Free Class</p>
-                                <p class="text-sm text-gray-900">Take a look at your statistics</p>
+                                {{!-- <p class="text-sm text-gray-900">Take a look at your statistics</p> --}}
                               </div>
                             </a>
                           </div>

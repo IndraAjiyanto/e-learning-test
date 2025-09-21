@@ -5,7 +5,7 @@
     <form method="POST" action="/minggu/{{id}}" class="space-y-6">
 
       <div>
-        <label for="keterangan" class="block text-sm font-semibold text-gray-700 mb-1">Keterangan</label>
+        <label for="keterangan" class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
         <textarea id="keterangan" name="keterangan" rows="3"
           class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
       </div>
@@ -21,7 +21,7 @@
          class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
   </label>
 
-  <span class="text-sm text-gray-700">Klik toggle jika pertemuan terakhir</span>
+  <span class="text-sm text-gray-700">Click toggle if it’s the last week</span>
 
   <input type="hidden" name="akhir_check" :value="launch">
 </div>

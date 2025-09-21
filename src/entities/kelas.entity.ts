@@ -1,10 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany, ManyToOne} from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany, ManyToOne, OneToOne, JoinColumn} from "typeorm";
 import { User } from "./user.entity";
 import { Portfolio } from "./portfolio.entity";
 import { Kategori } from "./kategori.entity";
 import { Pembayaran } from "./pembayaran.entity";
 import { Logbook } from "./logbook.entity";
 import { Minggu } from "./minggu.entity";
+import { Alumni } from "./alumni.entity";
+import { Sertifikat } from "./sertifikat.entity";
+import { JenisKelas } from "./jenis_kelas.entity";
 
 @Entity()
 export class Kelas {
@@ -56,6 +59,16 @@ user: User[];
     @OneToMany(() => Logbook, (logbook) => logbook.kelas, { cascade: true, onDelete : 'CASCADE' })
     logbook: Logbook[];
 
-          @ManyToOne(() => Kategori, (kategori) => kategori.kelas)
+          @ManyToOne(() => Kategori, (kategori) => kategori.kelas, {onDelete : 'CASCADE'})
           kategori: Kategori
+
+          @ManyToOne(() => JenisKelas, (jenis_kelas) => jenis_kelas.kelas, {onDelete : 'CASCADE'})
+          @JoinColumn({ name: "jenis_kelasId" }) 
+          jenis_kelas: JenisKelas
+    
+        @OneToMany(() => Alumni, (alumni) => alumni.kelas, {cascade: true, onDelete : 'CASCADE'})
+        alumni: Alumni[]
+
+        @OneToMany(() => Sertifikat, (sertifikat) => sertifikat.kelas, {cascade: true, onDelete : 'CASCADE'})
+        sertifikat: Sertifikat[]
 }

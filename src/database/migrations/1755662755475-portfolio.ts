@@ -11,10 +11,24 @@ export class Portfolio1755662755475 implements MigrationInterface {
                 isPrimary: true,
                 isGenerated: true,
                 generationStrategy: 'increment'
-            },{
-                name: 'sertif',
+            },
+            {
+                name: 'gambar',
+                type: 'jsonb'
+            },
+            {
+                name: 'judul',
                 type: 'varchar'
-            },{
+            },
+            {
+                name: 'deskripsi',
+                type: 'varchar'
+            },
+                        {
+                name: 'teknologi',
+                type: 'jsonb',
+            },
+            {
                 name: 'userId',
                 type: 'int'
             },{

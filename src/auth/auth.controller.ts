@@ -3,22 +3,20 @@ import {
   Get,
   Post,
   Request,
-  UseGuards,
   Res,
   Req,
   Param,
   Body,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
-import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { AuthService } from './auth.service';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Controller()
 export class AuthController {
   constructor (private readonly authService: AuthService){}
   @Get('login')
-  async getLogin(@Res() res: Response, @Req() req:any) {
+  async getLogin(@Res() res: Response, @Req() req:Request) {
     res.render('login');
   }
 
@@ -35,6 +33,24 @@ export class AuthController {
   @Get('coba')
   async coba(@Res() res: Response,){
     res.render('user/dashboardlain')
+  }
+
+  @Get('register')
+  async regis(@Res() res: Response){
+    res.render('regis')
+  }
+
+  @Post('register')
+  async createAcount(@Body() createUserDto: CreateUserDto, @Req() req:any, @Res() res:Response){
+    try {
+      await this.authService.createAcount(createUserDto)
+      req.flash('success', 'success regis')
+      res.redirect('/login')
+    } catch (error) {
+      console.log(error)
+      req.flash('error', 'failed to regis')
+            res.redirect('/login')
+    }
   }
 
 @Post('login')

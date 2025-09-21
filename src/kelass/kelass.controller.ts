@@ -51,7 +51,8 @@ export class KelassController {
   @Get("/create")
   async formCreate(@Res() res: Response, @Req() req:Request){
     const kategori = await this.kelassService.findKategori()
-    return res.render('admin/kelas/create',{user: req.user, kategori});
+    const jenis_kelas = await this.kelassService.findJenisKelas()
+    return res.render('admin/kelas/create',{user: req.user, kategori, jenis_kelas});
   }
 
   @Roles('admin')
@@ -69,7 +70,8 @@ export class KelassController {
   async formEdit(@Res() res: Response, @Param('kelasId') kelasId: number, @Req() req: Request){
     const kelas = await this.kelassService.findOne(kelasId)
     const kategori = await this.kelassService.findKategori()
-    return res.render('admin/kelas/edit', {user: req.user, kelas, kategori});
+    const jenis_kelas = await this.kelassService.findJenisKelas()
+    return res.render('admin/kelas/edit', {user: req.user, kelas, kategori, jenis_kelas});
   }
 
   @Roles('admin')

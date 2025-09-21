@@ -5,17 +5,20 @@
   <div class="w-full max-w-4xl flex items-center justify-center">
     <div class="w-full max-w-md mx-auto bg-transparent rounded-2xl p-8 shadow-lg">
       
+      <!-- Logo -->
       <div class="flex items-center justify-center mb-6">
         <img src="/public/image/logo.png" alt="Logo" class="h-16 w-auto" />
       </div>
 
+      <!-- Title -->
       <div class="text-center mb-6">
         <h1 class="text-2xl font-bold text-white mt-2">E-Learning Platform</h1>
         <p class="text-gray-400 text-xs mt-2 whitespace-nowrap">
-          Akses materi pembelajaran dan ikuti kelas interaktif secara online.
+          Access learning materials and join interactive online classes.
         </p>
       </div>
 
+      <!-- Error Alert -->
       {{#if error}}
         <div role="alert" class="mb-6 p-4 rounded-xl bg-red-900/30 border border-red-500/40 backdrop-blur-sm">
           <div class="flex items-start gap-3">
@@ -36,8 +39,10 @@
         </div>
       {{/if}}
 
+      <!-- Login Form -->
       <form action="/login" method="post" class="space-y-6">
         
+        <!-- Email -->
         <div>
           <label class="block text-gray-200 mb-2">Email</label>
           <input 
@@ -49,6 +54,7 @@
           />
         </div>
 
+        <!-- Password -->
         <div x-data="{ show: false }">
           <label class="block text-gray-200 mb-2">Password</label>
           <div class="relative">
@@ -92,12 +98,21 @@
           </div>
         </div>
 
+        <!-- Submit Button -->
         <button 
           type="submit"
           class="w-full py-3 rounded-lg bg-gray-900 hover:bg-gray-700 text-white font-semibold transition duration-300">
           Login
         </button>
       </form>
+
+      <!-- Register Link -->
+      <div class="text-center mt-4">
+        <p class="text-sm text-gray-400">
+          Don’t have an account?
+          <a href="/register" class="text-indigo-400 hover:text-indigo-300 font-medium">Sign up now</a>
+        </p>
+      </div>
     </div>
   </div>
 </div>

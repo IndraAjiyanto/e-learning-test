@@ -50,6 +50,10 @@ export class Kelas1753670172780 implements MigrationInterface {
                 type: 'int'
             },
             {
+                name: 'jenis_kelasId',
+                type: 'int',
+            },
+            {
                 name: 'createdAt',
                 type: 'timestamp',
                 default: 'CURRENT_TIMESTAMP',
@@ -64,6 +68,12 @@ export class Kelas1753670172780 implements MigrationInterface {
     await queryRunner.createForeignKey('kelas', new TableForeignKey({
             columnNames: ['kategoriId'],
             referencedTableName: 'kategori',
+            referencedColumnNames: ['id'],
+            onDelete: 'RESTRICT',
+        }));
+    await queryRunner.createForeignKey('kelas', new TableForeignKey({
+            columnNames: ['jenis_kelasId'],
+            referencedTableName: 'jenis_kelas',
             referencedColumnNames: ['id'],
             onDelete: 'RESTRICT',
         }));

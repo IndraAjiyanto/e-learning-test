@@ -119,7 +119,7 @@ async progresMinggu(mingguId: number, userId: number) {
   }
   const minggu = await this.mingguRepository.findOne({where: {minggu_ke: minggu_sebelum.minggu_ke + 1, kelas: {id: minggu_sebelum.kelas.id}}})
   if(!minggu){
-    throw new NotFoundException('minggu not found')
+    return
   }else if(minggu.akhir === true){
     return 
   }

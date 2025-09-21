@@ -39,12 +39,13 @@ export class MingguService {
 
     async noPertemuan(kelasId: number){
     const mingguTerakhir = await this.findMingguKelas(kelasId)
+    console.log(mingguTerakhir)
     const mingguBaru = mingguTerakhir + 1
     return mingguBaru
   }
 
     async findMingguKelas(kelasId: number){
-    const minggu = await this.mingguRepository.findOne({where: {kelas: {id: kelasId}}, order: {createdAt: 'DESC'}})
+    const minggu = await this.mingguRepository.findOne({where: {kelas: {id: kelasId}}, order: {minggu_ke: 'DESC'}})
     if(!minggu){
       return 0
     }
@@ -56,7 +57,11 @@ export class MingguService {
   }
 
   async findOne(mingguId: number) {
-    return await this.mingguRepository.findOne({where: {id: mingguId}, relations: ['pertemuan', 'quiz', 'kelas']})
+    return await this.mingguRepository.findOne({where: {id: mingguId}, relations: ['pertemuan', 'quiz', 'kelas'], order: {
+      pertemuan: {
+        pertemuan_ke: 'ASC', 
+      },
+    },})
   }
 
   async update(id: number, updateMingguDto: UpdateMingguDto) {

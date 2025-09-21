@@ -1,41 +1,67 @@
-<section id="courses" class="py-16 pt-28 bg-gray-100" x-data="{ search: '' }">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">My Courses</h2>
-        
-        <div class="max-w-md mx-auto mb-12">
-            <div class="relative">
-                <input type="text" 
-                       x-model="search"
-                       placeholder="Cari kelas..." 
-                       class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:outline-none">
-                <button class="absolute right-0 top-0 bottom-0 bg-gray-900 text-white px-4 rounded-r-lg hover:bg-gray-700 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </button>
-            </div>
+<section class="pt-28 py-16 px-6 lg:px-20 bg-gray-50" x-data="{ search: '' }">
+    <!-- Title -->
+    <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            My Learning Journey
+        </h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Continue your progress and master new skills with our comprehensive courses designed for your career growth.
+        </p>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="max-w-md mb-12">
+        <div class="relative">
+            <input type="text" 
+                   x-model="search"
+                   placeholder="Search class..." 
+                   class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:outline-none bg-white shadow-sm">
+            <button class="absolute right-0 top-0 bottom-0 bg-gray-900 text-white px-4 rounded-r-lg hover:bg-gray-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </button>
         </div>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {{#each kelas}}
-            <div 
-                class="bg-white rounded-lg shadow-md overflow-hidden transition transform hover:scale-105"
-                x-data="{ text: '{{nama_kelas}} {{deskripsi}}'.toLowerCase() }"
-                x-show="text.includes(search.toLowerCase())"
-            >
-                <img src="{{gambar}}" 
-                     alt="{{nama_kelas}}" 
-                     class="w-full h-48 object-cover">
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold mb-3 text-gray-800">{{nama_kelas}}</h3>
-                    <p class="text-gray-600 mb-4 text-sm">{{deskripsi}}</p>
-                    <a href="/kelass/{{id}}" 
-                       class="inline-block w-full text-center bg-gray-900 text-white py-2 px-4 rounded transform hover:scale-105 hover:bg-gray-700 transition">
-                        Lihat Detail
-                    </a>
+    <!-- Course Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {{#each kelas}}
+        <div 
+            x-show="'{{nama_kelas}}'.toLowerCase().includes(search.toLowerCase())"
+            class="card bg-white shadow-lg border rounded-xl overflow-hidden transition-all duration-300"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100">
+            
+            <figure class="px-6 pt-6">
+                <img src="{{gambar}}" alt="{{nama_kelas}}" class="rounded-xl h-40 w-full object-cover">
+            </figure>
+
+            <div class="card-body">
+                <div class="flex gap-2 mb-2">
+                    <span class="badge badge-outline px-2 py-1 text-xs">{{kategori.nama_kategori}}</span>
+                </div>
+
+                <!-- Nama Kelas -->
+                <h2 class="card-title text-gray-900 text-lg">{{nama_kelas}}</h2>
+
+                <!-- Harga -->
+                <p class="text-base font-semibold text-gray-900">
+                    {{formatRupiah harga}}
+                </p>
+
+                <!-- Deskripsi -->
+                <p class="text-sm text-gray-600 line-clamp-2">
+                    {{deskripsi}}
+                </p>
+
+                <!-- Tombol -->
+                <div class="card-actions justify-end mt-4">
+                    <a href="/kelass/{{id}}" class="btn btn-outline w-full hover:bg-gray-900 hover:text-white text-gray-900 transition-colors">View Class</a>
                 </div>
             </div>
-            {{/each}}
         </div>
+        {{/each}}
     </div>
 </section>

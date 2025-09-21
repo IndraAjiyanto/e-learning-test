@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
-import { CreateDashboardDto } from './dto/create-dashboard.dto';
-import { UpdateDashboardDto } from './dto/update-dashboard.dto';
 import { Request, Response } from 'express';
 
 @Controller('dashboard')
@@ -24,17 +22,17 @@ export class DashboardController {
     }
   }
 
-  @Get('portofolio')
+  @Get('portofoli')
   async portfolio(@Req() req: Request, @Res() res: Response) {
     res.render('portofolio', { user: req.user });
   }
 
-  @Get('alumni')
+  @Get('alumn')
   async alumni(@Req() req: Request, @Res() res: Response) {
     res.render('alumni', { user: req.user });
   }
 
-  @Get('about')
+  @Get('abou')
   async about(@Req() req: Request, @Res() res: Response) {
     res.render('tentang', { user: req.user });
   }
