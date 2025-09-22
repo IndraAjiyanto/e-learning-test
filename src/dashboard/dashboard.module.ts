@@ -3,9 +3,10 @@ import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
+import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Kelas])],
+    imports: [TypeOrmModule.forFeature([Kelas, PertanyaanUmum])],
   controllers: [DashboardController],
   providers: [DashboardService],
     exports: [DashboardService]

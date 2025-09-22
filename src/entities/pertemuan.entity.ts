@@ -5,7 +5,6 @@ import { Tugas } from "./tugas.entity";
 import { Minggu } from "./minggu.entity";
 import { ProgresPertemuan } from "./progres_pertemuan.entity";
 
-export type Metode = 'online' | 'offline';
 
 @Entity()
 export class Pertemuan{
@@ -27,8 +26,7 @@ export class Pertemuan{
     @Column()
     lokasi: string
 
-    @Column({ type: 'enum', enum: ['online' , 'offline'] })
-    metode: Metode
+
 
     @Column({type: 'time'})
     waktu_awal: string

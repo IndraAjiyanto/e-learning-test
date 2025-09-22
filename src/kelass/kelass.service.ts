@@ -12,6 +12,10 @@ import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Nilai } from 'src/entities/nilai.entity';
 import { Quiz } from 'src/entities/quiz.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { Absen } from 'src/entities/absen.entity';
+import { Tugas } from 'src/entities/tugas.entity';
+import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
 
 @Injectable()
 export class KelassService {
@@ -34,6 +38,12 @@ export class KelassService {
         private readonly nilaiRepository: Repository<Nilai>,
         @InjectRepository(Quiz)
         private readonly quizRepository: Repository<Quiz>,
+        @InjectRepository(Absen)
+        private readonly absenRepository: Repository<Absen>,
+        @InjectRepository(JawabanTugas)
+        private readonly jawabanTugasRepository: Repository<JawabanTugas>,
+        @InjectRepository(ProgresPertemuan)
+        private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -112,6 +122,10 @@ async findPertemuanAndPertanyaan(mingguId: number, userId: number) {
 
 }
 
+async findAbsen(mingguId: number, userId: number){
+
+}
+
 
 async findMinggu(kelasId: number, userId: number) {
   const kelas = await this.findOne(kelasId);
@@ -130,6 +144,7 @@ async findMinggu(kelasId: number, userId: number) {
     .leftJoinAndSelect('minggu.kelas', 'kelas')
     .leftJoinAndSelect('minggu.quiz', 'quiz')
     .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
+    .leftJoinAndSelect('pertemuan.progres_pertemuan', 'progres_pertemuan', 'progres_pertemuan.userId = :userId', {userId})
     .leftJoinAndSelect('pertemuan.absen', 'absen')
     .leftJoinAndSelect('absen.user', 'user')
     .leftJoinAndSelect('pertemuan.tugas', 'tugas')
@@ -149,6 +164,77 @@ async findMinggu(kelasId: number, userId: number) {
     .getMany();
 }
 
+
+async createProgresPertemuan(userId: number, mingguList: Minggu[]) {
+  const progres: ProgresPertemuan[] = [];
+
+  for (const m of mingguList) {
+    for (const p of m.pertemuan) {
+      const existingProgres = await this.progresPertemuanRepository.findOne({
+        where: { pertemuan: { id: p.id }, user: { id: userId } }
+      });
+
+      if (existingProgres) {
+        // Sudah ada progres untuk pertemuan ini
+        // Cek apakah user sudah absen di pertemuan ini
+        const absen = await this.absenRepository.findOne({
+          where: { user: { id: userId }, pertemuan: { id: p.id } }
+        });
+
+        if (absen) {
+          // Sudah absen, cari pertemuan selanjutnya
+          const pertemuanSelanjutnya = await this.pertemuanRepository.findOne({
+            where: { pertemuan_ke: p.pertemuan_ke + 1, minggu: { id: m.id } }
+          });
+
+          if (pertemuanSelanjutnya) {
+            // Cek apakah sudah ada progres untuk pertemuan selanjutnya
+            const existingNextProgres = await this.progresPertemuanRepository.findOne({
+              where: { user: { id: userId }, pertemuan: { id: pertemuanSelanjutnya.id } }
+            });
+
+            // Save progres untuk pertemuan selanjutnya
+            const data = await this.progresPertemuanRepository.save({
+              id: existingNextProgres?.id, // Jika ada ID = update, jika null = insert
+              user: { id: userId },
+              pertemuan: { id: pertemuanSelanjutnya.id },
+              materi: true,
+              tugas: true
+            });
+
+            progres.push(data);
+          }
+        }
+
+      } else {
+        // Belum ada progres untuk pertemuan ini
+        if (p.pertemuan_ke === 1) {
+          // Pertemuan pertama - langsung bisa akses materi dan tugas
+          const data = this.progresPertemuanRepository.create({
+            user: { id: userId },
+            pertemuan: { id: p.id },
+            materi: true,
+            tugas: true
+          });
+          progres.push(data);
+          
+        } else {
+          // Pertemuan selain pertama - belum bisa akses materi dan tugas
+          const data = this.progresPertemuanRepository.create({
+            user: { id: userId },
+            pertemuan: { id: p.id },
+            materi: false,
+            tugas: false
+          });
+          progres.push(data);
+        }
+      }
+    }
+  }
+
+  // Save semua progres yang belum di-save
+  return await this.progresPertemuanRepository.save(progres);
+}
 
 
 async findMingguClass(  kelasId: number) {

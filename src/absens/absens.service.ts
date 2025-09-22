@@ -7,6 +7,7 @@ import { Not, Repository } from 'typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { User } from 'src/entities/user.entity';
 import { Kelas } from 'src/entities/kelas.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 
 @Injectable()
 export class AbsensService {
@@ -20,12 +21,15 @@ export class AbsensService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
+    @InjectRepository(ProgresPertemuan)
+    private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
+
     @InjectRepository(Kelas)
     private readonly kelasRepository: Repository<Kelas>
   ){}
 
   async create(CreateAbsenDto: CreateAbsenDto) {
-    const pertemuan = await this.pertemuanRepository.findOne({where: {id: CreateAbsenDto.pertemuanId}})
+    const pertemuan = await this.pertemuanRepository.findOne({where: {id: CreateAbsenDto.pertemuanId}, relations: ['minggu']})
     const user = await this.userRepository.findOne({where: {id: CreateAbsenDto.userId}})
     if(!pertemuan){
       throw new NotFoundException('pertemuan ini tidak ada')
@@ -38,6 +42,16 @@ export class AbsensService {
       pertemuan: pertemuan,
       user: user
     })
+    const pertemuan_selanjutnya = await this.pertemuanRepository.findOne({where: {pertemuan_ke: pertemuan?.pertemuan_ke + 1, minggu: {id: pertemuan.minggu.id}}})
+    if(pertemuan_selanjutnya){
+          await this.progresPertemuanRepository.create({
+      pertemuan: {id: pertemuan_selanjutnya.id},
+      user: {id: user.id},
+      materi: true,
+      tugas: true
+    })
+    }
+
     return await this.absenRepository.save(absen)
   }
 

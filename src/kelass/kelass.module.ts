@@ -15,9 +15,11 @@ import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Nilai } from 'src/entities/nilai.entity';
 import { Quiz } from 'src/entities/quiz.entity';
+import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori, Minggu, ProgresMinggu, JenisKelas, Nilai, Quiz]), PertanyaansModule, JawabanUsersModule, UsersModule],
+  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori, Minggu, ProgresMinggu, JenisKelas, Nilai, Quiz, JawabanTugas, ProgresPertemuan]), PertanyaansModule, JawabanUsersModule, UsersModule],
   controllers: [KelassController],
   providers: [KelassService],
   exports: [KelassService],

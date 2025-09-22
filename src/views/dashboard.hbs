@@ -417,25 +417,12 @@
             <h2 class="text-4xl font-bold text-center mb-12 text-gray-900">Frequently Asked Questions</h2>
             
             <div class="max-w-3xl mx-auto space-y-6">
+                {{#each pertanyaan_umum}}
                 <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Is this program suitable for beginners?</h3>
-                    <p class="text-gray-600">Yes! Our program is designed for all levels, from beginners to experienced professionals. Mentors will guide you from basics to advanced levels.</p>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{pertanyaan}}</h3>
+                    <p class="text-gray-600">{{jawaban}}</p>
                 </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Is there a certificate?</h3>
-                    <p class="text-gray-600">Every participant who completes the program will receive an official certificate from Kesatria Academy that can be used for portfolio and career advancement.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">How is the learning system?</h3>
-                    <p class="text-gray-600">Learning is conducted online with a combination of video lessons, live sessions with mentors, and real projects that can be used for your portfolio.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Is there job search assistance?</h3>
-                    <p class="text-gray-600">Yes, we have a job placement program that partners with various technology companies in Indonesia to help alumni find employment.</p>
-                </div>
+                {{/each}}
             </div>
         </div>
     </section>

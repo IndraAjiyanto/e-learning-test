@@ -4,16 +4,23 @@ import { UpdateDashboardDto } from './dto/update-dashboard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Repository } from 'typeorm';
+import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 
 @Injectable()
 export class DashboardService {
   constructor(
     @InjectRepository(Kelas)
-        private readonly kelasRepository: Repository<Kelas>
+        private readonly kelasRepository: Repository<Kelas>,
+    @InjectRepository(PertanyaanUmum)
+        private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>
   ) {}
 
   async findAllKelas(){
     return await this.kelasRepository.find({where: {launch: true}, order: {id: 'DESC'}, relations: ['kategori']});
+  }
+
+  async findFAQ(){
+    return await this.pertanyaanUmumRepository.find()
   }
   
   create(createDashboardDto: CreateDashboardDto) {

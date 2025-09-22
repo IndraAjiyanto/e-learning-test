@@ -1,6 +1,5 @@
 import { Transform } from 'class-transformer';
 import { IsString, IsDateString, IsInt, IsBooleanString, IsOptional, IsEnum } from 'class-validator';
-import { Metode } from 'src/entities/pertemuan.entity';
 
 export class CreatePertemuanDto {
   @IsString()
@@ -9,8 +8,7 @@ export class CreatePertemuanDto {
   @IsString()
   lokasi: string;
 
-      @IsEnum(['online' , 'offline'])
-      metode: Metode;
+
 
   @IsInt()
   pertemuan_ke: number;

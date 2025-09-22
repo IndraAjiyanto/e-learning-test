@@ -45,6 +45,7 @@
           <!-- Sessions -->
           <div class="space-y-4">
             {{#each this.pertemuan}}
+            {{#if this.progres_pertemuan.[0].materi}}
             <div x-data="{ open: false }" class="border rounded-xl shadow bg-white overflow-hidden">
               <!-- Toggle Session -->
               <button 
@@ -131,6 +132,9 @@
                 {{/if}}
               </div>
             </div>
+            {{else}}
+            selesaikan pertemuan sebelumnya terlebih dahulu
+            {{/if}}
             {{/each}}
           </div>
 

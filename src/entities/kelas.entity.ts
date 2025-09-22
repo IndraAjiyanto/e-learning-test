@@ -9,6 +9,9 @@ import { Alumni } from "./alumni.entity";
 import { Sertifikat } from "./sertifikat.entity";
 import { JenisKelas } from "./jenis_kelas.entity";
 
+export type Metode = 'online' | 'offline';
+
+
 @Entity()
 export class Kelas {
     @PrimaryGeneratedColumn()
@@ -26,6 +29,18 @@ export class Kelas {
     @Column()
     harga: number;
 
+    @Column()
+    promo: number;
+
+        @Column()
+    lokasi: string
+
+        @Column({ type: 'enum', enum: ['online' , 'offline'] })
+    metode: Metode
+
+    @Column("jsonb")
+    kriteria: string[]
+
 @Column({ default: false })
 launch: boolean;
 
@@ -37,6 +52,9 @@ launch: boolean;
 
     @Column("jsonb")
     target_pembelajaran: string[]
+
+    @Column()
+    kuota: number
 
     @CreateDateColumn()
     createdAt: Date;

@@ -25,6 +25,7 @@ export class KelassController {
         req.flash('success', 'class successfully created')
         res.redirect('/kelass');
     } catch (error) {
+      console.log(error)
         req.flash('error', 'class failed created')
         res.redirect('/kelass');
     }
@@ -102,6 +103,7 @@ export class KelassController {
     if (isUserInKelas) {
       const minggu = await this.kelassService.findMinggu(id, req.user.id);
       await this.kelassService.createProgresMinggu(req.user.id, minggu)
+      await this.kelassService.createProgresPertemuan(req.user.id, minggu)
     res.render('kelas/detail', { user: req.user, kelas, minggu });
   } else {
     res.render('kelas/Bdetail', {user: req.user, kelas, kelass});

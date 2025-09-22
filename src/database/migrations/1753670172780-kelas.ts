@@ -41,10 +41,31 @@ export class Kelas1753670172780 implements MigrationInterface {
                 name: 'deskripsi',
                 type: 'varchar'
             },
+                            {
+                    name: 'metode',
+                    type: 'enum',
+                    enum: ['online', 'offline']
+                },
+                {
+                    name: 'kriteria',
+                    type: 'jsonb'
+                },
+                {
+                    name: 'promo',
+                    type: 'int'
+                },
+                {
+                    name: 'kuota',
+                    type: 'int'
+                },
             {
                 name: 'gambar',
                 type: 'varchar'
             },
+                            {
+                    name: 'lokasi',
+                    type: 'varchar'
+                },
             {
                 name: 'kategoriId',
                 type: 'int'

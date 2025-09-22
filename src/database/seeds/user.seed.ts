@@ -4,6 +4,8 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
 import { AppModule } from 'src/app.module';
 import { Kategori } from 'src/entities/kategori.entity';
+import { Kelas } from 'src/entities/kelas.entity';
+import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
@@ -11,6 +13,8 @@ async function bootstrap() {
 
   const userRepository = dataSource.getRepository(User);
   const kategoriRepository = dataSource.getRepository(Kategori);
+  const kelassRepository = dataSource.getRepository(Kelas);
+  const jenisKelasRepository = dataSource.getRepository(JenisKelas);
 
   const hashedPassword = await bcrypt.hash('12345678', 10);
 
@@ -49,6 +53,33 @@ async function bootstrap() {
       nama_kategori: 'bootcamp'
     }
   ]);
+
+  await jenisKelasRepository.save([
+    {
+      nama_jenis_kelas: 'web development'
+    }
+  ])
+
+await kelassRepository.save([
+  {
+    nama_kelas: 'Full Stack Developer',
+    deskripsi: 'belajar menjadi full stack developer',
+    gambar: 'logo.png',
+    kuota: 10 ,
+    harga: 1000000,
+    promo: 5000000,
+    lokasi: 'kantor wiratek',
+    metode: 'offline',
+    kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
+    launch: false,
+    teknologi: ['nest js', 'react js'],
+    materi: ['javascript', 'css'],
+    target_pembelajaran: ['paham alur nest js', 'mahir di bidang full stack developer'],
+    jenis_kelas: {id:  1},
+    kategori: {id: 1}
+  }
+])
+
 
   await app.close();
 }

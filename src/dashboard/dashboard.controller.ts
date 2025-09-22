@@ -9,16 +9,17 @@ export class DashboardController {
     @Get('')
   async getProtected(@Req() req: Request, @Res() res: Response) {
     const kelas =  await this.dashboardService.findAllKelas();
+    const pertanyaan_umum = await this.dashboardService.findFAQ();
     if(req.user){
     if(req.user.role === "super_admin"){
       res.redirect('/users');
     } else if(req.user.role === "admin"){
       res.redirect('/kelass');
     }else if(req.user.role === "user"){
-      res.render('dashboard', { user: req.user, kelas });
+      res.render('dashboard', { user: req.user, kelas, pertanyaan_umum });
     }
     }else{
-      res.render('dashboard', { user: req.user, kelas });
+      res.render('dashboard', { user: req.user, kelas, pertanyaan_umum });
     }
   }
 
