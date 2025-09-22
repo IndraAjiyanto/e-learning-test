@@ -1,0 +1,102 @@
+<div class="max-w-6xl mx-auto px-6 py-10 pt-28" 
+     x-data="alumniTable({ alumni: {{json alumni}} })">
+  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Alumni</h2>
+
+    <div class="flex items-center gap-3">
+      <div class="relative w-full md:w-64">
+        <input 
+          type="text" 
+          placeholder="Search alumni..." 
+          x-model="searchInput"
+          @input="search = searchInput; pageNumber=0"
+          class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
+        />
+        <button 
+          @click="search = searchInput; pageNumber=0"
+          class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900"
+        >
+          🔍
+        </button>
+      </div>
+
+      <a href="/alumni/formCreate" 
+         class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Create Alumni
+      </a>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Profile</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Pesan</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status Alumni</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Posisi Sekarang</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {{#each alumni}}
+        <tr class="hover:bg-gray-50 transition"
+            x-show="filteredAlumni.includes('{{id}}')">
+          <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">
+            <img src="{{profile}}" 
+                 alt="{{nama}}" 
+                 class="w-12 h-12 rounded-full object-cover border" />
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{nama}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{pesan}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{alumni}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{posisi_sekarang}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{kelas.nama_kelas}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
+            <a href="/alumni/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
+            <form action="/alumni/{{id}}?_method=DELETE" method="post" class="inline">
+              <button type="button" class="text-gray-600 font-medium hover:underline" onclick="confirmDelete(this)">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function alumniTable({ alumni }) {
+  return {
+    searchInput: "",
+    search: "",
+    pageNumber: 0,
+    size: 5,
+    alumni,
+    amount: 0,
+    get filteredAlumni() {
+      let filtered = this.alumni.filter(a =>
+        (`${a.nama} ${a.pesan} ${a.alumni} ${a.posisi_sekarang} ${a.kelasId}`).toLowerCase()
+          .includes(this.search.toLowerCase())
+      );
+
+      this.amount = filtered.length;
+
+      const start = this.pageNumber * this.size;
+      const end = start + this.size;
+      return filtered.slice(start, end).map(a => a.id.toString());
+    },
+    pages() { return Array.from({ length: this.pageCount() }); },
+    pageCount() { return Math.ceil(this.amount / this.size); },
+    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
+    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
+    viewPage(index) { this.pageNumber = index; },
+  }
+}
+</script>

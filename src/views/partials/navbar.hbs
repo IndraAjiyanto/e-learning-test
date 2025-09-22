@@ -117,6 +117,15 @@
           class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
         >FAQ</a>
 
+                <a 
+          href="/alumni"
+          @click="setActive('/alumni')"
+          :class="active === '/alumni' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >Alumni</a>
+
         <!-- Dropdown Super Admin -->
         <div @click.away="open = false" class="relative" x-data="{ open: false }">
           <button @click="open = !open" class="flex flex-row items-center w-full px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:w-auto md:inline md:mt-0 md:ml-4 hover:text-gray-900 hover:bg-gray-200">
