@@ -21,6 +21,7 @@ export class KelassController {
   async create(@Body() createKelassDto: CreateKelassDto, @Res() res: Response, @UploadedFile() gambar: Express.Multer.File, @Req() req:Request) {
     try {
         createKelassDto.gambar = gambar.path
+        createKelassDto.proses = 'proces'
         await this.kelassService.create(createKelassDto);
         req.flash('success', 'class successfully created')
         res.redirect('/kelass');
@@ -34,9 +35,23 @@ export class KelassController {
 
   @Roles('admin')
   @Post('tambahMurid/:kelasId')
-  async addUserToKelas( @Param('kelasId') kelasId: number, @Res() res:Response,   @Body('userId') userId: number, ) {
-  await this.kelassService.addUserToKelas(userId, kelasId);
-  res.redirect('/kelass')
+  async addUserToKelas( @Param('kelasId') kelasId: number, @Res() res:Response, @Req() req:Request ,@Body('userId') userId: number ) {
+    try {
+        await this.kelassService.addUserToKelas(userId, kelasId);
+        req.flash('success','user successfuly add to class')
+        res.redirect('/kelass')
+
+    } catch (error) {
+        req.flash('error','user failed add to class')
+        res.redirect('/kelass')
+    }
+
+  }
+
+  @Roles('super_admin')
+  @Get('/addPrice/:kelasId')
+  async addPrice(@Param('kelasId') kelasId: number, @Res() res:Response, @Req() req:Request){
+    res.render('super_admin/kelas/create', {user: req.user})
   }
 
   // Get all class
@@ -44,7 +59,7 @@ export class KelassController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const kelas = await this.kelassService.allKelas();
-    return res.render('admin/kelas/index',{user: req.user, kelas});
+    res.render('admin/kelas/index',{user: req.user, kelas});
   }
 
   // Form create class
@@ -88,6 +103,7 @@ export class KelassController {
   async detail(@Param('id') id: number, @Res() res: Response, @Req() req: Request) {
     const kelas = await this.kelassService.findOne(id);
     const kelass = await this.kelassService.allKelas();
+    const daftar = await this.kelassService.sumStudent(kelas.id)
   let isUserInKelas = false;
   if(!kelas){
     req.flash('info', 'not found class')
@@ -106,7 +122,7 @@ export class KelassController {
       await this.kelassService.createProgresPertemuan(req.user.id, minggu)
     res.render('kelas/detail', { user: req.user, kelas, minggu });
   } else {
-    res.render('kelas/Bdetail', {user: req.user, kelas, kelass});
+    res.render('kelas/Bdetail', {user: req.user, kelas, kelass, daftar});
   }
   }
   }
@@ -129,6 +145,9 @@ export class KelassController {
       await this.usersService.getPublicIdFromUrl(kelas.gambar);
       updateKelassDto.gambar = gambar.path; 
       } 
+      if(req.user?.role === "super_admin"){
+        updateKelassDto.proses = 'acc'
+      }
       await this.kelassService.update(kelasId, updateKelassDto);
       req.flash('success', 'Successfully update kelas')
       if(req.user?.role == 'super_admin'){
@@ -140,7 +159,6 @@ export class KelassController {
       req.flash('error', 'failed update kelas')
       res.redirect('/kelass');
     }
-
   }
 
   // toogle update

@@ -1,5 +1,5 @@
 import { IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsString } from "class-validator";
-import { Metode } from "src/entities/kelas.entity";
+import { Metode, Proses } from "src/entities/kelas.entity";
 
 export class CreateKelassDto {
     @IsString()
@@ -35,6 +35,9 @@ export class CreateKelassDto {
 
     @IsString()
     gambar: string
+
+        @IsEnum(['acc' , 'proces' , 'rejected'])
+        proses: Proses;
 
     @IsString()
     deskripsi: string

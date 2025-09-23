@@ -3,7 +3,7 @@ import { CreateKelassDto } from './dto/create-kelass.dto';
 import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { In, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Kategori } from 'src/entities/kategori.entity';
@@ -16,6 +16,7 @@ import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { Absen } from 'src/entities/absen.entity';
 import { Tugas } from 'src/entities/tugas.entity';
 import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
+import { Pembayaran } from 'src/entities/pembayaran.entity';
 
 @Injectable()
 export class KelassService {
@@ -44,6 +45,8 @@ export class KelassService {
         private readonly jawabanTugasRepository: Repository<JawabanTugas>,
         @InjectRepository(ProgresPertemuan)
         private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
+        @InjectRepository(Pembayaran)
+        private readonly pembayaranRepository: Repository<Pembayaran>,
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -73,7 +76,7 @@ export class KelassService {
       throw new NotFoundException('User tidak ada');
     }
   
-    const kelas = await this.kelasRepository.findOneBy({ id: kelasId });
+    const kelas = await this.kelasRepository.findOne({where: {id: kelasId}, relations: ['user'] });
     if (!kelas) {
       throw new NotFoundException('Kelas tidak ada');
     }
@@ -82,9 +85,24 @@ export class KelassService {
     if (sudahGabung) {
       throw new BadRequestException('User sudah tergabung dalam kelas');
     }
+
+    const daftar = await this.pembayaranRepository.find({where: { kelas: {id: kelasId}, proses: 'proces'}})
+    const gabung = await this.userRepository.find({where: {kelas: {id:kelasId}}})
+    const jumlah_user = daftar.length + gabung.length
+
+    if(jumlah_user >= kelas.kuota ){
+      throw new BadRequestException('Saat ini kelas sedang penuh');
+    }
   
     user.kelas.push(kelas);
     return await this.userRepository.save(user);
+  }
+
+  async sumStudent(kelasId: number){
+        const daftar = await this.pembayaranRepository.find({where: { kelas: {id: kelasId}, proses: 'proces'}})
+    const gabung = await this.userRepository.find({where: {kelas: {id:kelasId}}})
+    const jumlah_user = daftar.length + gabung.length
+    return jumlah_user
   }
 
 async findMyCourse(userId: number) {
@@ -145,6 +163,7 @@ async findMinggu(kelasId: number, userId: number) {
     .leftJoinAndSelect('minggu.quiz', 'quiz')
     .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
     .leftJoinAndSelect('pertemuan.progres_pertemuan', 'progres_pertemuan', 'progres_pertemuan.userId = :userId', {userId})
+    .leftJoinAndSelect('pertemuan.logbook', 'logbook','logbook.userId = :userId', {userId} )
     .leftJoinAndSelect('pertemuan.absen', 'absen')
     .leftJoinAndSelect('absen.user', 'user')
     .leftJoinAndSelect('pertemuan.tugas', 'tugas')

@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { User } from 'src/entities/user.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, Logbook, User])],
+  imports: [TypeOrmModule.forFeature([Kelas, Logbook, User, Pertemuan])],
   controllers: [LogbookController],
   providers: [LogbookService],
   exports: [LogbookService]

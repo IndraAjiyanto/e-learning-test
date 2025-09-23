@@ -70,6 +70,7 @@
     <!-- Card No Rekening -->
               {{#if (roles kelas.kategori.nama_kategori "free class")}}
               {{else}}
+              {{#if (check daftar kelas.kuota) }}
                           <div class="bank-card p-5 flex flex-col gap-4">
                     <p class="text-xs text-gray-900 mb-1">Account Number</p>
                     <div class="flex items-center justify-between">
@@ -107,6 +108,9 @@
                     <li>Class access will be granted</li>
                 </ol>
             </div>
+            {{else}}
+            class sedang penuh
+            {{/if}}
               {{/if}}
 
     <!-- Form Upload -->
@@ -119,6 +123,7 @@
       </button>
     </form>
           {{else if (roles kelas.kategori.nama_kategori "course")}}
+              {{#if (check daftar kelas.kuota) }}
            <form action="/pembayarans/{{user.id}}/{{kelas.id}}"  enctype="multipart/form-data" method="post" class="space-y-3">
       <label class="block text-sm font-medium text-gray-700">Upload Payment Proof</label>
       <input 
@@ -139,7 +144,9 @@
         Enroll Now
       </button>
     </form>
+    {{/if}}
           {{else if (roles kelas.kategori.nama_kategori "bootcamp")}}
+              {{#if (check daftar kelas.kuota) }}
                      <form action="/pembayarans/{{user.id}}/{{kelas.id}}"  enctype="multipart/form-data" method="post" class="space-y-3">
       <label class="block text-sm font-medium text-gray-700">Upload Bukti Transfer</label>
       <input 
@@ -160,6 +167,7 @@
         Enroll Now
       </button>
     </form>
+    {{/if}}
           {{/if }}
       {{else}}
 

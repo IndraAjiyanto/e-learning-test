@@ -2,7 +2,7 @@
   <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl text-gray-900 font-semibold mb-6">Log Book Form</h2>
 
-    <form action="/logbook" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form action="/logbook/{{pertemuanId}}" method="POST" enctype="multipart/form-data" class="space-y-6">
 
       <div>
         <label for="kegiatan" class="block text-sm font-semibold text-gray-700 mb-1">Activity</label>
@@ -60,7 +60,7 @@
           class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
           Add Log Book
         </button>
-        <a href="/kelass/"
+        <a href="/kelass/{{kelasId}}"
           class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
           Cancel
         </a>

@@ -1,6 +1,8 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./user.entity";
-import { Kelas } from "./kelas.entity";
+import { Pertemuan } from "./pertemuan.entity";
+
+export type Proses = 'acc' | 'proces' | 'rejected';
 
 @Entity()
 export class Logbook {
@@ -16,6 +18,9 @@ export class Logbook {
     @Column()
     dokumentasi: string
 
+            @Column({ type: 'enum', enum: ['acc' , 'proces' , 'rejected'], default: 'rejected' })
+            proses: Proses
+
     @Column()
     kendala: string
 
@@ -28,7 +33,7 @@ export class Logbook {
     @ManyToOne(() => User, (user) => user.logbook, {onDelete : 'CASCADE'})
     user: User
 
-    @ManyToOne(() => Kelas, (kelas) => kelas.logbook, {onDelete : 'CASCADE'})
-    kelas: Kelas
+    @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.logbook, {onDelete : 'CASCADE'})
+    pertemuan: Pertemuan
     
 }

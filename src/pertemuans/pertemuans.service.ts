@@ -8,6 +8,7 @@ import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { Minggu } from 'src/entities/minggu.entity';
+import { Logbook } from 'src/entities/logbook.entity';
 
 @Injectable()
 export class PertemuansService {
@@ -23,6 +24,9 @@ export class PertemuansService {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    
+    @InjectRepository(Logbook)
+    private readonly logBookRepository: Repository<Logbook>,
 
     @InjectRepository(Pertanyaan)
     private readonly pertanyaanRepository: Repository<Pertanyaan>
@@ -99,6 +103,10 @@ async findMuridInKelas(kelasId: number, pertemuanId: number) {
 
 async findPertanyaan(pertemuanId: number){
   return await this.pertanyaanRepository.find({where: {quiz: {id:pertemuanId}}, relations: ['jawaban']})
+}
+
+async findLogBook(pertemuanId: number){
+  return await this.logBookRepository.find({where: {pertemuan: {id: pertemuanId}}})
 }
 
   async findOne(id: number) {

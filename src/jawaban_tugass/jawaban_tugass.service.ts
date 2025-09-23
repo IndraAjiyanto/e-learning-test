@@ -35,7 +35,7 @@ export class JawabanTugassService {
   }
 
   async findTugas(tugasId: number){
-    return await this.tugasRepository.findOne({where: {id: tugasId}, relations: ['pertemuan']})
+    return await this.tugasRepository.findOne({where: {id: tugasId}, relations: ['pertemuan', 'pertemuan.minggu', 'pertemuan.minggu.kelas']})
   }
 
   async findJawabanTugas(userId:number, tugasId:number){

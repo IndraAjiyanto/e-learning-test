@@ -17,7 +17,12 @@ export class Logbook1757657729794 implements MigrationInterface {
                          },{
                              name: 'rincian_kegiatan',
                              type: 'varchar'
-                         },{
+                         },
+                                                                                                 {
+                    name: 'proses',
+                    type: 'enum',
+                    enum: ['acc', 'proces', 'rejected']
+                },{
                              name: 'kendala',
                              type: 'varchar'
                          },
@@ -28,7 +33,7 @@ export class Logbook1757657729794 implements MigrationInterface {
                              name: 'userId',
                              type: 'int'
                          },{
-                            name: 'kelasId',
+                            name: 'pertemuanId',
                             type: 'int'
                          },{
                                  name: 'createdAt',
@@ -50,8 +55,8 @@ export class Logbook1757657729794 implements MigrationInterface {
                                                                          onDelete: "CASCADE",
                                                                      }));
                                                                      await queryRunner.createForeignKey('logbook', new TableForeignKey({
-                                                                         columnNames: ['kelasId'],
-                                                                         referencedTableName: 'kelas',
+                                                                         columnNames: ['pertemuanId'],
+                                                                         referencedTableName: 'pertemuan',
                                                                          referencedColumnNames: ['id'],
                                                                          onDelete: "CASCADE",
                                                                      }));
@@ -62,13 +67,13 @@ export class Logbook1757657729794 implements MigrationInterface {
   if (!table) return;
 
   const userFk = table.foreignKeys.find(fk => fk.columnNames.includes('userId'));
-  const kelasFk = table.foreignKeys.find(fk => fk.columnNames.includes('kelasId'));
+  const pertemuanFk = table.foreignKeys.find(fk => fk.columnNames.includes('pertemuanId'));
 
   if (userFk) {
     await queryRunner.dropForeignKey('logbook', userFk);
   }
-    if (kelasFk) {
-    await queryRunner.dropForeignKey('logbook', kelasFk);
+    if (pertemuanFk) {
+    await queryRunner.dropForeignKey('logbook', pertemuanFk);
   }
 
 

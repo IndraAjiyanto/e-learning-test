@@ -18,7 +18,8 @@ export class Kelas1753670172780 implements MigrationInterface {
             },
             {
                 name: 'harga',
-                type: 'int'
+                type: 'int',
+                    isNullable: true
             },
             {
                 name: 'launch',
@@ -52,11 +53,18 @@ export class Kelas1753670172780 implements MigrationInterface {
                 },
                 {
                     name: 'promo',
-                    type: 'int'
+                    type: 'int',
+                    isNullable: true
                 },
                 {
                     name: 'kuota',
-                    type: 'int'
+                    type: 'int',
+                    isNullable: true
+                },
+                                                                        {
+                    name: 'proses',
+                    type: 'enum',
+                    enum: ['acc', 'proces', 'rejected']
                 },
             {
                 name: 'gambar',

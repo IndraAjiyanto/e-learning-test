@@ -26,7 +26,6 @@ export class JawabanTugassController {
     req.flash('success', 'submission successfuly send')
     res.redirect(`/jawaban-tugass/${pertemuanId}/${tugasId}`)
     } catch (error) {
-      console.log(error)
           req.flash('error', 'submission unsuccess send')
     res.redirect(`/jawaban-tugass/${pertemuanId}/${tugasId}`)
     }
@@ -47,8 +46,9 @@ export class JawabanTugassController {
   @Roles('admin')
   @Get(':tugasId')
   async findOne(@Param('tugasId') tugasId: number, @Req() req:Request, @Res() res:Response) {
+    const tugas = await this.jawabanTugassService.findTugas(tugasId)
     const jawaban_tugas =  await this.jawabanTugassService.findAllJawabanTugas(tugasId)
-    res.render('admin/jawaban-tugas/index', {user: req.user, jawaban_tugas})
+    res.render('admin/jawaban-tugas/index', {user: req.user, jawaban_tugas, tugas})
   }
 
   @Patch(':id')

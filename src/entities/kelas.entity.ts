@@ -3,14 +3,13 @@ import { User } from "./user.entity";
 import { Portfolio } from "./portfolio.entity";
 import { Kategori } from "./kategori.entity";
 import { Pembayaran } from "./pembayaran.entity";
-import { Logbook } from "./logbook.entity";
 import { Minggu } from "./minggu.entity";
 import { Alumni } from "./alumni.entity";
 import { Sertifikat } from "./sertifikat.entity";
 import { JenisKelas } from "./jenis_kelas.entity";
 
 export type Metode = 'online' | 'offline';
-
+export type Proses = 'acc' | 'proces' | 'rejected';
 
 @Entity()
 export class Kelas {
@@ -26,10 +25,10 @@ export class Kelas {
     @Column()
     gambar: string;
 
-    @Column()
+    @Column({ nullable: true })
     harga: number;
 
-    @Column()
+    @Column({ nullable: true })
     promo: number;
 
         @Column()
@@ -47,13 +46,16 @@ launch: boolean;
     @Column("jsonb")
     teknologi: string[]
 
+        @Column({ type: 'enum', enum: ['acc' , 'proces' , 'rejected'], default: 'rejected' })
+        proses: Proses
+
     @Column("jsonb")
     materi: string[];
 
     @Column("jsonb")
     target_pembelajaran: string[]
 
-    @Column()
+    @Column({ nullable: true })
     kuota: number
 
     @CreateDateColumn()
@@ -73,9 +75,6 @@ user: User[];
 
     @OneToMany(() => Pembayaran, (pembayaran) => pembayaran.kelas, { cascade: true, onDelete : 'CASCADE' })
     pembayaran: Pembayaran[];
-
-    @OneToMany(() => Logbook, (logbook) => logbook.kelas, { cascade: true, onDelete : 'CASCADE' })
-    logbook: Logbook[];
 
           @ManyToOne(() => Kategori, (kategori) => kategori.kelas, {onDelete : 'CASCADE'})
           kategori: Kategori

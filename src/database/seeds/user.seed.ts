@@ -70,6 +70,7 @@ await kelassRepository.save([
     promo: 5000000,
     lokasi: 'kantor wiratek',
     metode: 'offline',
+    proses: 'acc',
     kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
     launch: false,
     teknologi: ['nest js', 'react js'],

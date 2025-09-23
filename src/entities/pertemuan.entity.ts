@@ -4,6 +4,7 @@ import { Materi } from "./materi.entity";
 import { Tugas } from "./tugas.entity";
 import { Minggu } from "./minggu.entity";
 import { ProgresPertemuan } from "./progres_pertemuan.entity";
+import { Logbook } from "./logbook.entity";
 
 
 @Entity()
@@ -51,6 +52,9 @@ export class Pertemuan{
 
     @OneToMany(() => ProgresPertemuan, (progres_pertemuan) => progres_pertemuan.pertemuan, { cascade: true, onDelete: 'CASCADE' })
     progres_pertemuan: ProgresPertemuan[];
+
+        @OneToMany(() => Logbook, (logbook) => logbook.pertemuan, { cascade: true, onDelete : 'CASCADE' })
+        logbook: Logbook[];
 
     @CreateDateColumn()
     createdAt: Date;

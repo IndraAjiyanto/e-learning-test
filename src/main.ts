@@ -80,6 +80,7 @@ hbs.registerHelper('formatRupiah', function (angka: number) {
 });
 
   hbs.registerHelper('roles', (a, b) => a === b);
+  hbs.registerHelper('check', (a, b) => a < b);
   hbs.registerHelper('gte', (a, b) => a >= b)
   hbs.registerPartials(join(__dirname, '..', 'src','views', 'partials'));
   app.set('view options', { layout: 'layouts/main' });

@@ -39,7 +39,8 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Cover</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name Class</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Category Class</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tech</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Proses</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kuota</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Student</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Launch</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
@@ -57,7 +58,9 @@
           </td>
           <td class="px-6 py-4 text-sm text-gray-800">{{nama_kelas}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{kategori.nama_kategori}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{teknologi}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{proses}}</td>
+          {{#if (roles proses "acc")}}
+          <td class="px-6 py-4 text-sm text-gray-800">{{kuota}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.length}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">
             <form action="/kelass/{{id}}/toggle-launch?_method=PATCH" method="POST">
@@ -71,20 +74,82 @@
               </button>
             </form>
           </td>
-          <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
-            {{#if (roles ../user.role "admin")}}
-              <a href="/kelass/detail/kelas/admin/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">View Kelas</a>
-              <a href="/kelass/addUser/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">View murid</a>
-            {{else}}
-              <a href="/kelass/edit/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">Edit</a>
-              <form action="/kelass/{{id}}?_method=DELETE" method="post" class="inline">
-                <button type="button"
-                  class="inline-block text-gray-600 font-medium hover:underline" onclick="confirmDelete(this)">
-                  Delete
-                </button>
-              </form>
-            {{/if}}
-          </td>
+          {{else}}
+{{/if}}
+<td class="px-6 py-4 text-sm text-gray-800 flex items-center gap-3">
+  {{#if (roles ../user.role "admin")}}
+    <!-- View Kelas -->
+    <a href="/kelass/detail/kelas/admin/{{id}}" 
+       class="p-2 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition" 
+       title="View Kelas">
+      <svg xmlns="http://www.w3.org/2000/svg" 
+           fill="none" viewBox="0 0 24 24" 
+           stroke-width="1.5" stroke="currentColor" 
+           class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M12 6.75c-4.5 0-8.25 2.25-10.5 6 
+                 2.25 3.75 6 6 10.5 6s8.25-2.25 
+                 10.5-6c-2.25-3.75-6-6-10.5-6z" />
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+      </svg>
+    </a>
+
+    <!-- View Murid -->
+    <a href="/kelass/addUser/{{id}}" 
+       class="p-2 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800 transition" 
+       title="View Murid">
+      <svg xmlns="http://www.w3.org/2000/svg" 
+           fill="none" viewBox="0 0 24 24" 
+           stroke-width="1.5" stroke="currentColor" 
+           class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M15 19.128a9.388 9.388 0 01-6 
+                 0M4.5 9a4.5 4.5 0 109 0 
+                 4.5 4.5 0 00-9 0zm15 
+                 0a4.5 4.5 0 11-9 0 
+                 4.5 4.5 0 019 0z" />
+      </svg>
+    </a>
+  {{else}}
+    <!-- Edit -->
+    <a href="/kelass/edit/{{id}}" 
+       class="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition" 
+       title="Edit">
+      <svg xmlns="http://www.w3.org/2000/svg" 
+           fill="none" viewBox="0 0 24 24" 
+           stroke-width="1.5" stroke="currentColor" 
+           class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M16.862 4.487l1.687-1.688a1.875 
+                 1.875 0 112.652 2.652L10.582 
+                 16.07a4.5 4.5 0 01-1.897 
+                 1.13l-2.685.805.805-2.685a4.5 
+                 4.5 0 011.13-1.897l10.927-10.936z" />
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M19.5 7.125L16.875 4.5" />
+      </svg>
+    </a>
+
+    <!-- Delete -->
+    <form action="/kelass/{{id}}?_method=DELETE" method="post">
+      <button type="button" 
+              onclick="confirmDelete(this)" 
+              class="p-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition" 
+              title="Delete">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             fill="none" viewBox="0 0 24 24" 
+             stroke-width="1.5" stroke="currentColor" 
+             class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" 
+                d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </form>
+  {{/if}}
+</td>
+
+
         </tr>
         {{/each}}
       </tbody>

@@ -73,12 +73,13 @@ export class PertemuansController {
   @Roles('admin')
   @Get(':pertemuanId')
   async findOne(@Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:any) {
+    const logbook = await this.pertemuansService.findLogBook(pertemuanId)
     const pertemuan = await this.pertemuansService.findOne(pertemuanId);
     const murid = await this.pertemuansService.findMuridInKelas(pertemuan.minggu.kelas.id, pertemuanId)
       const materipdf = await this.materisService.findMateriPdf(pertemuanId)
   const materivideo = await this.materisService.findMateriVideo(pertemuanId)
   const materippt = await this.materisService.findMateriPpt(pertemuanId)
-    res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid, materipdf, materippt, materivideo })
+    res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid, materipdf, materippt, materivideo, logbook })
   }
 
   @Roles('admin')

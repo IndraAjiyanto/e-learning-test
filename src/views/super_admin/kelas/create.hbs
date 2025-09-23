@@ -1,0 +1,79 @@
+<div class="pt-28 py-20">
+  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Add Pricing</h2>
+
+    <form action="/kelass/addPrice?_method=PATCH" method="POST" class="space-y-6">
+
+           <div x-data="{
+                        display: '',
+                        value: '',
+                        formatKuota(event) {
+                            let angka = event.target.value.replace(/\D/g, ''); 
+                            this.value = angka;
+                            this.display = new Intl.NumberFormat('id-ID').format(angka);
+                        }
+                    }">
+                        <label for="kuota1" class="block text-sm font-semibold text-gray-700 mb-1">Kuota Class</label>
+                        <input type="text" 
+                               id="kuota1"
+                               x-model="display" 
+                               @input="formatKuota($event)" 
+                               placeholder="Enter quota"
+                               class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+                        <input type="hidden" name="kuota" x-model="value">
+                    </div>
+      
+      <!-- Price -->
+      <div x-data="{
+          display: '',
+          value: '',
+          formatHarga(event) {
+              let angka = event.target.value.replace(/\D/g, ''); 
+              this.value = angka;
+              this.display = new Intl.NumberFormat('id-ID').format(angka);
+          }
+      }">
+        <label for="harga1" class="block text-sm font-semibold text-gray-700 mb-1">Price</label>
+        <input type="text" 
+               id="harga1"
+               x-model="display" 
+               @input="formatHarga($event)" 
+               placeholder="Enter price"
+               class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+        <input type="hidden" name="harga" x-model="value">
+      </div>
+
+      <!-- Promo -->
+      <div x-data="{
+          display: '',
+          value: '',
+          formatPromo(event) {
+              let angka = event.target.value.replace(/\D/g, ''); 
+              this.value = angka;
+              this.display = new Intl.NumberFormat('id-ID').format(angka);
+          }
+      }">
+        <label for="promo1" class="block text-sm font-semibold text-gray-700 mb-1">Promo</label>
+        <input type="text" 
+               id="promo1"
+               x-model="display" 
+               @input="formatPromo($event)" 
+               placeholder="Enter promo price"
+               class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+        <input type="hidden" name="promo" x-model="value">
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex space-x-4">
+        <button type="submit"
+          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+          Save
+        </button>
+        <a href="/pricing"
+          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

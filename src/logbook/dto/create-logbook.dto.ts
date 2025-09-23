@@ -1,4 +1,5 @@
-import { IsInt, IsString } from "class-validator";
+import { IsEnum, IsInt, IsString } from "class-validator";
+import { Proses } from "src/entities/logbook.entity";
 
 export class CreateLogbookDto {
     @IsString()
@@ -16,6 +17,9 @@ export class CreateLogbookDto {
     @IsInt()
     userId: number;
 
+        @IsEnum(['acc' , 'proces' , 'rejected'])
+        proses: Proses;
+
     @IsInt()
-    kelasId: number;
+    pertemuanId: number;
 }

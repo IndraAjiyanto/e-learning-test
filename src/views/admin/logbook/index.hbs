@@ -58,7 +58,7 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Dokumentasi</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Created</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">status</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
       </thead>
@@ -75,15 +75,35 @@
           </td>
           <td class="px-6 py-4 text-sm text-gray-800">{{kelas.nama_kelas}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.username}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{createdAt}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
-            <a href="/logbook/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
-            <form action="/logbook/{{id}}?_method=DELETE" method="post" class="inline">
-              <button type="button" class="text-gray-600 font-medium hover:underline" onclick="confirmDelete(this)">
-                Delete
-              </button>
-            </form>
-          </td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{proses}}</td>
+<td class="px-6 py-4 text-sm text-gray-800">
+  <div class="flex items-center justify-center gap-2">
+    <!-- ACC Button -->
+    <form action="/logbook/{{id}}/acc?_method=PATCH" method="post" class="inline">
+      <button type="submit" 
+              class="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition">
+        <!-- Check Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      </button>
+    </form>
+
+    <!-- Reject Button -->
+    <form action="/logbook/{{id}}/rejected?_method=PATCH" method="post" class="inline">
+      <button type="submit" 
+              class="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition">
+        <!-- X Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</td>
+
         </tr>
         {{/each}}
       </tbody>
