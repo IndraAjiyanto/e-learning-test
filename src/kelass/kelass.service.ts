@@ -160,6 +160,7 @@ async findMinggu(kelasId: number, userId: number) {
       { userId }
     )
     .leftJoinAndSelect('minggu.kelas', 'kelas')
+    .leftJoinAndSelect('kelas.sertifikat', 'sertifikat', 'sertifikat.userId = :userId', {userId})
     .leftJoinAndSelect('minggu.quiz', 'quiz')
     .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
     .leftJoinAndSelect('pertemuan.progres_pertemuan', 'progres_pertemuan', 'progres_pertemuan.userId = :userId', {userId})

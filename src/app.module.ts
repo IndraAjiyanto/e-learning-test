@@ -29,6 +29,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { PertanyaanUmumModule } from './pertanyaan_umum/pertanyaan_umum.module';
 import { AlumniModule } from './alumni/alumni.module';
 import { JenisKelasModule } from './jenis_kelas/jenis_kelas.module';
+import { SertifikatModule } from './sertifikat/sertifikat.module';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { JenisKelasModule } from './jenis_kelas/jenis_kelas.module';
     // ServeStaticModule.forRoot({
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
-    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule, JawabansModule, TugassModule, PembayaransModule, PertanyaansModule, JawabanTugassModule, JawabanUsersModule, KomentarModule, LogbookModule, MingguModule, QuizModule, DashboardModule, PertanyaanUmumModule, AlumniModule, JenisKelasModule],
+    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule, JawabansModule, TugassModule, PembayaransModule, PertanyaansModule, JawabanTugassModule, JawabanUsersModule, KomentarModule, LogbookModule, MingguModule, QuizModule, DashboardModule, PertanyaanUmumModule, AlumniModule, JenisKelasModule, SertifikatModule],
   controllers: [AppController],
   providers: [AppService],
 })

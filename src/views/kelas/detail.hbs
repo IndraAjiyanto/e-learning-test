@@ -182,6 +182,13 @@
 
         </div>
       </div>
+      {{#if this.akhir}}
+      {{#if sertifikat}}
+      <a href="/sertifikat/{{sertifikat.id}}">lihat sertif</a>
+      {{else}}
+      <a href="/sertifikat/{{../kelas.id}}">lihat sertif</a>
+      {{/if}}
+      {{/if}}
       {{else}}
       <div class="border rounded-2xl shadow bg-gray-100 overflow-hidden opacity-60 cursor-not-allowed">
         <div class="w-full flex justify-between items-center px-6 py-4 bg-gray-200">
