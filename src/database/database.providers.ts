@@ -1,4 +1,3 @@
-
 import { DataSource } from 'typeorm';
 
 export const databaseProviders = [
@@ -12,10 +11,9 @@ export const databaseProviders = [
         username: 'postgres',
         password: '',
         database: 'e-learning',
-        entities: [
-            __dirname + '/src/entities/*.entity{.ts,.js}',
-        ],
+        entities: [__dirname + '/src/entities/*.entity{.ts,.js}'],
         synchronize: true,
+        logging: true,
       });
 
       return dataSource.initialize();

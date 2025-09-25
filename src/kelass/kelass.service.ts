@@ -17,6 +17,7 @@ import { Absen } from 'src/entities/absen.entity';
 import { Tugas } from 'src/entities/tugas.entity';
 import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
 import { Pembayaran } from 'src/entities/pembayaran.entity';
+import { UserKelas } from 'src/entities/user_kelas.entity';
 
 @Injectable()
 export class KelassService {
@@ -47,6 +48,8 @@ export class KelassService {
         private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
         @InjectRepository(Pembayaran)
         private readonly pembayaranRepository: Repository<Pembayaran>,
+        @InjectRepository(UserKelas)
+        private readonly userKelasRepository: Repository<UserKelas>,
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -66,41 +69,47 @@ export class KelassService {
     return await this.kelasRepository.save(kelas)
   }
 
-  async addUserToKelas(userId: number, kelasId: number): Promise<User> {
+  async addUserToKelas(userId: number, kelasId: number): Promise<UserKelas> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['kelas'],
+      relations: ['user_kelas', 'user_kelas.kelas'],
     });
   
     if (!user) {
       throw new NotFoundException('User tidak ada');
     }
   
-    const kelas = await this.kelasRepository.findOne({where: {id: kelasId}, relations: ['user'] });
+    const kelas = await this.kelasRepository.findOne({where: {id: kelasId}, relations: ['user_kelas','user_kelas.user'] });
     if (!kelas) {
       throw new NotFoundException('Kelas tidak ada');
     }
   
-    const sudahGabung = user.kelas.some((k) => k.id === kelas.id);
+    const sudahGabung = await this.userKelasRepository.findOne({where: {user: {id: userId}, kelas: {id: kelasId}}})
     if (sudahGabung) {
       throw new BadRequestException('User sudah tergabung dalam kelas');
     }
 
     const daftar = await this.pembayaranRepository.find({where: { kelas: {id: kelasId}, proses: 'proces'}})
-    const gabung = await this.userRepository.find({where: {kelas: {id:kelasId}}})
+    const gabung = await this.userRepository.find({where: {user_kelas: {kelas: {id:kelasId}}}})
     const jumlah_user = daftar.length + gabung.length
 
     if(jumlah_user >= kelas.kuota ){
       throw new BadRequestException('Saat ini kelas sedang penuh');
     }
   
-    user.kelas.push(kelas);
-    return await this.userRepository.save(user);
+
+    const user_kelas = await this.userKelasRepository.create({
+      progres: false,
+      user: user,
+      kelas: kelas
+  })
+    
+    return await this.userKelasRepository.save(user_kelas);
   }
 
   async sumStudent(kelasId: number){
         const daftar = await this.pembayaranRepository.find({where: { kelas: {id: kelasId}, proses: 'proces'}})
-    const gabung = await this.userRepository.find({where: {kelas: {id:kelasId}}})
+    const gabung = await this.userKelasRepository.find({where: {kelas: {id:kelasId}}})
     const jumlah_user = daftar.length + gabung.length
     return jumlah_user
   }
@@ -113,9 +122,9 @@ async findMyCourse(userId: number) {
 
   return await this.kelasRepository.find({
     where: {
-      user: { id: userId }  
+      user_kelas: { user : {id: userId} }  
     },
-    relations: ['user', 'kategori'], 
+    relations: ['user_kelas','user_kelas.user', 'kategori'], 
   });
 }
 
@@ -161,6 +170,7 @@ async findMinggu(kelasId: number, userId: number) {
     )
     .leftJoinAndSelect('minggu.kelas', 'kelas')
     .leftJoinAndSelect('kelas.sertifikat', 'sertifikat', 'sertifikat.userId = :userId', {userId})
+    .leftJoinAndSelect('kelas.portfolio', 'portfolio', 'portfolio.userId = :userId', {userId})
     .leftJoinAndSelect('minggu.quiz', 'quiz')
     .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
     .leftJoinAndSelect('pertemuan.progres_pertemuan', 'progres_pertemuan', 'progres_pertemuan.userId = :userId', {userId})
@@ -303,6 +313,13 @@ async createProgresMinggu(userId: number, mingguList: Minggu[]) {
 
       // Cek apakah ada nilai yang lulus
       const hasPassingScore = nilai.some(n => n.nilai >= quiz.nilai_minimal);
+
+      if(m.akhir === true){
+          await this.userKelasRepository.update(
+    { user: { id: userId }, kelas: { id: m.kelas.id } }, 
+    { progres: hasPassingScore }
+  );
+      }
       
       // Cari minggu selanjutnya
       const mingguSelanjutnya = await this.mingguRepository.findOne({
@@ -384,15 +401,15 @@ async findJenisKelas(){
   }
 
   async findMurid(id: number){
-    return await this.userRepository.find({where: {kelas: {id: id}}})
+    return await this.userRepository.find({where: {user_kelas: {kelas: {id: id}}}})
   }
 
   async allKelas(){
-   return await this.kelasRepository.find({relations: ['user', 'kategori']})
+   return await this.kelasRepository.find({relations: ['user_kelas', 'user_kelas.user' ,'kategori']})
   }
 
   async findOne(kelasId: number) {
-    const kelas =  await this.kelasRepository.findOne({where: {id: kelasId}, relations: ['user', 'kategori']})
+    const kelas = await this.kelasRepository.findOne({where: {id: kelasId}, relations: ['user_kelas', 'user_kelas.user', 'kategori']})
     if(!kelas){
       throw new NotFoundException()
     }

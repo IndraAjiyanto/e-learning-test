@@ -1,32 +1,49 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import cloudinary, { multerConfigImage } from 'src/common/config/multer.config';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('portfolios')
 export class PortfoliosController {
   constructor(private readonly portfoliosService: PortfoliosService) {}
 
-  @Roles('admin')
-  @Post()
-  async create(@Body() createPortfolioDto: CreatePortfolioDto) {
-    return this.portfoliosService.create(createPortfolioDto);
+  @Roles('user')
+  @Post(':kelasId')
+  @UseInterceptors(FilesInterceptor('gambar', 100 ,multerConfigImage)) 
+  async create(@UploadedFiles() gambar: Express.Multer.File[], @Param('kelasId') kelasId: number, @Body() createPortfolioDto: CreatePortfolioDto, @Res() res:Response, @Req() req:Request) {
+    try {
+      createPortfolioDto.kelasId = kelasId
+      createPortfolioDto.gambar = gambar.map((file) => file.path);
+      if(req.user){
+          createPortfolioDto.userId = req.user.id
+      }
+    await this.portfoliosService.create(createPortfolioDto);
+    req.flash('success', 'portofolio successfully upload')
+    res.redirect(`/kelass/${kelasId}`);
+    } catch (error) {
+      req.flash('error', 'Failed to upload portofolio');
+      res.redirect(`/kelass/${kelasId}`);
+    }
   }
 
-  @Roles('admin')
-  @Get()
-  async findAll(@Req() req:any, @Res() res:Response) {
-    const users = await this.portfoliosService.findAll();
-    res.render('/admin/', {})
+  @Roles('user')
+  @Get('formCreate/:kelasId')
+  async formCreate(@Param('kelasId') kelasId: number, @Req() req:Request, @Res() res:Response) {
+    res.render('user/portofolio/create', {user: req.user, kelasId})
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.portfoliosService.findOne(+id);
+  @Roles('user')
+  @Get(':portofolioId')
+  async findOne(@Param('portofolioId') portofolioId: number, @Res() res:Response, @Req() req:Request) {
+    const portfolio = await this.portfoliosService.findOne(portofolioId)
+    res.render('user/portofolio/detail', {user: req.user, portfolio})
+
   }
 
   @Patch(':id')

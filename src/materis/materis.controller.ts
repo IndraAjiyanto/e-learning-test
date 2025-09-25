@@ -87,7 +87,6 @@ async createPpt(
     try {
       slidePaths = await this.convertApiService.pptToPng(tmpPath, slideOutputDir);
     } catch (convertError) {
-      console.error('Conversion error:', convertError);
       await fs.unlink(tmpPath); // cleanup
       req.flash('error', 'Failed to convert PPT to images');
       return res.redirect(`/pertemuans/${pertemuanId}`);

@@ -1,0 +1,86 @@
+<div class="pt-28 py-20">
+  <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Create Portfolio</h2>
+
+    <form method="POST" action="/portfolios/{{kelasId}}" enctype="multipart/form-data" class="space-y-8">
+
+      <!-- Judul Portfolio -->
+      <div>
+        <label for="judul" class="block text-sm font-semibold text-gray-700 mb-1">Judul Portfolio</label>
+        <input type="text" id="judul" name="judul" placeholder="Enter portfolio title" required
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+      </div>
+
+      <!-- Deskripsi -->
+      <div>
+        <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
+        <textarea id="deskripsi" name="deskripsi" rows="4" placeholder="Write a description..."
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
+      </div>
+
+      <!-- Gambar (Multiple + Preview + Add More) -->
+      <div x-data="{ files: [] }" class="space-y-3">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Upload Gambar</label>
+
+<template x-for="(file, index) in files" :key="index">
+  <div class="flex items-center gap-3 mb-3">
+    <input 
+      type="file" 
+      name="gambar" 
+      accept="image/*"
+      @change="file.preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+      class="flex-1 border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+
+    <template x-if="file.preview">
+      <img :src="file.preview" class="w-16 h-16 object-cover rounded border border-gray-300" />
+    </template>
+
+    <button type="button" @click="files.splice(index, 1)" x-show="files.length > 1"
+      class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">✕</button>
+  </div>
+</template>
+
+
+        <button type="button" @click="files.push({ preview: null })"
+          class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
+                 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
+          + Tambah Gambar
+        </button>
+      </div>
+
+                    <div x-data="{ techs: [''] }">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
+                        <template x-for="(tech, index) in techs" :key="index">
+                            <div class="flex items-center gap-3 mb-3">
+                                <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter a technology"
+                                    class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
+                                           focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+                                <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
+                                    class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
+                                    ✕
+                                </button>
+                            </div>
+                        </template>
+                        <button type="button" @click="techs.push('')"
+                            class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
+                                   text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
+                            + Add Technology
+                        </button>
+                    </div>
+      
+
+
+      <!-- Button -->
+      <div class="flex space-x-4">
+        <button type="submit"
+          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+          Create
+        </button>
+        <a href="/kelass/{{kelasId}}"
+          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

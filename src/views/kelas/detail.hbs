@@ -183,10 +183,13 @@
         </div>
       </div>
       {{#if this.akhir}}
-      {{#if sertifikat}}
-      <a href="/sertifikat/{{sertifikat.id}}">lihat sertif</a>
-      {{else}}
+      {{#if ../kelas.user_kelas.[0].progres}}
       <a href="/sertifikat/{{../kelas.id}}">lihat sertif</a>
+      {{#if this.kelas.portfolio.[0]}}
+      <a href="/portfolios/{{this.kelas.portfolio.[0].id}}">view portofolio</a>
+      {{else}}
+      <a href="/portfolios/formCreate/{{../kelas.id}}">upload portofolio</a>
+      {{/if}}
       {{/if}}
       {{/if}}
       {{else}}

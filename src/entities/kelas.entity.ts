@@ -7,6 +7,7 @@ import { Minggu } from "./minggu.entity";
 import { Alumni } from "./alumni.entity";
 import { Sertifikat } from "./sertifikat.entity";
 import { JenisKelas } from "./jenis_kelas.entity";
+import { UserKelas } from "./user_kelas.entity";
 
 export type Metode = 'online' | 'offline';
 export type Proses = 'acc' | 'proces' | 'rejected';
@@ -64,8 +65,8 @@ launch: boolean;
     @UpdateDateColumn()
     updatedAt: Date;
 
-@ManyToMany(() => User, (user) => user.kelas, {onDelete : 'CASCADE'})
-user: User[];
+   @OneToMany(() => UserKelas, (user_kelas) => user_kelas.kelas, {cascade: true, onDelete : 'CASCADE'})
+    user_kelas: UserKelas[]
 
     @OneToMany(() => Minggu, (minggu) => minggu.kelas, {cascade: true, onDelete : 'CASCADE'})
     minggu: Minggu[]

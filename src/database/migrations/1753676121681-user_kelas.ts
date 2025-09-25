@@ -1,11 +1,23 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
-export class KelasUser1753676121681 implements MigrationInterface {
+export class UserKelas1753676121681 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table({
-            name: 'user_kelas_kelas',
+            name: 'user_kelas',
             columns: [
+                {
+                    name: 'id',
+                    type: 'int',
+                    isPrimary: true,
+                    isGenerated: true,
+                    generationStrategy: 'increment'
+                },
+                {
+                    name: 'progres',
+                    type: 'boolean',
+                    default: false
+                },
                 {
                     name: 'userId',
                     type: 'int'
@@ -17,14 +29,14 @@ export class KelasUser1753676121681 implements MigrationInterface {
             ]
         }))
 
-        await queryRunner.createForeignKey('user_kelas_kelas', new TableForeignKey({
+        await queryRunner.createForeignKey('user_kelas', new TableForeignKey({
             columnNames: ['userId'],
             referencedTableName: 'user',
             referencedColumnNames: ['id'],
             onDelete: "CASCADE",
         }));
 
-        await queryRunner.createForeignKey('user_kelas_kelas', new TableForeignKey({
+        await queryRunner.createForeignKey('user_kelas', new TableForeignKey({
             columnNames: ['kelasId'],
             referencedTableName: 'kelas',
             referencedColumnNames: ['id'],

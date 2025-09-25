@@ -11,6 +11,7 @@ import {
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { error } from 'console';
 
 @Controller()
 export class AuthController {
@@ -59,6 +60,7 @@ export class AuthController {
       const user = await this.authService.validateUser(body.email, body.password);
       
       if (!user) {
+        
         req.flash('error', 'Email atau password salah');
         return res.redirect('/login');
       }
@@ -71,6 +73,7 @@ export class AuthController {
         res.redirect('/dashboard');
       });
     } catch (error) {
+      console.log(error)
       req.flash('error', 'Email atau password salah');
       return res.redirect('/login');
     }

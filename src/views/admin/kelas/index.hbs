@@ -61,7 +61,7 @@
           <td class="px-6 py-4 text-sm text-gray-800">{{proses}}</td>
           {{#if (roles proses "acc")}}
           <td class="px-6 py-4 text-sm text-gray-800">{{kuota}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{user.length}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{user_kelas.user.length}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">
             <form action="/kelass/{{id}}/toggle-launch?_method=PATCH" method="POST">
               <button type="submit" 

@@ -1,0 +1,56 @@
+<div class="pt-28 py-20">
+  <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg space-y-8">
+
+    <!-- Judul -->
+    <h2 class="text-3xl font-bold text-gray-900 text-center">
+      {{portfolio.judul}}
+    </h2>
+
+    <!-- Deskripsi -->
+    <div>
+      <h3 class="text-lg font-semibold text-gray-700 mb-2">Deskripsi</h3>
+      <p class="text-gray-600 leading-relaxed">
+        {{portfolio.deskripsi}}
+      </p>
+    </div>
+
+    <!-- Gambar -->
+    <div>
+      <h3 class="text-lg font-semibold text-gray-700 mb-2">Gambar</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {{#each portfolio.gambar}}
+          <div class="relative group">
+            <img src="{{this}}" alt="Portfolio Image"
+              class="w-full h-40 object-cover rounded-lg border shadow-sm cursor-pointer group-hover:opacity-90 transition">
+
+            <!-- Zoom Button -->
+            <a href="{{this}}" target="_blank"
+              class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition rounded-lg">
+              <span class="text-white font-semibold">View</span>
+            </a>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Technologies -->
+    <div>
+      <h3 class="text-lg font-semibold text-gray-700 mb-2">Technologies</h3>
+      <div class="flex flex-wrap gap-2">
+        {{#each portfolio.teknologi}}
+          <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
+            {{this}}
+          </span>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end space-x-4 pt-6">
+      <a href="/portfolios/{{portfolio.id}}/edit"
+        class="px-6 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition">Edit</a>
+      <a href="/kelass/{{kelasId}}"
+        class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">Back</a>
+    </div>
+  </div>
+</div>

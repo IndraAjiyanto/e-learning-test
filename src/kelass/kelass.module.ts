@@ -18,9 +18,10 @@ import { Quiz } from 'src/entities/quiz.entity';
 import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { Pembayaran } from 'src/entities/pembayaran.entity';
+import { UserKelas } from 'src/entities/user_kelas.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, User, Pertemuan, Absen, Kategori, Minggu, ProgresMinggu, JenisKelas, Nilai, Quiz, JawabanTugas, ProgresPertemuan, Pembayaran]), PertanyaansModule, JawabanUsersModule, UsersModule],
+  imports: [TypeOrmModule.forFeature([UserKelas, Kelas, User, Pertemuan, Absen, Kategori, Minggu, ProgresMinggu, JenisKelas, Nilai, Quiz, JawabanTugas, ProgresPertemuan, Pembayaran]), PertanyaansModule, JawabanUsersModule, UsersModule],
   controllers: [KelassController],
   providers: [KelassService],
   exports: [KelassService],

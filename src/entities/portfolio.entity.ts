@@ -7,8 +7,8 @@ export class Portfolio{
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
-    gambar: string
+    @Column("jsonb")
+    gambar: string[]
 
     @Column()
     judul: string

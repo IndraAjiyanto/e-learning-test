@@ -13,6 +13,7 @@ import { Nilai } from './nilai.entity';
 import { ProgresMinggu } from './progres_minggu.entity';
 import { ProgresPertemuan } from './progres_pertemuan.entity';
 import { Sertifikat } from './sertifikat.entity';
+import { UserKelas } from './user_kelas.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -72,9 +73,8 @@ export class User {
 @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.user, { cascade: true, onDelete: 'CASCADE' })
   jawaban_tugas: JawabanTugas[];
 
-@ManyToMany(() => Kelas, (kelas) => kelas.user, { cascade: true, onDelete: 'CASCADE' })
-@JoinTable()
-kelas: Kelas[];
+   @OneToMany(() => UserKelas, (user_kelas) => user_kelas.user, {cascade: true, onDelete : 'CASCADE'})
+    user_kelas: UserKelas[]
 
 @OneToMany(() => Nilai, (nilai) => nilai.user, { cascade: true, onDelete: 'CASCADE' })
 nilai: Nilai[];

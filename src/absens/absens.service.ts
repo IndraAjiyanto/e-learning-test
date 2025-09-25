@@ -70,7 +70,7 @@ export class AbsensService {
     if(!kelas){
       return ''
     }
-    return await this.userRepository.find({where: {role: 'user', kelas: {id: kelas['id']}} })
+    return await this.userRepository.find({where: {role: 'user', user_kelas: {kelas: {id: kelas['id']}}} })
   }
 
   async findKelas(){

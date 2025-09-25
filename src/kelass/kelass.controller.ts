@@ -110,8 +110,8 @@ export class KelassController {
   }else if(!req.user){
     res.render('kelas/Bdetail', { kelas, kelass});
   } else {
-          for (const u of kelas.user) {
-    if (u.id === req.user.id) {
+          for (const u of kelas.user_kelas) {
+    if (u.user.id === req.user.id) {
       isUserInKelas = true;
       break;
     }

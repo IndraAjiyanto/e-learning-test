@@ -1,8 +1,17 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsArray, IsNumber, IsString } from "class-validator";
 
 export class CreatePortfolioDto {
+    @IsArray()
+    gambar: string[]
+
     @IsString()
-    sertif: string
+    judul: string
+
+    @IsString()
+    deskripsi: string
+
+    @IsArray()
+    teknologi: string[]
     
         @IsNumber()
         userId: number;

@@ -7,6 +7,7 @@ import { Not, Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { v2 as cloudinary } from 'cloudinary';
+import { UserKelas } from 'src/entities/user_kelas.entity';
 
 
 @Injectable()
@@ -17,7 +18,9 @@ export class PembayaransService {
     @InjectRepository(Kelas)
     private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(UserKelas)
+    private readonly userKelasRepository: Repository<UserKelas>
   ){}
 
   async create(createPembayaranDto: CreatePembayaranDto) {
@@ -44,29 +47,35 @@ export class PembayaransService {
       }
   }
 
-      async addUserToKelas(userId: number, kelasId: number): Promise<User> {
-      const user = await this.userRepository.findOne({
-        where: { id: userId },
-        relations: ['kelas'],
-      });
-    
-      if (!user) {
-        throw new NotFoundException('User tidak ada');
-      }
-    
-      const kelas = await this.kelasRepository.findOneBy({ id: kelasId });
-      if (!kelas) {
-        throw new NotFoundException('Kelas tidak ada');
-      }
-    
-      const sudahGabung = user.kelas.some((k) => k.id === kelas.id);
-      if (sudahGabung) {
-        throw new BadRequestException('User sudah tergabung dalam kelas');
-      }
-    
-      user.kelas.push(kelas);
-      return await this.userRepository.save(user);
+  async addUserToKelas(userId: number, kelasId: number): Promise<UserKelas> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['user_kelas', 'user_kelas.kelas'],
+    });
+  
+    if (!user) {
+      throw new NotFoundException('User tidak ada');
     }
+  
+    const kelas = await this.kelasRepository.findOne({where: {id: kelasId}, relations: ['user_kelas','user_kelas.user'] });
+    if (!kelas) {
+      throw new NotFoundException('Kelas tidak ada');
+    }
+  
+    const sudahGabung = await this.userKelasRepository.findOne({where: {user: {id: userId}, kelas: {id: kelasId}}})
+    if (sudahGabung) {
+      throw new BadRequestException('User sudah tergabung dalam kelas');
+    }
+  
+
+    const user_kelas = await this.userKelasRepository.create({
+      progres: false,
+      user: user,
+      kelas: kelas
+  })
+    
+    return await this.userKelasRepository.save(user_kelas);
+  }
 
   async checkPembayaran(userId:number, kelasId:number){
     const pembayaran = await this.pembayaranRepository.find({where: {user: {id:userId}, kelas:{id:kelasId}, proses: Not('rejected')}})
