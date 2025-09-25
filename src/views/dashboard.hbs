@@ -232,23 +232,24 @@
                 </div>
 
                 <!-- Slide 3 -->
+                {{#each alumni}}
                 <div class="w-full flex-shrink-0 flex justify-center px-4">
                     <div class="bg-gray-50 rounded-lg shadow p-8 max-w-2xl">
                         <span class="text-5xl text-gray-700 font-bold">❝</span>
                         <p class="text-gray-800 text-lg leading-relaxed mb-6">
-                            Kesatria Academy doesn't just teach theory, but also practical application. 
-                            I now have an impressive portfolio to apply for jobs.
+                            {{pesan}}
                         </p>
                         <div class="flex items-center gap-4">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Alumni" class="w-12 h-12 rounded-full">
+                            <img src="{{profile}}" alt="Alumni" class="w-12 h-12 rounded-full">
                             <div>
-                                <p class="font-bold text-gray-900">Siti Marlina</p>
-                                <p class="text-gray-600 text-sm">UI/UX Designer</p>
-                                <p class="text-gray-600 text-sm">UI/UX Bootcamp Batch 2</p>
+                                <p class="font-bold text-gray-900">{{nama}}</p>
+                                <p class="text-gray-600 text-sm">{{posisi_sekarang}}</p>
+                                <p class="text-gray-600 text-sm">{{kelas.nama_kelas}}</p>
                             </div>
                         </div>
                     </div>
                 </div>
+                {{/each}}
             </div>
 
             <!-- Navigation Buttons -->

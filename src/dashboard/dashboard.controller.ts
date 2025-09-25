@@ -10,6 +10,7 @@ export class DashboardController {
   async getProtected(@Req() req: Request, @Res() res: Response) {
     const kelas =  await this.dashboardService.findAllKelas();
     const pertanyaan_umum = await this.dashboardService.findFAQ();
+    const alumni = await this.dashboardService.findAlumni()
     if(req.user){
     if(req.user.role === "super_admin"){
       res.redirect('/users');

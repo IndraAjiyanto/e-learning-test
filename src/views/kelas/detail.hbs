@@ -15,9 +15,9 @@
     <h2 class="text-2xl text-gray-900 font-semibold mb-4">Weeks</h2>
 
     <div class="space-y-4">
-
       {{#each minggu}}
       {{#if progres_minggu.[0].quiz}}
+      <!-- Week Open -->
       <div x-data="{ openMinggu: false }" class="border rounded-2xl shadow bg-white overflow-hidden">
         
         <!-- Toggle Week -->
@@ -47,6 +47,7 @@
             {{#each this.pertemuan}}
             {{#if this.progres_pertemuan.[0].materi}}
             <div x-data="{ open: false }" class="border rounded-xl shadow bg-white overflow-hidden">
+              
               <!-- Toggle Session -->
               <button 
                 @click="open = !open" 
@@ -73,6 +74,7 @@
 
               <!-- Session Content -->
               <div x-show="open" x-collapse class="px-6 pb-6">
+                
                 {{#if (hasUserAbsen absen ../../user.id)}}
                   <!-- Already Attended -->
                   <span class="inline-block mb-4 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
@@ -109,35 +111,37 @@
                     </a>
                     {{/each}}
                   </div>
-{{#if (roles logbook.[0].proses "acc")}}
-  <div class="mt-4">
-    <a href="/logbook/{{id}}"
-       class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded-lg shadow hover:bg-green-700 transition">
-      View Log Book
-    </a>
-  </div>
-{{else if (roles logbook.[0].proses "rejected")}}
-  <div class="mt-4">
-    <a href="/logbook/formEdit/{{id}}"
-       class="block w-full px-4 py-2 bg-red-600 text-white text-center rounded-lg shadow hover:bg-red-700 transition">
-      Update Log Book
-    </a>
-  </div>
-{{else if (roles logbook.[0].proses "proces")}}
-  <div class="mt-4">
-    <a href="/logbook/{{id}}"
-       class="block w-full px-4 py-2 bg-yellow-500 text-white text-center rounded-lg shadow hover:bg-yellow-600 transition">
-      Log Book in Process
-    </a>
-  </div>
-{{else}}
-  <div class="mt-4">
-    <a href="/logbook/formCreate/{{../id}}/{{../../kelas.id}}"
-       class="block w-full px-4 py-2 bg-gray-900 text-white text-center rounded-lg shadow hover:bg-gray-700 transition">
-      Create Log Book
-    </a>
-  </div>
-{{/if}}
+
+                  <!-- Logbook -->
+                  {{#if (roles logbook.[0].proses "acc")}}
+                    <div class="mt-4">
+                      <a href="/logbook/{{id}}"
+                        class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded-lg shadow hover:bg-green-700 transition">
+                        View Log Book
+                      </a>
+                    </div>
+                  {{else if (roles logbook.[0].proses "rejected")}}
+                    <div class="mt-4">
+                      <a href="/logbook/formEdit/{{id}}"
+                        class="block w-full px-4 py-2 bg-red-600 text-white text-center rounded-lg shadow hover:bg-red-700 transition">
+                        Update Log Book
+                      </a>
+                    </div>
+                  {{else if (roles logbook.[0].proses "proces")}}
+                    <div class="mt-4">
+                      <a href="/logbook/{{id}}"
+                        class="block w-full px-4 py-2 bg-yellow-500 text-white text-center rounded-lg shadow hover:bg-yellow-600 transition">
+                        Log Book in Process
+                      </a>
+                    </div>
+                  {{else}}
+                    <div class="mt-4">
+                      <a href="/logbook/formCreate/{{../id}}/{{../../kelas.id}}"
+                        class="block w-full px-4 py-2 bg-gray-900 text-white text-center rounded-lg shadow hover:bg-gray-700 transition">
+                        Create Log Book
+                      </a>
+                    </div>
+                  {{/if}}
 
                 {{else}}
                   <!-- Not Attended -->
@@ -162,18 +166,19 @@
               </div>
             </div>
             {{else}}
-            selesaikan pertemuan sebelumnya terlebih dahulu
+              <p class="text-sm text-gray-500 italic">Selesaikan pertemuan sebelumnya terlebih dahulu</p>
             {{/if}}
             {{/each}}
           </div>
 
+          <!-- Quiz -->
           <div class="mt-6">
             {{#each this.quiz}}
               {{#if this.pertanyaan.length}}
-                  <a href="/quiz/form/{{id}}" 
-                     class="block w-full text-center px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow-lg hover:scale-105 transform transition">
-                    Quiz
-                  </a>
+                <a href="/quiz/form/{{id}}" 
+                   class="block w-full text-center px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-lg shadow-lg hover:scale-105 transform transition">
+                  Quiz
+                </a>
               {{else}}
                 <p class="text-gray-500 text-center text-sm italic">No quiz available yet</p>
               {{/if}}
@@ -182,17 +187,32 @@
 
         </div>
       </div>
+
+      <!-- Sertifikat & Portofolio -->
       {{#if this.akhir}}
-      {{#if ../kelas.user_kelas.[0].progres}}
-      <a href="/sertifikat/{{../kelas.id}}">lihat sertif</a>
-      {{#if this.kelas.portfolio.[0]}}
-      <a href="/portfolios/{{this.kelas.portfolio.[0].id}}">view portofolio</a>
+        {{#if ../kelas.user_kelas.[0].progres}}
+          <div class="flex space-x-4 mt-4">
+            <a href="/sertifikat/{{../kelas.id}}" 
+               class="flex-1 px-6 py-3 text-center bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
+              Lihat Sertifikat
+            </a>
+            {{#if this.kelas.portfolio.[0]}}
+              <a href="/portfolios/{{this.kelas.portfolio.[0].id}}" 
+                 class="flex-1 px-6 py-3 text-center bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition">
+                View Portfolio
+              </a>
+            {{else}}
+              <a href="/portfolios/formCreate/{{../kelas.id}}" 
+                 class="flex-1 px-6 py-3 text-center bg-cyan-600 text-white rounded-lg shadow hover:bg-cyan-700 transition">
+                Upload Portfolio
+              </a>
+            {{/if}}
+          </div>
+        {{/if}}
+      {{/if}}
+
       {{else}}
-      <a href="/portfolios/formCreate/{{../kelas.id}}">upload portofolio</a>
-      {{/if}}
-      {{/if}}
-      {{/if}}
-      {{else}}
+      <!-- Week Locked -->
       <div class="border rounded-2xl shadow bg-gray-100 overflow-hidden opacity-60 cursor-not-allowed">
         <div class="w-full flex justify-between items-center px-6 py-4 bg-gray-200">
           <h2 class="font-bold text-xl text-gray-500">
@@ -208,7 +228,6 @@
       </div>
       {{/if}}
       {{/each}}
-      
     </div>
   </div>
 </div>

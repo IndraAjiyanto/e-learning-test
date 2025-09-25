@@ -1,80 +1,104 @@
 <div class="pt-28 py-20">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+  <div class="max-w-5xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-6 text-gray-900">Create Alumni</h2>
 
     <form action="/alumni" method="post" class="space-y-6" enctype="multipart/form-data">
 
-      <!-- Profile Photo -->
-      <div x-data="{ previewUrl: null }" class="space-y-3">
-        <label for="profile" class="block text-sm font-medium text-gray-700 mb-1">
-          Photos Profile
-        </label>
-        <input 
-          type="file" 
-          id="profile" 
-          name="profile" 
-          accept="image/*" 
-          x-ref="fileInput"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
-          @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-        >
+      <!-- Grid for Left & Right -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- LEFT COLUMN -->
+        <div class="space-y-6">
 
-        <template x-if="previewUrl">
-          <div class="relative w-32 h-32">
-            <img 
-              :src="previewUrl" 
-              alt="Preview Photos" 
-              class="w-32 h-32 object-cover rounded-lg border border-gray-300"
+          <!-- Profile Photo -->
+          <div x-data="{ previewUrl: null }" class="space-y-3">
+            <label for="profile" class="block text-sm font-semibold text-gray-700 mb-1">
+              Profile Photo
+            </label>
+            <input 
+              type="file" 
+              id="profile" 
+              name="profile" 
+              accept="image/*" 
+              x-ref="fileInput"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none 
+                     focus:ring-2 focus:ring-gray-900 text-gray-700"
+              @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
             >
-            <button 
-              type="button" 
-              class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
-              @click="previewUrl = null; $refs.fileInput.value = null;">
-              &times;
-            </button>
+
+            <template x-if="previewUrl">
+              <div class="relative w-32 h-32">
+                <img 
+                  :src="previewUrl" 
+                  alt="Preview Profile Photo" 
+                  class="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                >
+                <button 
+                  type="button" 
+                  class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full 
+                         flex items-center justify-center shadow hover:bg-red-600"
+                  @click="previewUrl = null; $refs.fileInput.value = null;">
+                  &times;
+                </button>
+              </div>
+            </template>
           </div>
-        </template>
+
+          <!-- Name -->
+          <div>
+            <label for="nama" class="block text-sm font-semibold text-gray-700 mb-1">Name</label>
+            <input type="text" id="nama" name="nama" 
+                   class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 
+                          focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+          </div>
+
+          <!-- Message -->
+          <div>
+            <label for="pesan" class="block text-sm font-semibold text-gray-700 mb-1">Message</label>
+            <textarea id="pesan" name="pesan" rows="4"
+              class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 
+                     focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="space-y-6">
+
+          <!-- Alumni Status -->
+          <div>
+            <label for="alumni" class="block text-sm font-semibold text-gray-700 mb-1">Alumni Status</label>
+            <input type="text" id="alumni" name="alumni" 
+                   class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 
+                          focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+          </div>
+
+          <!-- Current Position -->
+          <div>
+            <label for="posisi_sekarang" class="block text-sm font-semibold text-gray-700 mb-1">Current Position</label>
+            <input type="text" id="posisi_sekarang" name="posisi_sekarang" 
+                   class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 
+                          focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+          </div>
+
+          <!-- Class (relation) -->
+          <div>
+            <label for="kelasId" class="block text-sm font-semibold text-gray-700 mb-1">Class</label>
+            <select id="kelasId" name="kelasId" 
+              class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 
+                     focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+              <option value="" disabled selected>-- Select Class --</option>
+              {{#each kelas}}
+              <option value="{{id}}">{{nama_kelas}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
       </div>
 
-      <!-- Nama -->
-      <div>
-        <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-        <input type="text" id="nama" name="nama" class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
-
-      <!-- Pesan -->
-      <div>
-        <label for="pesan" class="block text-sm font-medium text-gray-700 mb-1">Pesan</label>
-        <textarea id="pesan" name="pesan" rows="3" class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
-      </div>
-
-      <!-- Alumni -->
-      <div>
-        <label for="alumni" class="block text-sm font-medium text-gray-700 mb-1">Alumni</label>
-        <input type="text" id="alumni" name="alumni" class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
-
-      <!-- Posisi Sekarang -->
-      <div>
-        <label for="posisi_sekarang" class="block text-sm font-medium text-gray-700 mb-1">Posisi Sekarang</label>
-        <input type="text" id="posisi_sekarang" name="posisi_sekarang" class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
-
-      <!-- Kelas (relasi) -->
-      <div>
-        <label for="kelasId" class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
-        <select id="kelasId" name="kelasId" class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-          <option value="" disabled selected>-- Pilih Kelas --</option>
-          <!-- loop data kelas di sini -->
-          {{#each kelas}}
-          <option value="{{id}}">{{nama_kelas}}</option>
-          {{/each}}
-        </select>
-      </div>
-
-      <!-- Tombol -->
-      <div class="flex gap-3">
-        <button type="submit" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+      <!-- Action Buttons -->
+      <div class="flex gap-3 justify-end">
+        <button type="submit" 
+          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
           Create
         </button>
         <a href="/alumni"

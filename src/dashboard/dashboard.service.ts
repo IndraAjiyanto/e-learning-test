@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Repository } from 'typeorm';
 import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
+import { Alumni } from 'src/entities/alumni.entity';
 
 @Injectable()
 export class DashboardService {
@@ -12,7 +13,9 @@ export class DashboardService {
     @InjectRepository(Kelas)
         private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(PertanyaanUmum)
-        private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>
+        private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
+    @InjectRepository(Alumni)
+        private readonly alumniRepository: Repository<Alumni>
   ) {}
 
   async findAllKelas(){
@@ -21,6 +24,10 @@ export class DashboardService {
 
   async findFAQ(){
     return await this.pertanyaanUmumRepository.find()
+  }
+
+  async findAlumni(){
+    return await this.alumniRepository.find({relations: ['kelas']})
   }
   
   create(createDashboardDto: CreateDashboardDto) {

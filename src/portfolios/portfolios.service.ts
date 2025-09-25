@@ -6,6 +6,7 @@ import { Portfolio } from 'src/entities/portfolio.entity';
 import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
+import cloudinary from 'src/common/config/multer.config';
 
 @Injectable()
 export class PortfoliosService {
@@ -40,16 +41,56 @@ export class PortfoliosService {
     return await this.portfolioRepository.save(portfolio)
   }
 
-  findAll() {
-    return `This action returns all portfolios`;
+  async findAll() {
+    return await this.portfolioRepository.find({relations: ['kelas', 'user']})
   }
 
   async findOne(portfolioId: number) {
-    return await this.portfolioRepository.findOne({where: {id:portfolioId}})
+    const portfolio = await this.portfolioRepository.findOne({where: {id:portfolioId}})
+    if(!portfolio){
+      throw new NotFoundException('portfolio not found')
+    }
+    return portfolio
   }
 
-  update(id: number, updatePortfolioDto: UpdatePortfolioDto) {
-    return `This action updates a #${id} portfolio`;
+    async getPublicIdFromUrl(url: string) {
+      // Pisahkan berdasarkan "/upload/"
+      const parts = url.split('/upload/');
+      if (parts.length < 2) {
+        return null;
+      }
+  
+      // Ambil bagian setelah upload/
+      let path = parts[1];
+  
+      // Hapus "v1234567890/" (versi auto Cloudinary)
+      path = path.replace(/^v[0-9]+\/?/, '');
+  
+      // Buang extension (.jpg, .png, .pdf, dll)
+      path = path.replace(/\.[^.]+$/, '');
+  
+      console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
+  
+      await this.deleteFileIfExists(path);
+    }
+  
+    async deleteFileIfExists(publicId: string) {
+      try {
+        const result = await cloudinary.uploader.destroy(publicId);
+  
+        if (result.result === 'not found') {
+          console.log('File not found in Cloudinary.');
+        } else {
+          console.log('File deleted from Cloudinary:', result);
+        }
+      } catch (error) {
+        console.error('Error deleting file from Cloudinary:', error);
+        throw error;
+      }
+    }
+
+  async update(portfolioId: number, updatePortfolioDto: UpdatePortfolioDto) {
+    await this.portfolioRepository.update(portfolioId, updatePortfolioDto);
   }
 
   remove(id: number) {

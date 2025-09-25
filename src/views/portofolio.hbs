@@ -1,98 +1,109 @@
-<div  class="pt-28">
-<div class="container mx-auto px-6 py-12">
-  <h2 class="text-2xl font-bold text-gray-900 mb-8">
-    Portofolio Peserta
-  </h2>
+<!-- Portfolio Section -->
+<section class="bg-gray-50 py-16 px-6 lg:px-20">
+  <!-- Title -->
+  <div class="text-center mb-12">
+    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">
+      Portofolio Peserta
+    </h2>
+    <p class="mt-2 text-lg text-gray-600">
+      Check out the amazing works created by our talented participants.
+    </p>
+  </div>
 
   <!-- Grid Card -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-    
-    <!-- Card 1 -->
-    <div class="bg-white border rounded-2xl shadow hover:shadow-lg transition overflow-hidden">
+    <!-- Card -->
+    {{#each portfolio}}
+    <div class="bg-white border-b-8 border-b-white rounded-xl shadow hover:border-b-gray-700 hover:bg-gray-100 transition">
       <div class="relative">
-        <img src="https://picsum.photos/400/200?random=1" alt="Judul Kelas" class="w-full h-44 object-cover">
-        <span class="absolute top-3 left-3 bg-white text-gray-800 text-xs px-2 py-1 rounded-md shadow">
-          Digital Marketing
+        <img src="https://picsum.photos/400/200?random=1"
+             alt="Judul Kelas"
+             class="w-full h-44 object-cover rounded-t-xl">
+        <span class="absolute top-3 left-3 bg-white text-gray-800 text-xs px-3 py-1 rounded-md shadow">
+          {{judul}}
         </span>
       </div>
-      <div class="p-5 space-y-3">
+      <div class="p-6 space-y-3">
         <div class="flex flex-wrap gap-2">
           <span class="px-3 py-1 text-xs rounded-full bg-cyan-100 text-cyan-700 font-medium">Digital Marketing</span>
           <span class="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-700 font-medium">Remote Internship</span>
         </div>
-        <h3 class="text-base font-bold text-gray-900 line-clamp-2">Pelajari Copywriting untuk Pemula</h3>
+        <h3 class="text-lg font-semibold text-gray-900">{{deskripsi}}</h3>
         <div class="flex items-center gap-2 text-sm text-gray-600">
           <div class="flex text-yellow-400">★★★★★</div>
           <span>4.9 (2409 Ulasan)</span>
         </div>
-        <div class="flex items-center gap-4 text-sm text-gray-500">
+        <div class="flex items-center gap-6 text-sm text-gray-500">
           <div class="flex items-center gap-1">⏱ 78 Menit</div>
           <div class="flex items-center gap-1">📘 6 Materi</div>
         </div>
-        <a href="#" 
-           class="block w-full text-center border border-cyan-500 text-cyan-600 font-medium rounded-lg py-2 hover:bg-cyan-500 hover:text-white transition">
+        <a href="#"
+           class="btn btn-outline w-full hover:bg-gray-900 hover:text-white text-gray-900 transition-colors">
           Lihat Detail
         </a>
       </div>
     </div>
+    {{/each}}
 
     <!-- Card 2 -->
-    <div class="bg-white border rounded-2xl shadow hover:shadow-lg transition overflow-hidden">
+    <div class="bg-white border-b-8 border-b-white rounded-xl shadow hover:border-b-gray-700 hover:bg-gray-100 transition">
       <div class="relative">
-        <img src="https://picsum.photos/400/200?random=2" alt="Judul Kelas" class="w-full h-44 object-cover">
-        <span class="absolute top-3 left-3 bg-white text-gray-800 text-xs px-2 py-1 rounded-md shadow">
+        <img src="https://picsum.photos/400/200?random=2"
+             alt="Judul Kelas"
+             class="w-full h-44 object-cover rounded-t-xl">
+        <span class="absolute top-3 left-3 bg-white text-gray-800 text-xs px-3 py-1 rounded-md shadow">
           Design
         </span>
       </div>
-      <div class="p-5 space-y-3">
+      <div class="p-6 space-y-3">
         <div class="flex flex-wrap gap-2">
           <span class="px-3 py-1 text-xs rounded-full bg-purple-100 text-purple-700 font-medium">UI/UX</span>
           <span class="px-3 py-1 text-xs rounded-full bg-cyan-100 text-cyan-700 font-medium">Remote Internship</span>
         </div>
-        <h3 class="text-base font-bold text-gray-900 line-clamp-2">Belajar Membuat Konten Menarik dengan Canva</h3>
+        <h3 class="text-lg font-semibold text-gray-900">Belajar Membuat Konten Menarik dengan Canva</h3>
         <div class="flex items-center gap-2 text-sm text-gray-600">
           <div class="flex text-yellow-400">★★★★★</div>
           <span>4.8 (1200 Ulasan)</span>
         </div>
-        <div class="flex items-center gap-4 text-sm text-gray-500">
+        <div class="flex items-center gap-6 text-sm text-gray-500">
           <div class="flex items-center gap-1">⏱ 105 Menit</div>
           <div class="flex items-center gap-1">📘 8 Materi</div>
         </div>
-        <a href="#" 
-           class="block w-full text-center border border-cyan-500 text-cyan-600 font-medium rounded-lg py-2 hover:bg-cyan-500 hover:text-white transition">
+        <a href="#"
+           class="btn btn-outline w-full hover:bg-gray-900 hover:text-white text-gray-900 transition-colors">
           Lihat Detail
         </a>
       </div>
     </div>
 
     <!-- Card 3 -->
-    <div class="bg-white border rounded-2xl shadow hover:shadow-lg transition overflow-hidden">
+    <div class="bg-white border-b-8 border-b-white rounded-xl shadow hover:border-b-gray-700 hover:bg-gray-100 transition">
       <div class="relative">
-        <img src="https://picsum.photos/400/200?random=3" alt="Judul Kelas" class="w-full h-44 object-cover">
-        <span class="absolute top-3 left-3 bg-white text-gray-800 text-xs px-2 py-1 rounded-md shadow">
+        <img src="https://picsum.photos/400/200?random=3"
+             alt="Judul Kelas"
+             class="w-full h-44 object-cover rounded-t-xl">
+        <span class="absolute top-3 left-3 bg-white text-gray-800 text-xs px-3 py-1 rounded-md shadow">
           Business
         </span>
       </div>
-      <div class="p-5 space-y-3">
+      <div class="p-6 space-y-3">
         <div class="flex flex-wrap gap-2">
           <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium">Marketing</span>
         </div>
-        <h3 class="text-base font-bold text-gray-900 line-clamp-2">Cara Membuat Campaign Iklan yang Efektif</h3>
+        <h3 class="text-lg font-semibold text-gray-900">Cara Membuat Campaign Iklan yang Efektif</h3>
         <div class="flex items-center gap-2 text-sm text-gray-600">
           <div class="flex text-yellow-400">★★★★☆</div>
           <span>4.7 (900 Ulasan)</span>
         </div>
-        <div class="flex items-center gap-4 text-sm text-gray-500">
+        <div class="flex items-center gap-6 text-sm text-gray-500">
           <div class="flex items-center gap-1">⏱ 170 Menit</div>
           <div class="flex items-center gap-1">📘 10 Materi</div>
         </div>
-        <a href="#" 
-           class="block w-full text-center border border-cyan-500 text-cyan-600 font-medium rounded-lg py-2 hover:bg-cyan-500 hover:text-white transition">
+        <a href="#"
+           class="btn btn-outline w-full hover:bg-gray-900 hover:text-white text-gray-900 transition-colors">
           Lihat Detail
         </a>
       </div>
     </div>
-
   </div>
-</div>
-</div>
+</section>
