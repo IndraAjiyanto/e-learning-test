@@ -1,225 +1,706 @@
-<div class="bg-white text-gray-900 px-6 py-10 pt-28">
+<div class="bg-gradient-to-br from-slate-50 to-white text-slate-900 px-6 py-10 pt-28" x-data="{ activeTab: 'info' }">
   <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
     
     <!-- Left Content -->
-<div class="lg:col-span-2 space-y-8">
-  <!-- Course Preview -->
-  <div class="w-full rounded-xl overflow-hidden shadow">
-    <img src="{{kelas.gambar}}" alt="{{kelas.nama_kelas}}" class="w-full object-cover">
-  </div>
+    <div class="lg:col-span-2 space-y-8">
+      <!-- Course Preview -->
+      <div class="w-full rounded-2xl overflow-hidden shadow-xl ring-1 ring-slate-200">
+        <img src="{{kelas.gambar}}" alt="{{kelas.nama_kelas}}" class="w-full h-64 object-cover">
+      </div>
 
-  <!-- Tabs -->
-  <div class="border-b flex gap-6 text-sm font-medium">
-    <button class="pb-3 border-b-2 border-gray-900">Course Info</button>
-    <button class="pb-3 text-gray-500 hover:text-gray-900">Reviews</button>
-  </div>
+      <!-- Tabs -->
+      <div class="border-b border-slate-200 flex gap-6 text-sm font-medium overflow-x-auto">
+        <button 
+          @click="activeTab = 'info'" 
+          :class="activeTab === 'info' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class="pb-3 transition-colors whitespace-nowrap"
+        >
+          Course Info
+        </button>
+        <button 
+          @click="activeTab = 'benefit'" 
+          :class="activeTab === 'benefit' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class="pb-3 transition-colors whitespace-nowrap"
+        >
+          Benefits
+        </button>
+        <button 
+          @click="activeTab = 'faq'" 
+          :class="activeTab === 'faq' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class="pb-3 transition-colors whitespace-nowrap"
+        >
+          FAQ
+        </button>
+        <button 
+          @click="activeTab = 'bootcamp'" 
+          :class="activeTab === 'bootcamp' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class="pb-3 transition-colors whitespace-nowrap"
+        >
+          Bootcamp Flow
+        </button>
+        <button 
+          @click="activeTab = 'mentor'" 
+          :class="activeTab === 'mentor' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class="pb-3 transition-colors whitespace-nowrap"
+        >
+          Mentors
+        </button>
+        <button 
+          @click="activeTab = 'reviews'" 
+          :class="activeTab === 'reviews' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class="pb-3 transition-colors whitespace-nowrap"
+        >
+          Reviews
+        </button>
+      </div>
 
-  <!-- Description -->
-  <div>
-    <h3 class="text-2xl font-bold mb-3 text-gray-900">{{kelas.nama_kelas}}</h3>
-    <p class="text-gray-700 leading-relaxed">
-      {{kelas.deskripsi}}
-    </p>
-  </div>
+      <!-- Tab Content -->
+      <div>
+        <!-- Course Info Tab -->
+        <div x-show="activeTab === 'info'" x-transition>
+          <!-- Description -->
+          <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
+            <h3 class="text-3xl font-bold mb-4 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">{{kelas.nama_kelas}}</h3>
+            <p class="text-slate-700 leading-relaxed text-lg">
+              {{kelas.deskripsi}}
+            </p>
+          </div>
 
-  <!-- Course Content (Accordion Style) -->
-  <div class="space-y-6 divide-y divide-gray-200">
-    
-    <!-- Material Includes -->
-    <div class="pt-4">
-      <h4 class="text-lg font-semibold mb-2 text-gray-900">Material Includes</h4>
-      <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
-        {{#each kelas.materi}}
-        <li>{{this}}</li>
-        {{/each}}
-      </ul>
-    </div>
+          <!-- Course Content -->
+          <div class="space-y-6">
+            <!-- Material Includes -->
+            <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
+              <h4 class="text-xl font-bold mb-4 text-slate-900 flex items-center gap-2">
+                <i class="fas fa-book-open text-slate-600"></i>
+                Material Includes
+              </h4>
+              <ul class="space-y-3">
+                {{#each kelas.materi}}
+                <li class="flex items-start gap-3 text-slate-700">
+                  <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
+                  <span>{{this}}</span>
+                </li>
+                {{/each}}
+              </ul>
+            </div>
 
-    <!-- What You'll Learn -->
-    <div class="pt-4">
-      <h4 class="text-lg font-semibold mb-2 text-gray-900">What You'll Learn</h4>
-      <ul class="list-disc pl-5 space-y-1 text-sm text-gray-700">
-        {{#each kelas.target_pembelajaran}}
-        <li>{{this}}</li>
-        {{/each}}
-      </ul>
-    </div>
+            <!-- What You'll Learn -->
+            <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
+              <h4 class="text-xl font-bold mb-4 text-slate-900 flex items-center gap-2">
+                <i class="fas fa-graduation-cap text-slate-600"></i>
+                What You'll Learn
+              </h4>
+              <ul class="space-y-3">
+                {{#each kelas.target_pembelajaran}}
+                <li class="flex items-start gap-3 text-slate-700">
+                  <i class="fas fa-star text-amber-500 mt-1 flex-shrink-0"></i>
+                  <span>{{this}}</span>
+                </li>
+                {{/each}}
+              </ul>
+            </div>
 
+            <!-- Tags -->
+            <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
+              <h4 class="text-xl font-bold mb-4 text-slate-900 flex items-center gap-2">
+                <i class="fas fa-code text-slate-600"></i>
+                Technologies
+              </h4>
+              <div class="flex gap-2 flex-wrap">
+                {{#each kelas.teknologi}}
+                <span class="px-3 py-1 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 rounded-full text-sm font-medium border border-slate-300 hover:from-slate-200 hover:to-slate-300 transition-all">{{this}}</span>
+                {{/each}}
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <!-- Tags -->
-    <div class="pt-4">
-      <h4 class="text-lg font-semibold mb-2 text-gray-900">Tech</h4>
-      <div class="flex gap-2 flex-wrap">
-        {{#each kelas.teknologi}}
-        <span class="badge badge-outline">{{this}}</span>
-        {{/each}}
+        <!-- Benefits Tab -->
+        <div x-show="activeTab === 'benefit'" x-transition>
+          <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
+            <h3 class="text-3xl font-bold mb-6 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">Course Benefits</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200">
+                <div class="flex items-start gap-4">
+                  <div class="bg-blue-100 p-3 rounded-full">
+                    <i class="fas fa-certificate text-blue-600 text-xl"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-blue-800 text-lg mb-2">Certificate of Completion</h4>
+                    <p class="text-blue-700">Get an official certificate after completing the course to boost your career profile.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-5 border border-emerald-200">
+                <div class="flex items-start gap-4">
+                  <div class="bg-emerald-100 p-3 rounded-full">
+                    <i class="fas fa-briefcase text-emerald-600 text-xl"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-emerald-800 text-lg mb-2">Career Opportunities</h4>
+                    <p class="text-emerald-700">Access to our job portal and career guidance to help you land your dream job.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-5 border border-amber-200">
+                <div class="flex items-start gap-4">
+                  <div class="bg-amber-100 p-3 rounded-full">
+                    <i class="fas fa-users text-amber-600 text-xl"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-amber-800 text-lg mb-2">Community Access</h4>
+                    <p class="text-amber-700">Join our exclusive community of learners and professionals for networking and support.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-200">
+                <div class="flex items-start gap-4">
+                  <div class="bg-purple-100 p-3 rounded-full">
+                    <i class="fas fa-laptop-code text-purple-600 text-xl"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-purple-800 text-lg mb-2">Real Projects</h4>
+                    <p class="text-purple-700">Work on real-world projects to build a portfolio that showcases your skills.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-8 bg-gradient-to-r from-slate-100 to-slate-200 rounded-xl p-6 border border-slate-300">
+              <h4 class="font-bold text-slate-800 text-xl mb-4">Additional Benefits</h4>
+              <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <li class="flex items-center gap-3 text-slate-700">
+                  <i class="fas fa-check text-emerald-500"></i>
+                  <span>Lifetime access to course materials</span>
+                </li>
+                <li class="flex items-center gap-3 text-slate-700">
+                  <i class="fas fa-check text-emerald-500"></i>
+                  <span>Regular content updates</span>
+                </li>
+                <li class="flex items-center gap-3 text-slate-700">
+                  <i class="fas fa-check text-emerald-500"></i>
+                  <span>1-on-1 mentoring sessions</span>
+                </li>
+                <li class="flex items-center gap-3 text-slate-700">
+                  <i class="fas fa-check text-emerald-500"></i>
+                  <span>Interview preparation guidance</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ Tab -->
+        <div x-show="activeTab === 'faq'" x-transition>
+          <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
+            <h3 class="text-3xl font-bold mb-6 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">Frequently Asked Questions</h3>
+            
+            <div class="space-y-4" x-data="{ openFaq: null }">
+              <!-- FAQ Item 1 -->
+              <div class="border border-slate-200 rounded-xl overflow-hidden">
+                <button 
+                  class="w-full text-left p-5 bg-white hover:bg-slate-50 transition-colors flex justify-between items-center"
+                  @click="openFaq = openFaq === 1 ? null : 1"
+                >
+                  <span class="font-semibold text-slate-800">Do I need prior experience to join this course?</span>
+                  <i class="fas fa-chevron-down text-slate-500 transition-transform duration-300" :class="{'rotate-180': openFaq === 1}"></i>
+                </button>
+                <div class="px-5 pb-5 text-slate-700" x-show="openFaq === 1" x-transition>
+                  No prior experience is required for our beginner courses. We start from the fundamentals and gradually progress to more advanced topics. For intermediate and advanced courses, we recommend having basic knowledge in the relevant field.
+                </div>
+              </div>
+              
+              <!-- FAQ Item 2 -->
+              <div class="border border-slate-200 rounded-xl overflow-hidden">
+                <button 
+                  class="w-full text-left p-5 bg-white hover:bg-slate-50 transition-colors flex justify-between items-center"
+                  @click="openFaq = openFaq === 2 ? null : 2"
+                >
+                  <span class="font-semibold text-slate-800">How long will I have access to the course materials?</span>
+                  <i class="fas fa-chevron-down text-slate-500 transition-transform duration-300" :class="{'rotate-180': openFaq === 2}"></i>
+                </button>
+                <div class="px-5 pb-5 text-slate-700" x-show="openFaq === 2" x-transition>
+                  You will have lifetime access to all course materials, including any future updates we make to the content. This means you can revisit the materials anytime you need a refresher.
+                </div>
+              </div>
+              
+              <!-- FAQ Item 3 -->
+              <div class="border border-slate-200 rounded-xl overflow-hidden">
+                <button 
+                  class="w-full text-left p-5 bg-white hover:bg-slate-50 transition-colors flex justify-between items-center"
+                  @click="openFaq = openFaq === 3 ? null : 3"
+                >
+                  <span class="font-semibold text-slate-800">What is the time commitment for this course?</span>
+                  <i class="fas fa-chevron-down text-slate-500 transition-transform duration-300" :class="{'rotate-180': openFaq === 3}"></i>
+                </button>
+                <div class="px-5 pb-5 text-slate-700" x-show="openFaq === 3" x-transition>
+                  The course is designed to be completed in {{kelas.durasi}} with a recommended commitment of 5-7 hours per week. However, you can learn at your own pace and complete the course according to your schedule.
+                </div>
+              </div>
+              
+              <!-- FAQ Item 4 -->
+              <div class="border border-slate-200 rounded-xl overflow-hidden">
+                <button 
+                  class="w-full text-left p-5 bg-white hover:bg-slate-50 transition-colors flex justify-between items-center"
+                  @click="openFaq = openFaq === 4 ? null : 4"
+                >
+                  <span class="font-semibold text-slate-800">Will I receive a certificate upon completion?</span>
+                  <i class="fas fa-chevron-down text-slate-500 transition-transform duration-300" :class="{'rotate-180': openFaq === 4}"></i>
+                </button>
+                <div class="px-5 pb-5 text-slate-700" x-show="openFaq === 4" x-transition>
+                  Yes, you will receive a certificate of completion after finishing all course modules and submitting the final project. Our certificates are recognized by industry partners and can be shared on LinkedIn and other professional platforms.
+                </div>
+              </div>
+              
+              <!-- FAQ Item 5 -->
+              <div class="border border-slate-200 rounded-xl overflow-hidden">
+                <button 
+                  class="w-full text-left p-5 bg-white hover:bg-slate-50 transition-colors flex justify-between items-center"
+                  @click="openFaq = openFaq === 5 ? null : 5"
+                >
+                  <span class="font-semibold text-slate-800">What kind of support is available during the course?</span>
+                  <i class="fas fa-chevron-down text-slate-500 transition-transform duration-300" :class="{'rotate-180': openFaq === 5}"></i>
+                </button>
+                <div class="px-5 pb-5 text-slate-700" x-show="openFaq === 5" x-transition>
+                  We provide multiple support channels including a dedicated student community, Q&A forums, weekly live sessions with instructors, and email support. Our team is committed to helping you succeed in your learning journey.
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+              <h4 class="font-bold text-blue-800 text-lg mb-3">Still have questions?</h4>
+              <p class="text-blue-700 mb-4">Our support team is here to help you with any additional questions you might have.</p>
+              <a href="/contact" class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-envelope"></i>
+                Contact Support
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bootcamp Flow Tab -->
+        <div x-show="activeTab === 'bootcamp'" x-transition>
+          <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
+            <h3 class="text-3xl font-bold mb-6 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">Bootcamp Learning Flow</h3>
+            
+            <div class="relative">
+              <!-- Timeline -->
+              <div class="space-y-10">
+                <!-- Phase 1 -->
+                <div class="flex gap-6">
+                  <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">1</div>
+                    <div class="flex-1 w-0.5 bg-gradient-to-b from-blue-500 to-indigo-600 mt-2"></div>
+                  </div>
+                  <div class="flex-1 pb-10">
+                    <h4 class="text-xl font-bold text-slate-800 mb-2">Foundation & Onboarding</h4>
+                    <p class="text-slate-700 mb-3">Get familiar with the bootcamp structure, tools, and fundamental concepts. Set up your development environment and meet your cohort.</p>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Week 1-2</span>
+                      <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Setup & Orientation</span>
+                      <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Basic Concepts</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Phase 2 -->
+                <div class="flex gap-6">
+                  <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">2</div>
+                    <div class="flex-1 w-0.5 bg-gradient-to-b from-emerald-500 to-green-600 mt-2"></div>
+                  </div>
+                  <div class="flex-1 pb-10">
+                    <h4 class="text-xl font-bold text-slate-800 mb-2">Core Learning & Projects</h4>
+                    <p class="text-slate-700 mb-3">Dive deep into the core curriculum with hands-on projects. Apply your knowledge to real-world scenarios and build your portfolio.</p>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm">Week 3-8</span>
+                      <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm">Hands-on Projects</span>
+                      <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm">Weekly Challenges</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Phase 3 -->
+                <div class="flex gap-6">
+                  <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">3</div>
+                    <div class="flex-1 w-0.5 bg-gradient-to-b from-amber-500 to-orange-600 mt-2"></div>
+                  </div>
+                  <div class="flex-1 pb-10">
+                    <h4 class="text-xl font-bold text-slate-800 mb-2">Capstone Project</h4>
+                    <p class="text-slate-700 mb-3">Work on a comprehensive final project that showcases your skills. Receive guidance from mentors and peer feedback.</p>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm">Week 9-10</span>
+                      <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm">Final Project</span>
+                      <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm">Mentor Guidance</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Phase 4 -->
+                <div class="flex gap-6">
+                  <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">4</div>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-xl font-bold text-slate-800 mb-2">Career Preparation & Graduation</h4>
+                    <p class="text-slate-700 mb-3">Prepare for job interviews, polish your portfolio, and connect with potential employers. Graduate with a certificate and career-ready skills.</p>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">Week 11-12</span>
+                      <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">Interview Prep</span>
+                      <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">Career Services</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-8 bg-gradient-to-r from-slate-100 to-slate-200 rounded-xl p-6 border border-slate-300">
+              <h4 class="font-bold text-slate-800 text-xl mb-3">Bootcamp Features</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-center gap-3">
+                  <i class="fas fa-calendar-check text-emerald-500"></i>
+                  <span class="text-slate-700">Structured 12-week curriculum</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <i class="fas fa-users text-blue-500"></i>
+                  <span class="text-slate-700">Small cohort sizes for personalized attention</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <i class="fas fa-project-diagram text-amber-500"></i>
+                  <span class="text-slate-700">Real-world project experience</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <i class="fas fa-briefcase text-purple-500"></i>
+                  <span class="text-slate-700">Career guidance and job support</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mentors Tab -->
+        <div x-show="activeTab === 'mentor'" x-transition>
+          <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
+            <h3 class="text-3xl font-bold mb-6 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">Meet Your Mentors</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Mentor 1 -->
+              <div class="bg-gradient-to-br from-slate-50 to-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
+                  <img src="/images/mentor1.jpg" alt="Mentor Name" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow">
+                  <div class="text-center sm:text-left flex-1">
+                    <h4 class="font-bold text-slate-800 text-lg">Sarah Johnson</h4>
+                    <p class="text-slate-600 mb-2">Senior Frontend Developer</p>
+                    <div class="flex justify-center sm:justify-start gap-2 mb-3">
+                      <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">React</span>
+                      <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Vue</span>
+                      <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">TypeScript</span>
+                    </div>
+                    <p class="text-slate-700 text-sm">5+ years experience building scalable web applications. Passionate about teaching and mentoring the next generation of developers.</p>
+                  </div>
+                </div>
+                <div class="mt-4 flex items-center justify-center sm:justify-start gap-4 text-slate-500">
+                  <a href="#" class="hover:text-blue-500 transition-colors">
+                    <i class="fab fa-linkedin"></i>
+                  </a>
+                  <a href="#" class="hover:text-slate-800 transition-colors">
+                    <i class="fab fa-github"></i>
+                  </a>
+                  <a href="#" class="hover:text-red-500 transition-colors">
+                    <i class="fab fa-youtube"></i>
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Mentor 2 -->
+              <div class="bg-gradient-to-br from-slate-50 to-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
+                  <img src="/images/mentor2.jpg" alt="Mentor Name" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow">
+                  <div class="text-center sm:text-left flex-1">
+                    <h4 class="font-bold text-slate-800 text-lg">Michael Chen</h4>
+                    <p class="text-slate-600 mb-2">Full Stack Developer</p>
+                    <div class="flex justify-center sm:justify-start gap-2 mb-3">
+                      <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs">JavaScript</span>
+                      <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Node.js</span>
+                      <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">Python</span>
+                    </div>
+                    <p class="text-slate-700 text-sm">Former tech lead with 8 years of experience. Specializes in backend development and system architecture. Loves solving complex problems.</p>
+                  </div>
+                </div>
+                <div class="mt-4 flex items-center justify-center sm:justify-start gap-4 text-slate-500">
+                  <a href="#" class="hover:text-blue-500 transition-colors">
+                    <i class="fab fa-linkedin"></i>
+                  </a>
+                  <a href="#" class="hover:text-slate-800 transition-colors">
+                    <i class="fab fa-github"></i>
+                  </a>
+                  <a href="#" class="hover:text-blue-400 transition-colors">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Mentor 3 -->
+              <div class="bg-gradient-to-br from-slate-50 to-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
+                  <img src="/images/mentor3.jpg" alt="Mentor Name" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow">
+                  <div class="text-center sm:text-left flex-1">
+                    <h4 class="font-bold text-slate-800 text-lg">Alexandra Park</h4>
+                    <p class="text-slate-600 mb-2">UI/UX Designer & Developer</p>
+                    <div class="flex justify-center sm:justify-start gap-2 mb-3">
+                      <span class="px-2 py-1 bg-pink-100 text-pink-700 rounded-full text-xs">Figma</span>
+                      <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">Adobe XD</span>
+                      <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">CSS</span>
+                    </div>
+                    <p class="text-slate-700 text-sm">Design lead with 6 years of experience creating beautiful and functional user interfaces. Believes in the power of design to solve user problems.</p>
+                  </div>
+                </div>
+                <div class="mt-4 flex items-center justify-center sm:justify-start gap-4 text-slate-500">
+                  <a href="#" class="hover:text-blue-500 transition-colors">
+                    <i class="fab fa-linkedin"></i>
+                  </a>
+                  <a href="#" class="hover:text-pink-500 transition-colors">
+                    <i class="fab fa-dribbble"></i>
+                  </a>
+                  <a href="#" class="hover:text-slate-800 transition-colors">
+                    <i class="fab fa-behance"></i>
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Mentor 4 -->
+              <div class="bg-gradient-to-br from-slate-50 to-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
+                  <img src="/images/mentor4.jpg" alt="Mentor Name" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow">
+                  <div class="text-center sm:text-left flex-1">
+                    <h4 class="font-bold text-slate-800 text-lg">David Rodriguez</h4>
+                    <p class="text-slate-600 mb-2">DevOps Engineer</p>
+                    <div class="flex justify-center sm:justify-start gap-2 mb-3">
+                      <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs">AWS</span>
+                      <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">Docker</span>
+                      <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs">Kubernetes</span>
+                    </div>
+                    <p class="text-slate-700 text-sm">Infrastructure specialist with 7 years of experience. Helps companies scale their applications and optimize their deployment processes.</p>
+                  </div>
+                </div>
+                <div class="mt-4 flex items-center justify-center sm:justify-start gap-4 text-slate-500">
+                  <a href="#" class="hover:text-blue-500 transition-colors">
+                    <i class="fab fa-linkedin"></i>
+                  </a>
+                  <a href="#" class="hover:text-slate-800 transition-colors">
+                    <i class="fab fa-github"></i>
+                  </a>
+                  <a href="#" class="hover:text-orange-500 transition-colors">
+                    <i class="fab fa-stack-overflow"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-8 bg-gradient-to-r from-slate-100 to-slate-200 rounded-xl p-6 border border-slate-300">
+              <h4 class="font-bold text-slate-800 text-xl mb-3">Mentorship Approach</h4>
+              <p class="text-slate-700 mb-4">Our mentors are industry professionals who are passionate about teaching. They provide personalized guidance, code reviews, and career advice throughout your learning journey.</p>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center p-4">
+                  <i class="fas fa-comments text-blue-500 text-2xl mb-2"></i>
+                  <h5 class="font-semibold text-slate-800">Weekly Check-ins</h5>
+                  <p class="text-slate-600 text-sm">Regular 1-on-1 sessions to track progress</p>
+                </div>
+                <div class="text-center p-4">
+                  <i class="fas fa-code text-emerald-500 text-2xl mb-2"></i>
+                  <h5 class="font-semibold text-slate-800">Code Reviews</h5>
+                  <p class="text-slate-600 text-sm">Detailed feedback on your projects and code</p>
+                </div>
+                <div class="text-center p-4">
+                  <i class="fas fa-briefcase text-amber-500 text-2xl mb-2"></i>
+                  <h5 class="font-semibold text-slate-800">Career Guidance</h5>
+                  <p class="text-slate-600 text-sm">Interview prep and career path advice</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div x-show="activeTab === 'reviews'" x-transition>
+          <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
+            <h3 class="text-3xl font-bold mb-6 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">Student Reviews</h3>
+            <p class="text-slate-700">Reviews content will be displayed here.</p>
+          </div>
+        </div>
       </div>
     </div>
 
-  </div>
-</div>
-
     <!-- Right Sidebar -->
-<aside class="space-y-6" x-data="{ previewUrl: null }">
-  <div class="p-6 border rounded-xl shadow space-y-6 bg-white">
-    <!-- Harga -->
-    <div>
-      <p class="text-4xl text-center font-bold text-gray-900">{{formatRupiah kelas.harga}}</p>
-    </div>
-
-    <!-- Card No Rekening -->
-              {{#if (roles kelas.kategori.nama_kategori "free class")}}
-              {{else}}
-              {{#if (check daftar kelas.kuota) }}
-                          <div class="bank-card p-5 flex flex-col gap-4">
-                    <p class="text-xs text-gray-900 mb-1">Account Number</p>
-                    <div class="flex items-center justify-between">
-                        <p class="account-number text-xl font-bold tracking-wider">2847 9237 4298 1234</p>
-                        <button @click="copyToClipboard" 
-                                :class="{ 'copied': copied }" 
-                                class="copy-btn p-2 rounded-full text-gray-700">
-                            <i class="far" :class="copied ? 'fa-check' : 'fa-copy'"></i>
-                        </button>
-                </div>
-                
-                <div class="flex justify-between items-center mt-4">
-                    <div>
-                        <p class="text-xs text-gray-900">Account Holder</p>
-                        <p class="text-sm font-semibold">KESATRIA ACADEMY</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-900">Bank Name</p>
-                        <p class="text-sm font-semibold">BANK BCA</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Payment Instructions -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 class="font-semibold text-blue-800 flex items-center gap-2">
-                    <i class="fas fa-info-circle"></i> Payment Instructions
-                </h4>
-                <ol class="list-decimal pl-5 mt-2 space-y-1 text-sm text-blue-700">
-                    <li>Transfer the exact amount of <span class="font-semibold">{{formatRupiah kelas.harga}}</span></li>
-                    <li>Use your name as the transfer reference</li>
-                    <li>Upload proof of payment below</li>
-                    <li>After uploading proof, the payment status will be "Processing"</li>
-                    <li>Wait for confirmation from the admin. If the payment is valid, the payment status will be "Accepted"</li>
-                    <li>Class access will be granted</li>
-                </ol>
-            </div>
-            {{else}}
-            class sedang penuh
-            {{/if}}
-              {{/if}}
-
-    <!-- Form Upload -->
-    {{#if user}}
-          {{#if (roles kelas.kategori.nama_kategori "free class")}}
-                     <form action="/pembayarans/{{user.id}}/{{kelas.id}}" method="post" class="space-y-3">
-
-      <button type="submit" class="btn w-full bg-gray-900 text-white hover:bg-gray-700">
-        Enroll Now
-      </button>
-    </form>
-          {{else if (roles kelas.kategori.nama_kategori "course")}}
-              {{#if (check daftar kelas.kuota) }}
-           <form action="/pembayarans/{{user.id}}/{{kelas.id}}"  enctype="multipart/form-data" method="post" class="space-y-3">
-      <label class="block text-sm font-medium text-gray-700">Upload Payment Proof</label>
-      <input 
-        type="file" name="file"
-        class="file-input file-input-bordered w-full bg-white border-gray-300 rounded-lg"
-        @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-      />
-
-      <!-- Preview -->
-      <template x-if="previewUrl">
-        <div class="mt-2">
-          <p class="text-xs text-gray-500 mb-1">Preview:</p>
-          <img :src="previewUrl" alt="Preview" class="rounded-lg border max-h-48 object-contain" />
+    <aside class="space-y-6" x-data="{ previewUrl: null, copied: false, copyToClipboard() { navigator.clipboard.writeText('2847 9237 4298 1234'); this.copied = true; setTimeout(() => this.copied = false, 2000); } }">
+      <div class="p-8 border border-slate-200 rounded-2xl shadow-xl bg-gradient-to-br from-white to-slate-50 space-y-6 sticky top-6">
+        <!-- Harga -->
+        <div class="text-center">
+          <p class="text-5xl font-bold bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">{{formatRupiah kelas.harga}}</p>
         </div>
-      </template>
 
-      <button type="submit" class="btn w-full bg-gray-900 text-white hover:bg-gray-700">
-        Enroll Now
-      </button>
-    </form>
-    {{/if}}
-          {{else if (roles kelas.kategori.nama_kategori "bootcamp")}}
-              {{#if (check daftar kelas.kuota) }}
-                     <form action="/pembayarans/{{user.id}}/{{kelas.id}}"  enctype="multipart/form-data" method="post" class="space-y-3">
-      <label class="block text-sm font-medium text-gray-700">Upload Bukti Transfer</label>
-      <input 
-        type="file" name="file"
-        class="file-input file-input-bordered w-full bg-white border-gray-300 rounded-lg"
-        @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-      />
-
-      <!-- Preview -->
-      <template x-if="previewUrl">
-        <div class="mt-2">
-          <p class="text-xs text-gray-500 mb-1">Preview:</p>
-          <img :src="previewUrl" alt="Preview" class="rounded-lg border max-h-48 object-contain" />
+        <!-- Card No Rekening -->
+        {{#if (roles kelas.kategori.nama_kategori "free class")}}
+        {{else}}
+        {{#if (check daftar kelas.kuota) }}
+        <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-6 rounded-2xl shadow-lg">
+          <p class="text-xs text-slate-300 mb-2">Account Number</p>
+          <div class="flex items-center justify-between">
+            <p class="text-xl font-bold tracking-wider">2847 9237 4298 1234</p>
+            <button @click="copyToClipboard" 
+                    :class="{ 'bg-emerald-500': copied, 'bg-slate-700': !copied }" 
+                    class="p-2 rounded-full transition-all duration-300 hover:scale-110">
+                <i class="far" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+            </button>
+          </div>
+          
+          <div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-700">
+            <div>
+              <p class="text-xs text-slate-300">Account Holder</p>
+              <p class="text-sm font-semibold">KESATRIA ACADEMY</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-300">Bank Name</p>
+              <p class="text-sm font-semibold">BANK BCA</p>
+            </div>
+          </div>
         </div>
-      </template>
 
-      <button type="submit" class="btn w-full bg-gray-900 text-white hover:bg-gray-700">
-        Enroll Now
-      </button>
-    </form>
-    {{/if}}
-          {{/if }}
-      {{else}}
+        <!-- Payment Instructions -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5">
+          <h4 class="font-bold text-blue-800 flex items-center gap-2 mb-3">
+            <i class="fas fa-info-circle"></i> Payment Instructions
+          </h4>
+          <ol class="list-decimal pl-5 space-y-2 text-sm text-blue-700">
+            <li>Transfer the exact amount of <span class="font-bold bg-blue-100 px-2 py-1 rounded">{{formatRupiah kelas.harga}}</span></li>
+            <li>Use your name as the transfer reference</li>
+            <li>Upload proof of payment below</li>
+            <li>After uploading proof, the payment status will be "Processing"</li>
+            <li>Wait for confirmation from the admin. If the payment is valid, the payment status will be "Accepted"</li>
+            <li>Class access will be granted</li>
+          </ol>
+        </div>
+        {{else}}
+        <div class="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-5 text-center">
+          <i class="fas fa-users text-red-500 text-2xl mb-2"></i>
+          <p class="font-semibold text-red-800">Class is Full</p>
+          <p class="text-sm text-red-600">This class has reached maximum capacity</p>
+        </div>
+        {{/if}}
+        {{/if}}
 
-      <a href="/login" class="btn w-full bg-gray-900 text-white hover:bg-gray-700">
-        Enroll Now
-      </a>
-          {{/if}}
+        <!-- Form Upload -->
+        {{#if user}}
+        {{#if (roles kelas.kategori.nama_kategori "free class")}}
+        <form action="/pembayarans/{{user.id}}/{{kelas.id}}" method="post" class="space-y-4">
+          <button type="submit" class="w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <i class="fas fa-play-circle mr-2"></i>
+            Enroll Now - Free
+          </button>
+        </form>
+        {{else if (roles kelas.kategori.nama_kategori "course")}}
+        {{#if (check daftar kelas.kuota) }}
+        <form action="/pembayarans/{{user.id}}/{{kelas.id}}" enctype="multipart/form-data" method="post" class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Upload Payment Proof</label>
+            <input 
+              type="file" name="file"
+              class="w-full bg-white border-2 border-slate-300 rounded-xl p-3 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 transition-all"
+              @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+            />
+          </div>
 
+          <!-- Preview -->
+          <template x-if="previewUrl">
+            <div class="mt-3">
+              <p class="text-xs text-slate-500 mb-2">Preview:</p>
+              <img :src="previewUrl" alt="Preview" class="rounded-xl border-2 border-slate-200 max-h-48 w-full object-contain" />
+            </div>
+          </template>
 
+          <button type="submit" class="w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <i class="fas fa-credit-card mr-2"></i>
+            Enroll Now
+          </button>
+        </form>
+        {{/if}}
+        {{else if (roles kelas.kategori.nama_kategori "bootcamp")}}
+        {{#if (check daftar kelas.kuota) }}
+        <form action="/pembayarans/{{user.id}}/{{kelas.id}}" enctype="multipart/form-data" method="post" class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Upload Payment Proof</label>
+            <input 
+              type="file" name="file"
+              class="w-full bg-white border-2 border-slate-300 rounded-xl p-3 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 transition-all"
+              @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+            />
+          </div>
 
+          <!-- Preview -->
+          <template x-if="previewUrl">
+            <div class="mt-3">
+              <p class="text-xs text-slate-500 mb-2">Preview:</p>
+              <img :src="previewUrl" alt="Preview" class="rounded-xl border-2 border-slate-200 max-h-48 w-full object-contain" />
+            </div>
+          </template>
 
-
-
-  </div>
-</aside>
-
-
+          <button type="submit" class="w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <i class="fas fa-rocket mr-2"></i>
+            Enroll in Bootcamp
+          </button>
+        </form>
+        {{/if}}
+        {{/if }}
+        {{else}}
+        <a href="/login" class="block w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center">
+          <i class="fas fa-sign-in-alt mr-2"></i>
+          Login to Enroll
+        </a>
+        {{/if}}
+      </div>
+    </aside>
   </div>
 
   <!-- Related Courses -->
-  <h2 class="text-2xl font-bold mb-5">Other Class</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {{#each kelass}}
-            <div 
-                class="card bg-white shadow-lg border rounded-xl overflow-hidden transition-all duration-300"
-                x-show="tab === '{{kategori.nama_kategori}}'"
-                x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 transform scale-95"
-                x-transition:enter-end="opacity-100 transform scale-100">
-                <figure class="px-6 pt-6">
-                    <img src="{{gambar}}" alt="{{nama_kelas}}" class="rounded-xl h-40 w-full object-cover">
-                </figure>
-                <div class="card-body">
-                    <div class="flex gap-2 mb-2">
-                        <span class="badge badge-outline px-2 py-1 text-xs">{{kategori.nama_kategori}}</span>
-                    </div>
-                    <h2 class="card-title text-gray-900 text-lg">{{nama_kelas}}</h2>
-                    <p class="text-sm text-gray-600 line-clamp-2">
-                        {{deskripsi}}
-                    </p>
-                    <div class="card-actions justify-end mt-4">
-                        <a href="/kelass/{{id}}" class="btn btn-outline w-full hover:bg-gray-900 hover:text-white text-gray-900 transition-colors">View Class</a>
-                    </div>
-                </div>
-            </div>
-            {{/each}}
+  <div class="max-w-7xl mx-auto px-6 mt-16">
+    <h2 class="text-3xl font-bold mb-8 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">Other Classes</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {{#each kelass}}
+      <div class="bg-white shadow-lg border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group">
+        <figure>
+          <img src="{{gambar}}" alt="{{nama_kelas}}" class="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300">
+        </figure>
+        <div class="p-6">
+          <div class="flex gap-2 mb-3">
+            <span class="px-3 py-1 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 rounded-full text-xs font-medium border border-slate-300">{{kategori.nama_kategori}}</span>
+          </div>
+          <h2 class="font-bold text-slate-900 text-lg mb-2 line-clamp-2">{{nama_kelas}}</h2>
+          <p class="text-sm text-slate-600 line-clamp-2 mb-4">
+            {{deskripsi}}
+          </p>
+          <div class="mt-auto">
+            <a href="/kelass/{{id}}" class="block w-full text-center py-3 px-4 border-2 border-slate-300 text-slate-700 rounded-xl font-semibold hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all duration-300">
+              View Class
+            </a>
+          </div>
         </div>
+      </div>
+      {{/each}}
+    </div>
 
     <!-- Navigation -->
     <div class="flex justify-center gap-3 mt-10">
-      <button class="btn btn-circle bg-white text-gray-700 border-gray-700">❮</button>
-      <button class="btn btn-circle bg-white text-gray-700 border-gray-700">❯</button>
+      <button class="w-12 h-12 bg-white text-slate-700 border-2 border-slate-300 rounded-full hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all duration-300 flex items-center justify-center">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="w-12 h-12 bg-white text-slate-700 border-2 border-slate-300 rounded-full hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all duration-300 flex items-center justify-center">
+        <i class="fas fa-chevron-right"></i>
+      </button>
     </div>
   </div>
 </div>

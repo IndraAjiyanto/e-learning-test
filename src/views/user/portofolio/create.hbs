@@ -1,86 +1,145 @@
-<div class="pt-28 py-20">
-  <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Create Portfolio</h2>
+  <div class="pt-28 py-20">
+        <div class="max-w-4xl mx-auto px-6 py-12 bg-white rounded-2xl shadow-xl border border-slate-100">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-bold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent mb-3">
+                    Create Portfolio
+                </h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-slate-400 to-slate-600 mx-auto rounded-full"></div>
+                <p class="text-slate-600 mt-4">Showcase your work and achievements</p>
+            </div>
 
-    <form method="POST" action="/portfolios/{{kelasId}}" enctype="multipart/form-data" class="space-y-8">
+            <form method="POST" action="/portfolios/{{kelasId}}" enctype="multipart/form-data" class="space-y-8">
 
-      <!-- Judul Portfolio -->
-      <div>
-        <label for="judul" class="block text-sm font-semibold text-gray-700 mb-1">Judul Portfolio</label>
-        <input type="text" id="judul" name="judul" placeholder="Enter portfolio title" required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
+                <div class="space-y-2">
+                    <label for="judul" class="block text-sm font-semibold text-slate-700 mb-2">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            Judul Portfolio
+                        </span>
+                    </label>
+                    <input type="text" id="judul" name="judul" placeholder="Enter portfolio title" required
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent text-slate-700 transition-all duration-200 hover:border-slate-300">
+                </div>
 
-      <!-- Deskripsi -->
-      <div>
-        <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
-        <textarea id="deskripsi" name="deskripsi" rows="4" placeholder="Write a description..."
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
-      </div>
+                <div class="space-y-2">
+                    <label for="deskripsi" class="block text-sm font-semibold text-slate-700 mb-2">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                            </svg>
+                            Deskripsi
+                        </span>
+                    </label>
+                    <textarea id="deskripsi" name="deskripsi" rows="4" placeholder="Write a description..."
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent text-slate-700 transition-all duration-200 hover:border-slate-300 resize-none"></textarea>
+                </div>
 
-      <!-- Gambar (Multiple + Preview + Add More) -->
-      <div x-data="{ files: [] }" class="space-y-3">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Upload Gambar</label>
+                <div x-data="{ files: [{ preview: null }] }" class="space-y-4">
+                    <label class="block text-sm font-semibold text-slate-700 mb-3">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Upload Gambar
+                        </span>
+                    </label>
 
-<template x-for="(file, index) in files" :key="index">
-  <div class="flex items-center gap-3 mb-3">
-    <input 
-      type="file" 
-      name="gambar" 
-      accept="image/*"
-      @change="file.preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-      class="flex-1 border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+                    <template x-for="(file, index) in files" :key="index">
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1">
+                                    <input 
+                                        type="file" 
+                                        name="gambar" 
+                                        accept="image/*"
+                                        @change="file.preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+                                        class="w-full border border-slate-200 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 transition-all duration-200">
+                                </div>
 
-    <template x-if="file.preview">
-      <img :src="file.preview" class="w-16 h-16 object-cover rounded border border-gray-300" />
-    </template>
+                                <template x-if="file.preview">
+                                    <div class="relative">
+                                        <img :src="file.preview" class="w-20 h-20 object-cover rounded-lg border-2 border-slate-200 shadow-sm" />
+                                        <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </template>
 
-    <button type="button" @click="files.splice(index, 1)" x-show="files.length > 1"
-      class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">✕</button>
-  </div>
-</template>
-
-
-        <button type="button" @click="files.push({ preview: null })"
-          class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
-                 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-          + Tambah Gambar
-        </button>
-      </div>
-
-                    <div x-data="{ techs: [''] }">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
-                        <template x-for="(tech, index) in techs" :key="index">
-                            <div class="flex items-center gap-3 mb-3">
-                                <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter a technology"
-                                    class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
-                                           focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                                <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
-                                    class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
-                                    ✕
+                                <button type="button" @click="files.splice(index, 1)" x-show="files.length > 1"
+                                    class="w-10 h-10 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
                                 </button>
                             </div>
-                        </template>
-                        <button type="button" @click="techs.push('')"
-                            class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
-                                   text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-                            + Add Technology
-                        </button>
-                    </div>
-      
+                        </div>
+                    </template>
 
+                    <button type="button" @click="files.push({ preview: null })"
+                        class="w-full border-2 border-dashed border-slate-300 rounded-xl px-6 py-4 text-slate-500 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2 transition-all duration-200 group">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Tambah Gambar
+                    </button>
+                </div>
 
-      <!-- Button -->
-      <div class="flex space-x-4">
-        <button type="submit"
-          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-          Create
-        </button>
-        <a href="/kelass/{{kelasId}}"
-          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-          Cancel
-        </a>
-      </div>
-    </form>
-  </div>
-</div>
+                <div x-data="{ techs: [''] }" class="space-y-4">
+                    <label class="block text-sm font-semibold text-slate-700 mb-3">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                            Technologies
+                        </span>
+                    </label>
+                    
+                    <template x-for="(tech, index) in techs" :key="index">
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1">
+                                    <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter a technology (e.g., React, Node.js, Python)"
+                                        class="w-full border border-slate-200 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent text-slate-700 transition-all duration-200 hover:border-slate-300">
+                                </div>
+                                <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
+                                    class="w-10 h-10 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <button type="button" @click="techs.push('')"
+                        class="w-full border-2 border-dashed border-slate-300 rounded-xl px-6 py-4 text-slate-500 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2 transition-all duration-200 group">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Technology
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                    <button type="submit"
+                        class="flex-1 bg-gradient-to-r from-slate-800 to-slate-900 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-700 hover:to-slate-800 transition-all duration-200 font-medium flex items-center justify-center gap-2 group">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Create Portfolio
+                    </button>
+                    <a href="/kelass/{{kelasId}}"
+                        class="flex-1 px-8 py-3 rounded-xl border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 font-medium flex items-center justify-center gap-2 group">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>

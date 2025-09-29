@@ -42,7 +42,7 @@ export class LogbookService {
   }
 
   async findKelasByUser(userId: number){
-    return await this.kelasRepository.find({where: {user_kelas: {user :{id: userId}}}, relations: ['user_kelas','user_kelas.user','pertemuan']})
+    return await this.kelasRepository.find({where: {user_kelas: {user :{id: userId}}}, relations: ['user_kelas','user_kelas.user','minggu']})
   }
 
   async findAll() {

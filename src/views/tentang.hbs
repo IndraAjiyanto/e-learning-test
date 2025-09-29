@@ -1,137 +1,464 @@
-    <div class="hero px-4 py-10 bg-white min-h-screen">
-        <div class="hero-content flex-col lg:flex-row-reverse gap-10">
-            
-            <!-- Image -->
-            <img
-                src="/public/image/orang.png"
-                class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-lg"
-            />
-
-            <!-- Content -->
-            <div class="text-gray-900 text-center lg:text-left">
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold">
-                    Welcome to Kesatria Academy
-                </h1>
-
-                <p class="py-4 sm:py-6 text-lg sm:text-xl md:text-2xl">
-                    IT Development and Artificial Intelligence education program with high-quality courses and bootcamps for the professional world.
-                </p>
-
-                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <button class="btn bg-gray-900 text-white hover:text-gray-900 hover:bg-white px-8 sm:px-16 lg:px-28 border border-gray-900 transition-colors">
-                        Start Learning
-                    </button>
-                    <button class="btn btn-outline hover:bg-gray-900 hover:text-white text-gray-900 px-8 sm:px-16 lg:px-28 border-gray-900 transition-colors">
-                        Consultation
-                    </button>
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Kami - Kesatria Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #64748b 0%, #334155 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .accent-line {
+            background: linear-gradient(90deg, #64748b 0%, #334155 100%);
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900" x-data="{ activeSection: 'story' }">
+     Navigation 
+    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold gradient-text">Kesatria Academy</span>
                 </div>
+                <a href="/" class="flex items-center space-x-2 text-gray-600 hover:text-slate-600 transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Kembali ke Beranda</span>
+                </a>
             </div>
         </div>
-    </div>
+    </nav>
 
-        <div class="bg-gray-900 rounded-t-[8vw] py-16 px-6 lg:px-20 ">
-        <!-- Title -->
-        <div class="text-center max-w-4xl mx-auto mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold text-white">
-                Kesatria Academy Bootcamp has experience helping 
-                <span class="text-gray-300">3400+ CAREER SHIFTERS</span> during the pandemic 
-                <span class="font-bold">UNTIL NOW</span>
-                through...
-            </h2>
-        </div>
-
-        <!-- Grid Card -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
-            
-            <!-- Card 1 -->
-            <div class="p-6 bg-white border-b-white rounded-xl shadow hover:border-b-gray-700 border-b-8 hover:bg-gray-100 transition">
-                <div class="flex justify-center mb-4">
-                    <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-gray-700">
-                        📖
+    <div class="pt-20 min-h-screen">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                 Sidebar Navigation 
+                <div class="lg:col-span-1">
+                    <div class="sticky top-32 space-y-2">
+                        <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Navigasi</h2>
+                        <nav class="space-y-1">
+                            <button @click="activeSection = 'story'" 
+                                    :class="activeSection === 'story' ? 'bg-slate-100 text-slate-700 border-l-4 border-slate-600' : 'text-gray-600 hover:text-slate-600 hover:bg-gray-50'"
+                                    class="w-full text-left px-4 py-3 rounded-r-lg transition-all duration-200 flex items-center space-x-3">
+                                <i class="fas fa-book-open text-sm"></i>
+                                <span>Cerita Kami</span>
+                            </button>
+                            <button @click="activeSection = 'mission'" 
+                                    :class="activeSection === 'mission' ? 'bg-slate-100 text-slate-700 border-l-4 border-slate-600' : 'text-gray-600 hover:text-slate-600 hover:bg-gray-50'"
+                                    class="w-full text-left px-4 py-3 rounded-r-lg transition-all duration-200 flex items-center space-x-3">
+                                <i class="fas fa-bullseye text-sm"></i>
+                                <span>Misi & Visi</span>
+                            </button>
+                            <button @click="activeSection = 'team'" 
+                                    :class="activeSection === 'team' ? 'bg-slate-100 text-slate-700 border-l-4 border-slate-600' : 'text-gray-600 hover:text-slate-600 hover:bg-gray-50'"
+                                    class="w-full text-left px-4 py-3 rounded-r-lg transition-all duration-200 flex items-center space-x-3">
+                                <i class="fas fa-users text-sm"></i>
+                                <span>Tim Kami</span>
+                            </button>
+                            <button @click="activeSection = 'values'" 
+                                    :class="activeSection === 'values' ? 'bg-slate-100 text-slate-700 border-l-4 border-slate-600' : 'text-gray-600 hover:text-slate-600 hover:bg-gray-50'"
+                                    class="w-full text-left px-4 py-3 rounded-r-lg transition-all duration-200 flex items-center space-x-3">
+                                <i class="fas fa-heart text-sm"></i>
+                                <span>Nilai-Nilai</span>
+                            </button>
+                            <button @click="activeSection = 'contact'" 
+                                    :class="activeSection === 'contact' ? 'bg-slate-100 text-slate-700 border-l-4 border-slate-600' : 'text-gray-600 hover:text-slate-600 hover:bg-gray-50'"
+                                    class="w-full text-left px-4 py-3 rounded-r-lg transition-all duration-200 flex items-center space-x-3">
+                                <i class="fas fa-envelope text-sm"></i>
+                                <span>Kontak</span>
+                            </button>
+                        </nav>
                     </div>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                    Weekend Online Learning
-                </h3>
-                <p class="text-gray-600 text-sm">
-                    Eliminate the fear of not being able to attend classes because your job requires you to work overtime until night.
-                </p>
-            </div>
-            
-            <!-- Card 2 -->
-            <div class="p-6 bg-white border-b-white rounded-xl shadow hover:border-b-gray-700 border-b-8 hover:bg-gray-100 transition">
-                <div class="flex justify-center mb-4">
-                    <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-gray-700">
-                        👨‍🏫
+
+                 Main Content 
+                <div class="lg:col-span-3">
+                     Story Section 
+                    <div x-show="activeSection === 'story'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
+                        <div class="mb-8">
+                            <h1 class="text-4xl font-bold gradient-text mb-4">Kesatria Academy</h1>
+                            <div class="w-20 h-1 accent-line rounded-full mb-6"></div>
+                            <p class="text-xl text-gray-600 leading-relaxed">Platform pembelajaran teknologi terdepan yang memberdayakan generasi digital Indonesia</p>
+                        </div>
+
+                        <div class="prose prose-lg max-w-none">
+                            <p class="text-gray-700 leading-relaxed mb-6">
+                                Kesatria Academy lahir dari visi untuk menciptakan ekosistem pembelajaran teknologi yang accessible, berkualitas tinggi, dan relevan dengan kebutuhan industri. Kami percaya bahwa setiap individu memiliki potensi untuk menjadi "kesatria" di bidang teknologi, dengan dedikasi dan bimbingan yang tepat.
+                            </p>
+                            
+                            <p class="text-gray-700 leading-relaxed mb-6">
+                                Sejak didirikan, kami telah berkomitmen untuk menyediakan pembelajaran yang tidak hanya fokus pada aspek teknis, tetapi juga mengembangkan soft skills dan mindset yang dibutuhkan untuk sukses di era digital. Dengan kurikulum yang selalu update dan instruktur berpengalaman dari industri, kami memastikan setiap peserta mendapatkan pembelajaran yang maksimal.
+                            </p>
+
+                             Statistics 
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 my-12">
+                                <div class="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl card-hover">
+                                    <div class="text-3xl font-bold gradient-text mb-2">10K+</div>
+                                    <div class="text-sm text-gray-600">Siswa Aktif</div>
+                                </div>
+                                <div class="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl card-hover">
+                                    <div class="text-3xl font-bold gradient-text mb-2">500+</div>
+                                    <div class="text-sm text-gray-600">Kelas Tersedia</div>
+                                </div>
+                                <div class="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl card-hover">
+                                    <div class="text-3xl font-bold gradient-text mb-2">95%</div>
+                                    <div class="text-sm text-gray-600">Tingkat Kepuasan</div>
+                                </div>
+                                <div class="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl card-hover">
+                                    <div class="text-3xl font-bold gradient-text mb-2">50+</div>
+                                    <div class="text-sm text-gray-600">Instruktur Expert</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     Mission Section 
+                    <div x-show="activeSection === 'mission'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
+                        <div class="mb-8">
+                            <h1 class="text-4xl font-bold gradient-text mb-4">Misi & Visi</h1>
+                            <div class="w-20 h-1 accent-line rounded-full mb-6"></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-8 rounded-2xl card-hover">
+                                <div class="w-16 h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl flex items-center justify-center mb-6">
+                                    <i class="fas fa-eye text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold gradient-text mb-4">Visi Kami</h3>
+                                <p class="text-gray-700 leading-relaxed">
+                                    Menjadi platform pembelajaran teknologi terdepan di Indonesia yang menghasilkan talenta digital berkualitas tinggi dan siap bersaing di kancah global.
+                                </p>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-8 rounded-2xl card-hover">
+                                <div class="w-16 h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl flex items-center justify-center mb-6">
+                                    <i class="fas fa-bullseye text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold gradient-text mb-4">Misi Kami</h3>
+                                <p class="text-gray-700 leading-relaxed">
+                                    Menyediakan pendidikan teknologi yang accessible, praktis, dan relevan dengan kebutuhan industri untuk memberdayakan setiap individu mencapai potensi maksimalnya.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-12">
+                            <h3 class="text-2xl font-bold gradient-text mb-6">Komitmen Kami</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="flex items-start space-x-4 p-6 bg-white border border-gray-200 rounded-xl card-hover">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-star text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-2">Kualitas Terjamin</h4>
+                                        <p class="text-gray-600 text-sm">Kurikulum yang selalu update dan instruktur berpengalaman industri</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-4 p-6 bg-white border border-gray-200 rounded-xl card-hover">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-users text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-2">Komunitas Solid</h4>
+                                        <p class="text-gray-600 text-sm">Membangun jaringan profesional yang saling mendukung</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-4 p-6 bg-white border border-gray-200 rounded-xl card-hover">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-rocket text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-2">Inovasi Berkelanjutan</h4>
+                                        <p class="text-gray-600 text-sm">Selalu mengadopsi teknologi dan metodologi pembelajaran terbaru</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     Team Section 
+                    <div x-show="activeSection === 'team'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
+                        <div class="mb-8">
+                            <h1 class="text-4xl font-bold gradient-text mb-4">Tim Kami</h1>
+                            <div class="w-20 h-1 accent-line rounded-full mb-6"></div>
+                            <p class="text-xl text-gray-600">Bertemu dengan para ahli yang berdedikasi untuk kesuksesan pembelajaran Anda</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div class="bg-white border border-gray-200 rounded-2xl p-6 card-hover">
+                                <div class="w-20 h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                    <i class="fas fa-user text-white text-2xl"></i>
+                                </div>
+                                <div class="text-center">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-2">Ahmad Rizki</h3>
+                                    <p class="text-slate-600 font-medium mb-3">Founder & CEO</p>
+                                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                                        Ex-Senior Engineer di Google dengan 10+ tahun pengalaman dalam pengembangan sistem skala besar
+                                    </p>
+                                    <div class="flex justify-center space-x-3">
+                                        <a href="#" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-linkedin text-slate-600 text-sm"></i>
+                                        </a>
+                                        <a href="#" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-twitter text-slate-600 text-sm"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-2xl p-6 card-hover">
+                                <div class="w-20 h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                    <i class="fas fa-user text-white text-2xl"></i>
+                                </div>
+                                <div class="text-center">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-2">Sarah Putri</h3>
+                                    <p class="text-slate-600 font-medium mb-3">Head of Curriculum</p>
+                                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                                        Mantan Lead Designer di Tokopedia dengan expertise dalam UX/UI Design dan Product Strategy
+                                    </p>
+                                    <div class="flex justify-center space-x-3">
+                                        <a href="#" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-linkedin text-slate-600 text-sm"></i>
+                                        </a>
+                                        <a href="#" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-dribbble text-slate-600 text-sm"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-2xl p-6 card-hover">
+                                <div class="w-20 h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                    <i class="fas fa-user text-white text-2xl"></i>
+                                </div>
+                                <div class="text-center">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-2">Budi Santoso</h3>
+                                    <p class="text-slate-600 font-medium mb-3">Lead Instructor</p>
+                                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                                        Full-stack Developer dengan 8+ tahun pengalaman di startup unicorn dan perusahaan teknologi
+                                    </p>
+                                    <div class="flex justify-center space-x-3">
+                                        <a href="#" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-github text-slate-600 text-sm"></i>
+                                        </a>
+                                        <a href="#" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-twitter text-slate-600 text-sm"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-12 bg-gradient-to-br from-slate-50 to-slate-100 p-8 rounded-2xl">
+                            <h3 class="text-2xl font-bold gradient-text mb-4 text-center">Bergabung dengan Tim Kami</h3>
+                            <p class="text-gray-600 text-center mb-6">
+                                Kami selalu mencari talenta terbaik untuk bergabung dalam misi mencerdaskan bangsa melalui teknologi
+                            </p>
+                            <div class="text-center">
+                                <a href="#" class="inline-flex items-center space-x-2 bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-lg hover:from-slate-700 hover:to-slate-900 transition-all duration-200">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>Lihat Lowongan Kerja</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                     Values Section 
+                    <div x-show="activeSection === 'values'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
+                        <div class="mb-8">
+                            <h1 class="text-4xl font-bold gradient-text mb-4">Nilai-Nilai Kami</h1>
+                            <div class="w-20 h-1 accent-line rounded-full mb-6"></div>
+                            <p class="text-xl text-gray-600">Prinsip-prinsip yang memandu setiap langkah perjalanan kami</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-white border border-gray-200 rounded-2xl p-8 card-hover">
+                                <div class="w-16 h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl flex items-center justify-center mb-6">
+                                    <i class="fas fa-lightbulb text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold gradient-text mb-4">Inovasi</h3>
+                                <p class="text-gray-700 leading-relaxed">
+                                    Kami selalu mencari cara baru dan lebih baik untuk memberikan pengalaman pembelajaran yang luar biasa. Inovasi adalah DNA kami dalam menghadapi tantangan pendidikan digital.
+                                </p>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-2xl p-8 card-hover">
+                                <div class="w-16 h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl flex items-center justify-center mb-6">
+                                    <i class="fas fa-handshake text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold gradient-text mb-4">Integritas</h3>
+                                <p class="text-gray-700 leading-relaxed">
+                                    Kejujuran dan transparansi adalah fondasi kepercayaan dengan siswa, instruktur, dan mitra. Kami berkomitmen untuk selalu bertindak dengan integritas tinggi.
+                                </p>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-2xl p-8 card-hover">
+                                <div class="w-16 h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl flex items-center justify-center mb-6">
+                                    <i class="fas fa-users text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold gradient-text mb-4">Kolaborasi</h3>
+                                <p class="text-gray-700 leading-relaxed">
+                                    Kami percaya bahwa pembelajaran terbaik terjadi dalam lingkungan yang kolaboratif. Membangun komunitas yang saling mendukung adalah prioritas utama kami.
+                                </p>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-2xl p-8 card-hover">
+                                <div class="w-16 h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl flex items-center justify-center mb-6">
+                                    <i class="fas fa-trophy text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold gradient-text mb-4">Excellence</h3>
+                                <p class="text-gray-700 leading-relaxed">
+                                    Standar tinggi dalam setiap aspek layanan kami. Dari kurikulum hingga pengalaman pengguna, kami selalu berusaha memberikan yang terbaik untuk kesuksesan siswa.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                     Contact Section 
+                    <div x-show="activeSection === 'contact'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
+                        <div class="mb-8">
+                            <h1 class="text-4xl font-bold gradient-text mb-4">Hubungi Kami</h1>
+                            <div class="w-20 h-1 accent-line rounded-full mb-6"></div>
+                            <p class="text-xl text-gray-600">Kami siap membantu perjalanan pembelajaran teknologi Anda</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-2xl font-bold gradient-text mb-6">Informasi Kontak</h3>
+                                <div class="space-y-6">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-envelope text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900 mb-1">Email</h4>
+                                            <p class="text-gray-600">info@kesatriaacademy.com</p>
+                                            <p class="text-gray-600">support@kesatriaacademy.com</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-phone text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900 mb-1">Telepon</h4>
+                                            <p class="text-gray-600">+62 21 1234 5678</p>
+                                            <p class="text-gray-600">+62 812 3456 7890</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-map-marker-alt text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900 mb-1">Alamat</h4>
+                                            <p class="text-gray-600">Jl. Teknologi No. 123<br>Jakarta Selatan 12345<br>Indonesia</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-8">
+                                    <h4 class="font-semibold text-gray-900 mb-4">Media Sosial</h4>
+                                    <div class="flex space-x-4">
+                                        <a href="#" class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-instagram text-slate-600 text-xl"></i>
+                                        </a>
+                                        <a href="#" class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-twitter text-slate-600 text-xl"></i>
+                                        </a>
+                                        <a href="#" class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-linkedin text-slate-600 text-xl"></i>
+                                        </a>
+                                        <a href="#" class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                            <i class="fab fa-youtube text-slate-600 text-xl"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-8 rounded-2xl">
+                                <h3 class="text-2xl font-bold gradient-text mb-6">Kirim Pesan</h3>
+                                <form class="space-y-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                                        <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Subjek</label>
+                                        <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Pesan</label>
+                                        <textarea rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"></textarea>
+                                    </div>
+                                    <button type="submit" class="w-full bg-gradient-to-r from-slate-600 to-slate-800 text-white py-3 px-6 rounded-lg hover:from-slate-700 hover:to-slate-900 transition-all duration-200 flex items-center justify-center space-x-2">
+                                        <i class="fas fa-paper-plane"></i>
+                                        <span>Kirim Pesan</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                    Expert Mentor Guidance
-                </h3>
-                <p class="text-gray-600 text-sm">
-                    Learn directly from industry professionals with years of experience in top tech companies.
-                </p>
             </div>
-            
-            <!-- Card 3 -->
-            <div class="p-6 bg-white border-b-white rounded-xl shadow hover:border-b-gray-700 border-b-8 hover:bg-gray-100 transition">
-                <div class="flex justify-center mb-4">
-                    <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-gray-700">
-                        💼
+        </div>
+    </div>
+
+     Footer 
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-3 mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-lg"></i>
                     </div>
+                    <span class="text-xl font-bold">Kesatria Academy</span>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                    Career Preparation Support
-                </h3>
-                <p class="text-gray-600 text-sm">
-                    Get help with CV, portfolio, and interview preparation from our dedicated talent support team.
-                </p>
+                <p class="text-gray-400 mb-6">Memberdayakan generasi digital Indonesia melalui pendidikan teknologi berkualitas</p>
+                <div class="flex justify-center space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a>
+                </div>
+                <div class="mt-8 pt-8 border-t border-gray-800">
+                    <p class="text-gray-400">&copy; 2025 Kesatria Academy. All rights reserved.</p>
+                </div>
             </div>
         </div>
-    </div>
-<!-- Tentang Perusahaan -->
-<section class="bg-white py-20 px-6 lg:px-20">
-  <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-    
-    <!-- Gambar -->
-    <div class="flex justify-center">
-      <img 
-        src="/public/image/company.png" 
-        alt="About Kesatria Academy" 
-        class="w-full max-w-md rounded-2xl shadow-lg"
-      />
-    </div>
-
-    <!-- Konten -->
-    <div class="text-gray-900">
-      <h2 class="text-3xl md:text-4xl font-bold mb-6">
-        About <span class="text-gray-700">Kesatria Academy</span>
-      </h2>
-      <p class="text-gray-600 text-lg leading-relaxed mb-6">
-        Kesatria Academy is an IT development and Artificial Intelligence education institution
-        committed to preparing professionals for the digital era. We provide innovative learning 
-        experiences, industry-oriented programs, and direct mentorship from experts to ensure 
-        every learner is career-ready.
-      </p>
-
-      <!-- Nilai Perusahaan -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <!-- Visi -->
-        <div class="p-6 border rounded-xl shadow-sm hover:shadow-md transition">
-          <h3 class="text-xl font-semibold mb-2">🌟 Vision</h3>
-          <p class="text-gray-600 text-sm">
-            To be the leading academy in shaping world-class digital talent.
-          </p>
-        </div>
-
-        <!-- Misi -->
-        <div class="p-6 border rounded-xl shadow-sm hover:shadow-md transition">
-          <h3 class="text-xl font-semibold mb-2">🎯 Mission</h3>
-          <p class="text-gray-600 text-sm">
-            Empower learners with practical skills, mentorship, and global opportunities.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </footer>
+</body>
+</html>

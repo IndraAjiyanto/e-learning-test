@@ -6,6 +6,8 @@ import { Kelas } from 'src/entities/kelas.entity';
 import { Repository } from 'typeorm';
 import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 import { Alumni } from 'src/entities/alumni.entity';
+import { Portfolio } from 'src/entities/portfolio.entity';
+import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 
 @Injectable()
 export class DashboardService {
@@ -15,11 +17,23 @@ export class DashboardService {
     @InjectRepository(PertanyaanUmum)
         private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
     @InjectRepository(Alumni)
-        private readonly alumniRepository: Repository<Alumni>
+        private readonly alumniRepository: Repository<Alumni>,
+    @InjectRepository(Portfolio)
+        private readonly portfolioRepository: Repository<Portfolio>,
+    @InjectRepository(GambarBenefit)
+        private readonly gambarBenefitRepository: Repository<GambarBenefit>,
   ) {}
 
   async findAllKelas(){
-    return await this.kelasRepository.find({where: {launch: true}, order: {id: 'DESC'}, relations: ['kategori']});
+    return await this.kelasRepository.find({where: {launch: true}, order: {id: 'DESC'}, relations: ['kategori', 'jenis_kelas']});
+  }
+
+  async findPortfolio(){
+    return await this.portfolioRepository.find({relations: ['kelas','kelas.kategori','kelas.jenis_kelas', 'user', 'user.biodata']})
+  }
+
+  async findOnePortfolio(portfolioId: number){
+    return await this.portfolioRepository.findOne({where: {id: portfolioId}, relations: ['kelas','kelas.kategori','kelas.jenis_kelas', 'user', 'user.biodata']})
   }
 
   async findFAQ(){
@@ -28,6 +42,10 @@ export class DashboardService {
 
   async findAlumni(){
     return await this.alumniRepository.find({relations: ['kelas']})
+  }
+
+  async findGambar(){
+    return await this.gambarBenefitRepository.find()
   }
   
   create(createDashboardDto: CreateDashboardDto) {

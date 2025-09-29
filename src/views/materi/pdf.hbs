@@ -1,54 +1,82 @@
 <div class="max-w-7xl mx-auto px-4 py-10 pt-28" 
      x-data="{ pdfSrc: '', materiJudul: '' }">
 
-  <!-- Tombol Kembali -->
-  <div class="mb-6">
+  <div class="mb-8">
     <a href="/kelass/{{pertemuan.minggu.kelas.id}}" 
-       class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           class="h-5 w-5 mr-2" fill="none" 
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" 
-              stroke-linejoin="round" 
-              stroke-width="2" 
-              d="M15 19l-7-7 7-7" />
-      </svg>
-      Back
+       class="inline-flex items-center text-slate-600 hover:text-slate-900 text-base font-semibold transition-colors duration-200 group">
+      <div class="p-2 rounded-lg bg-slate-50 group-hover:bg-slate-100 transition-colors duration-200 mr-3">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="h-4 w-4" fill="none" 
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M15 19l-7-7 7-7" />
+        </svg>
+      </div>
+      Kembali ke Kelas
     </a>
   </div>
 
-  <!-- Layout Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
-    <!-- Bagian PDF Viewer -->
     <div class="col-span-2">
-      <iframe 
-        class="h-[500px] w-full rounded-lg border shadow"
-        x-bind:src="'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(pdfSrc)">
-      </iframe>
+      <div class="bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-200 shadow-lg overflow-hidden">
+        <iframe 
+          class="h-[600px] w-full"
+          x-bind:src="'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(pdfSrc)">
+        </iframe>
+      </div>
 
-      <div class="mt-4">
-        <h1 class="text-2xl font-bold text-gray-900" x-text="materiJudul"></h1>
+      <div class="mt-6">
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent" 
+            x-text="materiJudul || 'Pilih materi untuk mulai belajar'"></h1>
+        <div class="h-1 w-20 bg-gradient-to-r from-slate-600 to-slate-400 rounded-full mt-2"></div>
       </div>
     </div>
 
-    <!-- Daftar Materi -->
-    <div class="bg-white border border-gray-200 p-6 rounded-lg shadow">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">Materi Kelas</h2>
+    <div class="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl shadow-lg overflow-hidden">
+      <div class="p-6 bg-gradient-to-r from-slate-900 to-slate-800">
+        <h2 class="text-xl font-semibold text-white flex items-center">
+          <div class="p-2 bg-white/10 rounded-lg mr-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          Materi Kelas
+        </h2>
+      </div>
 
-      {{#if materi.length}}
-        <div class="space-y-2">
-          {{#each materi}}
-          <button  
-            class="w-full text-left px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition"
-            @click="pdfSrc = '{{file}}'; materiJudul = '{{judul}}'">
-            {{judul}}
-          </button>
-          {{/each}}
-        </div>
-      {{else}}
-        <p class="px-4 py-2 text-gray-500 text-sm">Belum ada materi</p>
-      {{/if}}
+      <div class="p-6">
+        {{#if materi.length}}
+          <div class="space-y-3">
+            {{#each materi}}
+            <button  
+              class="w-full text-left px-4 py-4 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all duration-200 shadow-sm hover:shadow-md group"
+              @click="pdfSrc = '{{file}}'; materiJudul = '{{judul}}'">
+              <div class="flex items-center">
+                <div class="p-2 bg-slate-100 group-hover:bg-slate-200 rounded-lg mr-3 transition-colors duration-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <span class="font-medium text-slate-900 group-hover:text-slate-700 transition-colors duration-200">{{judul}}</span>
+              </div>
+            </button>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="text-center py-8">
+            <div class="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <p class="text-slate-500 text-sm font-medium">Belum ada materi tersedia</p>
+            <p class="text-slate-400 text-xs mt-1">Materi akan ditambahkan segera</p>
+          </div>
+        {{/if}}
+      </div>
     </div>
 
   </div>

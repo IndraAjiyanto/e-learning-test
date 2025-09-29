@@ -18,7 +18,7 @@ export class UsersController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(FileInterceptor('profile', multerConfigImage)) 
-  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response, @UploadedFile() profile: Express.Multer.File, @Req() req:any) {
+  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response, @UploadedFile() profile: Express.Multer.File, @Req() req:Request) {
     try {
       createUserDto.profile = profile.path;
       await this.usersService.create(createUserDto);

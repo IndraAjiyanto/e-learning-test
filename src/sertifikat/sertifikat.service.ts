@@ -34,10 +34,11 @@ export class SertifikatService {
     if(!user){
       throw new NotFoundException('user not found')
     }
-    const kelas = await this.kelasRepository.findOne({where: {id:kelasId}})
+    const kelas = await this.kelasRepository.findOne({where: {id:kelasId}, relations: ['minggu', 'minggu.quiz']})
         if(!kelas){
       throw new NotFoundException('kelas not found')
     }
+
     const sertifikat = await this.sertifikatRepository.findOne({where: {user: {id:userId}, kelas: {id: kelasId}}})
     if(!sertifikat){
       const templatePath = path.join(process.cwd(), 'tmp', 'sertifikat.pdf');
@@ -45,13 +46,69 @@ export class SertifikatService {
 
     const pdfDoc = await PDFDocument.load(templateBytes);
     const page = pdfDoc.getPages()[0];
+    const page2 = pdfDoc.getPages()[1];
+    const {height} = page2.getSize()
 
     page.drawText(user.username, {
-      x: 300,
-      y: 250,
+      x: 380,
+      y: 355,
       size: 36,
       color: rgb(0, 0, 0),
     });
+    const rows : any [] = [];
+
+  const headers = ["Material", "Interval", "Predicate"];
+        for (const m of kelas.minggu){
+     for(const q of m.quiz){
+      rows.push([q.nama_quiz, ])
+     }
+  }
+
+
+let startY = height - 200;
+let cellWidth = 150;
+let cellHeight = 30;
+let startX = 190;
+
+// Header
+headers.forEach((header, i) => {
+  page2.drawRectangle({
+    x: startX + i * cellWidth,
+    y: startY,
+    width: cellWidth,
+    height: cellHeight,
+    borderColor: rgb(0, 0, 0),
+    borderWidth: 1,
+  });
+  page2.drawText(header, {
+    x: startX + i * cellWidth + 10,
+    y: startY + 10,
+    size: 12,
+  });
+});
+
+// Rows
+rows.forEach((row, rowIndex) => {
+  row.forEach((cell, colIndex) => {
+    const y = startY - (rowIndex + 1) * cellHeight;
+    const x = startX + colIndex * cellWidth;
+
+    page2.drawRectangle({
+      x,
+      y,
+      width: cellWidth,
+      height: cellHeight,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 1,
+    });
+
+    page2.drawText(String(cell), {
+      x: x + 10,
+      y: y + 10,
+      size: 12,
+    });
+  });
+});
 
      const pdfBytes = await pdfDoc.save();
 

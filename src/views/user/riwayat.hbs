@@ -1,107 +1,180 @@
-<section class="py-16 bg-white pt-28" 
-         x-data="{ open: false, imageSrc: '', tab: 'all' }">
-  <div class="container mx-auto px-4 max-w-5xl">
-    <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">
-      History Payment
-    </h2>
 
-    <div class="flex justify-center gap-3 mb-10">
+
+<section class="py-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-28" 
+         x-data="{ open: false, imageSrc: '', tab: 'all' }">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <div class="text-center mb-16">
+      <div class="inline-block p-1 rounded-2xl bg-gradient-to-r from-slate-600 to-slate-800 mb-6">
+        <div class="bg-white rounded-xl px-8 py-4">
+          <h2 class="text-4xl font-bold bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
+            <i class="fas fa-history mr-3 text-slate-600"></i>
+            Payment History
+          </h2>
+        </div>
+      </div>
+      <p class="text-slate-600 text-lg max-w-2xl mx-auto">
+        Track and manage all your payment transactions with detailed status information
+      </p>
+    </div>
+
+    <div class="flex justify-center gap-4 mb-12">
       <button @click="tab = 'all'"
-        :class="tab === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'"
-        class="px-5 py-2 rounded-lg font-medium transition">
-        All
+        :class="tab === 'all' ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
+        class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2">
+        <i class="fas fa-list"></i>
+        All Payments
       </button>
       <button @click="tab = 'acc'"
-        :class="tab === 'acc' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'"
-        class="px-5 py-2 rounded-lg font-medium transition">
-        ACC
+        :class="tab === 'acc' ? 'bg-gradient-to-r from-emerald-500 to-emerald-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200'"
+        class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2">
+        <i class="fas fa-check-circle"></i>
+        Accepted
       </button>
       <button @click="tab = 'proces'"
-        :class="tab === 'proces' ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700'"
-        class="px-5 py-2 rounded-lg font-medium transition">
-        Proces
+        :class="tab === 'proces' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-amber-50 border border-slate-200'"
+        class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2">
+        <i class="fas fa-clock"></i>
+        Processing
       </button>
       <button @click="tab = 'rejected'"
-        :class="tab === 'rejected' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700'"
-        class="px-5 py-2 rounded-lg font-medium transition">
+        :class="tab === 'rejected' ? 'bg-gradient-to-r from-red-500 to-red-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-red-50 border border-slate-200'"
+        class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2">
+        <i class="fas fa-times-circle"></i>
         Rejected
       </button>
     </div>
 
     {{#if pembayaran.length}}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {{#each pembayaran}}
           <div 
             x-show="tab === 'all' 
               || (tab === 'acc' && '{{this.proses}}' === 'acc') 
               || (tab === 'proces' && '{{this.proses}}' === 'proces') 
               || (tab === 'rejected' && '{{this.proses}}' === 'rejected')"
-            class="rounded-2xl shadow-md overflow-hidden border transition transform hover:scale-105 hover:shadow-lg
-              {{#if (roles this.proses 'acc')}} bg-green-50 border-green-300
-              {{else if (roles this.proses 'proces')}} bg-yellow-50 border-yellow-300
-              {{else}} bg-red-50 border-red-300 {{/if}}">
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            class="group relative rounded-2xl shadow-lg overflow-hidden border transition-all duration-300 transform hover:scale-105 hover:shadow-2xl
+              {{#if (roles this.proses 'acc')}} bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-200
+              {{else if (roles this.proses 'proces')}} bg-gradient-to-br from-amber-50 to-orange-100 border-amber-200 hover:from-amber-100 hover:to-orange-200
+              {{else}} bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:from-red-100 hover:to-red-200 {{/if}}">
 
-            <div class="p-6 space-y-3">
-              <h3 class="text-lg font-bold text-gray-900">
-                {{this.kelas.nama_kelas}}
-              </h3>
-              <p class="text-sm text-gray-600">
-                Date: {{this.createdAt}}
-              </p>
+            <div class="absolute top-4 right-4 z-10">
+              {{#if (roles this.proses 'acc')}}
+                <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                  <i class="fas fa-check"></i>
+                  ACCEPTED
+                </div>
+              {{else if (roles this.proses 'proces')}}
+                <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                  <i class="fas fa-clock"></i>
+                  PROCESSING
+                </div>
+              {{else}}
+                <div class="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                  <i class="fas fa-times"></i>
+                  REJECTED
+                </div>
+              {{/if}}
+            </div>
 
-              <p class="text-sm font-medium">
-                Status:
-                {{#if (roles this.proses 'acc')}}
-                  <span class="text-green-700 font-bold">ACC</span>
-                {{else if (roles this.proses 'proces')}}
-                  <span class="text-yellow-700 font-bold">PROCES</span>
-                {{else}}
-                  <span class="text-red-700 font-bold">REJECTED</span>
-                {{/if}}
-              </p>
+            <div class="p-8 space-y-6">
+              <div class="space-y-3">
+                <h3 class="text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors">
+                  <i class="fas fa-graduation-cap mr-2 text-slate-600"></i>
+                  {{this.kelas.nama_kelas}}
+                </h3>
+                
+                <div class="flex items-center text-slate-600 text-sm">
+                  <i class="fas fa-calendar-alt mr-2"></i>
+                  <span class="font-medium">Payment Date:</span>
+                  <span class="ml-2">{{formatTanggal this.createdAt}}</span>
+                </div>
 
-              <div class="flex gap-3 pt-4">
+                <div class="flex items-center text-sm">
+                  <i class="fas fa-info-circle mr-2 text-slate-500"></i>
+                  <span class="font-medium text-slate-700">Status:</span>
+                  {{#if (roles this.proses 'acc')}}
+                    <span class="ml-2 text-emerald-700 font-bold">ACCEPTED</span>
+                  {{else if (roles this.proses 'proces')}}
+                    <span class="ml-2 text-amber-700 font-bold">PROCESSING</span>
+                  {{else}}
+                    <span class="ml-2 text-red-700 font-bold">REJECTED</span>
+                  {{/if}}
+                </div>
+              </div>
+
+              <div class="flex gap-3 pt-6">
                 <button 
                   @click="open = true; imageSrc = '{{this.file}}'" 
-                  class="flex-1 py-2 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-700 transition transform hover:scale-105">
-                  View proof of payment
+                  class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-slate-600 to-slate-800 text-white font-semibold text-sm hover:from-slate-700 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                  <i class="fas fa-eye"></i>
+                  View Proof
                 </button>
                 <a 
                   href="/kelass/{{this.kelas.id}}" 
-                  class="flex-1 py-2 rounded-lg bg-white text-gray-800 border font-medium text-sm hover:bg-gray-50 transition transform hover:scale-105 text-center">
-                  View class
+                  class="flex-1 py-3 px-4 rounded-xl bg-white text-slate-800 border-2 border-slate-200 font-semibold text-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                  <i class="fas fa-external-link-alt"></i>
+                  View Class
                 </a>
               </div>
             </div>
+
+            <div class="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
           </div>
         {{/each}}
       </div>
     {{else}}
-      <div class="text-center text-gray-600">
-        No payment history yet
+      <div class="text-center py-16">
+        <div class="bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl p-12 max-w-md mx-auto">
+          <i class="fas fa-receipt text-6xl text-slate-400 mb-6"></i>
+          <h3 class="text-xl font-bold text-slate-700 mb-3">No Payment History</h3>
+          <p class="text-slate-600">You haven't made any payments yet. Start exploring our courses!</p>
+        </div>
       </div>
     {{/if}}
   </div>
 
-  <!-- Modal -->
   <div 
     x-show="open" 
-    class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-    x-transition
+    class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
     @click.self="open = false"
     x-cloak>
 
-    <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-4 relative">
-      <button 
-        @click="open = false" 
-        class="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-2xl">
-        &times;
-      </button>
+    <div 
+      class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 transform scale-95"
+      x-transition:enter-end="opacity-100 transform scale-100"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100 transform scale-100"
+      x-transition:leave-end="opacity-0 transform scale-95">
+      
+      <div class="bg-gradient-to-r from-slate-600 to-slate-800 p-6 flex items-center justify-between">
+        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+          <i class="fas fa-image"></i>
+          Payment Proof
+        </h3>
+        <button 
+          @click="open = false" 
+          class="text-white hover:text-slate-200 text-2xl w-10 h-10 rounded-full hover:bg-white/20 transition-all duration-200 flex items-center justify-center">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
 
-      <img 
-        :src="imageSrc" 
-        alt="Bukti Pembayaran" 
-        class="rounded-lg w-full max-h-[80vh] object-contain">
+      <div class="p-6 bg-slate-50">
+        <img 
+          :src="imageSrc" 
+          alt="Payment Proof" 
+          class="rounded-2xl w-full max-h-[70vh] object-contain shadow-lg mx-auto">
+      </div>
     </div>
   </div>
 </section>

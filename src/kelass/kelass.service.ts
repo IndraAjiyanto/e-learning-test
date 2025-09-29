@@ -124,7 +124,7 @@ async findMyCourse(userId: number) {
     where: {
       user_kelas: { user : {id: userId} }  
     },
-    relations: ['user_kelas','user_kelas.user', 'kategori'], 
+    relations: ['user_kelas','user_kelas.user', 'kategori', 'jenis_kelas'], 
   });
 }
 

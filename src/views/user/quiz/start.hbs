@@ -1,41 +1,61 @@
 <div class="pt-28">
-<form 
-  method="POST" 
-  action="/jawaban-users/{{quizId}}" 
-  class="space-y-8 max-w-3xl mx-auto"
->
-  {{#each pertanyaan}}
-  <div class="p-6 border border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition">
-    <!-- Nomor + Pertanyaan -->
-    <p class="font-semibold text-gray-900 mb-4">
-     {{pertanyaan_soal}}
-    </p>
-
-    <!-- Pilihan Jawaban -->
-    <div class="space-y-3">
-      {{#each jawaban}}
-      <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
-        <input 
-          type="radio" 
-          name="q-{{../id}}"   
-          value="{{id}}"       
-          class="accent-gray-900 w-5 h-5"
-        >
-        <span class="ml-3 text-gray-900">{{jawaban}}</span>
-      </label>
-      {{/each}}
+  <div class="max-w-3xl mx-auto mb-8">
+    <div class="bg-gradient-to-r from-slate-50 to-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <h2 class="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-2">
+        Quiz Assessment
+      </h2>
+      <p class="text-slate-600">
+        Pilih jawaban yang paling tepat untuk setiap pertanyaan di bawah ini
+      </p>
     </div>
   </div>
-  {{/each}}
 
-  <!-- Tombol Submit -->
-  <div class="flex justify-end pt-6">
-    <button 
-      type="submit" 
-      class="px-6 py-3 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-800 hover:shadow-lg hover:scale-105 transition-transform"
-    >
-      Kirim Jawaban
-    </button>
-  </div>
-</form>
+  <form 
+    method="POST" 
+    action="/jawaban-users/{{quizId}}" 
+    class="space-y-8 max-w-3xl mx-auto"
+  >
+    {{#each pertanyaan}}
+    <div class="group p-6 border border-slate-200 rounded-2xl bg-white shadow-sm hover:shadow-lg hover:border-slate-300 transition-all duration-300">
+      <div class="flex items-start gap-4 mb-6">
+        <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+          {{@index}}
+        </div>
+        <p class="font-semibold text-slate-900 text-lg leading-relaxed">
+          {{pertanyaan_soal}}
+        </p>
+      </div>
+
+      <div class="space-y-3 ml-12">
+        {{#each jawaban}}
+        <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-slate-50 hover:to-white hover:border-slate-300 transition-all duration-200 group/option">
+          <input 
+            type="radio" 
+            name="q-{{../id}}"   
+            value="{{id}}"       
+            class="w-5 h-5 text-slate-600 border-slate-300 focus:ring-slate-500 focus:ring-2"
+          >
+          <span class="ml-4 text-slate-800 font-medium group-hover/option:text-slate-900 transition-colors">
+            {{jawaban}}
+          </span>
+        </label>
+        {{/each}}
+      </div>
+    </div>
+    {{/each}}
+
+    <div class="flex justify-end pt-8">
+      <button 
+        type="submit" 
+        class="group px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-lg hover:shadow-xl hover:from-slate-800 hover:to-slate-900 hover:scale-105 transition-all duration-300 font-semibold text-lg"
+      >
+        <span class="flex items-center gap-2">
+          Kirim Jawaban
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </form>
 </div>

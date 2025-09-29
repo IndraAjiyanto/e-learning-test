@@ -1,22 +1,88 @@
-<section class="pt-28 py-16 px-6 lg:px-20 bg-gray-50" x-data="{ search: '' }">
-    <!-- Title -->
+<section class="pt-28 py-16 px-6 lg:px-20 bg-gradient-to-br from-slate-50 to-white" 
+  x-data="{
+      tab: 'all',
+      categories: ['all', 'free class','course','bootcamp'],
+      selectedCategory: 'all',
+      searchQuery: '',
+      courseCategories: ['all', 'web development', 'ui/ux', 'devops', 'mobile development', 'data science', 'cybersecurity'],
+      currentPage: 1,
+      itemsPerPage: 6,
+
+      get filteredKelas() {
+          return [...$refs.kelasList.children].filter(el => {
+              const matchesTab = this.tab === 'all' || el.dataset.kategori === this.tab;
+              const matchesCategory = this.selectedCategory === 'all' || 
+                                    el.dataset.category?.toLowerCase() === this.selectedCategory.toLowerCase();
+              const matchesSearch = this.searchQuery === '' || 
+                                  el.dataset.nama?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                                  el.dataset.deskripsi?.toLowerCase().includes(this.searchQuery.toLowerCase());
+              
+              return matchesTab && matchesCategory && matchesSearch;
+          })
+      },
+
+      get totalPages() {
+          return Math.ceil(this.filteredKelas.length / this.itemsPerPage)
+      },
+
+      paginatedKelas(el) {
+          const idx = this.filteredKelas.indexOf(el)
+          return idx >= (this.currentPage - 1) * this.itemsPerPage &&
+                 idx < this.currentPage * this.itemsPerPage
+      },
+
+      resetFilters() {
+          this.selectedCategory = 'all';
+          this.searchQuery = '';
+          this.currentPage = 1;
+      }
+  }"
+  x-init="$watch('tab', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
+>
     <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <h2 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-4">
             My Learning Journey
         </h2>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Continue your progress and master new skills with our comprehensive courses designed for your career growth.
         </p>
     </div>
     
-    <!-- Search Bar -->
-    <div class="max-w-md mb-12">
-        <div class="relative">
+    <div class="flex flex-wrap justify-center gap-4 mb-8">
+        <template x-for="category in categories" :key="category">
+            <button 
+                class="px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-1"
+                :class="tab === category 
+                    ? 'bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-lg' 
+                    : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50'"
+                @click="tab = category"
+                x-text="category.charAt(0).toUpperCase() + category.slice(1)"
+            >
+            </button>
+        </template>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-3 mb-8">
+        <template x-for="cat in courseCategories" :key="cat">
+            <button 
+                class="px-4 py-2 text-xs font-medium rounded-lg transition-all duration-200"
+                :class="selectedCategory === cat 
+                    ? 'bg-slate-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                @click="selectedCategory = cat"
+                x-text="cat.charAt(0).toUpperCase() + cat.slice(1)"
+            >
+            </button>
+        </template>
+    </div>
+    
+    <div class="max-w-md mx-auto mb-12">
+        <div class="relative group">
             <input type="text" 
-                   x-model="search"
-                   placeholder="Search class..." 
-                   class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-900 focus:outline-none bg-white shadow-sm">
-            <button class="absolute right-0 top-0 bottom-0 bg-gray-900 text-white px-4 rounded-r-lg hover:bg-gray-700 transition-colors">
+                   x-model="searchQuery"
+                   placeholder="Search your classes..." 
+                   class="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 focus:outline-none bg-white shadow-sm transition-all duration-200 group-hover:shadow-md">
+            <button class="absolute right-0 top-0 bottom-0 bg-gradient-to-r from-slate-700 to-slate-900 text-white px-4 rounded-r-xl hover:from-slate-800 hover:to-slate-900 transition-all duration-200 shadow-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
@@ -24,44 +90,84 @@
         </div>
     </div>
 
-    <!-- Course Cards Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto" x-ref="kelasList">
         {{#each kelas}}
         <div 
-            x-show="'{{nama_kelas}}'.toLowerCase().includes(search.toLowerCase())"
-            class="card bg-white shadow-lg border rounded-xl overflow-hidden transition-all duration-300"
+            class="group bg-white shadow-lg hover:shadow-xl border border-slate-100 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
+            data-kategori="{{kategori.nama_kategori}}"
+            data-category="{{jenis_kelas.nama_jenis_kelas}}"
+            data-nama="{{nama_kelas}}"
+            data-deskripsi="{{deskripsi}}"
+            x-show="(tab === 'all' || tab === '{{kategori.nama_kategori}}') && (selectedCategory === 'all' || selectedCategory.toLowerCase() === '{{jenis_kelas.nama_jenis_kelas}}'.toLowerCase()) && (searchQuery === '' || '{{nama_kelas}}'.toLowerCase().includes(searchQuery.toLowerCase()) || '{{deskripsi}}'.toLowerCase().includes(searchQuery.toLowerCase())) && paginatedKelas($el)"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 transform scale-95"
             x-transition:enter-end="opacity-100 transform scale-100">
             
-            <figure class="px-6 pt-6">
-                <img src="{{gambar}}" alt="{{nama_kelas}}" class="rounded-xl h-40 w-full object-cover">
+            <figure class="relative overflow-hidden">
+                <img src="{{gambar}}" alt="{{nama_kelas}}" class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </figure>
 
-            <div class="card-body">
-                <div class="flex gap-2 mb-2">
-                    <span class="badge badge-outline px-2 py-1 text-xs">{{kategori.nama_kategori}}</span>
+            <div class="p-6">
+                <div class="flex gap-2 mb-3">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                        {{kategori.nama_kategori}}
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-slate-500 to-slate-600 text-white">
+                        {{jenis_kelas.nama_jenis_kelas}}
+                    </span>
                 </div>
 
-                <!-- Nama Kelas -->
-                <h2 class="card-title text-gray-900 text-lg">{{nama_kelas}}</h2>
+                <h2 class="text-xl font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-slate-700 transition-colors">
+                    {{nama_kelas}}
+                </h2>
 
-                <!-- Harga -->
-                <p class="text-base font-semibold text-gray-900">
-                    {{formatRupiah harga}}
-                </p>
 
-                <!-- Deskripsi -->
-                <p class="text-sm text-gray-600 line-clamp-2">
+
+                <p class="text-sm text-slate-600 line-clamp-2 mb-4 leading-relaxed">
                     {{deskripsi}}
                 </p>
 
-                <!-- Tombol -->
-                <div class="card-actions justify-end mt-4">
-                    <a href="/kelass/{{id}}" class="btn btn-outline w-full hover:bg-gray-900 hover:text-white text-gray-900 transition-colors">View Class</a>
+                <div class="mt-auto">
+                    <a href="/kelass/{{id}}" class="block w-full text-center px-4 py-3 bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-slate-900 text-white font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                        Continue Learning
+                    </a>
                 </div>
             </div>
         </div>
         {{/each}}
+    </div>
+
+    <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
+        <button 
+            @click="currentPage = Math.max(1, currentPage - 1)"
+            :disabled="currentPage === 1"
+            class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+            Previous
+        </button>
+        
+        <span class="px-4 py-2 text-slate-600" x-text="`Page ${currentPage} of ${totalPages}`"></span>
+        
+        <button 
+            @click="currentPage = Math.min(totalPages, currentPage + 1)"
+            :disabled="currentPage === totalPages"
+            class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+            Next
+        </button>
+    </div>
+
+    <div x-show="filteredKelas.length === 0" class="text-center py-12">
+        <div class="max-w-md mx-auto">
+            <div class="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-900 mb-2">No classes found</h3>
+            <p class="text-slate-600 mb-4">Try adjusting your filters or search terms to find what you're looking for.</p>
+            <button @click="resetFilters()" class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors">
+                Reset Filters
+            </button>
+        </div>
     </div>
 </section>

@@ -6,7 +6,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { multerConfigImage } from 'src/common/config/multer.config';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('portfolios')

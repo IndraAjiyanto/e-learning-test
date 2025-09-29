@@ -1,94 +1,176 @@
-<div class="pt-28 py-20">
-  <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Edit Portfolio</h2>
+<div class="pt-28 py-20 bg-gradient-to-br from-slate-50 to-white min-h-screen">
+  <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-xl border border-slate-200">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-2">
+        Edit Portfolio
+      </h2>
+      <div class="w-24 h-1 bg-gradient-to-r from-slate-600 to-slate-400 mx-auto rounded-full"></div>
+    </div>
 
     <form method="POST" action="/portfolios/{{portfolio.id}}?_method=PATCH" enctype="multipart/form-data" class="space-y-8">
 
-      <!-- Judul Portfolio -->
-      <div>
-        <label for="judul" class="block text-sm font-semibold text-gray-700 mb-1">Judul Portfolio</label>
+      <div class="space-y-2">
+        <label for="judul" class="flex items-center text-sm font-semibold text-slate-700 mb-2">
+          <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          Judul Portfolio
+        </label>
         <input type="text" id="judul" name="judul" value="{{portfolio.judul}}" required
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white 
-                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+          class="w-full border border-slate-300 rounded-lg px-4 py-3 bg-white 
+                 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent 
+                 text-slate-700 transition-all duration-200 hover:border-slate-400">
       </div>
 
-      <!-- Deskripsi -->
-      <div>
-        <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
+      <div class="space-y-2">
+        <label for="deskripsi" class="flex items-center text-sm font-semibold text-slate-700 mb-2">
+          <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Deskripsi
+        </label>
         <textarea id="deskripsi" name="deskripsi" rows="4"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white 
-                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">{{portfolio.deskripsi}}</textarea>
+          class="w-full border border-slate-300 rounded-lg px-4 py-3 bg-white 
+                 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent 
+                 text-slate-700 transition-all duration-200 hover:border-slate-400 resize-none">{{portfolio.deskripsi}}</textarea>
       </div>
 
-      <!-- Gambar (Preview + Hapus + Upload Baru) -->
-      <div x-data="{ oldFiles: {{json portfolio.gambar}}, newFiles: [] }" class="space-y-3">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Gambar Portfolio</label>
+      <div x-data="{ oldFiles: {{json portfolio.gambar}}, newFiles: [] }" class="space-y-4">
+        <label class="flex items-center text-sm font-semibold text-slate-700 mb-3">
+          <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          Gambar Portfolio
+        </label>
 
-        <!-- Gambar Lama -->
-        <template x-for="(url, index) in oldFiles" :key="'old-' + index">
-          <div class="flex items-center gap-3 mb-3">
-            <img :src="url" class="w-20 h-20 object-cover rounded border border-gray-300" />
-            <input type="hidden" name="gambar" :value="url">
-            <button type="button" @click="oldFiles.splice(index, 1)"
-              class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
-              ✕
-            </button>
-          </div>
-        </template>
+        <div class="space-y-3">
+          <template x-for="(url, index) in oldFiles" :key="'old-' + index">
+            <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-slate-50 to-white rounded-lg border border-slate-200 hover:shadow-md transition-all duration-200">
+              <div class="relative">
+                <img :src="url" class="w-20 h-20 object-cover rounded-lg border-2 border-slate-200 shadow-sm" />
+                <div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+              </div>
+              <input type="hidden" name="gambar" :value="url">
+              <div class="flex-1">
+                <p class="text-sm text-slate-600 font-medium">Existing Image</p>
+                <p class="text-xs text-slate-500">Currently saved</p>
+              </div>
+              <button type="button" @click="oldFiles.splice(index, 1)"
+                class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 
+                       rounded-full flex items-center justify-center transition-all duration-200 
+                       hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </template>
+        </div>
 
-        <!-- Gambar Baru -->
-        <template x-for="(file, index) in newFiles" :key="'new-' + index">
-          <div class="flex items-center gap-3 mb-3">
-            <input type="file" name="gambar" accept="image/*"
-              @change="file.preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-              class="flex-1 border border-gray-300 rounded-lg px-4 py-2 bg-white 
-                     focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+        <div class="space-y-3">
+          <template x-for="(file, index) in newFiles" :key="'new-' + index">
+            <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-slate-50 rounded-lg border border-slate-200 hover:shadow-md transition-all duration-200">
+              <input type="file" name="gambar" accept="image/*"
+                @change="file.preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+                class="flex-1 border border-slate-300 rounded-lg px-4 py-2 bg-white 
+                       focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent 
+                       text-slate-700 transition-all duration-200 hover:border-slate-400">
 
-            <template x-if="file.preview">
-              <img :src="file.preview" class="w-16 h-16 object-cover rounded border border-gray-300" />
-            </template>
+              <template x-if="file.preview">
+                <div class="relative">
+                  <img :src="file.preview" class="w-16 h-16 object-cover rounded-lg border-2 border-slate-200 shadow-sm" />
+                  <div class="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                </div>
+              </template>
 
-            <button type="button" @click="newFiles.splice(index, 1)"
-              class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">✕</button>
-          </div>
-        </template>
+              <button type="button" @click="newFiles.splice(index, 1)"
+                class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 
+                       rounded-full flex items-center justify-center transition-all duration-200 
+                       hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </template>
+        </div>
 
         <button type="button" @click="newFiles.push({ preview: null })"
-          class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
-                 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-          + Tambah Gambar Baru
+          class="w-full border-2 border-dashed border-slate-300 rounded-lg px-6 py-4 
+                 text-slate-600 hover:border-slate-400 hover:text-slate-700 hover:bg-slate-50
+                 flex items-center justify-center transition-all duration-200 group">
+          <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Tambah Gambar Baru
         </button>
       </div>
 
-      <!-- Technologies -->
-      <div x-data="{ techs: {{json portfolio.teknologi}} }">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
-        <template x-for="(tech, index) in techs" :key="index">
-          <div class="flex items-center gap-3 mb-3">
-            <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter a technology"
-              class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
-                     focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-            <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
-              class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
-              ✕
-            </button>
-          </div>
-        </template>
+      <div x-data="{ techs: {{json portfolio.teknologi}} }" class="space-y-4">
+        <label class="flex items-center text-sm font-semibold text-slate-700 mb-3">
+          <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+          </svg>
+          Technologies
+        </label>
+        
+        <div class="space-y-3">
+          <template x-for="(tech, index) in techs" :key="index">
+            <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-slate-50 to-white rounded-lg border border-slate-200 hover:shadow-md transition-all duration-200">
+              <div class="w-8 h-8 bg-gradient-to-br from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white text-sm font-bold" x-text="index + 1"></div>
+              <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter a technology"
+                class="flex-1 border border-slate-300 bg-white rounded-lg px-4 py-2 
+                       focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent 
+                       text-slate-700 transition-all duration-200 hover:border-slate-400">
+              <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
+                class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 
+                       rounded-full flex items-center justify-center transition-all duration-200 
+                       hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </template>
+        </div>
+        
         <button type="button" @click="techs.push('')"
-          class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
-                 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-          + Add Technology
+          class="w-full border-2 border-dashed border-slate-300 rounded-lg px-6 py-4 
+                 text-slate-600 hover:border-slate-400 hover:text-slate-700 hover:bg-slate-50
+                 flex items-center justify-center transition-all duration-200 group">
+          <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Add Technology
         </button>
       </div>
 
-      <!-- Button -->
-      <div class="flex space-x-4">
+      <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200">
         <button type="submit"
-          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-          Update
+          class="flex-1 bg-gradient-to-r from-slate-900 to-slate-700 hover:from-slate-800 hover:to-slate-600 
+                 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl 
+                 transition-all duration-200 transform hover:scale-105 
+                 flex items-center justify-center font-semibold">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+          </svg>
+          Update Portfolio
         </button>
         <a href="/kelass/{{portfolio.kelasId}}"
-          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          class="flex-1 px-6 py-3 rounded-lg border-2 border-slate-300 text-slate-700 
+                 hover:bg-slate-50 hover:border-slate-400 transition-all duration-200 
+                 flex items-center justify-center font-semibold">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
           Cancel
         </a>
       </div>

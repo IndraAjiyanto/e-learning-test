@@ -1,109 +1,106 @@
-<!-- Portfolio Section -->
-<section class="bg-gray-50 py-16 px-6 lg:px-20">
-  <!-- Title -->
-  <div class="text-center mb-12">
-    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">
-      Portofolio Peserta
-    </h2>
-    <p class="mt-2 text-lg text-gray-600">
-      Check out the amazing works created by our talented participants.
-    </p>
-  </div>
+    <div class="max-w-6xl mx-auto bg-gray-50 pt-28 py-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Portfolio</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {{#each portfolio}}
+            <div class="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div class="relative overflow-hidden rounded-t-xl" x-data="{ 
+                currentSlide: 0, 
+                images: [{{#each gambar}}'{{this}}',{{/each}}],
+                autoSlide: null,
+                init() {
+                  this.startAutoSlide();
+                },
+                startAutoSlide() {
+                  this.autoSlide = setInterval(() => {
+                    this.nextSlide();
+                  }, 4000);
+                },
+                stopAutoSlide() {
+                  clearInterval(this.autoSlide);
+                },
+                nextSlide() {
+                  this.currentSlide = (this.currentSlide + 1) % this.images.length;
+                },
+                prevSlide() {
+                  this.currentSlide = this.currentSlide === 0 ? this.images.length - 1 : this.currentSlide - 1;
+                },
+                goToSlide(index) {
+                  this.currentSlide = index;
+                }
+              }" @mouseenter="stopAutoSlide()" @mouseleave="startAutoSlide()">
+                
+                <div class="relative h-44 w-full">
+                  <template x-for="(image, index) in images" :key="index">
+                    <img :src="image" 
+                         :alt="'React Advanced - Image ' + (index + 1)"
+                         class="absolute inset-0 w-full h-44 object-cover transition-opacity duration-500"
+                         :class="{ 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }">
+                  </template>
+                </div>
 
-  <!-- Grid Card -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-    <!-- Card -->
-    {{#each portfolio}}
-    <div class="bg-white border-b-8 border-b-white rounded-xl shadow hover:border-b-gray-700 hover:bg-gray-100 transition">
-      <div class="relative">
-        <img src="https://picsum.photos/400/200?random=1"
-             alt="Judul Kelas"
-             class="w-full h-44 object-cover rounded-t-xl">
-        <span class="absolute top-3 left-3 bg-white text-gray-800 text-xs px-3 py-1 rounded-md shadow">
-          {{judul}}
-        </span>
-      </div>
-      <div class="p-6 space-y-3">
-        <div class="flex flex-wrap gap-2">
-          <span class="px-3 py-1 text-xs rounded-full bg-cyan-100 text-cyan-700 font-medium">Digital Marketing</span>
-          <span class="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-700 font-medium">Remote Internship</span>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900">{{deskripsi}}</h3>
-        <div class="flex items-center gap-2 text-sm text-gray-600">
-          <div class="flex text-yellow-400">★★★★★</div>
-          <span>4.9 (2409 Ulasan)</span>
-        </div>
-        <div class="flex items-center gap-6 text-sm text-gray-500">
-          <div class="flex items-center gap-1">⏱ 78 Menit</div>
-          <div class="flex items-center gap-1">📘 6 Materi</div>
-        </div>
-        <a href="#"
-           class="btn btn-outline w-full hover:bg-gray-900 hover:text-white text-gray-900 transition-colors">
-          Lihat Detail
-        </a>
-      </div>
-    </div>
-    {{/each}}
+                <div>
+                  <button @click="prevSlide()" 
+                          class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                  </button>
+                  <button @click="nextSlide()" 
+                          class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </button>
+                </div>
 
-    <!-- Card 2 -->
-    <div class="bg-white border-b-8 border-b-white rounded-xl shadow hover:border-b-gray-700 hover:bg-gray-100 transition">
-      <div class="relative">
-        <img src="https://picsum.photos/400/200?random=2"
-             alt="Judul Kelas"
-             class="w-full h-44 object-cover rounded-t-xl">
-        <span class="absolute top-3 left-3 bg-white text-gray-800 text-xs px-3 py-1 rounded-md shadow">
-          Design
-        </span>
-      </div>
-      <div class="p-6 space-y-3">
-        <div class="flex flex-wrap gap-2">
-          <span class="px-3 py-1 text-xs rounded-full bg-purple-100 text-purple-700 font-medium">UI/UX</span>
-          <span class="px-3 py-1 text-xs rounded-full bg-cyan-100 text-cyan-700 font-medium">Remote Internship</span>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900">Belajar Membuat Konten Menarik dengan Canva</h3>
-        <div class="flex items-center gap-2 text-sm text-gray-600">
-          <div class="flex text-yellow-400">★★★★★</div>
-          <span>4.8 (1200 Ulasan)</span>
-        </div>
-        <div class="flex items-center gap-6 text-sm text-gray-500">
-          <div class="flex items-center gap-1">⏱ 105 Menit</div>
-          <div class="flex items-center gap-1">📘 8 Materi</div>
-        </div>
-        <a href="#"
-           class="btn btn-outline w-full hover:bg-gray-900 hover:text-white text-gray-900 transition-colors">
-          Lihat Detail
-        </a>
-      </div>
-    </div>
+                <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md">
+                  {{kelas.nama_kelas}}
+                </div>
 
-    <!-- Card 3 -->
-    <div class="bg-white border-b-8 border-b-white rounded-xl shadow hover:border-b-gray-700 hover:bg-gray-100 transition">
-      <div class="relative">
-        <img src="https://picsum.photos/400/200?random=3"
-             alt="Judul Kelas"
-             class="w-full h-44 object-cover rounded-t-xl">
-        <span class="absolute top-3 left-3 bg-white text-gray-800 text-xs px-3 py-1 rounded-md shadow">
-          Business
-        </span>
-      </div>
-      <div class="p-6 space-y-3">
-        <div class="flex flex-wrap gap-2">
-          <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium">Marketing</span>
+                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                  <template x-for="(image, index) in images" :key="index">
+                    <button @click="goToSlide(index)" 
+                            class="w-2 h-2 rounded-full transition-all duration-200"
+                            :class="{ 'bg-white': currentSlide === index, 'bg-white/50': currentSlide !== index }">
+                    </button>
+                  </template>
+                </div>
+              </div>
+
+              <div class="p-6 space-y-4">
+                <div class="flex flex-wrap gap-2">
+                  <span class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border">
+                    {{kelas.jenis_kelas.nama_jenis_kelas}}
+                  </span>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-900 leading-tight">
+                  {{judul}}
+                </h3>
+
+                <div class="flex flex-wrap gap-2">
+                  {{#each teknologi}}
+                  <span class="px-2 py-1 text-xs rounded-md bg-gray-900 text-white font-medium">{{this}}</span>
+                  {{/each}}
+                </div>
+
+                <div class="flex items-center gap-3 pt-2 border-t border-gray-100">
+                  <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                    <img src="{{user.profile}}" alt="John Doe" class="w-full h-full object-cover">
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{user.biodata.nama_lengkap}}</p>
+                  </div>
+                </div>
+
+<div class="card-actions justify-end mt-6">
+                <a href="/dashboard/portfolio/{{id}}" class="w-full text-center  px-4 py-2 bg-white border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-900 hover:text-white transition-all duration-200">
+                  Lihat Detail
+                </a>
+                </div>
+              </div>
+            </div>
+            {{/each}}
         </div>
-        <h3 class="text-lg font-semibold text-gray-900">Cara Membuat Campaign Iklan yang Efektif</h3>
-        <div class="flex items-center gap-2 text-sm text-gray-600">
-          <div class="flex text-yellow-400">★★★★☆</div>
-          <span>4.7 (900 Ulasan)</span>
-        </div>
-        <div class="flex items-center gap-6 text-sm text-gray-500">
-          <div class="flex items-center gap-1">⏱ 170 Menit</div>
-          <div class="flex items-center gap-1">📘 10 Materi</div>
-        </div>
-        <a href="#"
-           class="btn btn-outline w-full hover:bg-gray-900 hover:text-white text-gray-900 transition-colors">
-          Lihat Detail
-        </a>
-      </div>
     </div>
-  </div>
-</section>

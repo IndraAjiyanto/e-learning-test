@@ -1,108 +1,212 @@
 <div class="max-w-6xl mx-auto px-6 py-10 pt-28" 
      x-data="{ open: false, imageSrc: '', tab: 'all' }">
 
-  <!-- Header -->
-  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Payment History</h2>
+   Header 
+  <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <div>
+      <h2 class="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent text-center md:text-left">Payment History</h2>
+      <p class="text-slate-600 mt-2 text-center md:text-left">Manage and track all payment transactions</p>
+    </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="flex justify-center md:justify-start space-x-3 mb-6">
+   Tabs 
+  <div class="flex justify-center md:justify-start space-x-2 mb-8">
     <button @click="tab = 'all'"
-      :class="tab === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'"
-      class="px-4 py-2 rounded-lg font-medium transition">
-      All
+      :class="tab === 'all' ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+      <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        All
+      </span>
     </button>
     <button @click="tab = 'proces'"
-      :class="tab === 'proces' ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700'"
-      class="px-4 py-2 rounded-lg font-medium transition">
-      Proces
+      :class="tab === 'proces' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+      <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Process
+      </span>
     </button>
     <button @click="tab = 'acc'"
-      :class="tab === 'acc' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'"
-      class="px-4 py-2 rounded-lg font-medium transition">
-      ACC
+      :class="tab === 'acc' ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+      <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        Accepted
+      </span>
     </button>
     <button @click="tab = 'rejected'"
-      :class="tab === 'rejected' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700'"
-      class="px-4 py-2 rounded-lg font-medium transition">
-      Rejected
+      :class="tab === 'rejected' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+      <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        Rejected
+      </span>
     </button>
   </div>
 
-  <!-- List -->
-  <div class="overflow-x-auto bg-white shadow-lg rounded-xl p-6">
+   List 
+  <div class="bg-white shadow-xl rounded-2xl p-8 border border-slate-100">
     {{#if pembayaran.length}}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {{#each pembayaran}}
           <div 
             x-show="tab === 'all' 
               || (tab === 'acc' && '{{this.proses}}' === 'acc') 
               || (tab === 'proces' && '{{this.proses}}' === 'proces') 
               || (tab === 'rejected' && '{{this.proses}}' === 'rejected')"
-            class="rounded-xl border p-6 relative transition hover:shadow-lg hover:scale-[1.01]
-              {{#if (roles this.proses 'acc')}} bg-green-50 border-green-300
-              {{else if (roles this.proses 'proces')}} bg-yellow-50 border-yellow-300
-              {{else}} bg-red-50 border-red-300 {{/if}}">
+            class="rounded-2xl border-2 p-6 relative transition-all duration-300 hover:shadow-xl hover:scale-[1.02] group
+              {{#if (roles this.proses 'acc')}} bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200 hover:border-emerald-300
+              {{else if (roles this.proses 'proces')}} bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 hover:border-amber-300
+              {{else}} bg-gradient-to-br from-red-50 to-rose-50 border-red-200 hover:border-red-300 {{/if}}">
 
-            <!-- Status badge -->
-            <div class="absolute top-3 right-3">
+             Status badge 
+            <div class="absolute -top-3 -right-3">
               {{#if (roles this.proses 'acc')}}
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-200 text-green-800">ACC</span>
+                <span class="px-4 py-2 text-xs font-bold rounded-full bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  ACCEPTED
+                </span>
               {{else if (roles this.proses 'proces')}}
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-200 text-yellow-800">PROCES</span>
+                <span class="px-4 py-2 text-xs font-bold rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  PROCESSING
+                </span>
               {{else}}
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-200 text-red-800">REJECTED</span>
+                <span class="px-4 py-2 text-xs font-bold rounded-full bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  REJECTED
+                </span>
               {{/if}}
             </div>
 
-            <!-- Content -->
-            <h3 class="text-lg font-bold text-gray-900">{{this.kelas.nama_kelas}}</h3>
-            <p class="text-sm text-gray-600">Category: {{this.kelas.kategori.nama_kategori}}</p>
-            <p class="text-sm text-gray-600">Name: {{this.user.username}}</p>
-            <p class="text-sm text-gray-600">Date: {{format this.createdAt}}</p>
+             Content 
+            <div class="space-y-3 mb-6">
+              <h3 class="text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors">{{this.kelas.nama_kelas}}</h3>
+              
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-slate-600">
+                  <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                  <span class="text-sm font-medium">{{this.kelas.kategori.nama_kategori}}</span>
+                </div>
+                
+                <div class="flex items-center gap-2 text-slate-600">
+                  <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  </svg>
+                  <span class="text-sm font-medium">{{this.user.username}}</span>
+                </div>
+                
+                <div class="flex items-center gap-2 text-slate-600">
+                  <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V6a2 2 0 012-2h4a2 2 0 012 2v1M8 7h8m-9 4a2 2 0 002 2h6a2 2 0 002-2v-4H7v4z"></path>
+                  </svg>
+                  <span class="text-sm font-medium">{{formatTanggal this.createdAt}}</span>
+                </div>
+              </div>
+            </div>
 
-            <div class="flex flex-wrap gap-3 pt-4">
+             Actions 
+            <div class="flex flex-col gap-3">
               <button 
                 @click="open = true; imageSrc = '{{this.file}}'" 
-                class="flex-1 py-2 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-700 transition">
-                View Proof
+                class="w-full py-3 rounded-xl bg-gradient-to-r from-slate-700 to-slate-800 text-white font-semibold text-sm hover:from-slate-800 hover:to-slate-900 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                View Payment Proof
               </button>
 
               {{#if (roles this.proses 'proces')}}
-                <form action="/pembayarans/acc/{{this.id}}?_method=PATCH" method="post" class="flex-1">
-                  <button type="submit"
-                    class="w-full py-2 rounded-lg bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition">
-                    ACC
-                  </button>
-                </form>
-                <form action="/pembayarans/rejected/{{this.id}}?_method=PATCH" method="post" class="flex-1">
-                  <button type="submit"
-                    class="w-full py-2 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition">
-                    Reject
-                  </button>
-                </form>
+                <div class="flex gap-2">
+                  <form action="/pembayarans/acc/{{this.id}}?_method=PATCH" method="post" class="flex-1">
+                    <button type="submit"
+                      class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold text-sm hover:from-emerald-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Accept
+                    </button>
+                  </form>
+                  <form action="/pembayarans/rejected/{{this.id}}?_method=PATCH" method="post" class="flex-1">
+                    <button type="submit"
+                      class="w-full py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold text-sm hover:from-red-600 hover:to-rose-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                      Reject
+                    </button>
+                  </form>
+                </div>
               {{/if}}
             </div>
           </div>
         {{/each}}
       </div>
     {{else}}
-      <div class="text-center text-gray-600 py-10">No payment history yet</div>
+      <div class="text-center py-16">
+        <div class="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+          <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-slate-700 mb-2">No Payment History</h3>
+        <p class="text-slate-500">Payment transactions will appear here once they are submitted.</p>
+      </div>
     {{/if}}
   </div>
 
-  <!-- Modal -->
+   Modal 
   <div x-show="open" 
-       class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-       x-transition
+       class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
        @click.self="open = false">
 
-    <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-4 relative">
-      <button @click="open = false" 
-              class="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
+    <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative"
+         x-transition:enter="transition ease-out duration-300 transform"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200 transform"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95">
+      
+       Modal Header 
+      <div class="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
+        <h3 class="text-xl font-bold text-slate-900">Payment Proof</h3>
+        <button @click="open = false" 
+                class="p-2 hover:bg-slate-200 rounded-full transition-colors duration-200 text-slate-600 hover:text-slate-900">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
 
-      <img :src="imageSrc" alt="Payment Proof" class="rounded-lg w-full max-h-[80vh] object-contain">
+       Modal Content 
+      <div class="p-6 max-h-[calc(90vh-120px)] overflow-auto">
+        <img :src="imageSrc" alt="Payment Proof" class="rounded-2xl w-full h-auto object-contain shadow-lg border border-slate-200">
+      </div>
     </div>
   </div>
 </div>

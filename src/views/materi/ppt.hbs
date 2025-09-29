@@ -2,65 +2,87 @@
      x-data="{ slides: [] }"
      x-init="initReveal()">
 
-  <!-- Tombol kembali -->
   <div class="mb-8">
     <a href="/kelass/{{pertemuan.minggu.kelas.id}}" 
-       class="inline-flex items-center text-gray-700 text-base font-medium hover:underline">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+       class="inline-flex items-center px-4 py-2 bg-slate-50 text-slate-700 text-base font-medium rounded-lg border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all duration-200 shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
-      Back
+      Back to Class
     </a>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
     
-    <!-- Slideshow Area -->
-    <div class="col-span-2 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+    <div class="col-span-2 bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
       <div class="reveal">
         <div class="slides">
           <template x-for="slide in slides" :key="slide">
             <section>
-              <img :src="slide" class="w-full h-[550px] object-contain bg-gray-50 rounded-lg" />
+              <img :src="slide" class="w-full h-[550px] object-contain bg-gradient-to-br from-slate-50 to-white rounded-lg" />
             </section>
           </template>
         </div>
       </div>
 
-      <!-- Placeholder kalau belum pilih -->
       <template x-if="slides.length === 0">
-        <div class="flex items-center justify-center h-[550px] bg-gray-50 text-gray-400 text-lg font-medium">
-          Pilih materi untuk melihat slide 📑
+        <div class="flex flex-col items-center justify-center h-[550px] bg-gradient-to-br from-slate-50 to-slate-100 text-slate-500">
+          <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <p class="text-lg font-medium text-slate-600">Select Material to View Slides</p>
+          <p class="text-sm text-slate-400 mt-1">Choose from the materials list to start presentation</p>
         </div>
       </template>
     </div>
 
-    <!-- Sidebar Materi -->
-    <aside class="bg-white border border-gray-200 p-6 rounded-2xl shadow space-y-4">
-      <h2 class="text-lg font-semibold text-gray-900 border-b pb-3">Materi Kelas</h2>
+    <aside class="bg-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden">
+      <div class="bg-gradient-to-r from-slate-900 to-slate-700 px-6 py-4">
+        <h2 class="text-lg font-semibold text-white flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          Class Materials
+        </h2>
+      </div>
       
-      {{#if materi.length}}
-        <ul class="space-y-3">
-          {{#each materi}}
-            <li>
-              <button  
-                class="w-full text-left px-4 py-3 rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-gray-900 hover:text-white transition"
-                @click="
-                  slides = {{json this.slides}};
-                  $nextTick(() => {
-                    Reveal.sync();
-                    Reveal.slide(0);
-                  });
-                "
-              >
-                {{judul}}
-              </button>
-            </li>
-          {{/each}}
-        </ul>
-      {{else}}
-        <p class="text-gray-500 italic">Belum ada materi tersedia</p>
-      {{/if}}
+      <div class="p-6">
+        {{#if materi.length}}
+          <ul class="space-y-3">
+            {{#each materi}}
+              <li>
+                <button  
+                  class="w-full text-left px-4 py-3 rounded-lg border border-slate-200 bg-gradient-to-r from-white to-slate-50 shadow-sm hover:from-slate-900 hover:to-slate-700 hover:text-white hover:border-slate-600 transition-all duration-300 group"
+                  @click="
+                    slides = {{json this.slides}};
+                    $nextTick(() => {
+                      Reveal.sync();
+                      Reveal.slide(0);
+                    });
+                  "
+                >
+                  <div class="flex items-center">
+                    <div class="w-2 h-2 bg-slate-400 rounded-full mr-3 group-hover:bg-white transition-colors"></div>
+                    <span class="font-medium">{{judul}}</span>
+                  </div>
+                </button>
+              </li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <div class="text-center py-8">
+            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <p class="text-slate-500 font-medium">No Materials Available</p>
+            <p class="text-slate-400 text-sm mt-1">Materials will appear here when added</p>
+          </div>
+        {{/if}}
+      </div>
     </aside>
   </div>
 </div>
