@@ -39,20 +39,45 @@
 
       </div>
 
-      <div class="flex gap-3">
-        <a href="/pertemuans/formEdit/{{pertemuan.id}}" 
-           class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
-          Edit
-        </a>
-                <form action="/pertemuans/{{pertemuan.id}}/{{pertemuan.minggu.id}}?_method=DELETE" method="post">
-          <button 
-            type="button"
-            onclick="confirmDelete(this)"
-            class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-400 transition">
-            Delete
-          </button>
-        </form>
-      </div>
+<div class="flex items-center gap-4">
+  <!-- Tombol Edit -->
+  <a href="/pertemuans/formEdit/{{pertemuan.id}}"
+     class="p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
+     title="Edit Pertemuan">
+    <!-- Icon Edit (Pencil) -->
+    <svg xmlns="http://www.w3.org/2000/svg"
+         fill="none" viewBox="0 0 24 24"
+         stroke-width="2" stroke="currentColor"
+         class="w-7 h-7">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M16.862 4.487l1.687-1.688a1.875 1.875 
+               0 112.652 2.652L10.582 16.07a4.5 
+               4.5 0 01-1.897 1.13l-2.685.805.805-2.685
+               a4.5 4.5 0 011.13-1.897l10.927-10.936z" />
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M19.5 7.125L16.875 4.5" />
+    </svg>
+  </a>
+
+  <!-- Tombol Delete -->
+  <form action="/pertemuans/{{pertemuan.id}}/{{pertemuan.minggu.id}}?_method=DELETE" method="post">
+    <button 
+      type="button"
+      onclick="confirmDelete(this)"
+      class="p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm"
+      title="Delete Pertemuan">
+      <!-- Icon Delete (X / Trash) -->
+      <svg xmlns="http://www.w3.org/2000/svg"
+           fill="none" viewBox="0 0 24 24"
+           stroke-width="2" stroke="currentColor"
+           class="w-7 h-7">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </form>
+</div>
+
     </div>
   </div>
 </div>

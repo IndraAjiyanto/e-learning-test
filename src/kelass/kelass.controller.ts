@@ -108,7 +108,7 @@ export class KelassController {
   if(!kelas){
     req.flash('info', 'not found class')
   }else if(!req.user){
-    res.render('kelas/Bdetail', { kelas, kelass});
+    res.render('kelas/Bdetail', { kelas, kelass, daftar});
   } else {
           for (const u of kelas.user_kelas) {
     if (u.user.id === req.user.id) {

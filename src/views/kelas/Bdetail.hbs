@@ -58,6 +58,8 @@
       <div>
         <!-- Course Info Tab -->
         <div x-show="activeTab === 'info'" x-transition>
+          <div class="space-y-6">
+
           <!-- Description -->
           <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
             <h3 class="text-3xl font-bold mb-4 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">{{kelas.nama_kelas}}</h3>
@@ -67,7 +69,6 @@
           </div>
 
           <!-- Course Content -->
-          <div class="space-y-6">
             <!-- Material Includes -->
             <div class="bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200">
               <h4 class="text-xl font-bold mb-4 text-slate-900 flex items-center gap-2">
@@ -540,9 +541,19 @@
     <aside class="space-y-6" x-data="{ previewUrl: null, copied: false, copyToClipboard() { navigator.clipboard.writeText('2847 9237 4298 1234'); this.copied = true; setTimeout(() => this.copied = false, 2000); } }">
       <div class="p-8 border border-slate-200 rounded-2xl shadow-xl bg-gradient-to-br from-white to-slate-50 space-y-6 sticky top-6">
         <!-- Harga -->
-        <div class="text-center">
-          <p class="text-5xl font-bold bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">{{formatRupiah kelas.harga}}</p>
-        </div>
+<div class="text-center space-y-2">
+  <!-- Harga coret -->
+  <p class="text-lg text-gray-400 line-through ">
+    {{formatRupiah kelas.promo}}
+  </p>
+
+  <!-- Harga promo -->
+  <p class="text-4xl font-bold bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
+    {{formatRupiah kelas.harga}}
+  </p>
+
+</div>
+
 
         <!-- Card No Rekening -->
         {{#if (roles kelas.kategori.nama_kategori "free class")}}

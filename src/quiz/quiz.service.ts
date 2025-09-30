@@ -41,7 +41,7 @@ export class QuizService {
   }
 
   async findOne(quizId: number) {
-    return await this.quizRepository.findOne({where: {id: quizId}, relations: ['minggu', 'minggu.kelas', 'pertanyaan', 'pertanyaan.jawaban', 'nilai']});
+    return await this.quizRepository.findOne({where: {id: quizId}, relations: ['minggu', 'minggu.kelas', 'pertanyaan', 'pertanyaan.jawaban', 'nilai', 'nilai.user']});
   }
 
   async findNilaiUser(userId:number, quziId:number){
