@@ -58,13 +58,13 @@ export class PertemuansController {
 
   @Roles('admin')
   @Get('formAdd/:id')
-  async formAdd(@Res() res:Response, @Req() req:any, @Param('id') id: number){
+  async formAdd(@Res() res:Response, @Req() req:Request, @Param('id') id: number){
     res.render('admin/kelas/createPertemuan', {user: req.user, id})
   }
 
   @Roles('admin')
   @Get('formEdit/:id')
-  async formEdit(@Res() res:Response, @Req() req:any, @Param('id') id: number){
+  async formEdit(@Res() res:Response, @Req() req:Request, @Param('id') id: number){
     const pertemuan = await this.pertemuansService.findOne(id)
     const kelas = await this.pertemuansService.findAllKelas()
     res.render('admin/pertemuan/edit', {user: req.user, kelas, pertemuan})
@@ -72,14 +72,15 @@ export class PertemuansController {
 
   @Roles('admin')
   @Get(':pertemuanId')
-  async findOne(@Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:any) {
+  async findOne(@Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:Request) {
     const logbook = await this.pertemuansService.findLogBook(pertemuanId)
+    const logbook_mentor = await this.pertemuansService.findLogBookMentor(pertemuanId)
     const pertemuan = await this.pertemuansService.findOne(pertemuanId);
     const murid = await this.pertemuansService.findMuridInKelas(pertemuan.minggu.kelas.id, pertemuanId)
       const materipdf = await this.materisService.findMateriPdf(pertemuanId)
   const materivideo = await this.materisService.findMateriVideo(pertemuanId)
   const materippt = await this.materisService.findMateriPpt(pertemuanId)
-    res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid, materipdf, materippt, materivideo, logbook })
+    res.render('admin/pertemuan/detail',{user:req.user, pertemuan, murid, materipdf, materippt, materivideo, logbook, logbook_mentor })
   }
 
   @Roles('admin')

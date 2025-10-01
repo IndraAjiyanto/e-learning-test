@@ -8,6 +8,7 @@ import { User } from 'src/entities/user.entity';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import cloudinary from 'src/common/config/multer.config';
+import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 
 @Injectable()
 export class LogbookService {
@@ -19,6 +20,8 @@ export class LogbookService {
   private readonly pertemuanRepository: Repository<Pertemuan>
   @InjectRepository(Kelas)
   private readonly kelasRepository: Repository<Kelas>
+      @InjectRepository(LogbookMentor)
+      private readonly logBookMentorRepository: Repository<LogbookMentor>
 
   async create(createLogbookDto: CreateLogbookDto) {
     const user = await this.userRepository.findOne({where: {id: createLogbookDto.userId}})
@@ -46,8 +49,12 @@ export class LogbookService {
   }
 
   async findAll() {
-    return await this.logBookRepository.find({where: {user: {role: 'user'}}, relations: [ 'user']})
+    return await this.logBookRepository.find({ relations: [ 'user', 'pertemuan', 'pertemuan.minggu', 'pertemuan.minggu.kelas']})
   }
+
+    async findLogBookMentor() {
+    return await this.logBookMentorRepository.find({relations: ['user', 'pertemuan', 'pertemuan.minggu', 'pertemuan.minggu.kelas']})
+    }
 
   async findPertemuan(pertemuanId: number){
     const pertemuan = await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['minggu', 'minggu.kelas']})

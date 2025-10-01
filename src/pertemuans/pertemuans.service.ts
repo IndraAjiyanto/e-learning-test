@@ -9,6 +9,7 @@ import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { Minggu } from 'src/entities/minggu.entity';
 import { Logbook } from 'src/entities/logbook.entity';
+import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 
 @Injectable()
 export class PertemuansService {
@@ -29,7 +30,10 @@ export class PertemuansService {
     private readonly logBookRepository: Repository<Logbook>,
 
     @InjectRepository(Pertanyaan)
-    private readonly pertanyaanRepository: Repository<Pertanyaan>
+    private readonly pertanyaanRepository: Repository<Pertanyaan>,
+
+    @InjectRepository(LogbookMentor)
+    private readonly logbookMentorRepository: Repository<LogbookMentor>
   ){}
 
   async create(createPertemuanDto: CreatePertemuanDto) {
@@ -107,6 +111,10 @@ async findPertanyaan(pertemuanId: number){
 
 async findLogBook(pertemuanId: number){
   return await this.logBookRepository.find({where: {pertemuan: {id: pertemuanId}}})
+}
+
+async findLogBookMentor(pertemuanId: number){
+  return  await this.logbookMentorRepository.find({where: {pertemuan: {id: pertemuanId}}})
 }
 
   async findOne(id: number) {

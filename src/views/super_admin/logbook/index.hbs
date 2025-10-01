@@ -1,0 +1,177 @@
+<div 
+  x-data="{ tab: 'user', openDetail: false, selectedLog: null }"
+  class="max-w-7xl mx-auto px-6 py-10 pt-24"
+>
+  <!-- Header -->
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Log Book</h1>
+    <p class="text-gray-600">Pilih log book yang ingin ditampilkan</p>
+  </div>
+
+  <!-- Tab Buttons -->
+  <div class="flex justify-center gap-4 mb-8">
+    <button 
+      @click="tab = 'user'"
+      :class="tab === 'user' 
+        ? 'bg-gray-900 text-white' 
+        : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
+      class="px-5 py-2 rounded-lg font-medium transition"
+    >
+      Log Book User
+    </button>
+    <button 
+      @click="tab = 'mentor'"
+      :class="tab === 'mentor' 
+        ? 'bg-gray-900 text-white' 
+        : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
+      class="px-5 py-2 rounded-lg font-medium transition"
+    >
+      Log Book Mentor
+    </button>
+  </div>
+
+  <!-- Log Book User Table -->
+  <div x-show="tab === 'user'" x-transition>
+    {{#if logbook.length}}
+      <div class="overflow-x-auto shadow rounded-lg border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200 bg-white text-sm">
+          <thead class="bg-gray-50">
+            <tr class="text-gray-700">
+              <th class="px-4 py-3 text-left font-semibold">No</th>
+              <th class="px-4 py-3 text-left font-semibold">Kegiatan</th>
+              <th class="px-4 py-3 text-left font-semibold">Pertemuan</th>
+              <th class="px-4 py-3 text-left font-semibold">Minggu</th>
+              <th class="px-4 py-3 text-left font-semibold">Kelas</th>
+              <th class="px-4 py-3 text-left font-semibold">User</th>
+              <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
+              <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {{#each logbook}}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 text-gray-900 font-medium">{{this.kegiatan}}</td>
+              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.pertemuan_ke}}</td>
+              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.minggu_ke}}</td>
+              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.kelas.nama_kelas}}</td>
+              <td class="px-4 py-3 text-gray-700">{{this.user.username}}</td>
+              <td class="px-4 py-3 text-gray-500">{{this.createdAt}}</td>
+              <td class="px-4 py-3 text-center">
+                <button 
+                  @click="openDetail = true; selectedLog = {{json this}}"
+                  class="bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition"
+                >
+                  Detail
+                </button>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <p class="text-center text-gray-500 italic mt-6">Belum ada data logbook user.</p>
+    {{/if}}
+  </div>
+
+  <!-- Log Book Mentor Table -->
+  <div x-show="tab === 'mentor'" x-transition>
+    {{#if logbook_mentor.length}}
+      <div class="overflow-x-auto shadow rounded-lg border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200 bg-white text-sm">
+          <thead class="bg-gray-50">
+            <tr class="text-gray-700">
+              <th class="px-4 py-3 text-left font-semibold">No</th>
+              <th class="px-4 py-3 text-left font-semibold">Kegiatan</th>
+              <th class="px-4 py-3 text-left font-semibold">Pertemuan</th>
+              <th class="px-4 py-3 text-left font-semibold">Minggu</th>
+              <th class="px-4 py-3 text-left font-semibold">Kelas</th>
+              <th class="px-4 py-3 text-left font-semibold">User</th>
+              <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
+              <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {{#each logbook_mentor}}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 text-gray-900 font-medium">{{this.kegiatan}}</td>
+              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.pertemuan_ke}}</td>
+              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.minggu_ke}}</td>
+              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.kelas.nama_kelas}}</td>
+              <td class="px-4 py-3 text-gray-700">{{this.user.username}}</td>
+              <td class="px-4 py-3 text-gray-500">{{this.createdAt}}</td>
+              <td class="px-4 py-3 text-center">
+                <button 
+                  @click="openDetail = true; selectedLog = {{json this}}"
+                  class="bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition"
+                >
+                  Detail
+                </button>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <p class="text-center text-gray-500 italic mt-6">Belum ada data logbook mentor.</p>
+    {{/if}}
+  </div>
+
+  <!-- Modal Detail -->
+  <div 
+    x-show="openDetail"
+    x-transition
+    class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+  >
+    <div 
+      @click.away="openDetail = false" 
+      class="bg-white rounded-xl p-6 max-w-lg w-full shadow-lg relative"
+    >
+      <button 
+        @click="openDetail = false" 
+        class="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+      >
+        ✕
+      </button>
+
+      <h2 class="text-xl font-semibold mb-4 text-gray-900">Detail Logbook</h2>
+
+      <!-- Info Kelas & Pertemuan -->
+      <div class="bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1">
+        <p><strong>Kelas:</strong> <span x-text="selectedLog?.pertemuan?.minggu?.kelas?.nama_kelas ?? '-'"></span></p>
+        <p><strong>Minggu:</strong> <span x-text="selectedLog?.pertemuan?.minggu?.minggu_ke ?? '-'"></span></p>
+        <p><strong>Pertemuan:</strong> <span x-text="selectedLog?.pertemuan?.pertemuan_ke ?? '-'"></span></p>
+      </div>
+
+      <!-- Info User -->
+      <div class="bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1">
+        <p><strong>Nama User:</strong> <span x-text="selectedLog?.user?.nama ?? '-'"></span></p>
+        <p><strong>Email:</strong> <span x-text="selectedLog?.user?.email ?? '-'"></span></p>
+      </div>
+
+      <!-- Info Logbook -->
+      <div class="space-y-2 text-gray-700">
+        <p><strong>Kegiatan:</strong> <span x-text="selectedLog?.kegiatan"></span></p>
+        <p><strong>Rincian Kegiatan:</strong> <span x-text="selectedLog?.rincian_kegiatan"></span></p>
+        <template x-if="selectedLog?.proses">
+          <p><strong>Proses:</strong> <span x-text="selectedLog?.proses"></span></p>
+        </template>
+        <p><strong>Kendala:</strong> <span x-text="selectedLog?.kendala"></span></p>
+        <p><strong>Tanggal:</strong> <span x-text="selectedLog?.createdAt"></span></p>
+      </div>
+
+      <!-- Dokumentasi -->
+      <template x-if="selectedLog?.dokumentasi">
+        <div class="mt-4">
+          <p class="font-semibold mb-2">Dokumentasi:</p>
+          <img 
+            :src="selectedLog?.dokumentasi" 
+            alt="Dokumentasi" 
+            class="rounded-lg border max-h-64 object-contain mx-auto"
+          />
+        </div>
+      </template>
+    </div>
+  </div>
+</div>

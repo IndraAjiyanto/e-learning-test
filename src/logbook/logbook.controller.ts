@@ -64,6 +64,14 @@ export class LogbookController {
     }
   }
 
+    @Roles('super_admin')
+  @Get('all')
+  async findAll(@Req() req:Request, @Res() res:Response){
+    const logbook = await this.logbookService.findAll()
+    const logbook_mentor = await this.logbookService.findLogBookMentor()
+    res.render('super_admin/logbook/index', {user: req.user, logbook, logbook_mentor})
+  }
+
   @Roles('user', 'admin')
   @Get()
   async findLogBook(@Req() req:Request, @Res() res:Response) {

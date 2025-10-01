@@ -179,6 +179,15 @@
             : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
           class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
         >Alumni</a>
+        
+                <a 
+          href="/logbook/all"
+          @click="setActive('/logbook')"
+          :class="active === '/logbook' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-200 hover:text-gray-900'"
+          class="px-4 py-2 mt-2 text-sm font-semibold rounded-lg md:mt-0 md:ml-4"
+        >Log Book</a>
 
         <!-- Dropdown Super Admin -->
         <div @click.away="open = false" class="relative" x-data="{ open: false }">

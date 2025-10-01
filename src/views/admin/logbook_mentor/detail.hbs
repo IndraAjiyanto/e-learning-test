@@ -1,0 +1,54 @@
+<div class="pt-28 py-20">
+  <div class="max-w-3xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    <h2 class="text-2xl text-gray-900 font-semibold mb-6">Log Book Detail</h2>
+
+    <div class="space-y-6">
+      <!-- Activity -->
+      <div>
+        <p class="text-sm font-semibold text-gray-700">Activity</p>
+        <p class="mt-1 text-gray-900">{{logbook_mentor.kegiatan}}</p>
+      </div>
+
+      <!-- Activity Details -->
+      <div>
+        <p class="text-sm font-semibold text-gray-700">Activity Details</p>
+        <p class="mt-1 text-gray-900 whitespace-pre-line">{{logbook_mentor.rincian_kegiatan}}</p>
+      </div>
+
+      <!-- Obstacle -->
+      <div>
+        <p class="text-sm font-semibold text-gray-700">Obstacle</p>
+        <p class="mt-1 text-gray-900">{{logbook_mentor.kendala}}</p>
+      </div>
+
+      <!-- Documentation -->
+      <div>
+        <p class="text-sm font-semibold text-gray-700">Photo Documentation</p>
+        {{#if logbook_mentor.dokumentasi}}
+          <img src="{{logbook_mentor.dokumentasi}}" alt="Dokumentasi" 
+               class="mt-2 w-48 h-48 object-cover rounded-lg border border-gray-300 shadow">
+        {{else}}
+          <p class="mt-1 text-gray-500 italic">No documentation uploaded.</p>
+        {{/if}}
+      </div>
+
+      <!-- User -->
+      <div>
+        <p class="text-sm font-semibold text-gray-700">User</p>
+        <p class="mt-1 text-gray-900">{{user.username}}</p>
+      </div>
+
+
+    <!-- Back Button -->
+    <div class="mt-8">
+      <a href="/logbook-mentor/formEdit/{{logbook_mentor.id}}" 
+         class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+        update
+      </a>
+      <a href="/pertemuans/{{logbook_mentor.pertemuan.id}}" 
+         class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+        ← Back to Log Book
+      </a>
+    </div>
+  </div>
+</div>
