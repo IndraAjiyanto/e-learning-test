@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBiodataDto } from './dto/create-biodata.dto';
 import { UpdateBiodataDto } from './dto/update-biodata.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,16 +16,21 @@ export class BiodatasService {
     return await this.biodataRepository.save(biodata)
   }
 
-  findAll() {
-    return `This action returns all biodatas`;
+  async findOne(biodataId: number) {
+    const biodata = await this.biodataRepository.findOne({where: {id:biodataId}, relations: ['user']})
+    if(!biodata){
+      throw new NotFoundException('biodata not found')
+    }
+    return biodata
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} biodata`;
-  }
-
-  update(id: number, updateBiodataDto: UpdateBiodataDto) {
-    return `This action updates a #${id} biodata`;
+  async update(biodataId: number, updateBiodataDto: UpdateBiodataDto) {
+    const biodata = await this.findOne(biodataId)
+    if(!biodata){
+      throw new NotFoundException('biodata not found')
+    }
+            Object.assign(biodata, updateBiodataDto)
+        return await this.biodataRepository.save(biodata)
   }
 
   remove(id: number) {
