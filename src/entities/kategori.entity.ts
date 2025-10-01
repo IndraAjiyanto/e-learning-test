@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Kelas } from "./kelas.entity";
+import { PertanyaanKelas } from "./pertanyaan_kelas.entity";
 
 
 @Entity()
@@ -18,4 +19,6 @@ export class Kategori{
 
             @OneToMany(() => Kelas, (kelas) => kelas.kategori)
             kelas: Kelas[]
+
+
 }

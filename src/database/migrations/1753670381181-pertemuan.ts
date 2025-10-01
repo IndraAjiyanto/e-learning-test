@@ -21,11 +21,6 @@ export class Pertemuan1753670381181 implements MigrationInterface {
                     name: 'topik',
                     type: 'varchar'
                 },
-                                            {
-                name: 'check',
-                type: 'boolean',
-                default: false
-            },
                 {
                     name: 'lokasi',
                     type: 'varchar'

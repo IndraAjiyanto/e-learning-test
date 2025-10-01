@@ -106,6 +106,11 @@
             class="px-4 py-2 rounded-lg shadow transition">
       Log book user
     </button>
+    <button @click="tab = 'logbook_mentor'" 
+            :class="tab === 'logbook_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Log book mentor
+    </button>
   </div>
 
   <div x-show="tab === 'logbook'">
@@ -186,6 +191,209 @@
           <td class="px-6 py-4 text-sm text-gray-800">{{kelas.nama_kelas}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.username}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{proses}}</td>
+<td class="px-6 py-4 text-sm text-gray-800">
+  <div class="flex items-center justify-center gap-2">
+    <!-- ACC Button -->
+    <form action="/logbook/{{id}}/acc?_method=PATCH" method="post" class="inline">
+      <button type="submit" 
+              class="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition">
+        <!-- Check Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      </button>
+    </form>
+
+    <!-- Reject Button -->
+    <form action="/logbook/{{id}}/rejected?_method=PATCH" method="post" class="inline">
+      <button type="submit" 
+              class="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition">
+        <!-- X Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</td>
+
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center" 
+       x-show="pageCount() > 1">
+    <button @click="prevPage" :disabled="pageNumber==0"
+      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }">Prev</button>
+
+    <template x-for="(page,index) in pages()" :key="index">
+      <button @click="viewPage(index)" 
+        class="px-3 py-1 rounded"
+        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
+        x-text="index+1"></button>
+    </template>
+
+    <button @click="nextPage" :disabled="pageNumber >= pageCount()-1"
+      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
+  </div>
+</div>
+
+<script>
+// DIPERBAIKI: Pindahkan exportExcel ke dalam Alpine component
+function logbookTable({ logbooks }) {
+  return {
+    searchInput: "",
+    search: "",
+    pageNumber: 0,
+    size: 5,
+    logbooks,
+    amount: 0,
+    
+    get filteredLogbooks() {
+      let filtered = this.logbooks.filter(l =>
+        (`${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`).toLowerCase()
+          .includes(this.search.toLowerCase())
+      );
+
+      this.amount = filtered.length;
+
+      const start = this.pageNumber * this.size;
+      const end = start + this.size;
+      return filtered.slice(start, end).map(l => l.id.toString());
+    },
+    
+    // DIPERBAIKI: Export Excel sesuai data yang tampil di table
+    exportExcel() {
+      // Ambil data yang sudah difilter
+      const filtered = this.logbooks.filter(l =>
+        (`${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`).toLowerCase()
+          .includes(this.search.toLowerCase())
+      );
+
+      // Ambil data sesuai halaman yang sedang aktif
+      const start = this.pageNumber * this.size;
+      const end = start + this.size;
+      const currentPageData = filtered.slice(start, end);
+
+      const rows = [
+        ["No", "Kegiatan", "Rincian", "Kendala", "dokumentasi", "User", "Kelas", "Created At"]
+      ];
+
+      currentPageData.forEach((l, index) => {
+        rows.push([
+          start + index + 1, // Nomor urut sesuai halaman
+          l.kegiatan,
+          l.rincian_kegiatan,
+          l.kendala,
+          l.dokumentasi,
+          l.user?.username ?? "-",
+          l.kelas?.nama_kelas ?? "-",
+          l.createdAt
+        ]);
+      });
+
+      const worksheet = XLSX.utils.aoa_to_sheet(rows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Logbook");
+
+      XLSX.writeFile(workbook, "logbook.xlsx");
+    },
+
+    pages() { return Array.from({ length: this.pageCount() }); },
+    pageCount() { return Math.ceil(this.amount / this.size); },
+    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
+    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
+    viewPage(index) { this.pageNumber = index; }
+  }
+}
+
+// HAPUS: Fungsi exportExcel yang lama sudah tidak diperlukan
+// function exportExcel() { ... }
+</script>
+  </div>
+
+  <div x-show="tab === 'logbook_mentor'">
+<div class="max-w-5xl mx-auto " 
+     x-data="logbookTable({ logbooks: {{json logbook_mentor}} })">
+  
+  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+
+    <div class="flex items-center gap-3">
+      <div class="relative w-full md:w-64">
+        <input 
+          type="text" 
+          placeholder="Search logbook..." 
+          x-model="searchInput"
+          @input="search = searchInput; pageNumber=0"
+          class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
+        />
+        <button 
+          @click="search = searchInput; pageNumber=0"
+          class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+          </svg>
+        </button>
+      </div>
+
+      <a href="/logbook/formCreate" 
+         class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+        Create Logbook
+      </a>
+
+      <!-- DIPERBAIKI: Panggil method dari Alpine component -->
+<button 
+  @click="exportExcel()" 
+  class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+>
+  <!-- Logo Excel dengan shadow lebih tebal -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-5 w-5 rounded shadow">
+    <path fill="#185C37" d="M42 6H14a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/>
+    <path fill="#21A366" d="M14 6H8a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h6V6z"/>
+    <path fill="#107C41" d="M22 14H8v20h14V14z"/>
+    <path fill="#fff" d="M19 31h-2.1l-2.9-5-2.9 5H9l4.2-7-4.1-7h2.1l2.9 5 2.9-5H19l-4.2 7 4.2 7z"/>
+  </svg>
+  Export Excel
+</button>
+
+
+    </div>
+  </div>
+
+  <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kegiatan</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Rincian</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kendala</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Dokumentasi</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {{#each logbook_mentor}}
+        <tr class="hover:bg-gray-50 transition"
+            x-show="filteredLogbooks.includes('{{id}}')">
+          <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{kegiatan}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{rincian_kegiatan}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{kendala}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">
+            <img src="{{dokumentasi}}" alt="Dokumentasi" class="w-16 h-16 object-cover rounded border" />
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{kelas.nama_kelas}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{user.username}}</td>
 <td class="px-6 py-4 text-sm text-gray-800">
   <div class="flex items-center justify-center gap-2">
     <!-- ACC Button -->

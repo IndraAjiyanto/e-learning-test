@@ -1,4 +1,4 @@
-    <div class="max-w-6xl mx-auto bg-gray-50 pt-28 py-6">
+    <div class="max-w-6xl mx-auto bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-28 px-6 py-12">
         <h1 class="text-3xl font-bold text-gray-900 mb-8">Portfolio</h1>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -90,15 +90,17 @@
                     <img src="{{user.profile}}" alt="John Doe" class="w-full h-full object-cover">
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900 truncate">{{user.biodata.nama_lengkap}}</p>
+                    <p class="text-sm font-semibold text-gray-900 truncate">{{user.biodata.nama_lengkap}}</p>
+                    <p class="text-xs font-medium text-gray-900 truncate">{{user.email}}</p>
                   </div>
                 </div>
 
-<div class="card-actions justify-end mt-6">
-                <a href="/dashboard/portfolio/{{id}}" class="w-full text-center  px-4 py-2 bg-white border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-900 hover:text-white transition-all duration-200">
-                  Lihat Detail
-                </a>
-                </div>
+                              <div class="card-actions justify-end mt-6">
+                  <a href="/dashboard/portfolio/{{id}}" class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                      View Detail
+                  </a>
+              </div>
+                
               </div>
             </div>
             {{/each}}

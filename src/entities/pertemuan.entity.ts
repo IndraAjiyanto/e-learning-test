@@ -5,6 +5,7 @@ import { Tugas } from "./tugas.entity";
 import { Minggu } from "./minggu.entity";
 import { ProgresPertemuan } from "./progres_pertemuan.entity";
 import { Logbook } from "./logbook.entity";
+import { LogbookMentor } from "./logbook_mentor.entity";
 
 
 @Entity()
@@ -18,8 +19,6 @@ export class Pertemuan{
     @Column()
     pertemuan_ke: number
 
-      @Column({ default: false })
-  check: boolean;
 
     @Column()
     tanggal: Date
@@ -55,6 +54,9 @@ export class Pertemuan{
 
         @OneToMany(() => Logbook, (logbook) => logbook.pertemuan, { cascade: true, onDelete : 'CASCADE' })
         logbook: Logbook[];
+
+        @OneToMany(() => LogbookMentor, (logbook_mentor) => logbook_mentor.pertemuan, { cascade: true, onDelete : 'CASCADE' })
+        logbook_mentor: LogbookMentor[];
 
     @CreateDateColumn()
     createdAt: Date;

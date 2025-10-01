@@ -8,6 +8,7 @@ import { Alumni } from "./alumni.entity";
 import { Sertifikat } from "./sertifikat.entity";
 import { JenisKelas } from "./jenis_kelas.entity";
 import { UserKelas } from "./user_kelas.entity";
+import { PertanyaanKelas } from "./pertanyaan_kelas.entity";
 
 export type Metode = 'online' | 'offline';
 export type Proses = 'acc' | 'proces' | 'rejected';
@@ -89,4 +90,7 @@ launch: boolean;
 
         @OneToMany(() => Sertifikat, (sertifikat) => sertifikat.kelas, {cascade: true, onDelete : 'CASCADE'})
         sertifikat: Sertifikat[]
+
+                    @OneToMany(() => PertanyaanKelas, (pertanyaan_kelas) => pertanyaan_kelas.kelas)
+            pertanyaan_kelas: PertanyaanKelas[]
 }

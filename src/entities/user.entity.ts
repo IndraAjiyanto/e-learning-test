@@ -14,6 +14,7 @@ import { ProgresMinggu } from './progres_minggu.entity';
 import { ProgresPertemuan } from './progres_pertemuan.entity';
 import { Sertifikat } from './sertifikat.entity';
 import { UserKelas } from './user_kelas.entity';
+import { LogbookMentor } from './logbook_mentor.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -60,6 +61,9 @@ export class User {
 
 @OneToMany(() => Logbook, (logbook) => logbook.user, { cascade: true, onDelete: 'CASCADE' })
   logbook: Logbook[];
+
+@OneToMany(() => LogbookMentor, (logbook_mentor) => logbook_mentor.user, { cascade: true, onDelete: 'CASCADE' })
+  logbook_mentor: LogbookMentor[];
 
 @OneToMany(() => Portfolio, (portfolio) => portfolio.user, { cascade: true, onDelete: 'CASCADE'  })
   portfolio: Portfolio[];

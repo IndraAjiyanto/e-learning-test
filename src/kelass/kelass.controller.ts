@@ -102,7 +102,7 @@ export class KelassController {
   @Get(':id')
   async detail(@Param('id') id: number, @Res() res: Response, @Req() req: Request) {
     const kelas = await this.kelassService.findOne(id);
-    const kelass = await this.kelassService.allKelas();
+    const kelass = await this.kelassService.allClassExcept(kelas.id);
     const daftar = await this.kelassService.sumStudent(kelas.id)
   let isUserInKelas = false;
   if(!kelas){

@@ -169,6 +169,7 @@ async findMinggu(kelasId: number, userId: number) {
       { userId }
     )
     .leftJoinAndSelect('minggu.kelas', 'kelas')
+    .leftJoinAndSelect('kelas.user_kelas', 'user_kelas', 'user_kelas.userId = :userId', {userId})
     .leftJoinAndSelect('kelas.sertifikat', 'sertifikat', 'sertifikat.userId = :userId', {userId})
     .leftJoinAndSelect('kelas.portfolio', 'portfolio', 'portfolio.userId = :userId', {userId})
     .leftJoinAndSelect('minggu.quiz', 'quiz')
@@ -406,6 +407,10 @@ async findJenisKelas(){
 
   async allKelas(){
    return await this.kelasRepository.find({relations: ['user_kelas', 'user_kelas.user' ,'kategori']})
+  }
+
+  async allClassExcept(kelasId: number){
+    return await this.kelasRepository.find({where: {id: Not(kelasId)}, relations: ['user_kelas', 'user_kelas.user', 'kategori', 'jenis_kelas']})
   }
 
   async findOne(kelasId: number) {
