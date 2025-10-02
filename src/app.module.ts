@@ -34,6 +34,9 @@ import { KerjaSamaModule } from './kerja_sama/kerja_sama.module';
 import { PertanyaanKelasModule } from './pertanyaan_kelas/pertanyaan_kelas.module';
 import { LogbookMentorModule } from './logbook_mentor/logbook_mentor.module';
 import { BenefitModule } from './benefit/benefit.module';
+import { MentorModule } from './mentor/mentor.module';
+import { AlurKelasModule } from './alur_kelas/alur_kelas.module';
+import { BenefitKelasModule } from './benefit_kelas/benefit_kelas.module';
 
 @Module({
   imports: [
@@ -44,7 +47,7 @@ import { BenefitModule } from './benefit/benefit.module';
     // ServeStaticModule.forRoot({
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
-    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule, JawabansModule, TugassModule, PembayaransModule, PertanyaansModule, JawabanTugassModule, JawabanUsersModule, KomentarModule, LogbookModule, MingguModule, QuizModule, DashboardModule, PertanyaanUmumModule, AlumniModule, JenisKelasModule, SertifikatModule, KerjaSamaModule, PertanyaanKelasModule, LogbookMentorModule, BenefitModule],
+    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule, JawabansModule, TugassModule, PembayaransModule, PertanyaansModule, JawabanTugassModule, JawabanUsersModule, KomentarModule, LogbookModule, MingguModule, QuizModule, DashboardModule, PertanyaanUmumModule, AlumniModule, JenisKelasModule, SertifikatModule, KerjaSamaModule, PertanyaanKelasModule, LogbookMentorModule, BenefitModule, MentorModule, AlurKelasModule, BenefitKelasModule],
   controllers: [AppController],
   providers: [AppService],
 })

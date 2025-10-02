@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
 import { KerjaSamaService } from './kerja_sama.service';
 import { CreateKerjaSamaDto } from './dto/create-kerja_sama.dto';
 import { UpdateKerjaSamaDto } from './dto/update-kerja_sama.dto';
@@ -6,7 +6,9 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigImage } from 'src/common/config/multer.config';
+import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 
+@UseGuards(AuthenticatedGuard)
 @Controller('kerja-sama')
 export class KerjaSamaController {
   constructor(private readonly kerjaSamaService: KerjaSamaService) {}

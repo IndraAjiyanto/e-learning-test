@@ -34,7 +34,7 @@ export class SertifikatService {
     if(!user){
       throw new NotFoundException('user not found')
     }
-    const kelas = await this.kelasRepository.findOne({where: {id:kelasId}, relations: ['minggu', 'minggu.quiz']})
+    const kelas = await this.kelasRepository.findOne({where: {id:kelasId}, relations: ['minggu', 'minggu.quiz', 'jenis_kelas', 'kategori']})
         if(!kelas){
       throw new NotFoundException('kelas not found')
     }
@@ -55,6 +55,20 @@ export class SertifikatService {
       size: 36,
       color: rgb(0, 0, 0),
     });
+
+    const text = `Has completed from the Private ${kelas.kategori.nama_kategori} Program ${kelas.nama_kelas} at the  Kesatria Academy, from December 7 to March 7, having successfully learned and practiced ${kelas.nama_kelas} materials and is ready to become a professional in the field.`
+
+    const line_one = ``
+    const line_two = ``
+    const line_three = ``
+
+    page.drawText(text, {
+      x: 380,
+      y: 400,
+      size: 20,
+      color: rgb(0, 0, 0),
+    })
+
     const rows : any [] = [];
 
   const headers = ["Material", "Interval", "Predicate"];

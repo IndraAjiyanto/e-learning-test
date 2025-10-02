@@ -100,83 +100,99 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum ab, aliquid, mole
     </div>
 
     <!-- Benefits Section -->
-    <section class="bg-gradient-to-br from-slate-50 via-white to-slate-100 py-20 px-6 lg:px-20">
-        <!-- Title -->
-        <div class="text-center mb-16">
-            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Imagine!
-            </h2>
-            <p class="text-sm text-gray-600 max-w-2xl mx-auto">
-                You will get all these benefits after joining our 4-month bootcamp!
+{{!--
+  Partial: benefits-section
+  Usage: {{> benefits-section benefits=benefits}}
+  Expected data shape:
+  benefits: [
+    { icon: "star", title: "...", description: "...", featured: false },
+    { icon: "briefcase", title: "...", description: "...", featured: false },
+    { icon: "money-bill-wave", title: "...", description: "...", featured: true }
+  ]
+--}}
+
+<section class="bg-gradient-to-br from-slate-50 via-white to-slate-100 py-20 px-6 lg:px-20">
+  <div class="text-center mb-16">
+    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+      Imagine!
+    </h2>
+    <p class="text-sm text-gray-600 max-w-2xl mx-auto">
+      You will get all these benefits after joining our 4-month bootcamp!
+    </p>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
+    <div class="space-y-6">
+   
+        {{!-- Fallback (static) when no data is passed) --}}
+                <div class="relative group rounded-2xl p-6 bg-white shadow-xl ring-2 ring-emerald-400/60 hover:ring-emerald-500 transition-all duration-300">
+          <div aria-hidden="true" class="pointer-events-none absolute inset-0 rounded-2xl bg-emerald-50/40 group-hover:bg-emerald-50/70 transition-colors duration-300"></div>
+          <div class="absolute -top-3 left-6">
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white shadow-sm">
+              <i class="fa-solid fa-fire text-[10px]"></i>
+              Most Wanted
+            </span>
+          </div>
+          <div class="relative flex items-start gap-5">
+            <div class="text-white text-2xl bg-emerald-600 p-4 rounded-xl shadow-md">
+              <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-extrabold text-gray-900 mb-2">
+                Salary Up to Two Digits!
+              </h3>
+              <p class="text-gray-700 text-lg leading-relaxed">
+                Get highly competitive salaries from many well-known companies that partner with Kesatria Academy.
+              </p>
+              <span class="sr-only">This is the most desired benefit by most learners.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-5 group rounded-2xl p-4 bg-white/70 hover:bg-white transition-colors duration-300 ring-1 ring-slate-200 hover:ring-slate-300">
+          <div class="text-slate-700 text-2xl bg-slate-100 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">
+              Premium Mentors and Networking
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              You will be guided directly by expert mentors from Top Tech Companies who are ready to intensively mentor you.
             </p>
+          </div>
         </div>
 
-        <!-- Main Grid -->
-        <div class="grid lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
-            <!-- Left: Benefits -->
-            <div class="space-y-10">
-                <!-- Item 1 -->
-                <div class="flex items-start gap-6 group">
-                    <div class="text-slate-700 text-3xl bg-slate-100 p-4 rounded-full group-hover:bg-slate-600 group-hover:text-white transition-all duration-300">
-                        <i class="fa-solid fa-star"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">
-                            Premium Mentors and Networking
-                        </h3>
-                        <p class="text-gray-600 text-lg leading-relaxed">
-                            You will be guided directly by expert mentors from Top Tech Companies who are ready to intensively mentor you.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Item 2 -->
-                <div class="flex items-start gap-6 group">
-                    <div class="text-slate-700 text-3xl bg-slate-100 p-4 rounded-full group-hover:bg-slate-600 group-hover:text-white transition-all duration-300">
-                        <i class="fa-solid fa-briefcase"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">
-                            More Solid Career Preparation!
-                        </h3>
-                        <p class="text-gray-600 text-lg leading-relaxed">
-                            CV, Portfolio, and User Interview preparation will be directly assisted by the talent support team from Kesatria Academy.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Item 3 -->
-                <div class="flex items-start gap-6 group">
-                    <div class="text-slate-700 text-3xl bg-slate-100 p-4 rounded-full group-hover:bg-slate-600 group-hover:text-white transition-all duration-300">
-                        <i class="fa-solid fa-money-bill-wave"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">
-                            Salary Up to Two Digits!
-                        </h3>
-                        <p class="text-gray-600 text-lg leading-relaxed">
-                            Get highly competitive salaries from many well-known companies that partner with Kesatria Academy.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right: Photos -->
-            <div class="grid grid-cols-2 gap-6">
-                <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
-                     class="rounded-2xl shadow-2xl col-span-2 h-64 object-cover border-4 border-white hover:scale-105 transition-transform duration-300" alt="Teamwork">
-
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
-                     class="rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300" alt="Laptop Work">
-
-                <img src="https://glints.com/id/lowongan/wp-content/uploads/2020/04/smartworks-coworking-Uz8THWPXwhI-unsplash-min-scaled.jpg"
-                     class="rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300" alt="Meeting">
-
-                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
-                     class="rounded-2xl shadow-2xl col-span-2 h-60 object-cover border-4 border-white hover:scale-105 transition-transform duration-300" alt="Coding">
-            </div>
+        <div class="flex items-start gap-5 group rounded-2xl p-4 bg-white/70 hover:bg-white transition-colors duration-300 ring-1 ring-slate-200 hover:ring-slate-300">
+          <div class="text-slate-700 text-2xl bg-slate-100 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">
+              More Solid Career Preparation!
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              CV, Portfolio, and User Interview preparation will be directly assisted by the talent support team from Kesatria Academy.
+            </p>
+          </div>
         </div>
-    </section>
+
+
+    </div>
+
+    <div class="grid grid-cols-2 gap-6">
+      <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+           class="rounded-2xl shadow-2xl col-span-2 h-64 object-cover border-4 border-white hover:scale-105 transition-transform duration-300" alt="Teamwork">
+      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+           class="rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300" alt="Laptop Work">
+      <img src="https://glints.com/id/lowongan/wp-content/uploads/2020/04/smartworks-coworking-Uz8THWPXwhI-unsplash-min-scaled.jpg"
+           class="rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300" alt="Meeting">
+      <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+           class="rounded-2xl shadow-2xl col-span-2 h-60 object-cover border-4 border-white hover:scale-105 transition-transform duration-300" alt="Coding">
+    </div>
+  </div>
+</section>
+
 
     <!-- Alumni Stories Section -->
 <section 
@@ -331,6 +347,32 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum ab, aliquid, mole
       courseCategories: ['all', 'web development', 'ui/ux', 'devops', 'mobile development', 'data science', 'cybersecurity'],
       currentPage: 1,
       itemsPerPage: 6,
+      categoryDropdownOpen: false,
+      typeDropdownOpen: false,
+      
+      categoriesData: [
+        { value: 'all', icon: 'fa-th', title: 'All Categories', desc: 'Tampilkan semua kategori kelas' },
+        { value: 'free class', icon: 'fa-gift', title: 'Free Class', desc: 'Kelas gratis untuk pemula' },
+        { value: 'course', icon: 'fa-book', title: 'Course', desc: 'Kursus terstruktur dengan materi lengkap' },
+        { value: 'bootcamp', icon: 'fa-rocket', title: 'Bootcamp', desc: 'Program intensif dengan mentor expert' }
+      ],
+      courseCategoriesData: [
+        { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'Semua jenis pembelajaran' },
+        { value: 'web development', icon: 'fa-code', title: 'Web Development', desc: 'Bangun website modern' },
+        { value: 'ui/ux', icon: 'fa-palette', title: 'UI/UX Design', desc: 'Desain antarmuka yang menarik' },
+        { value: 'devops', icon: 'fa-server', title: 'DevOps', desc: 'Automasi dan deployment' },
+        { value: 'mobile development', icon: 'fa-mobile-alt', title: 'Mobile Development', desc: 'Aplikasi iOS dan Android' },
+        { value: 'data science', icon: 'fa-chart-line', title: 'Data Science', desc: 'Analisis data dan ML' },
+        { value: 'cybersecurity', icon: 'fa-shield-alt', title: 'Cybersecurity', desc: 'Keamanan sistem informasi' }
+      ],
+
+      get selectedCategoryItem() {
+        return this.categoriesData.find(c => c.value === this.tab) || this.categoriesData[0];
+      },
+      
+      get selectedTypeItem() {
+        return this.courseCategoriesData.find(c => c.value === this.selectedCategory) || this.courseCategoriesData[0];
+      },
 
       get filteredKelas() {
           return [...$refs.kelasList.children].filter(el => {
@@ -362,91 +404,192 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum ab, aliquid, mole
           this.currentPage = 1;
       }
   }"
-  class="bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 py-20 px-6 lg:px-20"
+  class="bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 py-20 px-6 lg:px-20 relative overflow-visible"
   x-init="$watch('tab', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
 >
-  <!-- Title -->
-  <div class="text-center mb-12">
-      <h2 class="text-4xl md:text-5xl font-bold text-white max-w-3xl mx-auto leading-tight">
+
+  <!-- Header Section -->
+  <div class="text-center mb-16 relative">
+      <h1 class="text-5xl md:text-6xl font-extrabold text-white mb-4 relative z-10">
           Kesatria Academy Class
-      </h2>
-                                     <p class="text-sm text-white py-6 max-w-2xl mx-auto">
-                You will get all these benefits after joining our 4-month bootcamp!
-            </p>
+      </h1>
+      <p class="text-lg text-slate-300 max-w-2xl mx-auto relative z-10">
+          You will get all these benefits after joining our 4-month bootcamp!
+      </p>
   </div>
 
-  <!-- FILTER DROPDOWNS -->
-  <div class="max-w-5xl mx-auto mb-12">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Filter Kategori Utama -->
-          <div>
-              <label class="block text-slate-300 font-medium mb-2">Category</label>
-              <select 
-                  x-model="tab"
-                  class="w-full px-4 py-3 bg-white/10 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-300"
-              >
-                  <template x-for="category in categories" :key="category">
-                      <option 
-                          :value="category" 
-                          x-text="category.charAt(0).toUpperCase() + category.slice(1)"
-                      ></option>
-                  </template>
-              </select>
+  <!-- Filter Section -->
+  <div class="max-w-6xl mx-auto mb-16 relative z-10 overflow-visible">
+      <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl">
+          <!-- Filter Title -->
+          <div class="flex items-center gap-3 mb-6">
+              <div class="w-1 h-8 bg-gradient-to-b from-slate-400 to-slate-600 rounded-full"></div>
+              <h3 class="text-2xl font-bold text-white">Find Your Perfect Class</h3>
           </div>
 
-          <!-- Filter Course Category -->
-          <div>
-              <label class="block text-slate-300 font-medium mb-2">Course Type</label>
-              <select 
-                  x-model="selectedCategory"
-                  class="w-full px-4 py-3 bg-white/10 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-300"
-              >
-                  <template x-for="category in courseCategories" :key="category">
-                      <option 
-                          :value="category" 
-                          x-text="category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')"
-                      ></option>
-                  </template>
-              </select>
-          </div>
-
-          <!-- Search Input -->
-          <div>
-              <label class="block text-slate-300 font-medium mb-2">Search</label>
-              <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <i class="fas fa-search text-slate-400"></i>
-                  </div>
-                  <input 
-                      type="text" 
-                      x-model="searchQuery"
-                      placeholder="Search classes..." 
-                      class="w-full pl-10 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-300"
+          <!-- Filter Controls -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 relative z-50">
+              
+              <!-- Category Filter -->
+              <div @click.away="categoryDropdownOpen = false" class="group relative">
+                  <label class="flex items-center gap-2 text-slate-300 font-semibold mb-3 text-sm uppercase tracking-wide">
+                      <i class="fas fa-filter text-slate-400"></i>
+                      Category
+                  </label>
+                  
+                  <button
+                      @click="categoryDropdownOpen = !categoryDropdownOpen"
+                      type="button"
+                      class="w-full px-5 py-4 pr-12 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:bg-white/10 text-left relative"
                   >
-                  <button 
-                      x-show="searchQuery !== ''"
-                      @click="searchQuery = ''"
-                      class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white transition-colors duration-200"
-                  >
-                      <i class="fas fa-times"></i>
+                      <div class="flex items-center gap-3">
+                          <i :class="selectedCategoryItem.icon" class="fas text-slate-400"></i>
+                          <span x-text="selectedCategoryItem.title"></span>
+                      </div>
+                      <div class="absolute right-4 top-1/2 -translate-y-1/2 transition-transform duration-300" :class="categoryDropdownOpen ? 'rotate-180' : ''">
+                          <i class="fas fa-chevron-down text-white text-lg"></i>
+                      </div>
                   </button>
+
+                  <!-- Dropdown Menu -->
+                  <div
+                      x-show="categoryDropdownOpen"
+                      x-transition
+                      style="z-index: 9999"
+                      class="absolute w-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+                  >
+                      <template x-for="category in categoriesData" :key="category.value">
+                          <button
+                              type="button"
+                              @click="tab = category.value; categoryDropdownOpen = false"
+                              class="w-full px-5 py-4 text-left hover:bg-slate-50 transition-colors duration-200 flex items-start gap-4 group/item"
+                              :class="tab === category.value ? 'bg-slate-100' : ''"
+                          >
+                              <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors" :class="tab === category.value ? 'bg-slate-600 text-white' : 'text-slate-600'">
+                                  <i :class="category.icon" class="fas"></i>
+                              </div>
+                              <div class="flex-1">
+                                  <h4 class="font-bold text-gray-900 mb-1" x-text="category.title"></h4>
+                                  <p class="text-sm text-gray-600" x-text="category.desc"></p>
+                              </div>
+                              <div x-show="tab === category.value" class="flex-shrink-0">
+                                  <i class="fas fa-check text-slate-600"></i>
+                              </div>
+                          </button>
+                      </template>
+                  </div>
+              </div>
+
+              <!-- Course Type Filter -->
+              <div @click.away="typeDropdownOpen = false" class="group relative">
+                  <label class="flex items-center gap-2 text-slate-300 font-semibold mb-3 text-sm uppercase tracking-wide">
+                      <i class="fas fa-layer-group text-slate-400"></i>
+                      Course Type
+                  </label>
+                  
+                  <button
+                      @click="typeDropdownOpen = !typeDropdownOpen"
+                      type="button"
+                      class="w-full px-5 py-4 pr-12 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:bg-white/10 text-left relative"
+                  >
+                      <div class="flex items-center gap-3">
+                          <i :class="selectedTypeItem.icon" class="fas text-slate-400"></i>
+                          <span x-text="selectedTypeItem.title"></span>
+                      </div>
+                      <div class="absolute right-4 top-1/2 -translate-y-1/2 transition-transform duration-300" :class="typeDropdownOpen ? 'rotate-180' : ''">
+                          <i class="fas fa-chevron-down text-white text-lg"></i>
+                      </div>
+                  </button>
+
+                  <div
+                      x-show="typeDropdownOpen"
+                      x-transition
+                      style="z-index: 9999"
+                      class="absolute w-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-96 overflow-y-auto"
+                  >
+                      <template x-for="type in courseCategoriesData" :key="type.value">
+                          <button
+                              type="button"
+                              @click="selectedCategory = type.value; typeDropdownOpen = false"
+                              class="w-full px-5 py-4 text-left hover:bg-slate-50 transition-colors duration-200 flex items-start gap-4 group/item"
+                              :class="selectedCategory === type.value ? 'bg-slate-100' : ''"
+                          >
+                              <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors" :class="selectedCategory === type.value ? 'bg-slate-600 text-white' : 'text-slate-600'">
+                                  <i :class="type.icon" class="fas"></i>
+                              </div>
+                              <div class="flex-1">
+                                  <h4 class="font-bold text-gray-900 mb-1" x-text="type.title"></h4>
+                                  <p class="text-sm text-gray-600" x-text="type.desc"></p>
+                              </div>
+                              <div x-show="selectedCategory === type.value" class="flex-shrink-0">
+                                  <i class="fas fa-check text-slate-600"></i>
+                              </div>
+                          </button>
+                      </template>
+                  </div>
+              </div>
+
+              <!-- Search Input -->
+              <div class="group">
+                  <label class="flex items-center gap-2 text-slate-300 font-semibold mb-3 text-sm uppercase tracking-wide">
+                      <i class="fas fa-search text-slate-400"></i>
+                      Search
+                  </label>
+                  <div class="relative">
+                      <input 
+                          type="text" 
+                          x-model="searchQuery"
+                          placeholder="Type to search..." 
+                          class="w-full px-5 py-4 pr-12 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white placeholder-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:bg-white/10"
+                      >
+                      <button 
+                          x-show="searchQuery !== ''"
+                          @click="searchQuery = ''"
+                          class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors duration-200"
+                      >
+                          <i class="fas fa-times-circle text-xl"></i>
+                      </button>
+                  </div>
               </div>
           </div>
+
+          <!-- Active Filters & Reset -->
+          <div class="flex items-center justify-between flex-wrap gap-4" x-show="selectedCategory !== 'all' || tab !== 'all' || searchQuery !== ''">
+              <div class="flex items-center gap-3 flex-wrap">
+                  <span class="text-slate-400 text-sm font-medium">Active Filters:</span>
+                  <span x-show="tab !== 'all'" class="px-4 py-2 bg-slate-700/50 text-slate-200 rounded-lg text-sm font-medium">
+                      <i class="fas fa-tag mr-2"></i><span x-text="tab"></span>
+                  </span>
+                  <span x-show="selectedCategory !== 'all'" class="px-4 py-2 bg-slate-700/50 text-slate-200 rounded-lg text-sm font-medium">
+                      <i class="fas fa-layer-group mr-2"></i><span x-text="selectedCategory"></span>
+                  </span>
+                  <span x-show="searchQuery !== ''" class="px-4 py-2 bg-slate-700/50 text-slate-200 rounded-lg text-sm font-medium">
+                      <i class="fas fa-search mr-2"></i>"<span x-text="searchQuery"></span>"
+                  </span>
+              </div>
+              <button 
+                  @click="resetFilters()"
+                  class="px-6 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg font-medium"
+              >
+                  <i class="fas fa-redo mr-2"></i>Reset All
+              </button>
+          </div>
       </div>
 
-      <!-- Reset Button -->
-      <div class="text-center mt-8" x-show="selectedCategory !== 'all' || tab !== 'all' || searchQuery !== ''">
-          <button 
-              @click="resetFilters()"
-              class="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
-          >
-              <i class="fas fa-refresh mr-2"></i>Reset Filters
-          </button>
+      <!-- Results Counter -->
+      <div class="mt-6 text-center">
+          <p class="text-slate-400">
+              Showing <span class="text-white font-bold" x-text="filteredKelas.filter((el, idx) => paginatedKelas(el)).length"></span> of 
+              <span class="text-white font-bold" x-text="filteredKelas.length"></span> classes
+          </p>
       </div>
   </div>
 
-  <!-- GRID LIST -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto" x-ref="kelasList">
+  <!-- Classes Grid -->
+  <div 
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto relative overflow-visible"
+    x-ref="kelasList"
+  >
       {{#each kelas}}
       <div 
           class="group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
@@ -480,45 +623,49 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum ab, aliquid, mole
       {{/each}}
   </div>
 
-  <!-- NO RESULT -->
-  <div x-show="filteredKelas.length === 0" class="text-center py-16">
-      <div class="w-24 h-24 mx-auto mb-6 bg-slate-700 rounded-full flex items-center justify-center">
-          <i class="fas fa-graduation-cap text-3xl text-white"></i>
+  <!-- No Results -->
+  <div x-show="filteredKelas.length === 0" class="text-center py-20" x-transition>
+      <div class="bg-white/5 backdrop-blur-md border border-white/10 w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center">
+          <i class="fas fa-inbox text-5xl text-slate-400"></i>
       </div>
-      <h3 class="text-2xl font-bold text-white mb-2">No classes found</h3>
-      <p class="text-slate-300 text-lg">Try adjusting your search or filter criteria.</p>
+      <h3 class="text-3xl font-bold text-white mb-3">No Classes Found</h3>
+      <p class="text-slate-300 text-lg mb-6">Try adjusting your search or filter criteria.</p>
       <button 
           @click="resetFilters()"
-          class="mt-4 px-6 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-lg transition-all duration-300"
+          class="px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold"
       >
-          Clear All Filters
+          <i class="fas fa-redo mr-2"></i>Clear All Filters
       </button>
   </div>
 
-  <!-- PAGINATION -->
+  <!-- Pagination -->
   <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
       <button 
           @click="currentPage = Math.max(1, currentPage - 1)"
           :disabled="currentPage === 1"
-          class="px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:opacity-50 text-white rounded-lg transition-all duration-300"
+          class="px-5 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
       >
           <i class="fas fa-chevron-left"></i>
       </button>
       
-      <span class="text-white font-medium">
-          Page <span x-text="currentPage"></span> of <span x-text="totalPages"></span>
-      </span>
+      <template x-for="page in totalPages" :key="page">
+          <button 
+              @click="currentPage = page"
+              class="w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300"
+              :class="currentPage === page ? 'bg-white text-slate-800 shadow-xl' : 'bg-slate-700 text-white hover:bg-slate-600'"
+              x-text="page"
+          ></button>
+      </template>
       
       <button 
           @click="currentPage = Math.min(totalPages, currentPage + 1)"
           :disabled="currentPage === totalPages"
-          class="px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:opacity-50 text-white rounded-lg transition-all duration-300"
+          class="px-5 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
       >
           <i class="fas fa-chevron-right"></i>
       </button>
   </div>
 </div>
-
 
 
     <!-- FAQ Section -->
@@ -538,3 +685,44 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum ab, aliquid, mole
             </div>
         </div>
     </section>
+
+<div 
+        x-data="{ showTooltip: false }" 
+        class="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 group"
+        @mouseenter="showTooltip = true"
+        @mouseleave="showTooltip = false"
+    >
+        <!-- Tooltip -->
+        <div 
+            x-show="showTooltip"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 translate-x-2"
+            x-transition:enter-end="opacity-100 translate-x-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-x-0"
+            x-transition:leave-end="opacity-0 translate-x-2"
+            class="hidden md:block absolute right-20 top-1/2 -translate-y-1/2 bg-gradient-to-r from-slate-700 to-slate-800 text-white px-5 py-3 rounded-xl shadow-2xl whitespace-nowrap font-semibold text-sm"
+        >
+            Need help? Chat with us!
+            <div class="absolute -right-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-b-8 border-l-8 border-transparent border-l-slate-800"></div>
+        </div>
+
+        <!-- Button -->
+        <a 
+            href="https://wa.me/6281234567890?text=Halo%20Kesatria%20Academy!%20Saya%20ingin%20bertanya%20tentang%20bootcamp" 
+            target="_blank"
+            class="relative flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full shadow-lg hover:shadow-2xl hover:scale-110 hover:-translate-y-2 hover:from-slate-500 hover:to-slate-700 transition-all duration-300 animate-pulse-slate group"
+            aria-label="Chat WhatsApp"
+        >
+            <i class="fab fa-whatsapp text-white text-2xl md:text-3xl"></i>
+            
+            <!-- Badge Notifikasi -->
+            <span class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 md:w-6 md:h-6 bg-gradient-to-br from-slate-600 to-slate-800 text-white text-xs font-bold rounded-full border-2 md:border-3 border-white shadow-lg animate-bounce-subtle">
+                1
+            </span>
+        </a>
+    </div>
+
+
+
+

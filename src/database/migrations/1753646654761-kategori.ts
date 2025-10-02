@@ -16,6 +16,14 @@ export class Kategori1753646654761 implements MigrationInterface {
                         name: 'nama_kategori',
                         type: 'varchar',
                     },
+                    {
+                        name: 'icon',
+                        type: 'varchar'
+                    },
+                    {
+                        name: 'deskripsi',
+                        type:  'varchar'
+                    },
             {
                 name: 'createdAt',
                 type: 'timestamp',

@@ -4,11 +4,11 @@ import { Portfolio } from "./portfolio.entity";
 import { Kategori } from "./kategori.entity";
 import { Pembayaran } from "./pembayaran.entity";
 import { Minggu } from "./minggu.entity";
-import { Alumni } from "./alumni.entity";
 import { Sertifikat } from "./sertifikat.entity";
 import { JenisKelas } from "./jenis_kelas.entity";
 import { UserKelas } from "./user_kelas.entity";
 import { PertanyaanKelas } from "./pertanyaan_kelas.entity";
+import { Mentor } from "./mentor.entity";
 
 export type Metode = 'online' | 'offline';
 export type Proses = 'acc' | 'proces' | 'rejected';
@@ -84,13 +84,13 @@ launch: boolean;
           @ManyToOne(() => JenisKelas, (jenis_kelas) => jenis_kelas.kelas, {onDelete : 'CASCADE'})
           @JoinColumn({ name: "jenis_kelasId" }) 
           jenis_kelas: JenisKelas
-    
-        @OneToMany(() => Alumni, (alumni) => alumni.kelas, {cascade: true, onDelete : 'CASCADE'})
-        alumni: Alumni[]
 
         @OneToMany(() => Sertifikat, (sertifikat) => sertifikat.kelas, {cascade: true, onDelete : 'CASCADE'})
         sertifikat: Sertifikat[]
 
                     @OneToMany(() => PertanyaanKelas, (pertanyaan_kelas) => pertanyaan_kelas.kelas)
             pertanyaan_kelas: PertanyaanKelas[]
+
+                    @OneToMany(() => Mentor, (mentor) => mentor.kelas)
+            mentor: Mentor[]
 }

@@ -21,13 +21,13 @@ export class Alumni {
     @Column()
     posisi_sekarang: string
 
+    @Column()
+    kelas: string
+
         @CreateDateColumn()
         createdAt: Date;
         
         @UpdateDateColumn()
         updatedAt: Date;
-
-        @ManyToOne(() => Kelas, (kelas) => kelas.alumni, { onDelete: 'CASCADE' }) 
-        kelas: Kelas
 
 }

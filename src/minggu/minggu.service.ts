@@ -39,7 +39,6 @@ export class MingguService {
 
     async noPertemuan(kelasId: number){
     const mingguTerakhir = await this.findMingguKelas(kelasId)
-    console.log(mingguTerakhir)
     const mingguBaru = mingguTerakhir + 1
     return mingguBaru
   }
@@ -50,10 +49,6 @@ export class MingguService {
       return 0
     }
     return minggu.minggu_ke
-  }
-
-  findAll() {
-    return `This action returns all minggu`;
   }
 
   async findOne(mingguId: number) {

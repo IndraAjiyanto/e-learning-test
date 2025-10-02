@@ -44,19 +44,27 @@ async function bootstrap() {
 
     await kategoriRepository.save([
     {
-      nama_kategori: 'free class'
+      nama_kategori: 'Short Class',
+      icon: 'short.png',
+      deskripsi: 'class free'
     },
     {
-      nama_kategori: 'course'
+      nama_kategori: 'Course',
+            icon: 'course.png',
+      deskripsi: 'class advance'
     },
     {
-      nama_kategori: 'bootcamp'
+      nama_kategori: 'Bootcamp',
+      icon: 'bootcamp.png',
+      deskripsi: 'class intermediet'
     }
   ]);
 
   await jenisKelasRepository.save([
     {
-      nama_jenis_kelas: 'web development'
+      nama_jenis_kelas: 'Web Development',
+            icon: 'web_development.png',
+      deskripsi: 'development'
     }
   ])
 

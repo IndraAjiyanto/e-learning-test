@@ -17,5 +17,5 @@ export class CreateAlumnusDto {
     posisi_sekarang: string
 
     @IsInt()
-    kelasId: number
+    kelas: string
 }

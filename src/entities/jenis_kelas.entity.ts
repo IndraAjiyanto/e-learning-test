@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Kelas } from "./kelas.entity";
 
 @Entity()
@@ -8,6 +8,13 @@ export class JenisKelas{
 
     @Column()
     nama_jenis_kelas: string
+
+
+        @Column()
+    icon: string
+
+    @Column()
+    deskripsi: string
 
             @OneToMany(() => Kelas, (kelas) => kelas.jenis_kelas)
             kelas: Kelas[]

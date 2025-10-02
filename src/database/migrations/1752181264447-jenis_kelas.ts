@@ -16,6 +16,14 @@ export class JenisKelas1752181264447 implements MigrationInterface {
                                 name: 'nama_jenis_kelas',
                                 type: 'varchar',
                             },
+                            {
+                                name: 'icon',
+                                type: 'varchar'
+                            },
+                            {
+                                name: 'deskripsi',
+                                type: 'varchar'
+                            },
                     {
                         name: 'createdAt',
                         type: 'timestamp',

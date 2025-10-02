@@ -6,7 +6,6 @@ import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigImage } from 'src/common/config/multer.config';
-import { profile } from 'console';
 
 @Controller('alumni')
 export class AlumniController {
@@ -37,16 +36,14 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res:Response, @Req() req:Request){
-    const kelas = await this.alumniService.findKelas()
-    res.render('super_admin/alumni/create', {user: req.user, kelas})
+    res.render('super_admin/alumni/create', {user: req.user})
   }
 
   @Roles('super_admin')
   @Get('formEdit/:alumniId')
   async formEdit(@Param('alumniId') alumniId: number, @Res() res:Response, @Req() req:Request) {
     const alumni = await this.alumniService.findOne(alumniId);
-    const kelas = await this.alumniService.findKelas();
-    res.render('super_admin/alumni/edit', {user: req.user, alumni, kelas})
+    res.render('super_admin/alumni/edit', {user: req.user, alumni})
   }
 
   @Roles('super_admin')

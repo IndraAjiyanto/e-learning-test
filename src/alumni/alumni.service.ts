@@ -16,20 +16,12 @@ export class AlumniService {
         private readonly kelasRepository: Repository<Kelas>,
   ){}
   async create(createAlumnusDto: CreateAlumnusDto) {
-    const kelas = await this.kelasRepository.findOne({where: {id: createAlumnusDto.kelasId}})
-    if(!kelas){
-      throw new NotFoundException('kelas tidak ditemukan')
-    }
-    const alumni = await this.alumniRepository.create({...createAlumnusDto, kelas: kelas})
+    const alumni = await this.alumniRepository.create(createAlumnusDto)
     await this.alumniRepository.save(alumni)
   }
 
   async findAll() {
     return await this.alumniRepository.find({relations: ['kelas']});
-  }
-
-  async findKelas(){
-    return await this.kelasRepository.find()
   }
 
   async findOne(alumniId: number) {
@@ -81,21 +73,8 @@ export class AlumniService {
     if(!alumni){
       throw new NotFoundException('alumni tidak ditemukan')
     }
-  if (updateAlumnusDto.kelasId) {
-    const kelas = await this.kelasRepository.findOne({
-      where: { id: updateAlumnusDto.kelasId }
-    });
 
-      if (!kelas) {
-      throw new NotFoundException(` kelas dengan ID ${updateAlumnusDto.kelasId} tidak ditemukan`);
-    }
-
-    alumni.kelas = kelas
-
-  }
-
-  const { kelasId, ...otherProperties } = updateAlumnusDto;
-  Object.assign(alumni, otherProperties);
+  Object.assign(alumni, updateAlumnusDto);
 
   return await this.alumniRepository.save(alumni);
   }

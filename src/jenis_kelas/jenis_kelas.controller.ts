@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { JenisKelasService } from './jenis_kelas.service';
 import { CreateJenisKelaDto } from './dto/create-jenis_kela.dto';
 import { UpdateJenisKelaDto } from './dto/update-jenis_kela.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfigImage } from 'src/common/config/multer.config';
 
 @Controller('jenis-kelas')
 export class JenisKelasController {
@@ -11,8 +13,10 @@ export class JenisKelasController {
 
   @Roles('super_admin')
   @Post()
-  async create(@Body() createJenisKelaDto: CreateJenisKelaDto, @Res() res:Response, @Req() req:Request) {
+    @UseInterceptors(FileInterceptor('icon', multerConfigImage))
+  async create(@Body() createJenisKelaDto: CreateJenisKelaDto, @UploadedFile() icon: Express.Multer.File, @Res() res:Response, @Req() req:Request) {
     try {
+      createJenisKelaDto.icon = icon.path
       await this.jenisKelasService.create(createJenisKelaDto);
       req.flash('success','Class type successfully created')
       res.redirect('/jenis-kelas')
@@ -44,8 +48,14 @@ export class JenisKelasController {
 
   @Roles('super_admin')
   @Patch(':jenis_kelasId')
-  async update(@Param('jenis_kelasId') jenis_kelasId: number, @Body() updateJenisKelaDto: UpdateJenisKelaDto, @Req() req:Request, @Res() res:Response) {
+    @UseInterceptors(FileInterceptor('icon', multerConfigImage))
+  async update(@Param('jenis_kelasId') jenis_kelasId: number,@UploadedFile() icon: Express.Multer.File, @Body() updateJenisKelaDto: UpdateJenisKelaDto, @Req() req:Request, @Res() res:Response) {
     try {
+      const jenis_kelas = await this.jenisKelasService.findOne(jenis_kelasId)
+      if(icon){
+                await this.jenisKelasService.getPublicIdFromUrl(jenis_kelas.icon);
+        updateJenisKelaDto.icon = icon.path
+      } 
      await this.jenisKelasService.update(jenis_kelasId, updateJenisKelaDto);
      req.flash('success', 'Class type successfully update')
      res.redirect('/jenis-kelas')
@@ -59,6 +69,12 @@ export class JenisKelasController {
   @Delete(':jenis_kelasId')
   async remove(@Param('jenis_kelasId') jenis_kelasId: number, @Req() req:Request, @Res() res:Response) {
     try {
+          const jenis_kelas = await this.jenisKelasService.findOne(jenis_kelasId);
+    if (!jenis_kelas) {
+      req.flash('error', 'jenis_kelas not found');
+      return res.redirect('/jenis-kelas');
+    }
+    await this.jenisKelasService.getPublicIdFromUrl(jenis_kelas.icon);
       await this.jenisKelasService.remove(jenis_kelasId);
            req.flash('success', 'Class type successfully delete')
      res.redirect('/jenis-kelas')

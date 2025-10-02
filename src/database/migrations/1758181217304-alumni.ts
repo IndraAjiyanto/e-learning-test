@@ -32,8 +32,8 @@ export class Alumni1758181217304 implements MigrationInterface {
                                                                type: 'varchar'
                                                            },
                                                            {
-                                                               name: 'kelasId',
-                                                               type: 'int'
+                                                               name: 'kelas',
+                                                               type: 'varchar'
                                                            },
                                                            {
                                                                    name: 'createdAt',
@@ -48,12 +48,6 @@ export class Alumni1758181217304 implements MigrationInterface {
                                                        ]
                                                        }))
 
-                                                           await queryRunner.createForeignKey('alumni', new TableForeignKey({
-                                                                   columnNames: ['kelasId'],
-                                                                   referencedTableName: 'kelas',
-                                                                   referencedColumnNames: ['id'],
-                                                                   onDelete: 'RESTRICT',
-                                                               }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
