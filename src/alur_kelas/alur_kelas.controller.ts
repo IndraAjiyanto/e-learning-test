@@ -28,8 +28,8 @@ export class AlurKelasController {
 
   @Roles('super_admin')
   @Get('formCreate/:kategoriId')
-  async formCreate(@Res() res:Response, @Req() req:Request){
-    res.render('super_admin/alur_kelas/create', {user: req.user})
+  async formCreate(@Param('kategoriId') kategoriId: number,@Res() res:Response, @Req() req:Request){
+    res.render('super_admin/alur_kelas/create', {user: req.user, kategoriId})
   }
 
   @Roles('super_admin')
