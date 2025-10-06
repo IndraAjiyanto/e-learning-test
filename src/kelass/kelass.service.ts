@@ -18,6 +18,7 @@ import { Tugas } from 'src/entities/tugas.entity';
 import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
 import { Pembayaran } from 'src/entities/pembayaran.entity';
 import { UserKelas } from 'src/entities/user_kelas.entity';
+import { Mentor } from 'src/entities/mentor.entity';
 
 @Injectable()
 export class KelassService {
@@ -50,6 +51,8 @@ export class KelassService {
         private readonly pembayaranRepository: Repository<Pembayaran>,
         @InjectRepository(UserKelas)
         private readonly userKelasRepository: Repository<UserKelas>,
+        @InjectRepository(Mentor)
+        private readonly mentorRepository: Repository<Mentor>,
   ){}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -126,6 +129,10 @@ async findMyCourse(userId: number) {
     },
     relations: ['user_kelas','user_kelas.user', 'kategori', 'jenis_kelas'], 
   });
+}
+
+async findMentor(kelasId){
+  return await this.mentorRepository.find({where: {kelas: {id: kelasId}}})
 }
 
 async findPertemuanAndPertanyaan(mingguId: number, userId: number) {
@@ -482,12 +489,11 @@ async findJenisKelas(){
   }
 
 async removeUserKelas(userId: number, kelasId: number) {
-
-await this.kelasRepository  
-    .createQueryBuilder()
-  .relation(Kelas, "user")
-  .of(kelasId)
-  .remove(userId);
+  const user_kelas = await this.userKelasRepository.findOne({where: {user: {id: userId}, kelas: {id: kelasId}}})
+  if(!user_kelas){
+    throw new NotFoundException('user kelas not found')
+  }
+return await this.userKelasRepository.remove(user_kelas)
 }
 
 

@@ -1,12 +1,17 @@
-<div class="pt-28">
-  <div class="max-w-6xl mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl space-y-8">
+<div class="pt-28 px-6 py-10">
 
+  <!-- ===================== CARD DETAIL KELAS ===================== -->
+  <div class="max-w-6xl mb-8 mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl space-y-8">
+
+    <!-- Tombol Back -->
     <div>
       <a href="/kelass" 
          class="inline-flex items-center text-gray-600 text-base font-medium hover:underline">
         <svg xmlns="http://www.w3.org/2000/svg" 
-             class="h-5 w-5 mr-1" fill="none" 
-             viewBox="0 0 24 24" stroke="currentColor">
+             class="h-5 w-5 mr-1" 
+             fill="none" 
+             viewBox="0 0 24 24" 
+             stroke="currentColor">
           <path stroke-linecap="round" 
                 stroke-linejoin="round" 
                 stroke-width="2" 
@@ -16,125 +21,319 @@
       </a>
     </div>
 
-      <div class="flex items-start justify-between">
+    <!-- Header Info Kelas -->
+    <div class="flex items-start justify-between">
+
+      <!-- Info Kelas -->
       <div class="flex gap-6">
         <img src="{{kelas.gambar}}" 
-             alt="" 
+             alt="Cover {{kelas.nama_kelas}}" 
              class="w-40 h-40 object-cover rounded-lg shadow-md">
+        
         <div>
-          <h1 class="text-2xl text-gray-900 font-bold mb-2">{{kelas.nama_kelas}}</h1>
+          <h1 class="text-2xl text-gray-900 font-bold mb-2">
+            {{kelas.nama_kelas}}
+          </h1>
           <p class="text-gray-700 mb-1">{{kelas.deskripsi}}</p>
-          <p class="text-gray-700"><span class="font-semibold">Tech:</span> {{kelas.teknologi}}</p>
-          <p class="text-gray-700"><span class="font-semibold">Target:</span> {{kelas.target_pembelajaran}}</p>
-          <p class="text-gray-700"><span class="font-semibold">Category:</span> {{kelas.kategori.nama_kategori}}</p>
+          <p class="text-gray-700">
+            <span class="font-semibold">Tech:</span> {{kelas.teknologi}}
+          </p>
+          <p class="text-gray-700">
+            <span class="font-semibold">Target:</span> {{kelas.target_pembelajaran}}
+          </p>
+          <p class="text-gray-700">
+            <span class="font-semibold">Category:</span> {{kelas.kategori.nama_kategori}}
+          </p>
         </div>
       </div>
-<div class="flex items-center gap-4">
-  <!-- Tombol Edit -->
-  <a href="/kelass/edit/{{kelas.id}}"
-     class="p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
-     title="Edit Class">
-    <!-- Icon Edit (Pencil) -->
-    <svg xmlns="http://www.w3.org/2000/svg"
-         fill="none" viewBox="0 0 24 24"
-         stroke-width="2" stroke="currentColor"
-         class="w-7 h-7">
-      <path stroke-linecap="round" stroke-linejoin="round"
-            d="M16.862 4.487l1.687-1.688a1.875 1.875 
-               0 112.652 2.652L10.582 16.07a4.5 
-               4.5 0 01-1.897 1.13l-2.685.805.805-2.685
-               a4.5 4.5 0 011.13-1.897l10.927-10.936z" />
-      <path stroke-linecap="round" stroke-linejoin="round"
-            d="M19.5 7.125L16.875 4.5" />
-    </svg>
-  </a>
 
-  <!-- Tombol Delete -->
-  <form action="/kelass/{{kelas.id}}?_method=DELETE" method="post">
-    <button 
-      type="button"
-      onclick="confirmDelete(this)"
-      class="p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm"
-      title="Delete Class">
-      <!-- Icon Delete (Trash / X) -->
-      <svg xmlns="http://www.w3.org/2000/svg"
-           fill="none" viewBox="0 0 24 24"
-           stroke-width="2" stroke="currentColor"
-           class="w-7 h-7">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-  </form>
-</div>
+      <!-- Tombol Aksi -->
+      <div class="flex items-center gap-4">
 
+        <!-- Tombol Edit -->
+        <a href="/kelass/edit/{{kelas.id}}"
+           class="p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
+           title="Edit Class">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24"
+               stroke-width="2" stroke="currentColor"
+               class="w-7 h-7">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 
+                     0 112.652 2.652L10.582 16.07a4.5 
+                     4.5 0 01-1.897 1.13l-2.685.805.805-2.685
+                     a4.5 4.5 0 011.13-1.897l10.927-10.936z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M19.5 7.125L16.875 4.5" />
+          </svg>
+        </a>
+
+        <!-- Tombol Delete -->
+        <form action="/kelass/{{kelas.id}}?_method=DELETE" method="post">
+          <button 
+            type="button"
+            onclick="confirmDelete(this)"
+            class="p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm"
+            title="Delete Class">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 fill="none" viewBox="0 0 24 24"
+                 stroke-width="2" stroke="currentColor"
+                 class="w-7 h-7">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </form>
+      </div>
     </div>
-
-<div class="space-y-4">
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-    <h2 class="text-2xl text-gray-900 font-semibold">Weeks</h2>
   </div>
 
-  {{#if minggu.length}}
-    <div class="grid gap-4">
-      {{#each minggu}}
-        <div class="bg-gray-50 p-4 rounded-xl shadow-md hover:bg-gray-100 transition">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="font-semibold text-gray-900 mb-1">
-                Week {{this.minggu_ke}}: {{this.keterangan}}
-              </p>
-            </div>
-            <a href="/minggu/{{this.id}}" 
-               class="p-2 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-           fill="none" viewBox="0 0 24 24" 
-           stroke-width="1.5" stroke="currentColor" 
-           class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" 
-              d="M12 6.75c-4.5 0-8.25 2.25-10.5 6 
-                 2.25 3.75 6 6 10.5 6s8.25-2.25 
-                 10.5-6c-2.25-3.75-6-6-10.5-6z" />
-        <path stroke-linecap="round" stroke-linejoin="round" 
-              d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-      </svg>
-            </a>
-          </div>
+  <!-- ===================== TAB SECTION ===================== -->
+  <div class="max-w-5xl mx-auto" x-data="{ tab: 'week', search: '' }">
+
+    <!-- Tab Navigation -->
+    <div class="flex space-x-4 mb-6">
+      <button @click="tab = 'week'" 
+              :class="tab === 'week' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        Week
+      </button>
+
+      <button @click="tab = 'mentor'" 
+              :class="tab === 'mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        Mentor
+      </button>
+    </div>
+
+    <!-- ===================== TAB WEEK ===================== -->
+    <div x-show="tab === 'week'">
+      <div class="max-w-5xl mx-auto">
+        
+        <!-- Header Section -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <h2 class="text-2xl text-gray-900 font-semibold">Weeks</h2>
         </div>
-      {{/each}}
-    </div>
-  {{else}}
-    <!-- Empty State -->
-    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-400 mb-4" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 
-                 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-      </svg>
-      <p class="text-gray-700 font-medium text-lg">No Week yet</p>
-      <p class="text-gray-500 text-sm mt-1">
-        Click <span class="font-semibold">Add Week</span> to create a new one.
-      </p>
-    </div>
-  {{/if}}
 
-{{#if mingguTerakhir}}
+        <!-- Daftar Week -->
+        {{#if minggu.length}}
+          <div class="grid gap-4">
+            {{#each minggu}}
+              <div class="bg-gray-50 p-4 rounded-xl shadow-md hover:bg-gray-100 transition">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="font-semibold text-gray-900 mb-1">
+                      Week {{this.minggu_ke}}: {{this.keterangan}}
+                    </p>
+                  </div>
+                  <a href="/minggu/{{this.id}}" 
+                     class="p-2 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                         fill="none" viewBox="0 0 24 24" 
+                         stroke-width="1.5" stroke="currentColor" 
+                         class="w-5 h-5">
+                      <path stroke-linecap="round" stroke-linejoin="round" 
+                            d="M12 6.75c-4.5 0-8.25 2.25-10.5 6 
+                               2.25 3.75 6 6 10.5 6s8.25-2.25 
+                               10.5-6c-2.25-3.75-6-6-10.5-6z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" 
+                            d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <!-- Empty State -->
+          <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 class="h-14 w-14 text-gray-400 mb-4" 
+                 fill="none" viewBox="0 0 24 24" 
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 
+                       5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <p class="text-gray-700 font-medium text-lg">No Week yet</p>
+            <p class="text-gray-500 text-sm mt-1">
+              Click <span class="font-semibold">Add Week</span> to create a new one.
+            </p>
+          </div>
+        {{/if}}
 
-{{else}}
-  <a href="/minggu/formAdd/{{kelas.id}}" 
-     class="flex flex-col items-center justify-center text-center py-10 border-2 border-dashed rounded-xl hover:bg-gray-50 transition">
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         class="h-10 w-10 text-gray-400 mb-2" 
-         fill="none" viewBox="0 0 24 24" 
-         stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-    </svg>
-    <span class="text-gray-700 font-medium">Add Week</span>
-  </a>
+        <!-- Tombol Tambah Week -->
+        {{#if mingguTerakhir}}
+        {{else}}
+          <a href="/minggu/formAdd/{{kelas.id}}" 
+             class="flex flex-col items-center justify-center text-center py-10 border-2 border-dashed rounded-xl hover:bg-gray-50 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 class="h-10 w-10 text-gray-400 mb-2" 
+                 fill="none" viewBox="0 0 24 24" 
+                 stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" 
+                    d="M12 4v16m8-8H4" />
+            </svg>
+            <span class="text-gray-700 font-medium">Add Week</span>
+          </a>
+        {{/if}}
+
+      </div>
+    </div>
+
+    <!-- ===================== TAB MENTOR ===================== -->
+<div x-show="tab === 'mentor'">
+  <div 
+       x-data="mentorTable({ mentor: {{json mentor}} })">
+    
+    <!-- Header: Search + Add -->
+    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+      <div class="flex items-center gap-3">
+        <!-- Search -->
+        <div class="relative w-full md:w-64">
+          <button 
+            @click="search = searchInput; pageNumber=0"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900">
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 class="h-5 w-5" fill="none" viewBox="0 0 24 24" 
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" 
+                    stroke-width="2" 
+                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 
+                       0 016.15 13.65z" />
+            </svg>
+          </button>
+          <input 
+            type="text" 
+            placeholder="Search mentor..." 
+            x-model="searchInput"
+            @input="search = searchInput; pageNumber=0"
+            class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
+          />
+        </div>
+
+        <!-- Tombol Tambah Mentor -->
+        <a href="/mentor/formAdd/{{kelas.id}}"
+           class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
+          Add Mentor
+        </a>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Bidang</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {{#each mentor}}
+          <tr class="hover:bg-gray-50 transition"
+              x-show="filteredMentor.includes('{{id}}')">
+            <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800">{{nama}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800">{{bidang}}</td>
+            <td class="px-6 py-4 text-sm flex items-center gap-3">
+              <!-- Edit -->
+              <a href="/mentor/edit/{{id}}"
+                 class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition"
+                 title="Edit">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     fill="none" viewBox="0 0 24 24"
+                     stroke-width="1.5" stroke="currentColor"
+                     class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 
+                           0 112.652 2.652L10.582 16.07a4.5 
+                           4.5 0 01-1.897 1.13l-2.685.805.805-2.685
+                           a4.5 4.5 0 011.13-1.897l10.927-10.936z" />
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M19.5 7.125L16.875 4.5" />
+                </svg>
+              </a>
+
+              <!-- Delete -->
+              <form action="/mentor/{{id}}?_method=DELETE" method="post" class="inline">
+                <button type="button" 
+                        onclick="confirmDelete(this)" 
+                        class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"
+                        title="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       fill="none" viewBox="0 0 24 24"
+                       stroke-width="1.5" stroke="currentColor"
+                       class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center"
+         x-show="pageCount() > 1">
+      <button @click="prevPage" :disabled="pageNumber==0"
+        class="px-3 py-1 rounded border border-gray-900 text-gray-900"
+        :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }">Prev</button>
+
+      <template x-for="(page,index) in pages()" :key="index">
+        <button @click="viewPage(index)" 
+          class="px-3 py-1 rounded"
+          :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
+          x-text="index+1"></button>
+      </template>
+
+      <button @click="nextPage" :disabled="pageNumber >= pageCount()-1"
+        class="px-3 py-1 rounded border border-gray-900 text-gray-900"
+        :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
+    </div>
+  </div>
 </div>
-{{/if}}
+
+
 
 
   </div>
 </div>
+
+
+<script>
+function mentorTable({ mentor }) {
+  return {
+    searchInput: "",
+    search: "",
+    pageNumber: 0,
+    size: 5,
+    mentor,
+    amount: 0,
+    get filteredMentor() {
+      let filtered = this.mentor.filter(u =>
+        (`${u.nama} ${u.email} ${u.bidang || ''}`).toLowerCase()
+          .includes(this.search.toLowerCase())
+      );
+      this.amount = filtered.length;
+
+      const start = this.pageNumber * this.size;
+      const end = start + this.size;
+      return filtered.slice(start, end).map(u => u.id.toString());
+    },
+    pages() { return Array.from({ length: this.pageCount() }); },
+    pageCount() { return Math.ceil(this.amount / this.size); },
+    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
+    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
+    viewPage(index) { this.pageNumber = index; },
+  }
+}
+</script>

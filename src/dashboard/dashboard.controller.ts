@@ -24,6 +24,18 @@ export class DashboardController {
     }
   }
 
+  @Get('kategori/:kategoriName')
+  async program(@Param('kategoriName') kategoriName: string,@Req() req: Request, @Res() res: Response){
+    const kelas = await this.dashboardService.findKelasByKategori(kategoriName)
+    if(kategoriName === 'Bootcamp'){
+    res.render('kelas/bootcamp', {kelas})
+    }else if(kategoriName === 'Course'){
+    res.render('kelas/course', {kelas})
+    }else if(kategoriName === 'Short Class'){
+    res.render('kelas/short_class', {kelas})
+    }
+  }
+
   @Get('portofolio')
   async portfolio(@Req() req: Request, @Res() res: Response) {
     const portfolio = await this.dashboardService.findPortfolio()

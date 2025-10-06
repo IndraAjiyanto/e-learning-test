@@ -28,6 +28,10 @@ export class DashboardService {
     return await this.kelasRepository.find({where: {launch: true}, order: {id: 'DESC'}, relations: ['kategori', 'jenis_kelas']});
   }
 
+  async findKelasByKategori(kategoriName: string){
+    return await this.kelasRepository.find({where: {kategori: {nama_kategori: kategoriName}, launch: true}, order: {id: 'DESC'}, relations: ['kategori', 'jenis_kelas']})
+  }
+
   async findPortfolio(){
     return await this.portfolioRepository.find({relations: ['kelas','kelas.kategori','kelas.jenis_kelas', 'user', 'user.biodata']})
   }

@@ -1,0 +1,96 @@
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Edit Data Mentor</h2>
+
+  <form 
+    action="/mentors/{{mentor.id}}" 
+    method="POST" 
+    enctype="multipart/form-data"
+    class="space-y-6"
+  >
+    <!-- Method Spoofing (karena HTML form tidak support PUT) -->
+    <input type="hidden" name="_method" value="PUT">
+
+    <!-- Nama -->
+    <div>
+      <label for="nama" class="block text-gray-700 font-semibold mb-2">Nama</label>
+      <input 
+        type="text" 
+        id="nama" 
+        name="nama" 
+        value="{{mentor.nama}}"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-200"
+        placeholder="Masukkan nama mentor"
+        required
+      >
+    </div>
+
+    <!-- Posisi -->
+    <div>
+      <label for="posisi" class="block text-gray-700 font-semibold mb-2">Posisi</label>
+      <input 
+        type="text" 
+        id="posisi" 
+        name="posisi" 
+        value="{{mentor.posisi}}"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-200"
+        placeholder="Masukkan posisi mentor"
+        required
+      >
+    </div>
+
+    <!-- Profile (Foto) -->
+    <div>
+      <label for="profile" class="block text-gray-700 font-semibold mb-2">Foto Profile</label>
+      <div class="flex items-center gap-4">
+        <!-- Preview Foto -->
+        {{#if mentor.profile}}
+        <img 
+          src="/uploads/mentors/{{mentor.profile}}" 
+          alt="Profile {{mentor.nama}}" 
+          class="w-16 h-16 rounded-full object-cover shadow"
+        >
+        {{else}}
+        <span class="text-gray-500 text-sm">Belum ada foto</span>
+        {{/if}}
+
+        <!-- Input File -->
+        <input 
+          type="file" 
+          id="profile" 
+          name="profile" 
+          accept="image/*"
+          class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4
+                 file:rounded-lg file:border-0 file:text-sm file:font-semibold
+                 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        >
+      </div>
+      <p class="text-xs text-gray-500 mt-1">Biarkan kosong jika tidak ingin mengganti foto.</p>
+    </div>
+
+    <!-- Deskripsi -->
+    <div>
+      <label for="deskripsi" class="block text-gray-700 font-semibold mb-2">Deskripsi</label>
+      <textarea 
+        id="deskripsi" 
+        name="deskripsi"
+        rows="4"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-200"
+        placeholder="Tulis deskripsi mentor di sini"
+        required
+      >{{mentor.deskripsi}}</textarea>
+    </div>
+
+    <!-- Tombol Aksi -->
+    <div class="flex justify-end gap-4">
+      <a 
+        href="/mentors"
+        class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+      >Batal</a>
+
+      <button 
+        type="submit"
+        class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >Simpan Perubahan</button>
+    </div>
+  </form>
+</div>

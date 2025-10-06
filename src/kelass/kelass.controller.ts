@@ -95,8 +95,9 @@ export class KelassController {
   async detailKelas(@Param('kelasId') kelasId: number, @Res() res: Response, @Req() req: Request){
     const kelas = await this.kelassService.findOne(kelasId);
     const minggu = await this.kelassService.findMingguClass(kelasId);
+    const mentor = await this.kelassService.findMentor(kelasId)
     const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId)
-    res.render('admin/kelas/detail', {user: req.user, kelas, minggu, mingguTerakhir})
+    res.render('admin/kelas/detail', {user: req.user, kelas, minggu, mingguTerakhir, mentor})
   }
 
   @Get(':id')
@@ -198,12 +199,11 @@ export class KelassController {
   @Delete(':userId/kelas/:kelasId')
   async removeUserKelas(@Param('userId') userId: number, @Param('kelasId') kelasId: number, @Res() res:Response, @Req() req:Request) {
     try {
-      const kelas = await this.kelassService.findOne(kelasId)
-      await this.usersService.getPublicIdFromUrl(kelas.gambar)
         await this.kelassService.removeUserKelas(userId, kelasId);
         req.flash('success', 'class successfuly delete')
         res.redirect('/kelass')
     } catch (error) {
+      console.log(error)
               req.flash('error', 'class unsuccess delete')
         res.redirect('/kelass')
     }

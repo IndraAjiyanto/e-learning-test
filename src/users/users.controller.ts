@@ -124,14 +124,14 @@ async findAll(@Res() res: Response, @Req() req: any) {
 async remove(
   @Param('id') id: number,
   @Res() res: Response,
-  @Req() req: any,
+  @Req() req: Request,
 ) {
   try {
 
     const user = await this.usersService.findOne(id);
     if (!user) {
       req.flash('error', 'User not found');
-      return res.redirect('/users');
+      res.redirect('/users');
     }
     await this.usersService.getPublicIdFromUrl(user.profile);
 
@@ -139,11 +139,10 @@ async remove(
     await this.usersService.remove(id); 
 
     req.flash('success', 'User successfully deleted');
-    return res.redirect('/users');
+     res.redirect('/users');
   } catch (error) {
-    console.error(error);
     req.flash('error', 'Failed to delete user');
-    return res.redirect('/users');
+     res.redirect('/users');
   }
 }
 
