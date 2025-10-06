@@ -13,6 +13,15 @@ export class Mentor{
     posisi: string
 
     @Column()
+    linkedin: string
+
+    @Column()
+    github: string
+
+    @Column("jsonb")
+    teknologi: string[]
+
+    @Column()
     profile: string
 
     @Column()

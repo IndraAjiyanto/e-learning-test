@@ -20,6 +20,18 @@ export class Mentor1759385490253 implements MigrationInterface {
                                                                       type: 'varchar'
                                                                   },
                                                                   {
+                                                                    name: 'linkedin',
+                                                                    type: 'varchar'
+                                                                  },
+                                                                              {
+                name: 'teknologi',
+                type: 'jsonb',
+            },
+                                                                  {
+                                                                    name: 'github',
+                                                                    type: 'varchar'
+                                                                  },
+                                                                  {
                                                                     name: 'profile',
                                                                     type: 'varchar'                                                                    
                                                                   },
