@@ -1,0 +1,352 @@
+
+    <div class="pt-24 min-h-screen bg-white" x-data="portfolioApp()">
+        <div class="container mx-auto px-4 pb-16">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">My Portfo</h1>
+                <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+                    Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Sidebar Filters -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
+                        <!-- Active Filters -->
+                        <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-semibold text-gray-700">Active Filters</h4>
+                                <button @click="resetFilters()" class="text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center">
+                                    <i class="fas fa-undo-alt mr-1 text-xs"></i>
+                                    Reset
+                                </button>
+                            </div>
+                            <div class="space-y-2">
+                                <template x-if="selectedCategory === '' && selectedClassType === ''">
+                                    <div class="text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200">
+                                        No active filters
+                                    </div>
+                                </template>
+                                <template x-if="selectedCategory !== ''">
+                                    <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                                        <span x-text="selectedCategory"></span>
+                                    </span>
+                                </template>
+                                <template x-if="selectedClassType !== ''">
+                                    <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                        <span x-text="selectedClassType"></span>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="mb-6">
+                            <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-tags text-gray-500 mr-2"></i>
+                                Category
+                            </h3>
+                            <div class="space-y-2">
+                                <button @click="selectedCategory = ''" :class="selectedCategory === '' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                    <span class="text-sm">All Categories</span>
+                                    <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                                </button>
+                                <template x-for="cat in categories" :key="cat">
+                                    <button @click="selectedCategory = cat" :class="selectedCategory === cat ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                        <span class="text-sm" x-text="cat"></span>
+                                        <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Class Type Filter -->
+                        <div class="mb-6">
+                            <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-graduation-cap text-gray-500 mr-2"></i>
+                                Class Type
+                            </h3>
+                            <div class="space-y-2">
+                                <button @click="selectedClassType = ''" :class="selectedClassType === '' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                    <span class="text-sm">All</span>
+                                    <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                                </button>
+                                <template x-for="type in classTypes" :key="type">
+                                    <button @click="selectedClassType = type" :class="selectedClassType === type ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                        <span class="text-sm" x-text="type"></span>
+                                        <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Projects Count -->
+                        <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-900" x-text="filteredPortfolio.length"></div>
+                                <div class="text-sm text-gray-600">Projects Available</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Grid -->
+                <div class="lg:col-span-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <template x-for="item in paginatedPortfolio" :key="item.id" x-data="{ currentSlide: 0, autoSlide: null }" x-init="autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % item.images.length }, 4000)" @mouseenter="clearInterval(autoSlide)" @mouseleave="autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % item.images.length }, 4000)">
+                            <div class="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                                <!-- Image Slider -->
+                                <div class="relative overflow-hidden rounded-t-xl">
+                                    <div class="relative h-44 w-full">
+                                        <template x-for="(image, index) in item.images" :key="index">
+                                            <img :src="image" :alt="'Portfolio - Image ' + (index + 1)" class="absolute inset-0 w-full h-44 object-cover transition-opacity duration-500" :class="{ 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }">
+                                        </template>
+                                    </div>
+
+                                    <!-- Navigation Buttons -->
+                                    <button @click="currentSlide = currentSlide === 0 ? item.images.length - 1 : currentSlide - 1" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                        </svg>
+                                    </button>
+                                    <button @click="currentSlide = (currentSlide + 1) % item.images.length" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Class Badge -->
+                                    <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md">
+                                        <span x-text="item.className"></span>
+                                    </div>
+
+                                    <!-- Dots Indicator -->
+                                    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                                        <template x-for="(image, index) in item.images" :key="index">
+                                            <button @click="currentSlide = index" class="w-2 h-2 rounded-full transition-all duration-200" :class="{ 'bg-white': currentSlide === index, 'bg-white/50': currentSlide !== index }"></button>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Card Content -->
+                                <div class="p-6 space-y-4">
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border">
+                                            <span x-text="item.classType"></span>
+                                        </span>
+                                    </div>
+
+                                    <h3 class="text-lg font-semibold text-gray-900 leading-tight" x-text="item.title"></h3>
+
+                                    <div class="flex flex-wrap gap-2">
+                                        <template x-for="tech in item.technologies" :key="tech">
+                                            <span class="px-2 py-1 text-xs rounded-md bg-gray-900 text-white font-medium" x-text="tech"></span>
+                                        </template>
+                                    </div>
+
+                                    <div class="flex items-center gap-3 pt-2 border-t border-gray-100">
+                                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                            <img :src="item.userProfile" :alt="item.userName" class="w-full h-full object-cover">
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-semibold text-gray-900 truncate" x-text="item.userName"></p>
+                                            <p class="text-xs font-medium text-gray-500 truncate" x-text="item.userEmail"></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6">
+                                        <a :href="'/dashboard/portfolio/' + item.id" class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                                            View Detail
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Pagination -->
+                <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
+                    <button 
+                        @click="currentPage = Math.max(1, currentPage - 1)"
+                        :disabled="currentPage === 1"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <template x-for="page in totalPages" :key="page">
+                        <button 
+                            @click="currentPage = page"
+                            class="w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm"
+                            :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+                            x-text="page"
+                        ></button>
+                    </template>
+                    
+                    <button 
+                        @click="currentPage = Math.min(totalPages, currentPage + 1)"
+                        :disabled="currentPage === totalPages"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function portfolioApp() {
+            return {
+                allPortfolio: [
+                    {
+                        id: 1,
+                        title: 'React Advanced Dashboard',
+                        className: 'Full Stack',
+                        classType: 'Online',
+                        category: 'Web Development',
+                        technologies: ['React', 'Node.js', 'MongoDB'],
+                        images: ['https://via.placeholder.com/400x300?text=React+Dashboard+1', 'https://via.placeholder.com/400x300?text=React+Dashboard+2'],
+                        userName: 'John Doe',
+                        userEmail: 'john@example.com',
+                        userProfile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John'
+                    },
+                    {
+                        id: 2,
+                        title: 'Vue E-commerce Platform',
+                        className: 'Frontend Intensive',
+                        classType: 'Hybrid',
+                        category: 'Web Development',
+                        technologies: ['Vue.js', 'Tailwind CSS', 'Firebase'],
+                        images: ['https://via.placeholder.com/400x300?text=Vue+Ecommerce+1', 'https://via.placeholder.com/400x300?text=Vue+Ecommerce+2', 'https://via.placeholder.com/400x300?text=Vue+Ecommerce+3'],
+                        userName: 'Jane Smith',
+                        userEmail: 'jane@example.com',
+                        userProfile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane'
+                    },
+                    {
+                        id: 3,
+                        title: 'Mobile App Development',
+                        className: 'Mobile Dev',
+                        classType: 'Offline',
+                        category: 'Mobile Development',
+                        technologies: ['React Native', 'Firebase', 'Redux'],
+                        images: ['https://via.placeholder.com/400x300?text=Mobile+App+1'],
+                        userName: 'Alex Johnson',
+                        userEmail: 'alex@example.com',
+                        userProfile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'
+                    },
+                    {
+                        id: 4,
+                        title: 'AI Machine Learning Model',
+                        className: 'Data Science',
+                        classType: 'Online',
+                        category: 'Data Science',
+                        technologies: ['Python', 'TensorFlow', 'Pandas'],
+                        images: ['https://via.placeholder.com/400x300?text=ML+Model+1', 'https://via.placeholder.com/400x300?text=ML+Model+2'],
+                        userName: 'Maria Garcia',
+                        userEmail: 'maria@example.com',
+                        userProfile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria'
+                    },
+                    {
+                        id: 5,
+                        title: 'Web Design Portfolio',
+                        className: 'UI/UX Design',
+                        classType: 'Hybrid',
+                        category: 'Design',
+                        technologies: ['Figma', 'Adobe XD', 'Sketch'],
+                        images: ['https://via.placeholder.com/400x300?text=Design+Portfolio+1', 'https://via.placeholder.com/400x300?text=Design+Portfolio+2', 'https://via.placeholder.com/400x300?text=Design+Portfolio+3', 'https://via.placeholder.com/400x300?text=Design+Portfolio+4'],
+                        userName: 'Sarah Williams',
+                        userEmail: 'sarah@example.com',
+                        userProfile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
+                    },
+                    {
+                        id: 6,
+                        title: 'Django Backend API',
+                        className: 'Backend Development',
+                        classType: 'Online',
+                        category: 'Web Development',
+                        technologies: ['Django', 'PostgreSQL', 'REST API'],
+                        images: ['https://via.placeholder.com/400x300?text=Backend+API+1'],
+                        userName: 'Michael Chen',
+                        userEmail: 'michael@example.com',
+                        userProfile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael'
+                    },
+                    {
+                        id: 7,
+                        title: 'iOS App Native',
+                        className: 'Mobile Dev',
+                        classType: 'Offline',
+                        category: 'Mobile Development',
+                        technologies: ['Swift', 'SwiftUI', 'CoreData'],
+                        images: ['https://via.placeholder.com/400x300?text=iOS+App+1', 'https://via.placeholder.com/400x300?text=iOS+App+2'],
+                        userName: 'Emily Brown',
+                        userEmail: 'emily@example.com',
+                        userProfile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily'
+                    },
+                    {
+                        id: 8,
+                        title: 'DevOps Infrastructure',
+                        className: 'DevOps',
+                        classType: 'Hybrid',
+                        category: 'DevOps',
+                        technologies: ['Docker', 'Kubernetes', 'AWS'],
+                        images: ['https://via.placeholder.com/400x300?text=DevOps+1', 'https://via.placeholder.com/400x300?text=DevOps+2'],
+                        userName: 'David Lee',
+                        userEmail: 'david@example.com',
+                        userProfile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David'
+                    }
+                ],
+                selectedCategory: '',
+                selectedClassType: '',
+                currentPage: 1,
+                itemsPerPage: 6,
+
+                get categories() {
+                    return [...new Set(this.allPortfolio.map(p => p.category))];
+                },
+
+                get classTypes() {
+                    return [...new Set(this.allPortfolio.map(p => p.classType))];
+                },
+
+                get filteredPortfolio() {
+                    return this.allPortfolio.filter(item => {
+                        const categoryMatch = this.selectedCategory === '' || item.category === this.selectedCategory;
+                        const typeMatch = this.selectedClassType === '' || item.classType === this.selectedClassType;
+                        return categoryMatch && typeMatch;
+                    });
+                },
+
+                get totalPages() {
+                    return Math.ceil(this.filteredPortfolio.length / this.itemsPerPage);
+                },
+
+                get paginatedPortfolio() {
+                    const start = (this.currentPage - 1) * this.itemsPerPage;
+                    const end = start + this.itemsPerPage;
+                    return this.filteredPortfolio.slice(start, end);
+                },
+
+                resetFilters() {
+                    this.selectedCategory = '';
+                    this.selectedClassType = '';
+                    this.currentPage = 1;
+                },
+
+                nextPage() {
+                    if (this.currentPage < this.totalPages) {
+                        this.currentPage++;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                },
+
+                previousPage() {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+            };
+        }
+    </script>

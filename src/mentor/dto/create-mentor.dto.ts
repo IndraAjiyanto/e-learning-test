@@ -10,6 +10,15 @@ export class CreateMentorDto {
     @IsString()
     profile: string
 
+              @IsString()
+          teknologi: string[]
+
+    @IsString()
+    linkedin: string
+
+    @IsString()
+    github: string
+
     @IsString()
     deskripsi: string
 

@@ -1,108 +1,236 @@
-    <div class="max-w-6xl mx-auto bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-28 px-6 py-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Portfolio</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {{#each portfolio}}
-            <div class="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-              <div class="relative overflow-hidden rounded-t-xl" x-data="{ 
-                currentSlide: 0, 
-                images: [{{#each gambar}}'{{this}}',{{/each}}],
-                autoSlide: null,
-                init() {
-                  this.startAutoSlide();
-                },
-                startAutoSlide() {
-                  this.autoSlide = setInterval(() => {
-                    this.nextSlide();
-                  }, 4000);
-                },
-                stopAutoSlide() {
-                  clearInterval(this.autoSlide);
-                },
-                nextSlide() {
-                  this.currentSlide = (this.currentSlide + 1) % this.images.length;
-                },
-                prevSlide() {
-                  this.currentSlide = this.currentSlide === 0 ? this.images.length - 1 : this.currentSlide - 1;
-                },
-                goToSlide(index) {
-                  this.currentSlide = index;
-                }
-              }" @mouseenter="stopAutoSlide()" @mouseleave="startAutoSlide()">
-                
-                <div class="relative h-44 w-full">
-                  <template x-for="(image, index) in images" :key="index">
-                    <img :src="image" 
-                         :alt="'React Advanced - Image ' + (index + 1)"
-                         class="absolute inset-0 w-full h-44 object-cover transition-opacity duration-500"
-                         :class="{ 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }">
-                  </template>
+<div class="pt-24 min-h-screen bg-white" x-data="portfolioApp()">
+    <div class="container mx-auto px-4 pb-16">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Portfolio</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+                Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Sidebar Filters -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
+                    <!-- Active Filters -->
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-sm font-semibold text-gray-700">Active Filters</h4>
+                            <button @click="resetFilters()" class="text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center">
+                                <i class="fas fa-undo-alt mr-1 text-xs"></i>
+                                Reset
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            <template x-if="selectedKategori === '' && selectedJenisKelas === ''">
+                                <div class="text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200">
+                                    No active filters
+                                </div>
+                            </template>
+
+                            <template x-if="selectedKategori !== ''">
+                                <span class="block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border">
+                                    <span x-text="selectedKategori"></span>
+                                </span>
+                            </template>
+
+                            <template x-if="selectedJenisKelas !== ''">
+                                <span class="block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border">
+                                    <span x-text="selectedJenisKelas"></span>
+                                </span>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Kategori Filter -->
+                    <div class="mb-6">
+                        <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="fas fa-tags text-gray-500 mr-2"></i>
+                            Category
+                        </h3>
+                        <div class="space-y-2">
+                            <button @click="selectedKategori = ''" :class="selectedKategori === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white ' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                <span class="text-sm">All Categories</span>
+                                <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                            </button>
+                            <template x-for="kategori in allKategori" :key="kategori.id">
+                                <button @click="selectedKategori = kategori.nama_kategori" :class="selectedKategori === kategori.nama_kategori ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                    <span class="text-sm" x-text="kategori.nama_kategori"></span>
+                                    <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Jenis Kelas Filter -->
+                    <div class="mb-6">
+                        <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="fas fa-graduation-cap text-gray-500 mr-2"></i>
+                            Class Type
+                        </h3>
+                        <div class="space-y-2">
+                            <button @click="selectedJenisKelas = ''" :class="selectedJenisKelas === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                <span class="text-sm">All</span>
+                                <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                            </button>
+                            <template x-for="jenis in allJenisKelas" :key="jenis.id">
+                                <button @click="selectedJenisKelas = jenis.nama_jenis_kelas" :class="selectedJenisKelas === jenis.nama_jenis_kelas ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                    <span class="text-sm" x-text="jenis.nama_jenis_kelas"></span>
+                                    <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Projects Count -->
+                    <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-gray-900" x-text="filteredPortfolio.length"></div>
+                            <div class="text-sm text-gray-600">Projects Available</div>
+                        </div>
+                    </div>
                 </div>
-
-                <div>
-                  <button @click="prevSlide()" 
-                          class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                  </button>
-                  <button @click="nextSlide()" 
-                          class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                  </button>
-                </div>
-
-                <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md">
-                  {{kelas.nama_kelas}}
-                </div>
-
-                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-                  <template x-for="(image, index) in images" :key="index">
-                    <button @click="goToSlide(index)" 
-                            class="w-2 h-2 rounded-full transition-all duration-200"
-                            :class="{ 'bg-white': currentSlide === index, 'bg-white/50': currentSlide !== index }">
-                    </button>
-                  </template>
-                </div>
-              </div>
-
-              <div class="p-6 space-y-4">
-                <div class="flex flex-wrap gap-2">
-                  <span class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border">
-                    {{kelas.jenis_kelas.nama_jenis_kelas}}
-                  </span>
-                </div>
-
-                <h3 class="text-lg font-semibold text-gray-900 leading-tight">
-                  {{judul}}
-                </h3>
-
-                <div class="flex flex-wrap gap-2">
-                  {{#each teknologi}}
-                  <span class="px-2 py-1 text-xs rounded-md bg-gray-900 text-white font-medium">{{this}}</span>
-                  {{/each}}
-                </div>
-
-                <div class="flex items-center gap-3 pt-2 border-t border-gray-100">
-                  <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                    <img src="{{user.profile}}" alt="John Doe" class="w-full h-full object-cover">
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-gray-900 truncate">{{user.biodata.nama_lengkap}}</p>
-                    <p class="text-xs font-medium text-gray-900 truncate">{{user.email}}</p>
-                  </div>
-                </div>
-
-                              <div class="card-actions justify-end mt-6">
-                  <a href="/dashboard/portfolio/{{id}}" class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                      View Detail
-                  </a>
-              </div>
-                
-              </div>
             </div>
-            {{/each}}
+
+            <!-- Portfolio Grid -->
+            <div class="lg:col-span-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="item in paginatedPortfolio" :key="item.id">
+                        <div class="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                            <!-- Single Image -->
+                            <div class="relative overflow-hidden rounded-t-xl">
+                                <div class="relative h-44 w-full">
+                                    <img :src="item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'" 
+                                         :alt="item.judul" 
+                                         class="w-full h-44 object-cover">
+                                </div>
+
+                                <!-- Kategori Badge -->
+                                <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md">
+                                    <span x-text="item.kategori?.nama_kategori || 'No Category'"></span>
+                                </div>
+                            </div>
+
+                            <!-- Card Content -->
+                            <div class="p-6 space-y-4">
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border">
+                                        <i class="fas fa-laptop text-gray-500"></i>
+                                        <span x-text="item.jenis_kelas?.nama_jenis_kelas || 'No Type'"></span>
+                                    </span>
+                                </div>
+
+                                <h3 class="text-lg font-semibold text-gray-900 leading-tight" x-text="item.judul || 'No Title'"></h3>
+
+                                <p class="text-gray-600 text-sm" x-text="item.deskripsi ? (item.deskripsi.length > 100 ? item.deskripsi.substring(0, 100) + '...' : item.deskripsi) : 'No description'"></p>
+
+                                <div class="flex flex-wrap gap-2" x-show="item.teknologi && item.teknologi.length > 0">
+                                    <template x-for="tech in item.teknologi" :key="tech">
+                                        <span class="px-3 py-1 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:from-gray-100 hover:to-gray-200 transition-all" x-text="tech"></span>
+                                    </template>
+                                </div>
+
+                                <div class="flex items-center gap-3 pt-2 border-t border-gray-100" x-show="item.user">
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                        <img :src="item.user.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + item.user.username" 
+                                             :alt="item.user.username" 
+                                             class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-900 truncate" x-text="item.user.username || 'Unknown User'"></p>
+                                        <p class="text-xs font-medium text-gray-500 truncate" x-text="item.user.email || 'No email'"></p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6">
+                                    <a :href="'/dashboard/portfolio/' + item.id" class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                                        View Detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- No Results Message -->
+                <div x-show="filteredPortfolio.length === 0" class="text-center py-12">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-search text-gray-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No Projects Found</h3>
+                    <p class="text-gray-600 mb-6">Try adjusting your filters to find more projects.</p>
+                    <button @click="resetFilters()" class="bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-lg hover:from-slate-500 hover:to-slate-700 transition-all duration-300">
+                        Reset Filters
+                    </button>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
+                    <button 
+                        @click="currentPage = Math.max(1, currentPage - 1)"
+                        :disabled="currentPage === 1"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <template x-for="page in totalPages" :key="page">
+                        <button 
+                            @click="currentPage = page"
+                            class="w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm"
+                            :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+                            x-text="page"
+                        ></button>
+                    </template>
+                    
+                    <button 
+                        @click="currentPage = Math.min(totalPages, currentPage + 1)"
+                        :disabled="currentPage === totalPages"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+
+<script>
+function portfolioApp() {
+    return {
+        allPortfolio: {{{ json portfolio }}},
+        allKategori: {{{ json kategori }}},
+        allJenisKelas: {{{ json jenis_kelas }}},
+        selectedKategori: '',
+        selectedJenisKelas: '',
+        currentPage: 1,
+        itemsPerPage: 6,
+
+        get filteredPortfolio() {
+            return this.allPortfolio.filter(item => {
+                const kategoriMatch = this.selectedKategori === '' || 
+                    (item.kategori && item.kategori.nama_kategori === this.selectedKategori);
+                const jenisKelasMatch = this.selectedJenisKelas === '' || 
+                    (item.jenis_kelas && item.jenis_kelas.nama_jenis_kelas === this.selectedJenisKelas);
+                return kategoriMatch && jenisKelasMatch;
+            });
+        },
+
+        get totalPages() {
+            return Math.ceil(this.filteredPortfolio.length / this.itemsPerPage);
+        },
+
+        get paginatedPortfolio() {
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.filteredPortfolio.slice(start, end);
+        },
+
+        resetFilters() {
+            this.selectedKategori = '';
+            this.selectedJenisKelas = '';
+            this.currentPage = 1;
+        }
+    };
+}
+</script>

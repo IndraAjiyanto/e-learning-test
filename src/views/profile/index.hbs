@@ -1,145 +1,281 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28" x-data="profilePreview()">
+<div class="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 pt-20" x-data="profilePreview()">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">My Profile</h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Manage your account information and profile settings
+            </p>
+        </div>
 
-  <div class="mb-10 flex flex-col sm:flex-row items-center gap-6">
-    <div class="relative">
-      <img :src="previewUrl || '{{user.profile}}'" 
-           alt="Foto Profil"
-           class="w-28 h-28 rounded-full border-4 border-gray-200 shadow-lg object-cover" />
+        <!-- Profile Card -->
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 p-8 mb-10 transition-all duration-300 hover:shadow-3xl">
+            <!-- Profile Header with Image, Info, and Action Buttons -->
+            <div class="flex flex-col lg:flex-row items-center lg:items-start gap-8">
+                <!-- Profile Image Section -->
+                <div class="flex-shrink-0">
+                    <div class="relative">
+                        <img :src="previewUrl || '{{user.profile}}'" 
+                             alt="Profile Photo"
+                             class="w-32 h-32 rounded-full border-4 border-slate-200 shadow-2xl object-cover transition-all duration-300 hover:scale-105" />
 
-      <label for="profile-upload"
-             class="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow cursor-pointer hover:bg-gray-100 transition">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="h-5 w-5 text-gray-600"
-             fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15.232 5.232l3.536 3.536M9 11l6.586-6.586
-                   a2 2 0 012.828 0l1.172 1.172a2 2 0 010 2.828L13 15
-                   m-4 0h4m-4 0v4m0-4H5m4 0v-4" />
-        </svg>
-      </label>
+                        <label for="profile-upload"
+                               class="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg cursor-pointer hover:bg-slate-100 transition-all duration-300 hover:scale-110">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="h-5 w-5 text-slate-600"
+                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M15.232 5.232l3.536 3.536M9 11l6.586-6.586
+                                         a2 2 0 012.828 0l1.172 1.172a2 2 0 010 2.828L13 15
+                                         m-4 0h4m-4 0v4m0-4H5m4 0v-4" />
+                            </svg>
+                        </label>
 
-      <form x-ref="profileForm" action="/users/update/profile/{{user.id}}?_method=PATCH" method="post" enctype="multipart/form-data">
-        <input id="profile-upload" type="file" name="profile" accept="image/*" class="hidden"
-               x-ref="fileInput"
-               @change="
-                 previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : '';
-                 if(previewUrl) open = true;
-               " />
-      </form>
-    </div>
+                        <form x-ref="profileForm" action="/users/update/profile/{{user.id}}?_method=PATCH" method="post" enctype="multipart/form-data">
+                            <input id="profile-upload" type="file" name="profile" accept="image/*" class="hidden"
+                                   x-ref="fileInput"
+                                   @change="
+                                     previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : '';
+                                     if(previewUrl) open = true;
+                                   " />
+                        </form>
+                    </div>
+                </div>
 
-    <div class="text-center sm:text-left">
-      <h1 class="text-3xl text-gray-900 font-bold mb-1">{{user.username}}</h1>
-      <p class="text-gray-600">{{user.email}}</p>
-    </div>
-  </div>
+                <!-- User Info Section -->
+                <div class="flex-1 text-center lg:text-left">
+                    <div class="mb-4">
+                        <h1 class="text-3xl font-bold text-slate-800 mb-2">{{user.username}}</h1>
+                        <p class="text-slate-600 text-lg">{{user.email}}</p>
+                    </div>
+                    
+                    <!-- User Role Badge -->
+                    <div class="flex gap-2 justify-center lg:justify-start">
+                        <span class="px-3 py-1 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 rounded-full text-sm font-medium">
+                            {{user.role}}
+                        </span>
+                    </div>
+                </div>
 
-  <div x-show="open" 
-       class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
-       x-transition
-       @click.self="closeModal()">
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-4 relative">
-      <button @click="closeModal()" 
-              class="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
-
-      <img :src="previewUrl" alt="Preview Profile" 
-           class="rounded-lg w-full object-contain max-h-[70vh] mt-4">
-
-      <div class="flex justify-end gap-3 mt-4">
-        <button @click="closeModal()"
-                class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-          Cancel
-        </button>
-
-        <button @click="$refs.profileForm.submit()" 
-                class="px-6 py-2 rounded-lg bg-gray-900 text-white shadow hover:bg-gray-700 transition">
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="mb-10">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-semibold text-gray-900">Account Information</h2>
-      <div class="flex gap-2">
-        <a href="/users/profile/info_akun" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">Edit Info</a>
-        <a href="/users/profile/password" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">Change Password</a>
-      </div>
-    </div>
-
-    <div class="bg-white shadow-lg rounded-xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-      <div>
-        <p class="text-sm text-gray-500">Username</p>
-        <p class="text-lg text-gray-900 font-medium">{{user.username}}</p>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500">Email</p>
-        <p class="text-lg text-gray-900 font-medium">{{user.email}}</p>
-      </div>
-
-      {{#if (roles user.role "user")}}
-        {{#if user.biodata}}
-          <div>
-            <p class="text-sm text-gray-500">Nama Lengkap</p>
-            <p class="text-lg font-medium">{{user.biodata.nama_lengkap}}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">No</p>
-            <p class="text-lg font-medium">{{user.biodata.no}}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Jenis Kelamin</p>
-            <p class="text-lg font-medium">{{user.biodata.jenis_kelamin}}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Domisili</p>
-            <p class="text-lg font-medium">{{user.biodata.kota}}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Pendidikan Terakhir</p>
-            <p class="text-lg font-medium">{{user.biodata.pendidikan}}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Program Studi</p>
-            <p class="text-lg font-medium">{{user.biodata.program_studi}}</p>
-          </div>
-        {{else}}
-          <div class="col-span-2">
-            <div class="p-4 rounded-lg bg-yellow-100 text-yellow-800 flex items-center justify-between">
-              <div>
-                <p class="font-semibold">Biodata belum lengkap</p>
-                <p class="text-sm">Lengkapi biodata agar profilmu lebih profesional.</p>
-              </div>
-              <a href="/biodatas/create" class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-700 transition">Lengkapi Biodata</a>
+                <!-- Action Buttons Section - Di samping kanan -->
+                <div class="flex flex-col gap-3 w-full lg:w-auto">
+                    <a href="/users/profile/info_akun" 
+                       class="bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-center whitespace-nowrap">
+                        <i class="fas fa-edit mr-2"></i>Edit Profile
+                    </a>
+                    <a href="/users/profile/password" 
+                       class="bg-white text-slate-800 border-2 border-slate-300 px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-center whitespace-nowrap">
+                        <i class="fas fa-key mr-2"></i>Change Password
+                    </a>
+                </div>
             </div>
-          </div>
+        </div>
+
+        <!-- Account Information Section -->
+        <div class="mb-10">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">Account Information</h2>
+                <p class="text-slate-600 mt-2">Your basic account details and personal information</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+                <!-- Basic Information Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Username -->
+                    <div class="flex items-center gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200">
+                        <div class="w-12 h-12  flex items-center justify-center flex-shrink-0">
+
+                            <i class="fas fa-user text-gray-700 text-lg"></i>
+                            </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-slate-500 font-medium">Username</p>
+                            <p class="text-lg text-slate-800 font-semibold">{{user.username}}</p>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="flex items-center gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200">
+                        <div class="w-12 h-12  flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-envelope text-gray-700 text-lg"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-slate-500 font-medium">Email</p>
+                            <p class="text-lg text-slate-800 font-semibold">{{user.email}}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Biodata Section for Users -->
+                {{#if (roles user.role "user")}}
+                    {{#if user.biodata}}
+                        <!-- Personal Information -->
+                        <div class="mt-8 pt-8 border-t border-slate-200">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                                <h3 class="text-xl font-bold text-slate-800">Personal Information</h3>
+                                <!-- Edit Information Button -->
+                                <a href="/biodatas/formEdit/{{user.biodata.id}}" 
+                                   class="inline-flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold mt-4 md:mt-0">
+                                    <i class="fas fa-edit mr-2"></i>
+                                    Edit Information
+                                </a>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Full Name -->
+                                <div class="flex items-center gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200">
+                                    <div class="w-12 h-12  flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-id-card text-gray-700 text-lg"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-slate-500 font-medium">Full Name</p>
+                                        <p class="text-lg text-slate-800 font-semibold">{{user.biodata.nama_lengkap}}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Gender -->
+                                <div class="flex items-center gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200">
+                                    <div class="w-12 h-12  flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-venus-mars text-gray-700 text-lg"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-slate-500 font-medium">Gender</p>
+                                        <p class="text-lg text-slate-800 font-semibold">{{user.biodata.jenis_kelamin}}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Details -->
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <!-- Phone Number -->
+                                <div class="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 text-center">
+                                    <div class="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-phone text-gray-700 text-sm"></i>
+                                    </div>
+                                    <p class="text-sm text-slate-500 font-medium">Phone Number</p>
+                                    <p class="text-base text-slate-800 font-semibold">{{user.biodata.no}}</p>
+                                </div>
+
+                                <!-- Location -->
+                                <div class="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 text-center">
+                                    <div class="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-map-marker-alt text-gray-700 text-sm"></i>
+                                    </div>
+                                    <p class="text-sm text-slate-500 font-medium">Location</p>
+                                    <p class="text-base text-slate-800 font-semibold">{{user.biodata.kota}}</p>
+                                </div>
+
+                                <!-- Education -->
+                                <div class="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 text-center">
+                                    <div class="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-graduation-cap text-gray-700 text-sm"></i>
+                                    </div>
+                                    <p class="text-sm text-slate-500 font-medium">Education</p>
+                                    <p class="text-base text-slate-800 font-semibold">{{user.biodata.pendidikan}}</p>
+                                </div>
+
+                                <!-- Study Program -->
+                                <div class="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 text-center">
+                                    <div class="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-book text-gray-700 text-sm"></i>
+                                    </div>
+                                    <p class="text-sm text-slate-500 font-medium">Study Program</p>
+                                    <p class="text-base text-slate-800 font-semibold">{{user.biodata.program_studi}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {{else}}
+                        <!-- No Biodata Warning -->
+                        <div class="mt-8 p-6 rounded-xl bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200">
+                            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-exclamation-triangle text-white text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-yellow-800 text-lg">Complete Your Profile</p>
+                                        <p class="text-yellow-700 text-sm">Complete your biodata to make your profile more professional.</p>
+                                    </div>
+                                </div>
+                                <a href="/biodatas/formCreate" 
+                                   class="bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold whitespace-nowrap">
+                                    Complete Biodata
+                                </a>
+                            </div>
+                        </div>
+                    {{/if}}
+                {{/if}}
+            </div>
+        </div>
+
+        <!-- Portfolio Section for Users -->
+        {{#if (roles user.role "user")}}
+        <div class="mb-10">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">My Portfolio</h2>
+                <p class="text-slate-600 mt-2">Showcase your projects and achievements</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+                <div class="text-center">
+                    <div class="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-folder-open text-slate-400 text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">No Portfolio Yet</h3>
+                    <p class="text-slate-600 mb-6 max-w-md mx-auto">Showcase your projects and skills by adding your first portfolio item to impress potential employers.</p>
+                    <a href="/portfolio/create" 
+                       class="inline-flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-800 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold">
+                        <i class="fas fa-plus"></i>
+                        Create First Portfolio
+                    </a>
+                </div>
+            </div>
+        </div>
         {{/if}}
-      {{/if}}
     </div>
-  </div>
 
-  {{#if (roles user.role "user")}}
-  <div class="mb-10">
-    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Portfolio</h2>
-    <div class="bg-white shadow-lg rounded-xl p-6">
-      <p class="text-gray-600">Kamu belum menambahkan portofolio.</p>
+    <!-- Profile Picture Preview Modal -->
+    <div x-show="open" 
+         class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
+         x-transition
+         @click.self="closeModal()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <button @click="closeModal()" 
+                    class="absolute top-4 right-4 text-slate-600 hover:text-slate-900 text-2xl w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-all duration-300">
+                &times;
+            </button>
+
+            <h3 class="text-xl font-bold text-slate-800 mb-4">Profile Picture Preview</h3>
+            
+            <img :src="previewUrl" alt="Preview Profile" 
+                 class="rounded-xl w-full object-contain max-h-[60vh] border border-slate-200">
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button @click="closeModal()"
+                        class="px-6 py-3 rounded-xl border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold">
+                    Cancel
+                </button>
+
+                <button @click="$refs.profileForm.submit()" 
+                        class="px-6 py-3 rounded-xl bg-gradient-to-r from-slate-600 to-slate-800 text-white shadow-lg hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold">
+                    Save Changes
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
-  {{/if}}
-
 </div>
 
 <script>
 function profilePreview() {
-  return {
-    previewUrl: '',
-    open: false,
-    closeModal() {
-      this.open = false;
-      this.previewUrl = '';
-      this.$refs.fileInput.value = null;
+    return {
+        previewUrl: '',
+        open: false,
+        closeModal() {
+            this.open = false;
+            this.previewUrl = '';
+            if (this.$refs.fileInput) {
+                this.$refs.fileInput.value = null;
+            }
+        }
     }
-  }
 }
-</script>
+</script> 

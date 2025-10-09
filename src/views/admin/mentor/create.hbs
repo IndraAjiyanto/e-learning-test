@@ -2,7 +2,7 @@
   <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
     <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Create Mentor</h2>
 
-    <form method="POST" action="/mentors" enctype="multipart/form-data" class="space-y-8">
+    <form method="POST" action="/mentor/{{kelasId}}" enctype="multipart/form-data" class="space-y-8">
 
       <!-- Profile / Foto -->
       <div x-data="{ previewUrl: null }" class="space-y-3">
@@ -61,6 +61,27 @@
                  focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
       </div>
 
+                          <div x-data="{ techs: [''] }">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
+                        <template x-for="(tech, index) in techs" :key="index">
+                            <div class="flex items-center gap-3 mb-3">
+                                <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter a technology"
+                                    class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
+                                           focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+                                <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
+                                    class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
+                                    ✕
+                                </button>
+                            </div>
+                        </template>
+                        <button type="button" @click="techs.push('')"
+                            class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
+                                   text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
+                            + Add Technology
+                        </button>
+                    </div>
+
+
       <!-- Deskripsi -->
       <div>
         <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
@@ -71,6 +92,30 @@
           placeholder="Write a short description about the mentor..."
           class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 
                  focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
+      </div>
+
+            <div>
+        <label for="linkedin" class="block text-sm font-semibold text-gray-700 mb-1">Linkedin</label>
+        <input 
+          type="text" 
+          id="linkedin" 
+          name="linkedin" 
+          placeholder="link linkedin" 
+          required
+          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 
+                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+      </div>
+
+            <div>
+        <label for="github" class="block text-sm font-semibold text-gray-700 mb-1">Github</label>
+        <input 
+          type="text" 
+          id="github" 
+          name="github" 
+          placeholder="Link github" 
+          required
+          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 
+                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
       </div>
 
       <!-- Buttons -->

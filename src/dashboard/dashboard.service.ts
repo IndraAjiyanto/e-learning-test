@@ -8,6 +8,9 @@ import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
+import { Kategori } from 'src/entities/kategori.entity';
+import { JenisKelas } from 'src/entities/jenis_kelas.entity';
+import { paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class DashboardService {
@@ -22,6 +25,10 @@ export class DashboardService {
         private readonly portfolioRepository: Repository<Portfolio>,
     @InjectRepository(GambarBenefit)
         private readonly gambarBenefitRepository: Repository<GambarBenefit>,
+    @InjectRepository(Kategori)
+        private readonly kategoriRepository: Repository<Kategori>,
+    @InjectRepository(JenisKelas)
+        private readonly jenisKelasRepository: Repository<JenisKelas>,
   ) {}
 
   async findAllKelas(){
@@ -40,12 +47,34 @@ export class DashboardService {
     return await this.portfolioRepository.findOne({where: {id: portfolioId}, relations: ['kelas','kelas.kategori','kelas.jenis_kelas', 'user', 'user.biodata']})
   }
 
+  async paginatePortfolio({ kategori, jenis_kelas, page, limit }) {
+  const queryBuilder = this.portfolioRepository.createQueryBuilder('portfolio')
+    .leftJoinAndSelect('portfolio.kelas', 'kelas')
+    .leftJoinAndSelect('portfolio.user', 'user')
+    .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas');
+
+  if (kategori) queryBuilder.andWhere('kelas.kategoriId = :kategori', { kategori });
+  if (jenis_kelas) queryBuilder.andWhere('kelas.jenis_kelasId = :jenis_kelas', { jenis_kelas });
+
+  queryBuilder.orderBy('portfolio.id', 'DESC');
+
+  return paginate(queryBuilder, { page, limit });
+}
+
   async findFAQ(){
     return await this.pertanyaanUmumRepository.find()
   }
 
   async findAlumni(){
-    return await this.alumniRepository.find({relations: ['kelas']})
+    return await this.alumniRepository.find()
+  }
+
+    async findKategori(){
+    return await this.kategoriRepository.find()
+  }
+
+  async findJenisKelas(){
+    return await this.jenisKelasRepository.find()
   }
 
   async findGambar(){

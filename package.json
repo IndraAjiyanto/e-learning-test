@@ -6,12 +6,13 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build && npm run build:css:prod",
+    "build:script": "esbuild src/common/public/js/alpine.js --bundle --outfile=src/common/public/assets/main.js --minify",
+    "build": "nest build && npm run build:css:prod && npm run build:script",
     "build:css": "tailwindcss -i ./src/common/public/style.css -o ./src/common/public/css/style.css --watch",
     "build:css:prod": "tailwindcss -i ./src/common/public/style.css -o ./src/common/public/css/style.css --minify",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "concurrently \"npm run build:css\" \"nest start --watch\"",
+    "start:dev": "concurrently \"npm run build:css\" \"npm run build:script --watch\" \"nest start --watch\"",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -35,7 +36,7 @@
     "@nestjs/serve-static": "^5.0.3",
     "@nestjs/typeorm": "^11.0.0",
     "@types/express-session": "^1.18.2",
-    "alpinejs": "^3.14.9",
+    "alpinejs": "^3.15.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -51,6 +52,7 @@
     "method-override": "^3.0.0",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
+    "nestjs-typeorm-paginate": "^4.1.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "pdf-lib": "^1.17.1",
@@ -81,6 +83,7 @@
     "autoprefixer": "^10.4.16",
     "concurrently": "^9.2.0",
     "daisyui": "^4.4.20",
+    "esbuild": "^0.25.10",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
@@ -97,7 +100,8 @@
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.20.0",
+    "vite": "^7.1.9"
   },
   "jest": {
     "moduleFileExtensions": [

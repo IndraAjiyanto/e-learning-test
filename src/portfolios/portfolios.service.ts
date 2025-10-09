@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import cloudinary from 'src/common/config/multer.config';
+import { Kategori } from 'src/entities/kategori.entity';
+import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 
 @Injectable()
 export class PortfoliosService {
@@ -19,6 +21,12 @@ export class PortfoliosService {
       
           @InjectRepository(User)
           private readonly userRepository: Repository<User>,
+
+          @InjectRepository(Kategori)
+          private readonly kategoriRepository: Repository<Kategori>,
+
+          @InjectRepository(JenisKelas)
+          private readonly jenisKelasRepository: Repository<JenisKelas>,
 
     ){}
   async create(createPortfolioDto: CreatePortfolioDto) {
@@ -39,6 +47,18 @@ export class PortfoliosService {
     })
 
     return await this.portfolioRepository.save(portfolio)
+  }
+
+  async findByUser(userId: number){
+    return await this.portfolioRepository.find({where: {user: {id: userId}}})
+  }
+
+  async findKategori(){
+    return await this.kategoriRepository.find()
+  }
+
+  async findJenisKelas(){
+    return await this.jenisKelasRepository.find()
   }
 
   async findAll() {

@@ -1,23 +1,68 @@
-<section class="pt-28 py-16 px-6 lg:px-20 bg-gradient-to-br from-slate-50 to-white" 
+<div 
   x-data="{
-      tab: 'all',
-      categories: ['all', 'free class','course','bootcamp'],
-      selectedCategory: 'all',
+      tab: 'all', // Main Category: 'all', 'Short Class', 'Course', 'Bootcamp'
+      categories: ['all', 'short class', 'course', 'bootcamp'],
+      selectedCategory: 'all', // Course Type: 'web development', 'ui/ux', etc.
+      selectedMethod: 'all', // Method: 'all', 'online', 'offline'
       searchQuery: '',
       courseCategories: ['all', 'web development', 'ui/ux', 'devops', 'mobile development', 'data science', 'cybersecurity'],
       currentPage: 1,
       itemsPerPage: 6,
+      categoryDropdownOpen: false,
+      typeDropdownOpen: false,
+      methodDropdownOpen: false,
+      
+      categoriesData: [
+        { value: 'all', icon: 'fa-th', title: 'All Categories', desc: 'Show all class categories' },
+        { value: 'Short Class', icon: 'fa-gift', title: 'Short Class', desc: 'Free classes for beginners' },
+        { value: 'Course', icon: 'fa-book', title: 'Course', desc: 'Structured courses with complete materials' },
+        { value: 'Bootcamp', icon: 'fa-rocket', title: 'Bootcamp', desc: 'Intensive programs with expert mentors' }
+      ],
+      
+      courseCategoriesData: [
+        { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
+        { value: 'web development', icon: 'fa-code', title: 'Web Development', desc: 'Build modern and responsive websites' },
+        { value: 'ui/ux', icon: 'fa-palette', title: 'UI/UX Design', desc: 'Design engaging and user-friendly interfaces' },
+        { value: 'devops', icon: 'fa-server', title: 'DevOps', desc: 'Automation, CI/CD, and deployment' },
+        { value: 'mobile development', icon: 'fa-mobile-alt', title: 'Mobile Development', desc: 'Build iOS and Android applications' },
+        { value: 'data science', icon: 'fa-chart-line', title: 'Data Science', desc: 'Data analysis, visualization, and machine learning' },
+        { value: 'cybersecurity', icon: 'fa-shield-alt', title: 'Cybersecurity', desc: 'Protect and secure information systems' }
+      ],
+      
+      methodOptions: [
+        { value: 'all', icon: 'fa-th', title: 'All Methods', desc: 'Show all learning methods' },
+        { value: 'online', icon: 'fa-laptop', title: 'Online', desc: 'Learn from anywhere with online classes' },
+        { value: 'offline', icon: 'fa-map-marker-alt', title: 'Offline', desc: 'In-person classes at physical locations' }
+      ],
+
+      get selectedCategoryItem() {
+        return this.categoriesData.find(c => c.value === this.tab) || this.categoriesData[0];
+      },
+      
+      get selectedTypeItem() {
+        return this.courseCategoriesData.find(c => c.value === this.selectedCategory) || this.courseCategoriesData[0];
+      },
+
+      get selectedMethodItem() {
+        return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
+      },
 
       get filteredKelas() {
+          // Ensure $refs.kelasList exists and has children before accessing them
+          if (!$refs.kelasList) return [];
+
           return [...$refs.kelasList.children].filter(el => {
-              const matchesTab = this.tab === 'all' || el.dataset.kategori === this.tab;
+              // Data is normalized to lowercase for comparison
+              const matchesTab = this.tab === 'all' || el.dataset.kategori.toLowerCase() === this.tab.toLowerCase();
               const matchesCategory = this.selectedCategory === 'all' || 
                                     el.dataset.category?.toLowerCase() === this.selectedCategory.toLowerCase();
+              const matchesMethod = this.selectedMethod === 'all' || 
+                                   el.dataset.location?.toLowerCase() === this.selectedMethod.toLowerCase();
               const matchesSearch = this.searchQuery === '' || 
                                   el.dataset.nama?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                                   el.dataset.deskripsi?.toLowerCase().includes(this.searchQuery.toLowerCase());
               
-              return matchesTab && matchesCategory && matchesSearch;
+              return matchesTab && matchesCategory && matchesMethod && matchesSearch;
           })
       },
 
@@ -33,141 +78,345 @@
 
       resetFilters() {
           this.selectedCategory = 'all';
+          this.selectedMethod = 'all';
+          this.tab = 'all';
           this.searchQuery = '';
           this.currentPage = 1;
       }
   }"
-  x-init="$watch('tab', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
+  class="bg-gradient-to-br from-white via-gray-50 to-white py-20 px-6 lg:px-20 relative overflow-visible"
+  x-init="$watch('tab', () => currentPage = 1); $watch('selectedMethod', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
 >
-    <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-4">
-            My Learning Journey
-        </h2>
-        <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Continue your progress and master new skills with our comprehensive courses designed for your career growth.
-        </p>
-    </div>
-    
-    <div class="flex flex-wrap justify-center gap-4 mb-8">
-        <template x-for="category in categories" :key="category">
-            <button 
-                class="px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-1"
-                :class="tab === category 
-                    ? 'bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-lg' 
-                    : 'bg-white text-slate-700 border-2 border-slate-200 hover:border-slate-400 hover:bg-slate-50'"
-                @click="tab = category"
-                x-text="category.charAt(0).toUpperCase() + category.slice(1)"
-            >
-            </button>
-        </template>
+
+    <!-- Header Section -->
+    <div class="text-center mb-16 relative mt-10">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 relative z-10">
+          Kesatria Academy Class
+      </h1>
+      <p class="text-lg text-gray-500 max-w-2xl mx-auto relative z-10">
+          Explore berbagai kelas premium kami, mulai dari kelas singkat, course terstruktur, hingga program bootcamp intensif, untuk menguasai teknologi terkini.
+      </p>
     </div>
 
-    <div class="flex flex-wrap justify-center gap-3 mb-8">
-        <template x-for="cat in courseCategories" :key="cat">
-            <button 
-                class="px-4 py-2 text-xs font-medium rounded-lg transition-all duration-200"
-                :class="selectedCategory === cat 
-                    ? 'bg-slate-600 text-white shadow-md' 
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
-                @click="selectedCategory = cat"
-                x-text="cat.charAt(0).toUpperCase() + cat.slice(1)"
-            >
-            </button>
-        </template>
-    </div>
-    
-    <div class="max-w-md mx-auto mb-12">
-        <div class="relative group">
-            <input type="text" 
-                   x-model="searchQuery"
-                   placeholder="Search your classes..." 
-                   class="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 focus:outline-none bg-white shadow-sm transition-all duration-200 group-hover:shadow-md">
-            <button class="absolute right-0 top-0 bottom-0 bg-gradient-to-r from-slate-700 to-slate-900 text-white px-4 rounded-r-xl hover:from-slate-800 hover:to-slate-900 transition-all duration-200 shadow-sm">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </button>
+    <!-- Filter Section -->
+    <div class="max-w-6xl mx-auto mb-16 relative z-10 overflow-visible">
+      <div class="bg-white backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-xl">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-1 h-8 bg-gradient-to-b from-slate-600 to-slate-800 rounded-full"></div>
+          <h3 class="text-2xl font-bold text-gray-900">Find Your Perfect Class</h3>
         </div>
-    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto" x-ref="kelasList">
-        {{#each kelas}}
-        <div 
-            class="group bg-white shadow-lg hover:shadow-xl border border-slate-100 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
-            data-kategori="{{kategori.nama_kategori}}"
-            data-category="{{jenis_kelas.nama_jenis_kelas}}"
-            data-nama="{{nama_kelas}}"
-            data-deskripsi="{{deskripsi}}"
-            x-show="(tab === 'all' || tab === '{{kategori.nama_kategori}}') && (selectedCategory === 'all' || selectedCategory.toLowerCase() === '{{jenis_kelas.nama_jenis_kelas}}'.toLowerCase()) && (searchQuery === '' || '{{nama_kelas}}'.toLowerCase().includes(searchQuery.toLowerCase()) || '{{deskripsi}}'.toLowerCase().includes(searchQuery.toLowerCase())) && paginatedKelas($el)"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 transform scale-95"
-            x-transition:enter-end="opacity-100 transform scale-100">
+        <!-- Filter Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 relative z-50">
+          <!-- Class Type Filter -->
+          <div @click.away="categoryDropdownOpen = false" class="group relative">
+            <label class="flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
+              <i class="fas fa-layer-group text-slate-600"></i>
+              Class Type
+            </label>
             
-            <figure class="relative overflow-hidden">
-                <img src="{{gambar}}" alt="{{nama_kelas}}" class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </figure>
-
-            <div class="p-6">
-                <div class="flex gap-2 mb-3">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                        {{kategori.nama_kategori}}
-                    </span>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-slate-500 to-slate-600 text-white">
-                        {{jenis_kelas.nama_jenis_kelas}}
-                    </span>
+            <button
+                @click="categoryDropdownOpen = !categoryDropdownOpen"
+                type="button"
+                class="w-full px-5 py-4 pr-12 bg-white border border-gray-300 rounded-2xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:border-slate-400 text-left relative shadow-sm"
+            >
+                <div class="flex items-center gap-3">
+                    <i :class="selectedCategoryItem.icon" class="fas text-slate-600"></i>
+                    <span x-text="selectedCategoryItem.title"></span>
                 </div>
-
-                <h2 class="text-xl font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-slate-700 transition-colors">
-                    {{nama_kelas}}
-                </h2>
-
-
-
-                <p class="text-sm text-slate-600 line-clamp-2 mb-4 leading-relaxed">
-                    {{deskripsi}}
-                </p>
-
-                <div class="mt-auto">
-                    <a href="/kelass/{{id}}" class="block w-full text-center px-4 py-3 bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-slate-900 text-white font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
-                        Continue Learning
-                    </a>
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 transition-transform duration-300" :class="categoryDropdownOpen ? 'rotate-180' : ''">
+                    <i class="fas fa-chevron-down text-gray-500 text-lg"></i>
                 </div>
-            </div>
-        </div>
-        {{/each}}
-    </div>
-
-    <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
-        <button 
-            @click="currentPage = Math.max(1, currentPage - 1)"
-            :disabled="currentPage === 1"
-            class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
-            Previous
-        </button>
-        
-        <span class="px-4 py-2 text-slate-600" x-text="`Page ${currentPage} of ${totalPages}`"></span>
-        
-        <button 
-            @click="currentPage = Math.min(totalPages, currentPage + 1)"
-            :disabled="currentPage === totalPages"
-            class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
-            Next
-        </button>
-    </div>
-
-    <div x-show="filteredKelas.length === 0" class="text-center py-12">
-        <div class="max-w-md mx-auto">
-            <div class="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
-                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
-                </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-slate-900 mb-2">No classes found</h3>
-            <p class="text-slate-600 mb-4">Try adjusting your filters or search terms to find what you're looking for.</p>
-            <button @click="resetFilters()" class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors">
-                Reset Filters
             </button>
+
+            <!-- Dropdown Menu -->
+            <div
+                x-show="categoryDropdownOpen"
+                x-transition
+                style="z-index: 9999"
+                class="absolute w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden max-h-96 overflow-y-auto"
+            >
+                <template x-for="category in categoriesData" :key="category.value">
+                    <button
+                        type="button"
+                        @click="tab = category.value; categoryDropdownOpen = false"
+                        class="w-full px-5 py-4 text-left hover:bg-slate-50 transition-colors duration-200 flex items-start gap-4 group/item"
+                        :class="tab === category.value ? 'bg-slate-100' : ''"
+                    >
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors" :class="tab === category.value ? 'bg-slate-600 text-white' : 'text-slate-600'">
+                            <i :class="category.icon" class="fas"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-900 mb-1" x-text="category.title"></h4>
+                            <p class="text-sm text-gray-600" x-text="category.desc"></p>
+                        </div>
+                        <div x-show="tab === category.value" class="flex-shrink-0">
+                            <i class="fas fa-check text-slate-600"></i>
+                        </div>
+                    </button>
+                </template>
+            </div>
+          </div>
+
+          <!-- Course Focus Filter -->
+          <div @click.away="typeDropdownOpen = false" class="group relative">
+            <label class="flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
+              <i class="fas fa-sitemap text-slate-600"></i> Course Focus
+            </label>
+            
+            <button
+                @click="typeDropdownOpen = !typeDropdownOpen"
+                type="button"
+                class="w-full px-5 py-4 pr-12 bg-white border border-gray-300 rounded-2xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:border-slate-400 text-left relative shadow-sm"
+            >
+                <div class="flex items-center gap-3">
+                    <i :class="selectedTypeItem.icon" class="fas text-slate-600"></i>
+                    <span x-text="selectedTypeItem.title"></span>
+                </div>
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 transition-transform duration-300" :class="typeDropdownOpen ? 'rotate-180' : ''">
+                    <i class="fas fa-chevron-down text-gray-500 text-lg"></i>
+                </div>
+            </button>
+
+            <div
+                x-show="typeDropdownOpen"
+                x-transition
+                style="z-index: 9999"
+                class="absolute w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden max-h-96 overflow-y-auto"
+            >
+                <template x-for="type in courseCategoriesData" :key="type.value">
+                    <button
+                        type="button"
+                        @click="selectedCategory = type.value; typeDropdownOpen = false"
+                        class="w-full px-5 py-4 text-left hover:bg-slate-50 transition-colors duration-200 flex items-start gap-4 group/item"
+                        :class="selectedCategory === type.value ? 'bg-slate-100' : ''"
+                    >
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors" :class="selectedCategory === type.value ? 'bg-slate-600 text-white' : 'text-slate-600'">
+                            <i :class="type.icon" class="fas"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-900 mb-1" x-text="type.title"></h4>
+                            <p class="text-sm text-gray-600" x-text="type.desc"></p>
+                        </div>
+                        <div x-show="selectedCategory === type.value" class="flex-shrink-0">
+                            <i class="fas fa-check text-slate-600"></i>
+                        </div>
+                    </button>
+                </template>
+            </div>
+          </div>
+
+          <!-- Method Filter -->
+          <div @click.away="methodDropdownOpen = false" class="group relative">
+            <label class="flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
+              <i class="fas fa-chalkboard-teacher text-slate-600"></i> Method
+            </label>
+            
+            <button
+                @click="methodDropdownOpen = !methodDropdownOpen"
+                type="button"
+                class="w-full px-5 py-4 pr-12 bg-white border border-gray-300 rounded-2xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:border-slate-400 text-left relative shadow-sm"
+            >
+                <div class="flex items-center gap-3">
+                    <i :class="selectedMethodItem.icon" class="fas text-slate-600"></i>
+                    <span x-text="selectedMethodItem.title"></span>
+                </div>
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 transition-transform duration-300" 
+                     :class="methodDropdownOpen ? 'rotate-180' : ''">
+                    <i class="fas fa-chevron-down text-gray-500 text-lg"></i>
+                </div>
+            </button>
+
+            <div
+                x-show="methodDropdownOpen"
+                x-transition
+                style="z-index: 9999"
+                class="absolute w-full mt-2 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden"
+            >
+                <template x-for="method in methodOptions" :key="method.value">
+                    <button
+                        type="button"
+                        @click="selectedMethod = method.value; methodDropdownOpen = false"
+                        class="w-full px-5 py-4 text-left hover:bg-slate-50 transition-colors duration-200 flex items-start gap-4 group/item"
+                        :class="selectedMethod === method.value ? 'bg-slate-100' : ''"
+                    >
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors" 
+                             :class="selectedMethod === method.value ? 'bg-slate-600 text-white' : 'text-slate-600'">
+                            <i :class="method.icon" class="fas"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-900 mb-1" x-text="method.title"></h4>
+                            <p class="text-sm text-gray-600" x-text="method.desc"></p>
+                        </div>
+                        <div x-show="selectedMethod === method.value" class="flex-shrink-0">
+                            <i class="fas fa-check text-slate-600"></i>
+                        </div>
+                    </button>
+                </template>
+            </div>
+          </div>
+
+          <!-- Search Filter -->
+          <div class="group">
+            <label class="flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
+              <i class="fas fa-search text-slate-600"></i>
+              Search
+            </label>
+            <div class="relative">
+                <input 
+                    type="text" 
+                    x-model="searchQuery"
+                    placeholder="Cari nama atau deskripsi kelas..." 
+                    class="w-full px-5 py-4 pr-12 bg-white border border-gray-300 rounded-2xl text-gray-900 placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:border-slate-400 shadow-sm"
+                >
+                <button 
+                    x-show="searchQuery !== ''"
+                    @click="searchQuery = ''"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-600 transition-colors duration-200"
+                >
+                    <i class="fas fa-times-circle text-xl"></i>
+                </button>
+            </div>
+          </div>
         </div>
+
+        <!-- Active Filters -->
+        <div class="flex items-center justify-between flex-wrap gap-4" x-show="tab !== 'all' || selectedCategory !== 'all' || searchQuery !== '' || selectedMethod !== 'all'">
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="text-gray-600 text-sm font-medium">Active Filters:</span>
+            <span x-show="tab !== 'all'" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-full text-sm font-medium border border-slate-300">
+                <i class="fas fa-tag mr-2"></i><span x-text="tab"></span>
+            </span>
+            <span x-show="selectedCategory !== 'all'" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-full text-sm font-medium border border-slate-300">
+                <i class="fas fa-layer-group mr-2"></i><span x-text="selectedCategory"></span>
+            </span>
+            <span x-show="selectedMethod !== 'all'" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-full text-sm font-medium border border-slate-300">
+                <i class="fas fa-chalkboard-teacher mr-2"></i><span x-text="selectedMethod"></span>
+            </span>
+            <span x-show="searchQuery !== ''" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-full text-sm font-medium border border-slate-300">
+                <i class="fas fa-search mr-2"></i>"<span x-text="searchQuery"></span>"
+            </span>
+          </div>
+          <button 
+              @click="resetFilters()"
+              class="px-6 py-2.5 bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-xl font-medium"
+          >
+              <i class="fas fa-redo mr-2"></i>Reset All
+          </button>
+        </div>
+      </div>
+
+      <!-- Results Count -->
+      <div class="mt-6 text-center">
+          <p class="text-gray-600">
+              Showing <span class="text-gray-900 font-bold" x-text="filteredKelas.filter((el, idx) => paginatedKelas(el)).length"></span> of 
+              <span class="text-gray-900 font-bold" x-text="filteredKelas.length"></span> classes
+              available.
+          </p>
+      </div>
     </div>
-</section>
+
+    <!-- Classes Grid -->
+    <div 
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto relative overflow-visible"
+      x-ref="kelasList"
+    >
+      {{#each kelas}}
+      <div 
+        class="group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
+        data-kategori="{{kategori.nama_kategori}}"
+        data-category="{{jenis_kelas.nama_jenis_kelas}}"
+        data-nama="{{nama_kelas}}"
+        data-deskripsi="{{deskripsi}}"
+        data-location="{{metode}}"
+        x-show="paginatedKelas($el)"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform scale-90"
+        x-transition:enter-end="opacity-100 transform scale-100"
+      >
+        <figure>
+          <img src="{{gambar}}" alt="{{nama_kelas}}" 
+               class="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300">
+        </figure>
+
+        <div class="card-body p-8">
+          <div class="flex gap-2 mb-3">
+      <span class="badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full">
+        {{kategori.nama_kategori}}
+      </span>
+      <span class="badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full">
+        {{jenis_kelas.nama_jenis_kelas}}
+      </span>
+          </div>
+
+          <div class="flex flex-wrap gap-2 mb-4 text-sm text-gray-700">
+            <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+              <i class="fas fa-laptop text-slate-500"></i>
+              <span>{{metode}}</span>
+            </div>
+            <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+              <i class="fas fa-user-tie text-slate-500"></i>
+              <span>{{lokasi}}</span>
+            </div>
+          </div>
+
+          <h2 class="card-title text-gray-900 text-2xl font-bold mb-2 line-clamp-2">{{nama_kelas}}</h2>
+
+          <p class="text-sm text-gray-600 line-clamp-3 leading-relaxed mb-4">
+            {{deskripsi}}
+          </p>
+
+          <div class="card-actions justify-end">
+            <a href="/kelass/{{id}}" 
+               class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.01] rounded-xl font-semibold">
+               View Class
+            </a>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+
+    <!-- No Results Message -->
+    <div x-show="filteredKelas.length === 0" class="text-center py-20" x-transition>
+      <div class="bg-slate-100 w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center border border-slate-200 shadow-md">
+          <i class="fas fa-inbox text-5xl text-slate-500"></i>
+      </div>
+      <h3 class="text-3xl font-bold text-gray-900 mb-3">No Classes Found</h3>
+      <p class="text-gray-600 text-lg mb-6">Try adjusting your search or filter criteria.</p>
+      <button 
+          @click="resetFilters()"
+          class="px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-700 hover:to-slate-900 text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold shadow-xl"
+      >
+          <i class="fas fa-redo mr-2"></i>Clear All Filters
+      </button>
+    </div>
+
+    <!-- Pagination -->
+                <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
+                    <button 
+                        @click="currentPage = Math.max(1, currentPage - 1)"
+                        :disabled="currentPage === 1"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <template x-for="page in totalPages" :key="page">
+                        <button 
+                            @click="currentPage = page"
+                            class="w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm"
+                            :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+                            x-text="page"
+                        ></button>
+                    </template>
+                    
+                    <button 
+                        @click="currentPage = Math.min(totalPages, currentPage + 1)"
+                        :disabled="currentPage === totalPages"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+</div>

@@ -213,7 +213,7 @@
         </div>
 
         <!-- Tombol Tambah Mentor -->
-        <a href="/mentor/formAdd/{{kelas.id}}"
+        <a href="/mentor/formCreate/{{kelas.id}}"
            class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
           Add Mentor
         </a>
@@ -226,9 +226,12 @@
         <thead class="bg-gray-100">
           <tr>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Profile</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Bidang</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Posisi</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">teknologi</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">linkedin</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">github</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
           </tr>
         </thead>
@@ -237,12 +240,15 @@
           <tr class="hover:bg-gray-50 transition"
               x-show="filteredMentor.includes('{{id}}')">
             <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800"><img src="{{profile}}" alt=""></td>
             <td class="px-6 py-4 text-sm text-gray-800">{{nama}}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">{{bidang}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800">{{posisi}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800">{{teknologi}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800">{{linkedin}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800">{{github}}</td>
             <td class="px-6 py-4 text-sm flex items-center gap-3">
               <!-- Edit -->
-              <a href="/mentor/edit/{{id}}"
+              <a href="/mentor/formEdit/{{id}}"
                  class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition"
                  title="Edit">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -260,7 +266,7 @@
               </a>
 
               <!-- Delete -->
-              <form action="/mentor/{{id}}?_method=DELETE" method="post" class="inline">
+              <form action="/mentor/{{id}}/{{../kelas.id}}?_method=DELETE" method="post" class="inline">
                 <button type="button" 
                         onclick="confirmDelete(this)" 
                         class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"

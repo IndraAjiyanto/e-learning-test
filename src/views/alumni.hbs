@@ -1,240 +1,292 @@
-<div class="pt-28 min-h-screen">
-  <div class="container mx-auto px-6 pb-16" x-data="{ tab: 'Semua Fakultas' }">
-    
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent mb-4">
-        Alumni
-      </h1>
-      <div class="w-24 h-1 bg-gradient-to-r from-slate-400 to-slate-600 mx-auto rounded-full"></div>
-      <p class="text-slate-600 mt-4 max-w-2xl mx-auto">
-        Bergabunglah dengan bootcamp intensif yang dirancang untuk mengembangkan karier Anda dengan kurikulum terkini dan bimbingan expert.
-      </p>
+<div class="pt-24 min-h-screen bg-white" x-data="alumniApp()">
+    <div class="container mx-auto px-4 pb-16">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Our Alumni</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+                Meet our talented alumni who have successfully completed their programs and are making an impact in the industry.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Sidebar Filters -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
+                    <!-- Active Filters -->
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-sm font-semibold text-gray-700">Active Filters</h4>
+                            <button @click="resetFilters()" class="text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center">
+                                <i class="fas fa-undo-alt mr-1 text-xs"></i>
+                                Reset
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            <template x-if="selectedKelas === ''">
+                                <div class="text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200">
+                                    No active filters
+                                </div>
+                            </template>
+
+                            <template x-if="selectedKelas !== ''">
+                                <span class="block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border border-gray-300">
+                                    <span x-text="selectedKelas"></span>
+                                </span>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Kelas Filter -->
+                    <div class="mb-6">
+                        <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="fas fa-graduation-cap text-gray-500 mr-2"></i>
+                            Program Kelas
+                        </h3>
+                        <div class="space-y-2">
+                            <button @click="selectedKelas = ''" :class="selectedKelas === '' ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-white text-gray-700 hover:bg-gray-50'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300">
+                                <span class="text-sm">All Programs</span>
+                                <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                            </button>
+                            <template x-for="kelas in kelasList" :key="kelas">
+                                <button @click="selectedKelas = kelas" :class="selectedKelas === kelas ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-white text-gray-700 hover:bg-gray-50'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300">
+                                    <span class="text-sm" x-text="kelas"></span>
+                                    <i class="fas fa-chevron-right text-xs opacity-70"></i>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Alumni Count -->
+                    <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-gray-900" x-text="filteredAlumni.length"></div>
+                            <div class="text-sm text-gray-600">Alumni</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alumni Grid -->
+            <div class="lg:col-span-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="alumni in paginatedAlumni" :key="alumni.id">
+                        <div class="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 group">
+                            <!-- Profile Header -->
+                            <div class="relative bg-gradient-to-br from-gray-50 to-white rounded-t-xl p-6 border-b border-gray-200">
+                                <!-- Profile Image -->
+                                <div class="flex items-center gap-4">
+                                    <div class="relative">
+                                        <img :src="alumni.profile" 
+                                             :alt="alumni.nama" 
+                                             class="w-16 h-16 rounded-full border-4 border-white shadow-md object-cover">
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-bold text-gray-900 text-lg truncate" x-text="alumni.nama"></h3>
+                                        <p class="text-sm text-gray-600 truncate" x-text="alumni.kelas"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Content -->
+                            <div class="p-6 space-y-4">
+                                <!-- Current Position -->
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-briefcase text-white text-sm"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
+                                                CURRENT POSITION
+                                            </p>
+                                            <p class="font-bold text-gray-900 text-sm" x-text="alumni.posisi_sekarang"></p>
+                                            <p class="text-xs text-gray-500 mt-1" x-text="alumni.kantor"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Testimonial -->
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                            <i class="fas fa-quote-left text-white text-xs"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm text-gray-700 leading-relaxed" x-text="alumni.pesan"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Stats -->
+                                <div class="grid grid-cols-2 gap-3 pt-3 border-t border-gray-200">
+                                    <!-- Program -->
+                                    <div class="text-center">
+                                            <i class="fas fa-user-graduate text-gray-700 p-3 text-xl"></i>
+                                        <p class="text-xs font-semibold text-gray-900" x-text="alumni.kelas"></p>
+                                        <p class="text-xs text-gray-500">Program</p>
+                                    </div>
+                                    
+                                    <!-- Company -->
+                                    <div class="text-center">
+                                            <i class="fas fa-building text-gray-700 p-3 text-xl"></i>
+                                        <p class="text-xs font-semibold text-gray-900 truncate" x-text="alumni.kantor"></p>
+                                        <p class="text-xs text-gray-500">Company</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- No Results Message -->
+                <div x-show="filteredAlumni.length === 0" class="text-center py-12">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-users text-gray-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No Alumni Found</h3>
+                    <p class="text-gray-600 mb-6">Try adjusting your filters to find more alumni.</p>
+                    <button @click="resetFilters()" class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all duration-300 border border-gray-700">
+                        Reset Filters
+                    </button>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
+                    <button 
+                        @click="currentPage = Math.max(1, currentPage - 1)"
+                        :disabled="currentPage === 1"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <template x-for="page in totalPages" :key="page">
+                        <button 
+                            @click="currentPage = page"
+                            class="w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm"
+                            :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+                            x-text="page"
+                        ></button>
+                    </template>
+                    
+                    <button 
+                        @click="currentPage = Math.min(totalPages, currentPage + 1)"
+                        :disabled="currentPage === totalPages"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
-
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 sticky top-8">
-          <div class="mb-6">
-            <h3 class="text-lg font-semibold text-slate-900 mb-2 flex items-center">
-              <i class="fas fa-filter text-slate-500 mr-2"></i>
-              Filter by Faculty
-            </h3>
-            <div class="w-12 h-0.5 bg-gradient-to-r from-slate-400 to-slate-600 rounded-full"></div>
-          </div>
-          
-          <div class="space-y-3">
-            <template x-for="kategori in ['Semua Fakultas', 'Finance', 'Data', 'IT', 'Bisnis']" :key="kategori">
-              <button 
-                @click="tab = kategori" 
-                :class="tab === kategori 
-                  ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-white shadow-lg transform scale-105' 
-                  : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300'" 
-                class="w-full px-4 py-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-between group">
-                <span x-text="kategori" class="font-medium"></span>
-                <i class="fas fa-chevron-right text-xs opacity-50 group-hover:opacity-100 transition-opacity" 
-                   :class="tab === kategori ? 'rotate-90' : ''"></i>
-              </button>
-            </template>
-          </div>
-
-          <div class="mt-8 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-slate-900">50+</div>
-              <div class="text-sm text-slate-600">Active Bootcamps</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="lg:col-span-3">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          
-          <div 
-            class="group w-auto bg-white rounded-2xl shadow-lg hover:shadow-2xl border border-slate-200 overflow-hidden transition-all duration-500 hover:-translate-y-2"
-            x-show="tab === 'Semua Fakultas' || tab === 'Finance'"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 transform scale-95"
-            x-transition:enter-end="opacity-100 transform scale-100">
-            
-            <div class="relative">
-              <div class="absolute top-4 left-4 z-10">
-                <span class="px-3 py-1.5 text-xs rounded-full bg-gradient-to-r from-slate-100 to-white text-slate-700 font-semibold shadow-sm border border-slate-200 backdrop-blur-sm">
-                  <i class="fas fa-graduation-cap mr-1"></i>
-                  Bootcamp
-                </span>
-              </div>
-              <div class="absolute top-4 right-4 z-10">
-                <div class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-slate-200 group-hover:bg-slate-100 transition-colors">
-                  <i class="fas fa-heart text-slate-400 text-sm group-hover:text-red-400 transition-colors"></i>
-                </div>
-              </div>
-              <div class="h-56 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
-                <img src="https://via.placeholder.com/400x220" 
-                     class="h-36 object-contain group-hover:scale-110 transition-transform duration-500" alt="Bootcamp">
-              </div>
-            </div>
-
-            <div class="p-8">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-sm text-slate-500 font-medium">Finance</span>
-                <div class="flex items-center text-yellow-500">
-                  <i class="fas fa-star text-xs"></i>
-                  <span class="text-xs text-slate-600 ml-1">4.8</span>
-                </div>
-              </div>
-              
-              <h3 class="text-2xl font-bold text-slate-900 mb-4 group-hover:text-slate-700 transition-colors">
-                Bootcamp Finance & Accounting
-              </h3>
-              
-              <p class="text-slate-600 mb-6 leading-relaxed">
-                Gabung di bootcamp yang siap #BimbingSampeJadi kariermu dengan silabus lengkap, langsung kerja setelah lulus. Gratis mengulang kelas!
-              </p>
-
-              <div class="flex flex-wrap gap-2 mb-6">
-                <span class="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-lg">12 Weeks</span>
-                <span class="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-lg">Certificate</span>
-                <span class="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-lg">Job Guarantee</span>
-              </div>
-              
-              <button class="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                <i class="fas fa-arrow-right mr-2"></i>
-                Pelajari Selengkapnya
-              </button>
-            </div>
-          </div>
-
-          <div 
-            class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl border border-slate-200 overflow-hidden transition-all duration-500 hover:-translate-y-2"
-            x-show="tab === 'Semua Fakultas' || tab === 'Finance'"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 transform scale-95"
-            x-transition:enter-end="opacity-100 transform scale-100">
-            
-            <div class="relative">
-              <div class="absolute top-4 left-4 z-10">
-                <span class="px-3 py-1.5 text-xs rounded-full bg-gradient-to-r from-slate-100 to-white text-slate-700 font-semibold shadow-sm border border-slate-200 backdrop-blur-sm">
-                  <i class="fas fa-graduation-cap mr-1"></i>
-                  Bootcamp
-                </span>
-              </div>
-              <div class="absolute top-4 right-4 z-10">
-                <div class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-slate-200 group-hover:bg-slate-100 transition-colors">
-                  <i class="fas fa-heart text-slate-400 text-sm group-hover:text-red-400 transition-colors"></i>
-                </div>
-              </div>
-              <div class="h-56 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
-                <img src="https://via.placeholder.com/400x220" 
-                     class="h-36 object-contain group-hover:scale-110 transition-transform duration-500" alt="Bootcamp">
-              </div>
-            </div>
-
-            <div class="p-8">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-sm text-slate-500 font-medium">Finance</span>
-                <div class="flex items-center text-yellow-500">
-                  <i class="fas fa-star text-xs"></i>
-                  <span class="text-xs text-slate-600 ml-1">4.9</span>
-                </div>
-              </div>
-              
-              <h3 class="text-2xl font-bold text-slate-900 mb-4 group-hover:text-slate-700 transition-colors">
-                Bootcamp Audit
-              </h3>
-              
-              <p class="text-slate-600 mb-6 leading-relaxed">
-                Gabung di bootcamp yang siap #BimbingSampeJadi kariermu dengan silabus lengkap, langsung kerja setelah lulus. Gratis mengulang kelas!
-              </p>
-
-              <div class="flex flex-wrap gap-2 mb-6">
-                <span class="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-lg">10 Weeks</span>
-                <span class="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-lg">Certificate</span>
-                <span class="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-lg">Mentorship</span>
-              </div>
-              
-              <button class="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                <i class="fas fa-arrow-right mr-2"></i>
-                Pelajari Selengkapnya
-              </button>
-            </div>
-          </div>
-
-          <div 
-            class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl border border-slate-200 overflow-hidden transition-all duration-500 hover:-translate-y-2"
-            x-show="tab === 'Semua Fakultas' || tab === 'Data'"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 transform scale-95"
-            x-transition:enter-end="opacity-100 transform scale-100">
-            
-            <div class="relative">
-              <div class="absolute top-4 left-4 z-10">
-                <span class="px-3 py-1.5 text-xs rounded-full bg-gradient-to-r from-slate-100 to-white text-slate-700 font-semibold shadow-sm border border-slate-200 backdrop-blur-sm">
-                  <i class="fas fa-graduation-cap mr-1"></i>
-                  Bootcamp
-                </span>
-              </div>
-              <div class="absolute top-4 right-4 z-10">
-                <div class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-slate-200 group-hover:bg-slate-100 transition-colors">
-                  <i class="fas fa-heart text-slate-400 text-sm group-hover:text-red-400 transition-colors"></i>
-                </div>
-              </div>
-              <div class="h-56 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
-                <img src="https://comicvine.gamespot.com/a/uploads/original/11125/111253442/4897645-batman.jpg" 
-                     class="h-36 object-contain group-hover:scale-110 transition-transform duration-500" alt="Bootcamp">
-              </div>
-            </div>
-
-            <div class="p-8">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-sm text-slate-500 font-medium">Data Science</span>
-                <div class="flex items-center text-yellow-500">
-                  <i class="fas fa-star text-xs"></i>
-                  <span class="text-xs text-slate-600 ml-1">4.7</span>
-                </div>
-              </div>
-              
-              <h3 class="text-2xl font-bold text-slate-900 mb-4 group-hover:text-slate-700 transition-colors">
-                Data Science Bootcamp
-              </h3>
-              
-              <p class="text-slate-600 mb-6 leading-relaxed">
-                Master data science dengan Python, machine learning, dan analytics. Siap berkarier sebagai data scientist profesional.
-              </p>
-
-              <div class="flex flex-wrap gap-2 mb-6">
-                <span class="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-lg">16 Weeks</span>
-                <span class="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-lg">Portfolio</span>
-                <span class="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-lg">Industry Project</span>
-              </div>
-              
-              <button class="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                <i class="fas fa-arrow-right mr-2"></i>
-                Pelajari Selengkapnya
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-        <div x-show="tab !== 'Semua Fakultas' && tab !== 'Finance' && tab !== 'Data'" 
-             class="text-center py-16"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100">
-          <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <i class="fas fa-search text-slate-400 text-2xl"></i>
-          </div>
-          <h3 class="text-xl font-semibold text-slate-900 mb-2">No Bootcamps Found</h3>
-          <p class="text-slate-600 mb-6">We're working on adding more bootcamps for this category.</p>
-          <button @click="tab = 'Semua Fakultas'" 
-                  class="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-6 py-3 rounded-xl font-medium hover:from-slate-700 hover:to-slate-800 transition-all duration-300">
-            <i class="fas fa-arrow-left mr-2"></i>
-            View All Bootcamps
-          </button>
-        </div>
-      </div>
-
-    </div>
-  </div>
 </div>
+
+<script>
+function alumniApp() {
+    return {
+        allAlumni: [
+            {
+                id: 1,
+                nama: 'John Doe',
+                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+                pesan: 'Program ini sangat membantu karir saya. Saya bisa langsung menerapkan ilmu yang dipelajari di dunia kerja.',
+                kantor: 'Tech Company Indonesia',
+                posisi_sekarang: 'Full Stack Developer',
+                kelas: 'Full Stack Development',
+            },
+            {
+                id: 2,
+                nama: 'Jane Smith',
+                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane',
+                pesan: 'Mentor yang berpengalaman dan kurikulum yang relevan dengan industri membuat saya siap bekerja.',
+                kantor: 'Data Analytics Corp',
+                posisi_sekarang: 'Data Scientist',
+                kelas: 'Data Science',
+            },
+            {
+                id: 3,
+                nama: 'Alex Johnson',
+                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
+                pesan: 'Dari nol sampai bisa membuat aplikasi mobile sendiri. Pengalaman belajar yang sangat berharga.',
+                kantor: 'Mobile First Startup',
+                posisi_sekarang: 'Mobile Developer',
+                kelas: 'Mobile Development',
+            },
+            {
+                id: 4,
+                nama: 'Maria Garcia',
+                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
+                pesan: 'Project-based learning membuat saya memahami konsep AI dengan lebih mendalam dan praktis.',
+                kantor: 'AI Research Lab',
+                posisi_sekarang: 'AI Engineer',
+                kelas: 'AI & Machine Learning',
+            },
+            {
+                id: 5,
+                nama: 'Sarah Williams',
+                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+                pesan: 'Belajar design thinking dan UX research mengubah cara saya mendesain produk digital.',
+                kantor: 'Creative Design Studio',
+                posisi_sekarang: 'UI/UX Designer',
+                kelas: 'UI/UX Design',
+            },
+            {
+                id: 6,
+                nama: 'Michael Chen',
+                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
+                pesan: 'Infrastructure as code dan cloud computing skills yang saya dapat sangat dicari di industri.',
+                kantor: 'Cloud Solutions Inc',
+                posisi_sekarang: 'DevOps Engineer',
+                kelas: 'DevOps',
+            },
+            {
+                id: 7,
+                nama: 'Emily Brown',
+                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
+                pesan: 'Pesan dari saya: Program ini memberikan fondasi yang kuat untuk karir di development.',
+                kantor: 'Wiratek Solusi Asia',
+                posisi_sekarang: 'iOS Developer',
+                kelas: 'Full Stack Development',
+            },
+            {
+                id: 8,
+                nama: 'David Lee',
+                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
+                pesan: 'Networking dengan alumni dan mentor membuka banyak peluang karir untuk saya.',
+                kantor: 'Enterprise Solutions',
+                posisi_sekarang: 'Backend Engineer',
+                kelas: 'Backend Development',
+            }
+        ],
+        selectedKelas: '',
+        currentPage: 1,
+        itemsPerPage: 6,
+
+        get kelasList() {
+            return [...new Set(this.allAlumni.map(a => a.kelas))].filter(Boolean);
+        },
+
+        get filteredAlumni() {
+            return this.allAlumni.filter(alumni => {
+                return this.selectedKelas === '' || alumni.kelas === this.selectedKelas;
+            });
+        },
+
+        get totalPages() {
+            return Math.ceil(this.filteredAlumni.length / this.itemsPerPage);
+        },
+
+        get paginatedAlumni() {
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.filteredAlumni.slice(start, end);
+        },
+
+        resetFilters() {
+            this.selectedKelas = '';
+            this.currentPage = 1;
+        }
+    };
+}
+</script>

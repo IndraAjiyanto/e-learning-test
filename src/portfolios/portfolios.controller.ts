@@ -36,7 +36,17 @@ export class PortfoliosController {
 @Get()
 async findAll(@Req() req:Request, @Res() res:Response){
   const portfolio = await this.portfoliosService.findAll()
-  res.render('portfolio', {user: req.user, portfolio})
+  const kategori = await this.portfoliosService.findKategori()
+  const jenis_kelas = await this.portfoliosService.findJenisKelas()
+  res.render('portfolio', {user: req.user, portfolio, kategori, jenis_kelas})
+}
+
+
+@Roles('user')
+@Get('myportfolio/:userId')
+async myPortfolio(@Req() req:Request, @Res() res:Response, @Param('userId') userId: number){
+  const portfolio = await this.portfoliosService.findByUser(userId)
+    res.render('user/myportfolio', {user: req.user, portfolio})
 }
 
 

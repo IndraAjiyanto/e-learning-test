@@ -22,10 +22,11 @@ export class MentorController {
       createMentorDto.profile = profile.path
     await this.mentorService.create(createMentorDto);
     req.flash('success','mentor successfully created')
-    res.redirect(`/kelass/${kelasId}`)
+    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
     } catch (error) {
+      console.log(error)
           req.flash('error','mentor failed to create')
-    res.redirect(`/kelass/${kelasId}`)
+    res.redirect(`/kelass/detail/kelas/admin/${kelasId}`)
     }
   }
 

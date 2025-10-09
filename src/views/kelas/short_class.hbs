@@ -69,7 +69,7 @@
 >
 
   <!-- Header Section -->
-  <div class="text-center mb-16 relative mt-16">
+  <div class="text-center mb-16 relative mt-10">
       <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 relative z-10">
           Short Class
       </h1>
@@ -332,30 +332,30 @@
   </div>
 
   <!-- Pagination -->
-  <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
-      <button 
-          @click="currentPage = Math.max(1, currentPage - 1)"
-          :disabled="currentPage === 1"
-          class="px-5 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
-      >
-          <i class="fas fa-chevron-left"></i>
-      </button>
-      
-      <template x-for="page in totalPages" :key="page">
-          <button 
-              @click="currentPage = page"
-              class="w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm"
-              :class="currentPage === page ? 'bg-gray-600 text-white border-gray-600 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-              x-text="page"
-          ></button>
-      </template>
-      
-      <button 
-          @click="currentPage = Math.min(totalPages, currentPage + 1)"
-          :disabled="currentPage === totalPages"
-          class="px-5 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
-      >
-          <i class="fas fa-chevron-right"></i>
-      </button>
-  </div>
+                <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
+                    <button 
+                        @click="currentPage = Math.max(1, currentPage - 1)"
+                        :disabled="currentPage === 1"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <template x-for="page in totalPages" :key="page">
+                        <button 
+                            @click="currentPage = page"
+                            class="w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm"
+                            :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+                            x-text="page"
+                        ></button>
+                    </template>
+                    
+                    <button 
+                        @click="currentPage = Math.min(totalPages, currentPage + 1)"
+                        :disabled="currentPage === totalPages"
+                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+                    >
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
 </div>

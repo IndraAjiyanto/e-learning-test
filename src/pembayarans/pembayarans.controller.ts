@@ -20,7 +20,7 @@ export class PembayaransController {
   ) {
     try {
     const kelas = await this.pembayaransService.findKelas(kelasId)
-    if(kelas?.kategori.nama_kategori == "free class"){
+    if(kelas?.kategori.nama_kategori == "Short Class"){
       try {
             createPembayaranDto.kelasId = kelasId
             createPembayaranDto.userId = userId

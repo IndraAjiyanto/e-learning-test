@@ -21,7 +21,7 @@ export class AlumniService {
   }
 
   async findAll() {
-    return await this.alumniRepository.find({relations: ['kelas']});
+    return await this.alumniRepository.find();
   }
 
   async findOne(alumniId: number) {

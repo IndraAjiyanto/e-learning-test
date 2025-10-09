@@ -691,50 +691,144 @@
   </div>
 
   <!-- Related Courses -->
-  <div class="max-w-7xl mx-auto px-6 mt-16">
+  <div class="max-w-7xl mx-auto px-6 mt-16" x-data="kelasPagination()">
     <h2 class="text-3xl font-bold mb-8 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">Other Classes</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto" x-ref="kelasList">
-      {{#each kelass}}
-      <div 
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto" x-ref="kelasList">
+      <template x-for="(kelas, index) in displayedKelas" :key="kelas.id">
+        <div 
           class="group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
-          data-kategori="{{kategori.nama_kategori}}"
-          data-category="{{jenis_kelas.nama_jenis_kelas}}"
-          data-nama="{{nama_kelas}}"
-          data-deskripsi="{{deskripsi}}"
-          x-show="(paginatedKelas($el)"
-          x-transition
-      >
+          x-show="isVisible(index)"
+        >
           <figure>
-              <img src="{{gambar}}" alt="{{nama_kelas}}" class="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300">
+            <img :src="kelas.gambar" :alt="kelas.nama_kelas" class="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300">
           </figure>
 
           <div class="card-body p-8">
-              <div class="flex gap-2 mb-4">
-                  <span class="badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full">{{kategori.nama_kategori}}</span>
-                  <span class="badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full">{{jenis_kelas.nama_jenis_kelas}}</span>
-              </div>
-              <h2 class="card-title text-gray-900 text-2xl font-bold mb-3">{{nama_kelas}}</h2>
-              <p class="text-xs font-medium text-slate-500 text-start line-through">{{formatRupiah promo}}</p>
-              <p class="text-xl font-bold text-slate-700 mb-3 animate-pulse">{{formatRupiah harga}}</p>
-              <p class="text-base text-gray-600 line-clamp-3 leading-relaxed mb-4">{{deskripsi}}</p>
-              <div class="card-actions justify-end mt-6">
-                  <a href="/kelass/{{id}}" class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                      View Class
-                  </a>
-              </div>
+            <div class="flex gap-2 mb-4">
+              <span class="badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full" x-text="kelas.kategori.nama_kategori"></span>
+              <span class="badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full" x-text="kelas.jenis_kelas.nama_jenis_kelas"></span>
+            </div>
+            <h2 class="card-title text-gray-900 text-2xl font-bold mb-3" x-text="kelas.nama_kelas"></h2>
+            <p class="text-xs font-medium text-slate-500 text-start line-through" x-text="formatRupiah(kelas.promo)"></p>
+            <p class="text-xl font-bold text-slate-700 mb-3 animate-pulse" x-text="formatRupiah(kelas.harga)"></p>
+            <p class="text-base text-gray-600 line-clamp-3 leading-relaxed mb-4" x-text="kelas.deskripsi"></p>
+            <div class="card-actions justify-end mt-6">
+              <a :href="'/kelass/' + kelas.id" class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                View Class
+              </a>
+            </div>
           </div>
-      </div>
-      {{/each}}
-  </div>
+        </div>
+      </template>
+    </div>
 
-    <!-- Navigation -->
-    <div class="flex justify-center gap-3 mt-10">
-      <button class="w-12 h-12 bg-white text-slate-700 border-2 border-slate-300 rounded-full hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all duration-300 flex items-center justify-center">
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
+      <button 
+        @click="previousPage()"
+        :disabled="currentPage === 1"
+        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+      >
         <i class="fas fa-chevron-left"></i>
       </button>
-      <button class="w-12 h-12 bg-white text-slate-700 border-2 border-slate-300 rounded-full hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all duration-300 flex items-center justify-center">
+      
+      <template x-for="page in totalPages" :key="page">
+        <button 
+          @click="currentPage = page"
+          class="w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm"
+          :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+          x-text="page"
+        ></button>
+      </template>
+      
+      <button 
+        @click="nextPage()"
+        :disabled="currentPage === totalPages"
+        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
+      >
         <i class="fas fa-chevron-right"></i>
       </button>
     </div>
   </div>
 </div>
+
+<script>
+function kelasPagination() {
+  return {
+    currentPage: 1,
+    itemsPerPage: 6,
+    
+    // Data kelas dari server (dikonversi dari Handlebars)
+    allKelas: [
+      {{#each kelass}}
+      {
+        id: {{id}},
+        nama_kelas: "{{nama_kelas}}",
+        deskripsi: "{{deskripsi}}",
+        gambar: "{{gambar}}",
+        harga: {{harga}},
+        promo: {{promo}},
+        kategori: {
+          nama_kategori: "{{kategori.nama_kategori}}"
+        },
+        jenis_kelas: {
+          nama_jenis_kelas: "{{jenis_kelas.nama_jenis_kelas}}"
+        }
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    ],
+    
+    get displayedKelas() {
+      return this.allKelas;
+    },
+    
+    get totalPages() {
+      return Math.ceil(this.allKelas.length / this.itemsPerPage);
+    },
+    
+    isVisible(index) {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return index >= startIndex && index < endIndex;
+    },
+    
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.scrollToTop();
+      }
+    },
+    
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.scrollToTop();
+      }
+    },
+    
+    scrollToTop() {
+      const element = document.querySelector('[x-ref="kelasList"]');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
+    
+    // Fungsi formatRupiah untuk Alpine.js
+    formatRupiah(angka) {
+      if (!angka) return 'Rp 0';
+      const number_string = angka.toString();
+      const sisa = number_string.length % 3;
+      let rupiah = number_string.substr(0, sisa);
+      const ribuan = number_string.substr(sisa).match(/\d{3}/g);
+      
+      if (ribuan) {
+        const separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+      }
+      
+      return 'Rp ' + rupiah;
+    }
+  };
+}
+</script>
