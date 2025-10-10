@@ -62,7 +62,7 @@ export class PortfoliosService {
   }
 
   async findAll() {
-    return await this.portfolioRepository.find({relations: ['kelas', 'user']})
+    return await this.portfolioRepository.find({relations: ['kelas', 'user', 'kelas.kategori', 'kelas.jenis_kelas']})
   }
 
   async findOne(portfolioId: number) {

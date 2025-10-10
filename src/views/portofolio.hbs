@@ -48,14 +48,12 @@
                             Category
                         </h3>
                         <div class="space-y-2">
-                            <button @click="selectedKategori = ''" :class="selectedKategori === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white ' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                            <button @click="selectedKategori = ''" :class="selectedKategori === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300">
                                 <span class="text-sm">All Categories</span>
-                                <i class="fas fa-chevron-right text-xs opacity-70"></i>
                             </button>
                             <template x-for="kategori in allKategori" :key="kategori.id">
-                                <button @click="selectedKategori = kategori.nama_kategori" :class="selectedKategori === kategori.nama_kategori ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                <button @click="selectedKategori = kategori.nama_kategori" :class="selectedKategori === kategori.nama_kategori ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300">
                                     <span class="text-sm" x-text="kategori.nama_kategori"></span>
-                                    <i class="fas fa-chevron-right text-xs opacity-70"></i>
                                 </button>
                             </template>
                         </div>
@@ -68,14 +66,12 @@
                             Class Type
                         </h3>
                         <div class="space-y-2">
-                            <button @click="selectedJenisKelas = ''" :class="selectedJenisKelas === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                            <button @click="selectedJenisKelas = ''" :class="selectedJenisKelas === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300">
                                 <span class="text-sm">All</span>
-                                <i class="fas fa-chevron-right text-xs opacity-70"></i>
                             </button>
                             <template x-for="jenis in allJenisKelas" :key="jenis.id">
-                                <button @click="selectedJenisKelas = jenis.nama_jenis_kelas" :class="selectedJenisKelas === jenis.nama_jenis_kelas ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between">
+                                <button @click="selectedJenisKelas = jenis.nama_jenis_kelas" :class="selectedJenisKelas === jenis.nama_jenis_kelas ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300">
                                     <span class="text-sm" x-text="jenis.nama_jenis_kelas"></span>
-                                    <i class="fas fa-chevron-right text-xs opacity-70"></i>
                                 </button>
                             </template>
                         </div>
@@ -94,20 +90,65 @@
             <!-- Portfolio Grid -->
             <div class="lg:col-span-3">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <template x-for="item in paginatedPortfolio" :key="item.id">
+                    <template x-for="item in paginatedPortfolio" :key="item.id" x-data="{ currentSlide: 0, autoSlide: null }" 
+                        x-init="
+                            // Handle multiple images
+                            const images = Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'];
+                            // Auto slide jika ada lebih dari 1 gambar
+                            if (images.length > 1) {
+                                autoSlide = setInterval(() => { 
+                                    currentSlide = (currentSlide + 1) % images.length 
+                                }, 3000);
+                            }
+                        " 
+                        @mouseenter="if (autoSlide) clearInterval(autoSlide)" 
+                        @mouseleave="if (Array.isArray(item.gambar) && item.gambar.length > 1) autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1) }, 3000)">
+                        
                         <div class="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                            <!-- Single Image -->
+                            <!-- Image Slider -->
                             <div class="relative overflow-hidden rounded-t-xl">
                                 <div class="relative h-44 w-full">
-                                    <img :src="item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'" 
-                                         :alt="item.judul" 
-                                         class="w-full h-44 object-cover">
+                                    <template x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'])" :key="index">
+                                        <img :src="image" 
+                                             :alt="item.judul + ' - Image ' + (index + 1)" 
+                                             class="absolute inset-0 w-full h-44 object-cover transition-opacity duration-500" 
+                                             :class="{ 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }">
+                                    </template>
                                 </div>
+
+                                <!-- Navigation Buttons (jika ada lebih dari 1 gambar) -->
+                                <template x-if="Array.isArray(item.gambar) && item.gambar.length > 1">
+                                    <div>
+                                        <button @click="currentSlide = currentSlide === 0 ? (Array.isArray(item.gambar) ? item.gambar.length : 1) - 1 : currentSlide - 1" 
+                                                class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                            </svg>
+                                        </button>
+                                        <button @click="currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1)" 
+                                                class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </template>
 
                                 <!-- Kategori Badge -->
                                 <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md">
-                                    <span x-text="item.kategori?.nama_kategori || 'No Category'"></span>
+                                    <span x-text="getCategoryName(item) || 'No Category'"></span>
                                 </div>
+
+                                <!-- Dots Indicator (jika ada lebih dari 1 gambar) -->
+                                <template x-if="Array.isArray(item.gambar) && item.gambar.length > 1">
+                                    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                                        <template x-for="(image, index) in item.gambar" :key="index">
+                                            <button @click="currentSlide = index" 
+                                                    class="w-2 h-2 rounded-full transition-all duration-200" 
+                                                    :class="{ 'bg-white': currentSlide === index, 'bg-white/50': currentSlide !== index }"></button>
+                                        </template>
+                                    </div>
+                                </template>
                             </div>
 
                             <!-- Card Content -->
@@ -115,7 +156,7 @@
                                 <div class="flex flex-wrap gap-2">
                                     <span class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border">
                                         <i class="fas fa-laptop text-gray-500"></i>
-                                        <span x-text="item.jenis_kelas?.nama_jenis_kelas || 'No Type'"></span>
+                                        <span x-text="getJenisKelasName(item) || 'No Type'"></span>
                                     </span>
                                 </div>
 
@@ -131,7 +172,7 @@
 
                                 <div class="flex items-center gap-3 pt-2 border-t border-gray-100" x-show="item.user">
                                     <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                                        <img :src="item.user.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + item.user.username" 
+                                        <img :src="item.user.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (item.user.username || 'user')" 
                                              :alt="item.user.username" 
                                              class="w-full h-full object-cover">
                                     </div>
@@ -206,12 +247,56 @@ function portfolioApp() {
         currentPage: 1,
         itemsPerPage: 6,
 
+        init() {
+            // Debug data di console
+            console.log('Portfolio data structure:', this.allPortfolio);
+            console.log('Portfolio items:', this.allPortfolio.items);
+            console.log('Kategori data:', this.allKategori);
+            console.log('Jenis Kelas data:', this.allJenisKelas);
+            
+            if (this.allPortfolio.items && this.allPortfolio.items.length > 0) {
+                const firstItem = this.allPortfolio.items[0];
+                console.log('First portfolio item:', firstItem);
+                console.log('Kelas structure:', firstItem.kelas);
+                console.log('Kategori structure:', firstItem.kelas?.kategori);
+                console.log('Jenis kelas structure:', firstItem.kelas?.jenis_kelas);
+                console.log('Gambar structure:', firstItem.gambar);
+                console.log('Is gambar array?', Array.isArray(firstItem.gambar));
+            }
+        },
+
+        get portfolioItems() {
+            return this.allPortfolio.items || [];
+        },
+
+        // Helper function untuk mendapatkan nama kategori
+        getCategoryName(item) {
+            // Coba berbagai kemungkinan path data
+            if (item.kelas?.kategori?.nama_kategori) return item.kelas.kategori.nama_kategori;
+            if (item.kategori?.nama_kategori) return item.kategori.nama_kategori;
+            if (item.kelas?.nama_kategori) return item.kelas.nama_kategori;
+            return null;
+        },
+
+        // Helper function untuk mendapatkan nama jenis kelas
+        getJenisKelasName(item) {
+            // Coba berbagai kemungkinan path data
+            if (item.kelas?.jenis_kelas?.nama_jenis_kelas) return item.kelas.jenis_kelas.nama_jenis_kelas;
+            if (item.jenis_kelas?.nama_jenis_kelas) return item.jenis_kelas.nama_jenis_kelas;
+            if (item.kelas?.nama_jenis_kelas) return item.kelas.nama_jenis_kelas;
+            return null;
+        },
+
         get filteredPortfolio() {
-            return this.allPortfolio.filter(item => {
-                const kategoriMatch = this.selectedKategori === '' || 
-                    (item.kategori && item.kategori.nama_kategori === this.selectedKategori);
-                const jenisKelasMatch = this.selectedJenisKelas === '' || 
-                    (item.jenis_kelas && item.jenis_kelas.nama_jenis_kelas === this.selectedJenisKelas);
+            return this.portfolioItems.filter(item => {
+                const itemCategory = this.getCategoryName(item);
+                const itemJenisKelas = this.getJenisKelasName(item);
+                
+                console.log('Filtering item:', item.judul, 'Category:', itemCategory, 'Jenis Kelas:', itemJenisKelas);
+                
+                const kategoriMatch = this.selectedKategori === '' || itemCategory === this.selectedKategori;
+                const jenisKelasMatch = this.selectedJenisKelas === '' || itemJenisKelas === this.selectedJenisKelas;
+                
                 return kategoriMatch && jenisKelasMatch;
             });
         },
