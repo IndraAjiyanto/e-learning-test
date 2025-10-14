@@ -6,8 +6,10 @@ import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigImage } from 'src/common/config/multer.config';
+import { multerConfigImage, multerConfigMemory } from 'src/common/config/multer.config';
 import { UsersService } from 'src/users/users.service';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
 
 @Controller('kelass')
@@ -17,10 +19,11 @@ export class KelassController {
   // create class
   @Roles('admin', 'super_admin')
   @Post()
-  @UseInterceptors(FileInterceptor('gambar', multerConfigImage)) 
+    @UseInterceptors(FileInterceptor('gambar', multerConfigMemory), ValidateImageInterceptor)
+  @ValidateImage({ minWidth: 1000, maxWidth: 1080, minHeight: 1200, maxHeight: 1350, folder: 'nestjs/images/banner/class' }) 
   async create(@Body() createKelassDto: CreateKelassDto, @Res() res: Response, @UploadedFile() gambar: Express.Multer.File, @Req() req:Request) {
     try {
-        createKelassDto.gambar = gambar.path
+        createKelassDto.gambar = req.body.uploadedImageUrl
         createKelassDto.proses = 'proces'
         await this.kelassService.create(createKelassDto);
         req.flash('success', 'class successfully created')

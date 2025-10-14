@@ -11,6 +11,9 @@ export class CreatePertanyaanDto {
   @IsString({ each: true })
   pilihan: string[];
 
+  @IsString()
+  gambar?: string;
+
     @IsNumber()
   jawaban: number;
 }

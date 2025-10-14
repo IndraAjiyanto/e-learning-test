@@ -15,6 +15,11 @@ export class Pertanyaan1756188100347 implements MigrationInterface {
                                 name: 'pertanyaan_soal',
                                 type: 'varchar'
                             },
+                            {
+                                name: 'gambar',
+                                type: 'varchar',
+                                isNullable: true,
+                            },
                                 {
                                 name: 'quizId',
                                 type: 'int'

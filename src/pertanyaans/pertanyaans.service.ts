@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Jawaban } from 'src/entities/jawaban.entity';
 import { Quiz } from 'src/entities/quiz.entity';
+import cloudinary from 'src/common/config/multer.config';
 
 @Injectable()
 export class PertanyaansService {
@@ -24,9 +25,9 @@ export class PertanyaansService {
         if(!quiz){
           throw new NotFoundException('quiz ini tidak ada')
         }
-
           const pertanyaan = await this.pertanyaanRepository.create({
           pertanyaan_soal: createPertanyaanDto.pertanyaan_soal,
+          gambar: createPertanyaanDto.gambar,
           quiz: quiz
         })
         return await this.pertanyaanRepository.save(pertanyaan)
@@ -41,7 +42,11 @@ export class PertanyaansService {
   }
 
   async findOne(pertanyaanId: number) {
-    return await this.pertanyaanRepository.findOne({where: {id: pertanyaanId}, relations: ['jawaban', 'quiz']})
+    const pertanyaan = await this.pertanyaanRepository.findOne({where: {id: pertanyaanId}, relations: ['jawaban', 'quiz']})
+    if(!pertanyaan){
+      throw new NotFoundException('Pertanyaan tidak ditemukan')
+    }
+    return pertanyaan
   }
 
 async update(pertanyaanId: number, updatePertanyaanDto: UpdatePertanyaanDto) {
@@ -52,6 +57,7 @@ async update(pertanyaanId: number, updatePertanyaanDto: UpdatePertanyaanDto) {
 
   // update pertanyaan_soal
   pertanyaan.pertanyaan_soal = updatePertanyaanDto.pertanyaan_soal;
+  pertanyaan.gambar = updatePertanyaanDto.gambar;
   await this.pertanyaanRepository.save(pertanyaan);
 
   // ambil jawaban lama
@@ -90,4 +96,40 @@ async update(pertanyaanId: number, updatePertanyaanDto: UpdatePertanyaanDto) {
     await this.jawabanRepository.remove(jawaban)
     await this.pertanyaanRepository.remove(pertanyaan)
   }
+
+    async getPublicIdFromUrl(url: string) {
+      // Pisahkan berdasarkan "/upload/"
+      const parts = url.split('/upload/');
+      if (parts.length < 2) {
+        return null;
+      }
+  
+      // Ambil bagian setelah upload/
+      let path = parts[1];
+  
+      // Hapus "v1234567890/" (versi auto Cloudinary)
+      path = path.replace(/^v[0-9]+\/?/, '');
+  
+      // Buang extension (.jpg, .png, .pdf, dll)
+      path = path.replace(/\.[^.]+$/, '');
+  
+      console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
+  
+      await this.deleteFileIfExists(path);
+    }
+  
+    async deleteFileIfExists(publicId: string) {
+      try {
+        const result = await cloudinary.uploader.destroy(publicId);
+  
+        if (result.result === 'not found') {
+          console.log('File not found in Cloudinary.');
+        } else {
+          console.log('File deleted from Cloudinary:', result);
+        }
+      } catch (error) {
+        console.error('Error deleting file from Cloudinary:', error);
+        throw error;
+      }
+    }
 }

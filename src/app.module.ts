@@ -37,6 +37,9 @@ import { BenefitModule } from './benefit/benefit.module';
 import { MentorModule } from './mentor/mentor.module';
 import { AlurKelasModule } from './alur_kelas/alur_kelas.module';
 import { BenefitKelasModule } from './benefit_kelas/benefit_kelas.module';
+import { TeamModule } from './team/team.module';
+import { VisiMisiModule } from './visi_misi/visi_misi.module';
+import { SocialModule } from './social/social.module';
 
 @Module({
   imports: [
@@ -47,7 +50,7 @@ import { BenefitKelasModule } from './benefit_kelas/benefit_kelas.module';
     // ServeStaticModule.forRoot({
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
-    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule, JawabansModule, TugassModule, PembayaransModule, PertanyaansModule, JawabanTugassModule, JawabanUsersModule, KomentarModule, LogbookModule, MingguModule, QuizModule, DashboardModule, PertanyaanUmumModule, AlumniModule, JenisKelasModule, SertifikatModule, KerjaSamaModule, PertanyaanKelasModule, LogbookMentorModule, BenefitModule, MentorModule, AlurKelasModule, BenefitKelasModule],
+    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule, JawabansModule, TugassModule, PembayaransModule, PertanyaansModule, JawabanTugassModule, JawabanUsersModule, KomentarModule, LogbookModule, MingguModule, QuizModule, DashboardModule, PertanyaanUmumModule, AlumniModule, JenisKelasModule, SertifikatModule, KerjaSamaModule, PertanyaanKelasModule, LogbookMentorModule, BenefitModule, MentorModule, AlurKelasModule, BenefitKelasModule, TeamModule, VisiMisiModule, SocialModule],
   controllers: [AppController],
   providers: [AppService],
 })

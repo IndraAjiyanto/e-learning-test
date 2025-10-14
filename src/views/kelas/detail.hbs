@@ -1,21 +1,47 @@
 <div class="max-w-5xl mx-auto px-6 py-10 pt-28">
-  <div class="mb-12 text-center">
-    <div class="relative mb-6">
-      <img 
-        src="{{kelas.gambar}}" 
-        alt="{{kelas.nama_kelas}}" 
-        class="mx-auto w-full h-64 object-cover rounded-2xl shadow-xl mb-6" 
-      />
+  <!-- Header dengan Background Pattern -->
+  <div class="mb-12 relative overflow-hidden rounded-3xl shadow-2xl group">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800"></div>
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px]"></div>
+    
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 p-8">
+      <!-- Gambar -->
+      <div class="lg:col-span-1 flex items-center justify-center">
+        <div class="relative">
+          <div class="absolute -inset-4 bg-white/10 rounded-2xl blur-lg"></div>
+          <img 
+            src="{{kelas.gambar}}" 
+            alt="{{kelas.nama_kelas}}" 
+            class="relative w-64 h-64 object-cover rounded-2xl shadow-2xl border-4 border-white/20 group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+      </div>
+      
+      <!-- Content -->
+      <div class="lg:col-span-2 flex flex-col justify-center text-white">
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="badge bg-white/20 backdrop-blur-sm text-white px-4 py-2 text-sm font-semibold rounded-full">
+            {{kelas.kategori.nama_kategori}}
+          </span>
+          <span class="badge bg-gradient-to-r from-blue-400 to-blue-500 text-white px-4 py-2 text-sm font-semibold rounded-full">
+            {{kelas.jenis_kelas.nama_jenis_kelas}}
+          </span>
+        </div>
+        
+        <h1 class="text-4xl font-bold mb-4 leading-tight">
+          {{kelas.nama_kelas}}
+        </h1>
+        <p class="text-lg text-white/90 leading-relaxed mb-6">
+          {{kelas.deskripsi}}
+        </p>
+        
+      </div>
     </div>
-    <h1 class="text-4xl text-gray-900 font-bold mb-4 bg-gradient-to-r from-slate-600 to-slate-800 bg-clip-text text-transparent">{{kelas.nama_kelas}}</h1>
-    <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{{kelas.deskripsi}}</p>
   </div>
 
   <div class="mb-10">
-    <div class="flex items-center mb-8">
-      <div class="h-1 bg-gradient-to-r from-slate-500 to-slate-700 rounded-full w-12 mr-4"></div>
-      <h2 class="text-3xl text-gray-900 font-bold">Course Weeks</h2>
-    </div>
+ 
 
     <div class="space-y-6">
       {{#each minggu}}

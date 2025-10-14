@@ -32,7 +32,7 @@ export class DashboardService {
   ) {}
 
   async findAllKelas(){
-    return await this.kelasRepository.find({where: {launch: true}, order: {id: 'DESC'}, relations: ['kategori', 'jenis_kelas']});
+    return await this.kelasRepository.find({where: {launch: true}, order: {id: 'DESC'}, relations: ['kategori', 'jenis_kelas', 'user_kelas']});
   }
 
   async findKelasByKategori(kategoriName: string){
@@ -51,7 +51,8 @@ export class DashboardService {
   const queryBuilder = this.portfolioRepository.createQueryBuilder('portfolio')
     .leftJoinAndSelect('portfolio.kelas', 'kelas')
     .leftJoinAndSelect('portfolio.user', 'user')
-    .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas');
+    .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
+    .leftJoinAndSelect('kelas.kategori', 'kategori');
 
   if (kategori) queryBuilder.andWhere('kelas.kategoriId = :kategori', { kategori });
   if (jenis_kelas) queryBuilder.andWhere('kelas.jenis_kelasId = :jenis_kelas', { jenis_kelas });

@@ -6,6 +6,9 @@ export class UpdatePertanyaanDto extends PartialType(CreatePertanyaanDto) {
       @IsString()
   pertanyaan_soal: string;
 
+    @IsString()
+  gambar?: string;
+
   @IsArray()
   @IsString({ each: true })
   pilihan: string[];

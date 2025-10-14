@@ -21,9 +21,21 @@
         <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-full flex items-center justify-center text-sm font-semibold">
           {{@index}}
         </div>
-        <p class="font-semibold text-slate-900 text-lg leading-relaxed">
-          {{pertanyaan_soal}}
-        </p>
+<div class="flex-1 space-y-3">
+      <!-- Gambar pertanyaan -->
+      {{#if gambar}}
+      <div class="w-full flex justify-center">
+        <img src="{{gambar}}" 
+             alt="Gambar Pertanyaan" 
+             class="max-h-64 rounded-xl border border-slate-200 shadow-sm object-contain">
+      </div>
+      {{/if}}
+
+      <!-- Teks pertanyaan -->
+      <p class="font-semibold text-slate-900 text-lg leading-relaxed">
+        {{pertanyaan_soal}}
+      </p>
+    </div>
       </div>
 
       <div class="space-y-3 ml-12">

@@ -11,7 +11,6 @@ import { id } from 'date-fns/locale';
 import { RolesGuard } from './common/guards/roles.guard';
 import  flash from 'connect-flash';
 import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.filter';
-import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
@@ -50,8 +49,6 @@ hbs.registerHelper('isNowBetween', function (tanggal: string, waktu_awal: string
 hbs.registerHelper('lookup', function(str, index) {
   return str[index];
 });
-
-
 
   hbs.registerHelper('formatTanggal', function (tanggal: string) {
     return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale: id });

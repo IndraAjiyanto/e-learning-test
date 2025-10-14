@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { v2 as cloudinary } from 'cloudinary';
+import { Portfolio } from 'src/entities/portfolio.entity';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +23,9 @@ export class UsersService {
 
     @InjectRepository(Kelas)
     private readonly kelasRepository: Repository<Kelas>,
+
+    @InjectRepository(Portfolio)
+    private readonly portfolioRepository: Repository<Portfolio>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -47,6 +51,10 @@ export class UsersService {
         absen: true,
       },
     });
+  }
+
+  async findPortfolio(userId: number){
+    return await this.portfolioRepository.find({where: {user: {id: userId}}})
   }
 
   async findAll() {

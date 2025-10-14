@@ -334,10 +334,10 @@
         x-transition:enter-start="opacity-0 transform scale-90"
         x-transition:enter-end="opacity-100 transform scale-100"
       >
-        <figure>
-          <img src="{{gambar}}" alt="{{nama_kelas}}" 
-               class="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300">
-        </figure>
+     <figure class="bg-gradient-to-br from-gray-50 to-gray-100 p-8 flex justify-center items-center min-h-[400px]">
+    <img src="{{gambar}}" alt="{{nama_kelas}}" 
+         class="h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-lg max-h-[350px]">
+  </figure>
 
         <div class="card-body p-8">
           <div class="flex gap-2 mb-3">
@@ -368,7 +368,7 @@
 
           <div class="card-actions justify-end">
             <a href="/kelass/{{id}}" 
-               class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.01] rounded-xl font-semibold">
+               class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                View Class
             </a>
           </div>

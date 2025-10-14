@@ -1,7 +1,7 @@
 // 3. Multer Config yang diperbaiki
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import { Options as MulterOptions } from 'multer';
+import { memoryStorage, Options as MulterOptions } from 'multer';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -100,4 +100,17 @@ export const multerConfigPdf: MulterOptions = {
   limits: {
     fileSize: 20 * 1024 * 1024, // 20MB
   },
+};
+
+
+export const multerConfigMemory: MulterOptions = {
+  storage: memoryStorage(),
+fileFilter: (req, file, callback) => {
+  if (!file.mimetype.match(/^image\/(jpg|jpeg|png)$/)) {
+    return (callback as any)(new Error('Only image files are allowed'), false);
+  }
+  callback(null, true);
+},
+
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 };

@@ -11,6 +11,9 @@ export class Pertanyaan{
     @Column()
     pertanyaan_soal:string
 
+@Column({ nullable: true })
+gambar?: string;
+
       @CreateDateColumn()
       createdAt: Date;
     

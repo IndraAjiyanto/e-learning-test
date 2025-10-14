@@ -421,7 +421,7 @@ async findJenisKelas(){
   }
 
   async findOne(kelasId: number) {
-    const kelas = await this.kelasRepository.findOne({where: {id: kelasId}, relations: ['user_kelas', 'user_kelas.user', 'kategori']})
+    const kelas = await this.kelasRepository.findOne({where: {id: kelasId}, relations: ['user_kelas', 'user_kelas.user', 'kategori', 'jenis_kelas']})
     if(!kelas){
       throw new NotFoundException()
     }

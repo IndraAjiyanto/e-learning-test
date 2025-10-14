@@ -70,7 +70,7 @@
 
   <!-- Header Section -->
   <div class="text-center mb-16 relative mt-10">
-      <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 relative z-10">
+      <h1 class="text-4xl font-extrabold text-gray-900 mb-4 relative z-10">
           Course
       </h1>
   </div>
@@ -249,23 +249,21 @@
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto relative overflow-visible"
     x-ref="kelasList"
   >
-      {{#each kelas}}
-<div 
-  class="group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
-  data-category="{{jenis_kelas.nama_jenis_kelas}}"
+{{#each kelas}}
+<div class="group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"   data-kategori="{{kategori.nama_kategori}}"
+   data-category="{{jenis_kelas.nama_jenis_kelas}}"
   data-nama="{{nama_kelas}}"
   data-deskripsi="{{deskripsi}}"
   data-location="{{metode}}"
   x-show="paginatedKelas($el)"
-  x-transition
->
-  <figure>
+  x-transition>
+  <!-- Gambar lebih besar -->
+  <figure class="bg-gradient-to-br from-gray-50 to-gray-100 p-8 flex justify-center items-center min-h-[400px]">
     <img src="{{gambar}}" alt="{{nama_kelas}}" 
-         class="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300">
+         class="h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-lg max-h-[350px]">
   </figure>
 
-  <div class="card-body p-8">
-    <!-- Kategori & Jenis Kelas -->
+  <div class="card-body p-6">
     <div class="flex gap-2 mb-3">
       <span class="badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full">
         {{kategori.nama_kategori}}
@@ -273,38 +271,47 @@
       <span class="badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full">
         {{jenis_kelas.nama_jenis_kelas}}
       </span>
+
     </div>
 
-    <!-- Metode & Posisi -->
-    <div class="flex flex-wrap gap-2 mb-4 text-sm text-gray-700">
-      <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
-        <i class="fas fa-laptop text-gray-500"></i>
-        <span>{{metode}}</span> <!-- Contoh: Online / Offline -->
-      </div>
-      <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
-        <i class="fas fa-user-tie text-gray-500"></i>
-        <span>{{lokasi}}</span> <!-- Contoh: Mentor / Coach / Instructor -->
-      </div>
-    </div>
+             <div class="flex flex-wrap gap-2 mb-4 text-sm text-gray-700">
+            <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+              <i class="fas fa-laptop text-slate-500"></i>
+              <span>{{metode}}</span>
+            </div>
+            <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+              <i class="fas fa-user-tie text-slate-500"></i>
+              <span>{{lokasi}}</span>
+            </div>
+          </div>
 
-    <!-- Nama Kelas -->
-    <h2 class="card-title text-gray-900 text-2xl font-bold mb-2">{{nama_kelas}}</h2>
-
-    <!-- Harga -->
-    <p class="text-xs font-medium text-slate-500 text-start line-through">
-      {{formatRupiah promo}}
-    </p>
-    <p class="text-xl font-bold text-slate-700 mb-3 animate-pulse">
-      {{formatRupiah harga}}
-    </p>
-
-    <!-- Deskripsi -->
-    <p class="text-base text-gray-600 line-clamp-3 leading-relaxed mb-4">
+    <h2 class="card-title text-gray-900 text-xl font-bold mb-3">{{nama_kelas}}</h2>
+    
+    <p class="text-sm text-gray-600 line-clamp-3 mb-4 leading-relaxed">
       {{deskripsi}}
     </p>
 
-    <!-- Tombol -->
-    <div class="card-actions justify-end mt-6">
+        <div class="bg-slate-50 rounded-lg p-4 mb-4">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-sm font-medium text-slate-600">Kuota Tersedia</span>
+        <span class="text-sm font-semibold text-slate-700">
+          {{user_kelas.length}} / {{kuota}} peserta
+        </span>
+      </div>
+      </div>
+
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <p class="text-xs font-medium text-slate-500 line-through">
+          {{formatRupiah promo}}
+        </p>
+        <p class="text-lg font-bold text-slate-700">
+          {{formatRupiah harga}}
+        </p>
+      </div>
+    </div>
+
+    <div class="card-actions">
       <a href="/kelass/{{id}}" 
          class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
         View Class
@@ -312,8 +319,7 @@
     </div>
   </div>
 </div>
-
-      {{/each}}
+{{/each}}
   </div>
 
   <!-- No Results -->

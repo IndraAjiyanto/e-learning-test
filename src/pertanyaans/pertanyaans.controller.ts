@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { PertanyaansService } from './pertanyaans.service';
 import { CreatePertanyaanDto } from './dto/create-pertanyaan.dto';
 import { UpdatePertanyaanDto } from './dto/update-pertanyaan.dto';
@@ -9,6 +9,8 @@ import { JawabansService } from 'src/jawabans/jawabans.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { JawabanUsersService } from 'src/jawaban_users/jawaban_users.service';
 import { QuizService } from 'src/quiz/quiz.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfigImage } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('pertanyaans')
@@ -23,14 +25,19 @@ constructor(
 
 @Roles('admin')
 @Post(':quizId')
+@UseInterceptors(FileInterceptor('gambar', multerConfigImage))
 async create(
   @Res() res: Response,
   @Req() req: Request,
   @Body() createPertanyaanDto: CreatePertanyaanDto,
   @Param('quizId') quizId: number,
+  @UploadedFile() gambar: Express.Multer.File
 ) {
   try {
     createPertanyaanDto.quizId = quizId;
+    if(gambar){
+      createPertanyaanDto.gambar = gambar.path;
+    }
     const pertanyaan = await this.pertanyaansService.create(createPertanyaanDto);
     for (let i = 0; i < createPertanyaanDto.pilihan.length; i++) {
       await this.jawabansService.create({
@@ -82,8 +89,17 @@ async create(
 
   @Roles('admin')
   @Patch(':pertanyaanId/:quizId')
-  async update(@Param('pertanyaanId') pertanyaanId: number, @Param('quizId') quizId: number, @Body() updatePertanyaanDto: UpdatePertanyaanDto, @Req() req:Request, @Res() res:Response) {
+@UseInterceptors(FileInterceptor('gambar', multerConfigImage))
+  async update(@Param('pertanyaanId') pertanyaanId: number,   @UploadedFile() gambar: Express.Multer.File, @Param('quizId') quizId: number, @Body() updatePertanyaanDto: UpdatePertanyaanDto, @Req() req:Request, @Res() res:Response) {
     try {
+      const pertanyaan = await this.pertanyaansService.findOne(pertanyaanId)
+      if(gambar){
+        updatePertanyaanDto.gambar = gambar.path;
+        if(pertanyaan.gambar){
+        await this.pertanyaansService.getPublicIdFromUrl(pertanyaan.gambar)
+        }
+        console.log(gambar.path)
+      }
     await this.pertanyaansService.update(pertanyaanId, updatePertanyaanDto);
     req.flash('success', 'successfuly update question')
     res.redirect(`/quiz/${quizId}`)
@@ -97,6 +113,10 @@ async create(
   @Delete(':pertanyaanId/:quizId')
   async remove(@Param('quizId') quizId: number,@Param('pertanyaanId') pertanyaanId: number, @Req() req:Request, @Res() res:Response) {
     try {
+      const pertanyaan = await this.pertanyaansService.findOne(pertanyaanId)
+      if(pertanyaan.gambar){
+        await this.pertanyaansService.getPublicIdFromUrl(pertanyaan.gambar)
+        }
           await this.pertanyaansService.remove(pertanyaanId);
           req.flash('success', 'successfuly delete question')
     res.redirect(`/quiz/${quizId}`)

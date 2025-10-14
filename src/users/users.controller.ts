@@ -8,7 +8,9 @@ import { Request, Response } from 'express';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigImage } from 'src/common/config/multer.config';
+import { multerConfigImage, multerConfigMemory } from 'src/common/config/multer.config';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('users')
@@ -17,10 +19,11 @@ export class UsersController {
 
   @Roles('super_admin')
   @Post()
-  @UseInterceptors(FileInterceptor('profile', multerConfigImage))
+    @UseInterceptors(FileInterceptor('profile', multerConfigMemory), ValidateImageInterceptor)
+  @ValidateImage({ minWidth: 300, maxWidth: 500, minHeight: 300, maxHeight: 500, folder: 'nestjs/images/profile' })
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response, @UploadedFile() profile: Express.Multer.File, @Req() req:Request) {
     try {
-      createUserDto.profile = profile.path;
+      createUserDto.profile = req.body.uploadedImageUrl;
       await this.usersService.create(createUserDto);
       req.flash('success', 'User created successfully');
       res.redirect('/users')
@@ -30,10 +33,15 @@ export class UsersController {
     }
   }
 
+  @Roles('user')
   @Get('profile')
-  async profile(@Res() res: Response, @Req() req:any){
+  async profile(@Res() res: Response, @Req() req:Request){
+    if (!req.user) {
+      return res.redirect('/login');
+    }
     const user = await this.usersService.findOne(req.user.id) 
-    return res.render('profile/index', {user: user});
+    const portfolio = await this.usersService.findPortfolio(req.user.id)
+    return res.render('profile/index', {user: user, portfolio});
   }
 
   @Get('profile/password')

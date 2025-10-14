@@ -116,6 +116,14 @@
 
         <div x-show="open" x-collapse class="px-6 pb-6 space-y-4">
 
+          {{#if gambar}}
+<div class="flex justify-center">
+  <img src="{{gambar}}" alt="Gambar Soal"
+       class="max-h-64 rounded-lg shadow border object-contain">
+</div>
+{{/if}}
+
+
           <ul class="space-y-2">
             {{#each this.jawaban}}
             <li class="flex items-center gap-3 p-2 rounded-lg border 

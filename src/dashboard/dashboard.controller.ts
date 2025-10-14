@@ -12,6 +12,7 @@ export class DashboardController {
     const kelas =  await this.dashboardService.findAllKelas();
     const pertanyaan_umum = await this.dashboardService.findFAQ();
     const gambar = await this.dashboardService.findGambar()
+
     if(req.user){
     if(req.user.role === "super_admin"){
       res.redirect('/users');
@@ -49,7 +50,7 @@ export class DashboardController {
     const kategoriList = await this.dashboardService.findKategori();
     const jenisKelasList = await this.dashboardService.findJenisKelas();
 
-    console.log(portfolio)
+    console.log(kategoriList)
 
     res.render('portofolio', {
       user: req.user,
