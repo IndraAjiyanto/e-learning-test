@@ -22,6 +22,7 @@ export class AbsensController {
     req.flash('success', 'Successfully submitted attendance');
     res.redirect(`/kelass/${kelasId}`)
     } catch (error) {
+      console.log(error)
     req.flash('error', 'You have already submitted attendance for this meeting');
     res.redirect(`/kelass/${kelasId}`)
     }

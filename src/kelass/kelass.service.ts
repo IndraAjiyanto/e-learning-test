@@ -186,6 +186,10 @@ async findMinggu(kelasId: number, userId: number) {
     .leftJoinAndSelect('pertemuan.absen', 'absen')
     .leftJoinAndSelect('absen.user', 'user')
     .leftJoinAndSelect('pertemuan.tugas', 'tugas')
+    .leftJoinAndSelect(  'tugas.jawaban_tugas',
+  'jawaban_tugas',
+  'jawaban_tugas.userId = :userId AND jawaban_tugas.proses = :proses',
+  { userId, proses: 'acc' })
     .leftJoinAndSelect('quiz.pertanyaan', 'pertanyaan')
     .leftJoinAndSelect('quiz.nilai', 'nilai')
     .leftJoinAndSelect('pertanyaan.jawaban', 'jawaban')
