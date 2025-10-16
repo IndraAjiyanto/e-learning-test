@@ -3,7 +3,6 @@
   <div class="mb-8 text-center">
     <!-- Enhanced header with gradient text and better spacing -->
     <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent mb-4">{{quiz.nama_quiz}}</h1>
-    <div class="w-24 h-1 bg-gradient-to-r from-slate-400 to-slate-600 mx-auto rounded-full"></div>
   </div>
 
   <!-- Info Quiz -->
@@ -37,20 +36,21 @@
 
   <!-- Tombol Kembali + Mulai Quiz -->
   <!-- Enhanced buttons with better styling and hover effects -->
-  <div class="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-    <a href="/kelass/{{quiz.minggu.kelas.id}}" 
-       class="w-full sm:w-auto px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 flex items-center justify-center space-x-2 font-medium">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-      </svg>
-      <span>Kembali ke Kelas</span>
-    </a>
+  <div class="mb-8 flex flex-row justify-between items-center gap-4">
+      <a href="/kelass/{{quiz.minggu.kelas.id}}" 
+     class="inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+    </svg>
+    Back to Class
+  </a>
     <a href="/quiz/start/{{quiz.id}}" 
-       class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transform transition-all duration-200 space-x-2">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10V9a2 2 0 012-2h2a2 2 0 012 2v1M9 10v5a2 2 0 002 2h2a2 2 0 002-2v-5"></path>
-      </svg>
+       class="bg-gradient-to-r from-slate-700 to-slate-900 text-white inline-flex items-center gap-3 px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg  focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+
       <span>Mulai Quiz</span>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+</svg>
     </a>
   </div>
 

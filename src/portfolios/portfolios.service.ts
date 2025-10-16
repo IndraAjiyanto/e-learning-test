@@ -66,7 +66,7 @@ export class PortfoliosService {
   }
 
   async findOne(portfolioId: number) {
-    const portfolio = await this.portfolioRepository.findOne({where: {id:portfolioId}})
+    const portfolio = await this.portfolioRepository.findOne({where: {id:portfolioId}, relations: ['kelas']})
     if(!portfolio){
       throw new NotFoundException('portfolio not found')
     }

@@ -54,9 +54,23 @@ export class QuizService {
   }
 
 
-  async findPertanyaan(quizId:number){
-    return this.pertanyaanRepository.find({where: {quiz: {id:quizId}}, relations:['jawaban']})
-  }
+async findPertanyaan(quizId:number){
+  return await this.pertanyaanRepository.find({
+    where: { 
+      quiz: { id: quizId }
+    },
+    relations: {
+      jawaban: true,  // Format baru TypeORM
+      quiz: true
+    },
+    order: {
+      id: 'ASC',  // Urutkan pertanyaan
+      jawaban: {
+        id: 'ASC'  // Urutkan jawaban
+      }
+    }
+  })
+}
 
   async update(quizId: number, updateQuizDto: UpdateQuizDto) {
         const quiz = await this.findOne(quizId)

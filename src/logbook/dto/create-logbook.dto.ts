@@ -12,6 +12,9 @@ export class CreateLogbookDto {
     dokumentasi: string;
 
     @IsString()
+    dokumentasi_lain: string;
+
+    @IsString()
     kendala: string;
 
     @IsInt()

@@ -30,6 +30,9 @@ export class Logbook1757657729794 implements MigrationInterface {
                             name: 'dokumentasi',
                             type: 'varchar'
                         },{
+                            name: 'dokumentasi_lain',
+                            type: 'varchar'
+                        },{
                              name: 'userId',
                              type: 'int'
                          },{

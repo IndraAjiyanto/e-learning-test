@@ -1,73 +1,209 @@
-<div class="pt-28">
-  <div class="max-w-3xl mx-auto mb-8">
-    <div class="bg-gradient-to-r from-slate-50 to-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-      <h2 class="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-2">
-        Quiz Assessment
-      </h2>
-      <p class="text-slate-600">
-        Pilih jawaban yang paling tepat untuk setiap pertanyaan di bawah ini
-      </p>
+<div class="max-w-7xl mx-auto px-4 pt-28">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-slate-50 to-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-8">
+        <h2 class="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-2">
+            {{pertanyaan.[0].quiz.nama_quiz}}
+        </h2>
+        <p class="text-slate-600">
+            Pilih jawaban yang paling tepat untuk setiap pertanyaan di bawah ini
+        </p>
     </div>
-  </div>
 
-  <form 
-    method="POST" 
-    action="/jawaban-users/{{quizId}}" 
-    class="space-y-8 max-w-3xl mx-auto"
-  >
-    {{#each pertanyaan}}
-    <div class="group p-6 border border-slate-200 rounded-2xl bg-white shadow-sm hover:shadow-lg hover:border-slate-300 transition-all duration-300">
-      <div class="flex items-start gap-4 mb-6">
-        <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-full flex items-center justify-center text-sm font-semibold">
-          {{@index}}
+    <!-- Form untuk submit -->
+    <form method="POST" action="/jawaban-users/{{quizId}}" x-data="quiz()" x-init="init()">
+        <!-- Main Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Sidebar - Question List -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sticky top-6">
+                    <h3 class="text-lg font-semibold text-slate-900 mb-4">Daftar Pertanyaan</h3>
+                    <div class="space-y-2 max-h-[600px] overflow-y-auto">
+                        {{#each pertanyaan}}
+                        <button 
+                            type="button"
+                            @click="currentQuestion = {{@index}}"
+                            class="w-full text-left p-3 rounded-xl border transition-all duration-200 flex items-center gap-3"
+                            :class="{
+                                'border-slate-700 bg-slate-700 text-white': currentQuestion === {{@index}},
+                                'border-slate-200 hover:border-slate-300 hover:bg-slate-50': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
+                                'border-green-200 bg-green-50 text-green-800': currentQuestion !== {{@index}} && isAnswered({{@index}})
+                            }"
+                        >
+                            <div class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium"
+                                :class="{
+                                    'bg-white text-slate-900': currentQuestion === {{@index}},
+                                    'bg-slate-600 text-white': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
+                                    'bg-green-500 text-white': currentQuestion !== {{@index}} && isAnswered({{@index}})
+                                }">
+                                <span>{{@index}}</span>
+                            </div>
+                            <span class="text-sm font-medium truncate">Pertanyaan {{@index}}</span>
+                            <template x-if="isAnswered({{@index}})">
+                                <svg class="w-4 h-4 ml-auto text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </template>
+                        </button>
+                        {{/each}}
+                    </div>
+
+                    <!-- Progress -->
+                    <div class="mt-6 pt-6 border-t border-slate-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-slate-600">Progress</span>
+                            <span class="text-sm text-slate-600" x-text="`${answeredCount}/{{pertanyaan.length}}`"></span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div 
+                                class="bg-green-600 h-2 rounded-full transition-all duration-500" 
+                                :style="`width: ${(answeredCount / {{pertanyaan.length}}) * 100}%`"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content - Question & Answers -->
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <!-- Question Navigation -->
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm font-medium text-slate-600">
+                                Pertanyaan <span x-text="currentQuestion + 1"></span> dari {{pertanyaan.length}}
+                            </span>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <button 
+                                type="button"
+                                @click="prevQuestion()"
+                                class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                :disabled="currentQuestion === 0"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                                Sebelumnya
+                            </button>
+                            <button 
+                                type="button"
+                                @click="nextQuestion()"
+                                class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                :disabled="currentQuestion === {{pertanyaan.length}} - 1"
+                            >
+                                Selanjutnya
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Content -->
+                    <div class="p-6">
+                        {{#each pertanyaan}}
+                        <div x-show="currentQuestion === {{@index}}">
+                            <div class="flex items-start gap-4 mb-6">
+                                <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                    {{@index}}
+                                </div>
+                                <div class="flex-1 space-y-4">
+                                    <!-- Question Image -->
+                                    {{#if gambar}}
+                                    <div class="w-full">
+                                        <div class="flex justify-center">
+                                            <img 
+                                                src="{{gambar}}" 
+                                                alt="Gambar Pertanyaan" 
+                                                class="max-h-64 rounded-xl border border-slate-200 shadow-sm object-contain"
+                                            >
+                                        </div>
+                                    </div>
+                                    {{/if}}
+
+                                    <!-- Question Text -->
+                                    <p class="font-semibold text-slate-900 text-lg leading-relaxed">{{pertanyaan_soal}}</p>
+                                </div>
+                            </div>
+
+                            <!-- Answer Options -->
+                            <div class="space-y-3 ml-12">
+                                {{#each jawaban}}
+                                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-slate-50 hover:to-white hover:border-slate-300 transition-all duration-200 group/option">
+                                    <input 
+                                        type="radio" 
+                                        name="q-{{../id}}"
+                                        value="{{id}}"
+                                        class="w-5 h-5 text-slate-600 border-slate-300 focus:ring-slate-500 focus:ring-2"
+                                        required
+                                    >
+                                    <span class="ml-4 text-slate-800 font-medium group-hover/option:text-slate-900 transition-colors">
+                                        {{jawaban}}
+                                    </span>
+                                </label>
+                                {{/each}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end p-6 border-t border-slate-200 bg-slate-50">
+                        <button 
+                            type="submit"
+                            class="group px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-lg hover:shadow-xl hover:from-slate-800 hover:to-slate-900 hover:scale-105 transition-all duration-300 font-semibold text-lg"
+                        >
+                            <span class="flex items-center gap-2">
+                                Kirim Jawaban
+                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-<div class="flex-1 space-y-3">
-      <!-- Gambar pertanyaan -->
-      {{#if gambar}}
-      <div class="w-full flex justify-center">
-        <img src="{{gambar}}" 
-             alt="Gambar Pertanyaan" 
-             class="max-h-64 rounded-xl border border-slate-200 shadow-sm object-contain">
-      </div>
-      {{/if}}
-
-      <!-- Teks pertanyaan -->
-      <p class="font-semibold text-slate-900 text-lg leading-relaxed">
-        {{pertanyaan_soal}}
-      </p>
-    </div>
-      </div>
-
-      <div class="space-y-3 ml-12">
-        {{#each jawaban}}
-        <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-slate-50 hover:to-white hover:border-slate-300 transition-all duration-200 group/option">
-          <input 
-            type="radio" 
-            name="q-{{../id}}"   
-            value="{{id}}"       
-            class="w-5 h-5 text-slate-600 border-slate-300 focus:ring-slate-500 focus:ring-2"
-          >
-          <span class="ml-4 text-slate-800 font-medium group-hover/option:text-slate-900 transition-colors">
-            {{jawaban}}
-          </span>
-        </label>
-        {{/each}}
-      </div>
-    </div>
-    {{/each}}
-
-    <div class="flex justify-end pt-8">
-      <button 
-        type="submit" 
-        class="group px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-lg hover:shadow-xl hover:from-slate-800 hover:to-slate-900 hover:scale-105 transition-all duration-300 font-semibold text-lg"
-      >
-        <span class="flex items-center gap-2">
-          Kirim Jawaban
-          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-          </svg>
-        </span>
-      </button>
-    </div>
-  </form>
+    </form>
 </div>
+
+<script>
+    function quiz() {
+        return {
+            currentQuestion: 0,
+            
+            init() {
+                console.log('Quiz initialized');
+            },
+            
+            get answeredCount() {
+                // Hitung berapa pertanyaan yang sudah dijawab
+                const form = this.$el;
+                const answeredInputs = Array.from(form.querySelectorAll('input[type="radio"]'))
+                    .filter(input => input.checked);
+                return answeredInputs.length;
+            },
+            
+            nextQuestion() {
+                if (this.currentQuestion < {{pertanyaan.length}} - 1) {
+                    this.currentQuestion++;
+                }
+            },
+            
+            prevQuestion() {
+                if (this.currentQuestion > 0) {
+                    this.currentQuestion--;
+                }
+            },
+            
+            isAnswered(index) {
+                // Cek apakah pertanyaan ke-index sudah dijawab
+                const questionId = [{{#each pertanyaan}}{{#unless @first}},{{/unless}}{{id}}{{/each}}][index];
+                const input = this.$el.querySelector(`input[name="q-${questionId}"]:checked`);
+                return input !== null;
+            }
+        }
+    }
+</script>

@@ -4,6 +4,7 @@ import { UpdateJawabanUserDto } from './dto/update-jawaban_user.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
+import { CreateJawabanUserDto } from './dto/create-jawaban_user.dto';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('jawaban-users')
@@ -12,9 +13,9 @@ export class JawabanUsersController {
 
   @Roles('user')
 @Post(':quizId')
-async create(@Param('quizId') quizId:number, @Req() req: Request, @Res() res: Response) {
+async create(@Param('quizId') quizId:number, @Req() req: Request, @Res() res: Response, @Body() createJawabanUserDto: CreateJawabanUserDto,) {
   try {
-    const jawabanUser = Object.entries(req.body).map(([key, value]) => {
+    const jawabanUser = Object.entries(createJawabanUserDto).map(([key, value]) => {
       const pertanyaanId = Number(key.replace("q-", ""));
       return {
         pertanyaanId,
@@ -23,15 +24,17 @@ async create(@Param('quizId') quizId:number, @Req() req: Request, @Res() res: Re
       };
     });
 
+    console.log(jawabanUser)
+
     await this.jawabanUsersService.create({ jawabanUser });
     await this.jawabanUsersService.nilaiCreate({jawabanUser})
 
     req.flash('success', 'berhasil menjawab pertanyaan');
-    return res.redirect(`/quiz/form/${quizId}`);
+    res.redirect(`/quiz/form/${quizId}`);
   } catch (error) {
     console.log(error)
     req.flash('error', 'gagal menjawab pertanyaan');
-    return res.redirect(`/quiz/form/${quizId}`);
+    res.redirect(`/quiz/form/${quizId}`);
   }
 }
 

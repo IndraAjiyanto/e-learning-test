@@ -1,70 +1,95 @@
-<div class="pt-28 py-20">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-2xl text-gray-900 font-semibold mb-6">Log Book Form</h2>
+<div class="bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen py-20">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
+      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center">Log Book Form</h2>
 
-    <form action="/logbook/{{pertemuanId}}" method="POST" enctype="multipart/form-data" class="space-y-6">
+      <form action="/logbook/{{pertemuanId}}" method="POST" enctype="multipart/form-data">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          <!-- Kolom Kiri -->
+          <div class="space-y-6">
+            <!-- Activity -->
+            <div>
+              <label for="kegiatan" class="block text-lg font-semibold text-gray-700 mb-3">Activity</label>
+              <input type="text" id="kegiatan" name="kegiatan" required placeholder="Enter activity description..."
+                class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white" />
+            </div>
 
-      <div>
-        <label for="kegiatan" class="block text-sm font-semibold text-gray-700 mb-1">Activity</label>
-        <input type="text" id="kegiatan" name="kegiatan" required placeholder="Enter activity..."
-          class="w-full border text-gray-700 bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900" />
-      </div>
-
-      <div>
-        <label for="rincian_kegiatan" class="block text-sm font-semibold text-gray-700 mb-1">Activity Details</label>
-        <textarea name="rincian_kegiatan" id="rincian_kegiatan"
-          placeholder="Enter activity details..."
-          class="w-full text-gray-700 bg-white border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"></textarea>
-      </div>
-
-      <div>
-        <label for="kendala" class="block text-sm font-semibold text-gray-700 mb-1">Obstacle</label>
-        <input type="text" id="kendala" name="kendala" required placeholder="Enter obstacle..."
-          class="w-full border text-gray-700 bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900" />
-      </div>
-
-      <div x-data="{ previewUrl: null }" class="space-y-3">
-        <label for="dokumentasi" class="block text-sm font-semibold text-gray-700 mb-1">
-          Photo Documentation
-        </label>
-        <input 
-          type="file" 
-          id="dokumentasi" 
-          name="dokumentasi" 
-          accept="image/*" 
-          x-ref="fileInput"
-          class="w-full border  bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
-          @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-        >
-
-        <template x-if="previewUrl">
-          <div class="relative w-32 h-32">
-            <img 
-              :src="previewUrl" 
-              alt="Photo Preview" 
-              class="w-32 h-32 object-cover rounded-lg border border-gray-300"
-            >
-
-            <button 
-              type="button" 
-              class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
-              @click="previewUrl = null; $refs.fileInput.value = null;">
-              &times;
-            </button>
+            <!-- Activity Details -->
+            <div>
+              <label for="rincian_kegiatan" class="block text-lg font-semibold text-gray-700 mb-3">Activity Details</label>
+              <textarea name="rincian_kegiatan" id="rincian_kegiatan" required
+                placeholder="Enter detailed description of your activity..."
+                rows="6"
+                class="w-full text-gray-700 bg-white/70 border border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 hover:bg-white resize-none"></textarea>
+            </div>
           </div>
-        </template>
-      </div>
 
-      <div class="flex space-x-4">
-        <button type="submit"
-          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-          Add Log Book
-        </button>
-        <a href="/kelass/{{kelasId}}"
-          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-          Cancel
-        </a>
-      </div>
-    </form>
+          <!-- Kolom Kanan -->
+          <div class="space-y-6">
+
+                                    <div>
+              <label for="kendala" class="block text-lg font-semibold text-gray-700 mb-3">Obstacle</label>
+              <input type="text" id="kendala" name="kendala" required placeholder="Enter any obstacles encountered..."
+                class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white" />
+            </div>
+
+            <!-- Photo Documentation -->
+            <div x-data="{ previewUrl: null }" class="space-y-4">
+              <label for="dokumentasi" class="block text-lg font-semibold text-gray-700 mb-3">
+                Photo Documentation
+              </label>
+              <input 
+                type="file" 
+                id="dokumentasi" 
+                name="dokumentasi" 
+                accept="image/*" 
+                x-ref="fileInput"
+                class="w-full border border-slate-300 rounded-xl px-5 py-4 bg-white/70 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+              >
+
+              <!-- Image Preview -->
+              <template x-if="previewUrl">
+                <div class="relative">
+                  <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <img 
+                      :src="previewUrl" 
+                      alt="Photo Preview" 
+                      class="w-full max-w-xs h-48 object-cover rounded-lg border-2 border-slate-300 shadow-sm mx-auto"
+                    >
+                    <button 
+                      type="button" 
+                      class="absolute -top-2 -right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all duration-300 transform hover:scale-110"
+                      @click="previewUrl = null; $refs.fileInput.value = null;">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </template>
+            </div>
+
+                        <div>
+              <input type="text" id="dokumentasi_lain" name="dokumentasi_lain" required placeholder="Enter any other documentation..."
+                class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-4 pt-10 mt-8 border-t border-slate-200">
+          <button type="submit"
+            class="bg-gradient-to-r from-slate-700 to-slate-900 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+            Add Log Book
+          </button>
+          <a href="/kelass/{{kelasId}}"
+            class="px-8 py-4 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

@@ -10,6 +10,8 @@ export class JawabanUserDto {
 
     @IsInt()
     userId: number
+
+  
 }
 
 export class CreateJawabanUserDto {

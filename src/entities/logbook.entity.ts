@@ -24,6 +24,9 @@ export class Logbook {
     @Column()
     kendala: string
 
+    @Column()
+    dokumentasi_lain: string
+
         @CreateDateColumn()
         createdAt: Date;
         
