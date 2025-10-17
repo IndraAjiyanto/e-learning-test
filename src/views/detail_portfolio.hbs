@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto px-4 pt-28 bg-gray-50 sm:px-6 lg:px-8 py-12">
+<div class="max-w-7xl mx-auto px-4 pt-28 bg-white sm:px-6 lg:px-8 py-12">
     
     <!-- Header -->
     <div class="text-center mb-16">
@@ -14,87 +14,68 @@
     <!-- Alpine.js Image Slider -->
     <div class="mb-16" 
          x-data="{
-            currentSlide: 0,
+            currentIndex: 0,
             images: [{{#each portfolio.gambar}}'{{this}}',{{/each}}],
-            autoSlideInterval: null,
-            init() { this.startAutoSlide(); },
-            startAutoSlide() { 
-                this.autoSlideInterval = setInterval(() => this.next(), 5000); 
+            next() {
+                this.currentIndex = (this.currentIndex + 1) % this.images.length;
             },
-            stopAutoSlide() { clearInterval(this.autoSlideInterval); },
-            restartAutoSlide() { this.stopAutoSlide(); this.startAutoSlide(); },
-            next() { this.currentSlide = (this.currentSlide + 1) % this.images.length; },
-            prev() { this.currentSlide = (this.currentSlide - 1 + this.images.length) % this.images.length; },
-            goToSlide(index) { this.currentSlide = index; this.restartAutoSlide(); }
+            prev() {
+                this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+            },
+            goTo(index) {
+                this.currentIndex = index;
+            }
          }" 
-         class="relative group">
+         class="space-y-6">
 
-        <!-- Slider Container -->
-        <div class="relative overflow-hidden rounded-2xl shadow-2xl max-w-3xl mx-auto aspect-[16/9] bg-white/50 backdrop-blur-sm border border-white/20">
-            
-            <!-- Images -->
-            <template x-for="(image, index) in images" :key="index">
-                <div x-show="currentSlide === index"
-                     x-transition:enter="transition ease-out duration-500"
-                     x-transition:enter-start="opacity-0 transform translate-x-full"
-                     x-transition:enter-end="opacity-100 transform translate-x-0"
-                     x-transition:leave="transition ease-in duration-500"
-                     x-transition:leave-start="opacity-100 transform translate-x-0"
-                     x-transition:leave-end="opacity-0 transform -translate-x-full"
-                     class="absolute inset-0 flex items-center justify-center p-8">
-                    <img 
-                        :src="image" 
-                        :alt="'Slide ' + (index + 1)" 
-                        class="max-h-[300px] w-auto object-contain rounded-lg shadow-md"
-                    >
-                </div>
-            </template>
+        <!-- Main Image Display -->
+        <div class="relative group w-full max-w-4xl mx-auto">
+            <div class="relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500">
+                <img x-bind:src="images[currentIndex]" 
+                     alt="Portfolio Image"
+                     class="w-full h-auto max-h-[300px] max-w-[500px] object-contain mx-auto cursor-pointer group-hover:scale-105 transition-transform duration-500">
 
-            <!-- Navigation Buttons -->
-            <button @click="prev(); restartAutoSlide();" 
-                    class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 shadow-lg z-10 border border-slate-200">
-                <svg class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </button>
-            
-            <button @click="next(); restartAutoSlide();" 
-                    class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 shadow-lg z-10 border border-slate-200">
-                <svg class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </button>
-
-            <!-- Dots Indicator -->
-            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                <template x-for="(image, index) in images" :key="index">
-                    <button @click="goToSlide(index)"
-                            :class="currentSlide === index ? 'w-6 bg-slate-600' : 'w-2 bg-white/60 hover:bg-white/90'"
-                            class="h-2 rounded-full transition-all duration-300">
-                    </button>
+                <!-- Navigation Arrows -->
+                <template x-if="images.length > 1">
+                    <div class="absolute inset-0 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button @click.prevent.stop="prev()" 
+                                class="w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 ml-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <button @click.prevent.stop="next()" 
+                                class="w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 mr-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </template>
-            </div>
 
-            <!-- Image Counter -->
-            <div class="absolute top-4 right-4 px-3 py-1 bg-slate-800/80 backdrop-blur-sm rounded-full z-10">
-                <span class="text-white text-sm font-medium" x-text="(currentSlide + 1) + ' / ' + images.length"></span>
+                <!-- Image Counter -->
+                <template x-if="images.length > 1">
+                    <div class="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        <span x-text="currentIndex + 1"></span>/<span x-text="images.length"></span>
+                    </div>
+                </template>
             </div>
         </div>
 
         <!-- Thumbnail Navigation -->
-        <div class="flex justify-center gap-3 mt-4">
-            <template x-for="(image, index) in images" :key="index">
-                <button @click="goToSlide(index)"
-                        :class="currentSlide === index ? 
-                               'ring-2 ring-slate-600 ring-offset-2 scale-105' : 
-                               'opacity-60 hover:opacity-100'"
-                        class="transition-all duration-200 rounded-lg overflow-hidden">
-                    <img :src="image" 
-                         :alt="'Thumbnail ' + (index + 1)"
-                         class="w-16 h-12 object-cover rounded-lg">
-                </button>
-            </template>
-        </div>
+        <template x-if="images.length > 1">
+            <div class="flex pt-2 space-x-3 overflow-x-auto pb-2 justify-center">
+                <template x-for="(image, index) in images" :key="index">
+                    <button @click="goTo(index)" 
+                            class="flex-shrink-0 w-20 h-20 rounded-lg border-2 transition-all duration-300 hover:shadow-lg"
+                            :class="currentIndex === index ? 'border-slate-700 scale-105' : 'border-slate-300 hover:border-slate-500'">
+                        <img :src="image" 
+                             alt="Thumbnail" 
+                             class="w-full h-full object-cover rounded-md">
+                    </button>
+                </template>
+            </div>
+        </template>
     </div>
 
     <!-- Content Grid -->

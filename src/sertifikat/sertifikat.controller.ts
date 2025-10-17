@@ -16,7 +16,7 @@ export class SertifikatController {
       const biodata = await this.sertifikatService.findBiodata(req.user.id)
       if(!biodata){
         req.flash('info','isi biodata terlebih dahulu')
-        res.redirect('/profile')
+        res.redirect('/users/profile')
       }else{
       const sertifikat = await this.sertifikatService.generateCertificate(kelasId, req.user.id);
       res.render('user/sertifikat/detail', {user: req.user, sertifikat})

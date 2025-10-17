@@ -23,7 +23,7 @@ export class KelassController {
   @ValidateImage({ minWidth: 1000, maxWidth: 1080, minHeight: 1200, maxHeight: 1350, folder: 'nestjs/images/banner/class' }) 
   async create(@Body() createKelassDto: CreateKelassDto, @Res() res: Response, @UploadedFile() gambar: Express.Multer.File, @Req() req:Request) {
     try {
-        createKelassDto.gambar = req.body.uploadedImageUrl
+        createKelassDto.gambar = req.body.uploadedImageUrls?.[0];
         createKelassDto.proses = 'proces'
         await this.kelassService.create(createKelassDto);
         req.flash('success', 'class successfully created')

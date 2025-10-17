@@ -50,7 +50,7 @@ export class PortfoliosService {
   }
 
   async findByUser(userId: number){
-    return await this.portfolioRepository.find({where: {user: {id: userId}}})
+    return await this.portfolioRepository.find({where: {user: {id: userId}}, relations: ['kelas', 'user', 'kelas.kategori', 'kelas.jenis_kelas']})
   }
 
   async findKategori(){

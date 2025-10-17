@@ -1,11 +1,11 @@
 <div class="bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen py-20">
   <div class="max-w-4xl mx-auto px-6">
     <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
-      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center">Lengkapi Biodata</h2>
+      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center">Edit Biodata</h2>
 
-      <form action="/biodatas" method="POST" x-data="{
+      <form action="/biodatas/{{biodata.id}}?_method=PUT" method="POST" x-data="{
         pendidikanOpen: false,
-        selectedPendidikan: '',
+        selectedPendidikan: '{{biodata.pendidikan}}',
         selectPendidikan(value) {
           this.selectedPendidikan = value;
           this.pendidikanOpen = false;
@@ -18,14 +18,14 @@
             <!-- Nama Lengkap -->
             <div>
               <label for="nama_lengkap" class="block text-lg font-semibold text-gray-700 mb-3">Nama Lengkap</label>
-              <input type="text" id="nama_lengkap" name="nama_lengkap" required
+              <input type="text" id="nama_lengkap" name="nama_lengkap" value="{{biodata.nama_lengkap}}" required
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
 
             <!-- No WA -->
             <div>
               <label for="no" class="block text-lg font-semibold text-gray-700 mb-3">No WA</label>
-              <input type="text" id="no" name="no" required
+              <input type="text" id="no" name="no" value="{{biodata.no}}" required
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
 
@@ -34,12 +34,14 @@
               <label class="block text-lg font-semibold text-gray-700 mb-3">Jenis Kelamin</label>
               <div class="flex flex-col gap-3">
                 <label class="inline-flex items-center gap-3 cursor-pointer group">
-                  <input type="radio" name="jenis_kelamin" value="Laki laki" required
+                  <input type="radio" name="jenis_kelamin" value="Laki laki" 
+                    {{#if (roles biodata.jenis_kelamin "Laki laki")}}checked{{/if}} required
                     class="radio border-gray-700 checked:text-gray-700 checked:bg-white">
                   <span class="text-gray-700 text-lg group-hover:text-slate-900 transition-colors">Laki-laki</span>
                 </label>
                 <label class="inline-flex items-center gap-3 cursor-pointer group">
-                  <input type="radio" name="jenis_kelamin" value="Perempuan" required
+                  <input type="radio" name="jenis_kelamin" value="Perempuan"
+                    {{#if (roles biodata.jenis_kelamin "Perempuan")}}checked{{/if}} required
                     class="radio border-gray-700 checked:text-gray-700 checked:bg-white">
                   <span class="text-gray-700 text-lg group-hover:text-slate-900 transition-colors">Perempuan</span>
                 </label>
@@ -52,7 +54,7 @@
             <!-- Kota -->
             <div>
               <label for="kota" class="block text-lg font-semibold text-gray-700 mb-3">Kota</label>
-              <input type="text" id="kota" name="kota" required
+              <input type="text" id="kota" name="kota" value="{{biodata.kota}}" required
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
 
@@ -130,7 +132,7 @@
             <!-- Program Studi -->
             <div>
               <label for="program_studi" class="block text-lg font-semibold text-gray-700 mb-3">Program Studi</label>
-              <input type="text" id="program_studi" name="program_studi" required
+              <input type="text" id="program_studi" name="program_studi" value="{{biodata.program_studi}}" required
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
           </div>
@@ -140,10 +142,10 @@
         <div class="flex items-center gap-4 pt-10 mt-8 border-t border-slate-200">
           <button type="submit"
             class="bg-gradient-to-r from-slate-700 to-slate-900 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-            Simpan Biodata
+            Update Biodata
           </button>
           <a href="/users/profile"
-            class="px-8 py-4 rounded-xl shadow-lg hover:shadow-xl  text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 transform hover:-translate-y-1 text-center focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+            class="px-8 py-4 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
             Kembali ke Profil
           </a>
         </div>

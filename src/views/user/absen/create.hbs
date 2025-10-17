@@ -1,7 +1,7 @@
 <div class="bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen py-20">
   <div class="max-w-2xl mx-auto px-6">
     <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
-      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center">Form Absen</h2>
+      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center">Attendance Form</h2>
 
       <form action="/absens/{{pertemuan.id}}/{{user.id}}/{{pertemuan.minggu.kelas.id}}" method="POST" class="space-y-8"
         x-data="{
@@ -12,14 +12,14 @@
             this.statusOpen = false;
           }
         }">
-        
-        <!-- Status Dropdown Custom -->
+
+        <!-- Attendance Status Dropdown -->
         <div>
-          <label class="block text-lg font-semibold text-gray-700 mb-3">Status Kehadiran</label>
+          <label class="block text-lg font-semibold text-gray-700 mb-3">Attendance Status</label>
           <div class="relative" x-data="{ open: false }">
-            <!-- Hidden Input untuk Form -->
+            <!-- Hidden Input -->
             <input type="hidden" name="status" :value="selectedStatus" required>
-            
+
             <!-- Dropdown Trigger -->
             <button 
               type="button"
@@ -27,7 +27,7 @@
               :class="selectedStatus ? 'text-gray-700' : 'text-gray-400'"
               class="w-full border border-slate-300 rounded-xl px-5 py-4 bg-white hover:bg-white transition-all duration-300 text-left flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400"
             >
-              <span x-text="selectedStatus || 'Pilih status kehadiran'"></span>
+              <span x-text="selectedStatus || 'Select attendance status'"></span>
               <svg 
                 viewBox="0 0 20 20" 
                 fill="currentColor" 
@@ -37,7 +37,7 @@
                 <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
               </svg>
             </button>
-            
+
             <!-- Dropdown Menu -->
             <div 
               x-show="open"
@@ -53,62 +53,62 @@
               <div class="py-2">
                 <button 
                   type="button"
-                  @click="selectedStatus = 'hadir'; open = false;"
+                  @click="selectedStatus = 'Present'; open = false;"
                   class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg flex items-center gap-3"
                 >
-                  <span>Hadir</span>
+                  <span>Present</span>
                 </button>
                 <button 
                   type="button"
-                  @click="selectedStatus = 'izin'; open = false;"
+                  @click="selectedStatus = 'Permission'; open = false;"
                   class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg flex items-center gap-3"
                 >
-                  <span>Izin</span>
+                  <span>Permission</span>
                 </button>
                 <button 
                   type="button"
-                  @click="selectedStatus = 'sakit'; open = false;"
+                  @click="selectedStatus = 'Sick'; open = false;"
                   class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg flex items-center gap-3"
                 >
-                  <span>Sakit</span>
+                  <span>Sick</span>
                 </button>
                 <button 
                   type="button"
-                  @click="selectedStatus = 'alfa'; open = false;"
+                  @click="selectedStatus = 'Absent'; open = false;"
                   class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg flex items-center gap-3"
                 >
-                  <span>Alfa</span>
+                  <span>Absent</span>
                 </button>
                 <button 
                   type="button"
-                  @click="selectedStatus = 'tidak ada keterangan'; open = false;"
+                  @click="selectedStatus = 'No Information'; open = false;"
                   class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg flex items-center gap-3"
                 >
-                  <span>Tidak Ada Keterangan</span>
+                  <span>No Information</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Keterangan Input -->
+        <!-- Notes Input -->
         <div>
-          <label for="keterangan" class="block text-lg font-semibold text-gray-700 mb-3">Keterangan</label>
-          <input type="text" id="keterangan" name="keterangan" required placeholder="Masukkan keterangan kehadiran..."
+          <label for="keterangan" class="block text-lg font-semibold text-gray-700 mb-3">Notes</label>
+          <input type="text" id="keterangan" name="keterangan" required placeholder="Enter attendance notes..."
             class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white" />
         </div>
 
-        <!-- Tombol Action -->
+        <!-- Action Buttons -->
         <div class="flex items-center gap-4 pt-6">
           <button type="submit"
             class="bg-gradient-to-r from-slate-700 to-slate-900 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
             :disabled="!selectedStatus"
             :class="!selectedStatus ? 'opacity-50 cursor-not-allowed' : ''">
-            Simpan Absen
+            Save Attendance
           </button>
           <a href="/kelass/{{pertemuan.minggu.kelas.id}}"
             class="px-8 py-4 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-            Batal
+            Cancel
           </a>
         </div>
       </form>

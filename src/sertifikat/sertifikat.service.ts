@@ -39,7 +39,7 @@ export class SertifikatService {
       throw new NotFoundException('kelas not found')
     }
 
-    const sertifikat = await this.sertifikatRepository.findOne({where: {user: {id:userId}, kelas: {id: kelasId}}})
+    const sertifikat = await this.sertifikatRepository.findOne({where: {user: {id:userId}, kelas: {id: kelasId}}, relations:['kelas']})
     if(!sertifikat){
       const templatePath = path.join(process.cwd(), 'tmp', 'sertifikat.pdf');
     const templateBytes = fs.readFileSync(templatePath);

@@ -2,11 +2,26 @@
   <div class="max-w-7xl mx-auto px-6">
     <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
       
+      <!-- Back Button -->
+      <div class="flex justify-start mb-8">
+        <a href="/kelass/{{portfolio.kelas.id}}" 
+           class="inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Class
+        </a>
+      </div>
+
       <!-- Header -->
       <div class="text-center mb-12">
         <h1 class="text-5xl font-bold text-gray-900 mb-4">{{portfolio.judul}}</h1>
         <p class="text-lg text-gray-600 max-w-3xl mx-auto">Portfolio showcase and project details</p>
       </div>
+
+      <!-- Project Gallery - Full Width -->
+      <div class="mb-12">
+
 
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
         
@@ -16,7 +31,6 @@
           <!-- Deskripsi -->
           <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-8 border border-slate-200 shadow-lg">
             <div class="flex items-center gap-3 mb-6">
-              <div class="w-3 h-3 bg-gradient-to-r from-slate-600 to-slate-800 rounded-full"></div>
               <h3 class="text-2xl font-bold text-gray-900">Project Description</h3>
             </div>
             <p class="text-gray-700 leading-relaxed text-lg">
@@ -27,12 +41,11 @@
           <!-- Technologies -->
           <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-8 border border-slate-200 shadow-lg">
             <div class="flex items-center gap-3 mb-6">
-              <div class="w-3 h-3 bg-gradient-to-r from-slate-600 to-slate-800 rounded-full"></div>
               <h3 class="text-2xl font-bold text-gray-900">Technologies Used</h3>
             </div>
             <div class="flex flex-wrap gap-4">
               {{#each portfolio.teknologi}}
-                <span class="px-6 py-3 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 rounded-xl text-base font-semibold border border-slate-300 hover:from-slate-200 hover:to-slate-300 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">
+                <span class="px-3 py-1 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:from-gray-100 hover:to-gray-200 transition-all">
                   {{this}}
                 </span>
               {{/each}}
@@ -41,12 +54,11 @@
 
         </div>
 
-        <!-- Kolom Kanan - Galeri Gambar dengan Slider -->
+        <!-- Kolom Kanan - Thumbnail Navigation -->
         <div class="space-y-8">
           <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-8 border border-slate-200 shadow-lg">
             <div class="flex items-center gap-3 mb-6">
-              <div class="w-3 h-3 bg-gradient-to-r from-slate-600 to-slate-800 rounded-full"></div>
-              <h3 class="text-2xl font-bold text-gray-900">Project Gallery</h3>
+              <h3 class="text-2xl font-bold text-gray-900">Image Thumbnails</h3>
             </div>
             
             <!-- Image Slider -->
@@ -66,20 +78,13 @@
               
               <!-- Main Image Display -->
               <div class="relative group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500">
-                <img x-bind:src="images[currentIndex]" alt="Portfolio Image"
-                  class="w-full h-80 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-500">
+                <div class="aspect-w-16 aspect-h-9">
+                  <img x-bind:src="images[currentIndex]" alt="Portfolio Image"
+                    class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-500"
+                    style="max-width: 1920px; max-height: 1080px;">
+                </div>
 
-                <a x-bind:href="images[currentIndex]" target="_blank"
-                  class="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl">
-                  <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/30 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <span class="text-white font-semibold text-lg flex items-center gap-3">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                      </svg>
-                      View Full Size
-                    </span>
-                  </div>
-                </a>
+              
 
                 <!-- Navigation Arrows -->
                 <template x-if="images.length > 1">
@@ -107,7 +112,7 @@
 
               <!-- Thumbnail Navigation -->
               <template x-if="images.length > 1">
-                <div class="flex space-x-3 overflow-x-auto pb-2">
+                <div class="flex space-x-3 overflow-x-auto pt-2 pb-2">
                   <template x-for="(image, index) in images" :key="index">
                     <button @click="goTo(index)" 
                       class="flex-shrink-0 w-20 h-20 rounded-lg border-2 transition-all duration-300"
@@ -128,20 +133,8 @@
       <div class="flex flex-col sm:flex-row gap-4 pt-12 mt-12 border-t border-slate-200">
         <a href="/portfolios/formEdit/{{portfolio.id}}"
           class="bg-gradient-to-r from-slate-700 to-slate-900 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 text-center flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-          </svg>
           Edit Portfolio
         </a>
-        <a href="/kelass/{{portfolio.kelas.id}}"
-          class="px-8 py-4 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center flex items-center justify-center gap-3 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-          </svg>
-          Back to Class
-        </a>
       </div>
-
     </div>
-  </div>
 </div>

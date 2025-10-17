@@ -4,36 +4,64 @@ import {
   ExecutionContext,
   CallHandler,
   BadRequestException,
-  Inject,
-  Optional,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { VALIDATE_IMAGE_KEY, ValidateImageOptions } from '../decorators/validate-image.decorator';
+import {
+  VALIDATE_IMAGE_KEY,
+  ValidateImageOptions,
+} from '../decorators/validate-image.decorator';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class ValidateImageInterceptor implements NestInterceptor {
-  constructor(private reflector: Reflector, private uploadService: UploadService) {}
+  constructor(
+    private reflector: Reflector,
+    private uploadService: UploadService,
+  ) {}
 
-  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest<Request>();
-    const file = request.file;
     const options = this.reflector.get<ValidateImageOptions>(
       VALIDATE_IMAGE_KEY,
       context.getHandler(),
     );
 
-    // kalau nggak ada @ValidateImage di handler, skip aja
-    if (!options || !file) return next.handle();
+    // kalau handler gak pakai @ValidateImage, langsung lanjut aja
+    if (!options) return next.handle();
+
+    // deteksi apakah pakai FileInterceptor atau FilesInterceptor
+    const files: Express.Multer.File[] = [];
+
+    if (Array.isArray(request.files)) {
+      // banyak file
+      files.push(...(request.files as Express.Multer.File[]));
+    } else if (request.file) {
+      // satu file
+      files.push(request.file as Express.Multer.File);
+    }
+
+    // kalau gak ada file, skip
+    if (!files.length) return next.handle();
 
     try {
-      await this.uploadService.validateImageDimensions(file, options);
+      const uploadResults: string[] = [];
 
-      // upload ke cloudinary
-      const imageUrl = await this.uploadService.uploadToCloudinary(file, options.folder);
-      request.body.uploadedImageUrl = imageUrl;
+      for (const file of files) {
+        await this.uploadService.validateImageDimensions(file, options);
+        const imageUrl = await this.uploadService.uploadToCloudinary(
+          file,
+          options.folder,
+        );
+        uploadResults.push(imageUrl);
+      }
+
+      // taruh hasil upload di body agar bisa diakses di controller
+      request.body.uploadedImageUrls = uploadResults;
     } catch (err) {
       throw new BadRequestException(err.message);
     }

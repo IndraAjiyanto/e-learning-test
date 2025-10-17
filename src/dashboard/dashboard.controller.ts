@@ -50,7 +50,7 @@ export class DashboardController {
     const kategoriList = await this.dashboardService.findKategori();
     const jenisKelasList = await this.dashboardService.findJenisKelas();
 
-    console.log(kategoriList)
+    console.log(portfolio)
 
     res.render('portofolio', {
       user: req.user,

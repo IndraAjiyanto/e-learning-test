@@ -5,8 +5,10 @@ import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
-import { multerConfigImage } from 'src/common/config/multer.config';
+import { multerConfigImage, multerConfigMemory } from 'src/common/config/multer.config';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('portfolios')
@@ -15,11 +17,12 @@ export class PortfoliosController {
 
   @Roles('user')
   @Post(':kelasId')
-  @UseInterceptors(FilesInterceptor('gambar', 100 ,multerConfigImage)) 
+      @UseInterceptors(FilesInterceptor('gambar', 100 ,multerConfigMemory), ValidateImageInterceptor)
+    @ValidateImage({ minWidth: 1900, maxWidth: 1920, minHeight: 1000, maxHeight: 1080, folder: 'nestjs/images/portfolio/user' }) 
   async create(@UploadedFiles() gambar: Express.Multer.File[], @Param('kelasId') kelasId: number, @Body() createPortfolioDto: CreatePortfolioDto, @Res() res:Response, @Req() req:Request) {
     try {
       createPortfolioDto.kelasId = kelasId
-      createPortfolioDto.gambar = gambar.map((file) => file.path);
+      createPortfolioDto.gambar = req.body.uploadedImageUrls;
       if(req.user){
           createPortfolioDto.userId = req.user.id
       }
@@ -45,8 +48,10 @@ async findAll(@Req() req:Request, @Res() res:Response){
 @Roles('user')
 @Get('myportfolio/:userId')
 async myPortfolio(@Req() req:Request, @Res() res:Response, @Param('userId') userId: number){
+  const kategori = await this.portfoliosService.findKategori()
+  const jenis_kelas = await this.portfoliosService.findJenisKelas()
   const portfolio = await this.portfoliosService.findByUser(userId)
-    res.render('user/myportfolio', {user: req.user, portfolio})
+    res.render('user/myportfolio', {user: req.user, portfolio, kategori, jenis_kelas})
 }
 
 
