@@ -54,7 +54,7 @@ export class UsersService {
   }
 
   async findPortfolio(userId: number){
-    return await this.portfolioRepository.find({where: {user: {id: userId}}})
+    return await this.portfolioRepository.find({where: {user: {id: userId}},relations: ['user','kelas','kelas.jenis_kelas','kelas.kategori']});
   }
 
   async findAll() {
