@@ -15,6 +15,7 @@ import { ProgresPertemuan } from './progres_pertemuan.entity';
 import { Sertifikat } from './sertifikat.entity';
 import { UserKelas } from './user_kelas.entity';
 import { LogbookMentor } from './logbook_mentor.entity';
+import { ProgresQuiz } from './progres_quiz.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -88,6 +89,9 @@ progres_minggu: ProgresMinggu[];
 
 @OneToMany(() => ProgresPertemuan, (progres_pertemuan) => progres_pertemuan.user, { cascade: true, onDelete: 'CASCADE' })
 progres_pertemuan: ProgresPertemuan[];
+
+@OneToMany(() => ProgresQuiz, (progres_quiz) => progres_quiz.user, { cascade: true, onDelete: 'CASCADE' })
+progres_quiz: ProgresQuiz[];
 
 @OneToMany(() => Sertifikat, (sertifikat) => sertifikat.user, { cascade: true, onDelete: 'CASCADE' })
 sertifikat: Sertifikat[];

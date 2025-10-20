@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./user.entity";
 import { Pertemuan } from "./pertemuan.entity";
 
@@ -18,5 +18,11 @@ export class ProgresPertemuan{
 
     @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.progres_pertemuan, {onDelete : 'CASCADE'})
     pertemuan: Pertemuan
+
+                    @CreateDateColumn()
+                    createdAt: Date;
+                    
+                    @UpdateDateColumn()
+                    updatedAt: Date;
     
 }

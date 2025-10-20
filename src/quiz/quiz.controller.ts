@@ -59,11 +59,6 @@ export class QuizController {
   @Get('start/:quizId')
   async startQuiz(@Param('quizId') quizId:number, @Res() res:Response, @Req() req:Request){
     const pertanyaan = await this.quizService.findPertanyaan(quizId)
-    console.log(pertanyaan[1].jawaban)
-    for(const p of pertanyaan){
-    console.log(p.jawaban)
-    console.log(p.pertanyaan_soal)
-    }
     res.render('user/quiz/start', {user: req.user, quizId, pertanyaan})
   }
 

@@ -23,11 +23,12 @@ export class UsersController {
   @ValidateImage({ minWidth: 300, maxWidth: 500, minHeight: 300, maxHeight: 500, folder: 'nestjs/images/profile' })
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response, @UploadedFile() profile: Express.Multer.File, @Req() req:Request) {
     try {
-      createUserDto.profile = req.body.uploadedImageUrl;
+      createUserDto.profile = req.body.uploadedImageUrls?.[0];
       await this.usersService.create(createUserDto);
       req.flash('success', 'User created successfully');
       res.redirect('/users')
     } catch (error) {
+      console.log(error)
       req.flash('error', 'Failed to create user');
       res.redirect('/users')
     }

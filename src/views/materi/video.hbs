@@ -30,12 +30,32 @@
     <div class='col-span-2'>
       <div
         class='bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden'
+        x-show='videoSrc'
       >
-        <video
-          controls
-          class='w-full h-[450px] bg-gradient-to-br from-slate-100 to-slate-50'
-          x-bind:src='videoSrc'
-        ></video>
+        <template
+          x-if="videoSrc.includes('youtube.com') || videoSrc.includes('youtu.be')"
+        >
+          <iframe
+            x-bind:src="videoSrc.includes('youtube.com/watch?v=') 
+              ? videoSrc.replace('watch?v=', 'embed/') 
+              : videoSrc.includes('youtu.be/') 
+                ? videoSrc.replace('youtu.be/', 'youtube.com/embed/') 
+                : videoSrc"
+            class='w-full h-[450px]'
+            frameborder='0'
+            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+            allowfullscreen
+          ></iframe>
+        </template>
+        <template
+          x-if="!videoSrc.includes('youtube.com') && !videoSrc.includes('youtu.be')"
+        >
+          <video
+            controls
+            class='w-full h-[450px] bg-gradient-to-br from-slate-100 to-slate-50'
+            x-bind:src='videoSrc'
+          ></video>
+        </template>
       </div>
 
       <div class='flex justify-between items-center mt-6'>

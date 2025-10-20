@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGenerate
 import { Pertanyaan } from "./pertanyaan.entity";
 import { Nilai } from "./nilai.entity";
 import { Minggu } from "./minggu.entity";
+import { ProgresQuiz } from "./progres_quiz.entity";
 
 @Entity()
 export class Quiz {
@@ -25,6 +26,9 @@ export class Quiz {
 
     @OneToMany(() => Nilai, (nilai) => nilai.quiz, { cascade: true, onDelete : 'CASCADE' })
     nilai: Nilai[]
+
+    @OneToMany(() => ProgresQuiz, (progres_quiz) => progres_quiz.quiz, { cascade: true, onDelete: 'CASCADE' })
+    progres_quiz: ProgresQuiz[];
 
     @ManyToOne(() => Minggu, (minggu) => minggu.quiz, {onDelete : 'CASCADE'})
     minggu: Minggu

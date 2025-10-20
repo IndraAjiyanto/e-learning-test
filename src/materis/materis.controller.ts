@@ -166,16 +166,13 @@ async createPpt(
 
   @Roles('admin')
 @Post('video/:pertemuanId')
-@UseInterceptors(FileInterceptor('file', multerConfigVideo))
 async createVideo(
   @Body() createMaterisDto: CreateMaterisDto,
-  @UploadedFile() file: Express.Multer.File,
   @Res() res:Response,
   @Param('pertemuanId') pertemuanId:number,
   @Req() req:Request
 ) {
   try {
-      createMaterisDto.file = file.path
   createMaterisDto.pertemuanId = pertemuanId; 
   createMaterisDto.jenis_file = "video"
   await this.materisService.create(createMaterisDto);

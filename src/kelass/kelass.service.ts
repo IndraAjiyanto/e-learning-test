@@ -182,6 +182,8 @@ async findMinggu(kelasId: number, userId: number) {
     .leftJoinAndSelect('minggu.quiz', 'quiz')
     .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
     .leftJoinAndSelect('pertemuan.progres_pertemuan', 'progres_pertemuan', 'progres_pertemuan.userId = :userId', {userId})
+    .leftJoin('minggu.pertemuan', 'pertemuan_akhir', 'pertemuan_akhir.akhir = :akhir', {akhir: true})
+    .leftJoinAndSelect('pertemuan_akhir.progres_pertemuan', 'progres_pertemuan_akhir', 'progres_pertemuan_akhir.userId = :userId AND progres_pertemuan_akhir.tugas = :tugas AND progres_pertemuan_akhir.materi = :materi', {userId, tugas: true, materi: true})
     .leftJoinAndSelect('pertemuan.logbook', 'logbook','logbook.userId = :userId', {userId} )
     .leftJoinAndSelect('pertemuan.absen', 'absen')
     .leftJoinAndSelect('absen.user', 'user')
@@ -252,7 +254,7 @@ async createProgresPertemuan(userId: number, mingguList: Minggu[]) {
         // Belum ada progres untuk pertemuan ini
         if (p.pertemuan_ke === 1) {
           // Pertemuan pertama - langsung bisa akses materi dan tugas
-          const data = this.progresPertemuanRepository.create({
+          const data = await this.progresPertemuanRepository.create({
             user: { id: userId },
             pertemuan: { id: p.id },
             materi: true,
@@ -262,7 +264,7 @@ async createProgresPertemuan(userId: number, mingguList: Minggu[]) {
           
         } else {
           // Pertemuan selain pertama - belum bisa akses materi dan tugas
-          const data = this.progresPertemuanRepository.create({
+          const data = await this.progresPertemuanRepository.create({
             user: { id: userId },
             pertemuan: { id: p.id },
             materi: false,
@@ -359,7 +361,7 @@ async createProgresMinggu(userId: number, mingguList: Minggu[]) {
       // Belum ada progres untuk minggu ini
       if (m.minggu_ke === 1) {
         // Minggu pertama - langsung bisa akses quiz
-        const data = this.progresMingguRepository.create({
+        const data = await this.progresMingguRepository.create({
           user: { id: userId },
           minggu: { id: m.id },
           quiz: true
@@ -368,7 +370,7 @@ async createProgresMinggu(userId: number, mingguList: Minggu[]) {
         
       } else {
         // Minggu selain pertama - belum bisa akses quiz
-        const data = this.progresMingguRepository.create({
+        const data = await this.progresMingguRepository.create({
           user: { id: userId },
           minggu: { id: m.id },
           quiz: false
@@ -382,6 +384,9 @@ async createProgresMinggu(userId: number, mingguList: Minggu[]) {
   return await this.progresMingguRepository.save(progres);
 }
 
+async createProgresQuiz(userId: number, mingguList: Minggu[]){
+
+}
 
 async findMingguTerakhir(kelasId: number){
   const minggu = await this.mingguRepository.find({where: {kelas: {id: kelasId}, akhir: true}})

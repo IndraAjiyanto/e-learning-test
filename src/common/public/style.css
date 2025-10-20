@@ -3,6 +3,33 @@
 @tailwind utilities;
 
 @layer base {
+  /* Custom Scrollbar untuk seluruh halaman */
+  * {
+    scrollbar-width: thin; /* Firefox - thin scrollbar */
+    scrollbar-color: #4b5563 #f3f4f6; /* Firefox - thumb dan track color */
+  }
+
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  *::-webkit-scrollbar {
+    width: 10px; /* Lebar scrollbar vertikal */
+    height: 10px; /* Tinggi scrollbar horizontal */
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #f3f4f6; /* Warna track/background */
+    border-radius: 10px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #4b5563; /* Warna thumb/handle */
+    border-radius: 10px;
+    border: 2px solid #f3f4f6; /* Border untuk efek padding */
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #374151; /* Warna saat hover */
+  }
+
   /* Autofill fix dengan caret color */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
@@ -18,5 +45,16 @@
     -webkit-text-fill-color: #374151 !important;
     caret-color: #374151 !important;
     transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE dan Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }

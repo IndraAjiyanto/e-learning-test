@@ -81,7 +81,7 @@
       Session
     </button>
       {{#each minggu.pertemuan}}
-      {{#if (roles this.pertemuan_ke 3)}}
+      {{#if akhir}}
     <button @click="tab = 'quiz'" 
             :class="tab === 'quiz' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
