@@ -180,12 +180,12 @@ export class KelassController {
     @Req() req: Request,
   ) {
     const kelas = await this.kelassService.findOne(id);
-    const kelass = await this.kelassService.allClassExcept(kelas.id);
-    const daftar = await this.kelassService.sumStudent(kelas.id);
     let isUserInKelas = false;
     if (!kelas) {
       req.flash('info', 'not found class');
     } else if (!req.user) {
+          const kelass = await this.kelassService.allClassExcept(kelas.id);
+    const daftar = await this.kelassService.sumStudent(kelas.id);
       res.render('kelas/Bdetail', { kelas, kelass, daftar });
     } else {
       for (const u of kelas.user_kelas) {
@@ -199,19 +199,20 @@ export class KelassController {
         await Promise.all([
           this.kelassService.createProgresMinggu(req.user.id, minggu),
           this.kelassService.createProgresPertemuan(req.user.id, minggu),
-          this.kelassService.createProgresQuiz(req.user.id, minggu)
         ]);
         const mingguUpdated = await this.kelassService.findMinggu(
           id,
           req.user.id,
         );
-  
+
         res.render('kelas/detail', {
           user: req.user,
           kelas,
           minggu: mingguUpdated,
         });
       } else {
+            const kelass = await this.kelassService.allClassExcept(kelas.id);
+    const daftar = await this.kelassService.sumStudent(kelas.id);
         res.render('kelas/Bdetail', { user: req.user, kelas, kelass, daftar });
       }
     }

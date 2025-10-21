@@ -10,24 +10,20 @@
   <div class="bg-white shadow-xl rounded-2xl p-8 mb-8 border border-slate-100 hover:shadow-2xl transition-all duration-300">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 bg-gradient-to-br from-slate-500 to-slate-700 rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
-        </div>
+        <svg class="w-10 h-10 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
         <div>
-          <p class="text-slate-600 text-sm font-medium">Jumlah Pertanyaan</p>
+          <p class="text-slate-600 text-sm font-medium">Total Questions</p>
           <p class="text-2xl font-bold text-slate-900">{{quiz.pertanyaan.length}}</p>
         </div>
       </div>
       <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 bg-gradient-to-br from-slate-500 to-slate-700 rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
+        <svg class="w-10 h-10 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
         <div>
-          <p class="text-slate-600 text-sm font-medium">Nilai Minimal</p>
+          <p class="text-slate-600 text-sm font-medium">Minimum Score</p>
           <p class="text-2xl font-bold text-slate-900">{{quiz.nilai_minimal}}</p>
         </div>
       </div>
@@ -47,7 +43,7 @@
     <a href="/quiz/start/{{quiz.id}}" 
        class="bg-gradient-to-r from-slate-700 to-slate-900 text-white inline-flex items-center gap-3 px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg  focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
 
-      <span>Mulai Quiz</span>
+      <span>Start Quiz</span>
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
 </svg>
@@ -58,24 +54,22 @@
   <!-- Enhanced history section with better table styling and empty state -->
   <div class="bg-white shadow-xl rounded-2xl p-8 border border-slate-100">
     <div class="flex items-center space-x-3 mb-6">
-      <div class="w-10 h-10 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg flex items-center justify-center">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-        </svg>
-      </div>
-      <h2 class="text-2xl font-bold text-slate-900">Riwayat Nilai</h2>
+      <svg class="w-8 h-8 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      <h2 class="text-2xl font-bold text-slate-900">Score History</h2>
     </div>
 
     {{#if nilai.length}}
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto max-h-96 overflow-y-auto rounded-lg border border-slate-200">
         <table class="w-full">
-          <thead>
+          <thead class="sticky top-0 z-10">
             <tr class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700 uppercase tracking-wider rounded-tl-lg">Nilai</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700 uppercase tracking-wider rounded-tr-lg">Status</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700 uppercase tracking-wider">Score</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700 uppercase tracking-wider">Status</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100">
+          <tbody class="divide-y divide-slate-100 bg-white">
             {{#each nilai}}
             <tr class="hover:bg-slate-50 transition-colors duration-150">
               <td class="px-6 py-4">
@@ -87,14 +81,14 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    Lulus
+                    Passed
                   </span>
                 {{else}}
                   <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border border-red-200">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
-                    Tidak Lulus
+                    Failed
                   </span>
                 {{/if}}
               </td>
@@ -110,8 +104,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
         </div>
-        <p class="text-slate-500 text-lg font-medium mb-2">Belum ada percobaan quiz</p>
-        <p class="text-slate-400">Mulai quiz pertama Anda untuk melihat riwayat nilai</p>
+        <p class="text-slate-500 text-lg font-medium mb-2">No quiz attempts yet</p>
+        <p class="text-slate-400">Start your first quiz to see your score history</p>
       </div>
     {{/if}}
   </div>
