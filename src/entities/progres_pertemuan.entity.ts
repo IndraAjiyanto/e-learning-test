@@ -8,10 +8,10 @@ export class ProgresPertemuan{
     id: number
 
     @Column({default: false})
-    tugas: boolean
+    logbook: boolean
 
     @Column({default: false})
-    materi: boolean
+    absen: boolean
 
     @ManyToOne(() => User, (user) => user.progres_pertemuan, {onDelete : 'CASCADE'})
     user: User

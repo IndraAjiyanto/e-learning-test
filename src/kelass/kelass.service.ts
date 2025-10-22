@@ -24,6 +24,7 @@ import { Pembayaran } from 'src/entities/pembayaran.entity';
 import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Mentor } from 'src/entities/mentor.entity';
 import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
+import { Logbook } from 'src/entities/logbook.entity';
 
 @Injectable()
 export class KelassService {
@@ -60,6 +61,8 @@ export class KelassService {
     private readonly mentorRepository: Repository<Mentor>,
     @InjectRepository(ProgresQuiz)
     private readonly progresQuizRepository: Repository<ProgresQuiz>,
+    @InjectRepository(Logbook)
+    private readonly logbookRepository: Repository<Logbook>,
   ) {}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -222,16 +225,16 @@ export class KelassService {
         'progres_quiz.userId = :userId',
         { userId },
       )
-          .leftJoinAndSelect('quiz.pertanyaan', 'pertanyaan')
-    .leftJoinAndSelect('quiz.nilai', 'nilai')
-    .leftJoinAndSelect('pertanyaan.jawaban', 'jawaban')
-    .leftJoinAndSelect(
-      'pertanyaan.jawaban_user',
-      'jawaban_user',
-      'jawaban_user.userId = :userId',
-      { userId }
-    )
-    .leftJoinAndSelect('jawaban_user.user', 'jawaban_user_user')
+      .leftJoinAndSelect('quiz.pertanyaan', 'pertanyaan')
+      .leftJoinAndSelect('quiz.nilai', 'nilai')
+      .leftJoinAndSelect('pertanyaan.jawaban', 'jawaban')
+      .leftJoinAndSelect(
+        'pertanyaan.jawaban_user',
+        'jawaban_user',
+        'jawaban_user.userId = :userId',
+        { userId },
+      )
+      .leftJoinAndSelect('jawaban_user.user', 'jawaban_user_user')
 
       .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
       .leftJoinAndSelect(
@@ -263,7 +266,7 @@ export class KelassService {
   }
 
   async createProgresPertemuan(userId: number, mingguList: Minggu[]) {
-    const progres: ProgresPertemuan[] = [];
+    const progresToSave: ProgresPertemuan[] = [];
 
     // OPTIMIZATION: Batch fetch semua data sekaligus
     const allPertemuan = mingguList.flatMap((m) => m.pertemuan || []);
@@ -284,12 +287,16 @@ export class KelassService {
       existingProgresList.map((p) => [p.pertemuan.id, p]),
     );
 
-    // Fetch all absen at once
-    const absenList = await this.absenRepository.find({
-      where: { user: { id: userId }, pertemuan: { id: In(pertemuanIds) } },
+    // Fetch all logbook at once
+    const logbookList = await this.logbookRepository.find({
+      where: {
+        user: { id: userId },
+        pertemuan: { id: In(pertemuanIds) },
+        proses: 'acc',
+      },
       relations: ['pertemuan'],
     });
-    const absenMap = new Map(absenList.map((a) => [a.pertemuan.id, a]));
+    const logbookMap = new Map(logbookList.map((a) => [a.pertemuan.id, a]));
 
     // Fetch all progres quiz at once
     const quizIds = mingguList
@@ -312,21 +319,26 @@ export class KelassService {
 
         if (existingProgres) {
           // Sudah ada progres untuk pertemuan ini
-          // Cek apakah user sudah absen di pertemuan ini
-          const absen = absenMap.get(p.id);
+          // Cek apakah user sudah logbook di pertemuan ini
+          const logbook = logbookMap.get(p.id);
 
-          if (absen) {
-            // Sudah absen, cari pertemuan selanjutnya
-            const pertemuanSelanjutnya = m.pertemuan.find(
-              (pt) => pt.pertemuan_ke === p.pertemuan_ke + 1,
-            );
-
-            if (absen.pertemuan.akhir === true && m.quiz && m.quiz.length > 0) {
+          if (logbook) {
+            // Sudah logbook, cek unlock quiz jika pertemuan terakhir
+            if (
+              logbook.pertemuan.akhir === true &&
+              m.quiz &&
+              m.quiz.length > 0
+            ) {
               const existingProgresQuiz = progresQuizMap.get(m.quiz[0].id);
               if (!existingProgresQuiz) {
                 await this.createProgresQuiz(userId, m.quiz[0].id);
               }
             }
+
+            // Cari pertemuan selanjutnya
+            const pertemuanSelanjutnya = m.pertemuan.find(
+              (pt) => pt.pertemuan_ke === p.pertemuan_ke + 1,
+            );
 
             if (pertemuanSelanjutnya) {
               // Cek apakah sudah ada progres untuk pertemuan selanjutnya
@@ -334,49 +346,49 @@ export class KelassService {
                 pertemuanSelanjutnya.id,
               );
 
-              // Save progres untuk pertemuan selanjutnya
-              const data = await this.progresPertemuanRepository.save({
-                id: existingNextProgres?.id, // Jika ada ID = update, jika null = insert
-                user: { id: userId },
-                pertemuan: { id: pertemuanSelanjutnya.id },
-                materi: true,
-                tugas: true,
-              });
+              // Jika belum ada progres untuk pertemuan selanjutnya, tambahkan ke queue
+              if (!existingNextProgres) {
+                const newProgres = this.progresPertemuanRepository.create({
+                  user: { id: userId },
+                  pertemuan: { id: pertemuanSelanjutnya.id },
+                  absen: true,
+                });
+                progresToSave.push(newProgres);
 
-              progres.push(data);
+                // Update map agar tidak duplikat saat iterasi berikutnya
+                existingProgresMap.set(pertemuanSelanjutnya.id, newProgres);
+              }
             }
           }
         } else {
           // Belum ada progres untuk pertemuan ini
           if (p.pertemuan_ke === 1) {
-            // Pertemuan pertama - langsung bisa akses materi dan tugas
-            const data = await this.progresPertemuanRepository.create({
+            // Pertemuan pertama - langsung bisa akses
+            const newProgres = this.progresPertemuanRepository.create({
               user: { id: userId },
               pertemuan: { id: p.id },
-              materi: true,
-              tugas: true,
+              absen: true,
             });
-            progres.push(data);
-          } else {
-            // Pertemuan selain pertama - belum bisa akses materi dan tugas
-            const data = await this.progresPertemuanRepository.create({
-              user: { id: userId },
-              pertemuan: { id: p.id },
-              materi: false,
-              tugas: false,
-            });
-            progres.push(data);
+            progresToSave.push(newProgres);
+
+            // Update map agar tidak duplikat
+            existingProgresMap.set(p.id, newProgres);
           }
+          // Pertemuan selain pertama tidak perlu di-generate, akan di-unlock oleh pertemuan sebelumnya
         }
       }
     }
 
-    // Save semua progres yang belum di-save
-    return await this.progresPertemuanRepository.save(progres);
+    // Save semua progres baru sekaligus
+    if (progresToSave.length > 0) {
+      return await this.progresPertemuanRepository.save(progresToSave);
+    }
+
+    return [];
   }
 
   async createProgresMinggu(userId: number, mingguList: Minggu[]) {
-    const progres: ProgresMinggu[] = [];
+    const progresToSave: ProgresMinggu[] = [];
 
     // OPTIMIZATION: Batch fetch semua data sekaligus
     const mingguIds = mingguList.map((m) => m.id);
@@ -438,6 +450,7 @@ export class KelassService {
           (n) => n.nilai >= quiz.nilai_minimal,
         );
 
+        // Update status kelulusan kelas jika minggu terakhir
         if (m.akhir === true) {
           await this.userKelasRepository.update(
             { user: { id: userId }, kelas: { id: m.kelas.id } },
@@ -457,40 +470,43 @@ export class KelassService {
             mingguSelanjutnya.id,
           );
 
-          // Save progres untuk minggu selanjutnya
-          const data = await this.progresMingguRepository.save({
-            id: existingNextProgres?.id, // Jika ada ID = update, jika null = insert
-            user: { id: userId },
-            minggu: { id: mingguSelanjutnya.id },
-            quiz: hasPassingScore, // true jika lulus, false jika tidak
-          });
+          // Jika belum ada progres untuk minggu selanjutnya, tambahkan ke queue
+          if (!existingNextProgres) {
+            const newProgres = this.progresMingguRepository.create({
+              user: { id: userId },
+              minggu: { id: mingguSelanjutnya.id },
+              quiz: hasPassingScore, // true jika lulus, false jika tidak
+            });
+            progresToSave.push(newProgres);
 
-          progres.push(data);
+            // Update map agar tidak duplikat saat iterasi berikutnya
+            existingProgresMap.set(mingguSelanjutnya.id, newProgres);
+          }
         }
       } else {
         // Belum ada progres untuk minggu ini
         if (m.minggu_ke === 1) {
           // Minggu pertama - langsung bisa akses quiz
-          const data = await this.progresMingguRepository.create({
+          const newProgres = this.progresMingguRepository.create({
             user: { id: userId },
             minggu: { id: m.id },
             quiz: true,
           });
-          progres.push(data);
-        } else {
-          // Minggu selain pertama - belum bisa akses quiz
-          const data = await this.progresMingguRepository.create({
-            user: { id: userId },
-            minggu: { id: m.id },
-            quiz: false,
-          });
-          progres.push(data);
+          progresToSave.push(newProgres);
+
+          // Update map agar tidak duplikat
+          existingProgresMap.set(m.id, newProgres);
         }
+        // Minggu selain pertama tidak perlu di-generate, akan di-unlock oleh minggu sebelumnya
       }
     }
 
-    // Save semua progres yang belum di-save
-    return await this.progresMingguRepository.save(progres);
+    // Save semua progres baru sekaligus
+    if (progresToSave.length > 0) {
+      return await this.progresMingguRepository.save(progresToSave);
+    }
+
+    return [];
   }
 
   async createProgresQuiz(userId: number, quizId: number) {
@@ -509,7 +525,7 @@ export class KelassService {
     });
     return await this.progresQuizRepository.save(progres_quiz);
   }
-  
+
   async findMingguClass(kelasId: number) {
     const kelas = await this.findOne(kelasId);
     if (!kelas) {

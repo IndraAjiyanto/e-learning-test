@@ -9,7 +9,7 @@ import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Absen, User, Pertemuan, Kelas, ProgresPertemuan])],
+  imports: [TypeOrmModule.forFeature([ProgresPertemuan, Absen, User, Pertemuan, Kelas, ProgresPertemuan])],
   controllers: [AbsensController],
   providers: [AbsensService],
   exports: [AbsensService],

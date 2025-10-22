@@ -1,50 +1,97 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28">
-  <!-- Header dengan Background Pattern -->
-  <div class="mb-12 relative overflow-hidden rounded-3xl shadow-2xl group">
-    <!-- Background Pattern -->
-    <div class="absolute inset-0 bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800"></div>
-    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px]"></div>
+<div class="max-w-7xl mx-auto px-6 py-10 pt-28">
+  
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
     
-    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 p-8">
-      <div class="lg:col-span-1 flex items-center justify-center">
-        <div class="relative">
-          <div class="absolute -inset-4 bg-white/10 rounded-2xl blur-lg"></div>
-          <img 
-            src="{{kelas.gambar}}" 
-            alt="{{kelas.nama_kelas}}" 
-            class="relative w-64 h-64 object-cover rounded-2xl shadow-2xl border-4 border-white/20 group-hover:scale-105 transition-transform duration-500"
-          />
+    <!-- Left Sidebar - Class Info (Sticky) -->
+    <div class="lg:col-span-4">
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden sticky top-24">
+        <div class="p-5">
+          <!-- Gambar Kelas -->
+          <div class="mb-4">
+            <div class="relative rounded-lg overflow-hidden">
+              <img 
+                src="{{kelas.gambar}}" 
+                alt="{{kelas.nama_kelas}}" 
+                class="w-full h-40 object-cover hover:scale-110 transition-transform duration-500"
+              />
+            </div>
+          </div>
+          
+          <!-- Badges -->
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span class="badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-md border border-slate-200">
+              {{kelas.kategori.nama_kategori}}
+            </span>
+            <span class="badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-md">
+              {{kelas.jenis_kelas.nama_jenis_kelas}}
+            </span>
+          </div>
+          
+          <!-- Content -->
+          <div>
+            <h1 class="text-xl font-bold text-slate-900 mb-2 leading-tight">
+              {{kelas.nama_kelas}}
+            </h1>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              {{kelas.deskripsi}}
+            </p>
+          </div>
         </div>
-      </div>
-      
-      <!-- Content -->
-      <div class="lg:col-span-2 flex flex-col justify-center text-white">
-        <div class="flex flex-wrap gap-2 mb-4">
-          <span class="badge bg-white/20 backdrop-blur-sm text-white px-4 py-2 text-sm font-semibold rounded-full">
-            {{kelas.kategori.nama_kategori}}
-          </span>
-          <span class="badge bg-gradient-to-r from-blue-400 to-blue-500 text-white px-4 py-2 text-sm font-semibold rounded-full">
-            {{kelas.jenis_kelas.nama_jenis_kelas}}
-          </span>
-        </div>
-        
-        <h1 class="text-4xl font-bold mb-4 leading-tight">
-          {{kelas.nama_kelas}}
-        </h1>
-        <p class="text-lg text-white/90 leading-relaxed mb-6">
-          {{kelas.deskripsi}}
-        </p>
-        
       </div>
     </div>
-  </div>
 
-  <div class="mb-10">
- 
+    <!-- Right Content - Weeks List -->
+    <div class="lg:col-span-8">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-slate-900 mb-2">Course Content</h2>
+        <p class="text-slate-600 text-sm">Complete each week to unlock the next</p>
+      </div>
 
-    <div class="space-y-6">
+      <div class="space-y-6">
       {{#each minggu}}
       {{#if progres_minggu.[0].quiz}}
+      
+      {{!-- Check if week is completed (quiz done) --}}
+      {{#if progres_minggu.[0].proses}}
+      {{!-- COMPLETED WEEK DESIGN --}}
+      <div x-data="{ openMinggu: false }" class="border-2 border-green-300 rounded-2xl shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 overflow-hidden hover:shadow-xl transition-all duration-300">
+        
+        <button 
+          @click="openMinggu = !openMinggu" 
+          class="w-full flex justify-between items-center px-8 py-6 bg-gradient-to-r from-green-100/50 to-emerald-100/50 hover:from-green-100 hover:to-emerald-100 transition-all duration-300 text-left group"
+        >
+          <div class="flex items-center space-x-4">
+            <!-- Checkmark Badge -->
+            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white shadow-md">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <h2 class="font-bold text-xl text-green-900 group-hover:text-green-700 transition-colors">
+                  Week {{this.minggu_ke}} : {{this.keterangan}}
+                </h2>
+                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold">Completed</span>
+              </div>
+              <p class="text-sm text-green-700">Great job! Click to review content</p>
+            </div>
+          </div>
+          <svg 
+            :class="{'rotate-180': openMinggu, 'text-green-600': openMinggu}" 
+            class="w-6 h-6 text-green-500 transition-all duration-300" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <div x-show="openMinggu" x-collapse class="px-8 pb-8 bg-white/50">
+      
+      {{else}}
+      {{!-- IN PROGRESS WEEK DESIGN --}}
       <div x-data="{ openMinggu: false }" class="border border-gray-200 rounded-2xl shadow-lg bg-white overflow-hidden hover:shadow-xl transition-all duration-300">
         
         <button 
@@ -72,10 +119,68 @@
         </button>
 
         <div x-show="openMinggu" x-collapse class="px-8 pb-8 bg-gray-50/50">
+      {{/if}}
           
           <div class="space-y-4 mt-6">
             {{#each this.pertemuan}}
-            {{#if this.progres_pertemuan.[0].materi}}
+            {{#if this.progres_pertemuan.[0].absen}}
+            {{#if this.progres_pertemuan.[0].logbook}}
+            
+            {{!-- Check if logbook is approved (completed session) --}}
+            {{!-- COMPLETED SESSION DESIGN --}}
+            <div x-data="{ open: false }" class="border-2 border-green-300 rounded-xl shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 overflow-hidden hover:shadow-xl transition-all duration-300">
+              
+              <button 
+                @click="open = !open" 
+                class="w-full flex justify-between items-center px-6 py-5 bg-gradient-to-r from-green-100/50 to-emerald-100/50 hover:from-green-100 hover:to-emerald-100 transition-all duration-300 text-left group"
+              >
+                <div class="flex items-center space-x-4">
+                  <!-- Checkmark Badge -->
+                  <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <h3 class="font-bold text-lg text-green-900 group-hover:text-green-700 transition-colors">
+                        Session {{pertemuan_ke}} - {{topik}}
+                      </h3>
+                      <span class="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">Completed</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                      <p class="text-sm text-green-700 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {{formatTanggal tanggal}}
+                      </p>
+                      <p class="text-sm text-green-700 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{formatTime waktu_awal}} - {{formatTime waktu_akhir}}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <svg 
+                  :class="{'rotate-180': open, 'text-green-600': open}" 
+                  class="w-5 h-5 text-green-500 transition-all duration-300" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+
+              <div x-show="open" x-collapse class="px-6 pb-6 bg-white/50">
+            
+
+            {{else}}
+
+                        {{!-- IN PROGRESS SESSION DESIGN --}}
             <div x-data="{ open: false }" class="border border-gray-200 rounded-xl shadow-md bg-white overflow-hidden hover:shadow-lg transition-all duration-300">
               
               <button 
@@ -115,6 +220,7 @@
               </button>
 
               <div x-show="open" x-collapse class="px-6 pb-6 bg-gradient-to-b from-white to-gray-50/50">
+            {{/if}}
                 {{#if absen}}
                   <div class="flex items-center mb-6 mt-4">
                     <div class="flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-green-200 text-green-800 rounded-full text-sm font-semibold shadow-sm">
@@ -130,7 +236,7 @@
                       <svg class="w-5 h-5 mr-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                       </svg>
-                      Course Materials
+                      Materials
                     </h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <a href="/materis/pdf/{{id}}" 
@@ -380,6 +486,12 @@
       </div>
       {{/if}}
       {{/each}}
+      </div>
+      <!-- End space-y-6 -->
     </div>
+    <!-- End Right Content - Weeks List (lg:col-span-8) -->
+    
   </div>
+  <!-- End grid container -->
 </div>
+<!-- End max-w-7xl container -->

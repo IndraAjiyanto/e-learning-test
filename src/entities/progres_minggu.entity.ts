@@ -1,24 +1,36 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { User } from "./user.entity";
-import { Minggu } from "./minggu.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { User } from './user.entity';
+import { Minggu } from './minggu.entity';
 
 @Entity()
-export class ProgresMinggu{
-    @PrimaryGeneratedColumn()
-    id: number
+export class ProgresMinggu {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ default: false })
-    quiz: boolean
+  @Column({ default: false })
+  quiz: boolean;
 
-                        @ManyToOne(() => User, (user) => user.progres_minggu, {onDelete : 'CASCADE'})
-                        user: User
+  @Column({ default: false })
+  proses: boolean;
 
-                            @ManyToOne(() => Minggu, (minggu) => minggu.progres_minggu, {onDelete : 'CASCADE'})
-                            minggu: Minggu
+  @ManyToOne(() => User, (user) => user.progres_minggu, { onDelete: 'CASCADE' })
+  user: User;
 
-                                            @CreateDateColumn()
-                                            createdAt: Date;
-                                            
-                                            @UpdateDateColumn()
-                                            updatedAt: Date;
+  @ManyToOne(() => Minggu, (minggu) => minggu.progres_minggu, {
+    onDelete: 'CASCADE',
+  })
+  minggu: Minggu;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

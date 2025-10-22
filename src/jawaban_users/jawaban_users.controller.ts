@@ -32,7 +32,6 @@ async create(@Param('quizId') quizId:number, @Req() req: Request, @Res() res: Re
     req.flash('success', 'berhasil menjawab pertanyaan');
     res.redirect(`/quiz/form/${quizId}`);
   } catch (error) {
-    console.log(error)
     req.flash('error', 'gagal menjawab pertanyaan');
     res.redirect(`/quiz/form/${quizId}`);
   }

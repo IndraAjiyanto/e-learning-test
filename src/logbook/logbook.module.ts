@@ -7,9 +7,10 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, Logbook, User, Pertemuan, LogbookMentor])],
+  imports: [TypeOrmModule.forFeature([ProgresPertemuan, Kelas, Logbook, User, Pertemuan, LogbookMentor])],
   controllers: [LogbookController],
   providers: [LogbookService],
   exports: [LogbookService]

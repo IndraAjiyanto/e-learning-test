@@ -42,10 +42,7 @@ export class KelassController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 1000,
-    maxWidth: 1080,
-    minHeight: 1200,
-    maxHeight: 1350,
+minWidth: 1900, maxWidth: 1920, minHeight: 1000, maxHeight: 1080,
     folder: 'nestjs/images/banner/class',
   })
   async create(

@@ -20,13 +20,13 @@ export class ProgresPertemuan1758164205424 implements MigrationInterface {
                                                 name: 'userId',
                                                 type: 'int'
                                             },
-                                           {
-                                                name: 'tugas',
+                                            {
+                                                name: 'logbook',
                                                 type: 'boolean',
                                                 default: false
                                             },
                                             {
-                                                name: 'materi',
+                                                name: 'absen',
                                                 type: 'boolean',
                                                 default: false
                                             },

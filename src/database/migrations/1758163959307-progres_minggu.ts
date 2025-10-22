@@ -25,6 +25,11 @@ export class ProgresMinggu1758163959307 implements MigrationInterface {
                                         type: 'boolean',
                                         default: false
                                     },
+                                                                     {
+                                        name: 'proses',
+                                        type: 'boolean',
+                                        default: false
+                                    },
                                     {
                                         name: 'createdAt',
                                         type: 'timestamp',
