@@ -1,124 +1,268 @@
-<div class="max-w-5xl mx-auto px-6 py-10 pt-28" 
-     x-data="logbookTable({ logbooks: {{json logbook}} })">
-  
-  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Logbook</h2>
+<div
+  class='max-w-5xl mx-auto px-6 py-10 pt-28'
+  x-data='logbookTable({ logbooks: {{json logbook}} })'
+>
 
-    <div class="flex items-center gap-3">
-      <div class="relative w-full md:w-64">
-        <input 
-          type="text" 
-          placeholder="Search logbook..." 
-          x-model="searchInput"
-          @input="search = searchInput; pageNumber=0"
-          class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
-        />
-        <button 
-          @click="search = searchInput; pageNumber=0"
-          class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900"
+  <div class='mb-6 flex flex-col gap-4'>
+    <div
+      class='flex flex-col md:flex-row md:justify-between md:items-center gap-4'
+    >
+      <h2
+        class='text-3xl font-bold text-gray-900 text-center md:text-left'
+      >Logbook</h2>
+
+      <div
+        class='flex flex-col sm:flex-row items-stretch sm:items-center gap-3'
+      >
+        <!-- Search Input -->
+        <div class='relative w-full sm:w-64'>
+          <input
+            type='text'
+            placeholder='Search logbook...'
+            x-model='searchInput'
+            @input='search = searchInput; pageNumber=0'
+            class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
+          />
+          <button
+            @click='search = searchInput; pageNumber=0'
+            class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900'
+          >
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              class='h-5 w-5'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z'
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Export Excel Button -->
+        <button
+          @click='exportToExcel()'
+          class='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition whitespace-nowrap'
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            class='h-5 w-5'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+            />
           </svg>
+          Export Excel
         </button>
       </div>
+    </div>
 
+    <!-- Filter Section -->
+    <div class='flex flex-col sm:flex-row gap-3 items-stretch sm:items-center'>
+      <label class='text-sm font-medium text-gray-700 whitespace-nowrap'>Filter
+        by:</label>
 
+      <!-- Kelas Filter -->
+      <select
+        x-model='filterKelas'
+        @change='pageNumber=0'
+        class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+      >
+        <option value=''>Semua Kelas</option>
+        <template x-for='kelas in uniqueKelas' :key='kelas'>
+          <option :value='kelas' x-text='kelas'></option>
+        </template>
+      </select>
+
+      <!-- Date Range Filter -->
+      <div class='flex gap-2 items-center'>
+        <input
+          type='date'
+          x-model='filterDateFrom'
+          @change='pageNumber=0'
+          class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          placeholder='Dari tanggal'
+        />
+        <span class='text-gray-500'>-</span>
+        <input
+          type='date'
+          x-model='filterDateTo'
+          @change='pageNumber=0'
+          class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          placeholder='Sampai tanggal'
+        />
+      </div>
+
+      <!-- Reset Filter Button -->
+      <button
+        @click='resetFilters()'
+        class='bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition whitespace-nowrap'
+      >
+        Reset Filter
+      </button>
     </div>
   </div>
 
-  <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-100">
+  <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+    <table class='min-w-full divide-y divide-gray-200'>
+      <thead class='bg-gray-100'>
         <tr>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kegiatan</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Rincian</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kendala</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Dokumentasi</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Created</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >No</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Kegiatan</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Rincian</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Kendala</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Dokumentasi</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Kelas</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Created</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Action</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray-200">
+      <tbody class='divide-y divide-gray-200'>
         {{#each logbook}}
-        <tr class="hover:bg-gray-50 transition"
-            x-show="filteredLogbooks.includes('{{id}}')">
-          <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{kegiatan}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{rincian_kegiatan}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{kendala}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">
-            <img src="{{dokumentasi}}" alt="Dokumentasi" class="w-16 h-16 object-cover rounded border" />
-          </td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{kelas.nama_kelas}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{createdAt}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
-            <a href="/logbook/formEdit/{{id}}" class="text-gray-600 font-medium hover:underline">Edit</a>
-            <form action="/logbook/{{id}}?_method=DELETE" method="post" class="inline">
-              <button type="button" class="text-gray-600 font-medium hover:underline" onclick="confirmDelete(this)">
-                Delete
-              </button>
-            </form>
-          </td>
-        </tr>
+          <tr
+            class='hover:bg-gray-50 transition'
+            x-show="filteredLogbooks.includes('{{id}}')"
+          >
+            <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{kegiatan}}</td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800'
+            >{{rincian_kegiatan}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{kendala}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              <img
+                src='{{dokumentasi}}'
+                alt='Dokumentasi'
+                class='w-16 h-16 object-cover rounded border'
+              />
+            </td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800'
+            >{{kelas.nama_kelas}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{createdAt}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800 space-x-2'>
+              <a
+                href='/logbook/formEdit/{{id}}'
+                class='text-gray-600 font-medium hover:underline'
+              >Edit</a>
+              <form
+                action='/logbook/{{id}}?_method=DELETE'
+                method='post'
+                class='inline'
+              >
+                <button
+                  type='button'
+                  class='text-gray-600 font-medium hover:underline'
+                  onclick='confirmDelete(this)'
+                >
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
         {{/each}}
       </tbody>
     </table>
   </div>
 
-  <div class="w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center" 
-       x-show="pageCount() > 1">
-    <button @click="prevPage" :disabled="pageNumber==0"
-      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
-      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }">Prev</button>
+  <div
+    class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center'
+    x-show='pageCount() > 1'
+  >
+    <button
+      @click='prevPage'
+      :disabled='pageNumber==0'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }"
+    >Prev</button>
 
-    <template x-for="(page,index) in pages()" :key="index">
-      <button @click="viewPage(index)" 
-        class="px-3 py-1 rounded"
+    <template x-for='(page,index) in pages()' :key='index'>
+      <button
+        @click='viewPage(index)'
+        class='px-3 py-1 rounded'
         :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
-        x-text="index+1"></button>
+        x-text='index+1'
+      ></button>
     </template>
 
-    <button @click="nextPage" :disabled="pageNumber >= pageCount()-1"
-      class="px-3 py-1 rounded border border-gray-900 text-gray-900"
-      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
+    <button
+      @click='nextPage'
+      :disabled='pageNumber >= pageCount()-1'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
+    >Next</button>
   </div>
 </div>
 
+<script
+  src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+></script>
+
 <script>
-// DIPERBAIKI: Pindahkan exportExcel ke dalam Alpine component
-function logbookTable({ logbooks }) {
-  return {
-    searchInput: "",
-    search: "",
-    pageNumber: 0,
-    size: 5,
-    logbooks,
-    amount: 0,
-    
-    get filteredLogbooks() {
-      let filtered = this.logbooks.filter(l =>
-        (`${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`).toLowerCase()
-          .includes(this.search.toLowerCase())
-      );
-
-      this.amount = filtered.length;
-
-      const start = this.pageNumber * this.size;
-      const end = start + this.size;
-      return filtered.slice(start, end).map(l => l.id.toString());
-    },
-    
-    pages() { return Array.from({ length: this.pageCount() }); },
-    pageCount() { return Math.ceil(this.amount / this.size); },
-    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
-    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
-    viewPage(index) { this.pageNumber = index; }
-  }
-}
-
-// HAPUS: Fungsi exportExcel yang lama sudah tidak diperlukan
-// function exportExcel() { ... }
+  function logbookTable({ logbooks }) { return { searchInput: "", search: "",
+  pageNumber: 0, size: 5, logbooks, amount: 0, filterKelas: "", filterDateFrom:
+  "", filterDateTo: "", get uniqueKelas() { const kelasSet = new Set();
+  this.logbooks.forEach(l => { if (l.kelas && l.kelas.nama_kelas) {
+  kelasSet.add(l.kelas.nama_kelas); } }); return Array.from(kelasSet).sort(); },
+  get allFilteredLogbooks() { return this.logbooks.filter(l => { // Search
+  filter const searchMatch = (`${l.kegiatan} ${l.rincian_kegiatan}
+  ${l.kendala}`).toLowerCase() .includes(this.search.toLowerCase()); // Kelas
+  filter const kelasMatch = !this.filterKelas || (l.kelas && l.kelas.nama_kelas
+  === this.filterKelas); // Date filter let dateMatch = true; if
+  (this.filterDateFrom || this.filterDateTo) { const logDate = new
+  Date(l.createdAt); if (this.filterDateFrom) { const fromDate = new
+  Date(this.filterDateFrom); dateMatch = dateMatch && logDate >= fromDate; } if
+  (this.filterDateTo) { const toDate = new Date(this.filterDateTo);
+  toDate.setHours(23, 59, 59, 999); // Include the entire day dateMatch =
+  dateMatch && logDate <= toDate; } } return searchMatch && kelasMatch &&
+  dateMatch; }); }, get filteredLogbooks() { const filtered =
+  this.allFilteredLogbooks; this.amount = filtered.length; const start =
+  this.pageNumber * this.size; const end = start + this.size; return
+  filtered.slice(start, end).map(l => l.id.toString()); }, resetFilters() {
+  this.searchInput = ""; this.search = ""; this.filterKelas = "";
+  this.filterDateFrom = ""; this.filterDateTo = ""; this.pageNumber = 0; },
+  exportToExcel() { const dataToExport = this.allFilteredLogbooks.map((log,
+  index) => ({ 'No': index + 1, 'Kegiatan': log.kegiatan || '', 'Rincian':
+  log.rincian_kegiatan || '', 'Kendala': log.kendala || '', 'Kelas': (log.kelas
+  && log.kelas.nama_kelas) || '', 'Tanggal': log.createdAt || '' })); if
+  (dataToExport.length === 0) { alert('Tidak ada data untuk diekspor!'); return;
+  } // Create workbook and worksheet const wb = XLSX.utils.book_new(); const ws
+  = XLSX.utils.json_to_sheet(dataToExport); // Set column widths ws['!cols'] = [
+  { wch: 5 }, // No { wch: 30 }, // Kegiatan { wch: 40 }, // Rincian { wch: 30
+  }, // Kendala { wch: 25 }, // Kelas { wch: 20 } // Tanggal ]; // Add worksheet
+  to workbook XLSX.utils.book_append_sheet(wb, ws, 'Logbook'); // Generate
+  filename with timestamp const date = new Date(); const filename =
+  `Logbook_${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}.xlsx`;
+  // Save file XLSX.writeFile(wb, filename); }, pages() { return Array.from({
+  length: this.pageCount() }); }, pageCount() { return Math.ceil(this.amount /
+  this.size); }, nextPage() { if (this.pageNumber < this.pageCount()-1)
+  this.pageNumber++; }, prevPage() { if (this.pageNumber > 0) this.pageNumber--;
+  }, viewPage(index) { this.pageNumber = index; } } }
 </script>
