@@ -21,8 +21,8 @@ export class Alumni {
     @Column()
     posisi_sekarang: string
 
-    @Column()
-    kelas: string
+              @ManyToOne(() => Kelas, (kelas) => kelas.alumni, {onDelete : 'CASCADE'})
+              kelas: Kelas
 
         @CreateDateColumn()
         createdAt: Date;

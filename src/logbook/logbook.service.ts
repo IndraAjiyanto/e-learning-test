@@ -10,6 +10,9 @@ import { Pertemuan } from 'src/entities/pertemuan.entity';
 import cloudinary from 'src/common/config/multer.config';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { paginateQuery } from 'src/common/utils/pagination.helper';
+import { PaginationParams } from 'src/common/decorators/pagination.decorator';
+import * as ExcelJS from 'exceljs';
 
 @Injectable()
 export class LogbookService {
@@ -61,6 +64,12 @@ export class LogbookService {
     });
   }
 
+  async findAllKelas() {
+    return await this.kelasRepository.find({
+      order: { id: 'DESC' },
+    });
+  }
+
   async findAll() {
     return await this.logBookRepository.find({
       relations: [
@@ -70,6 +79,180 @@ export class LogbookService {
         'pertemuan.minggu.kelas',
       ],
     });
+  }
+
+  async paginateLogbook(params: PaginationParams, userId?: number) {
+    const { kelas, dateFrom, dateTo, search, page, limit } = params;
+
+    console.log('🔍 Service paginateLogbook called:', { params, userId });
+
+    const queryBuilder = this.logBookRepository
+      .createQueryBuilder('logbook')
+      .leftJoinAndSelect('logbook.user', 'user')
+      .leftJoinAndSelect('user.biodata', 'biodata')
+      .leftJoinAndSelect('logbook.pertemuan', 'pertemuan')
+      .leftJoinAndSelect('pertemuan.minggu', 'minggu')
+      .leftJoinAndSelect('minggu.kelas', 'kelas');
+
+    // Filter by user if userId provided (for user role)
+    if (userId) {
+      queryBuilder.andWhere('logbook.userId = :userId', { userId });
+      console.log('👤 Filtering by userId:', userId);
+    }
+
+    // Filter by kelas
+    if (kelas) {
+      queryBuilder.andWhere('kelas.id = :kelas', { kelas });
+      console.log('🎓 Filtering by kelas:', kelas);
+    }
+
+    // Filter by date range
+    if (dateFrom) {
+      queryBuilder.andWhere('logbook.createdAt >= :dateFrom', {
+        dateFrom: new Date(dateFrom as string),
+      });
+      console.log('📅 Filtering dateFrom:', dateFrom);
+    }
+    if (dateTo) {
+      const endDate = new Date(dateTo as string);
+      endDate.setHours(23, 59, 59, 999);
+      queryBuilder.andWhere('logbook.createdAt <= :dateTo', {
+        dateTo: endDate,
+      });
+      console.log('📅 Filtering dateTo:', dateTo);
+    }
+
+    // Search filter
+    if (search) {
+      queryBuilder.andWhere(
+        '(logbook.kegiatan LIKE :search OR logbook.rincian_kegiatan LIKE :search OR logbook.kendala LIKE :search)',
+        { search: `%${search}%` },
+      );
+      console.log('🔎 Search term:', search);
+    }
+
+    queryBuilder.orderBy('logbook.createdAt', 'DESC');
+
+    // Log the SQL query
+    const sql = queryBuilder.getSql();
+    console.log('📝 SQL Query:', sql);
+
+    const result = await paginateQuery(queryBuilder, page, limit);
+    console.log('✅ Query result:', {
+      total: result.total,
+      itemsLength: result.items.length,
+      page: result.page,
+      totalPages: result.totalPages,
+    });
+
+    return result;
+  }
+
+  async findAllFiltered(filters: any, userId?: number) {
+    const queryBuilder = this.logBookRepository
+      .createQueryBuilder('logbook')
+      .leftJoinAndSelect('logbook.user', 'user')
+      .leftJoinAndSelect('user.biodata', 'biodata')
+      .leftJoinAndSelect('logbook.pertemuan', 'pertemuan')
+      .leftJoinAndSelect('pertemuan.minggu', 'minggu')
+      .leftJoinAndSelect('minggu.kelas', 'kelas');
+
+    if (userId) {
+      queryBuilder.andWhere('logbook.userId = :userId', { userId });
+    }
+
+    if (filters.kelas) {
+      queryBuilder.andWhere('kelas.id = :kelas', { kelas: filters.kelas });
+    }
+
+    if (filters.dateFrom) {
+      queryBuilder.andWhere('logbook.createdAt >= :dateFrom', {
+        dateFrom: new Date(filters.dateFrom),
+      });
+    }
+
+    if (filters.dateTo) {
+      const endDate = new Date(filters.dateTo);
+      endDate.setHours(23, 59, 59, 999);
+      queryBuilder.andWhere('logbook.createdAt <= :dateTo', {
+        dateTo: endDate,
+      });
+    }
+
+    if (filters.search) {
+      queryBuilder.andWhere(
+        '(logbook.kegiatan LIKE :search OR logbook.rincian_kegiatan LIKE :search OR logbook.kendala LIKE :search)',
+        { search: `%${filters.search}%` },
+      );
+    }
+
+    queryBuilder.orderBy('logbook.createdAt', 'DESC');
+
+    return await queryBuilder.getMany();
+  }
+
+  async generateExcel(logbooks: Logbook[]) {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Logbook');
+
+    // Define columns
+    worksheet.columns = [
+      { header: 'No', key: 'no', width: 5 },
+      { header: 'Nama', key: 'nama', width: 20 },
+      { header: 'Kegiatan', key: 'kegiatan', width: 30 },
+      { header: 'Rincian Kegiatan', key: 'rincian_kegiatan', width: 40 },
+      { header: 'Kendala', key: 'kendala', width: 30 },
+      { header: 'Kelas', key: 'kelas', width: 25 },
+      { header: 'Pertemuan', key: 'pertemuan', width: 15 },
+      { header: 'Status', key: 'proses', width: 12 },
+      { header: 'Tanggal', key: 'createdAt', width: 20 },
+    ];
+
+    // Style header
+    worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF374151' }, // gray-700
+    };
+    worksheet.getRow(1).alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+    };
+
+    // Add data
+    logbooks.forEach((log, index) => {
+      worksheet.addRow({
+        no: index + 1,
+        nama: log.user?.biodata?.nama_lengkap || log.user?.username || '-',
+        kegiatan: log.kegiatan || '-',
+        rincian_kegiatan: log.rincian_kegiatan || '-',
+        kendala: log.kendala || '-',
+        kelas: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
+        pertemuan: `Pertemuan ${log.pertemuan?.pertemuan_ke || '-'}`,
+        proses: log.proses || '-',
+        createdAt: log.createdAt
+          ? new Date(log.createdAt).toLocaleString('id-ID')
+          : '-',
+      });
+    });
+
+    // Style all cells
+    worksheet.eachRow((row, rowNumber) => {
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+        if (rowNumber > 1) {
+          cell.alignment = { vertical: 'top', wrapText: true };
+        }
+      });
+    });
+
+    return await workbook.xlsx.writeBuffer();
   }
 
   async findLogBookMentor() {

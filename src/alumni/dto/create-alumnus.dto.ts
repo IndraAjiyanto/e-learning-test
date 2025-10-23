@@ -1,4 +1,4 @@
-import { IsInt, IsString } from "class-validator";
+import { IsInt, IsNumber, IsString } from "class-validator";
 
 export class CreateAlumnusDto {
     @IsString()
@@ -16,6 +16,6 @@ export class CreateAlumnusDto {
     @IsString()
     posisi_sekarang: string
 
-    @IsString()
-    kelas: string
+        @IsInt()
+        kelasId: number;
 }

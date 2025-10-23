@@ -1,290 +1,310 @@
-<div class="pt-24 min-h-screen bg-white" x-data="alumniApp()">
-    <div class="container mx-auto px-4 pb-16">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-900 mb-4">Alumni</h1>
-            <p class="text-gray-600 max-w-2xl mx-auto text-lg">
-                Meet our talented alumni who have successfully completed their programs and are making an impact in the industry.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- Sidebar Filters -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
-                    <!-- Active Filters -->
-                    <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-sm font-semibold text-gray-700">Active Filters</h4>
-                            <button @click="resetFilters()" class="text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center">
-                                <i class="fas fa-undo-alt mr-1 text-xs"></i>
-                                Reset
-                            </button>
-                        </div>
-                        <div class="space-y-2">
-                            <template x-if="selectedKelas === ''">
-                                <div class="text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200">
-                                    No active filters
-                                </div>
-                            </template>
-
-                            <template x-if="selectedKelas !== ''">
-                                <span class="block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border border-gray-300">
-                                    <span x-text="selectedKelas"></span>
-                                </span>
-                            </template>
-                        </div>
-                    </div>
-
-                    <!-- Kelas Filter -->
-                    <div class="mb-6">
-                        <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
-                            <i class="fas fa-graduation-cap text-gray-500 mr-2"></i>
-                            Program Class
-                        </h3>
-                        <div class="space-y-2">
-                            <button @click="selectedKelas = ''" :class="selectedKelas === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300">
-                                <span class="text-sm">All Class</span>
-                            </button>
-                            <template x-for="kelas in kelasList" :key="kelas">
-                                <button @click="selectedKelas = kelas" :class="selectedKelas === kelas ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'" class="w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300">
-                                    <span class="text-sm" x-text="kelas"></span>
-                                </button>
-                            </template>
-                        </div>
-                    </div>
-
-                    <!-- Alumni Count -->
-                    <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-gray-900" x-text="filteredAlumni.length"></div>
-                            <div class="text-sm text-gray-600">Alumni</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Alumni Grid -->
-            <div class="lg:col-span-3">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <template x-for="alumni in paginatedAlumni" :key="alumni.id">
-                        <div class="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 group">
-                            <!-- Profile Header -->
-                            <div class="relative bg-gradient-to-br from-gray-50 to-white rounded-t-xl p-6 border-b border-gray-200">
-                                <!-- Profile Image -->
-                                <div class="flex items-center gap-4">
-                                    <div class="relative">
-                                        <img :src="alumni.profile" 
-                                             :alt="alumni.nama" 
-                                             class="w-16 h-16 rounded-full border-4 border-white shadow-md object-cover">
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h3 class="font-bold text-gray-900 text-lg truncate" x-text="alumni.nama"></h3>
-                                        <p class="text-sm text-gray-600 truncate" x-text="alumni.kelas"></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Card Content -->
-                            <div class="p-6 space-y-4">
-                                <!-- Current Position -->
-                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <i class="fas fa-briefcase text-white text-sm"></i>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">
-                                                CURRENT POSITION
-                                            </p>
-                                            <p class="font-bold text-gray-900 text-sm" x-text="alumni.posisi_sekarang"></p>
-                                            <p class="text-xs text-gray-500 mt-1" x-text="alumni.kantor"></p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Testimonial -->
-                                <div class="bg-white rounded-lg p-4 border border-gray-200">
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                                            <i class="fas fa-quote-left text-white text-xs"></i>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm text-gray-700 leading-relaxed" x-text="alumni.pesan"></p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Stats -->
-                                <div class="grid grid-cols-2 gap-3 pt-3 border-t border-gray-200">
-                                    <!-- Program -->
-                                    <div class="text-center">
-                                            <i class="fas fa-user-graduate text-gray-700 p-3 text-xl"></i>
-                                        <p class="text-xs font-semibold text-gray-900" x-text="alumni.kelas"></p>
-                                        <p class="text-xs text-gray-500">Class</p>
-                                    </div>
-                                    
-                                    <!-- Company -->
-                                    <div class="text-center">
-                                            <i class="fas fa-building text-gray-700 p-3 text-xl"></i>
-                                        <p class="text-xs font-semibold text-gray-900 truncate" x-text="alumni.kantor"></p>
-                                        <p class="text-xs text-gray-500">Company</p>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                <!-- No Results Message -->
-                <div x-show="filteredAlumni.length === 0" class="text-center py-12">
-                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-users text-gray-400 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No Alumni Found</h3>
-                    <p class="text-gray-600 mb-6">Try adjusting your filters to find more alumni.</p>
-                    <button @click="resetFilters()" class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all duration-300 border border-gray-700">
-                        Reset Filters
-                    </button>
-                </div>
-
-                <!-- Pagination -->
-                <div class="flex justify-center items-center gap-4 mt-12" x-show="totalPages > 1">
-                    <button 
-                        @click="currentPage = Math.max(1, currentPage - 1)"
-                        :disabled="currentPage === 1"
-                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
-                    >
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    
-                    <template x-for="page in totalPages" :key="page">
-                        <button 
-                            @click="currentPage = page"
-                            class="w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm"
-                            :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
-                            x-text="page"
-                        ></button>
-                    </template>
-                    
-                    <button 
-                        @click="currentPage = Math.min(totalPages, currentPage + 1)"
-                        :disabled="currentPage === totalPages"
-                        class="px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm"
-                    >
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+<div
+  class='pt-24 min-h-screen bg-white'
+  x-data='alumniApp()'
+  x-init='init()'
+  @selected-kelas-changed.window='currentPage = 1; fetchAlumni()'
+  @page-changed.window='fetchAlumni()'
+>
+  <div class='container mx-auto px-4 pb-16'>
+    <div class='text-center mb-12'>
+      <h1 class='text-4xl font-bold text-gray-900 mb-4'>Alumni</h1>
+      <p class='text-gray-600 max-w-2xl mx-auto text-lg'>
+        Meet our talented alumni who have successfully completed their programs
+        and are making an impact in the industry.
+      </p>
     </div>
+
+    <div class='grid grid-cols-1 lg:grid-cols-4 gap-8'>
+      <!-- Sidebar Filters -->
+      <div class='lg:col-span-1'>
+        <div
+          class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6'
+        >
+          <!-- Active Filters -->
+          <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+            <div class='flex items-center justify-between mb-3'>
+              <h4 class='text-sm font-semibold text-gray-700'>Active Filters</h4>
+              <button
+                @click='resetFilters()'
+                class='text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center'
+              >
+                <i class='fas fa-undo-alt mr-1 text-xs'></i>
+                Reset
+              </button>
+            </div>
+            <div class='space-y-2'>
+              <template x-if="selectedKelas === ''">
+                <div
+                  class='text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200'
+                >
+                  No active filters
+                </div>
+              </template>
+
+              <template x-if="selectedKelas !== ''">
+                <span
+                  class='block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border border-gray-300'
+                >
+                  <span x-text='selectedKelas'></span>
+                </span>
+              </template>
+            </div>
+          </div>
+
+          <!-- Kelas Filter -->
+          <div class='mb-6'>
+            <h3
+              class='text-base font-semibold text-gray-900 mb-3 flex items-center'
+            >
+              <i class='fas fa-graduation-cap text-gray-500 mr-2'></i>
+              Program Class
+            </h3>
+            <div class='space-y-2'>
+              <button
+                @click="selectedKelas = ''; currentPage = 1; fetchAlumni()"
+                :class="selectedKelas === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+                class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
+              >
+                <span class='text-sm'>All Class</span>
+              </button>
+              <template x-for='kelas in kelasList' :key='kelas.id'>
+                <button
+                  @click='selectedKelas = kelas.nama_kelas; currentPage = 1; fetchAlumni()'
+                  :class="selectedKelas === kelas.nama_kelas ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+                  class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
+                >
+                  <span class='text-sm' x-text='kelas.nama_kelas'></span>
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <!-- Alumni Count -->
+          <div class='mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+            <div class='text-center'>
+              <div
+                class='text-2xl font-bold text-gray-900'
+                x-text="loading ? '...' : allAlumni.length"
+              ></div>
+              <div class='text-sm text-gray-600'>Alumni</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alumni Grid -->
+      <div class='lg:col-span-3'>
+        <!-- Loading Skeleton -->
+        <div
+          x-show='loading'
+          class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+        >
+          <template x-for='i in itemsPerPage' :key='i'>
+            <div
+              class='bg-white border border-gray-300 rounded-xl shadow-sm p-6 animate-pulse'
+            >
+              <div class='flex items-center gap-4 mb-4'>
+                <div class='w-16 h-16 rounded-full bg-gray-200'></div>
+                <div class='flex-1 space-y-2'>
+                  <div class='h-4 bg-gray-200 rounded w-3/4'></div>
+                  <div class='h-3 bg-gray-200 rounded w-1/2'></div>
+                </div>
+              </div>
+              <div class='space-y-3'>
+                <div class='h-20 bg-gray-200 rounded'></div>
+                <div class='h-16 bg-gray-200 rounded'></div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Alumni Cards -->
+        <div
+          x-show='!loading'
+          class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+        >
+          <template x-for='alumni in allAlumni' :key='alumni.id'>
+            <div
+              class='bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 group'
+            >
+              <!-- Profile Header -->
+              <div
+                class='relative bg-gradient-to-br from-gray-50 to-white rounded-t-xl p-6 border-b border-gray-200'
+              >
+                <!-- Profile Image -->
+                <div class='flex items-center gap-4'>
+                  <div class='relative'>
+                    <img
+                      :src='alumni.profile'
+                      :alt='alumni.nama'
+                      class='w-16 h-16 rounded-full border-4 border-white shadow-md object-cover'
+                    />
+                  </div>
+                  <div class='flex-1 min-w-0'>
+                    <h3
+                      class='font-bold text-gray-900 text-lg truncate'
+                      x-text='alumni.nama'
+                    ></h3>
+                    <p
+                      class='text-sm text-gray-600 truncate'
+                      x-text='alumni.kelas'
+                    ></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Content -->
+              <div class='p-6 space-y-4'>
+                <!-- Current Position -->
+                <div class='bg-gray-50 rounded-lg p-4 border border-gray-200'>
+                  <div class='flex items-start gap-3'>
+                    <div
+                      class='w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0'
+                    >
+                      <i class='fas fa-briefcase text-white text-sm'></i>
+                    </div>
+                    <div class='flex-1 min-w-0'>
+                      <p
+                        class='text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1'
+                      >
+                        CURRENT POSITION
+                      </p>
+                      <p
+                        class='font-bold text-gray-900 text-sm'
+                        x-text='alumni.posisi_sekarang'
+                      ></p>
+                      <p
+                        class='text-xs text-gray-500 mt-1'
+                        x-text='alumni.kantor'
+                      ></p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Testimonial -->
+                <div class='bg-white rounded-lg p-4 border border-gray-200'>
+                  <div class='flex items-start gap-3'>
+                    <div
+                      class='w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1'
+                    >
+                      <i class='fas fa-quote-left text-white text-xs'></i>
+                    </div>
+                    <div class='flex-1 min-w-0'>
+                      <p
+                        class='text-sm text-gray-700 leading-relaxed'
+                        x-text='alumni.pesan'
+                      ></p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stats -->
+                <div
+                  class='grid grid-cols-2 gap-3 pt-3 border-t border-gray-200'
+                >
+                  <!-- Program -->
+                  <div class='text-center'>
+                    <i
+                      class='fas fa-user-graduate text-gray-700 p-3 text-xl'
+                    ></i>
+                    <p
+                      class='text-xs font-semibold text-gray-900'
+                      x-text='alumni.kelas'
+                    ></p>
+                    <p class='text-xs text-gray-500'>Class</p>
+                  </div>
+
+                  <!-- Company -->
+                  <div class='text-center'>
+                    <i class='fas fa-building text-gray-700 p-3 text-xl'></i>
+                    <p
+                      class='text-xs font-semibold text-gray-900 truncate'
+                      x-text='alumni.kantor'
+                    ></p>
+                    <p class='text-xs text-gray-500'>Company</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- No Results Message -->
+        <div
+          x-show='!loading && allAlumni.length === 0'
+          class='text-center py-12'
+        >
+          <div
+            class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'
+          >
+            <i class='fas fa-users text-gray-400 text-2xl'></i>
+          </div>
+          <h3 class='text-xl font-semibold text-gray-900 mb-2'>No Alumni Found</h3>
+          <p class='text-gray-600 mb-6'>Try adjusting your filters to find more
+            alumni.</p>
+          <button
+            @click='resetFilters()'
+            class='bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all duration-300 border border-gray-700'
+          >
+            Reset Filters
+          </button>
+        </div>
+
+        <!-- Pagination -->
+        <div
+          class='flex justify-center items-center gap-4 mt-12'
+          x-show='!loading && totalPages > 1'
+        >
+          <button
+            @click='currentPage = Math.max(1, currentPage - 1); fetchAlumni()'
+            :disabled='currentPage === 1'
+            class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+          >
+            <i class='fas fa-chevron-left'></i>
+          </button>
+
+          <template x-for='page in totalPages' :key='page'>
+            <button
+              @click='currentPage = page; fetchAlumni()'
+              class='w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm'
+              :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+              x-text='page'
+            ></button>
+          </template>
+
+          <button
+            @click='currentPage = Math.min(totalPages, currentPage + 1); fetchAlumni()'
+            :disabled='currentPage === totalPages'
+            class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+          >
+            <i class='fas fa-chevron-right'></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-function alumniApp() {
-    return {
-        allAlumni: [
-            {
-                id: 1,
-                nama: 'John Doe',
-                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-                pesan: 'Program ini sangat membantu karir saya. Saya bisa langsung menerapkan ilmu yang dipelajari di dunia kerja.',
-                kantor: 'Tech Company Indonesia',
-                posisi_sekarang: 'Full Stack Developer',
-                kelas: 'Full Stack Development',
-            },
-            {
-                id: 2,
-                nama: 'Jane Smith',
-                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane',
-                pesan: 'Mentor yang berpengalaman dan kurikulum yang relevan dengan industri membuat saya siap bekerja.',
-                kantor: 'Data Analytics Corp',
-                posisi_sekarang: 'Data Scientist',
-                kelas: 'Data Science',
-            },
-            {
-                id: 3,
-                nama: 'Alex Johnson',
-                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
-                pesan: 'Dari nol sampai bisa membuat aplikasi mobile sendiri. Pengalaman belajar yang sangat berharga.',
-                kantor: 'Mobile First Startup',
-                posisi_sekarang: 'Mobile Developer',
-                kelas: 'Mobile Development',
-            },
-            {
-                id: 4,
-                nama: 'Maria Garcia',
-                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
-                pesan: 'Project-based learning membuat saya memahami konsep AI dengan lebih mendalam dan praktis.',
-                kantor: 'AI Research Lab',
-                posisi_sekarang: 'AI Engineer',
-                kelas: 'AI & Machine Learning',
-            },
-            {
-                id: 5,
-                nama: 'Sarah Williams',
-                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-                pesan: 'Belajar design thinking dan UX research mengubah cara saya mendesain produk digital.',
-                kantor: 'Creative Design Studio',
-                posisi_sekarang: 'UI/UX Designer',
-                kelas: 'UI/UX Design',
-            },
-            {
-                id: 6,
-                nama: 'Michael Chen',
-                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
-                pesan: 'Infrastructure as code dan cloud computing skills yang saya dapat sangat dicari di industri.',
-                kantor: 'Cloud Solutions Inc',
-                posisi_sekarang: 'DevOps Engineer',
-                kelas: 'DevOps',
-            },
-            {
-                id: 7,
-                nama: 'Emily Brown',
-                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
-                pesan: 'Pesan dari saya: Program ini memberikan fondasi yang kuat untuk karir di development.',
-                kantor: 'Wiratek Solusi Asia',
-                posisi_sekarang: 'iOS Developer',
-                kelas: 'Full Stack Development',
-            },
-            {
-                id: 8,
-                nama: 'David Lee',
-                profile: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-                pesan: 'Networking dengan alumni dan mentor membuka banyak peluang karir untuk saya.',
-                kantor: 'Enterprise Solutions',
-                posisi_sekarang: 'Backend Engineer',
-                kelas: 'Backend Development',
-            }
-        ],
-        selectedKelas: '',
-        currentPage: 1,
-        itemsPerPage: 6,
-
-        get kelasList() {
-            return [...new Set(this.allAlumni.map(a => a.kelas))].filter(Boolean);
-        },
-
-        get filteredAlumni() {
-            return this.allAlumni.filter(alumni => {
-                return this.selectedKelas === '' || alumni.kelas === this.selectedKelas;
-            });
-        },
-
-        get totalPages() {
-            return Math.ceil(this.filteredAlumni.length / this.itemsPerPage);
-        },
-
-        get paginatedAlumni() {
-            const start = (this.currentPage - 1) * this.itemsPerPage;
-            const end = start + this.itemsPerPage;
-            return this.filteredAlumni.slice(start, end);
-        },
-
-        resetFilters() {
-            this.selectedKelas = '';
-            this.currentPage = 1;
-        }
-    };
-}
+  function alumniApp() { return { allAlumni: [], kelasList:
+  {{#if kelas}}{{json kelas}}{{else}}[]{{/if}}, selectedKelas: '', currentPage:
+  1, itemsPerPage: 6, totalPages: 1, loading: true, async init() { await
+  this.fetchAlumni(); }, async fetchAlumni() { try { this.loading = true; const
+  params = new URLSearchParams({ page: this.currentPage.toString(), limit:
+  this.itemsPerPage.toString(), }); if (this.selectedKelas) { const
+  selectedKelasObj = this.kelasList.find(k => k.nama_kelas ===
+  this.selectedKelas); if (selectedKelasObj) { params.append('kelas',
+  selectedKelasObj.id); } } const response = await
+  fetch(`/dashboard/alumni/data?${params}`); const data = await response.json();
+  this.allAlumni = data.items.map(alumni => ({ id: alumni.id, nama: alumni.nama,
+  profile: alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed='
+  + alumni.nama, pesan: alumni.pesan, kantor: alumni.alumni || 'Unknown',
+  posisi_sekarang: alumni.posisi_sekarang, kelas: alumni.kelas?.nama_kelas ||
+  'Unknown' })); this.totalPages = data.totalPages; this.loading = false; }
+  catch (error) { console.error('Error fetching alumni:', error); this.loading =
+  false; } }, resetFilters() { this.selectedKelas = ''; this.currentPage = 1;
+  this.fetchAlumni(); } }; } // Setup watchers
+  document.addEventListener('alpine:init', () => { Alpine.data('alumniApp',
+  alumniApp); });
 </script>

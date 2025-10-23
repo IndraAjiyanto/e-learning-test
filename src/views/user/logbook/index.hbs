@@ -1,268 +1,515 @@
 <div
-  class='max-w-5xl mx-auto px-6 py-10 pt-28'
-  x-data='logbookTable({ logbooks: {{json logbook}} })'
+  class='pt-24 min-h-screen bg-white'
+  x-data='initLogbookApp(window.KELAS_DATA || [])'
+  x-init='init()'
 >
+  <div class='container mx-auto px-4 pb-16'>
+    <!-- Header -->
+    <div class='mb-8'>
+      <h1 class='text-4xl font-bold text-gray-900 mb-2'>Logbook</h1>
+      <p class='text-gray-600'>Kelola dan pantau aktivitas logbook Anda</p>
+    </div>
 
-  <div class='mb-6 flex flex-col gap-4'>
-    <div
-      class='flex flex-col md:flex-row md:justify-between md:items-center gap-4'
-    >
-      <h2
-        class='text-3xl font-bold text-gray-900 text-center md:text-left'
-      >Logbook</h2>
+    <!-- Filter & Actions -->
+    <div class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6'>
+      <div class='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+        <!-- Left: Search & Filters -->
+        <div class='space-y-4'>
+          <!-- Search -->
+          <div class='relative'>
+            <input
+              type='text'
+              placeholder='Cari kegiatan, rincian, atau kendala...'
+              x-model='searchInput'
+              @input='debounceSearch()'
+              class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900'
+            />
+            <i
+              class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+            ></i>
+          </div>
 
-      <div
-        class='flex flex-col sm:flex-row items-stretch sm:items-center gap-3'
-      >
-        <!-- Search Input -->
-        <div class='relative w-full sm:w-64'>
-          <input
-            type='text'
-            placeholder='Search logbook...'
-            x-model='searchInput'
-            @input='search = searchInput; pageNumber=0'
-            class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
-          />
-          <button
-            @click='search = searchInput; pageNumber=0'
-            class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900'
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              class='h-5 w-5'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
+          <!-- Filters Row -->
+          <div class='flex flex-wrap gap-3'>
+            <!-- Kelas Filter -->
+            <select
+              x-model='filterKelas'
+              @change='currentPage = 1; fetchLogbooks()'
+              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
             >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z'
-              />
-            </svg>
-          </button>
+              <option value=''>Semua Kelas</option>
+              <template x-for='kelas in kelasList' :key='kelas.id'>
+                <option :value='kelas.id' x-text='kelas.nama_kelas'></option>
+              </template>
+            </select>
+
+            <!-- Date From -->
+            <input
+              type='date'
+              x-model='filterDateFrom'
+              @change='currentPage = 1; fetchLogbooks()'
+              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+            />
+
+            <!-- Date To -->
+            <input
+              type='date'
+              x-model='filterDateTo'
+              @change='currentPage = 1; fetchLogbooks()'
+              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+            />
+
+            <!-- Reset Button -->
+            <button
+              @click='resetFilters()'
+              class='bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition flex items-center gap-2'
+            >
+              <i class='fas fa-undo-alt text-sm'></i>
+              Reset
+            </button>
+          </div>
         </div>
 
-        <!-- Export Excel Button -->
-        <button
-          @click='exportToExcel()'
-          class='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition whitespace-nowrap'
-        >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            class='h-5 w-5'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
+        <!-- Right: Export Button -->
+        <div class='flex items-end justify-end'>
+          <button
+            @click='exportToExcel()'
+            class='bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 transition'
           >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-            />
-          </svg>
-          Export Excel
+            <i class='fas fa-file-excel text-lg'></i>
+            Export Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Filters Info -->
+      <div
+        x-show='hasActiveFilters()'
+        class='mt-4 pt-4 border-t border-gray-200'
+      >
+        <div class='flex items-center gap-2 text-sm text-gray-600'>
+          <i class='fas fa-filter'></i>
+          <span>Filter aktif:</span>
+          <span
+            x-show='filterKelas'
+            class='px-2 py-1 bg-gray-100 rounded text-gray-700'
+            x-text='getKelasName()'
+          ></span>
+          <span
+            x-show='filterDateFrom'
+            class='px-2 py-1 bg-gray-100 rounded text-gray-700'
+            x-text="'Dari: ' + filterDateFrom"
+          ></span>
+          <span
+            x-show='filterDateTo'
+            class='px-2 py-1 bg-gray-100 rounded text-gray-700'
+            x-text="'Sampai: ' + filterDateTo"
+          ></span>
+          <span
+            x-show='search'
+            class='px-2 py-1 bg-gray-100 rounded text-gray-700'
+            x-text="'Search: ' + search"
+          ></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div
+      x-show='loading'
+      class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'
+    >
+      <div class='overflow-x-auto'>
+        <table class='min-w-full divide-y divide-gray-200'>
+          <thead class='bg-gray-100'>
+            <tr>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >No</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Kegiatan</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Rincian</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Kendala</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Dokumentasi</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Kelas</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Status</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Tanggal</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Action</th>
+            </tr>
+          </thead>
+          <tbody class='divide-y divide-gray-200'>
+            <template x-for='i in itemsPerPage' :key='i'>
+              <tr class='animate-pulse'>
+                <td class='px-6 py-4'><div
+                    class='h-4 bg-gray-200 rounded w-8'
+                  ></div></td>
+                <td class='px-6 py-4'><div
+                    class='h-4 bg-gray-200 rounded w-32'
+                  ></div></td>
+                <td class='px-6 py-4'><div
+                    class='h-4 bg-gray-200 rounded w-48'
+                  ></div></td>
+                <td class='px-6 py-4'><div
+                    class='h-4 bg-gray-200 rounded w-32'
+                  ></div></td>
+                <td class='px-6 py-4'><div
+                    class='w-16 h-16 bg-gray-200 rounded'
+                  ></div></td>
+                <td class='px-6 py-4'><div
+                    class='h-4 bg-gray-200 rounded w-24'
+                  ></div></td>
+                <td class='px-6 py-4'><div
+                    class='h-6 bg-gray-200 rounded w-20'
+                  ></div></td>
+                <td class='px-6 py-4'><div
+                    class='h-4 bg-gray-200 rounded w-28'
+                  ></div></td>
+                <td class='px-6 py-4'><div
+                    class='h-4 bg-gray-200 rounded w-16'
+                  ></div></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div
+      x-show='!loading'
+      class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'
+    >
+
+      <div class='overflow-x-auto'>
+        <table class='min-w-full divide-y divide-gray-200'>
+          <thead class='bg-gray-100'>
+            <tr>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >No</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Kegiatan</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Rincian</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Kendala</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Dokumentasi</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Kelas</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Status</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Tanggal</th>
+              <th
+                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+              >Action</th>
+            </tr>
+          </thead>
+          <tbody class='divide-y divide-gray-200'>
+            <template x-for='(logbook, index) in allLogbooks' :key='logbook.id'>
+              <tr class='hover:bg-gray-50 transition'>
+                <td
+                  class='px-6 py-4 text-sm text-gray-800'
+                  x-text='((currentPage - 1) * itemsPerPage) + index + 1'
+                ></td>
+                <td
+                  class='px-6 py-4 text-sm text-gray-800'
+                  x-text='logbook.kegiatan'
+                ></td>
+                <td class='px-6 py-4 text-sm text-gray-800'>
+                  <div
+                    class='max-w-xs truncate'
+                    :title='logbook.rincian_kegiatan'
+                    x-text='logbook.rincian_kegiatan'
+                  ></div>
+                </td>
+                <td class='px-6 py-4 text-sm text-gray-800'>
+                  <div
+                    class='max-w-xs truncate'
+                    :title='logbook.kendala'
+                    x-text='logbook.kendala'
+                  ></div>
+                </td>
+                <td class='px-6 py-4'>
+                  <img
+                    :src='logbook.dokumentasi'
+                    alt='Dokumentasi'
+                    class='w-16 h-16 object-cover rounded border border-gray-300 cursor-pointer hover:opacity-75 transition'
+                    @click="window.open(logbook.dokumentasi, '_blank')"
+                  />
+                </td>
+                <td
+                  class='px-6 py-4 text-sm text-gray-800'
+                  x-text='logbook.kelas'
+                ></td>
+                <td class='px-6 py-4'>
+                  <span
+                    class='px-3 py-1 rounded-full text-xs font-semibold'
+                    :class="{
+                                            'bg-green-100 text-green-700': logbook.proses === 'acc',
+                                            'bg-yellow-100 text-yellow-700': logbook.proses === 'proces',
+                                            'bg-red-100 text-red-700': logbook.proses === 'rejected'
+                                        }"
+                    x-text="logbook.proses === 'acc' ? 'Approved' : logbook.proses === 'proces' ? 'Process' : 'Rejected'"
+                  ></span>
+                </td>
+                <td
+                  class='px-6 py-4 text-sm text-gray-800'
+                  x-text='formatDate(logbook.createdAt)'
+                ></td>
+                <td class='px-6 py-4 text-sm space-x-2'>
+                  <a
+                    :href='`/logbook/formEdit/${logbook.id}`'
+                    class='text-gray-600 hover:text-gray-900 font-medium hover:underline'
+                  >
+                    <i class='fas fa-edit'></i>
+                    Edit
+                  </a>
+                  <form
+                    :action='`/logbook/${logbook.id}?_method=DELETE`'
+                    method='post'
+                    class='inline'
+                  >
+                    <button
+                      type='button'
+                      class='text-red-600 hover:text-red-900 font-medium hover:underline'
+                      @click='confirmDelete($event)'
+                    >
+                      <i class='fas fa-trash'></i>
+                      Delete
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- No Data -->
+      <div
+        x-show='!loading && allLogbooks.length === 0'
+        class='text-center py-12'
+      >
+        <div
+          class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'
+        >
+          <i class='fas fa-clipboard-list text-gray-400 text-3xl'></i>
+        </div>
+        <h3 class='text-xl font-semibold text-gray-900 mb-2'>Tidak Ada Logbook</h3>
+        <p class='text-gray-600 mb-6'>Belum ada data logbook yang sesuai dengan
+          filter.</p>
+        <button
+          @click='resetFilters()'
+          class='bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition'
+        >
+          Reset Filter
         </button>
       </div>
     </div>
 
-    <!-- Filter Section -->
-    <div class='flex flex-col sm:flex-row gap-3 items-stretch sm:items-center'>
-      <label class='text-sm font-medium text-gray-700 whitespace-nowrap'>Filter
-        by:</label>
-
-      <!-- Kelas Filter -->
-      <select
-        x-model='filterKelas'
-        @change='pageNumber=0'
-        class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
-      >
-        <option value=''>Semua Kelas</option>
-        <template x-for='kelas in uniqueKelas' :key='kelas'>
-          <option :value='kelas' x-text='kelas'></option>
-        </template>
-      </select>
-
-      <!-- Date Range Filter -->
-      <div class='flex gap-2 items-center'>
-        <input
-          type='date'
-          x-model='filterDateFrom'
-          @change='pageNumber=0'
-          class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
-          placeholder='Dari tanggal'
-        />
-        <span class='text-gray-500'>-</span>
-        <input
-          type='date'
-          x-model='filterDateTo'
-          @change='pageNumber=0'
-          class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
-          placeholder='Sampai tanggal'
-        />
-      </div>
-
-      <!-- Reset Filter Button -->
+    <!-- Pagination -->
+    <div
+      class='flex justify-center items-center gap-4 mt-8'
+      x-show='!loading && totalPages > 1'
+    >
       <button
-        @click='resetFilters()'
-        class='bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition whitespace-nowrap'
+        @click='currentPage = Math.max(1, currentPage - 1); fetchLogbooks()'
+        :disabled='currentPage === 1'
+        class='px-5 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm'
       >
-        Reset Filter
+        <i class='fas fa-chevron-left'></i>
+      </button>
+
+      <template x-for='page in totalPages' :key='page'>
+        <button
+          @click='currentPage = page; fetchLogbooks()'
+          class='w-12 h-12 rounded-xl text-lg font-semibold transition border shadow-sm'
+          :class="currentPage === page ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+          x-text='page'
+        ></button>
+      </template>
+
+      <button
+        @click='currentPage = Math.min(totalPages, currentPage + 1); fetchLogbooks()'
+        :disabled='currentPage === totalPages'
+        class='px-5 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm'
+      >
+        <i class='fas fa-chevron-right'></i>
       </button>
     </div>
   </div>
-
-  <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
-    <table class='min-w-full divide-y divide-gray-200'>
-      <thead class='bg-gray-100'>
-        <tr>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >No</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Kegiatan</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Rincian</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Kendala</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Dokumentasi</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Kelas</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Created</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Action</th>
-        </tr>
-      </thead>
-      <tbody class='divide-y divide-gray-200'>
-        {{#each logbook}}
-          <tr
-            class='hover:bg-gray-50 transition'
-            x-show="filteredLogbooks.includes('{{id}}')"
-          >
-            <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kegiatan}}</td>
-            <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{rincian_kegiatan}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kendala}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>
-              <img
-                src='{{dokumentasi}}'
-                alt='Dokumentasi'
-                class='w-16 h-16 object-cover rounded border'
-              />
-            </td>
-            <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{kelas.nama_kelas}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{createdAt}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800 space-x-2'>
-              <a
-                href='/logbook/formEdit/{{id}}'
-                class='text-gray-600 font-medium hover:underline'
-              >Edit</a>
-              <form
-                action='/logbook/{{id}}?_method=DELETE'
-                method='post'
-                class='inline'
-              >
-                <button
-                  type='button'
-                  class='text-gray-600 font-medium hover:underline'
-                  onclick='confirmDelete(this)'
-                >
-                  Delete
-                </button>
-              </form>
-            </td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div>
-
-  <div
-    class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center'
-    x-show='pageCount() > 1'
-  >
-    <button
-      @click='prevPage'
-      :disabled='pageNumber==0'
-      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
-      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }"
-    >Prev</button>
-
-    <template x-for='(page,index) in pages()' :key='index'>
-      <button
-        @click='viewPage(index)'
-        class='px-3 py-1 rounded'
-        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
-        x-text='index+1'
-      ></button>
-    </template>
-
-    <button
-      @click='nextPage'
-      :disabled='pageNumber >= pageCount()-1'
-      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
-      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
-    >Next</button>
-  </div>
 </div>
 
-<script
-  src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
-></script>
+<!-- Load external logbook script -->
+<script>// Logbook App Component for Alpine.js
+window.initLogbookApp = function (kelasData) {
+  console.log('🔧 Logbook App factory called', {
+    kelasCount: kelasData.length,
+  });
+
+  return {
+    allLogbooks: [],
+    kelasList: kelasData,
+    searchInput: '',
+    search: '',
+    searchTimeout: null,
+    filterKelas: '',
+    filterDateFrom: '',
+    filterDateTo: '',
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalPages: 1,
+    loading: true,
+
+    async init() {
+      console.log('🚀 Component init() called');
+      await this.fetchLogbooks();
+    },
+
+    debounceSearch() {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(() => {
+        this.search = this.searchInput;
+        this.currentPage = 1;
+        this.fetchLogbooks();
+      }, 500);
+    },
+
+    async fetchLogbooks() {
+      try {
+        console.log('📡 fetchLogbooks() started');
+        this.loading = true;
+        const params = new URLSearchParams({
+          page: this.currentPage.toString(),
+          limit: this.itemsPerPage.toString(),
+        });
+
+        if (this.filterKelas) params.append('kelas', this.filterKelas);
+        if (this.filterDateFrom) params.append('dateFrom', this.filterDateFrom);
+        if (this.filterDateTo) params.append('dateTo', this.filterDateTo);
+        if (this.search) params.append('search', this.search);
+
+        const url = `/logbook/data?${params}`;
+        console.log('🚀 Fetching:', url);
+
+        const response = await fetch(url);
+        console.log('📡 Response:', response.status, response.ok);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('📦 Data:', data);
+
+        this.allLogbooks = data.items.map((log) => ({
+          id: log.id,
+          kegiatan: log.kegiatan || '-',
+          rincian_kegiatan: log.rincian_kegiatan || '-',
+          kendala: log.kendala || '-',
+          dokumentasi: log.dokumentasi || '',
+          kelas: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
+          proses: log.proses || 'proces',
+          createdAt: log.createdAt,
+        }));
+
+        this.totalPages = data.totalPages;
+        this.loading = false;
+
+        console.log('✅ Done! Items:', this.allLogbooks.length);
+      } catch (error) {
+        console.error('❌ Error:', error);
+        this.loading = false;
+      }
+    },
+
+    resetFilters() {
+      this.searchInput = '';
+      this.search = '';
+      this.filterKelas = '';
+      this.filterDateFrom = '';
+      this.filterDateTo = '';
+      this.currentPage = 1;
+      this.fetchLogbooks();
+    },
+
+    hasActiveFilters() {
+      return (
+        this.filterKelas ||
+        this.filterDateFrom ||
+        this.filterDateTo ||
+        this.search
+      );
+    },
+
+    getKelasName() {
+      const kelas = this.kelasList.find((k) => k.id == this.filterKelas);
+      return kelas ? kelas.nama_kelas : '';
+    },
+
+    formatDate(date) {
+      if (!date) return '-';
+      const d = new Date(date);
+      return d.toLocaleDateString('id-ID', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    },
+
+    async exportToExcel() {
+      try {
+        const params = new URLSearchParams();
+        if (this.filterKelas) params.append('kelas', this.filterKelas);
+        if (this.filterDateFrom) params.append('dateFrom', this.filterDateFrom);
+        if (this.filterDateTo) params.append('dateTo', this.filterDateTo);
+        if (this.search) params.append('search', this.search);
+
+        window.location.href = `/logbook/export?${params}`;
+      } catch (error) {
+        console.error('Error exporting:', error);
+        alert('Gagal export data');
+      }
+    },
+
+    confirmDelete(event) {
+      if (confirm('Apakah Anda yakin ingin menghapus logbook ini?')) {
+        event.target.closest('form').submit();
+      }
+    },
+  };
+};
+
+</script>
 
 <script>
-  function logbookTable({ logbooks }) { return { searchInput: "", search: "",
-  pageNumber: 0, size: 5, logbooks, amount: 0, filterKelas: "", filterDateFrom:
-  "", filterDateTo: "", get uniqueKelas() { const kelasSet = new Set();
-  this.logbooks.forEach(l => { if (l.kelas && l.kelas.nama_kelas) {
-  kelasSet.add(l.kelas.nama_kelas); } }); return Array.from(kelasSet).sort(); },
-  get allFilteredLogbooks() { return this.logbooks.filter(l => { // Search
-  filter const searchMatch = (`${l.kegiatan} ${l.rincian_kegiatan}
-  ${l.kendala}`).toLowerCase() .includes(this.search.toLowerCase()); // Kelas
-  filter const kelasMatch = !this.filterKelas || (l.kelas && l.kelas.nama_kelas
-  === this.filterKelas); // Date filter let dateMatch = true; if
-  (this.filterDateFrom || this.filterDateTo) { const logDate = new
-  Date(l.createdAt); if (this.filterDateFrom) { const fromDate = new
-  Date(this.filterDateFrom); dateMatch = dateMatch && logDate >= fromDate; } if
-  (this.filterDateTo) { const toDate = new Date(this.filterDateTo);
-  toDate.setHours(23, 59, 59, 999); // Include the entire day dateMatch =
-  dateMatch && logDate <= toDate; } } return searchMatch && kelasMatch &&
-  dateMatch; }); }, get filteredLogbooks() { const filtered =
-  this.allFilteredLogbooks; this.amount = filtered.length; const start =
-  this.pageNumber * this.size; const end = start + this.size; return
-  filtered.slice(start, end).map(l => l.id.toString()); }, resetFilters() {
-  this.searchInput = ""; this.search = ""; this.filterKelas = "";
-  this.filterDateFrom = ""; this.filterDateTo = ""; this.pageNumber = 0; },
-  exportToExcel() { const dataToExport = this.allFilteredLogbooks.map((log,
-  index) => ({ 'No': index + 1, 'Kegiatan': log.kegiatan || '', 'Rincian':
-  log.rincian_kegiatan || '', 'Kendala': log.kendala || '', 'Kelas': (log.kelas
-  && log.kelas.nama_kelas) || '', 'Tanggal': log.createdAt || '' })); if
-  (dataToExport.length === 0) { alert('Tidak ada data untuk diekspor!'); return;
-  } // Create workbook and worksheet const wb = XLSX.utils.book_new(); const ws
-  = XLSX.utils.json_to_sheet(dataToExport); // Set column widths ws['!cols'] = [
-  { wch: 5 }, // No { wch: 30 }, // Kegiatan { wch: 40 }, // Rincian { wch: 30
-  }, // Kendala { wch: 25 }, // Kelas { wch: 20 } // Tanggal ]; // Add worksheet
-  to workbook XLSX.utils.book_append_sheet(wb, ws, 'Logbook'); // Generate
-  filename with timestamp const date = new Date(); const filename =
-  `Logbook_${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}.xlsx`;
-  // Save file XLSX.writeFile(wb, filename); }, pages() { return Array.from({
-  length: this.pageCount() }); }, pageCount() { return Math.ceil(this.amount /
-  this.size); }, nextPage() { if (this.pageNumber < this.pageCount()-1)
-  this.pageNumber++; }, prevPage() { if (this.pageNumber > 0) this.pageNumber--;
-  }, viewPage(index) { this.pageNumber = index; } } }
+  // Set kelas data in global scope for Alpine to access window.KELAS_DATA =
+  {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}}; console.log('✅ Kelas data
+  loaded:', window.KELAS_DATA ? window.KELAS_DATA.length : 0, 'items');
 </script>

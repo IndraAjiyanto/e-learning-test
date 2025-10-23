@@ -9,6 +9,7 @@ import { JenisKelas } from "./jenis_kelas.entity";
 import { UserKelas } from "./user_kelas.entity";
 import { PertanyaanKelas } from "./pertanyaan_kelas.entity";
 import { Mentor } from "./mentor.entity";
+import { Alumni } from "./alumni.entity";
 
 export type Metode = 'online' | 'offline';
 export type Proses = 'acc' | 'proces' | 'rejected';
@@ -71,6 +72,9 @@ launch: boolean;
 
     @OneToMany(() => Minggu, (minggu) => minggu.kelas, {cascade: true, onDelete : 'CASCADE'})
     minggu: Minggu[]
+
+    @OneToMany(() => Alumni, (alumni) => alumni.kelas, {cascade: true, onDelete : 'CASCADE'})
+    alumni: Alumni[]
 
     @OneToMany(() => Portfolio, (portfolio) => portfolio.kelas, { cascade: true , onDelete : 'CASCADE'})
       portfolio: Portfolio[];
