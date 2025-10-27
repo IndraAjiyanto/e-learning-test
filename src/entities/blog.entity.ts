@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { KategoriBlog } from "./kategori_blog.entity";
 
 @Entity()
 export class Blog {
@@ -19,4 +20,7 @@ export class Blog {
                 
             @UpdateDateColumn()
             updatedAt: Date;
+
+              @ManyToOne(() => KategoriBlog, (kategori_blog) => kategori_blog.blog, {onDelete : 'CASCADE'})
+              kategori_blog: KategoriBlog
 }

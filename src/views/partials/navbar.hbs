@@ -86,8 +86,17 @@
           :class="active === '/dashboard' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:mt-0'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:mt-0'
         >Home</a>
+
+        <a
+          href='/dashboard/about'
+          @click="setActive('/about')"
+          :class="active === '/about' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
+          class='block px-2 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+        >About</a>
 
         <!-- Program Dropdown - Mobile & Desktop -->
         <div class='relative md:ml-4'>
@@ -101,7 +110,7 @@
         ? 'bg-white text-gray-900'
         : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'
       ]"
-            class='flex items-center justify-between w-full px-4 py-2.5 text-sm font-semibold text-left rounded-lg transition-colors md:w-auto'
+            class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold text-left rounded-lg transition-colors md:w-auto'
           >
             <span>Program</span>
             <svg
@@ -129,7 +138,7 @@
             <a
               href='/dashboard/kategori/Bootcamp'
               @click="setActive('/dashboard/kategori/Bootcamp')"
-              class='flex items-center gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
                 <svg
@@ -144,13 +153,16 @@
                   ></path>
                 </svg>
               </div>
-              <span class='font-semibold'>Bootcamp</span>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>Bootcamp</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Intensive 3-6 month training</p>
+              </div>
             </a>
 
             <a
               href='/dashboard/kategori/Course'
               @click="setActive('/dashboard/kategori/Course')"
-              class='flex items-center gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
                 <svg
@@ -165,13 +177,16 @@
                   ></path>
                 </svg>
               </div>
-              <span class='font-semibold'>Course</span>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>Course</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Online course with complete materials</p>
+              </div>
             </a>
 
             <a
               href='/dashboard/kategori/Short Class'
               @click="setActive('/dashboard/kategori/Short Class')"
-              class='flex items-center gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
                 <svg
@@ -187,7 +202,10 @@
                   <path d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'></path>
                 </svg>
               </div>
-              <span class='font-semibold'>Short Class</span>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>Short Class</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Short class for specific skills</p>
+              </div>
             </a>
           </div>
 
@@ -206,9 +224,9 @@
                 <a
                   href='/dashboard/kategori/Bootcamp'
                   @click="setActive('/dashboard/kategori/Bootcamp')"
-                  class='flex items-start rounded-lg bg-transparent p-2 hover:bg-gray-200 transition-colors'
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
                 >
-                  <div class='bg-gray-900 text-white rounded-lg p-3'>
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
                     <svg
                       fill='none'
                       stroke='currentColor'
@@ -221,8 +239,9 @@
                       ></path>
                     </svg>
                   </div>
-                  <div class='ml-3'>
-                    <p class='font-semibold text-gray-900'>Bootcamp</p>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>Bootcamp</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Intensive 3-6 month training for career preparation</p>
                   </div>
                 </a>
 
@@ -230,9 +249,9 @@
                 <a
                   href='/dashboard/kategori/Course'
                   @click="setActive('/dashboard/kategori/Course')"
-                  class='flex items-start rounded-lg bg-transparent p-2 hover:bg-gray-200 transition-colors'
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
                 >
-                  <div class='bg-gray-900 text-white rounded-lg p-3'>
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
                     <svg
                       fill='none'
                       stroke='currentColor'
@@ -245,8 +264,9 @@
                       ></path>
                     </svg>
                   </div>
-                  <div class='ml-3'>
-                    <p class='font-semibold text-gray-900'>Course</p>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>Course</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Online course with complete and structured materials</p>
                   </div>
                 </a>
 
@@ -254,9 +274,9 @@
                 <a
                   href='/dashboard/kategori/Short Class'
                   @click="setActive('/dashboard/kategori/Short Class')"
-                  class='flex items-start rounded-lg bg-transparent p-2 hover:bg-gray-200 transition-colors'
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
                 >
-                  <div class='bg-gray-900 text-white rounded-lg p-3'>
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
                     <svg
                       fill='none'
                       stroke='currentColor'
@@ -272,8 +292,9 @@
                       ></path>
                     </svg>
                   </div>
-                  <div class='ml-3'>
-                    <p class='font-semibold text-gray-900'>Short Class</p>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>Short Class</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Short class for specific and practical skills</p>
                   </div>
                 </a>
               </div>
@@ -287,7 +308,7 @@
           :class="active === '/portofolio' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Portofolio</a>
 
         <a
@@ -296,23 +317,14 @@
           :class="active === '/alumni' 
             ? 'bg-white text-gray-900' 
             : 'bg-gray-900 text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Alumni</a>
-
-        <a
-          href='/dashboard/about'
-          @click="setActive('/about')"
-          :class="active === '/about' 
-            ? 'bg-white text-gray-900' 
-            : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
-        >About</a>
 
         <!-- User Dropdown -->
         <div class='relative'>
           <button
             @click='userOpen = !userOpen'
-            class='flex items-center justify-between w-full px-4 py-2.5 text-sm font-semibold rounded-lg hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900 transition-colors md:w-auto md:ml-4'
+            class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold rounded-lg hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900 transition-colors md:w-auto md:ml-4'
           >
             <div class='flex items-center gap-3'>
               <span>{{user.username}}</span>
@@ -351,7 +363,7 @@
           >
             <a
               href='/users/profile'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -368,7 +380,7 @@
             </a>
             <a
               href='/kelass/kelas_saya/{{user.id}}'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -385,7 +397,7 @@
             </a>
             <a
               href='/logbook'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -402,7 +414,7 @@
             </a>
             <a
               href='/portfolios/myportfolio/{{user.id}}'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -419,7 +431,7 @@
             </a>
             <a
               href='/pembayarans/riwayat/{{user.id}}'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -436,7 +448,7 @@
             </a>
             <a
               href='/logout'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-400 rounded-lg bg-gray-800 hover:bg-red-900/20 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-400 rounded-lg bg-gray-800 hover:bg-red-900/20 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -577,7 +589,7 @@
           :class="active === '/kelass' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Class</a>
 
         <a
@@ -586,7 +598,7 @@
           :class="active === '/logbook' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Log Book</a>
 
         <a
@@ -595,13 +607,13 @@
           :class="active === '/portofolios' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Log Book</a>
 
         <div class='relative'>
           <button
             @click='userOpen = !userOpen'
-            class='flex items-center justify-between w-full px-4 py-2.5 text-sm font-semibold rounded-lg hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900 transition-colors md:w-auto md:ml-4'
+            class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold rounded-lg hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900 transition-colors md:w-auto md:ml-4'
           >
             <div class='flex items-center gap-3'>
               <span>{{user.username}}</span>
@@ -640,7 +652,7 @@
           >
             <a
               href='/users/profile'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -657,7 +669,7 @@
             </a>
             <a
               href='/logout'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-400 rounded-lg bg-gray-800 hover:bg-red-900/20 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-400 rounded-lg bg-gray-800 hover:bg-red-900/20 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -730,7 +742,7 @@
           :class="active === '/users' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Users</a>
 
         <a
@@ -739,7 +751,7 @@
           :class="active === '/kelass' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Class</a>
 
         <a
@@ -748,7 +760,7 @@
           :class="active === '/jenis-kelas' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Class Type</a>
 
         <a
@@ -757,7 +769,7 @@
           :class="active === '/pembayarans' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Payment</a>
 
         <a
@@ -766,7 +778,7 @@
           :class="active === '/pertanyaan-umum' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >FAQ</a>
 
         <a
@@ -775,7 +787,7 @@
           :class="active === '/alumni' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Alumni</a>
 
         <a
@@ -784,14 +796,14 @@
           :class="active === '/logbook' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Log Book</a>
 
         <!-- User Dropdown -->
         <div class='relative'>
           <button
             @click='userOpen = !userOpen'
-            class='flex items-center justify-between w-full px-4 py-2.5 text-sm font-semibold rounded-lg hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900 transition-colors md:w-auto md:ml-4'
+            class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold rounded-lg hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900 transition-colors md:w-auto md:ml-4'
           >
             <div class='flex items-center gap-3'>
               <span>{{user.username}}</span>
@@ -830,7 +842,7 @@
           >
             <a
               href='/users/profile'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -847,7 +859,7 @@
             </a>
             <a
               href='/logout'
-              class='flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-400 rounded-lg bg-gray-800 hover:bg-red-900/20 transition-colors'
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-400 rounded-lg bg-gray-800 hover:bg-red-900/20 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -920,8 +932,17 @@
           :class="active === '/dashboard' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:mt-0'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:mt-0'
         >Home</a>
+
+        <a
+          href='/dashboard/about'
+          @click="setActive('/about')"
+          :class="active === '/about' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+        >About</a>
 
         <div class='relative md:ml-4'>
           <button
@@ -934,7 +955,7 @@
         ? 'bg-white text-gray-900'
         : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'
       ]"
-            class='flex items-center justify-between w-full px-4 py-2.5 text-sm font-semibold text-left rounded-lg transition-colors md:w-auto'
+            class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold text-left rounded-lg transition-colors md:w-auto'
           >
             <span>Program</span>
             <svg
@@ -1039,9 +1060,9 @@
                 <a
                   href='/dashboard/kategori/Bootcamp'
                   @click="setActive('/dashboard/kategori/Bootcamp')"
-                  class='flex items-start rounded-lg bg-transparent p-2 hover:bg-gray-200 transition-colors'
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
                 >
-                  <div class='bg-gray-900 text-white rounded-lg p-3'>
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
                     <svg
                       fill='none'
                       stroke='currentColor'
@@ -1054,8 +1075,9 @@
                       ></path>
                     </svg>
                   </div>
-                  <div class='ml-3'>
-                    <p class='font-semibold text-gray-900'>Bootcamp</p>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>Bootcamp</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Intensive 3-6 month training for career preparation</p>
                   </div>
                 </a>
 
@@ -1063,9 +1085,9 @@
                 <a
                   href='/dashboard/kategori/Course'
                   @click="setActive('/dashboard/kategori/Course')"
-                  class='flex items-start rounded-lg bg-transparent p-2 hover:bg-gray-200 transition-colors'
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
                 >
-                  <div class='bg-gray-900 text-white rounded-lg p-3'>
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
                     <svg
                       fill='none'
                       stroke='currentColor'
@@ -1078,8 +1100,9 @@
                       ></path>
                     </svg>
                   </div>
-                  <div class='ml-3'>
-                    <p class='font-semibold text-gray-900'>Course</p>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>Course</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Online course with complete and structured materials</p>
                   </div>
                 </a>
 
@@ -1087,9 +1110,9 @@
                 <a
                   href='/dashboard/kategori/Short Class'
                   @click="setActive('/dashboard/kategori/Short Class')"
-                  class='flex items-start rounded-lg bg-transparent p-2 hover:bg-gray-200 transition-colors'
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
                 >
-                  <div class='bg-gray-900 text-white rounded-lg p-3'>
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
                     <svg
                       fill='none'
                       stroke='currentColor'
@@ -1105,8 +1128,9 @@
                       ></path>
                     </svg>
                   </div>
-                  <div class='ml-3'>
-                    <p class='font-semibold text-gray-900'>Short Class</p>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>Short Class</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Short class for specific and practical skills</p>
                   </div>
                 </a>
               </div>
@@ -1120,7 +1144,7 @@
           :class="active === '/portofolio' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Portofolio</a>
 
         <a
@@ -1129,17 +1153,8 @@
           :class="active === '/alumni' 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Alumni</a>
-
-        <a
-          href='/dashboard/about'
-          @click="setActive('/about')"
-          :class="active === '/about' 
-            ? 'bg-white text-gray-900' 
-            : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors md:ml-4'
-        >About</a>
 
         <a
           href='/login'
@@ -1147,7 +1162,7 @@
           :class="active === '/login' 
             ? 'bg-white text-gray-900 border-2 border-white' 
             : 'bg-transparent text-white border-2 border-white hover:bg-gray-100 hover:text-gray-900'"
-          class='block px-4 py-2.5 text-sm font-semibold border-2 border-white hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors md:ml-4'
+          class='block px-4 py-2 text-sm font-semibold border-2 border-white hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors md:ml-4'
         >Login</a>
 
       {{/if}}

@@ -50,7 +50,7 @@ export class DashboardService {
     return await this.kelasRepository.find({
       where: { kategori: { nama_kategori: kategoriName }, launch: true },
       order: { id: 'DESC' },
-      relations: ['kategori', 'jenis_kelas'],
+      relations: ['kategori', 'jenis_kelas', 'user_kelas'],
     });
   }
 

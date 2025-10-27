@@ -1,50 +1,274 @@
 <div
-  class='hero px-4 py-16 bg-gradient-to-br from-white via-slate-50 to-slate-100 min-h-screen'
+  class='hero px-4 py-16 bg-gradient-to-br from-white via-slate-50 to-slate-100 min-h-screen relative overflow-hidden'
 >
+
   <div
-    class='hero-content flex-col lg:flex-row-reverse gap-12 lg:gap-20 xl:gap-24 max-w-7xl mx-auto'
+    class='hero-content flex-col lg:flex-row-reverse gap-12 lg:gap-20 xl:gap-24 max-w-7xl mx-auto relative z-10'
   >
 
     <div class='relative flex-1'>
+      <!-- Decorative Background Layers -->
       <div
-        class='absolute inset-0 bg-gradient-to-r from-slate-600 to-slate-800 rounded-2xl transform rotate-3 opacity-20'
+        class='absolute inset-0 bg-gradient-to-r from-slate-600 to-slate-800 rounded-2xl transform rotate-3 opacity-20 animate-pulse-slow'
       ></div>
-      <img
-        src='/public/image/orang.png'
-        class='relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-2xl shadow-2xl border-4 border-white'
-      />
+      <div
+        class='absolute inset-0 bg-gradient-to-l from-slate-500 to-slate-700 rounded-2xl transform -rotate-3 opacity-10 animate-pulse-slow animation-delay-1000'
+      ></div>
+
+
+
+      <!-- Main Image with Glow Effect -->
+      <div class='relative group'>
+        <div
+          class='absolute inset-0 bg-gradient-to-r from-slate-500 to-slate-700 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300'
+        ></div>
+        <img
+          src='/public/image/orang.png'
+          class='relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-2xl shadow-2xl border-4 border-white transform transition-transform duration-300 hover:scale-105'
+        />
+      </div>
+
+      <!-- Stats Cards -->
+      <div
+        class='absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-full max-w-md'
+      >
+        <div class='grid grid-cols-3 gap-3'>
+          <div
+            class='bg-white rounded-xl shadow-xl p-4 border-2 border-slate-100 hover:border-slate-300 transition-all duration-300 hover:-translate-y-1'
+          >
+            <div class='text-3xl font-bold text-slate-800 mb-1'>500+</div>
+            <div class='text-xs text-slate-600 font-semibold'>Students</div>
+          </div>
+          <div
+            class='bg-white rounded-xl shadow-xl p-4 border-2 border-slate-100 hover:border-slate-300 transition-all duration-300 hover:-translate-y-1'
+          >
+            <div class='text-3xl font-bold text-slate-800 mb-1'>50+</div>
+            <div class='text-xs text-slate-600 font-semibold'>Courses</div>
+          </div>
+          <div
+            class='bg-white rounded-xl shadow-xl p-4 border-2 border-slate-100 hover:border-slate-300 transition-all duration-300 hover:-translate-y-1'
+          >
+            <div class='text-3xl font-bold text-slate-800 mb-1'>95%</div>
+            <div class='text-xs text-slate-600 font-semibold'>Success</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class='text-gray-900 text-center lg:text-left flex-1 max-w-xl'>
-      <h1
-        class='text-4xl sm:text-5xl md:text-6xl font-bold leading-tight whitespace-nowrap font-montserrat'
+    <div
+      class='text-gray-900 text-center lg:text-left flex-1 max-w-xl mt-16 lg:mt-0'
+    >
+      <!-- Badge Above Title -->
+      <div
+        class='inline-flex items-center gap-2 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 px-5 py-2 rounded-full mb-6 shadow-md'
       >
-        Kesatria Academy
+        <i class='fas fa-award text-slate-600'></i>
+        <span class='font-bold text-sm'>IT Training Platform</span>
+      </div>
+
+      <h1
+        class='text-4xl sm:text-5xl md:text-6xl font-bold leading-tight font-montserrat mb-4'
+      >
+        <span
+          class='bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 bg-clip-text text-transparent'
+        >
+          Kesatria Academy
+        </span>
       </h1>
 
-      <p class='py-6 text-lg text-gray-700 leading-relaxed font-inter'>
+      <!-- Animated Subtitle -->
+      <div class='flex items-center gap-3 justify-center lg:justify-start mb-4'>
+        <div
+          class='h-1 w-12 bg-gradient-to-r from-slate-600 to-slate-800 rounded-full'
+        ></div>
+        <p class='text-xl font-bold text-slate-600'>Transform Your Career</p>
+        <div
+          class='h-1 w-12 bg-gradient-to-r from-slate-800 to-slate-600 rounded-full'
+        ></div>
+      </div>
+
+      <p class='py-6 text-lg text-gray-700 leading-relaxed font-inter mb-6'>
         IT Development and Artificial Intelligence education program with
         high-quality courses and bootcamps for the professional world.
       </p>
+
+      <!-- Feature Highlights -->
+      <div class='grid grid-cols-2 gap-4 mb-8'>
+        <div
+          class='flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1'
+        >
+          <div
+            class='w-12 h-12 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg flex items-center justify-center shadow-md'
+          >
+            <i class='fas fa-check text-white text-xl'></i>
+          </div>
+          <div class='text-left'>
+            <p class='font-bold text-slate-800 text-sm'>Expert Mentors</p>
+            <p class='text-xs text-slate-600'>Industry Professionals</p>
+          </div>
+        </div>
+
+        <div
+          class='flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1'
+        >
+          <div
+            class='w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-700 rounded-lg flex items-center justify-center shadow-md'
+          >
+            <i class='fas fa-certificate text-white text-xl'></i>
+          </div>
+          <div class='text-left'>
+            <p class='font-bold text-slate-800 text-sm'>Certification</p>
+            <p class='text-xs text-slate-600'>Industry Recognized</p>
+          </div>
+        </div>
+
+        <div
+          class='flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1'
+        >
+          <div
+            class='w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center shadow-md'
+          >
+            <i class='fas fa-briefcase text-white text-xl'></i>
+          </div>
+          <div class='text-left'>
+            <p class='font-bold text-slate-800 text-sm'>Job Ready</p>
+            <p class='text-xs text-slate-600'>Career Support</p>
+          </div>
+        </div>
+
+        <div
+          class='flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1'
+        >
+          <div
+            class='w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-md'
+          >
+            <i class='fas fa-users text-white text-xl'></i>
+          </div>
+          <div class='text-left'>
+            <p class='font-bold text-slate-800 text-sm'>Community</p>
+            <p class='text-xs text-slate-600'>Active Network</p>
+          </div>
+        </div>
+      </div>
 
       <div
         class='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'
       >
         <button
-          class='btn text-xl bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-600 hover:to-slate-800 px-8 sm:px-16 lg:px-20 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
+          class='group btn text-xl bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-600 hover:to-slate-800 px-8 sm:px-16 lg:px-20 border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden'
         >
-          Start Learning
+          <span class='relative z-10 flex items-center gap-2'>
+            <i class='fas fa-rocket'></i>
+            Start Learning
+          </span>
+          <div
+            class='absolute inset-0 bg-gradient-to-r from-slate-600 to-slate-800 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left'
+          ></div>
         </button>
         <button
-          class='btn text-xl bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-8 sm:px-16 lg:px-20 border-0 hover:border-slate-400 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
+          class='group btn text-xl bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-8 sm:px-16 lg:px-20 border-2 border-slate-300 hover:border-slate-400 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2'
         >
-          Consultation
+          <span class='flex items-center gap-2'>
+            <i class='fas fa-comments'></i>
+            Consultation
+          </span>
         </button>
+      </div>
+
+      <!-- Trust Indicators -->
+      <div
+        class='flex items-center justify-center lg:justify-start gap-6 mt-8 flex-wrap'
+      >
+        <div class='flex items-center gap-2 text-slate-600'>
+          <i class='fas fa-shield-alt text-slate-700'></i>
+          <span class='text-sm font-semibold'>Money Back Guarantee</span>
+        </div>
+        <div class='flex items-center gap-2 text-slate-600'>
+          <i class='fas fa-headset text-slate-700'></i>
+          <span class='text-sm font-semibold'>24/7 Support</span>
+        </div>
       </div>
     </div>
 
   </div>
 </div>
+
+<style>
+  @keyframes blob {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes bounce-subtle {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(12deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(12deg);
+    }
+  }
+
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      opacity: 0.2;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce-subtle 2s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+  }
+
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-3000 {
+    animation-delay: 3s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+</style>
 
 <!-- Bootcamp Experience Section -->
 <div
@@ -863,7 +1087,7 @@
 
   <!-- Classes Grid -->
   <div
-    class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto relative overflow-visible'
+    class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto'
     x-ref='kelasList'
   >
     {{#each kelas}}
@@ -922,16 +1146,34 @@
             {{deskripsi}}
           </p>
 
-          <div class='bg-slate-50 rounded-lg p-4 mb-4'>
-            <div class='flex justify-between items-center mb-2'>
-              <span class='text-sm font-medium text-slate-600'>Kuota Tersedia</span>
-              <span class='text-sm font-semibold text-slate-700'>
+          <div
+            class='bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200'
+          >
+            <div class='flex items-center justify-between mb-3'>
+              <div class='flex items-center gap-2'>
+                <i class='fas fa-users text-slate-600 animate-pulse'></i>
+                <span class='text-sm font-medium text-slate-600'>Kuota</span>
+              </div>
+              <span
+                class='text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm'
+              >
                 {{user_kelas.length}}
                 /
                 {{kuota}}
                 peserta
               </span>
             </div>
+
+            <div
+              class='w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2'
+            >
+              <div
+                class='h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out'
+                :style='`width: ${({{user_kelas.length}} / {{kuota}}) * 100}%`'
+              >
+              </div>
+            </div>
+
           </div>
 
           <div class='flex items-center justify-between mb-4'>
@@ -939,7 +1181,7 @@
               <p class='text-xs font-medium text-slate-500 line-through'>
                 {{formatRupiah promo}}
               </p>
-              <p class='text-lg font-bold text-slate-700'>
+              <p class='text-lg font-bold text-slate-700 animate-pulse'>
                 {{formatRupiah harga}}
               </p>
             </div>
@@ -1068,7 +1310,7 @@
 
     <!-- Badge Notifikasi -->
     <span
-      class='absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 md:w-6 md:h-6 bg-gradient-to-br from-green-500 to-green-600 text-white text-xs font-bold rounded-full border-2 md:border-3 border-white shadow-lg animate-bounce-subtle'
+      class='absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 md:w-6 md:h-6 bg-gradient-to-br from-green-500 to-green-600 text-white text-xs font-bold rounded-full border-2 md:border-3 border-white shadow-lg '
     >
       1
     </span>
