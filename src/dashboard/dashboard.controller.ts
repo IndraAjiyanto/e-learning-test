@@ -29,9 +29,9 @@ export class DashboardController {
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
-        res.redirect('/users');
+        res.render('super_admin/kelas/index', {user: req.user});
       } else if (req.user.role === 'admin') {
-        res.redirect('/kelass');
+        res.render('admin/kelas/index', {user: req.user});
       } else if (req.user.role === 'user') {
         res.render('dashboard', {
           user: req.user,
@@ -99,7 +99,7 @@ export class DashboardController {
 
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
-    const kelasList = await this.dashboardService.findAllKelas();
+    const kelasList = await this.dashboardService.findKelas();
     res.render('alumni', { user: req.user, kelas: kelasList });
   }
 

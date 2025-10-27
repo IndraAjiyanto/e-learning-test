@@ -29,7 +29,7 @@
           
           <!-- Content -->
           <div>
-            <h1 class="text-xl font-bold text-slate-900 mb-2 leading-tight">
+            <h1 class="text-xl font-bold text-slate-900 mb-2 leading-tight font-montserrat">
               {{kelas.nama_kelas}}
             </h1>
             <p class="text-sm text-slate-600 leading-relaxed">
@@ -43,8 +43,8 @@
     <!-- Right Content - Weeks List -->
     <div class="lg:col-span-8">
       <div class="mb-6">
-        <h2 class="text-2xl font-bold text-slate-900 mb-2">Start Learning</h2>
-        <p class="text-slate-600 text-sm">Complete each week to unlock the next</p>
+        <h2 class="text-2xl font-bold text-slate-900 mb-2 font-montserrat">Start Learning</h2>
+        <p class="text-slate-600 text-sm font-inter">Complete each week to unlock the next</p>
       </div>
 
       <div class="space-y-4">
@@ -64,12 +64,12 @@
             <!-- Checkmark Badge -->
             <div>
               <div class="flex items-center gap-2">
-                <h2 class="font-bold text-base text-gray-900 group-hover:text-slate-700 transition-colors">
+                <h2 class="font-bold text-base text-gray-900 group-hover:text-slate-700 transition-colors font-montserrat">
                   Week {{this.minggu_ke}} : {{this.keterangan}}
                 </h2>
-                <span class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-2 py-0.5 rounded-full font-semibold">Completed</span>
+                <span class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-2 py-0.5 rounded-full font-semibold font-inter">Completed</span>
               </div>
-              <p class="text-xs text-gray-500 mt-0.5">Click to review content</p>
+              <p class="text-xs text-gray-500 mt-0.5 font-inter">Click to review content</p>
             </div>
           </div>
           <svg 
@@ -96,10 +96,10 @@
           <div class="flex items-center space-x-3">
 
             <div>
-              <h2 class="font-bold text-base text-gray-900 group-hover:text-slate-700 transition-colors">
+              <h2 class="font-bold text-base text-gray-900 group-hover:text-slate-700 transition-colors font-montserrat">
                 Week {{this.minggu_ke}} : {{this.keterangan}}
               </h2>
-              <p class="text-xs text-gray-500 mt-0.5">Click to expand week content</p>
+              <p class="text-xs text-gray-500 mt-0.5 font-inter">Click to expand week content</p>
             </div>
           </div>
           <svg 

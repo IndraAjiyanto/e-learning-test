@@ -58,3 +58,60 @@
     scrollbar-width: none; /* Firefox */
   }
 }
+
+/* TailAdmin template utilities required by sidebar */
+@layer utilities {
+  @variants responsive {
+    .menu-item {
+      @apply relative flex items-center gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
+    }
+  }
+
+  .menu-item-active {
+    @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  }
+  .menu-item-inactive {
+    @apply text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
+  }
+
+  .menu-item-icon-active {
+    @apply fill-brand-500 dark:fill-brand-400;
+  }
+  .menu-item-icon-inactive {
+    @apply fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300;
+  }
+
+  .menu-item-arrow {
+    @apply absolute top-1/2 right-2.5 -translate-y-1/2;
+  }
+  .menu-item-arrow-active {
+    @apply rotate-180 stroke-brand-500 dark:stroke-brand-400;
+  }
+  .menu-item-arrow-inactive {
+    @apply stroke-gray-500 group-hover:stroke-gray-700 dark:stroke-gray-400 dark:group-hover:stroke-gray-300;
+  }
+
+  .menu-dropdown-item {
+    @apply text-theme-sm relative flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium;
+  }
+  .menu-dropdown-item-active {
+    @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  }
+  .menu-dropdown-item-inactive {
+    @apply text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5;
+  }
+
+  .menu-dropdown-badge {
+    @apply text-brand-500 dark:text-brand-400 block rounded-full px-2.5 py-0.5 text-xs font-medium uppercase;
+  }
+  .menu-dropdown-badge-active {
+    @apply bg-brand-100 dark:bg-brand-500/20;
+  }
+  .menu-dropdown-badge-inactive {
+    @apply bg-brand-50 group-hover:bg-brand-100 dark:bg-brand-500/15 dark:group-hover:bg-brand-500/20;
+  }
+
+  .custom-scrollbar &::-webkit-scrollbar {
+    @apply size-1.5;
+  }
+}

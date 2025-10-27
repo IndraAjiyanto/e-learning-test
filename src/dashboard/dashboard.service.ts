@@ -40,6 +40,12 @@ export class DashboardService {
     });
   }
 
+
+  async findKelas(){
+    return await this.kelasRepository.find({order: { id: 'DESC' },
+      relations: ['kategori', 'jenis_kelas', 'user_kelas'],});
+  }
+
   async findKelasByKategori(kategoriName: string) {
     return await this.kelasRepository.find({
       where: { kategori: { nama_kategori: kategoriName }, launch: true },

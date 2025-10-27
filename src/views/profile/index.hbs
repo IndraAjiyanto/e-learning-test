@@ -2,8 +2,8 @@
     <div class="max-w-5xl mx-auto px-6 py-10">
         <!-- Header Section -->
         <div class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">My Profile</h1>
-            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4 font-montserrat">My Profile</h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-inter">
                 Manage your account information and profile settings
             </p>
         </div>
@@ -45,8 +45,8 @@
                 <!-- User Info Section - Center Aligned -->
                 <div class="flex-1">
                     <div class="flex flex-col items-center lg:items-start">
-                        <h1 class="text-3xl font-bold text-slate-800 mb-2">{{user.username}}</h1>
-                        <p class="text-slate-600 text-lg">{{user.email}}</p>
+                        <h1 class="text-3xl font-bold text-slate-800 mb-2 font-montserrat">{{user.username}}</h1>
+                        <p class="text-slate-600 text-lg font-inter">{{user.email}}</p>
                     </div>
                 </div>
 
@@ -67,8 +67,8 @@
         <!-- Account Information Section -->
         <div class="mb-10">
             <div class="mb-6">
-                <h2 class="text-2xl font-bold text-slate-800">Account Information</h2>
-                <p class="text-slate-600 mt-2">Your basic account details and personal information</p>
+                <h2 class="text-2xl font-bold text-slate-800 font-montserrat">Account Information</h2>
+                <p class="text-slate-600 mt-2 font-inter">Your basic account details and personal information</p>
             </div>
 
             <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
@@ -103,7 +103,7 @@
                         <!-- Personal Information -->
                         <div class="mt-8 pt-8 border-t border-slate-200">
                             <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                                <h3 class="text-xl font-bold text-slate-800">Personal Information</h3>
+                                <h3 class="text-xl font-bold text-slate-800 font-montserrat">Personal Information</h3>
                                 <!-- Edit Information Button -->
                                 <a href="/biodatas/formEdit/{{user.biodata.id}}" 
                                    class="inline-flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold mt-4 md:mt-0">
@@ -206,8 +206,8 @@
                 <div class="mb-10">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                         <div>
-                            <h2 class="text-2xl font-bold text-slate-800">My Portfolio</h2>
-                            <p class="text-slate-600 mt-2">Showcase your projects and achievements</p>
+                            <h2 class="text-2xl font-bold text-slate-800 font-montserrat">My Portfolio</h2>
+                            <p class="text-slate-600 mt-2 font-inter">Showcase your projects and achievements</p>
                         </div>
                     </div>
 
@@ -287,12 +287,12 @@ class="bg-white border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl tr
         </div>
 
         <!-- Title -->
-        <h3 class="text-lg font-semibold text-slate-900 leading-tight line-clamp-2">
+        <h3 class="text-lg font-semibold text-slate-900 leading-tight line-clamp-2 font-montserrat">
             {{judul}}
         </h3>
 
         <!-- Description -->
-        <p class="text-slate-600 text-sm line-clamp-3">
+        <p class="text-slate-600 text-sm line-clamp-3 font-inter">
             {{deskripsi}}
         </p>
 
@@ -324,8 +324,8 @@ class="bg-white border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl tr
                 <!-- Portfolio Kosong -->
                 <div class="mb-10">
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-slate-800">My Portfolio</h2>
-                        <p class="text-slate-600 mt-2">Showcase your projects and achievements</p>
+                        <h2 class="text-2xl font-bold text-slate-800 font-montserrat">My Portfolio</h2>
+                        <p class="text-slate-600 mt-2 font-inter">Showcase your projects and achievements</p>
                     </div>
 
                     <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
@@ -353,7 +353,7 @@ class="bg-white border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl tr
                 &times;
             </button>
 
-            <h3 class="text-xl font-bold text-slate-800 mb-4">Profile Picture Preview</h3>
+            <h3 class="text-xl font-bold text-slate-800 mb-4 font-montserrat">Profile Picture Preview</h3>
             
             <img :src="previewUrl" alt="Preview Profile" 
                  class="rounded-xl w-full object-contain max-h-[60vh] border border-slate-200">

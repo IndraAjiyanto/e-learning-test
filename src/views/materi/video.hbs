@@ -60,9 +60,14 @@
         </div>
 
         <!-- Tampilan default ketika belum ada video yang dipilih -->
-        <div x-show='!videoSrc' class='h-[450px] flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50'>
+        <div
+          x-show='!videoSrc'
+          class='h-[450px] flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50'
+        >
           <div class='text-center px-6'>
-            <div class='p-6 bg-white/50 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center shadow-lg'>
+            <div
+              class='p-6 bg-white/50 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center shadow-lg'
+            >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 class='h-12 w-12 text-slate-400'
@@ -78,15 +83,17 @@
                 />
               </svg>
             </div>
-            <p class='text-slate-600 text-lg font-semibold mb-2'>No Video Selected</p>
-            <p class='text-slate-400 text-sm'>Select a video from the list to start watching</p>
+            <p class='text-slate-600 text-lg font-semibold mb-2'>No Video
+              Selected</p>
+            <p class='text-slate-400 text-sm'>Select a video from the list to
+              start watching</p>
           </div>
         </div>
       </div>
 
       <div class='flex justify-between items-center mt-6'>
         <h1
-          class='text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent'
+          class='text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent font-montserrat'
           x-text="videoTitle || 'Select a video to start learning'"
         ></h1>
       </div>
@@ -96,7 +103,9 @@
       class='bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl shadow-lg overflow-hidden'
     >
       <div class='bg-gradient-to-r from-slate-900 to-slate-800 px-6 py-4'>
-        <h2 class='text-xl font-semibold text-white flex items-center'>
+        <h2
+          class='text-xl font-semibold text-white flex items-center font-montserrat'
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             class='h-6 w-6 mr-2'

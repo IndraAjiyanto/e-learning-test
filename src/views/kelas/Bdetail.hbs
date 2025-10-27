@@ -71,11 +71,11 @@
               class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200'
             >
               <h3
-                class='text-3xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
+                class='font-montserrat text-3xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
               >
                 {{kelas.nama_kelas}}
               </h3>
-              <p class='text-gray-700 leading-relaxed text-lg'>
+              <p class='font-inter text-gray-700 leading-relaxed text-lg'>
                 {{kelas.deskripsi}}
               </p>
             </div>
@@ -96,10 +96,11 @@
                     </div>
                     <div class='flex-1'>
                       <p
-                        class='text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >Method</p>
-                      <h4 class='text-xl font-bold text-gray-900 mb-1'>Online
-                        Class</h4>
+                      <h4
+                        class='font-montserrat text-xl font-bold text-gray-900 mb-1'
+                      >Online Class</h4>
                     </div>
                   </div>
                 </div>
@@ -117,10 +118,11 @@
                     </div>
                     <div class='flex-1'>
                       <p
-                        class='text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >Method</p>
-                      <h4 class='text-xl font-bold text-gray-900 mb-1'>Offline
-                        Class</h4>
+                      <h4
+                        class='font-montserrat text-xl font-bold text-gray-900 mb-1'
+                      >Offline Class</h4>
                     </div>
                   </div>
                 </div>
@@ -142,15 +144,15 @@
                   </div>
                   <div class='flex-1'>
                     <p
-                      class='text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                      class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >Location</p>
                     {{#if (roles kelas.metode 'online')}}
                       <h4
-                        class='text-xl font-bold text-gray-900 mb-1'
+                        class='font-montserrat text-xl font-bold text-gray-900 mb-1'
                       >{{kelas.lokasi}}</h4>
                     {{else}}
                       <h4
-                        class='text-xl font-bold text-gray-900 mb-1 truncate'
+                        class='font-montserrat text-xl font-bold text-gray-900 mb-1 truncate'
                         title='{{kelas.lokasi}}'
                       >{{kelas.lokasi}}</h4>
                     {{/if}}
@@ -172,10 +174,10 @@
                     </div>
                     <div class='flex-1'>
                       <p
-                        class='text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >Capacity</p>
                       <h4
-                        class='text-xl font-bold text-gray-900 mb-1'
+                        class='font-montserrat text-xl font-bold text-gray-900 mb-1'
                       >{{kelas.kuota}} Students</h4>
                     </div>
                   </div>
@@ -187,14 +189,14 @@
             <!-- Material Includes -->
             <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
               <h4
-                class='text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-box-open text-gray-500'></i>
                 Material Includes
               </h4>
               <ul class='space-y-3'>
                 {{#each kelas.materi}}
-                  <li class='flex items-start gap-3 text-gray-700'>
+                  <li class='flex items-start gap-3 font-inter text-gray-700'>
                     <i
                       class='fas fa-check-circle text-gray-500 mt-1 flex-shrink-0'
                     ></i>
@@ -209,14 +211,14 @@
               class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'
             >
               <h4
-                class='text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-lightbulb text-gray-500'></i>
                 What You'll Learn
               </h4>
               <ul class='space-y-3'>
                 {{#each kelas.target_pembelajaran}}
-                  <li class='flex items-start gap-3 text-gray-700'>
+                  <li class='flex items-start gap-3 font-inter text-gray-700'>
                     <i class='fas fa-star text-gray-400 mt-1 flex-shrink-0'></i>
                     <span>{{this}}</span>
                   </li>
@@ -229,14 +231,14 @@
               class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'
             >
               <h4
-                class='text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-user-check text-gray-500'></i>
                 Requirements
               </h4>
               <ul class='space-y-3'>
                 {{#each kelas.kriteria}}
-                  <li class='flex items-start gap-3 text-gray-700'>
+                  <li class='flex items-start gap-3 font-inter text-gray-700'>
                     <i
                       class='fas fa-check-square text-gray-400 mt-1 flex-shrink-0'
                     ></i>
@@ -249,7 +251,7 @@
             <!-- Technologies -->
             <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
               <h4
-                class='text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-code text-gray-500'></i>
                 Technologies
@@ -257,7 +259,7 @@
               <div class='flex gap-2 flex-wrap'>
                 {{#each kelas.teknologi}}
                   <span
-                    class='px-3 py-1 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:from-gray-100 hover:to-gray-200 transition-all'
+                    class='font-inter px-3 py-1 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:from-gray-100 hover:to-gray-200 transition-all'
                   >
                     {{this}}
                   </span>
@@ -272,7 +274,7 @@
         <div x-show="activeTab === 'benefit'" x-transition>
           <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
             <h3
-              class='text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
+              class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
             >
               Course Benefits
             </h3>
@@ -312,9 +314,10 @@
                     <i class='fas fa-briefcase text-gray-600 text-xl'></i>
                   </div>
                   <div>
-                    <h4 class='font-semibold text-gray-900 text-lg mb-2'>Career
-                      Opportunities</h4>
-                    <p class='text-gray-700 leading-relaxed'>
+                    <h4
+                      class='font-montserrat font-semibold text-gray-900 text-lg mb-2'
+                    >Career Opportunities</h4>
+                    <p class='font-inter text-gray-700 leading-relaxed'>
                       Access our job portal and career guidance to help you land
                       your dream job.
                     </p>
@@ -355,9 +358,10 @@
                     <i class='fas fa-laptop-code text-gray-600 text-xl'></i>
                   </div>
                   <div>
-                    <h4 class='font-semibold text-gray-900 text-lg mb-2'>Real
-                      Projects</h4>
-                    <p class='text-gray-700 leading-relaxed'>
+                    <h4
+                      class='font-montserrat font-semibold text-gray-900 text-lg mb-2'
+                    >Real Projects</h4>
+                    <p class='font-inter text-gray-700 leading-relaxed'>
                       Work on real-world projects to build a portfolio that
                       showcases your skills.
                     </p>
@@ -373,7 +377,7 @@
         <div x-show="activeTab === 'faq'" x-transition>
           <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
             <h3
-              class='text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
+              class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
             >
               Frequently Asked Questions
             </h3>
@@ -385,15 +389,15 @@
                   class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
                   @click='openFaq = openFaq === 1 ? null : 1'
                 >
-                  <span class='font-semibold text-gray-800'>Do I need prior
-                    experience to join this course?</span>
+                  <span class='font-montserrat font-semibold text-gray-800'>Do I
+                    need prior experience to join this course?</span>
                   <i
                     class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
                     :class="{'rotate-180': openFaq === 1}"
                   ></i>
                 </button>
                 <div
-                  class='px-5 pb-5 text-gray-700'
+                  class='font-inter px-5 pb-5 text-gray-700'
                   x-show='openFaq === 1'
                   x-transition
                 >
@@ -410,15 +414,15 @@
                   class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
                   @click='openFaq = openFaq === 2 ? null : 2'
                 >
-                  <span class='font-semibold text-gray-800'>How long will I have
-                    access to the course materials?</span>
+                  <span class='font-montserrat font-semibold text-gray-800'>How
+                    long will I have access to the course materials?</span>
                   <i
                     class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
                     :class="{'rotate-180': openFaq === 2}"
                   ></i>
                 </button>
                 <div
-                  class='px-5 pb-5 text-gray-700'
+                  class='font-inter px-5 pb-5 text-gray-700'
                   x-show='openFaq === 2'
                   x-transition
                 >
@@ -512,7 +516,7 @@
         <div x-show="activeTab === 'bootcamp'" x-transition>
           <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
             <h3
-              class='text-3xl font-bold mb-6 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent'
+              class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent'
             >
               Bootcamp Learning Flow
             </h3>
@@ -533,9 +537,10 @@
                     ></div>
                   </div>
                   <div class='flex-1 pb-10'>
-                    <h4 class='text-xl font-bold text-gray-900 mb-2'>Foundation
-                      & Onboarding</h4>
-                    <p class='text-gray-700 mb-3'>
+                    <h4
+                      class='font-montserrat text-xl font-bold text-gray-900 mb-2'
+                    >Foundation & Onboarding</h4>
+                    <p class='font-inter text-gray-700 mb-3'>
                       Get familiar with the bootcamp structure, tools, and
                       fundamental concepts. Set up your development environment
                       and meet your cohort.
@@ -556,9 +561,10 @@
                     ></div>
                   </div>
                   <div class='flex-1 pb-10'>
-                    <h4 class='text-xl font-bold text-gray-900 mb-2'>Core
-                      Learning & Projects</h4>
-                    <p class='text-gray-700 mb-3'>
+                    <h4
+                      class='font-montserrat text-xl font-bold text-gray-900 mb-2'
+                    >Core Learning & Projects</h4>
+                    <p class='font-inter text-gray-700 mb-3'>
                       Dive deep into the core curriculum with hands-on projects.
                       Apply your knowledge to real-world scenarios and build
                       your portfolio.
@@ -579,9 +585,10 @@
                     ></div>
                   </div>
                   <div class='flex-1 pb-10'>
-                    <h4 class='text-xl font-bold text-gray-900 mb-2'>Capstone
-                      Project</h4>
-                    <p class='text-gray-700 mb-3'>
+                    <h4
+                      class='font-montserrat text-xl font-bold text-gray-900 mb-2'
+                    >Capstone Project</h4>
+                    <p class='font-inter text-gray-700 mb-3'>
                       Work on a comprehensive final project that showcases your
                       skills. Receive guidance from mentors and peer feedback.
                     </p>
@@ -598,9 +605,10 @@
                     </div>
                   </div>
                   <div class='flex-1'>
-                    <h4 class='text-xl font-bold text-gray-900 mb-2'>Career
-                      Preparation & Graduation</h4>
-                    <p class='text-gray-700 mb-3'>
+                    <h4
+                      class='font-montserrat text-xl font-bold text-gray-900 mb-2'
+                    >Career Preparation & Graduation</h4>
+                    <p class='font-inter text-gray-700 mb-3'>
                       Prepare for job interviews, polish your portfolio, and
                       connect with potential employers. Graduate with a
                       certificate and career-ready skills.
@@ -616,7 +624,7 @@
         <div x-show="activeTab === 'mentor'" x-transition>
           <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
             <h3
-              class='text-3xl font-bold mb-6 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent'
+              class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent'
             >
               Meet Your Mentors
             </h3>
@@ -636,13 +644,16 @@
                     class='w-20 h-20 rounded-full object-cover border-4 border-white shadow'
                   />
                   <div class='text-center sm:text-left flex-1'>
-                    <h4 class='font-bold text-gray-800 text-lg'>Budi Santoso</h4>
-                    <p class='text-gray-600 mb-2'>Senior Web Developer</p>
+                    <h4
+                      class='font-montserrat font-bold text-gray-800 text-lg'
+                    >Budi Santoso</h4>
+                    <p class='font-inter text-gray-600 mb-2'>Senior Web
+                      Developer</p>
                     <div
                       class='flex justify-center sm:justify-start gap-2 mb-3 flex-wrap'
                     >
                       <span
-                        class='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
+                        class='font-inter px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
                       >JavaScript</span>
                       <span
                         class='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
@@ -690,13 +701,15 @@
                     class='w-20 h-20 rounded-full object-cover border-4 border-white shadow'
                   />
                   <div class='text-center sm:text-left flex-1'>
-                    <h4 class='font-bold text-gray-800 text-lg'>Siti Nurhaliza</h4>
-                    <p class='text-gray-600 mb-2'>UI/UX Designer</p>
+                    <h4
+                      class='font-montserrat font-bold text-gray-800 text-lg'
+                    >Siti Nurhaliza</h4>
+                    <p class='font-inter text-gray-600 mb-2'>UI/UX Designer</p>
                     <div
                       class='flex justify-center sm:justify-start gap-2 mb-3 flex-wrap'
                     >
                       <span
-                        class='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
+                        class='font-inter px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
                       >Figma</span>
                       <span
                         class='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
@@ -738,13 +751,15 @@
                     class='w-20 h-20 rounded-full object-cover border-4 border-white shadow'
                   />
                   <div class='text-center sm:text-left flex-1'>
-                    <h4 class='font-bold text-gray-800 text-lg'>Andi Pratama</h4>
-                    <p class='text-gray-600 mb-2'>Mobile Developer</p>
+                    <h4
+                      class='font-montserrat font-bold text-gray-800 text-lg'
+                    >Andi Pratama</h4>
+                    <p class='font-inter text-gray-600 mb-2'>Mobile Developer</p>
                     <div
                       class='flex justify-center sm:justify-start gap-2 mb-3 flex-wrap'
                     >
                       <span
-                        class='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
+                        class='font-inter px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
                       >Flutter</span>
                       <span
                         class='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
@@ -785,13 +800,15 @@
                     class='w-20 h-20 rounded-full object-cover border-4 border-white shadow'
                   />
                   <div class='text-center sm:text-left flex-1'>
-                    <h4 class='font-bold text-gray-800 text-lg'>Clara Wijaya</h4>
-                    <p class='text-gray-600 mb-2'>Data Scientist</p>
+                    <h4
+                      class='font-montserrat font-bold text-gray-800 text-lg'
+                    >Clara Wijaya</h4>
+                    <p class='font-inter text-gray-600 mb-2'>Data Scientist</p>
                     <div
                       class='flex justify-center sm:justify-start gap-2 mb-3 flex-wrap'
                     >
                       <span
-                        class='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
+                        class='font-inter px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
                       >Python</span>
                       <span
                         class='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300'
@@ -1042,7 +1059,7 @@
   <!-- Related Courses -->
   <div class='max-w-7xl mx-auto px-6 mt-16' x-data='kelasPagination()'>
     <h2
-      class='text-3xl font-bold mb-8 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent'
+      class='font-montserrat text-3xl font-bold mb-8 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent'
     >Other Classes</h2>
 
     <div
@@ -1074,19 +1091,19 @@
               ></span>
             </div>
             <h2
-              class='card-title text-gray-900 text-2xl font-bold mb-3'
+              class='font-montserrat card-title text-gray-900 text-2xl font-bold mb-3'
               x-text='kelas.nama_kelas'
             ></h2>
             <p
-              class='text-xs font-medium text-slate-500 text-start line-through'
+              class='font-inter text-xs font-medium text-slate-500 text-start line-through'
               x-text='formatRupiah(kelas.promo)'
             ></p>
             <p
-              class='text-xl font-bold text-slate-700 mb-3 animate-pulse'
+              class='font-inter text-xl font-bold text-slate-700 mb-3 animate-pulse'
               x-text='formatRupiah(kelas.harga)'
             ></p>
             <p
-              class='text-base text-gray-600 line-clamp-3 leading-relaxed mb-4'
+              class='font-inter text-base text-gray-600 line-clamp-3 leading-relaxed mb-4'
               x-text='kelas.deskripsi'
             ></p>
             <div class='card-actions justify-end mt-6'>

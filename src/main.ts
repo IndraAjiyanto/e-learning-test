@@ -80,6 +80,7 @@ async function bootstrap() {
   hbs.registerHelper('roles', (a, b) => a === b);
   hbs.registerHelper('check', (a, b) => a < b);
   hbs.registerHelper('eq', (a, b) => a == b);
+  hbs.registerHelper('gte', (a, b) => a >= b);
   hbs.registerHelper('isArray', (value) => Array.isArray(value));
   hbs.registerPartials(join(__dirname, '..', 'src', 'views', 'partials'));
   app.set('view options', { layout: 'layouts/main' });

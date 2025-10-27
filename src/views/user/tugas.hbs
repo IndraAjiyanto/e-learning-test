@@ -16,7 +16,7 @@
         <div class="space-y-6">
           <div class="bg-gradient-to-br from-white to-slate-50 p-6 rounded-2xl border border-slate-200 shadow-lg">
             <div class="flex items-center mb-4">
-              <h4 class="text-xl text-gray-900 font-bold">Assignment Material</h4>
+              <h4 class="text-xl text-gray-900 font-bold font-montserrat">Assignment Material</h4>
             </div>
             <div class="overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
               <iframe 
@@ -37,9 +37,9 @@
           {{else}}
           <div class="bg-gradient-to-br from-white to-slate-50 p-6 rounded-2xl border border-slate-200 shadow-lg">
             <div class="flex items-center mb-4">
-              <h4 class="text-xl text-gray-900 font-bold">Submit Your Answer</h4>
+              <h4 class="text-xl text-gray-900 font-bold font-montserrat">Submit Your Answer</h4>
             </div>
-            <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+            <p class="text-sm text-slate-600 mb-4 leading-relaxed font-inter">
               Enter a GitHub link, Google Drive, or any online file sharing link.
             </p>
             <form 
@@ -65,7 +65,7 @@
           {{/if}}
           <div class="bg-gradient-to-br from-white to-slate-50 p-6 rounded-2xl border border-slate-200 shadow-lg ">
             <div class="flex items-center mb-4">
-              <h4 class="text-xl text-gray-900 font-bold">Your Answer</h4>
+              <h4 class="text-xl text-gray-900 font-bold font-montserrat">Your Answer</h4>
             </div>
             
             {{#if jawaban_tugas.length}}
@@ -80,7 +80,7 @@
                       >
                         {{this.file}}
                       </a>
-                      <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full font-medium self-start">
+                      <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full font-medium self-start font-inter">
                         {{formatTanggal this.createdAt}}
                       </span>
                     </div>
@@ -120,9 +120,9 @@
                             <div class="flex items-start gap-2">
                               <div class="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
                               <div class="flex-1">
-                                <p class="text-sm text-slate-700 leading-relaxed">{{this.komentar}}</p>
+                                <p class="text-sm text-slate-700 leading-relaxed font-inter">{{this.komentar}}</p>
                                 {{#if this.createdAt}}
-                                  <p class="text-xs text-slate-500 mt-1">{{formatTanggal this.createdAt}}</p>
+                                  <p class="text-xs text-slate-500 mt-1 font-inter">{{formatTanggal this.createdAt}}</p>
                                 {{/if}}
                               </div>
                             </div>
@@ -140,8 +140,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                   </svg>
                 </div>
-                <p class="text-base text-slate-500 font-medium">No answer has been submitted yet.</p>
-                <p class="text-sm text-slate-400 mt-1">Submit your answer using the form on the left.</p>
+                <p class="text-base text-slate-500 font-medium font-inter">No answer has been submitted yet.</p>
+                <p class="text-sm text-slate-400 mt-1 font-inter">Submit your answer using the form on the left.</p>
               </div>
             {{/if}}
           </div>
