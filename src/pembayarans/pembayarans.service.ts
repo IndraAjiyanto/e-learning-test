@@ -96,7 +96,7 @@ export class PembayaransService {
   }
 
   async findPembayaran(userId: number){
-    const pembayaran = await this.pembayaranRepository.find({where: {user: {id: userId}}, relations: ['kelas']})
+    const pembayaran = await this.pembayaranRepository.find({where: {user: {id: userId}}, relations: ['kelas', 'kelas.kategori']})
   if(!pembayaran){
       return
     }else{

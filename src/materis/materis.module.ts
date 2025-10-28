@@ -5,13 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Materi } from 'src/entities/materi.entity';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
-import { ConvertApiService } from 'src/common/config/convertapi.service';
+import { LibreOfficeService } from 'src/common/config/libreoffice.service';
 import { PertemuansModule } from 'src/pertemuans/pertemuans.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Materi, Kelas, Pertemuan])],
   controllers: [MaterisController],
-  providers: [MaterisService, ConvertApiService],
+  providers: [MaterisService, LibreOfficeService],
   exports: [MaterisService],
 })
 export class MaterisModule {}

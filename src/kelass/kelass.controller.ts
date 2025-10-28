@@ -58,7 +58,6 @@ minWidth: 1900, maxWidth: 1920, minHeight: 1000, maxHeight: 1080,
       req.flash('success', 'class successfully created');
       res.redirect('/kelass');
     } catch (error) {
-      console.log(error);
       req.flash('error', 'class failed created');
       res.redirect('/kelass');
     }

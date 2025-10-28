@@ -6,53 +6,71 @@
     class='hero-content flex-col lg:flex-row-reverse gap-12 lg:gap-20 xl:gap-24 max-w-7xl mx-auto relative z-10'
   >
 
-    <div class='relative flex-1'>
-      <!-- Decorative Background Layers -->
+    <div class='relative flex-1 py-8'>
+      <!-- Animated Rings Background - Behind Everything -->
       <div
-        class='absolute inset-0 bg-gradient-to-r from-slate-600 to-slate-800 rounded-2xl transform rotate-3 opacity-20 animate-pulse-slow'
+        class='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border-2 border-slate-300 rounded-full opacity-10 animate-ping-slow pointer-events-none'
       ></div>
       <div
-        class='absolute inset-0 bg-gradient-to-l from-slate-500 to-slate-700 rounded-2xl transform -rotate-3 opacity-10 animate-pulse-slow animation-delay-1000'
+        class='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border-2 border-slate-400 rounded-full opacity-10 animate-ping-slow animation-delay-1000 pointer-events-none'
       ></div>
 
+      <!-- Orbiting Icons - Positioned Outside Image -->
+      <div
+        class='absolute top-12 -right-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center animate-float animation-delay-1000 z-10'
+      >
+        <i class='fas fa-code text-slate-700 text-lg'></i>
+      </div>
+      <div
+        class='absolute bottom-12 -left-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center animate-float animation-delay-2000 z-10'
+      >
+        <i class='fas fa-laptop-code text-slate-700 text-lg'></i>
+      </div>
+      <div
+        class='absolute top-1/3 -left-6 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center animate-bounce-subtle animation-delay-3000 z-10'
+      >
+        <i class='fas fa-graduation-cap text-slate-700'></i>
+      </div>
+      <div
+        class='absolute bottom-1/3 -right-6 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center animate-bounce-subtle z-10'
+      >
+        <i class='fas fa-rocket text-slate-700'></i>
+      </div>
 
-
-      <!-- Main Image with Glow Effect -->
-      <div class='relative group'>
+      <!-- Dots Pattern -->
+      <div class='absolute top-4 right-8 flex gap-2 z-10'>
+        <div class='w-2 h-2 bg-slate-400 rounded-full animate-pulse'></div>
         <div
-          class='absolute inset-0 bg-gradient-to-r from-slate-500 to-slate-700 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300'
+          class='w-2 h-2 bg-slate-500 rounded-full animate-pulse animation-delay-1000'
         ></div>
+        <div
+          class='w-2 h-2 bg-slate-600 rounded-full animate-pulse animation-delay-2000'
+        ></div>
+      </div>
+      <div class='absolute bottom-4 left-8 flex gap-2 z-10'>
+        <div
+          class='w-2 h-2 bg-slate-400 rounded-full animate-pulse animation-delay-2000'
+        ></div>
+        <div
+          class='w-2 h-2 bg-slate-500 rounded-full animate-pulse animation-delay-3000'
+        ></div>
+        <div class='w-2 h-2 bg-slate-600 rounded-full animate-pulse'></div>
+      </div>
+
+      <!-- Main Image Container -->
+      <div class='relative group mx-auto max-w-lg'>
+        <!-- Multi-layer Glow -->
+        <div
+          class='absolute inset-0 bg-gradient-to-r from-slate-400 to-slate-600 rounded-2xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500 animate-pulse-slow'
+        ></div>
+
         <img
           src='/public/image/orang.png'
-          class='relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-2xl shadow-2xl border-4 border-white transform transition-transform duration-300 hover:scale-105'
+          class='relative w-full transform transition-transform duration-300'
         />
+
       </div>
 
-      <!-- Stats Cards -->
-      <div
-        class='absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-full max-w-md'
-      >
-        <div class='grid grid-cols-3 gap-3'>
-          <div
-            class='bg-white rounded-xl shadow-xl p-4 border-2 border-slate-100 hover:border-slate-300 transition-all duration-300 hover:-translate-y-1'
-          >
-            <div class='text-3xl font-bold text-slate-800 mb-1'>500+</div>
-            <div class='text-xs text-slate-600 font-semibold'>Students</div>
-          </div>
-          <div
-            class='bg-white rounded-xl shadow-xl p-4 border-2 border-slate-100 hover:border-slate-300 transition-all duration-300 hover:-translate-y-1'
-          >
-            <div class='text-3xl font-bold text-slate-800 mb-1'>50+</div>
-            <div class='text-xs text-slate-600 font-semibold'>Courses</div>
-          </div>
-          <div
-            class='bg-white rounded-xl shadow-xl p-4 border-2 border-slate-100 hover:border-slate-300 transition-all duration-300 hover:-translate-y-1'
-          >
-            <div class='text-3xl font-bold text-slate-800 mb-1'>95%</div>
-            <div class='text-xs text-slate-600 font-semibold'>Success</div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div
@@ -76,80 +94,10 @@
         </span>
       </h1>
 
-      <!-- Animated Subtitle -->
-      <div class='flex items-center gap-3 justify-center lg:justify-start mb-4'>
-        <div
-          class='h-1 w-12 bg-gradient-to-r from-slate-600 to-slate-800 rounded-full'
-        ></div>
-        <p class='text-xl font-bold text-slate-600'>Transform Your Career</p>
-        <div
-          class='h-1 w-12 bg-gradient-to-r from-slate-800 to-slate-600 rounded-full'
-        ></div>
-      </div>
-
       <p class='py-6 text-lg text-gray-700 leading-relaxed font-inter mb-6'>
         IT Development and Artificial Intelligence education program with
         high-quality courses and bootcamps for the professional world.
       </p>
-
-      <!-- Feature Highlights -->
-      <div class='grid grid-cols-2 gap-4 mb-8'>
-        <div
-          class='flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1'
-        >
-          <div
-            class='w-12 h-12 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg flex items-center justify-center shadow-md'
-          >
-            <i class='fas fa-check text-white text-xl'></i>
-          </div>
-          <div class='text-left'>
-            <p class='font-bold text-slate-800 text-sm'>Expert Mentors</p>
-            <p class='text-xs text-slate-600'>Industry Professionals</p>
-          </div>
-        </div>
-
-        <div
-          class='flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1'
-        >
-          <div
-            class='w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-700 rounded-lg flex items-center justify-center shadow-md'
-          >
-            <i class='fas fa-certificate text-white text-xl'></i>
-          </div>
-          <div class='text-left'>
-            <p class='font-bold text-slate-800 text-sm'>Certification</p>
-            <p class='text-xs text-slate-600'>Industry Recognized</p>
-          </div>
-        </div>
-
-        <div
-          class='flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1'
-        >
-          <div
-            class='w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center shadow-md'
-          >
-            <i class='fas fa-briefcase text-white text-xl'></i>
-          </div>
-          <div class='text-left'>
-            <p class='font-bold text-slate-800 text-sm'>Job Ready</p>
-            <p class='text-xs text-slate-600'>Career Support</p>
-          </div>
-        </div>
-
-        <div
-          class='flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1'
-        >
-          <div
-            class='w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-md'
-          >
-            <i class='fas fa-users text-white text-xl'></i>
-          </div>
-          <div class='text-left'>
-            <p class='font-bold text-slate-800 text-sm'>Community</p>
-            <p class='text-xs text-slate-600'>Active Network</p>
-          </div>
-        </div>
-      </div>
 
       <div
         class='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'
@@ -237,6 +185,21 @@
     }
   }
 
+  @keyframes ping-slow {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.2;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.1);
+      opacity: 0.1;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.2;
+    }
+  }
+
   .animate-blob {
     animation: blob 7s infinite;
   }
@@ -251,6 +214,10 @@
 
   .animate-pulse-slow {
     animation: pulse-slow 3s ease-in-out infinite;
+  }
+
+  .animate-ping-slow {
+    animation: ping-slow 4s ease-in-out infinite;
   }
 
   .animation-delay-1000 {
@@ -687,11 +654,11 @@
 <div
   x-data="{
       tab: 'all',
-      categories: ['all', 'short class', 'course', 'bootcamp'],
+      categories: ['all', {{#each kategori}}'{{this.nama_kategori}}',{{/each}}],
       selectedCategory: 'all',
       selectedMethod: 'all',
       searchQuery: '',
-      courseCategories: ['all', 'web development', 'ui/ux', 'devops', 'mobile development', 'data science', 'cybersecurity'],
+      courseCategories: ['all', {{#each jenis_kelas}}'{{this.nama_jenis_kelas}}',{{/each}}],
       currentPage: 1,
       itemsPerPage: 6,
       categoryDropdownOpen: false,
@@ -700,19 +667,16 @@
       
       categoriesData: [
         { value: 'all', icon: 'fa-th', title: 'All Categories', desc: 'Show all class categories' },
-        { value: 'Short Class', icon: 'fa-gift', title: 'Short Class', desc: 'Free classes for beginners' },
-        { value: 'Course', icon: 'fa-book', title: 'Course', desc: 'Structured courses with complete materials' },
-        { value: 'Bootcamp', icon: 'fa-rocket', title: 'Bootcamp', desc: 'Intensive programs with expert mentors' }
+        {{#each kategori}}
+        { value: '{{this.nama_kategori}}', icon: 'fa-gift', title: '{{this.nama_kategori}}', desc: '{{this.deskripsi}}' },
+        {{/each}}
       ],
       
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
-        { value: 'web development', icon: 'fa-code', title: 'Web Development', desc: 'Build modern and responsive websites' },
-        { value: 'ui/ux', icon: 'fa-palette', title: 'UI/UX Design', desc: 'Design engaging and user-friendly interfaces' },
-        { value: 'devops', icon: 'fa-server', title: 'DevOps', desc: 'Automation, CI/CD, and deployment' },
-        { value: 'mobile development', icon: 'fa-mobile-alt', title: 'Mobile Development', desc: 'Build iOS and Android applications' },
-        { value: 'data science', icon: 'fa-chart-line', title: 'Data Science', desc: 'Data analysis, visualization, and machine learning' },
-        { value: 'cybersecurity', icon: 'fa-shield-alt', title: 'Cybersecurity', desc: 'Protect and secure information systems' }
+        {{#each jenis_kelas}}
+        { value: '{{this.nama_jenis_kelas}}', icon: 'fa-code', title: '{{this.nama_jenis_kelas}}', desc: '{{this.deskripsi}}' },
+        {{/each}}
       ],
       
       methodOptions: [
@@ -773,7 +737,7 @@
   <!-- Header Section -->
   <div class='text-center mb-16 relative'>
     <h1
-      class='text-4xl md:text-5xl font-extrabold text-white mb-4 relative z-10'
+      class='text-4xl md:text-5xl font-extrabold font-montserrat text-white mb-4 relative z-10'
     >
       Kesatria Academy Class
     </h1>
@@ -1142,7 +1106,7 @@
             class='card-title text-gray-900 text-xl font-bold mb-3'
           >{{nama_kelas}}</h2>
 
-          <p class='text-sm text-gray-600 line-clamp-3 mb-4 leading-relaxed'>
+          <p class='text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed'>
             {{deskripsi}}
           </p>
 
@@ -1310,7 +1274,7 @@
 
     <!-- Badge Notifikasi -->
     <span
-      class='absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 md:w-6 md:h-6 bg-gradient-to-br from-green-500 to-green-600 text-white text-xs font-bold rounded-full border-2 md:border-3 border-white shadow-lg '
+      class='absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 md:w-6 md:h-6 bg-gradient-to-br from-green-500 to-green-600 text-white text-xs font-bold rounded-full border-2 md:border-3 border-white shadow-lg'
     >
       1
     </span>

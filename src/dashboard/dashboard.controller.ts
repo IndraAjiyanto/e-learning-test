@@ -24,8 +24,7 @@ export class DashboardController {
   @Get('')
   async getProtected(@Req() req: Request, @Res() res: Response) {
     const kelas = await this.dashboardService.findAllKelas();
-    const pertanyaan_umum = await this.dashboardService.findFAQ();
-    const gambar = await this.dashboardService.findGambar();
+
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
@@ -33,19 +32,31 @@ export class DashboardController {
       } else if (req.user.role === 'admin') {
         res.render('admin/kelas/index', {user: req.user});
       } else if (req.user.role === 'user') {
+            const pertanyaan_umum = await this.dashboardService.findFAQ();
+    const gambar = await this.dashboardService.findGambar();
+    const jenis_kelas = await this.dashboardService.findJenisKelas()
+    const kategori = await this.dashboardService.findKategori()
         res.render('dashboard', {
           user: req.user,
           kelas,
           pertanyaan_umum,
           gambar,
+          jenis_kelas,
+          kategori
         });
       }
     } else {
+                  const pertanyaan_umum = await this.dashboardService.findFAQ();
+    const gambar = await this.dashboardService.findGambar();
+        const jenis_kelas = await this.dashboardService.findJenisKelas()
+    const kategori = await this.dashboardService.findKategori()
       res.render('dashboard', {
         user: req.user,
         kelas,
         pertanyaan_umum,
         gambar,
+                  jenis_kelas,
+          kategori
       });
     }
   }
@@ -57,12 +68,13 @@ export class DashboardController {
     @Res() res: Response,
   ) {
     const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
+    const jenis_kelas = await this.dashboardService.findJenisKelas();
     if (kategoriName === 'Bootcamp') {
-      res.render('kelas/bootcamp', { kelas, user: req.user });
+      res.render('kelas/bootcamp', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'Course') {
-      res.render('kelas/course', { kelas, user: req.user });
+      res.render('kelas/course', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'Short Class') {
-      res.render('kelas/short_class', { kelas, user: req.user });
+      res.render('kelas/short_class', { kelas, user: req.user, jenis_kelas   });
     }
   }
 

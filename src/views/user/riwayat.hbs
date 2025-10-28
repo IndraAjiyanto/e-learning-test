@@ -103,12 +103,15 @@
               </div>
 
               <div class="flex gap-3 pt-6">
+                {{#if (eq this.kelas.kategori.nama_kategori "Short Class")}}
+                {{else}}
                 <button 
                   @click="open = true; imageSrc = '{{this.file}}'" 
                   class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-slate-600 to-slate-800 text-white font-semibold text-sm hover:from-slate-700 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                   <i class="fas fa-eye"></i>
                   View Proof
                 </button>
+                {{/if}}
                 <a 
                   href="/kelass/{{this.kelas.id}}" 
                   class="flex-1 py-3 px-4 rounded-xl bg-white text-slate-800 border-2 border-slate-200 font-semibold text-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">

@@ -1,7 +1,28 @@
 <div
-  class='max-w-7xl mx-auto px-6 py-12 pt-28'
-  x-data='{ slides: [] }'
-  x-init='initReveal()'
+  class='max-w-7xl mx-auto px-4 py-10 pt-28'
+  x-data='{
+    slides: [],
+    currentSlide: 0,
+    slideTitle: "",
+    selectMaterial(slideUrls, title) {
+      this.slides = slideUrls;
+      this.slideTitle = title;
+      this.currentSlide = 0;
+    },
+    nextSlide() {
+      if (this.currentSlide < this.slides.length - 1) {
+        this.currentSlide++;
+      }
+    },
+    prevSlide() {
+      if (this.currentSlide > 0) {
+        this.currentSlide--;
+      }
+    },
+    goToSlide(index) {
+      this.currentSlide = index;
+    }
+  }'
 >
 
   <div class='mb-8'>
@@ -26,64 +47,134 @@
     </a>
   </div>
 
-  <div class='grid grid-cols-1 lg:grid-cols-3 gap-10'>
+  <div class='grid grid-cols-1 lg:grid-cols-3 gap-8'>
 
-    <div
-      class='col-span-2 bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl shadow-xl overflow-hidden'
-    >
-      <div class='reveal'>
-        <div class='slides'>
-          <template x-for='slide in slides' :key='slide'>
-            <section>
-              <img
-                :src='slide'
-                class='w-full h-[550px] object-contain bg-gradient-to-br from-slate-50 to-white rounded-lg'
-              />
-            </section>
-          </template>
-        </div>
+    <!-- Slide Viewer -->
+    <div class='col-span-2'>
+      <div
+        class='bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden'
+      >
+        <!-- Slides Container -->
+        <template x-if='slides.length > 0'>
+          <div class='relative'>
+            <!-- Main Slide -->
+            <div class='relative h-[600px] bg-gradient-to-br from-slate-50 to-white'>
+            <template x-for='(slide, index) in slides' :key='index'>
+              <div
+                x-show='currentSlide === index'
+                x-transition:enter='transition ease-out duration-300'
+                x-transition:enter-start='opacity-0 transform translate-x-full'
+                x-transition:enter-end='opacity-100 transform translate-x-0'
+                x-transition:leave='transition ease-in duration-300'
+                x-transition:leave-start='opacity-100 transform translate-x-0'
+                x-transition:leave-end='opacity-0 transform -translate-x-full'
+                class='absolute inset-0 flex items-center justify-center p-4'
+              >
+                <img
+                  :src='slide'
+                  :alt='`Slide ${index + 1}`'
+                  class='max-w-full max-h-full object-contain rounded-lg shadow-lg'
+                />
+              </div>
+            </template>
+
+            <!-- Navigation Buttons -->
+            <button
+              @click='prevSlide()'
+              x-show='currentSlide > 0'
+              class='absolute left-4 top-1/2 -translate-y-1/2 bg-slate-900/80 hover:bg-slate-900 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-slate-500'
+            >
+              <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 19l-7-7 7-7'></path>
+              </svg>
+            </button>
+
+            <button
+              @click='nextSlide()'
+              x-show='currentSlide < slides.length - 1'
+              class='absolute right-4 top-1/2 -translate-y-1/2 bg-slate-900/80 hover:bg-slate-900 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-slate-500'
+            >
+              <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7'></path>
+              </svg>
+            </button>
+
+            <!-- Slide Counter -->
+            <div class='absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white px-4 py-2 rounded-full shadow-lg'>
+              <span class='font-semibold' x-text='currentSlide + 1'></span>
+              <span class='mx-1'>/</span>
+              <span x-text='slides.length'></span>
+            </div>
+          </div>
+
+          <!-- Thumbnail Navigation -->
+          <div class='bg-slate-100 p-4 border-t border-slate-200'>
+            <div class='flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-slate-200'>
+              <template x-for='(slide, index) in slides' :key='index'>
+                <button
+                  @click='goToSlide(index)'
+                  :class='currentSlide === index ? "ring-2 ring-slate-900 ring-offset-2" : "opacity-60 hover:opacity-100"'
+                  class='flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden transition-all duration-200 focus:outline-none'
+                >
+                  <img
+                    :src='slide'
+                    :alt='`Thumbnail ${index + 1}`'
+                    class='w-full h-full object-cover'
+                  />
+                </button>
+              </template>
+            </div>
+          </div>
+        </template>
+
+        <!-- Empty State -->
+        <template x-if='slides.length === 0'>
+          <div
+            class='h-[600px] flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50'
+          >
+            <div class='text-center px-6'>
+              <div
+                class='p-6 bg-white/50 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center shadow-lg'
+              >
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  class='h-12 w-12 text-slate-400'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                >
+                  <path
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                    stroke-width='2'
+                    d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+                  />
+                </svg>
+              </div>
+              <p class='text-slate-600 text-lg font-semibold mb-2'>No Slides Selected</p>
+              <p class='text-slate-400 text-sm'>Select a material from the list to start presentation</p>
+            </div>
+          </div>
+        </template>
       </div>
 
-      <template x-if='slides.length === 0'>
-        <div
-          class='flex flex-col items-center justify-center h-[550px] bg-gradient-to-br from-slate-50 to-slate-100 text-slate-500'
-        >
-          <div
-            class='w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-4'
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              class='h-8 w-8 text-slate-400'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-              />
-            </svg>
-          </div>
-          <p class='text-lg font-medium text-slate-600'>Select Material to View
-            Slides</p>
-          <p class='text-sm text-slate-400 mt-1'>Choose from the materials list
-            to start presentation</p>
-        </div>
-      </template>
-    </div>
-
-    <aside
-      class='bg-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden'
+      <div class='mt-6'>
+        <h1
+          class='text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent font-montserrat'
+          x-text="slideTitle || 'Select a material to start learning'"
+        ></h1>
+      </div>
+    </div>    <!-- Materials Sidebar -->
+    <div
+      class='bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl shadow-lg overflow-hidden'
     >
-      <div class='bg-gradient-to-r from-slate-900 to-slate-700 px-6 py-4'>
+      <div class='bg-gradient-to-r from-slate-900 to-slate-800 px-6 py-4'>
         <h2
-          class='text-lg font-semibold text-white flex items-center font-montserrat'
+          class='text-xl font-semibold text-white flex items-center font-montserrat'
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
-            class='h-5 w-5 mr-2'
+            class='h-6 w-6 mr-2'
             fill='none'
             viewBox='0 0 24 24'
             stroke='currentColor'
@@ -95,61 +186,55 @@
               d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10'
             />
           </svg>
-          Class Materials
+          Slide Materials
         </h2>
       </div>
 
       <div class='p-6'>
         {{#if materi.length}}
-          <ul class='space-y-3'>
+          <div class='space-y-3'>
             {{#each materi}}
-              <li>
-                <button
-                  class='w-full text-left px-4 py-3 rounded-lg border border-slate-200 bg-gradient-to-r from-white to-slate-50 shadow-sm hover:from-slate-900 hover:to-slate-700 hover:text-white hover:border-slate-600 transition-all duration-300 group'
-                  @click='
-                    slides = {{json this.slides}};
-                    $nextTick(() => {
-                      Reveal.sync();
-                      Reveal.slide(0);
-                    });
-                  '
-                >
-                  <div class='flex items-center'>
+              <button
+                class='w-full text-left px-4 py-3 rounded-xl border border-slate-200 bg-white hover:bg-gradient-to-r hover:from-slate-50 hover:to-white hover:border-slate-300 hover:shadow-md transition-all duration-200 group'
+                @click='selectMaterial({{{json this.slides}}}, "{{judul}}")'
+              >
+                <div class='flex items-center justify-between'>
+                  <div class='flex items-center flex-1'>
                     <div
-                      class='w-2 h-2 bg-slate-400 rounded-full mr-3 group-hover:bg-white transition-colors'
+                      class='w-2 h-2 bg-slate-400 rounded-full mr-3 group-hover:bg-slate-600 transition-colors duration-200'
                     ></div>
-                    <span class='font-medium'>{{judul}}</span>
+                    <span
+                      class='font-medium text-slate-800 group-hover:text-slate-900'
+                    >{{judul}}</span>
                   </div>
-                </button>
-              </li>
+                  <span class='text-xs text-slate-400 ml-2'>
+                    {{slides.length}} slides
+                  </span>
+                </div>
+              </button>
             {{/each}}
-          </ul>
+          </div>
         {{else}}
           <div class='text-center py-8'>
-            <div
-              class='w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3'
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              class='h-12 w-12 text-slate-400 mx-auto mb-3'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
             >
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                class='h-6 w-6 text-slate-400'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-                />
-              </svg>
-            </div>
-            <p class='text-slate-500 font-medium'>No Materials Available</p>
-            <p class='text-slate-400 text-sm mt-1'>Materials will appear here
-              when added</p>
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+              />
+            </svg>
+            <p class='text-slate-500 text-sm font-medium'>No slide materials available</p>
+            <p class='text-slate-400 text-xs mt-1'>Check back later for new content</p>
           </div>
         {{/if}}
       </div>
-    </aside>
+    </div>
   </div>
 </div>

@@ -5,17 +5,18 @@
 >
   <div class='container mx-auto px-4 pb-16'>
     <!-- Header -->
-    <div class='mb-8'>
+    <div class='text-center mb-12'>
       <h1
-        class='text-4xl font-bold text-gray-900 mb-2 font-montserrat'
+        class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'
       >Logbook</h1>
-      <p class='text-gray-600 font-inter'>Kelola dan pantau aktivitas logbook
-        Anda</p>
+      <p class='text-gray-600 max-w-2xl mx-auto text-lg font-inter'>
+        Kelola dan pantau aktivitas logbook Anda dengan mudah
+      </p>
     </div>
 
     <!-- Filter & Actions -->
     <div class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6'>
-      <div class='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+      <div class='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         <!-- Left: Search & Filters -->
         <div class='space-y-4'>
           <!-- Search -->
@@ -25,10 +26,10 @@
               placeholder='Cari kegiatan, rincian, atau kendala...'
               x-model='searchInput'
               @input='debounceSearch()'
-              class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900'
+              class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
             />
             <i
-              class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+              class='fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400'
             ></i>
           </div>
 
@@ -38,7 +39,7 @@
             <select
               x-model='filterKelas'
               @change='currentPage = 1; fetchLogbooks()'
-              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
             >
               <option value=''>Semua Kelas</option>
               <template x-for='kelas in kelasList' :key='kelas.id'>
@@ -51,7 +52,7 @@
               type='date'
               x-model='filterDateFrom'
               @change='currentPage = 1; fetchLogbooks()'
-              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
             />
 
             <!-- Date To -->
@@ -59,16 +60,16 @@
               type='date'
               x-model='filterDateTo'
               @change='currentPage = 1; fetchLogbooks()'
-              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
             />
 
             <!-- Reset Button -->
             <button
               @click='resetFilters()'
-              class='bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition flex items-center gap-2'
+              class='bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-lg transition-all flex items-center gap-2 border border-gray-300'
             >
               <i class='fas fa-undo-alt text-sm'></i>
-              Reset
+              <span class='font-medium'>Reset</span>
             </button>
           </div>
         </div>
@@ -77,10 +78,10 @@
         <div class='flex items-end justify-end'>
           <button
             @click='exportToExcel()'
-            class='bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 transition'
+            class='bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5'
           >
             <i class='fas fa-file-excel text-lg'></i>
-            Export Excel
+            <span class='font-semibold'>Export Excel</span>
           </button>
         </div>
       </div>
@@ -89,30 +90,37 @@
       <div
         x-show='hasActiveFilters()'
         class='mt-4 pt-4 border-t border-gray-200'
+        x-transition:enter='transition ease-out duration-200'
+        x-transition:enter-start='opacity-0 -translate-y-2'
+        x-transition:enter-end='opacity-100 translate-y-0'
       >
-        <div class='flex items-center gap-2 text-sm text-gray-600'>
-          <i class='fas fa-filter'></i>
-          <span>Filter aktif:</span>
+        <div class='flex flex-wrap items-center gap-2 text-sm'>
+          <div class='flex items-center gap-2 text-gray-600 font-semibold'>
+            <i class='fas fa-filter'></i>
+            <span>Filter aktif:</span>
+          </div>
           <span
             x-show='filterKelas'
-            class='px-2 py-1 bg-gray-100 rounded text-gray-700'
+            class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium'
             x-text='getKelasName()'
           ></span>
           <span
             x-show='filterDateFrom'
-            class='px-2 py-1 bg-gray-100 rounded text-gray-700'
+            class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium'
             x-text="'Dari: ' + filterDateFrom"
           ></span>
           <span
             x-show='filterDateTo'
-            class='px-2 py-1 bg-gray-100 rounded text-gray-700'
+            class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium'
             x-text="'Sampai: ' + filterDateTo"
           ></span>
           <span
             x-show='search'
-            class='px-2 py-1 bg-gray-100 rounded text-gray-700'
-            x-text="'Search: ' + search"
-          ></span>
+            class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium flex items-center gap-1'
+          >
+            <i class='fas fa-search text-xs'></i>
+            <span x-text='search'></span>
+          </span>
         </div>
       </div>
     </div>
@@ -200,56 +208,56 @@
 
       <div class='overflow-x-auto'>
         <table class='min-w-full divide-y divide-gray-200'>
-          <thead class='bg-gray-100'>
+          <thead class='bg-gradient-to-r from-slate-50 to-slate-100'>
             <tr>
               <th
-                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >No</th>
               <th
-                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Kegiatan</th>
               <th
-                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Rincian</th>
               <th
-                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Kendala</th>
               <th
-                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Dokumentasi</th>
               <th
-                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Kelas</th>
               <th
-                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Status</th>
               <th
-                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Tanggal</th>
               <th
-                class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Action</th>
             </tr>
           </thead>
-          <tbody class='divide-y divide-gray-200'>
+          <tbody class='divide-y divide-gray-200 bg-white'>
             <template x-for='(logbook, index) in allLogbooks' :key='logbook.id'>
-              <tr class='hover:bg-gray-50 transition'>
+              <tr class='hover:bg-slate-50 transition-colors'>
                 <td
-                  class='px-6 py-4 text-sm text-gray-800'
+                  class='px-6 py-4 text-sm font-medium text-gray-900'
                   x-text='((currentPage - 1) * itemsPerPage) + index + 1'
                 ></td>
                 <td
-                  class='px-6 py-4 text-sm text-gray-800'
+                  class='px-6 py-4 text-sm font-semibold text-gray-900'
                   x-text='logbook.kegiatan'
                 ></td>
-                <td class='px-6 py-4 text-sm text-gray-800'>
+                <td class='px-6 py-4 text-sm text-gray-700'>
                   <div
                     class='max-w-xs truncate'
                     :title='logbook.rincian_kegiatan'
                     x-text='logbook.rincian_kegiatan'
                   ></div>
                 </td>
-                <td class='px-6 py-4 text-sm text-gray-800'>
+                <td class='px-6 py-4 text-sm text-gray-700'>
                   <div
                     class='max-w-xs truncate'
                     :title='logbook.kendala'
@@ -260,51 +268,68 @@
                   <img
                     :src='logbook.dokumentasi'
                     alt='Dokumentasi'
-                    class='w-16 h-16 object-cover rounded border border-gray-300 cursor-pointer hover:opacity-75 transition'
+                    class='w-20 h-20 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-slate-400 hover:shadow-md transition-all transform hover:scale-105'
                     @click="window.open(logbook.dokumentasi, '_blank')"
                   />
                 </td>
-                <td
-                  class='px-6 py-4 text-sm text-gray-800'
-                  x-text='logbook.kelas'
-                ></td>
                 <td class='px-6 py-4'>
                   <span
-                    class='px-3 py-1 rounded-full text-xs font-semibold'
+                    class='inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-300'
+                  >
+                    <i class='fas fa-graduation-cap mr-1.5'></i>
+                    <span x-text='logbook.kelas'></span>
+                  </span>
+                </td>
+                <td class='px-6 py-4'>
+                  <span
+                    class='inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide'
                     :class="{
-                                            'bg-green-100 text-green-700': logbook.proses === 'acc',
-                                            'bg-yellow-100 text-yellow-700': logbook.proses === 'proces',
-                                            'bg-red-100 text-red-700': logbook.proses === 'rejected'
-                                        }"
-                    x-text="logbook.proses === 'acc' ? 'Approved' : logbook.proses === 'proces' ? 'Process' : 'Rejected'"
-                  ></span>
+                      'bg-green-100 text-green-700 border border-green-300': logbook.proses === 'acc',
+                      'bg-yellow-100 text-yellow-700 border border-yellow-300': logbook.proses === 'proces',
+                      'bg-red-100 text-red-700 border border-red-300': logbook.proses === 'rejected'
+                    }"
+                  >
+                    <i
+                      class='fas mr-1.5'
+                      :class="{
+                      'fa-check-circle': logbook.proses === 'acc',
+                      'fa-clock': logbook.proses === 'proces',
+                      'fa-times-circle': logbook.proses === 'rejected'
+                    }"
+                    ></i>
+                    <span
+                      x-text="logbook.proses === 'acc' ? 'Approved' : logbook.proses === 'proces' ? 'Process' : 'Rejected'"
+                    ></span>
+                  </span>
                 </td>
                 <td
-                  class='px-6 py-4 text-sm text-gray-800'
+                  class='px-6 py-4 text-sm text-gray-700'
                   x-text='formatDate(logbook.createdAt)'
                 ></td>
-                <td class='px-6 py-4 text-sm space-x-2'>
-                  <a
-                    :href='`/logbook/formEdit/${logbook.id}`'
-                    class='text-gray-600 hover:text-gray-900 font-medium hover:underline'
-                  >
-                    <i class='fas fa-edit'></i>
-                    Edit
-                  </a>
-                  <form
-                    :action='`/logbook/${logbook.id}?_method=DELETE`'
-                    method='post'
-                    class='inline'
-                  >
-                    <button
-                      type='button'
-                      class='text-red-600 hover:text-red-900 font-medium hover:underline'
-                      @click='confirmDelete($event)'
+                <td class='px-6 py-4 text-sm'>
+                  <div class='flex items-center gap-3'>
+                    <a
+                      :href='`/logbook/formEdit/${logbook.id}`'
+                      class='inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-semibold hover:underline transition-colors'
                     >
-                      <i class='fas fa-trash'></i>
-                      Delete
-                    </button>
-                  </form>
+                      <i class='fas fa-edit'></i>
+                      <span>Edit</span>
+                    </a>
+                    <form
+                      :action='`/logbook/${logbook.id}?_method=DELETE`'
+                      method='post'
+                      class='inline'
+                    >
+                      <button
+                        type='button'
+                        class='inline-flex items-center gap-1.5 text-red-600 hover:text-red-900 font-semibold hover:underline transition-colors'
+                        @click='confirmDelete($event)'
+                      >
+                        <i class='fas fa-trash'></i>
+                        <span>Delete</span>
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             </template>
@@ -315,22 +340,23 @@
       <!-- No Data -->
       <div
         x-show='!loading && allLogbooks.length === 0'
-        class='text-center py-12'
+        class='text-center py-16'
       >
         <div
-          class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'
+          class='w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4'
         >
-          <i class='fas fa-clipboard-list text-gray-400 text-3xl'></i>
+          <i class='fas fa-clipboard-list text-slate-400 text-4xl'></i>
         </div>
-        <h3
-          class='text-xl font-semibold text-gray-900 mb-2 font-montserrat'
-        >Tidak Ada Logbook</h3>
-        <p class='text-gray-600 mb-6 font-inter'>Belum ada data logbook yang
-          sesuai dengan filter.</p>
+        <h3 class='text-xl font-bold text-gray-900 mb-2 font-montserrat'>Tidak
+          Ada Logbook</h3>
+        <p class='text-gray-600 mb-6 font-inter max-w-md mx-auto'>
+          Belum ada data logbook yang sesuai dengan filter yang Anda pilih.
+        </p>
         <button
           @click='resetFilters()'
-          class='bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition'
+          class='bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-700 hover:to-slate-900 text-white px-8 py-3 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-semibold'
         >
+          <i class='fas fa-undo-alt mr-2'></i>
           Reset Filter
         </button>
       </div>
@@ -338,13 +364,13 @@
 
     <!-- Pagination -->
     <div
-      class='flex justify-center items-center gap-4 mt-8'
+      class='flex justify-center items-center gap-4 mt-12'
       x-show='!loading && totalPages > 1'
     >
       <button
         @click='currentPage = Math.max(1, currentPage - 1); fetchLogbooks()'
         :disabled='currentPage === 1'
-        class='px-5 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm'
+        class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md'
       >
         <i class='fas fa-chevron-left'></i>
       </button>
@@ -352,8 +378,8 @@
       <template x-for='page in totalPages' :key='page'>
         <button
           @click='currentPage = page; fetchLogbooks()'
-          class='w-12 h-12 rounded-xl text-lg font-semibold transition border shadow-sm'
-          :class="currentPage === page ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+          class='w-12 h-12 rounded-xl text-lg font-semibold transition-all border shadow-sm'
+          :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
           x-text='page'
         ></button>
       </template>
@@ -361,7 +387,7 @@
       <button
         @click='currentPage = Math.min(totalPages, currentPage + 1); fetchLogbooks()'
         :disabled='currentPage === totalPages'
-        class='px-5 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition shadow-sm'
+        class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md'
       >
         <i class='fas fa-chevron-right'></i>
       </button>

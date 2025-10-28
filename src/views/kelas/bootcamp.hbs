@@ -3,7 +3,7 @@
       selectedType: 'all',
       selectedMethod: 'all',
       searchQuery: '',
-      courseCategories: ['all', 'web development', 'ui/ux', 'devops', 'mobile development', 'data science', 'cybersecurity'],
+      courseCategories: ['all', {{#each jenis_kelas}}'{{this.nama_jenis_kelas}}',{{/each}}],
       currentPage: 1,
       itemsPerPage: 6,
       typeDropdownOpen: false,
@@ -11,12 +11,9 @@
       
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
-        { value: 'web development', icon: 'fa-code', title: 'Web Development', desc: 'Build modern and responsive websites' },
-        { value: 'ui/ux', icon: 'fa-palette', title: 'UI/UX Design', desc: 'Design engaging and user-friendly interfaces' },
-        { value: 'devops', icon: 'fa-server', title: 'DevOps', desc: 'Automation, CI/CD, and deployment' },
-        { value: 'mobile development', icon: 'fa-mobile-alt', title: 'Mobile Development', desc: 'Build iOS and Android applications' },
-        { value: 'data science', icon: 'fa-chart-line', title: 'Data Science', desc: 'Data analysis, visualization, and machine learning' },
-        { value: 'cybersecurity', icon: 'fa-shield-alt', title: 'Cybersecurity', desc: 'Protect and secure information systems' }
+        {{#each jenis_kelas}}
+        { value: '{{this.nama_jenis_kelas}}', icon: 'fa-code', title: '{{this.nama_jenis_kelas}}', desc: '{{this.deskripsi}}' },
+        {{/each}}
       ],
       
       methodOptions: [
@@ -367,7 +364,7 @@
           >{{nama_kelas}}</h2>
 
           <p
-            class='text-sm text-gray-600 line-clamp-3 mb-4 leading-relaxed font-inter'
+            class='text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed font-inter'
           >
             {{deskripsi}}
           </p>

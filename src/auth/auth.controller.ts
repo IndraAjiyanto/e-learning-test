@@ -18,7 +18,11 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 export class AuthController {
   constructor (private readonly authService: AuthService){}
   @Get('login')
-  async getLogin(@Res() res: Response, @Req() req:Request) {
+  async getLogin(@Res() res: Response, @Req() req:any) {
+    if(req.user){
+          const previous = req.headers.referer || '/dashboard';
+    return res.redirect(previous);
+    }
     res.render('login');
   }
 
