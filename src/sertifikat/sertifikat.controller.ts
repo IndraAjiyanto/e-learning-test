@@ -24,11 +24,6 @@ export class SertifikatController {
     } 
   }
 
-  @Post()
-  create(@Body() createSertifikatDto: CreateSertifikatDto) {
-    return this.sertifikatService.create(createSertifikatDto);
-  }
-
   @Get()
   findAll() {
     return this.sertifikatService.findAll();

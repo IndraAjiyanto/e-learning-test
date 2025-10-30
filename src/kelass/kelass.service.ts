@@ -604,7 +604,7 @@ export class KelassService {
   async findOne(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
-      relations: ['user_kelas', 'user_kelas.user', 'kategori', 'jenis_kelas'],
+      relations: ['user_kelas', 'user_kelas.user', 'kategori', 'kategori.alur_kelas', 'kategori.benefit_kelas', 'jenis_kelas', 'mentor', 'pertanyaan_kelas'],
     });
     if (!kelas) {
       throw new NotFoundException();

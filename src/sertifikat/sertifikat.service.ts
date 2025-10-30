@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSertifikatDto } from './dto/create-sertifikat.dto';
 import { UpdateSertifikatDto } from './dto/update-sertifikat.dto';
 import { PDFDocument, rgb } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 import * as fs from 'fs';
 import * as path from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,155 +15,237 @@ import { Biodata } from 'src/entities/biodata.entity';
 
 @Injectable()
 export class SertifikatService {
-    constructor(
-      @InjectRepository(Kelas)
-      private readonly kelasRepository: Repository<Kelas>,
-      @InjectRepository(Sertifikat)
-      private readonly sertifikatRepository: Repository<Sertifikat>,
-      @InjectRepository(User)
-      private readonly userRepository: Repository<User>,
-      @InjectRepository(Biodata)
-      private readonly biodataRepository: Repository<Biodata>,
-    ){}
-
-  create(createSertifikatDto: CreateSertifikatDto) {
-    return 'This action adds a new sertifikat';
-  }
+  constructor(
+    @InjectRepository(Kelas)
+    private readonly kelasRepository: Repository<Kelas>,
+    @InjectRepository(Sertifikat)
+    private readonly sertifikatRepository: Repository<Sertifikat>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Biodata)
+    private readonly biodataRepository: Repository<Biodata>,
+  ) {}
 
   async generateCertificate(kelasId: number, userId: number) {
-    const user = await this.userRepository.findOne({where: {id:userId}})
-    if(!user){
-      throw new NotFoundException('user not found')
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['biodata'],
+    });
+    if (!user) {
+      throw new NotFoundException('user not found');
     }
-    const kelas = await this.kelasRepository.findOne({where: {id:kelasId}, relations: ['minggu', 'minggu.quiz', 'jenis_kelas', 'kategori']})
-        if(!kelas){
-      throw new NotFoundException('kelas not found')
+    const kelas = await this.kelasRepository.findOne({
+      where: { id: kelasId },
+      relations: ['minggu', 'minggu.quiz', 'jenis_kelas', 'kategori', 'mentor'],
+    });
+    if (!kelas) {
+      throw new NotFoundException('kelas not found');
     }
 
-    const sertifikat = await this.sertifikatRepository.findOne({where: {user: {id:userId}, kelas: {id: kelasId}}, relations:['kelas']})
-    if(!sertifikat){
+    const sertifikat = await this.sertifikatRepository.findOne({
+      where: { user: { id: userId }, kelas: { id: kelasId } },
+      relations: ['kelas'],
+    });
+    if (!sertifikat) {
       const templatePath = path.join(process.cwd(), 'tmp', 'sertifikat.pdf');
-    const templateBytes = fs.readFileSync(templatePath);
+      const templateBytes = fs.readFileSync(templatePath);
 
-    const pdfDoc = await PDFDocument.load(templateBytes);
-    const page = pdfDoc.getPages()[0];
-    const page2 = pdfDoc.getPages()[1];
-    const {height} = page2.getSize()
+      const pdfDoc = await PDFDocument.load(templateBytes);
+      pdfDoc.registerFontkit(fontkit);
+      const page = pdfDoc.getPages()[0];
+      const page2 = pdfDoc.getPages()[1];
+      const { width, height } = page.getSize();
 
-    page.drawText(user.username, {
-      x: 380,
-      y: 355,
-      size: 36,
-      color: rgb(0, 0, 0),
-    });
+      const openSauceBoldBytes = fs.readFileSync(
+        'src/common/font/OpenSauceSans-Bold.ttf',
+      );
 
-    const text = `Has completed from the Private ${kelas.kategori.nama_kategori} Program ${kelas.nama_kelas} at the  Kesatria Academy, from December 7 to March 7, having successfully learned and practiced ${kelas.nama_kelas} materials and is ready to become a professional in the field.`
+      // Embed font ke PDF
+      const openSauceBold = await pdfDoc.embedFont(openSauceBoldBytes);
 
-    const line_one = ``
-    const line_two = ``
-    const line_three = ``
+      // Hitung lebar text untuk center alignment
+      const nameSize = 43.8;
+      const nameWidth = openSauceBold.widthOfTextAtSize(
+        user.biodata.nama_lengkap,
+        nameSize,
+      );
+      const nameCenterX = (width - nameWidth) / 2;
 
-    page.drawText(text, {
-      x: 380,
-      y: 400,
-      size: 20,
-      color: rgb(0, 0, 0),
-    })
+      page.drawText(user.biodata.nama_lengkap, {
+        x: nameCenterX,
+        y: 349,
+        size: nameSize,
+        font: openSauceBold,
+        color: rgb(0, 0, 0),
+      });
 
-    const rows : any [] = [];
+      const text1 = `Has completed from the Private ${kelas.kategori.nama_kategori} Program ${kelas.nama_kelas} at`;
+      const text2 = `the  Kesatria Academy, from December 7 to March 7, having successfully learned and`;
+      const text3 = `practiced ${kelas.nama_kelas} materials and is ready to become a professional in the field.`;
 
-  const headers = ["Material", "Interval", "Predicate"];
-        for (const m of kelas.minggu){
-     for(const q of m.quiz){
-      rows.push([q.nama_quiz, ])
-     }
-  }
+      const openSauceRegularBytes = fs.readFileSync(
+        'src/common/font/OpenSauceSans-Regular.ttf',
+      );
 
+      // Embed font ke PDF
+      const openSauceRegular = await pdfDoc.embedFont(openSauceRegularBytes);
 
-let startY = height - 200;
-let cellWidth = 150;
-let cellHeight = 30;
-let startX = 190;
+      const textSize = 13.8;
 
-// Header
-headers.forEach((header, i) => {
-  page2.drawRectangle({
-    x: startX + i * cellWidth,
-    y: startY,
-    width: cellWidth,
-    height: cellHeight,
-    borderColor: rgb(0, 0, 0),
-    borderWidth: 1,
-  });
-  page2.drawText(header, {
-    x: startX + i * cellWidth + 10,
-    y: startY + 10,
-    size: 12,
-  });
-});
+      // Hitung lebar dan posisi center untuk text1
+      const text1Width = openSauceRegular.widthOfTextAtSize(text1, textSize);
+      const text1CenterX = (width - text1Width) / 2;
 
-// Rows
-rows.forEach((row, rowIndex) => {
-  row.forEach((cell, colIndex) => {
-    const y = startY - (rowIndex + 1) * cellHeight;
-    const x = startX + colIndex * cellWidth;
+      // Hitung lebar dan posisi center untuk text2
+      const text2Width = openSauceRegular.widthOfTextAtSize(text2, textSize);
+      const text2CenterX = (width - text2Width) / 2;
 
-    page2.drawRectangle({
-      x,
-      y,
-      width: cellWidth,
-      height: cellHeight,
-      borderColor: rgb(0, 0, 0),
-      borderWidth: 1,
-    });
+      // Hitung lebar dan posisi center untuk text3
+      const text3Width = openSauceRegular.widthOfTextAtSize(text3, textSize);
+      const text3CenterX = (width - text3Width) / 2;
 
-    page2.drawText(String(cell), {
-      x: x + 10,
-      y: y + 10,
-      size: 12,
-    });
-  });
-});
+      page.drawText(text1, {
+        x: text1CenterX,
+        y: 310,
+        size: textSize,
+        font: openSauceRegular,
+        color: rgb(0, 0, 0),
+      });
 
-     const pdfBytes = await pdfDoc.save();
+      page.drawText(text2, {
+        x: text2CenterX,
+        y: 290,
+        size: textSize,
+        font: openSauceRegular,
+        color: rgb(0, 0, 0),
+      });
 
-    // 3. Convert ke Buffer
-    const buffer = Buffer.from(pdfBytes);
+      page.drawText(text3, {
+        x: text3CenterX,
+        y: 268,
+        size: textSize,
+        font: openSauceRegular,
+        color: rgb(0, 0, 0),
+      });
 
-    // 4. Upload ke Cloudinary
-const result: any = await new Promise((resolve, reject) => {
-  const uploadStream = cloudinary.uploader.upload_stream(
-    {
-      folder: 'nestjs/certificates',
-      resource_type: 'raw', // wajib biar pdf diterima
-      public_id: `certificate-${user.username}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
-      allowed_formats: ['pdf'],
-    },
-    (error, result) => {
-      if (error) return reject(error);
-      resolve(result);
-    },
-  );
+      // Tambahkan nama mentor jika ada
+      if (kelas.mentor && kelas.mentor.length > 0) {
+        const mentorName = kelas.mentor[0].nama; // Ambil mentor pertama
+        const mentorSize = 12;
+        const mentorWidth = openSauceBold.widthOfTextAtSize(
+          mentorName,
+          mentorSize,
+        );
 
-  uploadStream.end(buffer);
-});
+        // Posisi di bagian kanan bawah (sama dengan posisi "Izaz Rizqullah, S.Kom")
+        // Center align di area kanan (sekitar kolom mentor)
+        const mentorAreaCenterX = 590; // Pusat area tanda tangan mentor
+        const mentorX = mentorAreaCenterX - mentorWidth / 2; // Center text
+        const mentorY = 106; // Posisi vertikal (di atas tulisan "Mentor")
 
-// sekarang result sudah berisi object Cloudinary
-const cert = this.sertifikatRepository.create({
-  sertif: result.secure_url, // ⬅️ pake secure_url biar bisa langsung diakses public
-  user: user,
-  kelas: kelas,
-});
+        page.drawText(mentorName, {
+          x: mentorX,
+          y: mentorY,
+          size: mentorSize,
+          font: openSauceBold,
+          color: rgb(0, 0, 0),
+        });
+      }
 
-return await this.sertifikatRepository.save(cert);
-    }else{
-      return sertifikat
+      const rows: any[] = [];
+
+      const headers = ['Material', 'Interval', 'Predicate'];
+      for (const m of kelas.minggu) {
+        for (const q of m.quiz) {
+          rows.push([q.nama_quiz]);
+        }
+      }
+
+      let startY = height - 200;
+      let cellWidth = 150;
+      let cellHeight = 30;
+      let startX = 190;
+
+      // Header
+      headers.forEach((header, i) => {
+        page2.drawRectangle({
+          x: startX + i * cellWidth,
+          y: startY,
+          width: cellWidth,
+          height: cellHeight,
+          borderColor: rgb(0, 0, 0),
+          borderWidth: 1,
+        });
+        page2.drawText(header, {
+          x: startX + i * cellWidth + 10,
+          y: startY + 10,
+          size: 12,
+        });
+      });
+
+      // Rows
+      rows.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
+          const y = startY - (rowIndex + 1) * cellHeight;
+          const x = startX + colIndex * cellWidth;
+
+          page2.drawRectangle({
+            x,
+            y,
+            width: cellWidth,
+            height: cellHeight,
+            borderColor: rgb(0, 0, 0),
+            borderWidth: 1,
+          });
+
+          page2.drawText(String(cell), {
+            x: x + 10,
+            y: y + 10,
+            size: 12,
+          });
+        });
+      });
+
+      const pdfBytes = await pdfDoc.save();
+
+      // 3. Convert ke Buffer
+      const buffer = Buffer.from(pdfBytes);
+
+      // 4. Upload ke Cloudinary
+      const result: any = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'nestjs/certificates',
+            resource_type: 'raw', // wajib biar pdf diterima
+            public_id: `certificate-${user.username}-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+            allowed_formats: ['pdf'],
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        );
+
+        uploadStream.end(buffer);
+      });
+
+      // sekarang result sudah berisi object Cloudinary
+      const cert = this.sertifikatRepository.create({
+        sertif: result.secure_url, // ⬅️ pake secure_url biar bisa langsung diakses public
+        user: user,
+        kelas: kelas,
+      });
+
+      return await this.sertifikatRepository.save(cert);
+    } else {
+      return sertifikat;
     }
-    
   }
 
-  async findBiodata(userId: number){
-    return await this.biodataRepository.findOne({where: {user: {id:userId}}})
+  async findBiodata(userId: number) {
+    return await this.biodataRepository.findOne({
+      where: { user: { id: userId } },
+    });
   }
 
   findAll() {

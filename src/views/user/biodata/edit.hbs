@@ -3,7 +3,7 @@
     <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
       <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center font-montserrat">Edit Biodata</h2>
 
-      <form action="/biodatas/{{biodata.id}}?_method=PUT" method="POST" x-data="{
+      <form action="/biodatas/{{biodata.id}}?_method=PATCH" method="POST" x-data="{
         pendidikanOpen: false,
         selectedPendidikan: '{{biodata.pendidikan}}',
         selectPendidikan(value) {

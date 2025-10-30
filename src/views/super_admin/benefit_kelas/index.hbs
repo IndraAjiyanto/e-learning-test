@@ -1,14 +1,17 @@
 <div class="max-w-5xl mx-auto px-6 py-10 pt-28"
-     x-data="kerjaSamaTable({ kerjaSama: {{json kerja_sama}} })">
+     x-data="benefitTable({ benefit_kelas: {{json benefit_kelas}} })">
+
+  <!-- Header & Search -->
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Partnerships</h2>
+    <h2 class="text-3xl font-bold text-gray-900 text-center md:text-left">Benefit Class</h2>
     <div class="flex items-center gap-3">
       <div class="relative w-full md:w-64">
-        <input type="text" placeholder="Search partnership..."
+        <input type="text" placeholder="Search benefit..."
                x-model="searchInput"
-               @input="search = searchInput; pageNumber=0"
-               class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"/>
-        <button @click="search = searchInput; pageNumber=0"
+               @input="search = searchInput; pageNumber = 0"
+               class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 
+                      focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"/>
+        <button @click="search = searchInput; pageNumber = 0"
                 class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -16,45 +19,42 @@
           </svg>
         </button>
       </div>
-      <a href="/kerja-sama/formCreate"
+      <a href="/benefit-kelas/formCreate"
          class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-        Create Partnership
+        Create Benefit
       </a>
     </div>
   </div>
 
+  <!-- Table -->
   <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-100">
       <tr>
         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Image</th>
-        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
-        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Updated At</th>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Icon</th>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Benefit</th>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Content</th>
+        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
       </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-      {{#each kerja_sama}}
+      {{#each benefit_kelas}}
       <tr class="hover:bg-gray-50 transition"
-          x-show="filteredKerjaSama.includes('{{id}}')">
+          x-show="filteredBenefit.includes('{{id}}')">
         <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
-
-        <!-- Gambar -->
         <td class="px-6 py-4 text-sm text-gray-800">
-          <img src="{{gambar}}" alt="Partnership Image" class="w-20 h-20 object-cover rounded-md shadow-sm border" />
+          <img src="{{icon}}" alt="icon" class="w-8 h-8 object-cover rounded"/>
         </td>
-
-        <!-- Created At -->
-        <td class="px-6 py-4 text-sm text-gray-800">{{formatDate createdAt}}</td>
-
-        <!-- Updated At -->
-        <td class="px-6 py-4 text-sm text-gray-800">{{formatDate updatedAt}}</td>
-
-        <!-- Action -->
+        <td class="px-6 py-4 text-sm text-gray-800 font-semibold">{{benefit}}</td>
+        <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{{isi}}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">
+          {{kategori.nama_kategori}}
+        </td>
         <td class="px-6 py-4 text-sm text-gray-800 flex items-center gap-3">
           <!-- Edit -->
-          <a href="/kerja-sama/formEdit/{{id}}" 
+          <a href="/benefit-kelas/formEdit/{{id}}" 
              class="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition" 
              title="Edit">
             <svg xmlns="http://www.w3.org/2000/svg" 
@@ -73,7 +73,7 @@
           </a>
 
           <!-- Delete -->
-          <form action="/kerja-sama/{{id}}?_method=DELETE" method="post">
+          <form action="/benefit-kelas/{{id}}?_method=DELETE" method="post">
             <button type="button" 
                     onclick="confirmDelete(this)" 
                     class="p-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition" 
@@ -96,26 +96,28 @@
 </div>
 
 <script>
-function kerjaSamaTable({ kerjaSama }) {
+function benefitTable({ benefit_kelas }) {
   return {
     searchInput: "",
     search: "",
     pageNumber: 0,
     size: 5,
-    kerjaSama,
+    benefit_kelas,
     amount: 0,
-    get filteredKerjaSama() {
-      let filtered = this.kerjaSama.filter(k =>
-        (`${k.gambar}`).toLowerCase().includes(this.search.toLowerCase())
+    get filteredBenefit() {
+      let filtered = this.benefit_kelas.filter(b =>
+        (`${b.benefit}`).toLowerCase().includes(this.search.toLowerCase()) ||
+        (`${b.isi}`).toLowerCase().includes(this.search.toLowerCase()) ||
+        (`${b.kategori?.nama_kategori || ''}`).toLowerCase().includes(this.search.toLowerCase())
       );
       this.amount = filtered.length;
       const start = this.pageNumber * this.size;
       const end = start + this.size;
-      return filtered.slice(start, end).map(k => k.id.toString());
+      return filtered.slice(start, end).map(b => b.id.toString());
     },
     pages() { return Array.from({ length: this.pageCount() }); },
     pageCount() { return Math.ceil(this.amount / this.size); },
-    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
+    nextPage() { if (this.pageNumber < this.pageCount() - 1) this.pageNumber++; },
     prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
     viewPage(index) { this.pageNumber = index; },
   }

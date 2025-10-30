@@ -31,6 +31,13 @@ export class LogbookMentorController {
   }
 
   @Roles('admin')
+  @Get()
+  async findAll(@Res() res:Response, @Req() req:Request) {
+    const logbook_mentor =  await this.logbookMentorService.findAll();
+    res.render('admin/logbook_mentor/index', {user:req.user, logbook_mentor})
+  }
+
+  @Roles('admin')
   @Get(':logbook_mentorId')
   async findOne(@Param('logbook_mentorId') logbook_mentorId: number, @Res() res:Response, @Req() req:Request) {
     const logbook_mentor = await this.logbookMentorService.findOne(logbook_mentorId);

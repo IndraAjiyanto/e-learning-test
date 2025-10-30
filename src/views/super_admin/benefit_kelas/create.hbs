@@ -1,0 +1,91 @@
+<div class="pt-28 py-20">
+  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Create New Benefit Class</h2>
+
+    <form action="/benefit-kelas" method="post" enctype="multipart/form-data" class="space-y-6">
+
+      <!-- Benefit -->
+      <div>
+        <label for="benefit" class="block text-sm font-semibold text-gray-700 mb-1">
+          Benefit Title
+        </label>
+        <input type="text" id="benefit" name="benefit"
+          placeholder="e.g. Lifetime Access, Certificate, Mentoring Support"
+          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 
+                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+      </div>
+
+      <!-- Isi -->
+      <div>
+        <label for="isi" class="block text-sm font-semibold text-gray-700 mb-1">
+          Description
+        </label>
+        <textarea id="isi" name="isi" rows="4"
+          placeholder="Describe the benefit in detail..."
+          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 
+                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
+      </div>
+
+      <!-- Icon Upload + Preview -->
+      <div x-data="{ previewUrl: null }" class="space-y-3">
+        <label for="icon" class="block text-sm font-semibold text-gray-700 mb-1">
+          Icon
+        </label>
+        <input 
+          type="file" 
+          id="icon" 
+          name="icon" 
+          accept="image/*" 
+          x-ref="fileInput"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none 
+                 focus:ring-2 focus:ring-gray-900 text-gray-700"
+          @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+        >
+
+        <template x-if="previewUrl">
+          <div class="relative w-32 h-32">
+            <img 
+              :src="previewUrl" 
+              alt="Preview Icon" 
+              class="w-32 h-32 object-cover rounded-lg border border-gray-300"
+            >
+            <button 
+              type="button" 
+              class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full 
+                     flex items-center justify-center shadow hover:bg-red-600"
+              @click="previewUrl = null; $refs.fileInput.value = null;">
+              &times;
+            </button>
+          </div>
+        </template>
+      </div>
+
+      <!-- Pilih Kategori -->
+      <div>
+        <label for="kategori_id" class="block text-sm font-semibold text-gray-700 mb-1">
+          Category
+        </label>
+        <select id="kategori_id" name="kategori_id"
+          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 
+                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+          <option value="">-- Select Category --</option>
+          {{#each kategori}}
+            <option value="{{id}}">{{nama_kategori}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex gap-3">
+        <button type="submit" 
+          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+          Create
+        </button>
+        <a href="/benefit-kelas"
+          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

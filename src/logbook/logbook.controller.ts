@@ -85,7 +85,6 @@ export class LogbookController {
       req.flash('success', 'Log book added successfully');
       res.redirect('/logbook');
     } catch (error) {
-      console.log(error);
       req.flash('error', 'Failed to add log book');
       res.redirect('/logbook');
     }
