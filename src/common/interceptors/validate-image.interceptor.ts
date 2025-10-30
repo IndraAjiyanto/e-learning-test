@@ -34,14 +34,21 @@ export class ValidateImageInterceptor implements NestInterceptor {
     // kalau handler gak pakai @ValidateImage, langsung lanjut aja
     if (!options) return next.handle();
 
-    // deteksi apakah pakai FileInterceptor atau FilesInterceptor
+    // deteksi apakah pakai FileInterceptor atau FilesInterceptor atau FileFieldsInterceptor
     const files: Express.Multer.File[] = [];
 
     if (Array.isArray(request.files)) {
-      // banyak file
+      // FilesInterceptor - banyak file dengan nama sama
       files.push(...(request.files as Express.Multer.File[]));
+    } else if (typeof request.files === 'object' && request.files !== null) {
+      // FileFieldsInterceptor - banyak file dengan nama beda
+      Object.values(
+        request.files as { [fieldname: string]: Express.Multer.File[] },
+      ).forEach((fileArray) => {
+        files.push(...fileArray);
+      });
     } else if (request.file) {
-      // satu file
+      // FileInterceptor - satu file
       files.push(request.file as Express.Multer.File);
     }
 
@@ -52,7 +59,38 @@ export class ValidateImageInterceptor implements NestInterceptor {
       const uploadResults: string[] = [];
 
       for (const file of files) {
-        await this.uploadService.validateImageDimensions(file, options);
+        // Validasi file size
+        if (options.maxSize && file.size > options.maxSize) {
+          throw new Error(
+            `File size exceeds maximum allowed size of ${(options.maxSize / 1024 / 1024).toFixed(2)}MB`,
+          );
+        }
+
+        // Validasi file type
+        if (
+          options.allowedTypes &&
+          !options.allowedTypes.includes(file.mimetype)
+        ) {
+          throw new Error(
+            `File type ${file.mimetype} is not allowed. Allowed types: ${options.allowedTypes.join(', ')}`,
+          );
+        }
+
+        // Validasi dimensi gambar (hanya jika semua options dimensi ada)
+        if (
+          options.minWidth &&
+          options.maxWidth &&
+          options.minHeight &&
+          options.maxHeight
+        ) {
+          await this.uploadService.validateImageDimensions(file, {
+            minWidth: options.minWidth,
+            maxWidth: options.maxWidth,
+            minHeight: options.minHeight,
+            maxHeight: options.maxHeight,
+          });
+        }
+
         const imageUrl = await this.uploadService.uploadToCloudinary(
           file,
           options.folder,

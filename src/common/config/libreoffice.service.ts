@@ -104,6 +104,14 @@ export class LibreOfficeService {
 
       await pdftopic.convert(pdfPath, options);
 
+      // Hapus file PDF setelah berhasil convert ke PNG
+      try {
+        await fs.unlink(pdfPath);
+        console.log('Cleaned up intermediate PDF file:', pdfPath);
+      } catch (unlinkError) {
+        console.error('Failed to delete PDF file:', unlinkError);
+      }
+
       // Dapatkan semua file PNG yang dibuat
       const files = await fs.readdir(outputDir);
       const pngFiles = files

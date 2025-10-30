@@ -36,6 +36,10 @@ export class Mentor1759385490253 implements MigrationInterface {
                                                                     type: 'varchar'                                                                    
                                                                   },
                                                                   {
+                                                                    name: 'ttd',
+                                                                    type: 'varchar'                                                                    
+                                                                  },
+                                                                  {
                                                                     name: 'deskripsi',
                                                                     type: 'varchar'
                                                                   },

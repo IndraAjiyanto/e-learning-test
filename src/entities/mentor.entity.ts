@@ -27,6 +27,9 @@ export class Mentor{
     @Column()
     deskripsi: string
 
+    @Column()
+    ttd: string
+
                @CreateDateColumn()
                 createdAt: Date;
                 

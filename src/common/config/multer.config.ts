@@ -232,22 +232,3 @@ export const multerConfigPdf = createCloudinaryConfig({
   resourceType: 'raw',
   maxSize: 20
 });
-
-export const multerConfigPpt: MulterOptions = {
-  storage: memoryStorage(),
-  limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB
-  },
-  fileFilter: (req, file, cb) => {
-    const config = FILE_TYPES.ppt;
-    const fileExtension = file.originalname.toLowerCase().substring(
-      file.originalname.lastIndexOf('.')
-    );
-
-    if (config.mimeTypes.includes(file.mimetype) && config.extensions.includes(fileExtension)) {
-      cb(null, true);
-    } else {
-      cb(new Error(config.errorMessage) as any, false);
-    }
-  },
-};

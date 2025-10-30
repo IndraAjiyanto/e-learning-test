@@ -70,7 +70,7 @@ export class UsersController {
     }
   }
 
-  @Roles('user')
+  @Roles('user','admin','super_admin')
   @Get('profile')
   async profile(@Res() res: Response, @Req() req: Request) {
     if (!req.user) {

@@ -5,8 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JenisFile, Materi } from 'src/entities/materi.entity';
 import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import * as fs from 'fs';
-import { join } from 'path';
 import { v2 as cloudinary } from 'cloudinary';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 
@@ -18,86 +16,92 @@ export class MaterisService {
     @InjectRepository(Kelas)
     private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(Pertemuan)
-    private readonly pertemuanRepository: Repository<Pertemuan>
-  ){}
+    private readonly pertemuanRepository: Repository<Pertemuan>,
+  ) {}
   async create(createMaterisDto: CreateMaterisDto) {
-        const pertemuan = await this.pertemuanRepository.findOne({where: {id: createMaterisDto.pertemuanId}})
-        if(!pertemuan){
-          throw new NotFoundException('pertemuan ini tidak ada')
-        }
-        const materi = await this.materiRepository.create({
-          ...createMaterisDto,
-          pertemuan: pertemuan,
-        })
-        return await this.materiRepository.save(materi)
+    const pertemuan = await this.pertemuanRepository.findOne({
+      where: { id: createMaterisDto.pertemuanId },
+    });
+    if (!pertemuan) {
+      throw new NotFoundException('pertemuan ini tidak ada');
+    }
+    const materi = await this.materiRepository.create({
+      ...createMaterisDto,
+      pertemuan: pertemuan,
+    });
+    return await this.materiRepository.save(materi);
   }
 
-  async findMateriBypertemuan(pertemuanId: number){
+  async findMateriBypertemuan(pertemuanId: number) {
     return await this.materiRepository.find({
-      where: { pertemuan: {id: pertemuanId} },
-      relations: ['pertemuan']  
-    })
+      where: { pertemuan: { id: pertemuanId } },
+      relations: ['pertemuan'],
+    });
   }
 
-  async findMateriPdf(pertemuanId: number){
+  async findMateriPdf(pertemuanId: number) {
     return await this.materiRepository.find({
-      where: {pertemuan:{id:pertemuanId}, jenis_file: "pdf"}
-    })
+      where: { pertemuan: { id: pertemuanId }, jenis_file: 'pdf' },
+    });
   }
 
-async findMateriPpt(pertemuanId: number) {
-  const materiList = await this.materiRepository.find({
-    where: { pertemuan: { id: pertemuanId }, jenis_file: "ppt" }
-  });
+  async findMateriPpt(pertemuanId: number) {
+    const materiList = await this.materiRepository.find({
+      where: { pertemuan: { id: pertemuanId }, jenis_file: 'ppt' },
+    });
 
-  return materiList;
-}
+    return materiList;
+  }
 
+  async findPertemuan(pertemuanId: number) {
+    return await this.pertemuanRepository.findOne({
+      where: { id: pertemuanId },
+      relations: ['absen', 'materi', 'tugas', 'minggu', 'minggu.kelas'],
+    });
+  }
 
-async findPertemuan(pertemuanId: number){
-  return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: [ 'absen', 'materi', 'tugas', 'minggu', 'minggu.kelas']})
-}
-
-
-  async findMateriVideo(pertemuanId: number){
+  async findMateriVideo(pertemuanId: number) {
     return await this.materiRepository.find({
-      where: {pertemuan:{id:pertemuanId}, jenis_file: "video"}
-    })
+      where: { pertemuan: { id: pertemuanId }, jenis_file: 'video' },
+    });
   }
 
-
-  async findPertemuanByKelas(mingguId: number){
+  async findPertemuanByKelas(mingguId: number) {
     const pertemuan = await this.pertemuanRepository.find({
-    where: { minggu: { id: mingguId } },
-    relations: ['materi'], 
-    order: { id: 'ASC' } 
-  });
+      where: { minggu: { id: mingguId } },
+      relations: ['materi'],
+      order: { id: 'ASC' },
+    });
 
-  return pertemuan.map(p => ({
-    ...p,
-    materiPdf: p.materi.filter(m => m.jenis_file === 'pdf'),
-    materiVideo: p.materi.filter(m => m.jenis_file === 'video'),
-    materiPpt: p.materi.filter(m => m.jenis_file === 'ppt'),
-  }));
+    return pertemuan.map((p) => ({
+      ...p,
+      materiPdf: p.materi.filter((m) => m.jenis_file === 'pdf'),
+      materiVideo: p.materi.filter((m) => m.jenis_file === 'video'),
+      materiPpt: p.materi.filter((m) => m.jenis_file === 'ppt'),
+    }));
   }
 
-  async findMateriByJenisAndPertemuan(mingguId: number, jenis_file: JenisFile){
-    return await this.materiRepository.find({where: {jenis_file: jenis_file, pertemuan: {minggu: {id: mingguId}}}, })
-
+  async findMateriByJenisAndPertemuan(mingguId: number, jenis_file: JenisFile) {
+    return await this.materiRepository.find({
+      where: {
+        jenis_file: jenis_file,
+        pertemuan: { minggu: { id: mingguId } },
+      },
+    });
   }
 
   async findIdentityMateri(jenis_file: JenisFile, pertemuanId: number) {
-      return await this.materiRepository.find({
-      where: {jenis_file: jenis_file, pertemuan: {id: pertemuanId}},
+    return await this.materiRepository.find({
+      where: { jenis_file: jenis_file, pertemuan: { id: pertemuanId } },
       relations: ['pertemuan'],
     });
   }
 
   async findOne(id: number) {
-      const materi = await this.materiRepository.findOne({
-      where: {id},
-      relations: ['pertemuan']
-    })
+    const materi = await this.materiRepository.findOne({
+      where: { id },
+      relations: ['pertemuan'],
+    });
     if (!materi) {
       throw new NotFoundException(`materi tidak ditemukan`);
     }
@@ -109,56 +113,111 @@ async findPertemuan(pertemuanId: number){
     return materi;
   }
 
-async getPublicIdFromUrl(url: string) {
-  // Pisahkan berdasarkan "/upload/"
-  const parts = url.split('/upload/');
-  if (parts.length < 2) {
-    return null;
-  }
-
-  // Ambil bagian setelah upload/
-  let path = parts[1];
-
-  // Hapus "v1234567890/" (versi auto Cloudinary)
-  path = path.replace(/^v[0-9]+\/?/, '');
-
-  // Buang extension (.jpg, .png, .pdf, dll)
-  path = path.replace(/\.[^.]+$/, '');
-
-
-  await this.deleteFileIfExists(path);
-}
-
-async deleteFileIfExists(publicId: string) {
-  try {
-    const result = await cloudinary.uploader.destroy(publicId);
-
-    if (result.result === 'not found') {
-      console.log('File not found in Cloudinary.');
-    } else {
-      console.log('File deleted from Cloudinary:', result);
+  async getPublicIdFromUrl(
+    url: string,
+    resourceType: 'image' | 'video' | 'raw' = 'image',
+  ) {
+    // Pisahkan berdasarkan "/upload/"
+    // Untuk raw files, URL bisa jadi: .../raw/upload/... atau .../upload/...
+    let parts = url.split('/upload/');
+    if (parts.length < 2) {
+      return null;
     }
-  } catch (error) {
-    console.error('Error deleting file from Cloudinary:', error);
-    throw error;
+
+    // Ambil bagian setelah upload/
+    let path = parts[1];
+
+    // Hapus "v1234567890/" (versi auto Cloudinary)
+    path = path.replace(/^v[0-9]+\/?/, '');
+
+    // Untuk raw files (PDF, PPT), JANGAN buang extension
+    // Untuk image/video, buang extension
+    if (resourceType !== 'raw') {
+      path = path.replace(/\.[^.]+$/, '');
+    }
+
+    await this.deleteFileIfExists(path, resourceType);
   }
-}
+  async deleteFileIfExists(
+    publicId: string,
+    resourceType: 'image' | 'video' | 'raw' = 'image',
+  ) {
+    try {
+      // Hapus file sesuai dengan resource type yang ditentukan
+      let result;
+
+      if (resourceType === 'raw') {
+        // Untuk raw files, gunakan type: 'upload' dan resource_type: 'raw'
+        result = await cloudinary.uploader.destroy(publicId, {
+          type: 'upload',
+          resource_type: 'raw',
+        });
+
+        // Jika masih not found, coba dengan api.delete_resources
+        if (result.result === 'not found') {
+          const deleteResult = await cloudinary.api.delete_resources(
+            [publicId],
+            {
+              type: 'upload',
+              resource_type: 'raw',
+            },
+          );
+          result =
+            deleteResult.deleted[publicId] === 'deleted'
+              ? { result: 'ok' }
+              : { result: 'not found' };
+        }
+      } else {
+        result = await cloudinary.uploader.destroy(publicId, {
+          resource_type: resourceType,
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting file from Cloudinary:', error);
+      throw error;
+    }
+  }
 
   async update(id: number, updateMaterisDto: UpdateMaterisDto) {
-    const materi = await this.findOne(id)
-    if(!materi){
+    const materi = await this.findOne(id);
+    if (!materi) {
       throw new NotFoundException('materi tidak ditemukan');
     }
-    Object.assign(materi, updateMaterisDto)
-    return await this.materiRepository.save(materi)
+    Object.assign(materi, updateMaterisDto);
+    return await this.materiRepository.save(materi);
   }
 
   async remove(materiId: number) {
-    const materi = await this.findOne(materiId)
-    if(!materi){
-      throw new NotFoundException('materi tidak ditemukan')
+    const materi = await this.findOne(materiId);
+    if (!materi) {
+      throw new NotFoundException('materi tidak ditemukan');
     }
-    await this.getPublicIdFromUrl(materi.file)
-    return await this.materiRepository.remove(materi)
+
+    // Hapus file dari Cloudinary (kecuali video karena video pakai link YouTube)
+    if (materi.jenis_file !== 'video') {
+      // Untuk PDF dan PPT gunakan resource_type: 'raw'
+      const resourceType =
+        materi.jenis_file === 'pdf' || materi.jenis_file === 'ppt'
+          ? 'raw'
+          : 'image';
+      await this.getPublicIdFromUrl(materi.file, resourceType);
+    }
+
+    // Jika materi PPT, hapus juga semua slides
+    if (
+      materi.jenis_file === 'ppt' &&
+      materi.slides &&
+      materi.slides.length > 0
+    ) {
+      for (const slideUrl of materi.slides) {
+        try {
+          await this.getPublicIdFromUrl(slideUrl, 'image'); // Slides adalah image
+        } catch (error) {
+          console.error(`Failed to delete slide: ${slideUrl}`, error);
+        }
+      }
+    }
+
+    return await this.materiRepository.remove(materi);
   }
 }

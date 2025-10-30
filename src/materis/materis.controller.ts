@@ -17,9 +17,9 @@ import { MaterisService } from './materis.service';
 import { CreateMaterisDto } from './dto/create-materis.dto';
 import { UpdateMaterisDto } from './dto/update-materis.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import cloudinary, {
   multerConfigPdf,
-  multerConfigPpt,
   multerConfigVideo,
 } from 'src/common/config/multer.config';
 import { JenisFile } from 'src/entities/materi.entity';
@@ -67,7 +67,28 @@ export class MaterisController {
 
   @Roles('admin')
   @Post('ppt/:pertemuanId')
-  @UseInterceptors(FileInterceptor('file', multerConfigPpt))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+      fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = [
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        ];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(
+            new Error(
+              'Format file tidak valid. Hanya PPT dan PPTX yang diperbolehkan',
+            ) as any,
+            false,
+          );
+        }
+      },
+    }),
+  )
   async createPpt(
     @Body() createMaterisDto: CreateMaterisDto,
     @UploadedFile() file: Express.Multer.File,
@@ -79,20 +100,6 @@ export class MaterisController {
       // Validasi file
       if (!file) {
         req.flash('error', 'File PPT/PPTX wajib diupload');
-        return res.redirect(`/pertemuans/${pertemuanId}`);
-      }
-
-      // Validasi format file
-      const allowedMimeTypes = [
-        'application/vnd.ms-powerpoint', // .ppt
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
-      ];
-
-      if (!allowedMimeTypes.includes(file.mimetype)) {
-        req.flash(
-          'error',
-          'Format file tidak valid. Hanya PPT dan PPTX yang diperbolehkan',
-        );
         return res.redirect(`/pertemuans/${pertemuanId}`);
       }
 
@@ -150,6 +157,14 @@ export class MaterisController {
       createMaterisDto.slides = slideUrls;
 
       await this.materisService.create(createMaterisDto);
+
+      // 4️⃣ Cleanup file temporary setelah berhasil (hanya folder slides, PPT sudah dihapus di libreOfficeService)
+      try {
+        await fs.rm(slideOutputDir, { recursive: true, force: true }); // Hapus folder slides temporary
+        console.log('Temporary files cleaned up successfully');
+      } catch (cleanupError) {
+        console.error('Cleanup error (non-critical):', cleanupError);
+      }
 
       req.flash(
         'success',
@@ -288,7 +303,28 @@ export class MaterisController {
 
   @Roles('admin')
   @Patch('ppt/:id')
-  @UseInterceptors(FileInterceptor('file', multerConfigPpt))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+      fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = [
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        ];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(
+            new Error(
+              'Format file tidak valid. Hanya PPT dan PPTX yang diperbolehkan',
+            ) as any,
+            false,
+          );
+        }
+      },
+    }),
+  )
   async updatePpt(
     @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,

@@ -7,6 +7,7 @@ import {
   Req,
   Param,
   Body,
+  Redirect,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -17,6 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 @Controller()
 export class AuthController {
   constructor (private readonly authService: AuthService){}
+
   @Get('login')
   async getLogin(@Res() res: Response, @Req() req:any) {
     if(req.user){

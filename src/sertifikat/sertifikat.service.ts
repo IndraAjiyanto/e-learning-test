@@ -47,7 +47,7 @@ export class SertifikatService {
       relations: ['kelas'],
     });
     if (!sertifikat) {
-      const templatePath = path.join(process.cwd(), 'tmp', 'sertifikat.pdf');
+      const templatePath = path.join(process.cwd(), 'common', 'assets', 'sertifikat.pdf');
       const templateBytes = fs.readFileSync(templatePath);
 
       const pdfDoc = await PDFDocument.load(templateBytes);

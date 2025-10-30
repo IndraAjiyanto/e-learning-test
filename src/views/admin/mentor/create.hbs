@@ -118,6 +118,37 @@
                  focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
       </div>
 
+
+            <div x-data="{ previewUrl: null }" class="space-y-3">
+        <label for="ttd" class="block text-sm font-semibold text-gray-700 mb-1">TTD</label>
+        <input 
+          type="file"
+          id="ttd" 
+          name="ttd" 
+          accept="image/*" 
+          x-ref="fileInput"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
+          @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+        >
+
+        <!-- Preview -->
+        <template x-if="previewUrl">
+          <div class="relative w-32 h-32">
+            <img 
+              :src="previewUrl" 
+              alt="Preview" 
+              class="w-32 h-32 object-cover rounded-lg border border-gray-300"
+            >
+            <button 
+              type="button" 
+              class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
+              @click="previewUrl = null; $refs.fileInput.value = null;">
+              &times;
+            </button>
+          </div>
+        </template>
+      </div>
+
       <!-- Buttons -->
       <div class="flex space-x-4">
         <button type="submit"

@@ -42,13 +42,15 @@ export class KelassController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-minWidth: 1900, maxWidth: 1920, minHeight: 1000, maxHeight: 1080,
+    minWidth: 1900,
+    maxWidth: 1920,
+    minHeight: 1000,
+    maxHeight: 1080,
     folder: 'nestjs/images/banner/class',
   })
   async create(
     @Body() createKelassDto: CreateKelassDto,
     @Res() res: Response,
-    @UploadedFile() gambar: Express.Multer.File,
     @Req() req: Request,
   ) {
     try {
@@ -169,6 +171,17 @@ minWidth: 1900, maxWidth: 1920, minHeight: 1000, maxHeight: 1080,
     });
   }
 
+  @Roles('user')
+  @Get('kelas_saya/:id')
+  async myCourse(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const kelas = await this.kelassService.findMyCourse(id);
+    res.render('user/mycourse', { kelas, user: req.user });
+  }
+
   @Get(':id')
   async detail(
     @Param('id') id: number,
@@ -180,8 +193,8 @@ minWidth: 1900, maxWidth: 1920, minHeight: 1000, maxHeight: 1080,
     if (!kelas) {
       req.flash('info', 'not found class');
     } else if (!req.user) {
-          const kelass = await this.kelassService.allClassExcept(kelas.id);
-    const daftar = await this.kelassService.sumStudent(kelas.id);
+      const kelass = await this.kelassService.allClassExcept(kelas.id);
+      const daftar = await this.kelassService.sumStudent(kelas.id);
       res.render('kelas/Bdetail', { kelas, kelass, daftar });
     } else {
       for (const u of kelas.user_kelas) {
@@ -207,22 +220,11 @@ minWidth: 1900, maxWidth: 1920, minHeight: 1000, maxHeight: 1080,
           minggu: mingguUpdated,
         });
       } else {
-            const kelass = await this.kelassService.allClassExcept(kelas.id);
-    const daftar = await this.kelassService.sumStudent(kelas.id);
+        const kelass = await this.kelassService.allClassExcept(kelas.id);
+        const daftar = await this.kelassService.sumStudent(kelas.id);
         res.render('kelas/Bdetail', { user: req.user, kelas, kelass, daftar });
       }
     }
-  }
-
-  @Roles('user')
-  @Get('kelas_saya/:id')
-  async myCourse(
-    @Param('id') id: number,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    const kelas = await this.kelassService.findMyCourse(id);
-    res.render('user/mycourse', { kelas, user: req.user });
   }
 
   // update kelas
