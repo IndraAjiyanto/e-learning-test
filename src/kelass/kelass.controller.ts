@@ -182,6 +182,19 @@ export class KelassController {
     res.render('user/mycourse', { kelas, user: req.user });
   }
 
+  @Roles('user')
+  @Get('detail/:kelasId')
+  async viewDetail(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const kelas = await this.kelassService.findOne(kelasId);
+    const check_user = await this.kelassService.checkUserInKelas(kelas.id, req.user!.id);
+    const kelass = await this.kelassService.allClassExcept(kelas.id);
+    res.render('kelas/Bdetail', { kelas, user: req.user, kelass, check_user });
+  }
+
   @Get(':id')
   async detail(
     @Param('id') id: number,

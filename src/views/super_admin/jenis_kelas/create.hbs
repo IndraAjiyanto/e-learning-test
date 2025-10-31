@@ -1,29 +1,107 @@
-<div class="pt-28 py-20">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Create New Class Type</h2>
+<div
+  class='pt-28 py-20'
+  x-data="{
+  icon: '',
+  get computedClass() {
+    const raw = (this.icon || '').toString().trim();
+    if (!raw) return 'fa-solid fa-circle-question';
+    const v = raw;
+    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
+    if (hasFaPrefix) {
+      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
+      return v;
+    }
+    if (!v.includes(' ')) return 'fa-solid fa-' + v;
+    return v;
+  }
+}"
+>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Class Type</h2>
 
-    <form action="/jenis-kelas" method="post" class="space-y-6">
+    <form action='/jenis-kelas' method='post' class='space-y-6'>
 
       <div>
-        <label for="nama_jenis_kelas" class="block text-sm font-semibold text-gray-700 mb-1">
+        <label
+          for='nama_jenis_kelas'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
           Class Type Name
         </label>
-        <input type="text" id="nama_jenis_kelas" name="nama_jenis_kelas" 
-          placeholder="e.g. Regular, Premium, Online"
-          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 
-                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+        <input
+          type='text'
+          id='nama_jenis_kelas'
+          name='nama_jenis_kelas'
+          placeholder='e.g. Regular, Premium, Online'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        />
       </div>
 
-      <div class="flex gap-3">
-        <button type="submit" 
-          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+      <div>
+        <label
+          for='icon'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Icon
+        </label>
+        <div class='flex items-center gap-4'>
+          <input
+            x-model='icon'
+            type='text'
+            id='icon'
+            name='icon'
+            placeholder='fa-code, fa-layer-group, etc.'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+
+          <!-- Live preview: binds computed class to the <i> element -->
+          <div class='flex items-center gap-3'>
+            <i :class='computedClass' class='text-2xl text-gray-700'></i>
+            <span class='text-sm text-gray-500' x-text='computedClass'></span>
+          </div>
+        </div>
+        <p class='text-sm text-gray-500 mt-2'>Type a Font Awesome class like
+          <code>fa-code</code>
+          or include full classes like
+          <code>fas fa-code</code>.</p>
+      </div>
+
+      <div>
+        <label
+          for='deskripsi'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Description</label>
+        <textarea
+          id='deskripsi'
+          name='deskripsi'
+          rows='4'
+          placeholder='Write a brief description...'
+          class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        ></textarea>
+      </div>
+
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+        >
           Create
         </button>
-        <a href="/jenis-kelas"
-          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+        <a
+          href='/jenis-kelas'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+        >
           Cancel
         </a>
       </div>
     </form>
   </div>
 </div>
+
+<!-- (Using inline x-data above for icon preview) -->
+
+<!-- Include Alpine.js (deferred). If the project already includes Alpine, this is harmless. -->
+<script src='https://unpkg.com/alpinejs@3.12.0/dist/cdn.min.js' defer></script>
+
+<!-- Optional: If Font Awesome isn't loaded globally, include the CDN link below (Font Awesome 6). Uncomment if you don't already include FA in your base layout. -->
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->

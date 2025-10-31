@@ -5,7 +5,7 @@ import {
   CallHandler,
   BadRequestException,
 } from '@nestjs/common';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Request, Response } from 'express';
 
@@ -18,21 +18,23 @@ export class MulterErrorInterceptor implements NestInterceptor {
         const request = ctx.getRequest<Request>();
         const response = ctx.getResponse<Response>();
 
-        // Check if error is from Multer file validation
+        // Check if error is from Multer file validation (case-insensitive)
+        const errMsg = (error?.message || '').toString().toLowerCase();
         if (
           error.message &&
-          (error.message.includes('Format file tidak valid') ||
-            error.message.includes('file') ||
-            error.message.includes('upload') ||
+          (errMsg.includes('format file tidak valid') ||
+            errMsg.includes('file') ||
+            errMsg.includes('upload') ||
             error.storageErrors)
         ) {
           // Set flash message
           (request as any).flash('error', error.message);
 
-          // Redirect back
+          // Redirect back and complete the request (do not rethrow)
           const referer = request.get('Referer') || '/users/profile';
           response.redirect(referer);
-          return throwError(() => new BadRequestException(error.message));
+          // return a completed Observable so Nest doesn't convert the error to JSON
+          return of(null);
         }
 
         // If not file upload error, pass through

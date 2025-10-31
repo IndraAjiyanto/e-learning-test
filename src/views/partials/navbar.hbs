@@ -2,9 +2,20 @@
   class='w-full shadow-lg fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white'
   x-data="{
     open: false,
+    isDesktop: window.innerWidth >= 768,
     toggleMenu() {
       this.open = !this.open;
       document.body.style.overflow = this.open ? 'hidden' : '';
+    },
+    init() {
+      // Update isDesktop on window resize
+      window.addEventListener('resize', () => {
+        this.isDesktop = window.innerWidth >= 768;
+        if (this.isDesktop) {
+          this.open = false;
+          document.body.style.overflow = '';
+        }
+      });
     }
   }"
 >
@@ -52,9 +63,8 @@
 
     <!-- Navbar -->
     <nav
-      x-show="open || window.innerWidth >= 768"
+      x-show="open || isDesktop"
       class="fixed inset-0 z-40 md:relative md:inset-auto md:flex md:items-center"
-      style="display: none;"
     >
       <!-- Mobile menu backdrop -->
       <div
@@ -70,7 +80,7 @@
 
       <!-- Mobile menu container -->
       <div
-        x-show="open || window.innerWidth >= 768"
+        x-show="open || isDesktop"
         x-transition:enter="transition ease-out duration-200 transform"
         x-transition:enter-start="translate-y-[-100%]"
         x-transition:enter-end="translate-y-0"

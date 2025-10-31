@@ -601,6 +601,10 @@ export class KelassService {
     });
   }
 
+  async checkUserInKelas(kelasId:number, userId:number){
+    return await this.userKelasRepository.findOne({where: {kelas: {id: kelasId}, user: {id: userId}}})
+  }
+
   async findOne(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },

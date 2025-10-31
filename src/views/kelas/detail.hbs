@@ -28,13 +28,23 @@
           </div>
           
           <!-- Content -->
-          <div>
+          <div class="mb-3">
             <h1 class="text-xl font-bold text-slate-900 mb-2 leading-tight font-montserrat">
               {{kelas.nama_kelas}}
             </h1>
             <p class="text-sm text-justify text-slate-600 leading-relaxed">
               {{kelas.deskripsi}}
             </p>
+          </div>
+
+                    <div class='card-actions'>
+            <a
+              href='/kelass/detail/{{kelas.id}}'
+              class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
+            >
+              <i class="fa-solid fa-circle-info"></i>
+              Detail Class
+            </a>
           </div>
         </div>
       </div>

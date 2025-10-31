@@ -26,16 +26,19 @@ export class FileUploadExceptionFilter implements ExceptionFilter {
       message = exception.message;
     }
 
-    // Check if error is related to file upload
+    // Normalize to lowercase for case-insensitive checks
+    const msgLower = (message || '').toString().toLowerCase();
+
+    // Check if error is related to file upload (case-insensitive)
     const isFileError =
-      message.includes('Format file') ||
-      message.includes('Ukuran file') ||
-      message.includes('file') ||
-      message.includes('upload') ||
-      message.includes('Hanya') ||
-      message.includes('diperbolehkan') ||
-      message.includes('dimension') ||
-      message.includes('image') ||
+      msgLower.includes('format file') ||
+      msgLower.includes('ukuran file') ||
+      msgLower.includes('file') ||
+      msgLower.includes('upload') ||
+      msgLower.includes('hanya') ||
+      msgLower.includes('diperbolehkan') ||
+      msgLower.includes('dimension') ||
+      msgLower.includes('image') ||
       (exception as any).storageErrors;
 
     if (isFileError) {

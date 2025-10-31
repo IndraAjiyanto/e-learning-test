@@ -51,6 +51,8 @@ export class UsersController {
     maxWidth: 500,
     minHeight: 300,
     maxHeight: 500,
+    maxSize: 1 * 1024 * 1024, // 3MB max
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/profile',
   })
   async create(

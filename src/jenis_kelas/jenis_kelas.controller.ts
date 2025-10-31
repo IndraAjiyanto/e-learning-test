@@ -13,10 +13,8 @@ export class JenisKelasController {
 
   @Roles('super_admin')
   @Post()
-    @UseInterceptors(FileInterceptor('icon', multerConfigImage))
-  async create(@Body() createJenisKelaDto: CreateJenisKelaDto, @UploadedFile() icon: Express.Multer.File, @Res() res:Response, @Req() req:Request) {
+  async create(@Body() createJenisKelaDto: CreateJenisKelaDto, @Res() res:Response, @Req() req:Request) {
     try {
-      createJenisKelaDto.icon = icon.path
       await this.jenisKelasService.create(createJenisKelaDto);
       req.flash('success','Class type successfully created')
       res.redirect('/jenis-kelas')
