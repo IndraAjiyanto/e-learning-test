@@ -2,7 +2,7 @@
   <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit Category</h2>
 
-    <form action="/kategori/{{kategori.id}}?_method=PATCH" method="post" enctype="multipart/form-data" class="space-y-6">
+    <form action="/kategoris/{{kategori.id}}?_method=PATCH" method="post" enctype="multipart/form-data" class="space-y-6">
 
       <!-- Nama Kategori -->
       <div>
@@ -16,45 +16,31 @@
                  focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
       </div>
 
-      <!-- Icon Upload + Preview -->
-      <div x-data="{ 
-              previewUrl: '{{kategori.icon}}' ? '{{kategori.icon}}' : null 
-            }" class="space-y-3">
-        <label for="icon" class="block text-sm font-semibold text-gray-700 mb-1">
-          Icon
-        </label>
-        <input 
-          type="file" 
-          id="icon" 
-          name="icon" 
-          accept="image/*" 
-          x-ref="fileInput"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none 
-                 focus:ring-2 focus:ring-gray-900 text-gray-700"
-          @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-        >
+      <div>
+        <label
+          for='icon'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Icon</label>
+        <div class='flex items-center gap-4'>
+          <input
+            x-model='icon'
+            type='text'
+            id='icon'
+            name='icon'
+            placeholder='code or fa-code or fa-solid fa-code'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
 
-        <!-- Preview Image -->
-        <template x-if="previewUrl">
-          <div class="relative w-32 h-32">
-            <img 
-              :src="previewUrl" 
-              alt="Preview Icon" 
-              class="w-32 h-32 object-cover rounded-lg border border-gray-300"
-            >
-            <button 
-              type="button" 
-              class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full 
-                     flex items-center justify-center shadow hover:bg-red-600"
-              @click="previewUrl = null; $refs.fileInput.value = null;">
-              &times;
-            </button>
+          <div class='flex items-center gap-3'>
+            <i :class='computedClass' class='text-2xl text-gray-700'></i>
+            <span class='text-sm text-gray-500' x-text='computedClass'></span>
           </div>
-        </template>
-
-        <p class="text-sm text-gray-500">
-          Leave empty if you don't want to change the current icon.
-        </p>
+        </div>
+        <p class='text-sm text-gray-500 mt-2'>Type an icon name like
+          <code>code</code>
+          or
+          <code>fa-code</code>. It will preview using Font Awesome 6 (e.g.
+          <code>fa-solid fa-code</code>).</p>
       </div>
 
       <!-- Deskripsi -->

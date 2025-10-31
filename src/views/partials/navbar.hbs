@@ -775,6 +775,15 @@
         >Class</a>
 
         <a
+          href='/kategoris'
+          @click="setActive('/kategoris')"
+          :class="active === '/kategoris' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+        >Category</a>
+
+        <a
           href='/jenis-kelas'
           @click="setActive('/jenis-kelas')"
           :class="active === '/jenis-kelas' 

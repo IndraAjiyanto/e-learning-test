@@ -16,6 +16,11 @@ export class KategorisService {
       private readonly alurKelasRepository: Repository<AlurKelas>
     ){}
 
+    async create(createKategorisDto: CreateKategorisDto) {
+    const kategori = await this.kategoriRepository.create(createKategorisDto);
+    return await this.kategoriRepository.save(kategori);
+  }
+
   async findAll() {
     return await this.kategoriRepository.find()
   }
@@ -41,39 +46,13 @@ export class KategorisService {
     return await this.kategoriRepository.save(kategori);
   }
 
-  async getPublicIdFromUrl(url: string) {
-    // Pisahkan berdasarkan "/upload/"
-    const parts = url.split('/upload/');
-    if (parts.length < 2) {
-      return null;
+  async remove(kategoriId: number) {
+    const kategori =  await this.findOne(kategoriId);
+    if (!kategori) {
+      throw new NotFoundException();
     }
-
-    // Ambil bagian setelah upload/
-    let path = parts[1];
-
-    // Hapus "v1234567890/" (versi auto Cloudinary)
-    path = path.replace(/^v[0-9]+\/?/, '');
-
-    // Buang extension (.jpg, .png, .pdf, dll)
-    path = path.replace(/\.[^.]+$/, '');
-
-    console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
-
-    await this.deleteFileIfExists(path);
-  }
-
-  async deleteFileIfExists(publicId: string) {
-    try {
-      const result = await cloudinary.uploader.destroy(publicId);
-
-      if (result.result === 'not found') {
-        console.log('File not found in Cloudinary.');
-      } else {
-        console.log('File deleted from Cloudinary:', result);
-      }
-    } catch (error) {
-      console.error('Error deleting file from Cloudinary:', error);
-      throw error;
-    }
+    await this.kategoriRepository.remove(kategori);
+    return {message: 'kategori successfully deleted'
+  };
   }
 }

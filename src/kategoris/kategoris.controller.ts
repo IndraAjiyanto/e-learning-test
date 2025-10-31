@@ -5,13 +5,31 @@ import { UpdateKategorisDto } from './dto/update-kategoris.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigImage } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('kategoris')
 export class KategorisController {
   constructor(private readonly kategorisService: KategorisService) {}
+
+  @Roles('super_admin')
+  @Post()
+  async create(@Body() createKategorisDto: CreateKategorisDto, @Res() res:Response, @Req() req:Request) {  
+    try {
+      await this.kategorisService.create(createKategorisDto);
+      req.flash('success', 'kategori successfully created')
+      res.redirect('/kategoris')
+    } catch (error) {
+      console.log(error);
+      req.flash('error', 'kategori failed to create')
+      res.redirect('/kategoris')
+    }
+  }
+
+  @Roles('super_admin')
+  @Get('formCreate')
+  async formCreate(@Res() res:Response, @Req() req:Request){
+    res.render('super_admin/kategori/create', {user: req.user})
+  } 
 
   @Roles('super_admin')
   @Get()
@@ -37,19 +55,26 @@ export class KategorisController {
 
   @Roles('super_admin')
   @Patch(':kategoriId')
-  @UseInterceptors(FileInterceptor('icon', multerConfigImage))
-  async update(@Param('kategoriId') kategoriId: number, @UploadedFile() icon: Express.Multer.File, @Body() updateKategorisDto: UpdateKategorisDto, @Res() res:Response, @Req() req:Request) {
+  async update(@Param('kategoriId') kategoriId: number, @Body() updateKategorisDto: UpdateKategorisDto, @Res() res:Response, @Req() req:Request) {
     try {
-      const kategori = await this.kategorisService.findOne(kategoriId)
-      if(icon){
-        await this.kategorisService.getPublicIdFromUrl(kategori.icon);
-        updateKategorisDto.icon = icon.path
-      }
     await this.kategorisService.update(kategoriId, updateKategorisDto);
     req.flash('success', 'kategori successfully updated')
     res.redirect('/kategoris')
     } catch (error) {
           req.flash('success', 'kategori failed to update')
+    res.redirect('/kategoris')
+    }
+  }
+
+  @Roles('super_admin')
+  @Delete(':kategoriId')
+  async remove(@Param('kategoriId') kategoriId: number, @Res() res:Response, @Req() req:Request) {
+    try {
+    await this.kategorisService.remove(kategoriId);
+    req.flash('success', 'kategori successfully deleted')
+    res.redirect('/kategoris')
+    } catch (error) {
+          req.flash('success', 'kategori failed to delete')
     res.redirect('/kategoris')
     }
   }
