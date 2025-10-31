@@ -4094,6 +4094,14 @@ details.collapse summary::-webkit-details-marker {
   bottom: 0px;
 }
 
+.-bottom-4 {
+  bottom: -1rem;
+}
+
+.-bottom-6 {
+  bottom: -1.5rem;
+}
+
 .-left-4 {
   left: -1rem;
 }
@@ -4166,6 +4174,14 @@ details.collapse summary::-webkit-details-marker {
   bottom: 1.5rem;
 }
 
+.bottom-60 {
+  bottom: 15rem;
+}
+
+.bottom-8 {
+  bottom: 2rem;
+}
+
 .left-0 {
   left: 0px;
 }
@@ -4204,6 +4220,10 @@ details.collapse summary::-webkit-details-marker {
 
 .right-0 {
   right: 0px;
+}
+
+.right-12 {
+  right: 3rem;
 }
 
 .right-2 {
@@ -4262,8 +4282,8 @@ details.collapse summary::-webkit-details-marker {
   top: 50%;
 }
 
-.top-1\/3 {
-  top: 33.333333%;
+.top-10 {
+  top: 2.5rem;
 }
 
 .top-12 {
@@ -5343,6 +5363,11 @@ details.collapse summary::-webkit-details-marker {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.rotate-45 {
+  --tw-rotate: 45deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .scale-100 {
   --tw-scale-x: 1;
   --tw-scale-y: 1;
@@ -6003,6 +6028,10 @@ details.collapse summary::-webkit-details-marker {
   border-color: rgb(203 213 225 / var(--tw-border-opacity));
 }
 
+.border-slate-300\/50 {
+  border-color: rgb(203 213 225 / 0.5);
+}
+
 .border-slate-400 {
   --tw-border-opacity: 1;
   border-color: rgb(148 163 184 / var(--tw-border-opacity));
@@ -6239,9 +6268,17 @@ details.collapse summary::-webkit-details-marker {
   background-color: rgb(226 232 240 / var(--tw-bg-opacity));
 }
 
+.bg-slate-200\/40 {
+  background-color: rgb(226 232 240 / 0.4);
+}
+
 .bg-slate-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(203 213 225 / var(--tw-bg-opacity));
+}
+
+.bg-slate-300\/30 {
+  background-color: rgb(203 213 225 / 0.3);
 }
 
 .bg-slate-400 {
@@ -6249,14 +6286,13 @@ details.collapse summary::-webkit-details-marker {
   background-color: rgb(148 163 184 / var(--tw-bg-opacity));
 }
 
+.bg-slate-400\/20 {
+  background-color: rgb(148 163 184 / 0.2);
+}
+
 .bg-slate-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(248 250 252 / var(--tw-bg-opacity));
-}
-
-.bg-slate-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(100 116 139 / var(--tw-bg-opacity));
 }
 
 .bg-slate-600 {
@@ -6336,6 +6372,11 @@ details.collapse summary::-webkit-details-marker {
 .bg-yellow-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(234 179 8 / var(--tw-bg-opacity));
+}
+
+.bg-slate-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(100 116 139 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-50 {
@@ -7778,6 +7819,11 @@ details.collapse summary::-webkit-details-marker {
 
 .blur-2xl {
   --tw-blur: blur(40px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.blur-xl {
+  --tw-blur: blur(24px);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
