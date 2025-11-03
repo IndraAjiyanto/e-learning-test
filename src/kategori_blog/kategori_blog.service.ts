@@ -1,26 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateKategoriBlogDto } from './dto/create-kategori_blog.dto';
 import { UpdateKategoriBlogDto } from './dto/update-kategori_blog.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { KategoriBlog } from 'src/entities/kategori_blog.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class KategoriBlogService {
-  create(createKategoriBlogDto: CreateKategoriBlogDto) {
-    return 'This action adds a new kategoriBlog';
+  constructor(
+    @InjectRepository(KategoriBlog)
+    private readonly kategoriBlogRepository: Repository<KategoriBlog>,
+  ) {}
+
+  async create(createKategoriBlogDto: CreateKategoriBlogDto) {
+    const kategori = this.kategoriBlogRepository.create(createKategoriBlogDto);
+    return await this.kategoriBlogRepository.save(kategori);
   }
 
-  findAll() {
-    return `This action returns all kategoriBlog`;
+  async findAll() {
+    return await this.kategoriBlogRepository.find({
+      relations: ['blog'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} kategoriBlog`;
+  async findOne(id: number) {
+    const kategori = await this.kategoriBlogRepository.findOne({
+      where: { id },
+      relations: ['blog'],
+    });
+    if (!kategori) {
+      throw new NotFoundException('Kategori Blog not found');
+    }
+    return kategori;
   }
 
-  update(id: number, updateKategoriBlogDto: UpdateKategoriBlogDto) {
-    return `This action updates a #${id} kategoriBlog`;
-  }
+  async update(id: number, updateKategoriBlogDto: UpdateKategoriBlogDto) {
+    const kategori = await this.findOne(id);
+    if (!kategori) {
+      throw new NotFoundException('Kategori Blog not found');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} kategoriBlog`;
+        Object.assign(kategori, updateKategoriBlogDto);
+        return await this.kategoriBlogRepository.save(kategori);
+    }
+
+  async remove(id: number) {
+    const kategori = await this.findOne(id);
+    if (!kategori) {
+      throw new NotFoundException('Kategori Blog not found');
+    }
+    return await this.kategoriBlogRepository.remove(kategori);
   }
 }

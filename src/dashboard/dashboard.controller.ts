@@ -1,21 +1,12 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
   Req,
   Res,
-  Query,
 } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { Request, Response } from 'express';
-import {
-  Paginate,
-  PaginationParams,
-} from 'src/common/decorators/pagination.decorator';
 
 @Controller('dashboard')
 export class DashboardController {

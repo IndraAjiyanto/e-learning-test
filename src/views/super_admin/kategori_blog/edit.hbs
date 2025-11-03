@@ -1,0 +1,138 @@
+<div class=' py-20'   x-data="{
+  icon: '{{kategori_blog.icon}}',
+  get computedClass() {
+    const raw = (this.icon || '').toString().trim();
+    if (!raw) return 'fa-solid fa-circle-question';
+    const v = raw;
+    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
+    if (hasFaPrefix) {
+      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
+      return v;
+    }
+    if (!v.includes(' ')) return 'fa-solid fa-' + v;
+    return v;
+  }
+}">
+  <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Edit Blog
+      Category</h2>
+
+    <form
+      action='/kategori-blog/{{kategori_blog.id}}?_method=PATCH'
+      method='post'
+      class='space-y-6'
+    >
+
+      <!-- Nama -->
+      <div>
+        <label for='nama' class='block text-sm font-medium text-gray-700 mb-2'>
+          Category Name
+          <span class='text-red-500'>*</span>
+        </label>
+        <input
+          type='text'
+          id='nama'
+          name='nama'
+          required
+          value='{{kategori_blog.nama}}'
+          placeholder='Enter category name'
+          class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900'
+        />
+      </div>
+
+      <!-- Icon -->
+      <div>
+        <label
+          for='icon'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Icon</label>
+        <div class='flex items-center gap-4'>
+          <input
+            x-model='icon'
+            type='text'
+            id='icon'
+            name='icon'
+            placeholder='code or fa-code or fa-solid fa-code'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+
+          <div class='flex items-center gap-3'>
+            <i :class='computedClass' class='text-2xl text-gray-700'></i>
+            <span class='text-sm text-gray-500' x-text='computedClass'></span>
+          </div>
+        </div>
+        <p class='text-sm text-gray-500 mt-2'>Type an icon name like
+          <code>code</code>
+          or
+          <code>fa-code</code>. It will preview using Font Awesome 6 (e.g.
+          <code>fa-solid fa-code</code>).</p>
+      </div>
+
+      <!-- Deskripsi -->
+      <div>
+        <label
+          for='deskripsi'
+          class='block text-sm font-medium text-gray-700 mb-2'
+        >
+          Description
+          <span class='text-red-500'>*</span>
+        </label>
+        <textarea
+          id='deskripsi'
+          name='deskripsi'
+          required
+          rows='5'
+          placeholder='Enter category description...'
+          class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 resize-none'
+        >{{kategori_blog.deskripsi}}</textarea>
+      </div>
+
+      <!-- Blog Count Info -->
+      {{#if kategori_blog.blog}}
+        <div
+          class='p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3'
+        >
+          <svg
+            class='w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0'
+            fill='none'
+            stroke='currentColor'
+            viewBox='0 0 24 24'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+            />
+          </svg>
+          <div>
+            <p class='text-sm text-blue-800 font-medium'>
+              This category is used by
+              {{kategori_blog.blog.length}}
+              blog post{{#if (gt kategori_blog.blog.length 1)}}s{{/if}}.
+            </p>
+            <p class='text-xs text-blue-600 mt-1'>
+              Updating this category will affect all related blog posts.
+            </p>
+          </div>
+        </div>
+      {{/if}}
+
+      <!-- Submit Buttons -->
+      <div class='flex gap-3 mt-6'>
+        <button
+          type='submit'
+          class='flex-1 py-2 px-4 bg-gray-900 text-white font-semibold rounded-lg shadow hover:bg-gray-600 transition'
+        >
+          Update Category
+        </button>
+        <a
+          href='/kategori-blog'
+          class='flex-1 py-2 px-4 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow hover:bg-gray-400 transition text-center'
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

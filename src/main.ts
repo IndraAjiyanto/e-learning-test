@@ -93,6 +93,26 @@ async function bootstrap() {
     }
     return '';
   });
+
+  hbs.registerHelper('computeIcon', function (iconValue) {
+    const raw = (iconValue || '').toString().trim();
+    if (!raw) return 'fa-solid fa-circle-question';
+
+    const v = raw;
+    const hasFaPrefix =
+      /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(
+        v,
+      ) || v.split(/\s+/).some((s) => /^fa-/i.test(s));
+
+    if (hasFaPrefix) {
+      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
+      return v;
+    }
+
+    if (!v.includes(' ')) return 'fa-solid fa-' + v;
+    return v;
+  });
+
   hbs.registerHelper('formatDate', function (date) {
     if (!date) return '';
     const d = new Date(date);
