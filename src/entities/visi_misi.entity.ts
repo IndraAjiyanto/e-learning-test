@@ -11,6 +11,9 @@ export class VisiMisi{
     @Column()
     misi: string
 
+    @Column()
+    icon: string
+
                             @CreateDateColumn()
                             createdAt: Date;
                             

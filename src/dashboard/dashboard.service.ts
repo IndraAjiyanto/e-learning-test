@@ -12,6 +12,10 @@ import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { paginateQuery } from 'src/common/utils/pagination.helper';
 import { PaginationParams } from 'src/common/decorators/pagination.decorator';
+import { KerjaSama } from 'src/entities/kerja_sama.entity';
+import { Benefit } from 'src/entities/benefit.entity';
+import { Team } from 'src/entities/team.entity';
+import { Social } from 'src/entities/social.entity';
 
 @Injectable()
 export class DashboardService {
@@ -30,6 +34,14 @@ export class DashboardService {
     private readonly kategoriRepository: Repository<Kategori>,
     @InjectRepository(JenisKelas)
     private readonly jenisKelasRepository: Repository<JenisKelas>,
+    @InjectRepository(KerjaSama)
+    private readonly kerjaSamaRepository: Repository<KerjaSama>,
+    @InjectRepository(Benefit)
+    private readonly benefitRepository: Repository<Benefit>,
+    @InjectRepository(Team)
+    private readonly teamRepository: Repository<Team>,
+    @InjectRepository(Social)
+    private readonly socialRepository: Repository<Social>,
   ) {}
 
   async findAllKelas() {
@@ -80,29 +92,6 @@ export class DashboardService {
     });
   }
 
-  async paginatePortfolio(params: PaginationParams) {
-    const { kategori, jenis_kelas, page, limit } = params;
-
-    const queryBuilder = this.portfolioRepository
-      .createQueryBuilder('portfolio')
-      .leftJoinAndSelect('portfolio.kelas', 'kelas')
-      .leftJoinAndSelect('portfolio.user', 'user')
-      .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
-      .leftJoinAndSelect('kelas.kategori', 'kategori');
-
-    if (kategori)
-      queryBuilder.andWhere('kelas.kategoriId = :kategori', { kategori });
-    if (jenis_kelas)
-      queryBuilder.andWhere('kelas.jenis_kelasId = :jenis_kelas', {
-        jenis_kelas,
-      });
-
-    queryBuilder.orderBy('portfolio.id', 'DESC');
-
-    // Menggunakan helper function yang lebih simple
-    return await paginateQuery(queryBuilder, page, limit);
-  }
-
   async findFAQ() {
     return await this.pertanyaanUmumRepository.find();
   }
@@ -114,31 +103,56 @@ export class DashboardService {
     });
   }
 
-  async paginateAlumni(params: PaginationParams) {
-    const { kelas, page, limit } = params;
+  async findKerjaSama() {
+    return await this.kerjaSamaRepository.find({
+      order: { id: 'DESC' },
+    });
+  }
 
-    const queryBuilder = await this.alumniRepository
-      .createQueryBuilder('alumni')
-      .leftJoinAndSelect('alumni.kelas', 'kelas');
+  async findTeam() {
+    return await this.teamRepository.find({
+      order: { id: 'ASC' },
+    });
+  }
 
-    if (kelas)
-      queryBuilder.andWhere('alumni.kelasId = :kelasId', { kelasId: kelas.id });
-
-    queryBuilder.orderBy('alumni.id', 'DESC');
-
-    return await paginateQuery(queryBuilder, page, limit);
+  async findSocial(){
+    return await this.socialRepository.find();
   }
 
   async findKategori() {
     return await this.kategoriRepository.find();
   }
 
+  async findBenefit1(){
+    return await this.benefitRepository.findOne({where: {no: 1}});
+  }
+
+  async findBenefit2(){
+    return await this.benefitRepository.findOne({where: {no: 2}});
+  }
+
+  async findBenefit3(){
+    return await this.benefitRepository.findOne({where: {no: 3}});
+  }
+
   async findJenisKelas() {
     return await this.jenisKelasRepository.find();
   }
 
-  async findGambar() {
-    return await this.gambarBenefitRepository.find();
+  async findGambar1() {
+    return await this.gambarBenefitRepository.findOne({ where: { no: 1 } });
+  }
+
+  async findGambar2() {
+    return await this.gambarBenefitRepository.findOne({ where: { no: 2 } });
+  }
+
+  async findGambar3() {
+    return await this.gambarBenefitRepository.findOne({ where: { no: 3 } });
+  }
+
+  async findGambar4() {
+    return await this.gambarBenefitRepository.findOne({ where: { no: 4 } });
   }
 
   create(createDashboardDto: CreateDashboardDto) {

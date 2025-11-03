@@ -1,0 +1,225 @@
+<div class='pt-28 py-20'>
+  <div
+    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{ 
+    previewUrl: null,
+    errorMessage: '',
+    isValid: true,
+    fileName: '',
+    fileSize: 0,
+    imageWidth: 0,
+    imageHeight: 0,
+    hasFile: false,
+    validateImage(file) {
+      if (!file) {
+        this.hasFile = false;
+        return;
+      }
+      
+      this.hasFile = true;
+      this.fileName = file.name;
+      this.fileSize = file.size;
+      this.errorMessage = '';
+      this.isValid = true;
+
+      // Validasi tipe file
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+        this.isValid = false;
+        this.previewUrl = null;
+        return;
+      }
+
+      // Validasi ukuran file (2MB = 2097152 bytes)
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 2MB`;
+        this.isValid = false;
+        this.previewUrl = null;
+        return;
+      }
+
+      // Validasi dimensi gambar
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      
+      img.onload = () => {
+        this.imageWidth = img.width;
+        this.imageHeight = img.height;
+        
+        if (img.width < 1000 || img.width > 1024 || img.height < 1000 || img.height > 1024) {
+          this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 1000x1000 to 1024x1024 pixels`;
+          this.isValid = false;
+          this.previewUrl = null;
+          URL.revokeObjectURL(objectUrl);
+        } else {
+          this.previewUrl = objectUrl;
+          this.isValid = true;
+          this.errorMessage = '';
+        }
+      };
+      
+      img.onerror = () => {
+        this.errorMessage = 'Failed to load image';
+        this.isValid = false;
+        this.previewUrl = null;
+        URL.revokeObjectURL(objectUrl);
+      };
+      
+      img.src = objectUrl;
+    },
+    clearFile() {
+      this.previewUrl = null;
+      this.errorMessage = '';
+      this.isValid = true;
+      this.fileName = '';
+      this.fileSize = 0;
+      this.imageWidth = 0;
+      this.imageHeight = 0;
+      this.hasFile = false;
+      $refs.fileInput.value = null;
+    },
+    canSubmit() {
+      // Harus ada file dan valid
+      return this.hasFile && this.isValid;
+    }
+  }"
+  >
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Create New
+      Benefit Image</h2>
+
+    <form
+      action='/gambar-benefit'
+      method='post'
+      enctype='multipart/form-data'
+      class='space-y-6'
+      @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please upload a valid image before submitting.'); }"
+    >
+
+      <!-- Number Select -->
+      <div>
+        <label for='no' class='block text-sm font-medium text-gray-700 mb-2'>
+          Number
+          <span class='text-red-500'>*</span>
+        </label>
+        <select
+          id='no'
+          name='no'
+          required
+          class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900'
+        >
+          <option value='' disabled selected>Select number</option>
+          <option value='1'>1</option>
+          <option value='2'>2</option>
+          <option value='3'>3</option>
+          <option value='4'>4</option>
+        </select>
+      </div>
+
+      <!-- Upload Gambar -->
+      <div>
+        <label
+          for='gambar'
+          class='block text-sm font-medium text-gray-700 mb-2'
+        >
+          Upload Image
+          <span class='text-red-500'>*</span>
+        </label>
+        <div class='space-y-3'>
+          <!-- File Input -->
+          <div class='relative'>
+            <input
+              type='file'
+              id='gambar'
+              name='gambar'
+              accept='image/jpeg,image/jpg,image/png'
+              @change='validateImage($event.target.files[0])'
+              x-ref='fileInput'
+              class='block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-600 cursor-pointer border border-gray-300 rounded-lg'
+            />
+          </div>
+
+          <!-- Validation Requirements -->
+          <div class='text-xs text-gray-500 space-y-1'>
+            <p>✓ Format: JPEG, JPG, or PNG</p>
+            <p>✓ Max size: 2MB</p>
+            <p>✓ Dimensions: 1000x1000 to 1024x1024 pixels</p>
+          </div>
+
+          <!-- File Info -->
+          <div x-show='hasFile' class='text-sm text-gray-600 space-y-1'>
+            <p><strong>File:</strong> <span x-text='fileName'></span></p>
+            <p><strong>Size:</strong>
+              <span x-text='(fileSize / 1024 / 1024).toFixed(2)'></span>
+              MB</p>
+            <p x-show='imageWidth > 0'><strong>Dimensions:</strong>
+              <span x-text='imageWidth'></span>x<span
+                x-text='imageHeight'
+              ></span>
+              px</p>
+          </div>
+
+          <!-- Error Message -->
+          <div
+            x-show='errorMessage'
+            class='p-3 bg-red-50 border border-red-200 rounded-lg'
+          >
+            <p class='text-sm text-red-700' x-text='errorMessage'></p>
+          </div>
+
+          <!-- Image Preview -->
+          <div x-show='previewUrl' class='mt-4'>
+            <p class='text-sm font-medium text-gray-700 mb-2'>Image Preview:</p>
+            <div class='relative inline-block'>
+              <img
+                :src='previewUrl'
+                alt='Preview'
+                class='max-w-full h-auto rounded-lg shadow-md border border-gray-200'
+              />
+              <button
+                type='button'
+                @click='clearFile()'
+                class='absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition shadow-lg'
+                title='Remove image'
+              >
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke-width='2'
+                  stroke='currentColor'
+                  class='w-4 h-4'
+                >
+                  <path
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                    d='M6 18L18 6M6 6l12 12'
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div class='flex gap-3 mt-6'>
+        <button
+          type='submit'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'"
+          class='flex-1 py-2 px-4 text-white font-semibold rounded-lg shadow transition'
+        >
+          Save
+        </button>
+        <a
+          href='/gambar-benefit'
+          class='flex-1 py-2 px-4 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow hover:bg-gray-400 transition text-center'
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,121 @@
+<div class='pt-28 py-20'>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Benefit</h2>
+
+    {{#if messages.error}}
+      <div
+        class='mb-6 flex items-center gap-3 p-4 bg-red-50 border border-red-300 rounded-lg text-red-800'
+      >
+        <i class='fas fa-exclamation-circle text-red-500 text-xl'></i>
+        <p class='font-medium'>{{messages.error}}</p>
+      </div>
+    {{/if}}
+
+    <form action='/benefit' method='post' class='space-y-6'>
+
+          <div>
+        <label
+          for='icon'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Icon
+        </label>
+        <div class='flex items-center gap-4'>
+          <input
+            x-model='icon'
+            type='text'
+            id='icon'
+            name='icon'
+            placeholder='fa-code, fa-layer-group, etc.'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+
+          <!-- Live preview: binds computed class to the <i> element -->
+          <div class='flex items-center gap-3'>
+            <i :class='computedClass' class='text-2xl text-gray-700'></i>
+            <span class='text-sm text-gray-500' x-text='computedClass'></span>
+          </div>
+        </div>
+        <p class='text-sm text-gray-500 mt-2'>Type a Font Awesome class like
+          <code>fa-code</code>
+          or include full classes like
+          <code>fas fa-code</code>.</p>
+      </div>
+
+      <!-- Judul -->
+      <div>
+        <label
+          for='judul'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Title
+          <span class='text-red-500'>*</span>
+        </label>
+        <input
+          type='text'
+          id='judul'
+          name='judul'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          placeholder='Enter benefit title'
+        />
+      </div>
+
+      <!-- Text -->
+      <div>
+        <label
+          for='text'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Description
+          <span class='text-red-500'>*</span>
+        </label>
+        <textarea
+          id='text'
+          name='text'
+          rows='5'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 resize-none'
+          placeholder='Enter benefit description'
+        ></textarea>
+      </div>
+
+      <!-- Number -->
+      <div>
+        <label for='no' class='block text-sm font-semibold text-gray-700 mb-1'>
+          Number
+          <span class='text-red-500'>*</span>
+        </label>
+        <select
+          id='no'
+          name='no'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        >
+          <option value=''>-- Select Number --</option>
+          <option value='1'>1</option>
+          <option value='2'>2</option>
+          <option value='3'>3</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition flex items-center gap-2'
+        >
+          <i class='fas fa-plus'></i>
+          Create
+        </button>
+        <a
+          href='/benefit'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
+        >
+          <i class='fas fa-times'></i>
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

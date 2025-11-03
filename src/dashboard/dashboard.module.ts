@@ -9,9 +9,13 @@ import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
+import { KerjaSama } from 'src/entities/kerja_sama.entity';
+import { Benefit } from 'src/entities/benefit.entity';
+import { Team } from 'src/entities/team.entity';
+import { Social } from 'src/entities/social.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Kelas, PertanyaanUmum, Alumni, Portfolio, GambarBenefit, Kategori, JenisKelas])],
+    imports: [TypeOrmModule.forFeature([Social ,Team, Benefit, Kelas, PertanyaanUmum, Alumni, Portfolio, GambarBenefit, Kategori, JenisKelas, KerjaSama])],
   controllers: [DashboardController],
   providers: [DashboardService],
     exports: [DashboardService]

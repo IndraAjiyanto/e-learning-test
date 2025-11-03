@@ -1,5 +1,7 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+export type No = 1 | 2 | 3 | 4;
+
 @Entity()
 export class GambarBenefit{
     @PrimaryGeneratedColumn()
@@ -7,6 +9,9 @@ export class GambarBenefit{
 
     @Column()
     gambar: string
+
+  @Column({ type: 'enum', enum: [1, 2, 3, 4] })
+  no: No;
 
                     @CreateDateColumn()
                     createdAt: Date;

@@ -374,15 +374,14 @@
           <div
             class='text-white text-2xl bg-emerald-600 p-4 rounded-xl shadow-md'
           >
-            <i class='fa-solid fa-money-bill-wave'></i>
+            <i class='{{benefit_1.icon}}'></i>
           </div>
           <div>
             <h3 class='text-2xl font-extrabold text-gray-900 mb-2'>
-              Salary Up to Two Digits!
+              {{benefit_1.judul}}
             </h3>
             <p class='text-gray-700 text-lg leading-relaxed'>
-              Get highly competitive salaries from many well-known companies
-              that partner with Kesatria Academy.
+              {{benefit_1.text}}
             </p>
             <span class='sr-only'>This is the most desired benefit by most
               learners.</span>
@@ -396,15 +395,14 @@
         <div
           class='text-slate-700 text-2xl bg-slate-100 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300'
         >
-          <i class='fa-solid fa-star'></i>
+          <i class='{{benefit_2.icon}}'></i>
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            Premium Mentors and Networking
+            {{benefit_2.judul}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
-            You will be guided directly by expert mentors from Top Tech
-            Companies who are ready to intensively mentor you.
+            {{benefit_2.text}}
           </p>
         </div>
       </div>
@@ -415,15 +413,14 @@
         <div
           class='text-slate-700 text-2xl bg-slate-100 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300'
         >
-          <i class='fa-solid fa-briefcase'></i>
+          <i class='{{benefit_3.icon}}'></i>
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            More Solid Career Preparation!
+            {{benefit_3.judul}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
-            CV, Portfolio, and User Interview preparation will be directly
-            assisted by the talent support team from Kesatria Academy.
+            {{benefit_3.text}}
           </p>
         </div>
       </div>
@@ -432,22 +429,22 @@
 
     <div class='grid grid-cols-2 gap-6'>
       <img
-        src='https://images.unsplash.com/photo-1521737604893-d14cc237f11d'
+        src='{{gambar_benefit_1.gambar}}'
         class='rounded-2xl shadow-2xl col-span-2 h-64 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Teamwork'
       />
       <img
-        src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f'
+        src='{{gambar_benefit_2.gambar}}'
         class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Laptop Work'
       />
       <img
-        src='https://glints.com/id/lowongan/wp-content/uploads/2020/04/smartworks-coworking-Uz8THWPXwhI-unsplash-min-scaled.jpg'
+        src='{{gambar_benefit_3.gambar}}'
         class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Meeting'
       />
       <img
-        src='https://images.unsplash.com/photo-1519389950473-47ba0277781c'
+        src='{{gambar_benefit_4.gambar}}'
         class='rounded-2xl shadow-2xl col-span-2 h-60 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Coding'
       />
@@ -490,57 +487,6 @@
       class='flex transition-transform duration-500'
       :style='`transform: translateX(-${active * 100}%);`'
     >
-      <!-- Slide 1 -->
-      <div class='w-full flex-shrink-0 flex justify-center px-4'>
-        <div
-          class='bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-2xl p-10 max-w-3xl border border-slate-200'
-        >
-          <span class='text-6xl text-slate-400 font-bold'>❝</span>
-          <p class='text-gray-800 text-xl leading-relaxed mb-8 italic'>
-            I tried looking for courses elsewhere, but they were too expensive!
-            Until I found Kesatria Academy which offers great value and has job
-            guarantees...
-          </p>
-          <div class='flex items-center gap-6'>
-            <img
-              src='https://randomuser.me/api/portraits/women/44.jpg'
-              alt='Alumni'
-              class='w-16 h-16 rounded-full border-4 border-slate-200'
-            />
-            <div>
-              <p class='font-bold text-gray-900 text-lg'>Dina Oktavia</p>
-              <p class='text-slate-600'>Marketing and Branding at Candelula</p>
-              <p class='text-slate-500 text-sm'>Digital Marketing Bootcamp Batch
-                3</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide 2 -->
-      <div class='w-full flex-shrink-0 flex justify-center px-4'>
-        <div
-          class='bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-2xl p-10 max-w-3xl border border-slate-200'
-        >
-          <span class='text-6xl text-slate-400 font-bold'>❝</span>
-          <p class='text-gray-800 text-xl leading-relaxed mb-8 italic'>
-            Mentors at Kesatria Academy are very friendly, the syllabus is
-            clear, and it really helped me upgrade my skills...
-          </p>
-          <div class='flex items-center gap-6'>
-            <img
-              src='https://randomuser.me/api/portraits/men/32.jpg'
-              alt='Alumni'
-              class='w-16 h-16 rounded-full border-4 border-slate-200'
-            />
-            <div>
-              <p class='font-bold text-gray-900 text-lg'>Andi Saputra</p>
-              <p class='text-slate-600'>Frontend Developer</p>
-              <p class='text-slate-500 text-sm'>Web Development Bootcamp Batch 5</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Slide 3 (Dynamic from data) -->
       {{#each alumni}}
@@ -616,36 +562,13 @@
     class='overflow-hidden whitespace-nowrap bg-white rounded-2xl shadow-lg py-8'
   >
     <div class='animate-slide flex items-center'>
+      {{#each kerja-sama}}
       <img
-        src='https://i.pinimg.com/originals/36/38/43/36384348ef9d7bfff66da6da9e975d56.png'
-        alt='BNI'
+        src='{{gambar}}'
+        alt='{{gambar}}'
         class='h-12 inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300'
       />
-      <img
-        src='http://pngimg.com/uploads/mcdonalds/mcdonalds_PNG17.png'
-        alt="McDonald's"
-        class='h-12 inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300'
-      />
-      <img
-        src='https://logos-world.net/wp-content/uploads/2021/08/Dominos-Logo.png'
-        alt="Domino's Pizza"
-        class='h-12 inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300'
-      />
-      <img
-        src='https://logos-world.net/wp-content/uploads/2020/09/Google-Logo.png'
-        alt='Google'
-        class='h-12 inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300'
-      />
-      <img
-        src='https://1.bp.blogspot.com/-H1NFvJAT--k/XTWpcYnPaoI/AAAAAAAAGCg/W9RhRwxf0tEFpRgR-6vVVAOL476HV803QCLcBGAs/s1600/Logo%2BGOJEK%2BTerbaru%2B2019%2BFormat%2BPNG%2BHD%2B.png'
-        alt='Gojek'
-        class='h-12 inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300'
-      />
-      <img
-        src='https://1.bp.blogspot.com/-M8L5nZiXMpk/X2H14EBayoI/AAAAAAAAAXA/yoo-qlBm224VriUmYfbW0DaJszOs0T8CgCLcBGAs/s1600/tokped%2Blogo%2B2.png'
-        alt='Tokopedia'
-        class='h-12 inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300'
-      />
+      {{/each}}
     </div>
   </div>
 </section>

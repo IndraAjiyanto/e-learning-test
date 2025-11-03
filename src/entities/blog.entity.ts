@@ -12,8 +12,8 @@ export class Blog {
     @Column()
     isi: string;
 
-    @Column()
-    gambar: string;
+    @Column('jsonb')
+    gambar: string[];
 
             @CreateDateColumn()
             createdAt: Date;

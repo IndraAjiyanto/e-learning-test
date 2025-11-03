@@ -73,7 +73,7 @@ async function bootstrap() {
     });
   });
 
-    hbs.registerHelper('roles', (a, b) => a === b);
+  hbs.registerHelper('roles', (a, b) => a === b);
 
   hbs.registerHelper('role', function (userRole, ...roles) {
     // Remove the last argument which is the options object
@@ -85,12 +85,23 @@ async function bootstrap() {
   hbs.registerHelper('gte', (a, b) => a >= b);
   hbs.registerHelper('gt', (a, b) => a > b);
   hbs.registerHelper('multiply', (a, b) => a * b);
+  hbs.registerHelper('subtract', (a, b) => a - b);
   hbs.registerHelper('isArray', (value) => Array.isArray(value));
   hbs.registerHelper('substring', (str, start, end) => {
     if (str && typeof str === 'string') {
       return str.substring(start, end).toUpperCase();
     }
     return '';
+  });
+  hbs.registerHelper('formatDate', function (date) {
+    if (!date) return '';
+    const d = new Date(date);
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    };
+    return d.toLocaleDateString('en-US', options);
   });
   hbs.registerPartials(join(__dirname, '..', 'src', 'views', 'partials'));
   app.set('view options', { layout: 'layouts/main' });

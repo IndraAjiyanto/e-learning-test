@@ -1,0 +1,152 @@
+<div class='pt-28 py-20'>
+  <div
+    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+         bulan: 3,
+         hargaFields: [{ value: '' }],
+         addHargaField() {
+           if (this.hargaFields.length < this.bulan) {
+             this.hargaFields.push({ value: '' });
+           }
+         },
+         removeHargaField(index) {
+           if (this.hargaFields.length > 1) {
+             this.hargaFields.splice(index, 1);
+           }
+         },
+         updateHargaFields() {
+           const current = this.hargaFields.length;
+           if (current < this.bulan) {
+             for (let i = current; i < this.bulan; i++) {
+               this.hargaFields.push({ value: '' });
+             }
+           } else if (current > this.bulan) {
+             this.hargaFields = this.hargaFields.slice(0, this.bulan);
+           }
+         }
+       }"
+  >
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Cicilan</h2>
+
+    {{#if messages.error}}
+      <div
+        class='mb-6 flex items-center gap-3 p-4 bg-red-50 border border-red-300 rounded-lg text-red-800'
+      >
+        <i class='fas fa-exclamation-circle text-red-500 text-xl'></i>
+        <p class='font-medium'>{{messages.error}}</p>
+      </div>
+    {{/if}}
+
+    <form action='/cicilan' method='post' class='space-y-6'>
+
+      <!-- Kelas -->
+      <div>
+        <label
+          for='kelasId'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Kelas
+          <span class='text-red-500'>*</span>
+        </label>
+        <select
+          id='kelasId'
+          name='kelasId'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        >
+          <option value=''>-- Select Kelas --</option>
+          {{#each kelas}}
+            <option value='{{id}}'>{{nama_kelas}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <!-- Durasi Cicilan -->
+      <div>
+        <label
+          for='bulan'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Durasi Cicilan
+          <span class='text-red-500'>*</span>
+        </label>
+        <select
+          id='bulan'
+          name='bulan'
+          required
+          x-model.number='bulan'
+          @change='updateHargaFields()'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        >
+          <option value='3'>3 Bulan</option>
+          <option value='6'>6 Bulan</option>
+          <option value='12'>12 Bulan</option>
+        </select>
+      </div>
+
+      <!-- Harga per Bulan -->
+      <div>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
+          Harga per Bulan
+          <span class='text-red-500'>*</span>
+        </label>
+        <div class='text-xs text-gray-500 mb-2'>
+          Masukkan harga untuk setiap bulan (total:
+          <span x-text='bulan'></span>
+          bulan)
+        </div>
+
+        <template x-for='(field, index) in hargaFields' :key='index'>
+          <div class='flex gap-2 mb-2'>
+            <div class='flex-1'>
+              <input
+                type='number'
+                :name="'harga'"
+                x-model='field.value'
+                required
+                :placeholder="'Harga bulan ke-' + (index + 1)"
+                class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+            </div>
+            <button
+              type='button'
+              @click='removeHargaField(index)'
+              x-show='hargaFields.length > 1 && index >= bulan'
+              class='px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition'
+            >
+              <i class='fas fa-minus'></i>
+            </button>
+          </div>
+        </template>
+
+        <button
+          type='button'
+          @click='addHargaField()'
+          x-show='hargaFields.length < bulan'
+          class='mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-2'
+        >
+          <i class='fas fa-plus'></i>
+          Add Month
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition flex items-center gap-2'
+        >
+          <i class='fas fa-plus'></i>
+          Create
+        </button>
+        <a
+          href='/cicilan'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
+        >
+          <i class='fas fa-times'></i>
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

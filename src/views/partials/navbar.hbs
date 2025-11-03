@@ -217,6 +217,57 @@
                 <p class='text-xs text-gray-300 mt-0.5'>Short class for specific skills</p>
               </div>
             </a>
+
+            <a
+              href='/dashboard/intenshif_program'
+              @click="setActive('/dashboard/intenshif_program')"
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+            >
+              <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
+                <svg
+                  fill='none'
+                  stroke='currentColor'
+                  stroke-width='2'
+                  viewBox='0 0 24 24'
+                  class='w-5 h-5'
+                >
+                  <path
+                    d='M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z'
+                  ></path>
+                  <path d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'></path>
+                </svg>
+              </div>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>Intenshif Program</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Short class for specific skills</p>
+              </div>
+            </a>
+
+            <a
+              href='/dashboard/wip'
+              @click="setActive('/dashboard/wip')"
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+            >
+              <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
+                <svg
+                  fill='none'
+                  stroke='currentColor'
+                  stroke-width='2'
+                  viewBox='0 0 24 24'
+                  class='w-5 h-5'
+                >
+                  <path
+                    d='M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z'
+                  ></path>
+                  <path d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'></path>
+                </svg>
+              </div>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>WIP</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Wiratek Internship Program</p>
+              </div>
+            </a>
+
           </div>
 
           <!-- Desktop Dropdown -->
@@ -307,6 +358,61 @@
                     <p class='text-xs text-gray-600 mt-1 font-inter'>Short class for specific and practical skills</p>
                   </div>
                 </a>
+
+                <a
+                  href='/dashboard/intenshif_program'
+                  @click="setActive('/dashboard/intenshif_program')"
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                >
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
+                    <svg
+                      fill='none'
+                      stroke='currentColor'
+                      stroke-width='2'
+                      viewBox='0 0 24 24'
+                      class='w-6 h-6'
+                    >
+                      <path
+                        d='M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z'
+                      ></path>
+                      <path
+                        d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>Intenshif Program</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Short class for specific and practical skills</p>
+                  </div>
+                </a>
+
+                <a
+                  href='/dashboard/wip'
+                  @click="setActive('/dashboard/wip')"
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                >
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
+                    <svg
+                      fill='none'
+                      stroke='currentColor'
+                      stroke-width='2'
+                      viewBox='0 0 24 24'
+                      class='w-6 h-6'
+                    >
+                      <path
+                        d='M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z'
+                      ></path>
+                      <path
+                        d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>WIP</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Wiratek Internship Program</p>
+                  </div>
+                </a>
+
               </div>
             </div>
           </div>
@@ -329,6 +435,15 @@
             : 'bg-gray-900 text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Alumni</a>
+
+                <a
+          href='/dashboard/bloc'
+          @click="setActive('/blog')"
+          :class="active === '/blog' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+        >Blog</a>
 
         <!-- User Dropdown -->
         <div class='relative'>
@@ -669,7 +784,7 @@
             <a
               href='/dashboard/kategori/Bootcamp'
               @click="setActive('/dashboard/kategori/Bootcamp')"
-              class='flex items-center gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
                 <svg
@@ -684,13 +799,16 @@
                   ></path>
                 </svg>
               </div>
-              <span class='font-semibold'>Bootcamp</span>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>Bootcamp</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Intensive 3-6 month training</p>
+              </div>
             </a>
 
             <a
               href='/dashboard/kategori/Course'
               @click="setActive('/dashboard/kategori/Course')"
-              class='flex items-center gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
                 <svg
@@ -705,13 +823,16 @@
                   ></path>
                 </svg>
               </div>
-              <span class='font-semibold'>Course</span>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>Course</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Online course with complete materials</p>
+              </div>
             </a>
 
             <a
               href='/dashboard/kategori/Short Class'
               @click="setActive('/dashboard/kategori/Short Class')"
-              class='flex items-center gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
                 <svg
@@ -727,8 +848,62 @@
                   <path d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'></path>
                 </svg>
               </div>
-              <span class='font-semibold'>Short Class</span>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>Short Class</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Short class for specific skills</p>
+              </div>
             </a>
+
+            <a
+              href='/dashboard/intenshif_program'
+              @click="setActive('/dashboard/intenshif_program')"
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+            >
+              <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
+                <svg
+                  fill='none'
+                  stroke='currentColor'
+                  stroke-width='2'
+                  viewBox='0 0 24 24'
+                  class='w-5 h-5'
+                >
+                  <path
+                    d='M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z'
+                  ></path>
+                  <path d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'></path>
+                </svg>
+              </div>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>Intenshif Program</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Short class for specific skills</p>
+              </div>
+            </a>
+
+            <a
+              href='/dashboard/wip'
+              @click="setActive('/dashboard/wip')"
+              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+            >
+              <div class='bg-white text-gray-900 rounded-lg p-2 flex-shrink-0'>
+                <svg
+                  fill='none'
+                  stroke='currentColor'
+                  stroke-width='2'
+                  viewBox='0 0 24 24'
+                  class='w-5 h-5'
+                >
+                  <path
+                    d='M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z'
+                  ></path>
+                  <path d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'></path>
+                </svg>
+              </div>
+              <div class='flex-1'>
+                <p class='font-semibold text-white'>WIP</p>
+                <p class='text-xs text-gray-300 mt-0.5'>Wiratek Internship Program</p>
+              </div>
+            </a>
+
           </div>
 
           <!-- Desktop Dropdown -->
@@ -819,6 +994,61 @@
                     <p class='text-xs text-gray-600 mt-1 font-inter'>Short class for specific and practical skills</p>
                   </div>
                 </a>
+
+                <a
+                  href='/dashboard/intenshif_program'
+                  @click="setActive('/dashboard/intenshif_program')"
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                >
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
+                    <svg
+                      fill='none'
+                      stroke='currentColor'
+                      stroke-width='2'
+                      viewBox='0 0 24 24'
+                      class='w-6 h-6'
+                    >
+                      <path
+                        d='M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z'
+                      ></path>
+                      <path
+                        d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>Intenshif Program</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Short class for specific and practical skills</p>
+                  </div>
+                </a>
+
+                <a
+                  href='/dashboard/wip'
+                  @click="setActive('/dashboard/wip')"
+                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                >
+                  <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
+                    <svg
+                      fill='none'
+                      stroke='currentColor'
+                      stroke-width='2'
+                      viewBox='0 0 24 24'
+                      class='w-6 h-6'
+                    >
+                      <path
+                        d='M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z'
+                      ></path>
+                      <path
+                        d='M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z'
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class='ml-3 flex-1'>
+                    <p class='font-semibold text-gray-900 font-montserrat'>WIP</p>
+                    <p class='text-xs text-gray-600 mt-1 font-inter'>Wiratek Internship Program</p>
+                  </div>
+                </a>
+
               </div>
             </div>
           </div>
@@ -841,6 +1071,15 @@
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Alumni</a>
+
+                        <a
+          href='/dashboard/bloc'
+          @click="setActive('/blog')"
+          :class="active === '/blog' 
+            ? 'bg-white text-gray-900' 
+            : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
+        >Blog</a>
 
         <a
           href='/login'

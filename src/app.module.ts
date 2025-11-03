@@ -42,17 +42,59 @@ import { VisiMisiModule } from './visi_misi/visi_misi.module';
 import { SocialModule } from './social/social.module';
 import { BlogModule } from './blog/blog.module';
 import { KategoriBlogModule } from './kategori_blog/kategori_blog.module';
+import { CicilanModule } from './cicilan/cicilan.module';
+import { GambarBenefitModule } from './gambar_benefit/gambar_benefit.module';
+import { TentangModule } from './tentang/tentang.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
     // ServeStaticModule.forRoot({
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
-    UsersModule, AbsensModule, MaterisModule, KelassModule, PertemuansModule, AuthModule, BiodatasModule, PortfoliosModule, KategorisModule, JawabansModule, TugassModule, PembayaransModule, PertanyaansModule, JawabanTugassModule, JawabanUsersModule, KomentarModule, LogbookModule, MingguModule, QuizModule, DashboardModule, PertanyaanUmumModule, AlumniModule, JenisKelasModule, SertifikatModule, KerjaSamaModule, PertanyaanKelasModule, LogbookMentorModule, BenefitModule, MentorModule, AlurKelasModule, BenefitKelasModule, TeamModule, VisiMisiModule, SocialModule, BlogModule, KategoriBlogModule],
+    UsersModule,
+    AbsensModule,
+    MaterisModule,
+    KelassModule,
+    PertemuansModule,
+    AuthModule,
+    BiodatasModule,
+    PortfoliosModule,
+    KategorisModule,
+    JawabansModule,
+    TugassModule,
+    PembayaransModule,
+    PertanyaansModule,
+    JawabanTugassModule,
+    JawabanUsersModule,
+    KomentarModule,
+    LogbookModule,
+    MingguModule,
+    QuizModule,
+    DashboardModule,
+    PertanyaanUmumModule,
+    AlumniModule,
+    JenisKelasModule,
+    SertifikatModule,
+    KerjaSamaModule,
+    PertanyaanKelasModule,
+    LogbookMentorModule,
+    BenefitModule,
+    MentorModule,
+    AlurKelasModule,
+    BenefitKelasModule,
+    TeamModule,
+    VisiMisiModule,
+    SocialModule,
+    BlogModule,
+    KategoriBlogModule,
+    CicilanModule,
+    GambarBenefitModule,
+    TentangModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

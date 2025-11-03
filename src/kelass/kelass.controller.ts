@@ -11,6 +11,7 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
+  UseFilters,
 } from '@nestjs/common';
 import { KelassService } from './kelass.service';
 import { CreateKelassDto } from './dto/create-kelass.dto';
@@ -26,7 +27,12 @@ import {
 import { UsersService } from 'src/users/users.service';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
+import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
+@UseGuards(AuthenticatedGuard)
+@UseFilters(FileUploadExceptionFilter)
+@UseInterceptors(MulterErrorInterceptor)
 @Controller('kelass')
 export class KelassController {
   constructor(
@@ -47,6 +53,8 @@ export class KelassController {
     minHeight: 1000,
     maxHeight: 1080,
     folder: 'nestjs/images/banner/class',
+    maxSize: 2 * 1024 * 1024, 
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
     @Body() createKelassDto: CreateKelassDto,

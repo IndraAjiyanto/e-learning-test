@@ -1,34 +1,227 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  Req,
+  UseGuards,
+  UseInterceptors,
+  UploadedFiles,
+  UseFilters,
+} from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { Request, Response } from 'express';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import {
+  createMemoryConfig,
+  multerConfigMemory,
+} from 'src/common/config/multer.config';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
+import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
 @Controller('blog')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
-
-  @Post()
-  create(@Body() createBlogDto: CreateBlogDto) {
-    return this.blogService.create(createBlogDto);
-  }
-
+  
+  // Public Routes
   @Get()
-  findAll() {
-    return this.blogService.findAll();
+  async findAll(@Res() res: Response, @Req() req: Request) {
+    const blogs = await this.blogService.findAll();
+    const categories = await this.blogService.getAllCategories();
+    res.render('blog', {
+      user: req.user,
+      blogs,
+      categories,
+    });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.blogService.findOne(+id);
+  @Get('detail/:id')
+  async findOne(
+    @Param('id') id: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const blog = await this.blogService.findOne(+id);
+    const recentBlogs = await this.blogService.getRecentBlogs(5);
+    res.render('blog-detail', {
+      user: req.user,
+      blog,
+      recentBlogs,
+    });
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
-    return this.blogService.update(+id, updateBlogDto);
+  // Admin Routes
+  @UseGuards(AuthenticatedGuard)
+  @UseFilters(FileUploadExceptionFilter)
+  @UseInterceptors(MulterErrorInterceptor)
+  @Roles('super_admin')
+  @Get('admin/list')
+  async adminList(@Res() res: Response, @Req() req: Request) {
+    const blogs = await this.blogService.findAll();
+    res.render('super_admin/blog/index', {
+      user: req.user,
+      blogs,
+    });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.blogService.remove(+id);
+  @UseGuards(AuthenticatedGuard)
+  @Roles('super_admin')
+  @Get('admin/formCreate')
+  async formCreate(@Res() res: Response, @Req() req: Request) {
+    const categories = await this.blogService.getAllCategories();
+    res.render('super_admin/blog/create', {
+      user: req.user,
+      categories,
+    });
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Roles('super_admin')
+  @Get('admin/formEdit/:id')
+  async formEdit(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const blog = await this.blogService.findOne(+id);
+    const categories = await this.blogService.getAllCategories();
+    res.render('super_admin/blog/edit', {
+      user: req.user,
+      blog,
+      categories,
+    });
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @UseFilters(FileUploadExceptionFilter)
+  @UseInterceptors(MulterErrorInterceptor)
+  @Roles('super_admin')
+  @Post('admin/create')
+  @UseInterceptors(
+    FilesInterceptor('gambar', 10, multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 800,
+    maxWidth: 1920,
+    minHeight: 400,
+    maxHeight: 1080,
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/blog',
+  })
+  async create(
+    @Body() createBlogDto: CreateBlogDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      createBlogDto.gambar = req.body.uploadedImageUrls || [];
+      await this.blogService.create(createBlogDto);
+      req.flash('success', 'Blog successfully created');
+      res.redirect('/blog/admin/list');
+    } catch (error) {
+      console.log(error);
+      req.flash('error', 'Blog failed to create');
+      res.redirect('/blog/admin/list');
+    }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @UseFilters(FileUploadExceptionFilter)
+  @UseInterceptors(MulterErrorInterceptor)
+  @Roles('super_admin')
+  @Patch('admin/update/:id')
+  @UseInterceptors(
+    FilesInterceptor('gambar', 10, multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 800,
+    maxWidth: 1920,
+    minHeight: 400,
+    maxHeight: 1080,
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/blog',
+  })
+  async update(
+    @UploadedFiles() gambar: Express.Multer.File[],
+    @Param('id') id: number,
+    @Body() updateBlogDto: UpdateBlogDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      const blog = await this.blogService.findOne(+id);
+
+      // Get existing images that user wants to keep
+      let existingImages: string[] = [];
+      if (req.body.existing_images) {
+        existingImages = Array.isArray(req.body.existing_images)
+          ? req.body.existing_images
+          : [req.body.existing_images];
+      }
+
+      // Delete images that are no longer needed
+      if (blog.gambar && blog.gambar.length > 0) {
+        for (const url of blog.gambar) {
+          if (!existingImages.includes(url)) {
+            await this.blogService.getPublicIdFromUrl(url);
+          }
+        }
+      }
+
+      // Combine existing images with new uploaded images
+      const newUploadedImages = req.body.uploadedImageUrls || [];
+      updateBlogDto.gambar = [...existingImages, ...newUploadedImages];
+
+      await this.blogService.update(+id, updateBlogDto);
+      req.flash('success', 'Blog successfully updated');
+      res.redirect('/blog/admin/list');
+    } catch (error) {
+      console.log(error);
+      req.flash('error', 'Blog failed to update');
+      res.redirect('/blog/admin/list');
+    }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Roles('super_admin')
+  @Delete('admin/delete/:id')
+  async remove(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      const blog = await this.blogService.findOne(+id);
+      if (!blog) {
+        req.flash('error', 'Blog not found');
+        res.redirect('/blog/admin/list');
+      }
+      // Delete all images
+      if (blog.gambar && blog.gambar.length > 0) {
+        for (const url of blog.gambar) {
+          await this.blogService.getPublicIdFromUrl(url);
+        }
+      }
+      await this.blogService.remove(+id);
+      req.flash('success', 'Blog successfully removed');
+      res.redirect('/blog/admin/list');
+    } catch (error) {
+      req.flash('error', 'Blog failed to remove');
+      res.redirect('/blog/admin/list');
+    }
   }
 }
