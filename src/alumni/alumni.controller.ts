@@ -36,14 +36,16 @@ export class AlumniController {
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res:Response, @Req() req:Request){
-    res.render('super_admin/alumni/create', {user: req.user})
+    const kelas = await this.alumniService.findAllKelas();
+    res.render('super_admin/alumni/create', {user: req.user, kelas})
   }
 
   @Roles('super_admin')
   @Get('formEdit/:alumniId')
   async formEdit(@Param('alumniId') alumniId: number, @Res() res:Response, @Req() req:Request) {
     const alumni = await this.alumniService.findOne(alumniId);
-    res.render('super_admin/alumni/edit', {user: req.user, alumni})
+    const kelas = await this.alumniService.findAllKelas();
+    res.render('super_admin/alumni/edit', {user: req.user, alumni, kelas})
   }
 
   @Roles('super_admin')

@@ -1,10 +1,6 @@
-<div
-  class='pt-24 min-h-screen bg-white'
-  x-data='alumniApp()'
-  x-init='init()'
-  @selected-kelas-changed.window='currentPage = 1; fetchAlumni()'
-  @page-changed.window='fetchAlumni()'
->
+
+  <div class='pt-24 min-h-screen bg-white' x-data='alumniApp()' x-init='init()'>
+
   <div class='container mx-auto px-4 pb-16'>
     <div class='text-center mb-12'>
       <h1
@@ -64,27 +60,18 @@
               Program Class
             </h3>
 
-            <!-- Debug Info -->
-            <div
-              class='mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs'
-              x-show='kelasList.length === 0'
-            >
-              <p class='text-yellow-800'>⚠️ No classes found. Total:
-                <span x-text='kelasList.length'></span></p>
-            </div>
-
             <div class='space-y-2'>
               <button
-                @click="selectedKelas = ''; currentPage = 1; fetchAlumni()"
-                :class="selectedKelas === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+                @click="selectKelas(null)"
+                :class="!selectedKelasId ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
                 class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
               >
                 <span class='text-sm'>All Class</span>
               </button>
               <template x-for='kelas in kelasList' :key='kelas.id'>
                 <button
-                  @click='selectedKelas = kelas.nama_kelas; currentPage = 1; fetchAlumni()'
-                  :class="selectedKelas === kelas.nama_kelas ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+                  @click='selectKelas(kelas.id)'
+                  :class="selectedKelasId == kelas.id ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
                   class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
                 >
                   <span class='text-sm' x-text='kelas.nama_kelas'></span>
@@ -98,7 +85,7 @@
             <div class='text-center'>
               <div
                 class='text-2xl font-bold text-gray-900'
-                x-text="loading ? '...' : allAlumni.length"
+                x-text='totalItems'
               ></div>
               <div class='text-sm text-gray-600'>Alumni</div>
             </div>
@@ -108,36 +95,9 @@
 
       <!-- Alumni Grid -->
       <div class='lg:col-span-3'>
-        <!-- Loading Skeleton -->
-        <div
-          x-show='loading'
-          class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-        >
-          <template x-for='i in itemsPerPage' :key='i'>
-            <div
-              class='bg-white border border-gray-300 rounded-xl shadow-sm p-6 animate-pulse'
-            >
-              <div class='flex items-center gap-4 mb-4'>
-                <div class='w-16 h-16 rounded-full bg-gray-200'></div>
-                <div class='flex-1 space-y-2'>
-                  <div class='h-4 bg-gray-200 rounded w-3/4'></div>
-                  <div class='h-3 bg-gray-200 rounded w-1/2'></div>
-                </div>
-              </div>
-              <div class='space-y-3'>
-                <div class='h-20 bg-gray-200 rounded'></div>
-                <div class='h-16 bg-gray-200 rounded'></div>
-              </div>
-            </div>
-          </template>
-        </div>
-
         <!-- Alumni Cards -->
-        <div
-          x-show='!loading'
-          class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-        >
-          <template x-for='alumni in allAlumni' :key='alumni.id'>
+        <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+          <template x-for='alumni in displayedAlumni' :key='alumni.id'>
             <div
               class='bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 group'
             >
@@ -149,7 +109,7 @@
                 <div class='flex items-center gap-4'>
                   <div class='relative'>
                     <img
-                      :src='alumni.profile'
+                      :src="alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + alumni.nama"
                       :alt='alumni.nama'
                       class='w-16 h-16 rounded-full border-4 border-white shadow-md object-cover'
                     />
@@ -161,7 +121,7 @@
                     ></h3>
                     <p
                       class='text-sm text-gray-600 truncate'
-                      x-text='alumni.kelas'
+                      x-text='getKelasName(alumni)'
                     ></p>
                   </div>
                 </div>
@@ -189,7 +149,7 @@
                       ></p>
                       <p
                         class='text-xs text-gray-500 mt-1'
-                        x-text='alumni.kantor'
+                        x-text="alumni.alumni || 'Unknown'"
                       ></p>
                     </div>
                   </div>
@@ -223,7 +183,7 @@
                     ></i>
                     <p
                       class='text-xs font-semibold text-gray-900'
-                      x-text='alumni.kelas'
+                      x-text='getKelasName(alumni)'
                     ></p>
                     <p class='text-xs text-gray-500'>Class</p>
                   </div>
@@ -233,7 +193,7 @@
                     <i class='fas fa-building text-gray-700 p-3 text-xl'></i>
                     <p
                       class='text-xs font-semibold text-gray-900 truncate'
-                      x-text='alumni.kantor'
+                      x-text="alumni.alumni || 'Unknown'"
                     ></p>
                     <p class='text-xs text-gray-500'>Company</p>
                   </div>
@@ -245,10 +205,7 @@
         </div>
 
         <!-- No Results Message -->
-        <div
-          x-show='!loading && allAlumni.length === 0'
-          class='text-center py-12'
-        >
+        <div x-show='displayedAlumni.length === 0' class='text-center py-12'>
           <div
             class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'
           >
@@ -268,10 +225,10 @@
         <!-- Pagination -->
         <div
           class='flex justify-center items-center gap-4 mt-12'
-          x-show='!loading && totalPages > 1'
+          x-show='totalPages > 1'
         >
           <button
-            @click='currentPage = Math.max(1, currentPage - 1); fetchAlumni()'
+            @click='changePage(Math.max(1, currentPage - 1))'
             :disabled='currentPage === 1'
             class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
           >
@@ -280,7 +237,7 @@
 
           <template x-for='page in totalPages' :key='page'>
             <button
-              @click='currentPage = page; fetchAlumni()'
+              @click='changePage(page)'
               class='w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm'
               :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
               x-text='page'
@@ -288,7 +245,7 @@
           </template>
 
           <button
-            @click='currentPage = Math.min(totalPages, currentPage + 1); fetchAlumni()'
+            @click='changePage(Math.min(totalPages, currentPage + 1))'
             :disabled='currentPage === totalPages'
             class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
           >
@@ -301,25 +258,95 @@
 </div>
 
 <script>
-  function alumniApp() { return { allAlumni: [], kelasList:
-  {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}}, selectedKelas: '',
-  currentPage: 1, itemsPerPage: 6, totalPages: 1, loading: true, async init() {
-  console.log('Kelas List:', this.kelasList); console.log('Total Kelas:',
-  this.kelasList.length); await this.fetchAlumni(); }, async fetchAlumni() { try
-  { this.loading = true; const params = new URLSearchParams({ page:
-  this.currentPage.toString(), limit: this.itemsPerPage.toString(), }); if
-  (this.selectedKelas) { const selectedKelasObj = this.kelasList.find(k =>
-  k.nama_kelas === this.selectedKelas); if (selectedKelasObj) {
-  params.append('kelas', selectedKelasObj.id); } } const response = await
-  fetch(`/dashboard/alumni/data?${params}`); const data = await response.json();
-  this.allAlumni = data.items.map(alumni => ({ id: alumni.id, nama: alumni.nama,
-  profile: alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed='
-  + alumni.nama, pesan: alumni.pesan, kantor: alumni.alumni || 'Unknown',
-  posisi_sekarang: alumni.posisi_sekarang, kelas: alumni.kelas?.nama_kelas ||
-  'Unknown' })); this.totalPages = data.totalPages; this.loading = false; }
-  catch (error) { console.error('Error fetching alumni:', error); this.loading =
-  false; } }, resetFilters() { this.selectedKelas = ''; this.currentPage = 1;
-  this.fetchAlumni(); } }; } document.addEventListener('alpine:init', () => {
-  Alpine.data('alumniApp', alumniApp); });
-</script>
+  function alumniApp() {
+    return {
+      allAlumni: {{#if alumni}}{{{json alumni}}}{{else}}[]{{/if}},
+      displayedAlumni: [],
+      kelasList: {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}},
+      selectedKelas: '',
+      selectedKelasId: '',
+      currentPage: 1,
+      itemsPerPage: 6,
+      totalPages: 1,
+      loading: false,
 
+      init() {
+        this.filterAndPaginate();
+      },
+
+      filterAndPaginate() {
+        
+        // Filter berdasarkan kelas
+        let filtered = this.allAlumni;
+        
+        if (this.selectedKelasId) {
+          filtered = this.allAlumni.filter(alumni => {
+            return alumni.kelas && alumni.kelas.id == this.selectedKelasId;
+          });
+        }
+        
+        // Hitung total pages
+        this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
+        
+        // Pagination
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        
+        this.displayedAlumni = filtered.slice(startIndex, endIndex);
+
+      },
+
+      get alumniItems() {
+        return this.displayedAlumni || [];
+      },
+
+      get totalItems() {
+        let filtered = this.allAlumni;
+        
+        if (this.selectedKelasId) {
+          filtered = this.allAlumni.filter(alumni => {
+            return alumni.kelas && alumni.kelas.id == this.selectedKelasId;
+          });
+        }
+        
+        return filtered.length;
+      },
+
+      selectKelas(kelasId) {
+
+        
+        this.selectedKelasId = kelasId;
+        this.currentPage = 1;
+        this.filterAndPaginate();
+        
+        // Set selected name untuk display
+        if (kelasId) {
+          const kelas = this.kelasList.find(k => k.id == kelasId);
+          this.selectedKelas = kelas ? kelas.nama_kelas : '';
+        } else {
+          this.selectedKelas = '';
+        }
+      },
+
+      changePage(page) {
+        this.currentPage = page;
+        this.filterAndPaginate();
+      },
+
+      resetFilters() {
+        this.selectedKelasId = null;
+        this.selectedKelas = '';
+        this.currentPage = 1;
+        this.filterAndPaginate();
+      },
+
+      getKelasName(alumni) {
+        return alumni.kelas?.nama_kelas || 'Unknown';
+      }
+    };
+  }
+
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('alumniApp', alumniApp);
+  });
+</script>

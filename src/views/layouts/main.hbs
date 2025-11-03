@@ -16,13 +16,22 @@
 </head>
 <body class=" bg-white text-base-content">
   
-  {{> navbar}}  
-
-  <main class="min-h-screen">
-    {{{ body }}}  
-  </main>
-
-    {{> footer}} 
+  {{#if (role user.role 'admin' 'super_admin')}}
+    <!-- Layout with Sidebar for Admin and Super Admin -->
+    {{> sidebar}}
+    <div class="lg:ml-64 min-h-screen">
+      <main class="min-h-screen">
+        {{{ body }}}  
+      </main>
+    </div>
+  {{else}}
+    <!-- Normal Layout with Navbar for User and Guest -->
+    {{> navbar}}  
+    <main class="min-h-screen">
+      {{{ body }}}  
+    </main>
+    {{> footer}}
+  {{/if}} 
 
 
 

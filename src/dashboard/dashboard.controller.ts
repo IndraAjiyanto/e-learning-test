@@ -25,38 +25,39 @@ export class DashboardController {
   async getProtected(@Req() req: Request, @Res() res: Response) {
     const kelas = await this.dashboardService.findAllKelas();
 
-
     if (req.user) {
       if (req.user.role === 'super_admin') {
-        res.render('super_admin/kelas/index', {user: req.user});
+        res.render('super_admin/kelas/index', { user: req.user });
       } else if (req.user.role === 'admin') {
-        res.render('admin/kelas/index', {user: req.user});
+        res.render('admin/kelas/index', { user: req.user });
       } else if (req.user.role === 'user') {
-            const pertanyaan_umum = await this.dashboardService.findFAQ();
-    const gambar = await this.dashboardService.findGambar();
-    const jenis_kelas = await this.dashboardService.findJenisKelas()
-    const kategori = await this.dashboardService.findKategori()
+        const pertanyaan_umum = await this.dashboardService.findFAQ();
+        const gambar = await this.dashboardService.findGambar();
+        const jenis_kelas = await this.dashboardService.findJenisKelas();
+        const kategori = await this.dashboardService.findKategori();
+        const alumni = await this.dashboardService.findAlumni();
         res.render('dashboard', {
           user: req.user,
           kelas,
           pertanyaan_umum,
           gambar,
           jenis_kelas,
-          kategori
+          kategori,
+          alumni,
         });
       }
     } else {
-                  const pertanyaan_umum = await this.dashboardService.findFAQ();
-    const gambar = await this.dashboardService.findGambar();
-        const jenis_kelas = await this.dashboardService.findJenisKelas()
-    const kategori = await this.dashboardService.findKategori()
+      const pertanyaan_umum = await this.dashboardService.findFAQ();
+      const gambar = await this.dashboardService.findGambar();
+      const jenis_kelas = await this.dashboardService.findJenisKelas();
+      const kategori = await this.dashboardService.findKategori();
       res.render('dashboard', {
         user: req.user,
         kelas,
         pertanyaan_umum,
         gambar,
-                  jenis_kelas,
-          kategori
+        jenis_kelas,
+        kategori,
       });
     }
   }
@@ -74,29 +75,23 @@ export class DashboardController {
     } else if (kategoriName === 'Course') {
       res.render('kelas/course', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'Short Class') {
-      res.render('kelas/short_class', { kelas, user: req.user, jenis_kelas   });
+      res.render('kelas/short_class', { kelas, user: req.user, jenis_kelas });
     }
   }
 
   @Get('portofolio')
   async portfolio(@Req() req: Request, @Res() res: Response) {
+    // Ambil semua data sekaligus
+    const portfolioList = await this.dashboardService.findPortfolio();
     const kategoriList = await this.dashboardService.findKategori();
     const jenisKelasList = await this.dashboardService.findJenisKelas();
 
-    // Render HTML dengan kategori dan jenis kelas untuk filter
     res.render('portofolio', {
       user: req.user,
+      portfolio: portfolioList,
       kategori: kategoriList,
       jenis_kelas: jenisKelasList,
     });
-  }
-
-  @Get('portofolio/data')
-  async portfolioData(
-    @Paginate({ defaultLimit: 6 }) pagination: PaginationParams,
-  ) {
-    // Return JSON data untuk fetch dari frontend
-    return await this.dashboardService.paginatePortfolio(pagination);
   }
 
   @Get('portfolio/:portfolioId')
@@ -111,17 +106,16 @@ export class DashboardController {
 
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
+    // Ambil semua data sekaligus
+    const alumniList = await this.dashboardService.findAlumni();
     const kelasList = await this.dashboardService.findKelas();
-    res.render('alumni', { user: req.user, kelas: kelasList });
-  }
 
-  @Get('alumni/data')
-  async alumniData(
-    @Paginate({ defaultLimit: 6 }) pagination: PaginationParams,
-  ) {
-    return await this.dashboardService.paginateAlumni(pagination);
+    res.render('alumni', {
+      user: req.user,
+      alumni: alumniList,
+      kelas: kelasList,
+    });
   }
-
   @Get('about')
   async about(@Req() req: Request, @Res() res: Response) {
     res.render('tentang', { user: req.user });

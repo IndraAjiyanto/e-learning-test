@@ -73,13 +73,25 @@ async function bootstrap() {
     });
   });
 
-  hbs.registerHelper('roles', (a, b) => a === b);
+    hbs.registerHelper('roles', (a, b) => a === b);
+
+  hbs.registerHelper('role', function (userRole, ...roles) {
+    // Remove the last argument which is the options object
+    const allowedRoles = roles.slice(0, -1);
+    return allowedRoles.includes(userRole);
+  });
   hbs.registerHelper('check', (a, b) => a < b);
   hbs.registerHelper('eq', (a, b) => a == b);
   hbs.registerHelper('gte', (a, b) => a >= b);
   hbs.registerHelper('gt', (a, b) => a > b);
   hbs.registerHelper('multiply', (a, b) => a * b);
   hbs.registerHelper('isArray', (value) => Array.isArray(value));
+  hbs.registerHelper('substring', (str, start, end) => {
+    if (str && typeof str === 'string') {
+      return str.substring(start, end).toUpperCase();
+    }
+    return '';
+  });
   hbs.registerPartials(join(__dirname, '..', 'src', 'views', 'partials'));
   app.set('view options', { layout: 'layouts/main' });
   app.use(methodOverride('_method'));

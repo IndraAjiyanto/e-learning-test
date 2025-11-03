@@ -88,7 +88,7 @@
                  focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
           <option value="" disabled>-- Select Class --</option>
           {{#each kelas}}
-          <option value="{{id}}" {{#if (roles ../alumni.kelasId id)}}selected{{/if}}>
+          <option value="{{id}}" {{#if (eq ../alumni.kelasId id)}}selected{{/if}}>
             {{nama_kelas}}
           </option>
           {{/each}}

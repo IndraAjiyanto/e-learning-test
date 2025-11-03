@@ -40,10 +40,11 @@ export class DashboardService {
     });
   }
 
-
-  async findKelas(){
-    return await this.kelasRepository.find({order: { id: 'DESC' },
-      relations: ['kategori', 'jenis_kelas', 'user_kelas'],});
+  async findKelas() {
+    return await this.kelasRepository.find({
+      order: { id: 'DESC' },
+      relations: ['kategori', 'jenis_kelas', 'user_kelas'],
+    });
   }
 
   async findKelasByKategori(kategoriName: string) {
@@ -107,17 +108,21 @@ export class DashboardService {
   }
 
   async findAlumni() {
-    return await this.alumniRepository.find();
+    return await this.alumniRepository.find({
+      relations: ['kelas'],
+      order: { id: 'DESC' },
+    });
   }
 
   async paginateAlumni(params: PaginationParams) {
     const { kelas, page, limit } = params;
 
-    const queryBuilder = this.alumniRepository
+    const queryBuilder = await this.alumniRepository
       .createQueryBuilder('alumni')
       .leftJoinAndSelect('alumni.kelas', 'kelas');
 
-    if (kelas) queryBuilder.andWhere('alumni.kelasId = :kelas', { kelas });
+    if (kelas)
+      queryBuilder.andWhere('alumni.kelasId = :kelasId', { kelasId: kelas.id });
 
     queryBuilder.orderBy('alumni.id', 'DESC');
 

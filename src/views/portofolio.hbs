@@ -9,12 +9,10 @@
     </div>
 
     <div class='grid grid-cols-1 lg:grid-cols-4 gap-8'>
-      <!-- Sidebar Filters -->
       <div class='lg:col-span-1'>
         <div
           class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6'
         >
-          <!-- Active Filters -->
           <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
             <div class='flex items-center justify-between mb-3'>
               <h4 class='text-sm font-semibold text-gray-700 font-montserrat'>Active Filters</h4>
@@ -396,114 +394,116 @@
 <script>
   function portfolioApp() {
     return {
-      portfolio: {
-        items: [],
-        total: 0,
-        page: 1,
-        limit: 6,
-        totalPages: 0
-      },
+      allPortfolio: {{#if portfolio}}{{{json portfolio}}}{{else}}[]{{/if}},
+      displayedPortfolio: [],
       allKategori: {{{json kategori}}},
       allJenisKelas: {{{json jenis_kelas}}},
       selectedKategori: '',
       selectedJenisKelas: '',
       selectedKategoriId: '',
       selectedJenisKelasId: '',
+      currentPage: 1,
+      itemsPerPage: 6,
+      totalPages: 1,
       loading: false,
 
-      async init() {
-        await this.fetchPortfolio();
+      init() {
+        console.log('Total Portfolio:', this.allPortfolio.length);
+        this.filterAndPaginate();
       },
 
-      async fetchPortfolio() {
-        this.loading = true;
-        try {
-          const params = new URLSearchParams();
-          params.append('page', this.portfolio.page.toString());
-          params.append('limit', '6');
-
-          if (this.selectedKategoriId) {
-            params.append('kategori', this.selectedKategoriId);
-          }
-
-          if (this.selectedJenisKelasId) {
-            params.append('jenis_kelas', this.selectedJenisKelasId);
-          }
-
-          // Fetch ke endpoint /dashboard/portofolio/data
-          const response = await fetch(`/dashboard/portofolio/data?${params.toString()}`);
-          const data = await response.json();
-          
-          this.portfolio = data;
-
-          // Set selected names untuk display
-          if (this.selectedKategoriId) {
-            const kat = this.allKategori.find(k => k.id == this.selectedKategoriId);
-            this.selectedKategori = kat ? kat.nama_kategori : '';
-          } else {
-            this.selectedKategori = '';
-          }
-
-          if (this.selectedJenisKelasId) {
-            const jenis = this.allJenisKelas.find(j => j.id == this.selectedJenisKelasId);
-            this.selectedJenisKelas = jenis ? jenis.nama_jenis_kelas : '';
-          } else {
-            this.selectedJenisKelas = '';
-          }
-
-        } catch (error) {
-          this.portfolio = {
-            items: [],
-            total: 0,
-            page: 1,
-            limit: 6,
-            totalPages: 0
-          };
-        } finally {
-          this.loading = false;
+      filterAndPaginate() {
+        // Filter berdasarkan kategori dan jenis kelas
+        let filtered = this.allPortfolio;
+        
+        if (this.selectedKategoriId) {
+          filtered = filtered.filter(item => {
+            const kategoriId = item.kelas?.kategori?.id || item.kategori?.id;
+            return kategoriId == this.selectedKategoriId;
+          });
         }
+        
+        if (this.selectedJenisKelasId) {
+          filtered = filtered.filter(item => {
+            const jenisKelasId = item.kelas?.jenis_kelas?.id || item.jenis_kelas?.id;
+            return jenisKelasId == this.selectedJenisKelasId;
+          });
+        }
+        
+        // Hitung total pages
+        this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
+        
+        // Pagination
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        
+        this.displayedPortfolio = filtered.slice(startIndex, endIndex);
       },
 
       get portfolioItems() {
-        return this.portfolio.items || [];
+        return this.displayedPortfolio || [];
       },
 
       get totalItems() {
-        return this.portfolio.total || 0;
+        let filtered = this.allPortfolio;
+        
+        if (this.selectedKategoriId) {
+          filtered = filtered.filter(item => {
+            const kategoriId = item.kelas?.kategori?.id || item.kategori?.id;
+            return kategoriId == this.selectedKategoriId;
+          });
+        }
+        
+        if (this.selectedJenisKelasId) {
+          filtered = filtered.filter(item => {
+            const jenisKelasId = item.kelas?.jenis_kelas?.id || item.jenis_kelas?.id;
+            return jenisKelasId == this.selectedJenisKelasId;
+          });
+        }
+        
+        return filtered.length;
       },
 
-      get currentPage() {
-        return this.portfolio.page || 1;
-      },
-
-      get totalPages() {
-        return this.portfolio.totalPages || 0;
-      },
-
-      async selectKategori(kategoriId) {
+      selectKategori(kategoriId) {
         this.selectedKategoriId = kategoriId;
-        this.portfolio.page = 1;
-        await this.fetchPortfolio();
+        this.currentPage = 1;
+        this.filterAndPaginate();
+        
+        // Set selected name untuk display
+        if (kategoriId) {
+          const kat = this.allKategori.find(k => k.id == kategoriId);
+          this.selectedKategori = kat ? kat.nama_kategori : '';
+        } else {
+          this.selectedKategori = '';
+        }
       },
 
-      async selectJenisKelas(jenisKelasId) {
+      selectJenisKelas(jenisKelasId) {
         this.selectedJenisKelasId = jenisKelasId;
-        this.portfolio.page = 1;
-        await this.fetchPortfolio();
+        this.currentPage = 1;
+        this.filterAndPaginate();
+        
+        // Set selected name untuk display
+        if (jenisKelasId) {
+          const jenis = this.allJenisKelas.find(j => j.id == jenisKelasId);
+          this.selectedJenisKelas = jenis ? jenis.nama_jenis_kelas : '';
+        } else {
+          this.selectedJenisKelas = '';
+        }
       },
 
-      async changePage(page) {
-        this.portfolio.page = page;
-        await this.fetchPortfolio();
+      changePage(page) {
+        this.currentPage = page;
+        this.filterAndPaginate();
       },
 
-      async resetFilters() {
+      resetFilters() {
         this.selectedKategoriId = '';
         this.selectedJenisKelasId = '';
         this.selectedKategori = '';
         this.selectedJenisKelas = '';
-        this.portfolio.page = 1;
-        await this.fetchPortfolio();
+        this.currentPage = 1;
+        this.filterAndPaginate();
       },
 
       getCategoryName(item) {

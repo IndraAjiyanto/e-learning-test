@@ -1,110 +1,314 @@
+<div class='py-20'>
+  <div
+    class='max-w-6xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data='{ 
+            coverValid: true,
+            coverHasFile: false,
+            updateCoverValidation(isValid, hasFile) {
+                this.coverValid = isValid;
+                this.coverHasFile = hasFile;
+            },
+            canSubmit() {
+                if (this.coverHasFile) {
+                    return this.coverValid;
+                }
+                return true;
+            }
+        }'
+  >
+    <h2 class='text-3xl font-bold mb-8 text-gray-900 text-center'>Create Class</h2>
 
-    <div class="pt-28 py-20">
-        <div class="max-w-6xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-            <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Create Class</h2>
+    <form
+      method='POST'
+      action='/kelass'
+      class='grid grid-cols-1 lg:grid-cols-2 gap-8'
+      enctype='multipart/form-data'
+      @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please fix the cover image validation errors before submitting.'); }"
+    >
 
-            <form method="POST" action="/kelass" class="grid grid-cols-1 lg:grid-cols-2 gap-8" enctype="multipart/form-data">
-                
-                <!-- LEFT COLUMN -->
-                <div class="space-y-6">
-                    <!-- Cover -->
-                    <div x-data="{ previewUrl: null }" class="space-y-3">
-                        <label for="gambar" class="block text-sm font-semibold text-gray-700 mb-1">Cover Class</label>
-                        <input 
-                            type="file" 
-                            id="gambar" 
-                            name="gambar" 
-                            accept="image/*" 
-                            x-ref="fileInput"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
-                            @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-                        >
+      <!-- LEFT COLUMN -->
+      <div class='space-y-6'>
+        <!-- Cover -->
+        <div
+          x-data="{ 
+                        previewUrl: null,
+                        errorMessage: '',
+                        isValid: true,
+                        fileName: '',
+                        fileSize: 0,
+                        imageWidth: 0,
+                        imageHeight: 0,
+                        hasFile: false,
+                        validateImage(file) {
+                            if (!file) {
+                                this.hasFile = false;
+                                $dispatch('cover-validation', { isValid: true, hasFile: false });
+                                return;
+                            }
+                            
+                            this.hasFile = true;
+                            this.fileName = file.name;
+                            this.fileSize = file.size;
+                            this.errorMessage = '';
+                            this.isValid = true;
 
-                        <template x-if="previewUrl">
-                            <div class="relative w-32 h-32">
-                                <img 
-                                    :src="previewUrl" 
-                                    alt="Preview" 
-                                    class="w-32 h-32 object-cover rounded-lg border border-gray-300"
-                                >
-                                <button 
-                                    type="button" 
-                                    class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
-                                    @click="previewUrl = null; $refs.fileInput.value = null;">
-                                    &times;
-                                </button>
-                            </div>
-                        </template>
-                    </div>
+                            // Validasi tipe file
+                            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                            if (!allowedTypes.includes(file.type)) {
+                                this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+                                this.isValid = false;
+                                this.previewUrl = null;
+                                $dispatch('cover-validation', { isValid: false, hasFile: true });
+                                return;
+                            }
 
-                    <!-- Method -->
-                    <div>
-                        <span class="block text-sm font-semibold text-gray-700 mb-2">Metode</span>
-                        <div class="grid grid-cols-2 gap-4">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="metode" value="online" class="hidden peer">
-                                <div class="flex items-center justify-center px-4 py-3 border rounded-lg transition
-                                            peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white">
-                                    <span class="font-semibold">Online</span>
-                                </div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="metode" value="offline" class="hidden peer">
-                                <div class="flex items-center justify-center px-4 py-3 border rounded-lg transition
-                                            peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white">
-                                    <span class="font-semibold">Offline</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
+                            // Validasi ukuran file (5MB max berdasarkan multer config umum)
+                            const maxSize = 5 * 1024 * 1024; // 5MB
+                            if (file.size > maxSize) {
+                                this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
+                                this.isValid = false;
+                                this.previewUrl = null;
+                                $dispatch('cover-validation', { isValid: false, hasFile: true });
+                                return;
+                            }
 
-                    <!-- Location -->
-                    <div>
-                        <label for="lokasi" class="block text-sm font-semibold text-gray-700 mb-1">Location</label>
-                        <input type="text" id="lokasi" name="lokasi" placeholder="Enter location" required
-                            class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                    </div>
+                            // Validasi dimensi gambar
+                            const img = new Image();
+                            const objectUrl = URL.createObjectURL(file);
+                            
+                            img.onload = () => {
+                                this.imageWidth = img.width;
+                                this.imageHeight = img.height;
+                                
+                                if (img.width < 1900 || img.width > 1920 || img.height < 1000 || img.height > 1080) {
+                                    this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 1900x1000 to 1920x1080 pixels`;
+                                    this.isValid = false;
+                                    this.previewUrl = null;
+                                    URL.revokeObjectURL(objectUrl);
+                                    $dispatch('cover-validation', { isValid: false, hasFile: true });
+                                } else {
+                                    this.previewUrl = objectUrl;
+                                    this.isValid = true;
+                                    this.errorMessage = '';
+                                    $dispatch('cover-validation', { isValid: true, hasFile: true });
+                                }
+                            };
+                            
+                            img.onerror = () => {
+                                this.errorMessage = 'Failed to load image';
+                                this.isValid = false;
+                                this.previewUrl = null;
+                                URL.revokeObjectURL(objectUrl);
+                                $dispatch('cover-validation', { isValid: false, hasFile: true });
+                            };
+                            
+                            img.src = objectUrl;
+                        },
+                        clearFile() {
+                            this.previewUrl = null;
+                            this.errorMessage = '';
+                            this.isValid = true;
+                            this.fileName = '';
+                            this.fileSize = 0;
+                            this.imageWidth = 0;
+                            this.imageHeight = 0;
+                            this.hasFile = false;
+                            $refs.fileInput.value = null;
+                            $dispatch('cover-validation', { isValid: true, hasFile: false });
+                        }
+                    }"
+          @cover-validation.window='updateCoverValidation($event.detail.isValid, $event.detail.hasFile)'
+          class='space-y-3'
+        >
+          <label
+            for='gambar'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >
+            Cover Class
+            <span class='text-xs text-gray-500 font-normal'>(1900x1000 -
+              1920x1080px, max 5MB, JPG/PNG)</span>
+          </label>
+          <input
+            type='file'
+            id='gambar'
+            name='gambar'
+            accept='image/jpeg,image/jpg,image/png'
+            x-ref='fileInput'
+            :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @change='validateImage($event.target.files[0])'
+          />
 
-                    <!-- Category -->
-                    <div>
-                        <label for="kategoriId" class="block text-sm font-semibold text-gray-700 mb-1">Category</label>
-                        <select name="kategoriId" id="kategoriId" 
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                            <option value="" selected disabled>-- Select Category --</option>
-                            {{#each kategori}}
-                                <option value="{{id}}">{{nama_kategori}}</option>
-                            {{/each}}
-                        </select>
-                    </div>
+          <!-- Error Message -->
+          <template x-if='!isValid && errorMessage'>
+            <div
+              class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <div>
+                <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+                <p class='text-xs text-red-700' x-text='errorMessage'></p>
+              </div>
+            </div>
+          </template>
 
-                    <!-- Jenis Kelas -->
-                    <div>
-                        <label for="jenis_kelasId" class="block text-sm font-semibold text-gray-700 mb-1">Jenis Kelas</label>
-                        <select name="jenis_kelasId" id="jenis_kelasId" 
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                            <option value="" selected disabled>-- Select Jenis Kelas --</option>
-                            {{#each jenis_kelas}}
-                                <option value="{{id}}">{{nama_jenis_kelas}}</option>
-                            {{/each}}
-                        </select>
-                    </div>
+          <!-- Preview with validation success -->
+          <template x-if='previewUrl && isValid'>
+            <div class='space-y-2'>
+              <!-- Success Message -->
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <div class='text-xs text-green-700'>
+                  <span class='font-semibold'>Valid image:</span>
+                  <span
+                    x-text='`${imageWidth}x${imageHeight}px, ${(fileSize / 1024 / 1024).toFixed(2)}MB`'
+                  ></span>
+                </div>
+              </div>
 
-                    <!-- Class Name -->
-                    <div>
-                        <label for="nama_kelas" class="block text-sm font-semibold text-gray-700 mb-1">Class Name</label>
-                        <input type="text" id="nama_kelas" name="nama_kelas" placeholder="Enter class name" required
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                    </div>
+              <!-- Image Preview -->
+              <div class='relative w-full max-w-md'>
+                <img
+                  :src='previewUrl'
+                  alt='Preview'
+                  class='w-full h-auto object-cover rounded-lg border-2 border-green-500 shadow-sm'
+                />
 
-                    <!-- Description -->
-                    <div>
-                        <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-                        <textarea id="deskripsi" name="deskripsi" rows="4" placeholder="Write a brief description..."
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
-                    </div>
-{{#if (roles user.role "super_admin")}}
-                    <!-- Kuota -->
-                    <div x-data="{
+                <button
+                  type='button'
+                  class='absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors'
+                  @click='clearFile()'
+                >
+                  <i class='fas fa-times'></i>
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Method -->
+        <div>
+          <span
+            class='block text-sm font-semibold text-gray-700 mb-2'
+          >Metode</span>
+          <div class='grid grid-cols-2 gap-4'>
+            <label class='cursor-pointer'>
+              <input
+                type='radio'
+                name='metode'
+                value='online'
+                class='hidden peer'
+              />
+              <div
+                class='flex items-center justify-center px-4 py-3 border rounded-lg transition peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white'
+              >
+                <span class='font-semibold'>Online</span>
+              </div>
+            </label>
+            <label class='cursor-pointer'>
+              <input
+                type='radio'
+                name='metode'
+                value='offline'
+                class='hidden peer'
+              />
+              <div
+                class='flex items-center justify-center px-4 py-3 border rounded-lg transition peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white'
+              >
+                <span class='font-semibold'>Offline</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div>
+          <label
+            for='lokasi'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Location</label>
+          <input
+            type='text'
+            id='lokasi'
+            name='lokasi'
+            placeholder='Enter location'
+            required
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label
+            for='kategoriId'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Category</label>
+          <select
+            name='kategoriId'
+            id='kategoriId'
+            class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          >
+            <option value='' selected disabled>-- Select Category --</option>
+            {{#each kategori}}
+              <option value='{{id}}'>{{nama_kategori}}</option>
+            {{/each}}
+          </select>
+        </div>
+
+        <!-- Jenis Kelas -->
+        <div>
+          <label
+            for='jenis_kelasId'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Jenis Kelas</label>
+          <select
+            name='jenis_kelasId'
+            id='jenis_kelasId'
+            class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          >
+            <option value='' selected disabled>-- Select Jenis Kelas --</option>
+            {{#each jenis_kelas}}
+              <option value='{{id}}'>{{nama_jenis_kelas}}</option>
+            {{/each}}
+          </select>
+        </div>
+
+        <!-- Class Name -->
+        <div>
+          <label
+            for='nama_kelas'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Class Name</label>
+          <input
+            type='text'
+            id='nama_kelas'
+            name='nama_kelas'
+            placeholder='Enter class name'
+            required
+            class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label
+            for='deskripsi'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Description</label>
+          <textarea
+            id='deskripsi'
+            name='deskripsi'
+            rows='4'
+            placeholder='Write a brief description...'
+            class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          ></textarea>
+        </div>
+        {{#if (roles user.role 'super_admin')}}
+          <!-- Kuota -->
+          <div
+            x-data="{
                         display: '',
                         value: '',
                         formatKuota(event) {
@@ -112,108 +316,162 @@
                             this.value = angka;
                             this.display = new Intl.NumberFormat('id-ID').format(angka);
                         }
-                    }">
-                        <label for="kuota1" class="block text-sm font-semibold text-gray-700 mb-1">Kuota Class</label>
-                        <input type="text" 
-                               id="kuota1"
-                               x-model="display" 
-                               @input="formatKuota($event)" 
-                               placeholder="Enter quota"
-                               class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                        <input type="hidden" name="kuota" x-model="value">
-                    </div>
-                    {{/if}}
-                </div>
+                    }"
+          >
+            <label
+              for='kuota1'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Kuota Class</label>
+            <input
+              type='text'
+              id='kuota1'
+              x-model='display'
+              @input='formatKuota($event)'
+              placeholder='Enter quota'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+            <input type='hidden' name='kuota' x-model='value' />
+          </div>
+        {{/if}}
+      </div>
 
-                <!-- RIGHT COLUMN -->
-                <div class="space-y-6">
-                    <!-- Technologies -->
-                    <div x-data="{ techs: [''] }">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
-                        <template x-for="(tech, index) in techs" :key="index">
-                            <div class="flex items-center gap-3 mb-3">
-                                <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter a technology"
-                                    class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
-                                           focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                                <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
-                                    class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
-                                    ✕
-                                </button>
-                            </div>
-                        </template>
-                        <button type="button" @click="techs.push('')"
-                            class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
-                                   text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-                            + Add Technology
-                        </button>
-                    </div>
+      <!-- RIGHT COLUMN -->
+      <div class='space-y-6'>
+        <!-- Technologies -->
+        <div x-data="{ techs: [''] }">
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-2'
+          >Technologies</label>
+          <template x-for='(tech, index) in techs' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='techs[index]'
+                name='teknologi[]'
+                placeholder='Enter a technology'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='techs.splice(index,1)'
+                x-show='techs.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="techs.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Technology
+          </button>
+        </div>
 
-                    <!-- Lessons -->
-                    <div x-data="{ materis: [''] }">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Lessons</label>
-                        <template x-for="(materi, index) in materis" :key="index">
-                            <div class="flex items-center gap-3 mb-3">
-                                <input type="text" x-model="materis[index]" name="materi[]" placeholder="Enter a lesson"
-                                    class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
-                                           focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                                <button type="button" @click="materis.splice(index,1)" x-show="materis.length > 1"
-                                    class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
-                                    ✕
-                                </button>
-                            </div>
-                        </template>
-                        <button type="button" @click="materis.push('')"
-                            class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
-                                   text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-                            + Add Lesson
-                        </button>
-                    </div>
+        <!-- Lessons -->
+        <div x-data="{ materis: [''] }">
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-2'
+          >Lessons</label>
+          <template x-for='(materi, index) in materis' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='materis[index]'
+                name='materi[]'
+                placeholder='Enter a lesson'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='materis.splice(index,1)'
+                x-show='materis.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="materis.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Lesson
+          </button>
+        </div>
 
-                    <!-- Learning Targets -->
-                    <div x-data="{ targets: [''] }">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Learning Targets</label>
-                        <template x-for="(target, index) in targets" :key="index">
-                            <div class="flex items-center gap-3 mb-3">
-                                <input type="text" x-model="targets[index]" name="target_pembelajaran[]" placeholder="Enter a learning target"
-                                    class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
-                                           focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                                <button type="button" @click="targets.splice(index,1)" x-show="targets.length > 1"
-                                    class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
-                                    ✕
-                                </button>
-                            </div>
-                        </template>
-                        <button type="button" @click="targets.push('')"
-                            class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
-                                   text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-                            + Add Target
-                        </button>
-                    </div>
+        <!-- Learning Targets -->
+        <div x-data="{ targets: [''] }">
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Learning
+            Targets</label>
+          <template x-for='(target, index) in targets' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='targets[index]'
+                name='target_pembelajaran[]'
+                placeholder='Enter a learning target'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='targets.splice(index,1)'
+                x-show='targets.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="targets.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Target
+          </button>
+        </div>
 
-                    <!-- Kriteria -->
-                    <div x-data="{ kriterias: [''] }">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Kriteria</label>
-                        <template x-for="(kriteria, index) in kriterias" :key="index">
-                            <div class="flex items-center gap-3 mb-3">
-                                <input type="text" x-model="kriterias[index]" name="kriteria[]" placeholder="Enter criteria"
-                                    class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
-                                           focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                                <button type="button" @click="kriterias.splice(index,1)" x-show="kriterias.length > 1"
-                                    class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
-                                    ✕
-                                </button>
-                            </div>
-                        </template>
-                        <button type="button" @click="kriterias.push('')"
-                            class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
-                                   text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-                            + Add Criteria
-                        </button>
-                    </div>
+        <!-- Kriteria -->
+        <div x-data="{ kriterias: [''] }">
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-2'
+          >Kriteria</label>
+          <template x-for='(kriteria, index) in kriterias' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='kriterias[index]'
+                name='kriteria[]'
+                placeholder='Enter criteria'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='kriterias.splice(index,1)'
+                x-show='kriterias.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="kriterias.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Criteria
+          </button>
+        </div>
 
-{{#if (roles user.role "super_admin")}}
-                    <!-- Price -->
-                    <div x-data="{
+        {{#if (roles user.role 'super_admin')}}
+          <!-- Price -->
+          <div
+            x-data="{
                         display: '',
                         value: '',
                         formatHarga(event) {
@@ -221,19 +479,26 @@
                             this.value = angka;
                             this.display = new Intl.NumberFormat('id-ID').format(angka);
                         }
-                    }">
-                        <label for="harga1" class="block text-sm font-semibold text-gray-700 mb-1">Price</label>
-                        <input type="text" 
-                               id="harga1"
-                               x-model="display" 
-                               @input="formatHarga($event)" 
-                               placeholder="Enter price"
-                               class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                        <input type="hidden" name="harga" x-model="value">
-                    </div>
+                    }"
+          >
+            <label
+              for='harga1'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Price</label>
+            <input
+              type='text'
+              id='harga1'
+              x-model='display'
+              @input='formatHarga($event)'
+              placeholder='Enter price'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+            <input type='hidden' name='harga' x-model='value' />
+          </div>
 
-                    <!-- Promo -->
-                    <div x-data="{
+          <!-- Promo -->
+          <div
+            x-data="{
                         display: '',
                         value: '',
                         formatPromo(event) {
@@ -241,30 +506,59 @@
                             this.value = angka;
                             this.display = new Intl.NumberFormat('id-ID').format(angka);
                         }
-                    }">
-                        <label for="promo1" class="block text-sm font-semibold text-gray-700 mb-1">Promo</label>
-                        <input type="text" 
-                               id="promo1"
-                               x-model="display" 
-                               @input="formatPromo($event)" 
-                               placeholder="Enter promo price"
-                               class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                        <input type="hidden" name="promo" x-model="value">
-                    </div>
-                    {{/if}}
-                </div>
+                    }"
+          >
+            <label
+              for='promo1'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Promo</label>
+            <input
+              type='text'
+              id='promo1'
+              x-model='display'
+              @input='formatPromo($event)'
+              placeholder='Enter promo price'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+            <input type='hidden' name='promo' x-model='value' />
+          </div>
+        {{/if}}
+      </div>
 
-                <!-- BUTTONS - Full Width -->
-                <div class="lg:col-span-2 flex space-x-4">
-                    <button type="submit"
-                        class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-                        Create
-                    </button>
-                    <a href="/kelass"
-                        class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-                        Cancel
-                    </a>
-                </div>
-            </form>
+      <!-- BUTTONS - Full Width -->
+      <div class='lg:col-span-2 space-y-4'>
+        <!-- Submit Warning -->
+        <template x-if='coverHasFile && !coverValid'>
+          <div
+            class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-triangle text-red-500'></i>
+            <p class='text-sm text-red-800'>
+              <span class='font-semibold'>Cannot submit:</span>
+              Please fix the cover image validation errors above.
+            </p>
+          </div>
+        </template>
+
+        <div class='flex space-x-4'>
+          <button
+            type='submit'
+            :disabled='coverHasFile && !coverValid'
+            :class="coverHasFile && !coverValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+            class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          >
+            <i class='fas fa-plus-circle'></i>
+            Create
+          </button>
+          <a
+            href='/kelass'
+            class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
+          >
+            <i class='fas fa-times'></i>
+            Cancel
+          </a>
         </div>
-    </div>
+      </div>
+    </form>
+  </div>
+</div>

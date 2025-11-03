@@ -699,26 +699,153 @@
 
     <aside
       class='space-y-6'
-      x-data="{ previewUrl: null, copied: false, copyToClipboard() { navigator.clipboard.writeText('2847 9237 4298 1234'); this.copied = true; setTimeout(() => this.copied = false, 2000); } }"
+      x-data="{ 
+        previewUrl: null, 
+        copied: false, 
+        paymentType: 'full',
+        installmentMonths: 3,
+        copyToClipboard() { 
+          navigator.clipboard.writeText('2847 9237 4298 1234'); 
+          this.copied = true; 
+          setTimeout(() => this.copied = false, 2000); 
+        },
+        calculateInstallment(total, months) {
+          return Math.ceil(total / months);
+        },
+        get installmentAmount() {
+          return this.calculateInstallment({{kelas.harga}}, this.installmentMonths);
+        }
+      }"
     >
       <div
         class='p-8 border border-slate-200 rounded-2xl shadow-xl bg-gradient-to-br from-white to-slate-50 space-y-6 sticky top-6'
       >
         <!-- Harga -->
         {{#if check_user}}{{else}}
-          <div class='text-center space-y-2'>
-            <!-- Harga coret -->
-            <p class='text-lg text-gray-400 line-through'>
-              {{formatRupiah kelas.promo}}
-            </p>
+          <div class='space-y-4'>
+            <!-- Payment Type Toggle -->
+            <div class='flex gap-2 p-1 bg-gray-100 rounded-xl'>
+              <button
+                @click="paymentType = 'full'"
+                :class="paymentType === 'full' ? 'bg-white shadow-md' : 'bg-transparent'"
+                class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
+              >
+                <i class='fas fa-money-bill-wave mr-2'></i>
+                Full Payment
+              </button>
+              <button
+                @click="paymentType = 'installment'"
+                :class="paymentType === 'installment' ? 'bg-white shadow-md' : 'bg-transparent'"
+                class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
+              >
+                <i class='fas fa-calendar-alt mr-2'></i>
+                Installment
+              </button>
+            </div>
 
-            <!-- Harga promo -->
-            <p
-              class='text-4xl font-bold bg-gradient-to-r animate-pulse from-slate-700 to-slate-900 bg-clip-text text-transparent'
+            <!-- Full Payment Display -->
+            <div
+              x-show="paymentType === 'full'"
+              x-transition
+              class='text-center space-y-2'
             >
-              {{formatRupiah kelas.harga}}
-            </p>
+              <!-- Harga coret -->
+              <p class='text-lg text-gray-400 line-through'>
+                {{formatRupiah kelas.promo}}
+              </p>
 
+              <!-- Harga promo -->
+              <p
+                class='text-4xl font-bold bg-gradient-to-r animate-pulse from-slate-700 to-slate-900 bg-clip-text text-transparent'
+              >
+                {{formatRupiah kelas.harga}}
+              </p>
+              <p class='text-sm text-gray-600'>One-time payment</p>
+            </div>
+
+            <!-- Installment Payment Display -->
+            <div
+              x-show="paymentType === 'installment'"
+              x-transition
+              class='space-y-4'
+            >
+              <!-- Installment Options -->
+              <div class='bg-white rounded-xl p-4 border-2 border-slate-200'>
+                <label class='block text-sm font-semibold text-slate-700 mb-3'>
+                  <i class='fas fa-clock mr-2'></i>
+                  Choose Installment Period
+                </label>
+                <div class='grid grid-cols-3 gap-2'>
+                  <button
+                    @click='installmentMonths = 3'
+                    :class="installmentMonths === 3 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
+                    class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
+                  >
+                    3 Months
+                  </button>
+                  <button
+                    @click='installmentMonths = 6'
+                    :class="installmentMonths === 6 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
+                    class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
+                  >
+                    6 Months
+                  </button>
+                  <button
+                    @click='installmentMonths = 12'
+                    :class="installmentMonths === 12 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
+                    class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
+                  >
+                    12 Months
+                  </button>
+                </div>
+              </div>
+
+              <!-- Installment Price Display -->
+              <div
+                class='bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl p-6 text-white'
+              >
+                <p class='text-sm text-slate-300 mb-2'>Monthly Payment</p>
+                <div class='flex items-baseline gap-2 mb-3'>
+                  <span
+                    class='text-4xl font-bold'
+                    x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'
+                  ></span>
+                  <span class='text-lg text-slate-300'>/month</span>
+                </div>
+                <div
+                  class='flex items-center justify-between pt-3 border-t border-slate-600'
+                >
+                  <div>
+                    <p class='text-xs text-slate-300'>Total</p>
+                    <p class='text-lg font-semibold'>{{formatRupiah
+                        kelas.harga
+                      }}</p>
+                  </div>
+                  <div>
+                    <p class='text-xs text-slate-300'>Duration</p>
+                    <p
+                      class='text-lg font-semibold'
+                      x-text='installmentMonths + " Months"'
+                    ></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Installment Info -->
+              <div class='bg-amber-50 border border-amber-200 rounded-xl p-4'>
+                <div class='flex items-start gap-3'>
+                  <i class='fas fa-info-circle text-amber-600 mt-1'></i>
+                  <div class='text-sm text-amber-800'>
+                    <p class='font-semibold mb-1'>Installment Information:</p>
+                    <ul class='list-disc pl-4 space-y-1'>
+                      <li>No additional fees or interest</li>
+                      <li>Pay monthly until completed</li>
+                      <li>Full access after first payment</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         {{/if}}
 
@@ -759,12 +886,14 @@
               <!-- Payment Instructions -->
               <div
                 class='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5'
+                x-show="paymentType === 'full'"
+                x-transition
               >
                 <h4
                   class='font-bold text-blue-800 flex items-center gap-2 mb-3'
                 >
                   <i class='fas fa-info-circle'></i>
-                  Payment Instructions
+                  Full Payment Instructions
                 </h4>
                 <ol class='list-decimal pl-5 space-y-2 text-sm text-blue-700'>
                   <li>Transfer the exact amount of
@@ -778,6 +907,41 @@
                   <li>Wait for confirmation from the admin. If the payment is
                     valid, the payment status will be "Accepted"</li>
                   <li>Class access will be granted</li>
+                </ol>
+              </div>
+
+              <!-- Installment Payment Instructions -->
+              <div
+                class='bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-5'
+                x-show="paymentType === 'installment'"
+                x-transition
+              >
+                <h4
+                  class='font-bold text-purple-800 flex items-center gap-2 mb-3'
+                >
+                  <i class='fas fa-calendar-check'></i>
+                  Installment Payment Instructions
+                </h4>
+                <ol class='list-decimal pl-5 space-y-2 text-sm text-purple-700'>
+                  <li>Transfer the first installment of
+                    <span
+                      class='font-bold bg-purple-100 px-2 py-1 rounded'
+                      x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'
+                    ></span></li>
+                  <li>Include "Installment 1/[Total Months] - [Your Name]" in
+                    the transfer notes</li>
+                  <li>Upload proof of first payment below</li>
+                  <li>You'll receive class access after first payment
+                    confirmation</li>
+                  <li>Continue paying monthly installments:
+                    <ul class='list-disc pl-5 mt-2 space-y-1'>
+                      <li>Same amount each month</li>
+                      <li>Upload proof for each payment</li>
+                      <li>Use "Installment [Number]/[Total] - [Your Name]" in
+                        notes</li>
+                    </ul>
+                  </li>
+                  <li>Certificate will be issued after all installments are paid</li>
                 </ol>
               </div>
             {{else}}
@@ -824,13 +988,66 @@
                   method='post'
                   class='space-y-4'
                 >
+                  <!-- Hidden inputs for payment info -->
+                  <input
+                    type='hidden'
+                    name='payment_type'
+                    :value='paymentType'
+                  />
+                  <input
+                    type='hidden'
+                    name='installment_months'
+                    :value='installmentMonths'
+                  />
+                  <input
+                    type='hidden'
+                    name='installment_amount'
+                    :value='installmentAmount'
+                  />
+
+                  <!-- Payment Summary Badge -->
+                  <div
+                    class='bg-slate-100 border border-slate-300 rounded-xl p-4'
+                  >
+                    <div class='flex items-center justify-between'>
+                      <div>
+                        <p
+                          class='text-xs font-semibold text-slate-600 uppercase'
+                        >Payment Type</p>
+                        <p
+                          class='text-sm font-bold text-slate-900'
+                          x-text="paymentType === 'full' ? 'Full Payment' : 'Installment (' + installmentMonths + ' months)'"
+                        ></p>
+                      </div>
+                      <div class='text-right'>
+                        <p
+                          class='text-xs font-semibold text-slate-600 uppercase'
+                        >Amount</p>
+                        <p
+                          class='text-sm font-bold text-slate-900'
+                          x-text="paymentType === 'full' ? '{{formatRupiah
+                            kelas.harga
+                          }}' : 'Rp ' + installmentAmount.toLocaleString('id-ID') + '/mo'"
+                        ></p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <label
                       class='block text-sm font-semibold text-slate-700 mb-2'
-                    >Upload Payment Proof</label>
+                    >
+                      <i class='fas fa-receipt mr-2'></i>
+                      Upload Payment Proof
+                      <span
+                        x-show="paymentType === 'installment'"
+                        class='text-purple-600'
+                      >(First Installment)</span>
+                    </label>
                     <input
                       type='file'
                       name='file'
+                      required
                       class='w-full bg-white border-2 border-slate-300 rounded-xl p-3 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 transition-all'
                       @change='previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null'
                     />
@@ -853,7 +1070,9 @@
                     class='w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
                   >
                     <i class='fas fa-credit-card mr-2'></i>
-                    Enroll Now
+                    <span
+                      x-text="paymentType === 'full' ? 'Enroll Now' : 'Enroll with Installment'"
+                    ></span>
                   </button>
                 </form>
               {{/if}}
@@ -865,13 +1084,66 @@
                   method='post'
                   class='space-y-4'
                 >
+                  <!-- Hidden inputs for payment info -->
+                  <input
+                    type='hidden'
+                    name='payment_type'
+                    :value='paymentType'
+                  />
+                  <input
+                    type='hidden'
+                    name='installment_months'
+                    :value='installmentMonths'
+                  />
+                  <input
+                    type='hidden'
+                    name='installment_amount'
+                    :value='installmentAmount'
+                  />
+
+                  <!-- Payment Summary Badge -->
+                  <div
+                    class='bg-slate-100 border border-slate-300 rounded-xl p-4'
+                  >
+                    <div class='flex items-center justify-between'>
+                      <div>
+                        <p
+                          class='text-xs font-semibold text-slate-600 uppercase'
+                        >Payment Type</p>
+                        <p
+                          class='text-sm font-bold text-slate-900'
+                          x-text="paymentType === 'full' ? 'Full Payment' : 'Installment (' + installmentMonths + ' months)'"
+                        ></p>
+                      </div>
+                      <div class='text-right'>
+                        <p
+                          class='text-xs font-semibold text-slate-600 uppercase'
+                        >Amount</p>
+                        <p
+                          class='text-sm font-bold text-slate-900'
+                          x-text="paymentType === 'full' ? '{{formatRupiah
+                            kelas.harga
+                          }}' : 'Rp ' + installmentAmount.toLocaleString('id-ID') + '/mo'"
+                        ></p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <label
                       class='block text-sm font-semibold text-slate-700 mb-2'
-                    >Upload Payment Proof</label>
+                    >
+                      <i class='fas fa-receipt mr-2'></i>
+                      Upload Payment Proof
+                      <span
+                        x-show="paymentType === 'installment'"
+                        class='text-purple-600'
+                      >(First Installment)</span>
+                    </label>
                     <input
                       type='file'
                       name='file'
+                      required
                       class='w-full bg-white border-2 border-slate-300 rounded-xl p-3 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 transition-all'
                       @change='previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null'
                     />
@@ -894,7 +1166,9 @@
                     class='w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
                   >
                     <i class='fas fa-rocket mr-2'></i>
-                    Enroll in Bootcamp
+                    <span
+                      x-text="paymentType === 'full' ? 'Enroll in Bootcamp' : 'Enroll with Installment'"
+                    ></span>
                   </button>
                 </form>
               {{/if}}

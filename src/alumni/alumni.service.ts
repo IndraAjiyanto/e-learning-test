@@ -16,12 +16,23 @@ export class AlumniService {
         private readonly kelasRepository: Repository<Kelas>,
   ){}
   async create(createAlumnusDto: CreateAlumnusDto) {
-    const alumni = await this.alumniRepository.create(createAlumnusDto)
+    const kelas = await this.kelasRepository.findOne({where: {id: createAlumnusDto.kelasId}})
+    if(!kelas){
+      throw new NotFoundException('Kelas not found')
+    }
+    const alumni = await this.alumniRepository.create({
+      ...createAlumnusDto,
+      kelas: kelas
+    })
     await this.alumniRepository.save(alumni)
   }
 
   async findAll() {
-    return await this.alumniRepository.find();
+    return await this.alumniRepository.find({relations: ['kelas']});
+  }
+
+  async findAllKelas() {
+    return await this.kelasRepository.find();
   }
 
   async findOne(alumniId: number) {
