@@ -10,25 +10,27 @@ import cloudinary from 'src/common/config/multer.config';
 @Injectable()
 export class AlumniService {
   constructor(
-        @InjectRepository(Alumni)
-        private readonly alumniRepository: Repository<Alumni>,
-        @InjectRepository(Kelas)
-        private readonly kelasRepository: Repository<Kelas>,
-  ){}
+    @InjectRepository(Alumni)
+    private readonly alumniRepository: Repository<Alumni>,
+    @InjectRepository(Kelas)
+    private readonly kelasRepository: Repository<Kelas>,
+  ) {}
   async create(createAlumnusDto: CreateAlumnusDto) {
-    const kelas = await this.kelasRepository.findOne({where: {id: createAlumnusDto.kelasId}})
-    if(!kelas){
-      throw new NotFoundException('Kelas not found')
+    const kelas = await this.kelasRepository.findOne({
+      where: { id: createAlumnusDto.kelasId },
+    });
+    if (!kelas) {
+      throw new NotFoundException('Kelas not found');
     }
     const alumni = await this.alumniRepository.create({
       ...createAlumnusDto,
-      kelas: kelas
-    })
-    await this.alumniRepository.save(alumni)
+      kelas: kelas,
+    });
+    await this.alumniRepository.save(alumni);
   }
 
   async findAll() {
-    return await this.alumniRepository.find({relations: ['kelas']});
+    return await this.alumniRepository.find({ relations: ['kelas'] });
   }
 
   async findAllKelas() {
@@ -36,11 +38,13 @@ export class AlumniService {
   }
 
   async findOne(alumniId: number) {
-    const alumni = await this.alumniRepository.findOne({where: {id: alumniId}})
-    if(!alumni){
-      throw new NotFoundException('alumni Not found')
+    const alumni = await this.alumniRepository.findOne({
+      where: { id: alumniId },
+    });
+    if (!alumni) {
+      throw new NotFoundException('Alumni not found');
     }
-    return alumni
+    return alumni;
   }
 
   async getPublicIdFromUrl(url: string) {
@@ -49,25 +53,25 @@ export class AlumniService {
     if (parts.length < 2) {
       return null;
     }
-  
+
     // Ambil bagian setelah upload/
     let path = parts[1];
-  
+
     // Hapus "v1234567890/" (versi auto Cloudinary)
     path = path.replace(/^v[0-9]+\/?/, '');
-  
+
     // Buang extension (.jpg, .png, .pdf, dll)
     path = path.replace(/\.[^.]+$/, '');
-  
+
     console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
-  
+
     await this.deleteFileIfExists(path);
   }
-  
+
   async deleteFileIfExists(publicId: string) {
     try {
       const result = await cloudinary.uploader.destroy(publicId);
-  
+
       if (result.result === 'not found') {
         console.log('File not found in Cloudinary.');
       } else {
@@ -80,17 +84,21 @@ export class AlumniService {
   }
 
   async update(alumniId: number, updateAlumnusDto: UpdateAlumnusDto) {
-    const alumni = await this.findOne(alumniId)
-    if(!alumni){
-      throw new NotFoundException('alumni tidak ditemukan')
+    const alumni = await this.findOne(alumniId);
+    if (!alumni) {
+      throw new NotFoundException('Alumni tidak ditemukan');
     }
 
-  Object.assign(alumni, updateAlumnusDto);
+    Object.assign(alumni, updateAlumnusDto);
 
-  return await this.alumniRepository.save(alumni);
+    return await this.alumniRepository.save(alumni);
   }
 
   async remove(alumniId: number) {
-    return `This action removes a #${alumniId} alumnus`;
+    const alumni = await this.findOne(alumniId);
+    if (!alumni) {
+      throw new NotFoundException();
+    }
+    return await this.alumniRepository.remove(alumni);
   }
 }

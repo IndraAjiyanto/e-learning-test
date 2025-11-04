@@ -1,84 +1,145 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  Req,
+  UseInterceptors,
+  UploadedFile,
+  UseGuards,
+  UseFilters,
+} from '@nestjs/common';
 import { AlumniService } from './alumni.service';
 import { CreateAlumnusDto } from './dto/create-alumnus.dto';
 import { UpdateAlumnusDto } from './dto/update-alumnus.dto';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigImage } from 'src/common/config/multer.config';
+import {
+  createMemoryConfig,
+  multerConfigImage,
+  multerConfigMemory,
+} from 'src/common/config/multer.config';
+import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
+import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
+@UseGuards(AuthenticatedGuard)
+@UseFilters(FileUploadExceptionFilter)
+@UseInterceptors(MulterErrorInterceptor)
 @Controller('alumni')
 export class AlumniController {
   constructor(private readonly alumniService: AlumniService) {}
 
   @Roles('super_admin')
   @Post()
-    @UseInterceptors(FileInterceptor('profile', multerConfigImage)) 
-  async create(@Body() createAlumnusDto: CreateAlumnusDto, @Res() res:Response, @Req() req:Request, @UploadedFile() profile: Express.Multer.File) {
+  @UseInterceptors(
+    FileInterceptor('profile', multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 300,
+    maxWidth: 500,
+    minHeight: 300,
+    maxHeight: 500,
+    maxSize: 1 * 1024 * 1024, // 1MB max
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/alumni',
+  })
+  async create(
+    @Body() createAlumnusDto: CreateAlumnusDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-      createAlumnusDto.profile = profile.path
+      createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       await this.alumniService.create(createAlumnusDto);
-      req.flash('success','alumni successfully created')
-      res.redirect('/alumni')
+      req.flash('success', 'Alumni successfully created');
+      res.redirect('/alumni');
     } catch (error) {
-            req.flash('error','alumni failed to create')
-      res.redirect('/alumni')
+      console.log(error);
+      req.flash('error', 'Alumni failed to create');
+      res.redirect('/alumni');
     }
   }
 
   @Roles('super_admin')
   @Get()
-  async findAll(@Res() res:Response, @Req() req:Request) {
-    const alumni = await this.alumniService.findAll()
-    res.render('super_admin/alumni/index', {user: req.user, alumni})
+  async findAll(@Res() res: Response, @Req() req: Request) {
+    const alumni = await this.alumniService.findAll();
+    res.render('super_admin/alumni/index', { user: req.user, alumni });
   }
 
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res:Response, @Req() req:Request){
+  async formCreate(@Res() res: Response, @Req() req: Request) {
     const kelas = await this.alumniService.findAllKelas();
-    res.render('super_admin/alumni/create', {user: req.user, kelas})
+    res.render('super_admin/alumni/create', { user: req.user, kelas });
   }
 
   @Roles('super_admin')
   @Get('formEdit/:alumniId')
-  async formEdit(@Param('alumniId') alumniId: number, @Res() res:Response, @Req() req:Request) {
+  async formEdit(
+    @Param('alumniId') alumniId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     const alumni = await this.alumniService.findOne(alumniId);
     const kelas = await this.alumniService.findAllKelas();
-    res.render('super_admin/alumni/edit', {user: req.user, alumni, kelas})
+    res.render('super_admin/alumni/edit', { user: req.user, alumni, kelas });
   }
 
   @Roles('super_admin')
   @Patch(':alumniId')
-  @UseInterceptors(FileInterceptor('profile', multerConfigImage)) 
-  async update(@UploadedFile() profile: Express.Multer.File, @Param('alumniId') alumniId: number, @Body() updateAlumnusDto: UpdateAlumnusDto, @Res() res:Response, @Req() req:Request) {
+  @UseInterceptors(FileInterceptor('profile', multerConfigImage))
+  async update(
+    @UploadedFile() profile: Express.Multer.File,
+    @Param('alumniId') alumniId: number,
+    @Body() updateAlumnusDto: UpdateAlumnusDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-      const alumni = await this.alumniService.findOne(alumniId)
+      const alumni = await this.alumniService.findOne(alumniId);
       if (profile) {
-      await this.alumniService.getPublicIdFromUrl(alumni.profile);
-      updateAlumnusDto.profile = profile.path; 
-      } 
+        await this.alumniService.getPublicIdFromUrl(alumni.profile);
+        updateAlumnusDto.profile = profile.path;
+      }
       await this.alumniService.update(alumniId, updateAlumnusDto);
-      req.flash('success', 'alumni successfully updated')
-      res.redirect('/alumni')
+      req.flash('success', 'Alumni successfully updated');
+      res.redirect('/alumni');
     } catch (error) {
-            req.flash('error', 'alumni failed to update')
-      res.redirect('/alumni')
+      req.flash('error', 'Alumni failed to update');
+      res.redirect('/alumni');
     }
   }
 
   @Roles('super_admin')
   @Delete(':alumniId')
-  async remove(@Param('alumniId') alumniId: number, @Res() res:Response, @Req() req:Request) {
+  async remove(
+    @Param('alumniId') alumniId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-      const alumni = await this.alumniService.findOne(alumniId)
-      await this.alumniService.getPublicIdFromUrl(alumni.profile)
+      const alumni = await this.alumniService.findOne(alumniId);
+      if (!alumni) {
+        req.flash('error', 'Alumni not found');
+        res.redirect('/alumni');
+      }
+      await this.alumniService.getPublicIdFromUrl(alumni.profile);
       await this.alumniService.remove(alumniId);
-      req.flash('success', 'alumni successfully remove')
-      res.redirect('/alumni')
+      req.flash('success', 'Alumni successfully removed');
+      res.redirect('/alumni');
     } catch (error) {
-      req.flash('error', 'alumni failed to remove')
-      res.redirect('/alumni')
+      req.flash('error', 'Alumni failed to remove');
+      res.redirect('/alumni');
     }
   }
 }
