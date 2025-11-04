@@ -1,4 +1,18 @@
-<div class='pt-28 py-20'>
+<div class='py-10' x-data="{
+  icon: '{{benefit.icon}}',
+  get computedClass() {
+    const raw = (this.icon || '').toString().trim();
+    if (!raw) return 'fa-solid fa-circle-question';
+    const v = raw;
+    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
+    if (hasFaPrefix) {
+      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
+      return v;
+    }
+    if (!v.includes(' ')) return 'fa-solid fa-' + v;
+    return v;
+  }
+}">
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Benefit</h2>
 

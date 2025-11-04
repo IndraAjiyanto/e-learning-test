@@ -43,11 +43,11 @@ export class GambarBenefitController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 1000,
-    maxWidth: 1024,
-    minHeight: 1000,
-    maxHeight: 1024,
-    maxSize: 2 * 1024 * 1024,
+    minWidth: 700,
+    maxWidth: 1500,
+    minHeight: 700,
+    maxHeight: 1500,
+    maxSize: 3 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/gambar_benefit',
   })
@@ -108,11 +108,11 @@ export class GambarBenefitController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 1000,
-    maxWidth: 1024,
-    minHeight: 1000,
-    maxHeight: 1024,
-    maxSize: 2 * 1024 * 1024,
+    minWidth: 700,
+    maxWidth: 1500,
+    minHeight: 700,
+    maxHeight: 1500,
+    maxSize: 3 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/gambar_benefit',
   })

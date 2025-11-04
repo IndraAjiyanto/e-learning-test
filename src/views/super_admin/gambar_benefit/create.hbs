@@ -1,4 +1,4 @@
-<div class='pt-28 py-20'>
+<div class='py-10'>
   <div
     class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
     x-data="{ 
@@ -31,10 +31,10 @@
         return;
       }
 
-      // Validasi ukuran file (2MB = 2097152 bytes)
-      const maxSize = 2 * 1024 * 1024; // 2MB
+      // Validasi ukuran file (3MB)
+      const maxSize = 3 * 1024 * 1024; // 3MB
       if (file.size > maxSize) {
-        this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 2MB`;
+        this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 3MB`;
         this.isValid = false;
         this.previewUrl = null;
         return;
@@ -48,8 +48,8 @@
         this.imageWidth = img.width;
         this.imageHeight = img.height;
         
-        if (img.width < 1000 || img.width > 1024 || img.height < 1000 || img.height > 1024) {
-          this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 1000x1000 to 1024x1024 pixels`;
+        if (img.width < 700 || img.width > 1500 || img.height < 700 || img.height > 1500) {
+          this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 700x700 to 1500x1500 pixels`;
           this.isValid = false;
           this.previewUrl = null;
           URL.revokeObjectURL(objectUrl);
@@ -143,8 +143,8 @@
           <!-- Validation Requirements -->
           <div class='text-xs text-gray-500 space-y-1'>
             <p>✓ Format: JPEG, JPG, or PNG</p>
-            <p>✓ Max size: 2MB</p>
-            <p>✓ Dimensions: 1000x1000 to 1024x1024 pixels</p>
+            <p>✓ Max size: 3MB</p>
+            <p>✓ Dimensions: 700x700 to 1500x1500 pixels</p>
           </div>
 
           <!-- File Info -->
