@@ -433,7 +433,7 @@
               </a>
 
               <!-- Delete -->
-              <form action="/alur-kelas/{{id}}?_method=DELETE" method="post" class="inline">
+              <form action="/alur-kelas/{{id}}/{{../kelas.id}}?_method=DELETE" method="post" class="inline">
                 <button type="button" 
                         onclick="confirmDelete(this)" 
                         class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"
@@ -570,7 +570,7 @@
               </a>
 
               <!-- Delete -->
-              <form action="/benefit-kelas/{{id}}?_method=DELETE" method="post" class="inline">
+              <form action="/benefit-kelas/{{id}}/{{../kelas.id}}?_method=DELETE" method="post" class="inline">
                 <button type="button" 
                         onclick="confirmDelete(this)" 
                         class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"
@@ -688,7 +688,7 @@
               </a>
 
               <!-- Delete -->
-              <form action="/pertanyaan-kelas/{{id}}?_method=DELETE" method="post" class="inline">
+              <form action="/pertanyaan-kelas/{{id}}/{{../kelas.id}}?_method=DELETE" method="post" class="inline">
                 <button type="button" 
                         onclick="confirmDelete(this)" 
                         class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"

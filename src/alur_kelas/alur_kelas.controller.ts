@@ -57,7 +57,6 @@ export class AlurKelasController {
     try {
       const kelasId = Number(req.body.kelas_id);
       createAlurKelaDto.kelasId = kelasId;
-      createAlurKelaDto.alur_ke = await this.alurKelasService.noAlur(kelasId);
       await this.alurKelasService.create(createAlurKelaDto);
       req.flash('success', 'alur kelas successfully created');
       res.redirect(`/alur-kelas`);
@@ -77,13 +76,12 @@ export class AlurKelasController {
   ) {
     try {
       createAlurKelaDto.kelasId = kelasId;
-      createAlurKelaDto.alur_ke = await this.alurKelasService.noAlur(kelasId);
       await this.alurKelasService.create(createAlurKelaDto);
       req.flash('success', 'alur kelas successfully created');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', 'alur kelas failed to create');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -120,10 +118,10 @@ export class AlurKelasController {
     try {
       await this.alurKelasService.update(alurKelasId, updateAlurKelaDto);
       req.flash('success', 'alur kelas successfully updated');
-      res.redirect(`/alur-kelas`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', 'alur kelas failed to update');
-      res.redirect(`/alur-kelas`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -138,10 +136,10 @@ export class AlurKelasController {
     try {
       await this.alurKelasService.remove(alurKelasId, kelasId);
       req.flash('success', 'alur kelas successfully delete');
-      res.redirect(`/alur-kelas`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', 'alur kelas failed to delete');
-      res.redirect(`/alur-kelas`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 }

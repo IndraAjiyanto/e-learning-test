@@ -22,6 +22,11 @@ export class AlurKelasService {
     if (!kelas) {
       throw new NotFoundException('kelas not found');
     }
+
+    // Auto-generate alur_ke
+    const alurTerakhir = await this.findAlurKelas(createAlurKelaDto.kelasId);
+    createAlurKelaDto.alur_ke = alurTerakhir + 1;
+
     const alur_kelas = this.alurKelasRepository.create({
       ...createAlurKelaDto,
       kelas: kelas,

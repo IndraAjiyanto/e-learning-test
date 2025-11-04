@@ -1,86 +1,64 @@
-{{> header user=user}}
-{{> sidebar user=user}}
+<div class='py-10'>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New FAQ</h2>
 
-<div class="p-4 sm:ml-64">
-  <div class="p-4 mt-14">
-    <div class="max-w-3xl mx-auto">
-      
-      <!-- Header -->
-      <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Add FAQ</h1>
-        <p class="text-gray-600">Create a new FAQ for class</p>
+    <form
+      action='/pertanyaan-kelas/{{kelasId}}'
+      method='post'
+      class='space-y-6'
+    >
+
+      <!-- Pertanyaan -->
+      <div>
+        <label
+          for='pertanyaan'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Question
+        </label>
+        <textarea
+          id='pertanyaan'
+          name='pertanyaan'
+          rows='3'
+          required
+          placeholder='Enter the question...'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        ></textarea>
       </div>
 
-      <!-- Form Card -->
-      <div class="bg-white rounded-xl shadow-lg p-6">
-        <form action="/pertanyaan-kelas/{{kelasId}}" method="POST">
-          
-          <!-- Kelas Dropdown -->
-          <div class="mb-6">
-            <label for="kelasId" class="block text-sm font-semibold text-gray-700 mb-2">
-              Class
-            </label>
-            <select 
-              name="kelasId" 
-              id="kelasId" 
-              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-              required>
-              <option value="">-- Select Class --</option>
-              {{#each kelass}}
-                <option value="{{this.id}}" {{#if (eq this.id ../kelasId)}}selected{{/if}}>
-                  {{this.nama_kelas}}
-                </option>
-              {{/each}}
-            </select>
-          </div>
-
-          <!-- Pertanyaan -->
-          <div class="mb-6">
-            <label for="pertanyaan" class="block text-sm font-semibold text-gray-700 mb-2">
-              Question
-            </label>
-            <textarea 
-              name="pertanyaan" 
-              id="pertanyaan" 
-              rows="3"
-              placeholder="Enter question..."
-              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-              required></textarea>
-          </div>
-
-          <!-- Jawaban -->
-          <div class="mb-6">
-            <label for="jawaban" class="block text-sm font-semibold text-gray-700 mb-2">
-              Answer
-            </label>
-            <textarea 
-              name="jawaban" 
-              id="jawaban" 
-              rows="5"
-              placeholder="Enter answer..."
-              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-              required></textarea>
-          </div>
-
-          <!-- Buttons -->
-          <div class="flex items-center gap-4">
-            <button 
-              type="submit" 
-              class="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
-              Create FAQ
-            </button>
-            <a 
-              href="/pertanyaan-kelas" 
-              class="text-gray-700 px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition">
-              Cancel
-            </a>
-          </div>
-
-        </form>
+      <!-- Jawaban -->
+      <div>
+        <label
+          for='jawaban'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Answer
+        </label>
+        <textarea
+          id='jawaban'
+          name='jawaban'
+          rows='5'
+          required
+          placeholder='Enter the answer...'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        ></textarea>
       </div>
 
-    </div>
+      <!-- Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+        >
+          Create
+        </button>
+        <a
+          href='/kelass/detail/kelas/admin/{{kelasId}}'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
   </div>
 </div>
-
-{{> footer}}

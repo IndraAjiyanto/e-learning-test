@@ -55,10 +55,15 @@ export class PertanyaanKelasController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    createPertanyaanKelaDto.kelasId = kelasId;
-    await this.pertanyaanKelasService.create(createPertanyaanKelaDto);
-    req.flash('success', 'PertanyaanKelas created successfully');
-    res.redirect('/admin/kelas/' + kelasId);
+    try {
+      createPertanyaanKelaDto.kelasId = kelasId;
+      await this.pertanyaanKelasService.create(createPertanyaanKelaDto);
+      req.flash('success', 'PertanyaanKelas created successfully');
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+    } catch (error) {
+      req.flash('error', 'PertanyaanKelas failed to create');
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+    }
   }
 
   @Roles('super_admin')
@@ -78,30 +83,39 @@ export class PertanyaanKelasController {
   }
 
   @Roles('super_admin')
-  @Patch(':id')
+  @Patch(':id/:kelasId')
   async update(
     @Param('id') id: number,
+    @Param('kelasId') kelasId: number,
     @Body() updatePertanyaanKelaDto: UpdatePertanyaanKelaDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const pertanyaanKelas = await this.pertanyaanKelasService.findOne(id);
-    await this.pertanyaanKelasService.update(+id, updatePertanyaanKelaDto);
-    req.flash('success', 'PertanyaanKelas updated successfully');
-    res.redirect('/admin/kelas/' + pertanyaanKelas.kelas.id);
+    try {
+      await this.pertanyaanKelasService.update(+id, updatePertanyaanKelaDto);
+      req.flash('success', 'PertanyaanKelas updated successfully');
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+    } catch (error) {
+      req.flash('error', 'PertanyaanKelas failed to update');
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+    }
   }
 
   @Roles('super_admin')
-  @Delete(':id')
+  @Delete(':id/:kelasId')
   async remove(
     @Param('id') id: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const pertanyaanKelas = await this.pertanyaanKelasService.findOne(id);
-    const kelasId = pertanyaanKelas.kelas.id;
-    await this.pertanyaanKelasService.remove(+id);
-    req.flash('success', 'PertanyaanKelas deleted successfully');
-    res.redirect('/admin/kelas/' + kelasId);
+    try {
+      await this.pertanyaanKelasService.remove(+id);
+      req.flash('success', 'PertanyaanKelas deleted successfully');
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+    } catch (error) {
+      req.flash('error', 'PertanyaanKelas failed to delete');
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+    }
   }
 }
