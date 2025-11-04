@@ -1,16 +1,18 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class CreateTeamDto {
-    @IsString()
-    profile: string
+  @IsString()
+  profile: string;
 
-    @IsString()
-    nama: string
+  @IsString()
+  nama: string;
 
-    @IsString()
-    posisi: string
+  @IsString()
+  posisi: string;
 
-    @IsString()
-    linkedin: string
-    
+  @IsString()
+  linkedin: string;
+
+  @IsString()
+  deskripsi: string;
 }

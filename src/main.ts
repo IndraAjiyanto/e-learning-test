@@ -173,6 +173,13 @@ async function bootstrap() {
   });
   hbs.registerHelper('json', (context) => JSON.stringify(context));
 
+  // Helper untuk convert newline ke <br> tag
+  hbs.registerHelper('nl2br', function (text) {
+    if (!text) return '';
+    const escaped = hbs.Utils.escapeExpression(text);
+    return new hbs.SafeString(escaped.replace(/\n/g, '<br>'));
+  });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

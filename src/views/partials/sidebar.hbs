@@ -613,30 +613,6 @@
           </div>
         </div>
 
-        <a
-          href='/cicilan'
-          @click="setActive('/cicilan')"
-          :class="active === '/cicilan' 
-            ? 'bg-white text-gray-900' 
-            : 'bg-transparent text-white hover:bg-gray-700'"
-          class='flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group'
-        >
-          <svg
-            class='w-5 h-5'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z'
-            />
-          </svg>
-          <span class='font-semibold'>Cicilan</span>
-        </a>
-
         <!-- Alumni Menu -->
         <a
           href='/alumni'
@@ -788,9 +764,9 @@
             </a>
 
             <a
-              href='/tentang/admin/list'
-              @click="setActive('/tentang/admin/list')"
-              :class="active === '/tentang/admin/list' 
+              href='/tentang'
+              @click="setActive('/tentang')"
+              :class="active === '/tentang' 
                 ? 'bg-gray-700 text-white' 
                 : 'bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'"
               class='flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-sm'
@@ -836,9 +812,9 @@
             </a>
 
             <a
-              href='/benefit'
-              @click="setActive('/benefit')"
-              :class="active === '/benefit' 
+              href='/value'
+              @click="setActive('/value')"
+              :class="active === '/value' 
                 ? 'bg-gray-700 text-white' 
                 : 'bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'"
               class='flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-sm'

@@ -66,7 +66,7 @@
         <div class='absolute bottom-12 right-8 w-6 h-6 bg-slate-400/20 rounded-full animate-bounce-subtle animation-delay-2000 pointer-events-none z-10'></div>
 
         <img
-          src='/public/image/orang.png'
+          src='{{tentang.[0].gambar}}'
           class='relative w-full transform transition-transform duration-300 z-10'
         />
 
@@ -89,15 +89,14 @@
         class='text-4xl sm:text-5xl md:text-6xl font-bold leading-tight font-montserrat mb-4'
       >
         <span
-          class='bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 bg-clip-text text-transparent'
+          class='bg-gradient-to-r from-slate-700 whitespace-nowrap via-slate-800 to-slate-900 bg-clip-text text-transparent'
         >
-          Kesatria Academy
+          {{tentang.[0].judul}}
         </span>
       </h1>
 
       <p class='py-6 text-lg text-gray-700 leading-relaxed font-inter mb-6'>
-        IT Development and Artificial Intelligence education program with
-        high-quality courses and bootcamps for the professional world.
+        {{{nl2br tentang.[0].text}}}
       </p>
 
       <div
@@ -592,14 +591,14 @@
       categoriesData: [
         { value: 'all', icon: 'fa-th', title: 'All Categories', desc: 'Show all class categories' },
         {{#each kategori}}
-        { value: '{{this.nama_kategori}}', icon: '{{this.icon}}', title: '{{this.nama_kategori}}', desc: '{{this.deskripsi}}' },
+        { value: '{{this.nama_kategori}}', icon: '{{computeIcon icon}}', title: '{{this.nama_kategori}}', desc: '{{this.deskripsi}}' },
         {{/each}}
       ],
       
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
         {{#each jenis_kelas}}
-        { value: '{{this.nama_jenis_kelas}}', icon: '{{this.icon}}', title: '{{this.nama_jenis_kelas}}', desc: '{{this.deskripsi}}' },
+        { value: '{{this.nama_jenis_kelas}}', icon: '{{computeIcon icon}}', title: '{{this.nama_jenis_kelas}}', desc: '{{this.deskripsi}}' },
         {{/each}}
       ],
       
@@ -1178,18 +1177,13 @@
 
   <!-- Button -->
   <a
-    href='https://wa.me/6281234567890?text=Halo%20Kesatria%20Academy!%20Saya%20ingin%20bertanya%20tentang%20bootcamp'
+    href='https://wa.me/62895618452602?text=Halo%20Kesatria%20Academy!%20Saya%20ingin%20bertanya%20tentang%20bootcamp'
     target='_blank'
     class='relative flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full shadow-lg hover:shadow-2xl hover:scale-110 hover:-translate-y-2 hover:from-green-400 hover:to-green-500 transition-all duration-300 animate-pulse-slate group'
     aria-label='Chat WhatsApp'
   >
     <i class='fab fa-whatsapp text-white text-2xl md:text-3xl'></i>
 
-    <!-- Badge Notifikasi -->
-    <span
-      class='absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 md:w-6 md:h-6 bg-gradient-to-br from-green-500 to-green-600 text-white text-xs font-bold rounded-full border-2 md:border-3 border-white shadow-lg'
-    >
-      1
-    </span>
+
   </a>
 </div>

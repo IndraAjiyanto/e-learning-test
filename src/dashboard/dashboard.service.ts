@@ -17,6 +17,7 @@ import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
 import { Blog } from 'src/entities/blog.entity';
+import { Tentang } from 'src/entities/tentang.entity';
 
 @Injectable()
 export class DashboardService {
@@ -45,6 +46,8 @@ export class DashboardService {
     private readonly socialRepository: Repository<Social>,
     @InjectRepository(Blog)
     private readonly blogRepository: Repository<Blog>,
+    @InjectRepository(Tentang)
+    private readonly tentangRepository: Repository<Tentang>,
   ) {}
 
   async findAllKelas() {
@@ -53,6 +56,10 @@ export class DashboardService {
       order: { id: 'DESC' },
       relations: ['kategori', 'jenis_kelas', 'user_kelas'],
     });
+  }
+
+  async findTentang() {
+    return await this.tentangRepository.find();
   }
 
   async findKelas() {

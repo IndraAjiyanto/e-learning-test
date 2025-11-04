@@ -27,7 +27,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 export class MentorController {
   constructor(private readonly mentorService: MentorService) {}
 
-  @Roles('admin')
+  @Roles('super_admin')
   @Post(':kelasId')
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -83,10 +83,10 @@ export class MentorController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    res.render('admin/mentor/create', { user: req.user, kelasId });
+    res.render('super_admin/mentor/create', { user: req.user, kelasId });
   }
 
-  @Roles('admin')
+  @Roles('super_admin')
   @Get(':mentorId')
   async findOne(
     @Param('mentorId') mentorId: number,
@@ -94,10 +94,10 @@ export class MentorController {
     @Req() req: Request,
   ) {
     const mentor = await this.mentorService.findOne(mentorId);
-    res.render('admin/mentor/detail', { user: req.user, mentor });
+    res.render('super_admin/mentor/detail', { user: req.user, mentor });
   }
 
-  @Roles('admin')
+  @Roles('super_admin')
   @Get('formEdit/:mentorId')
   async formEdit(
     @Param('mentorId') mentorId: number,
@@ -105,10 +105,10 @@ export class MentorController {
     @Req() req: Request,
   ) {
     const mentor = await this.mentorService.findOne(mentorId);
-    res.render('admin/mentor/edit', { user: req.user, mentor });
+    res.render('super_admin/mentor/edit', { user: req.user, mentor });
   }
 
-  @Roles('admin')
+  @Roles('super_admin')
   @Patch(':kelasId/:mentorId')
   @UseInterceptors(
     FileFieldsInterceptor(

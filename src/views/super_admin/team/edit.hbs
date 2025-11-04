@@ -1,22 +1,20 @@
-<div class="pt-28 py-20">
+<div class="py-10">
   <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit Team Member</h2>
 
     <form action="/team/{{team.id}}?_method=PUT" method="POST" enctype="multipart/form-data" class="space-y-6">
 
-      <!-- Preview foto -->
       <div 
         x-data="{ 
           previewUrl: null,
-          oldPhoto: '{{#if team.profile}}/uploads/team/{{team.profile}}{{else}}/images/default-avatar.png{{/if}}'
+          oldPhoto: '{{#if team.profile}}{{team.profile}}{{else}}/images/default-avatar.png{{/if}}'
         }" 
         class="space-y-3"
       >
         <label for="profile" class="block text-sm font-semibold text-gray-700 mb-1">
-          Photos Profile
+          Profile Photo
         </label>
 
-        <!-- Input file -->
         <input 
           type="file" 
           id="profile" 
@@ -27,7 +25,6 @@
           @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
         >
 
-        <!-- Tampilkan foto lama atau preview baru -->
         <div class="relative w-32 h-32">
           <img 
             :src="previewUrl ? previewUrl : oldPhoto" 
@@ -35,7 +32,6 @@
             class="w-32 h-32 object-cover rounded-lg border border-gray-300"
           >
 
-          <!-- Tombol hapus foto baru -->
           <template x-if="previewUrl">
             <button 
               type="button" 
@@ -47,7 +43,6 @@
         </div>
       </div>
 
-      <!-- Nama -->
       <div>
         <label for="nama" class="block text-sm font-semibold text-gray-700 mb-1">Name</label>
         <input 
@@ -55,11 +50,11 @@
           id="nama" 
           name="nama" 
           value="{{team.nama}}" 
+          required
           class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
         >
       </div>
 
-      <!-- Posisi -->
       <div>
         <label for="posisi" class="block text-sm font-semibold text-gray-700 mb-1">Position</label>
         <input 
@@ -67,23 +62,36 @@
           id="posisi" 
           name="posisi" 
           value="{{team.posisi}}" 
+          required
           class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
         >
       </div>
 
-      <!-- LinkedIn -->
       <div>
-        <label for="linkedin" class="block text-sm font-semibold text-gray-700 mb-1">LinkedIn</label>
+        <label for="linkedin" class="block text-sm font-semibold text-gray-700 mb-1">LinkedIn URL</label>
         <input 
-          type="text" 
+          type="url" 
           id="linkedin" 
           name="linkedin" 
           value="{{team.linkedin}}" 
+          required
+          placeholder="https://linkedin.com/in/username"
           class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
         >
       </div>
 
-      <!-- Tombol -->
+      <div>
+        <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+        <textarea 
+          id="deskripsi" 
+          name="deskripsi" 
+          required
+          rows="4"
+          placeholder="Enter team member description..."
+          class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+        >{{team.deskripsi}}</textarea>
+      </div>
+
       <div class="flex space-x-4">
         <button type="submit"
           class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-gray-900">

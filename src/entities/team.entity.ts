@@ -17,6 +17,9 @@ export class Team{
     @Column()
     linkedin: string
 
+    @Column()
+    deskripsi: string
+
                         @CreateDateColumn()
                         createdAt: Date;
                         

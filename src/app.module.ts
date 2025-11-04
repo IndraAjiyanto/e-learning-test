@@ -46,6 +46,7 @@ import { CicilanModule } from './cicilan/cicilan.module';
 import { GambarBenefitModule } from './gambar_benefit/gambar_benefit.module';
 import { TentangModule } from './tentang/tentang.module';
 import { TeknologiModule } from './teknologi/teknologi.module';
+import { IntenshifModule } from './intenshif/intenshif.module';
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { TeknologiModule } from './teknologi/teknologi.module';
     GambarBenefitModule,
     TentangModule,
     TeknologiModule,
+    IntenshifModule,
   ],
   controllers: [AppController],
   providers: [AppService],

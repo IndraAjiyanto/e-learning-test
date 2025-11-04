@@ -60,7 +60,7 @@ export class KategorisController {
     req.flash('success', 'kategori successfully updated')
     res.redirect('/kategoris')
     } catch (error) {
-          req.flash('success', 'kategori failed to update')
+          req.flash('error', 'kategori failed to update')
     res.redirect('/kategoris')
     }
   }

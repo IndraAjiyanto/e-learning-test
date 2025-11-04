@@ -282,6 +282,7 @@
             <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
 
               <!-- Benefit 1 -->
+              {{#each kelas.benefit_kelas}}
               <div
                 class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all'
               >
@@ -289,85 +290,19 @@
                   <div
                     class='bg-gray-100 p-3 rounded-full ring-1 ring-gray-200'
                   >
-                    <i class='fas fa-certificate text-gray-600 text-xl'></i>
+                    <i class='{{computeIcon this.icon}}'></i>
                   </div>
                   <div>
                     <h4
                       class='font-semibold text-gray-900 text-lg mb-2'
-                    >Certificate of Completion</h4>
+                    >{{this.benefit}}</h4>
                     <p class='text-gray-700 leading-relaxed'>
-                      Get an official certificate after completing the course to
-                      boost your career profile.
+                      {{this.isi}}
                     </p>
                   </div>
                 </div>
               </div>
-
-              <!-- Benefit 2 -->
-              <div
-                class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all'
-              >
-                <div class='flex items-start gap-4'>
-                  <div
-                    class='bg-gray-100 p-3 rounded-full ring-1 ring-gray-200'
-                  >
-                    <i class='fas fa-briefcase text-gray-600 text-xl'></i>
-                  </div>
-                  <div>
-                    <h4
-                      class='font-montserrat font-semibold text-gray-900 text-lg mb-2'
-                    >Career Opportunities</h4>
-                    <p class='font-inter text-gray-700 leading-relaxed'>
-                      Access our job portal and career guidance to help you land
-                      your dream job.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Benefit 3 -->
-              <div
-                class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all'
-              >
-                <div class='flex items-start gap-4'>
-                  <div
-                    class='bg-gray-100 p-3 rounded-full ring-1 ring-gray-200'
-                  >
-                    <i class='fas fa-users text-gray-600 text-xl'></i>
-                  </div>
-                  <div>
-                    <h4
-                      class='font-semibold text-gray-900 text-lg mb-2'
-                    >Community Access</h4>
-                    <p class='text-gray-700 leading-relaxed'>
-                      Join our exclusive community of learners and professionals
-                      for networking and support.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Benefit 4 -->
-              <div
-                class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all'
-              >
-                <div class='flex items-start gap-4'>
-                  <div
-                    class='bg-gray-100 p-3 rounded-full ring-1 ring-gray-200'
-                  >
-                    <i class='fas fa-laptop-code text-gray-600 text-xl'></i>
-                  </div>
-                  <div>
-                    <h4
-                      class='font-montserrat font-semibold text-gray-900 text-lg mb-2'
-                    >Real Projects</h4>
-                    <p class='font-inter text-gray-700 leading-relaxed'>
-                      Work on real-world projects to build a portfolio that
-                      showcases your skills.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              {{/each}}
 
             </div>
           </div>
@@ -384,13 +319,14 @@
 
             <div class='space-y-4' x-data='{ openFaq: null }'>
               <!-- FAQ Item 1 -->
+              {{#each kelas.pertanyaan_kelas}}
               <div class='border border-gray-200 rounded-xl overflow-hidden'>
                 <button
                   class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
                   @click='openFaq = openFaq === 1 ? null : 1'
                 >
                   <span class='font-montserrat font-semibold text-gray-800'>Do I
-                    need prior experience to join this course?</span>
+                    {{this.pertanyaan}}</span>
                   <i
                     class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
                     :class="{'rotate-180': openFaq === 1}"
@@ -401,113 +337,11 @@
                   x-show='openFaq === 1'
                   x-transition
                 >
-                  No prior experience is required for our beginner courses. We
-                  start from the fundamentals and gradually progress to more
-                  advanced topics. For intermediate and advanced courses, we
-                  recommend having basic knowledge in the relevant field.
+                  {{this.jawaban}}
                 </div>
               </div>
+              {{/each}}
 
-              <!-- FAQ Item 2 -->
-              <div class='border border-gray-200 rounded-xl overflow-hidden'>
-                <button
-                  class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
-                  @click='openFaq = openFaq === 2 ? null : 2'
-                >
-                  <span class='font-montserrat font-semibold text-gray-800'>How
-                    long will I have access to the course materials?</span>
-                  <i
-                    class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
-                    :class="{'rotate-180': openFaq === 2}"
-                  ></i>
-                </button>
-                <div
-                  class='font-inter px-5 pb-5 text-gray-700'
-                  x-show='openFaq === 2'
-                  x-transition
-                >
-                  You will have lifetime access to all course materials,
-                  including any future updates we make to the content. This
-                  means you can revisit the materials anytime you need a
-                  refresher.
-                </div>
-              </div>
-
-              <!-- FAQ Item 3 -->
-              <div class='border border-gray-200 rounded-xl overflow-hidden'>
-                <button
-                  class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
-                  @click='openFaq = openFaq === 3 ? null : 3'
-                >
-                  <span class='font-semibold text-gray-800'>What is the time
-                    commitment for this course?</span>
-                  <i
-                    class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
-                    :class="{'rotate-180': openFaq === 3}"
-                  ></i>
-                </button>
-                <div
-                  class='px-5 pb-5 text-gray-700'
-                  x-show='openFaq === 3'
-                  x-transition
-                >
-                  The course is designed to be completed in
-                  {{kelas.durasi}}
-                  with a recommended commitment of 5-7 hours per week. However,
-                  you can learn at your own pace and complete the course
-                  according to your schedule.
-                </div>
-              </div>
-
-              <!-- FAQ Item 4 -->
-              <div class='border border-gray-200 rounded-xl overflow-hidden'>
-                <button
-                  class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
-                  @click='openFaq = openFaq === 4 ? null : 4'
-                >
-                  <span class='font-semibold text-gray-800'>Will I receive a
-                    certificate upon completion?</span>
-                  <i
-                    class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
-                    :class="{'rotate-180': openFaq === 4}"
-                  ></i>
-                </button>
-                <div
-                  class='px-5 pb-5 text-gray-700'
-                  x-show='openFaq === 4'
-                  x-transition
-                >
-                  Yes, you will receive a certificate of completion after
-                  finishing all course modules and submitting the final project.
-                  Our certificates are recognized by industry partners and can
-                  be shared on LinkedIn and other professional platforms.
-                </div>
-              </div>
-
-              <!-- FAQ Item 5 -->
-              <div class='border border-gray-200 rounded-xl overflow-hidden'>
-                <button
-                  class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
-                  @click='openFaq = openFaq === 5 ? null : 5'
-                >
-                  <span class='font-semibold text-gray-800'>What kind of support
-                    is available during the course?</span>
-                  <i
-                    class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
-                    :class="{'rotate-180': openFaq === 5}"
-                  ></i>
-                </button>
-                <div
-                  class='px-5 pb-5 text-gray-700'
-                  x-show='openFaq === 5'
-                  x-transition
-                >
-                  We provide multiple support channels including a dedicated
-                  student community, Q&A forums, weekly live sessions with
-                  instructors, and email support. Our team is committed to
-                  helping you succeed in your learning journey.
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -525,12 +359,13 @@
               <!-- Timeline -->
               <div class='space-y-10'>
                 <!-- Phase 1 -->
+                {{#each kelas.alur_kelas}}
                 <div class='flex gap-6'>
                   <div class='flex flex-col items-center'>
                     <div
                       class='w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-800 rounded-full flex items-center justify-center text-white font-bold shadow-lg'
                     >
-                      1
+                      {{this.alur_ke}}
                     </div>
                     <div
                       class='flex-1 w-0.5 bg-gradient-to-b from-gray-600 to-gray-800 mt-2'
@@ -539,82 +374,13 @@
                   <div class='flex-1 pb-10'>
                     <h4
                       class='font-montserrat text-xl font-bold text-gray-900 mb-2'
-                    >Foundation & Onboarding</h4>
+                    >{{this.judul}}</h4>
                     <p class='font-inter text-gray-700 mb-3'>
-                      Get familiar with the bootcamp structure, tools, and
-                      fundamental concepts. Set up your development environment
-                      and meet your cohort.
+                      {{this.isi}}
                     </p>
                   </div>
                 </div>
-
-                <!-- Phase 2 -->
-                <div class='flex gap-6'>
-                  <div class='flex flex-col items-center'>
-                    <div
-                      class='w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-800 rounded-full flex items-center justify-center text-white font-bold shadow-lg'
-                    >
-                      2
-                    </div>
-                    <div
-                      class='flex-1 w-0.5 bg-gradient-to-b from-gray-600 to-gray-800 mt-2'
-                    ></div>
-                  </div>
-                  <div class='flex-1 pb-10'>
-                    <h4
-                      class='font-montserrat text-xl font-bold text-gray-900 mb-2'
-                    >Core Learning & Projects</h4>
-                    <p class='font-inter text-gray-700 mb-3'>
-                      Dive deep into the core curriculum with hands-on projects.
-                      Apply your knowledge to real-world scenarios and build
-                      your portfolio.
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Phase 3 -->
-                <div class='flex gap-6'>
-                  <div class='flex flex-col items-center'>
-                    <div
-                      class='w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-800 rounded-full flex items-center justify-center text-white font-bold shadow-lg'
-                    >
-                      3
-                    </div>
-                    <div
-                      class='flex-1 w-0.5 bg-gradient-to-b from-gray-600 to-gray-800 mt-2'
-                    ></div>
-                  </div>
-                  <div class='flex-1 pb-10'>
-                    <h4
-                      class='font-montserrat text-xl font-bold text-gray-900 mb-2'
-                    >Capstone Project</h4>
-                    <p class='font-inter text-gray-700 mb-3'>
-                      Work on a comprehensive final project that showcases your
-                      skills. Receive guidance from mentors and peer feedback.
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Phase 4 -->
-                <div class='flex gap-6'>
-                  <div class='flex flex-col items-center'>
-                    <div
-                      class='w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-800 rounded-full flex items-center justify-center text-white font-bold shadow-lg'
-                    >
-                      4
-                    </div>
-                  </div>
-                  <div class='flex-1'>
-                    <h4
-                      class='font-montserrat text-xl font-bold text-gray-900 mb-2'
-                    >Career Preparation & Graduation</h4>
-                    <p class='font-inter text-gray-700 mb-3'>
-                      Prepare for job interviews, polish your portfolio, and
-                      connect with potential employers. Graduate with a
-                      certificate and career-ready skills.
-                    </p>
-                  </div>
-                </div>
+                {{/each}}
               </div>
             </div>
           </div>
