@@ -133,20 +133,67 @@
                 <!-- RIGHT COLUMN -->
                 <div class="space-y-6">
                     <!-- Technologies -->
-                    <div x-data="{ techs: {{json kelas.teknologi}} || [''] }" class="space-y-4">
-                        <label class="block text-sm font-semibold text-gray-700">Technologies</label>
-                        <template x-for="(tech, index) in techs" :key="index">
-                            <div class="flex items-center gap-3">
-                                <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter tech..."
-                                    class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                                <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
-                                    class="text-red-500 hover:text-red-700 font-bold text-lg">✕</button>
-                            </div>
+                    <div x-data="{
+                      search: '',
+                      selectedTechs: {{json kelas.teknologi}} || [],
+                      showDropdown: false,
+                      availableTechs: {{json teknologi}},
+                      get filteredTechs() {
+                        return this.availableTechs.filter(t => 
+                          t.nama.toLowerCase().includes(this.search.toLowerCase()) &&
+                          !this.selectedTechs.find(s => s.id === t.id)
+                        );
+                      },
+                      selectTech(tech) {
+                        this.selectedTechs.push(tech);
+                        this.search = '';
+                        this.showDropdown = false;
+                      },
+                      removeTech(techId) {
+                        this.selectedTechs = this.selectedTechs.filter(t => t.id !== techId);
+                      }
+                    }" @click.away="showDropdown = false">
+                      <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
+                      
+                      <!-- Selected Technologies -->
+                      <div class="flex flex-wrap gap-2 mb-3" x-show="selectedTechs.length > 0">
+                        <template x-for="tech in selectedTechs" :key="tech.id">
+                          <div class="flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2">
+                            <div class="w-6 h-6 flex items-center justify-center" x-html="tech.svg"></div>
+                            <span class="text-sm font-medium text-gray-700" x-text="tech.nama"></span>
+                            <button type="button" @click="removeTech(tech.id)" 
+                              class="text-red-500 hover:text-red-700 ml-2">
+                              <i class="fas fa-times"></i>
+                            </button>
+                            <input type="hidden" name="teknologiIds[]" :value="tech.id">
+                          </div>
                         </template>
-                        <button type="button" @click="techs.push('')"
-                            class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-                            +
-                        </button>
+                      </div>
+
+                      <!-- Search Input -->
+                      <div class="relative">
+                        <input type="text" 
+                          x-model="search"
+                          @focus="showDropdown = true"
+                          @input="showDropdown = true"
+                          placeholder="Search and select technologies..."
+                          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+                        <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+
+                        <!-- Dropdown -->
+                        <div x-show="showDropdown && filteredTechs.length > 0"
+                          class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                          <template x-for="tech in filteredTechs" :key="tech.id">
+                            <button type="button" @click="selectTech(tech)"
+                              class="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0">
+                              <div class="w-8 h-8 flex items-center justify-center flex-shrink-0" x-html="tech.svg"></div>
+                              <span class="text-sm font-medium text-gray-700" x-text="tech.nama"></span>
+                            </button>
+                          </template>
+                        </div>
+                      </div>
+
+                      <p class="text-xs text-gray-500 mt-2">Click to select technologies from the list</p>
                     </div>
 
                     <!-- Lessons -->

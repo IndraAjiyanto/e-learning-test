@@ -35,8 +35,13 @@
             {{kelas.nama_kelas}}
           </h1>
           <p class="text-gray-700 mb-1">{{kelas.deskripsi}}</p>
-          <p class="text-gray-700">
-            <span class="font-semibold">Tech:</span> {{kelas.teknologi}}
+          <p class="text-gray-700 flex items-center gap-2">
+            <span class="font-semibold">Tech:</span> 
+            {{#each kelas.teknologi}} 
+            <div class="w-6 h-6 flex items-center justify-center">
+              {{{this.svg}}}
+            </div>
+            {{/each}}
           </p>
           <p class="text-gray-700">
             <span class="font-semibold">Target:</span> {{kelas.target_pembelajaran}}

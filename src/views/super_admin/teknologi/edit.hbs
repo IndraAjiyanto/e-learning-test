@@ -7,7 +7,7 @@
       method='post'
       class='space-y-6'
       x-data="{
-        svgPreview: `{{{teknologi.svg}}}`,
+        svgPreview: '',
         svgError: '',
         validateSVG(text) {
           this.svgError = '';
@@ -24,6 +24,13 @@
           }
           
           this.svgPreview = text;
+        },
+        init() {
+          // Initialize preview with existing SVG
+          const textarea = this.$refs.svgInput;
+          if (textarea && textarea.value) {
+            this.validateSVG(textarea.value);
+          }
         }
       }"
     >

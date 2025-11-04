@@ -30,7 +30,6 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
-@UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('kelass')
@@ -115,10 +114,12 @@ export class KelassController {
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const kategori = await this.kelassService.findKategori();
     const jenis_kelas = await this.kelassService.findJenisKelas();
+    const teknologi = await this.kelassService.findTeknologi()
     return res.render('admin/kelas/create', {
       user: req.user,
       kategori,
       jenis_kelas,
+      teknologi
     });
   }
 
@@ -151,11 +152,13 @@ export class KelassController {
     const kelas = await this.kelassService.findOne(kelasId);
     const kategori = await this.kelassService.findKategori();
     const jenis_kelas = await this.kelassService.findJenisKelas();
+    const teknologi = await this.kelassService.findTeknologi()
     return res.render('admin/kelas/edit', {
       user: req.user,
       kelas,
       kategori,
       jenis_kelas,
+      teknologi
     });
   }
 

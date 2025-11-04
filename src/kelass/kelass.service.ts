@@ -613,7 +613,7 @@ export class KelassService {
   async allClassExcept(kelasId: number) {
     return await this.kelasRepository.find({
       where: { id: Not(kelasId) },
-      relations: ['user_kelas', 'user_kelas.user', 'kategori', 'jenis_kelas'],
+      relations: ['user_kelas', 'user_kelas.user', 'kategori', 'jenis_kelas', 'teknologi'],
     });
   }
 
@@ -621,6 +621,10 @@ export class KelassService {
     return await this.userKelasRepository.findOne({
       where: { kelas: { id: kelasId }, user: { id: userId } },
     });
+  }
+
+  async findTeknologi() {
+    return await this.teknologiRepository.find();
   }
 
   async findOne(kelasId: number) {
@@ -635,6 +639,7 @@ export class KelassService {
         'jenis_kelas',
         'mentor',
         'pertanyaan_kelas',
+        'teknologi',
       ],
     });
     if (!kelas) {
@@ -691,7 +696,19 @@ export class KelassService {
       kelas.jenis_kelas = jenis_kelas;
     }
 
-    const { jenis_kelasId, kategoriId, ...otherProperties } = updateKelassDto;
+    // Handle teknologi relation
+    if (updateKelassDto.teknologiIds !== undefined) {
+      if (updateKelassDto.teknologiIds.length > 0) {
+        kelas.teknologi = await this.teknologiRepository.findBy({
+          id: In(updateKelassDto.teknologiIds),
+        });
+      } else {
+        kelas.teknologi = [];
+      }
+    }
+
+    const { jenis_kelasId, kategoriId, teknologiIds, ...otherProperties } =
+      updateKelassDto;
     Object.assign(kelas, otherProperties);
 
     return await this.kelasRepository.save(kelas);

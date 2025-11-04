@@ -4410,6 +4410,10 @@ details.collapse summary::-webkit-details-marker {
   max-height: 12rem;
 }
 
+.max-h-60 {
+  max-height: 15rem;
+}
+
 .max-h-64 {
   max-height: 16rem;
 }
@@ -6413,12 +6417,12 @@ details.collapse summary::-webkit-details-marker {
   font-family: Inter, sans-serif;
 }
 
-.font-montserrat {
-  font-family: Montserrat, sans-serif;
-}
-
 .font-mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.font-montserrat {
+  font-family: Montserrat, sans-serif;
 }
 
 .text-2xl {
@@ -7105,6 +7109,10 @@ details.collapse summary::-webkit-details-marker {
 .file\:text-white::file-selector-button {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.last\:border-0:last-child {
+  border-width: 0px;
 }
 
 .last\:border-b-0:last-child {
