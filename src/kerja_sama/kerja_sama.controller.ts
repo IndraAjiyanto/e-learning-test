@@ -43,11 +43,11 @@ export class KerjaSamaController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 1000,
-    maxWidth: 1024,
-    minHeight: 1000,
-    maxHeight: 1024,
-    maxSize: 2 * 1024 * 1024, 
+    minWidth: 300,
+    maxWidth: 500,
+    minHeight: 300,
+    maxHeight: 500,
+    maxSize: 5 * 1024 * 1024, 
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/kerja_sama',
   })
@@ -100,7 +100,7 @@ export class KerjaSamaController {
     @Req() req: Request,
   ) {
     const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
-    res.render('super_admin/kerja_sama/edit', { user: req.user });
+    res.render('super_admin/kerja_sama/edit', { user: req.user, kerja_sama });
   }
 
   @Roles('super_admin')
@@ -113,11 +113,11 @@ export class KerjaSamaController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 1000,
-    maxWidth: 1024,
-    minHeight: 1000,
-    maxHeight: 1024,
-    maxSize: 2 * 1024 * 1024, 
+    minWidth: 300,
+    maxWidth: 500,
+    minHeight: 300,
+    maxHeight: 500,
+    maxSize: 5 * 1024 * 1024, 
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/kerja_sama',
   })

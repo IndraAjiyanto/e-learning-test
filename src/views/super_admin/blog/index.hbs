@@ -39,7 +39,7 @@
       </div>
 
       <a
-        href='/blog/admin/formCreate'
+        href='/blog/formCreate'
         class='bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition'
       >
         Create Blog
@@ -168,7 +168,7 @@
               </a>
 
               <!-- Edit -->
-              <form action='/blog/admin/formEdit/{{id}}' method='get'>
+              <form action='/blog/formEdit/{{id}}' method='get'>
                 <button
                   type='submit'
                   class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
@@ -202,7 +202,7 @@
 
               <!-- Delete -->
               <form
-                action='/blog/admin/delete/{{id}}?_method=DELETE'
+                action='/blog/{{id}}?_method=DELETE'
                 method='post'
               >
                 <button

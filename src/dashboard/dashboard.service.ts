@@ -16,6 +16,7 @@ import { KerjaSama } from 'src/entities/kerja_sama.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
+import { Blog } from 'src/entities/blog.entity';
 
 @Injectable()
 export class DashboardService {
@@ -42,6 +43,8 @@ export class DashboardService {
     private readonly teamRepository: Repository<Team>,
     @InjectRepository(Social)
     private readonly socialRepository: Repository<Social>,
+    @InjectRepository(Blog)
+    private readonly blogRepository: Repository<Blog>,
   ) {}
 
   async findAllKelas() {
@@ -64,6 +67,13 @@ export class DashboardService {
       where: { kategori: { nama_kategori: kategoriName }, launch: true },
       order: { id: 'DESC' },
       relations: ['kategori', 'jenis_kelas', 'user_kelas'],
+    });
+  }
+
+  async findBlog() {
+    return await this.blogRepository.find({
+      order: { id: 'DESC' },
+      relations: ['kategori_blog', 'user', 'user.biodata'],
     });
   }
 

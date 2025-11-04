@@ -13,9 +13,10 @@ import { KerjaSama } from 'src/entities/kerja_sama.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
+import { Blog } from 'src/entities/blog.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Social ,Team, Benefit, Kelas, PertanyaanUmum, Alumni, Portfolio, GambarBenefit, Kategori, JenisKelas, KerjaSama])],
+    imports: [TypeOrmModule.forFeature([Blog ,Social ,Team, Benefit, Kelas, PertanyaanUmum, Alumni, Portfolio, GambarBenefit, Kategori, JenisKelas, KerjaSama])],
   controllers: [DashboardController],
   providers: [DashboardService],
     exports: [DashboardService]

@@ -83,6 +83,14 @@ export class DashboardController {
     }
   }
 
+
+  @Get('blog')
+  async blog(@Req() req: Request, @Res() res: Response) {
+    // Ambil semua data sekaligus
+    const blogList = await this.dashboardService.findBlog();
+    res.render('blog', { user: req.user, blog: blogList });
+  }
+
   @Get('kategori/:kategoriName')
   async program(
     @Param('kategoriName') kategoriName: string,

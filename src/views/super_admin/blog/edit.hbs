@@ -112,7 +112,7 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Edit Blog Post</h2>
 
     <form
-      action='/blog/admin/update/{{blog.id}}?_method=PATCH'
+      action='/blog/{{blog.id}}?_method=PATCH'
       method='post'
       enctype='multipart/form-data'
       class='space-y-6'
