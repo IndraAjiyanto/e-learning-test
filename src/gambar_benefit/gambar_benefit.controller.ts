@@ -44,7 +44,7 @@ export class GambarBenefitController {
   )
   @ValidateImage({
     minWidth: 700,
-    maxWidth: 1500,
+    maxWidth: 4000,
     minHeight: 700,
     maxHeight: 1500,
     maxSize: 3 * 1024 * 1024,
@@ -109,7 +109,7 @@ export class GambarBenefitController {
   )
   @ValidateImage({
     minWidth: 700,
-    maxWidth: 1500,
+    maxWidth: 4000,
     minHeight: 700,
     maxHeight: 1500,
     maxSize: 3 * 1024 * 1024,
