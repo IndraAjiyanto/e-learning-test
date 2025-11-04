@@ -66,7 +66,7 @@
         <div class='absolute bottom-12 right-8 w-6 h-6 bg-slate-400/20 rounded-full animate-bounce-subtle animation-delay-2000 pointer-events-none z-10'></div>
 
         <img
-          src='{{tentang.[0].gambar}}'
+          src='{{#if tentang.[0].gambar}}{{tentang.[0].gambar}}{{else}}/images/hero-placeholder.jpg{{/if}}'
           class='relative w-full transform transition-transform duration-300 z-10'
         />
 
@@ -91,12 +91,16 @@
         <span
           class='bg-gradient-to-r from-slate-700 whitespace-nowrap via-slate-800 to-slate-900 bg-clip-text text-transparent'
         >
-          {{tentang.[0].judul}}
+          {{#if tentang.[0].judul}}{{tentang.[0].judul}}{{else}}Transform Your Career with Kesatria Academy{{/if}}
         </span>
       </h1>
 
       <p class='py-6 text-lg text-gray-700 leading-relaxed font-inter mb-6'>
-        {{{nl2br tentang.[0].text}}}
+        {{#if tentang.[0].text}}
+          {{{nl2br tentang.[0].text}}}
+        {{else}}
+          Join thousands of students who have successfully transformed their careers through our comprehensive bootcamp programs. Learn from industry experts and build real-world projects.
+        {{/if}}
       </p>
 
       <div
@@ -373,14 +377,14 @@
           <div
             class='text-white text-2xl bg-emerald-600 p-4 rounded-xl shadow-md'
           >
-            <i class='{{computeIcon benefit_1.icon}}'></i>
+            <i class='{{#if benefit_1.icon}}{{computeIcon benefit_1.icon}}{{else}}fas fa-briefcase{{/if}}'></i>
           </div>
           <div>
             <h3 class='text-2xl font-extrabold text-gray-900 mb-2'>
-              {{benefit_1.judul}}
+              {{#if benefit_1.judul}}{{benefit_1.judul}}{{else}}Job Guarantee{{/if}}
             </h3>
             <p class='text-gray-700 text-lg leading-relaxed'>
-              {{benefit_1.text}}
+              {{#if benefit_1.text}}{{benefit_1.text}}{{else}}Get guaranteed job placement after completing the bootcamp with our hiring partner network.{{/if}}
             </p>
             <span class='sr-only'>This is the most desired benefit by most
               learners.</span>
@@ -394,14 +398,14 @@
         <div
           class='text-slate-700 text-2xl bg-slate-100 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300'
         >
-          <i class='{{computeIcon benefit_2.icon}}'></i>
+          <i class='{{#if benefit_2.icon}}{{computeIcon benefit_2.icon}}{{else}}fas fa-users{{/if}}'></i>
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{benefit_2.judul}}
+            {{#if benefit_2.judul}}{{benefit_2.judul}}{{else}}Expert Mentors{{/if}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
-            {{benefit_2.text}}
+            {{#if benefit_2.text}}{{benefit_2.text}}{{else}}Learn directly from industry professionals with years of experience in top tech companies.{{/if}}
           </p>
         </div>
       </div>
@@ -412,14 +416,14 @@
         <div
           class='text-slate-700 text-2xl bg-slate-100 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300'
         >
-          <i class='{{computeIcon benefit_3.icon}}'></i>
+          <i class='{{#if benefit_3.icon}}{{computeIcon benefit_3.icon}}{{else}}fas fa-certificate{{/if}}'></i>
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{benefit_3.judul}}
+            {{#if benefit_3.judul}}{{benefit_3.judul}}{{else}}Official Certificate{{/if}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
-            {{benefit_3.text}}
+            {{#if benefit_3.text}}{{benefit_3.text}}{{else}}Receive an industry-recognized certificate upon successful completion of the program.{{/if}}
           </p>
         </div>
       </div>
@@ -428,22 +432,22 @@
 
     <div class='grid grid-cols-2 gap-6'>
       <img
-        src='{{gambar_benefit_1.gambar}}'
+        src='{{#if gambar_benefit_1.gambar}}{{gambar_benefit_1.gambar}}{{else}}https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800{{/if}}'
         class='rounded-2xl shadow-2xl col-span-2 h-64 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Teamwork'
       />
       <img
-        src='{{gambar_benefit_2.gambar}}'
+        src='{{#if gambar_benefit_2.gambar}}{{gambar_benefit_2.gambar}}{{else}}https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800{{/if}}'
         class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Laptop Work'
       />
       <img
-        src='{{gambar_benefit_3.gambar}}'
+        src='{{#if gambar_benefit_3.gambar}}{{gambar_benefit_3.gambar}}{{else}}https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800{{/if}}'
         class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Meeting'
       />
       <img
-        src='{{gambar_benefit_4.gambar}}'
+        src='{{#if gambar_benefit_4.gambar}}{{gambar_benefit_4.gambar}}{{else}}https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800{{/if}}'
         class='rounded-2xl shadow-2xl col-span-2 h-60 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Coding'
       />
@@ -481,13 +485,14 @@
   <!-- Carousel -->
   <div class='relative w-full max-w-5xl mx-auto overflow-hidden'>
 
+    {{#if alumni}}
     <!-- Slide Wrapper -->
     <div
       class='flex transition-transform duration-500'
       :style='`transform: translateX(-${active * 100}%);`'
     >
 
-      <!-- Slide 3 (Dynamic from data) -->
+      <!-- Slide (Dynamic from data) -->
       {{#each alumni}}
         <div class='w-full flex-shrink-0 flex justify-center px-4'>
           <div
@@ -527,17 +532,42 @@
     >
       <i class='fas fa-chevron-right'></i>
     </button>
-  </div>
 
-  <!-- Dot Indicators -->
-  <div class='flex justify-center mt-8 gap-3'>
-    <template x-for='(s, i) in slides' :key='i'>
-      <button
-        class='w-4 h-4 rounded-full transition-all duration-300'
-        :class="active === i ? 'bg-slate-600 scale-125' : 'bg-slate-300 hover:bg-slate-400'"
-        @click='active = i'
-      ></button>
-    </template>
+    <!-- Dot Indicators -->
+    <div class='flex justify-center mt-8 gap-3'>
+      <template x-for='(s, i) in slides' :key='i'>
+        <button
+          class='w-4 h-4 rounded-full transition-all duration-300'
+          :class="active === i ? 'bg-slate-600 scale-125' : 'bg-slate-300 hover:bg-slate-400'"
+          @click='active = i'
+        ></button>
+      </template>
+    </div>
+    {{else}}
+    <!-- Fallback - No Alumni Data -->
+    <div class='text-center py-12'>
+      <div
+        class='bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-2xl p-10 max-w-3xl mx-auto border border-slate-200'
+      >
+        <span class='text-6xl text-slate-400 font-bold'>❝</span>
+        <p class='text-gray-800 text-xl leading-relaxed mb-8 italic'>
+          This bootcamp transformed my career completely! The mentors were amazing, and the curriculum was very comprehensive. Now I work at a leading tech company with a great salary.
+        </p>
+        <div class='flex items-center gap-6 justify-center'>
+          <img
+            src='https://ui-avatars.com/api/?name=John+Doe&background=64748b&color=fff&size=128'
+            alt='Alumni'
+            class='w-16 h-16 rounded-full border-4 border-slate-200'
+          />
+          <div class='text-left'>
+            <p class='font-bold text-gray-900 text-lg'>John Doe</p>
+            <p class='text-slate-600'>Senior Software Engineer</p>
+            <p class='text-slate-500 text-sm'>Full Stack Development Bootcamp</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/if}}
   </div>
 </section>
 
@@ -560,15 +590,41 @@
   <div
     class='overflow-hidden whitespace-nowrap bg-white rounded-2xl shadow-lg py-8'
   >
+    {{#if kerja_sama}}
     <div class='animate-slide flex items-center'>
       {{#each kerja_sama}}
       <img
         src='{{gambar}}'
-        alt='{{gambar}}'
+        alt='Partner Logo'
         class='h-12 inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300'
       />
       {{/each}}
     </div>
+    {{else}}
+    <!-- Fallback - No Partner Data -->
+    <div class='flex items-center justify-center gap-8 px-8'>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-building text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 1</p>
+      </div>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-industry text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 2</p>
+      </div>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-store text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 3</p>
+      </div>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-landmark text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 4</p>
+      </div>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-university text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 5</p>
+      </div>
+    </div>
+    {{/if}}
   </div>
 </section>
 
@@ -977,6 +1033,7 @@
     class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto'
     x-ref='kelasList'
   >
+    {{#if kelas}}
     {{#each kelas}}
       <div
         class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
@@ -1074,6 +1131,20 @@
         </div>
       </div>
     {{/each}}
+    {{else}}
+    <!-- Fallback - No Classes Data -->
+    <div class='col-span-full text-center py-20'>
+      <div
+        class='bg-white/5 backdrop-blur-md border border-white/10 w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center'
+      >
+        <i class='fas fa-graduation-cap text-5xl text-slate-400'></i>
+      </div>
+      <h3 class='text-3xl font-bold text-white mb-3'>No Programs Available Yet</h3>
+      <p class='text-slate-300 text-lg mb-6'>
+        We're preparing exciting programs for you. Stay tuned!
+      </p>
+    </div>
+    {{/if}}
   </div>
 
   <!-- No Results -->
@@ -1138,6 +1209,7 @@
     </h2>
 
     <div class='max-w-4xl mx-auto space-y-6'>
+      {{#if pertanyaan_umum}}
       {{#each pertanyaan_umum}}
         <div
           class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
@@ -1148,6 +1220,33 @@
           <p class='text-gray-600 leading-relaxed text-lg'>{{jawaban}}</p>
         </div>
       {{/each}}
+      {{else}}
+      <!-- Fallback - No FAQ Data -->
+      <div
+        class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
+      >
+        <h3
+          class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300'
+        >How long is the bootcamp program?</h3>
+        <p class='text-gray-600 leading-relaxed text-lg'>Our bootcamp program typically runs for 4 months with intensive weekend classes. You'll learn through hands-on projects and mentorship from industry experts.</p>
+      </div>
+      <div
+        class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
+      >
+        <h3
+          class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300'
+        >Do I need prior programming experience?</h3>
+        <p class='text-gray-600 leading-relaxed text-lg'>No prior experience is required! We welcome beginners and will guide you from the basics to advanced concepts step by step.</p>
+      </div>
+      <div
+        class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
+      >
+        <h3
+          class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300'
+        >What is the payment method?</h3>
+        <p class='text-gray-600 leading-relaxed text-lg'>We offer flexible payment options including full payment, installments, and early bird discounts. Contact us for more details.</p>
+      </div>
+      {{/if}}
     </div>
   </div>
 </section>
