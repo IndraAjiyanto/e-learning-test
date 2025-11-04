@@ -1,0 +1,63 @@
+<div class='pt-28 py-20'>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Alur Kelas</h2>
+
+    <form action='/alur-kelas' method='post' class='space-y-6'>
+
+      <!-- Keterangan -->
+      <div>
+        <label
+          for='keterangan'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Keterangan
+        </label>
+        <textarea
+          id='keterangan'
+          name='keterangan'
+          rows='4'
+          required
+          placeholder='Describe the class flow...'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        ></textarea>
+      </div>
+
+      <!-- Pilih Kelas -->
+      <div>
+        <label
+          for='kelas_id'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Kelas
+        </label>
+        <select
+          id='kelas_id'
+          name='kelas_id'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        >
+          <option value=''>-- Select Kelas --</option>
+          {{#each kelas}}
+            <option value='{{id}}'>{{nama_kelas}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <!-- Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+        >
+          Create
+        </button>
+        <a
+          href='/alur-kelas'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

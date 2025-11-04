@@ -24,6 +24,8 @@ import { Mentor } from './mentor.entity';
 import { Alumni } from './alumni.entity';
 import { Cicilan } from './cicilan.entity';
 import { Teknologi } from './teknologi.entity';
+import { AlurKelas } from './alur_kelas.entity';
+import { BenefitKelas } from './benefit_kelas.entity';
 
 export type Metode = 'online' | 'offline';
 export type Proses = 'acc' | 'proces' | 'rejected';
@@ -154,4 +156,10 @@ export class Kelas {
     onDelete: 'CASCADE',
   })
   cicilan: Cicilan[];
+
+              @OneToMany(() => AlurKelas, (alur_kelas) => alur_kelas.kelas)
+            alur_kelas: AlurKelas[]
+
+            @OneToMany(() => BenefitKelas, (benefit_kelas) => benefit_kelas.kelas)
+            benefit_kelas: BenefitKelas[]
 }

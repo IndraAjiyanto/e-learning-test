@@ -26,11 +26,7 @@ export class Kategori{
 
             @OneToMany(() => Kelas, (kelas) => kelas.kategori)
             kelas: Kelas[]
-
-            @OneToMany(() => BenefitKelas, (benefit_kelas) => benefit_kelas.kategori)
-            benefit_kelas: BenefitKelas[]
             
-            @OneToMany(() => AlurKelas, (alur_kelas) => alur_kelas.kategori)
-            alur_kelas: AlurKelas[]
+
 
 }

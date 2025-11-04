@@ -1,19 +1,20 @@
 import { IsString } from "class-validator";
-import { CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Kategori } from "./kategori.entity";
+import { Kelas } from "./kelas.entity";
 
 @Entity()
 export class BenefitKelas{
     @PrimaryGeneratedColumn()
     id: number
 
-    @IsString()
+    @Column()
     benefit: string
 
-    @IsString()
+    @Column()
     isi: string
 
-    @IsString()
+    @Column()
     icon: string
 
                     @CreateDateColumn()
@@ -22,6 +23,6 @@ export class BenefitKelas{
                     @UpdateDateColumn()
                     updatedAt: Date;
 
-    @ManyToOne(() => Kategori, (kategori) => kategori.benefit_kelas, {onDelete : 'CASCADE'})
-                    kategori: Kategori
+    @ManyToOne(() => Kelas, (kelas) => kelas.benefit_kelas, {onDelete : 'CASCADE'})
+                    kelas: Kelas
 }

@@ -1,19 +1,20 @@
 import { IsString } from "class-validator";
-import { CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Kategori } from "./kategori.entity";
+import { Kelas } from "./kelas.entity";
 
 @Entity()
 export class AlurKelas{
     @PrimaryGeneratedColumn()
     id: number
 
-    @IsString()
+    @Column()
     alur_ke: number
 
-    @IsString()
+    @Column()
     judul: string
 
-    @IsString()
+    @Column()
     isi: string
 
                         @CreateDateColumn()
@@ -21,7 +22,7 @@ export class AlurKelas{
                         
                         @UpdateDateColumn()
                         updatedAt: Date;
-    
-        @ManyToOne(() => Kategori, (kategori) => kategori.alur_kelas, {onDelete : 'CASCADE'})
-                        kategori: Kategori
+
+        @ManyToOne(() => Kelas, (kelas) => kelas.alur_kelas, {onDelete : 'CASCADE'})
+                        kelas: Kelas
 }

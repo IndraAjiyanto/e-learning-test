@@ -42,7 +42,6 @@ export class KategorisController {
   @Get(':kategoriId')
   async findOne(@Param('kategoriId') kategoriId: number, @Res() res:Response, @Req() req:Request) {
     const kategori = await this.kategorisService.findOne(kategoriId);
-    const alur_kelas = await this.kategorisService.findAlurKelas(kategoriId)
     res.render('super_admin/kategori/detail', {user: req.user, kategori})
   }
 

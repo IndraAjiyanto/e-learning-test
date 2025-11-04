@@ -113,6 +113,13 @@ async function bootstrap() {
     return v;
   });
 
+  hbs.registerHelper('truncate', function (text, length) {
+    if (!text) return '';
+    const str = text.toString();
+    if (str.length <= length) return str;
+    return str.substring(0, length) + '...';
+  });
+
   hbs.registerHelper('formatDate', function (date) {
     if (!date) return '';
     const d = new Date(date);

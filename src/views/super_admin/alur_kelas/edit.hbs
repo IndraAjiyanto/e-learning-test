@@ -1,0 +1,80 @@
+<div class='pt-28 py-20'>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Alur Kelas</h2>
+
+    <form
+      action='/alur-kelas/{{alur_kelas.id}}/{{alur_kelas.kelas.id}}?_method=PATCH'
+      method='post'
+      class='space-y-6'
+    >
+
+      <!-- Alur Ke (Read Only) -->
+      <div>
+        <label
+          for='alur_ke'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Alur Ke
+        </label>
+        <input
+          type='text'
+          id='alur_ke'
+          name='alur_ke'
+          value='{{alur_kelas.alur_ke}}'
+          readonly
+          class='w-full border bg-gray-100 border-gray-300 rounded-lg px-4 py-2 text-gray-700 cursor-not-allowed'
+        />
+      </div>
+
+      <!-- Keterangan -->
+      <div>
+        <label
+          for='keterangan'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Keterangan
+        </label>
+        <textarea
+          id='keterangan'
+          name='keterangan'
+          rows='4'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        >{{alur_kelas.keterangan}}</textarea>
+      </div>
+
+      <!-- Kelas (Read Only) -->
+      <div>
+        <label
+          for='kelas'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Kelas
+        </label>
+        <input
+          type='text'
+          id='kelas'
+          value='{{alur_kelas.kelas.nama_kelas}}'
+          readonly
+          class='w-full border bg-gray-100 border-gray-300 rounded-lg px-4 py-2 text-gray-700 cursor-not-allowed'
+        />
+      </div>
+
+      <!-- Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+        >
+          Update
+        </button>
+        <a
+          href='/alur-kelas'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

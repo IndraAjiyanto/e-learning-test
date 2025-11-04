@@ -72,7 +72,7 @@ export class KelassController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Post('tambahMurid/:kelasId')
   async addUserToKelas(
     @Param('kelasId') kelasId: number,
@@ -123,7 +123,7 @@ export class KelassController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('/addUser/:kelasId')
   async formAddUser(
     @Res() res: Response,
@@ -162,7 +162,7 @@ export class KelassController {
     });
   }
 
-  @Roles('admin')
+  @Roles('admin','super_admin')
   @Get('/detail/kelas/admin/:kelasId')
   async detailKelas(
     @Param('kelasId') kelasId: number,

@@ -157,10 +157,13 @@ export class MentorController {
 
       await this.mentorService.update(mentorId, updateMentorDto);
       req.flash('success', 'mentor successfully update');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+
     } catch (error) {
       req.flash('error', 'mentor failed to update');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      
+      
     }
   }
 
@@ -176,15 +179,18 @@ export class MentorController {
       const mentor = await this.mentorService.findOne(mentorId);
       if (!mentor) {
         req.flash('error', 'mentor not found');
-        res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+        
       }
       await this.mentorService.getPublicIdFromUrl(mentor.profile);
       await this.mentorService.remove(mentorId);
       req.flash('success', 'mentor successfully deleted');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      
     } catch (error) {
       req.flash('error', 'mentor failed to delete');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      
     }
   }
 }

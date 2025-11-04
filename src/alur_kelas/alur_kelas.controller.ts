@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Res,
+  Req,
+} from '@nestjs/common';
 import { AlurKelasService } from './alur_kelas.service';
 import { CreateAlurKelaDto } from './dto/create-alur_kela.dto';
 import { UpdateAlurKelaDto } from './dto/update-alur_kela.dto';
@@ -12,56 +23,125 @@ export class AlurKelasController {
   constructor(private readonly alurKelasService: AlurKelasService) {}
 
   @Roles('super_admin')
-  @Post(':kategoriId')
-  async create(@Param('kategoriId') kategoriId:number ,@Body() createAlurKelaDto: CreateAlurKelaDto, @Res() res:Response, @Req() req:Request) {
+  @Get()
+  async findAll(@Res() res: Response, @Req() req: Request) {
+    const alur_kelas = await this.alurKelasService.findAll();
+    res.render('super_admin/alur_kelas/index', { user: req.user, alur_kelas });
+  }
+
+  @Roles('super_admin')
+  @Get('detail/:alurKelasId')
+  async findOneDetail(
+    @Param('alurKelasId') alurKelasId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const alur_kelas = await this.alurKelasService.findOne(alurKelasId);
+    res.render('super_admin/alur_kelas/detail', { user: req.user, alur_kelas });
+  }
+
+  @Roles('super_admin')
+  @Get('formCreate')
+  async formCreate(@Res() res: Response, @Req() req: Request) {
+    const kelas = await this.alurKelasService.findAllKelas();
+    res.render('super_admin/alur_kelas/create', { user: req.user, kelas });
+  }
+
+  @Roles('super_admin')
+  @Post()
+  async createFromIndex(
+    @Body() createAlurKelaDto: CreateAlurKelaDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-      createAlurKelaDto.kategoriId = kategoriId
-      createAlurKelaDto.alur_ke = await this.alurKelasService.noAlur(kategoriId)
-    await this.alurKelasService.create(createAlurKelaDto);
-    req.flash('success', 'alur kelas successfully created')
-    res.redirect(`/kategoris/${kategoriId}`)
+      const kelasId = Number(req.body.kelas_id);
+      createAlurKelaDto.kelasId = kelasId;
+      createAlurKelaDto.alur_ke = await this.alurKelasService.noAlur(kelasId);
+      await this.alurKelasService.create(createAlurKelaDto);
+      req.flash('success', 'alur kelas successfully created');
+      res.redirect(`/alur-kelas`);
     } catch (error) {
-      req.flash('error', 'alur kelas failed to create')
-      res.redirect(`/kategoris/${kategoriId}`)
+      req.flash('error', 'alur kelas failed to create');
+      res.redirect(`/alur-kelas`);
     }
   }
 
   @Roles('super_admin')
-  @Get('formCreate/:kategoriId')
-  async formCreate(@Param('kategoriId') kategoriId: number,@Res() res:Response, @Req() req:Request){
-    res.render('super_admin/alur_kelas/create', {user: req.user, kategoriId})
+  @Post(':kelasId')
+  async create(
+    @Param('kelasId') kelasId: number,
+    @Body() createAlurKelaDto: CreateAlurKelaDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      createAlurKelaDto.kelasId = kelasId;
+      createAlurKelaDto.alur_ke = await this.alurKelasService.noAlur(kelasId);
+      await this.alurKelasService.create(createAlurKelaDto);
+      req.flash('success', 'alur kelas successfully created');
+      res.redirect(`/kelass/${kelasId}`);
+    } catch (error) {
+      req.flash('error', 'alur kelas failed to create');
+      res.redirect(`/kelass/${kelasId}`);
+    }
+  }
+
+  @Roles('super_admin')
+  @Get('formCreate/:kelasId')
+  async formCreateWithKelas(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    res.render('super_admin/alur_kelas/create', { user: req.user, kelasId });
   }
 
   @Roles('super_admin')
   @Get('formEdit/:alurKelasId')
-  async formEdit(@Param('alurKelasId') alurKelasId: number, @Res() res:Response, @Req() req:Request) {
-    const alur_kelas = await this.alurKelasService.findOne(alurKelasId)
-    res.render('super_admin/alur_kelas/edit', {user: req.user, alur_kelas})
+  async formEdit(
+    @Param('alurKelasId') alurKelasId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const alur_kelas = await this.alurKelasService.findOne(alurKelasId);
+    res.render('super_admin/alur_kelas/edit', { user: req.user, alur_kelas });
   }
 
   @Roles('super_admin')
-  @Patch(':alurKelasId/:kategoriId')
-  async update(@Param('alurKelasId') alurKelasId: number, @Param('kategoriId') kategoriId: number, @Body() updateAlurKelaDto: UpdateAlurKelaDto, @Res() res:Response, @Req() req:Request) {
+  @Patch(':alurKelasId/:kelasId')
+  async update(
+    @Param('alurKelasId') alurKelasId: number,
+    @Param('kelasId') kelasId: number,
+    @Body() updateAlurKelaDto: UpdateAlurKelaDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-      await this.alurKelasService.update(alurKelasId,updateAlurKelaDto)
-      req.flash('success', 'alur kelas successfully updated')
-      res.redirect(`/kategoris/${kategoriId}`)
+      await this.alurKelasService.update(alurKelasId, updateAlurKelaDto);
+      req.flash('success', 'alur kelas successfully updated');
+      res.redirect(`/alur-kelas`);
     } catch (error) {
-      req.flash('error', 'alur kelas failed to update')
-      res.redirect(`/kategoris/${kategoriId}`)
+      req.flash('error', 'alur kelas failed to update');
+      res.redirect(`/alur-kelas`);
     }
   }
 
   @Roles('super_admin')
-  @Delete(':alurKelasId/:kategoriId')
-  async remove(@Param('alurKelasId') alurKelasId: number, @Param('kategoriId') kategoriId: number, @Res() res:Response, @Req() req:Request) {
+  @Delete(':alurKelasId/:kelasId')
+  async remove(
+    @Param('alurKelasId') alurKelasId: number,
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-      await this.alurKelasService.remove(alurKelasId, kategoriId)
-      req.flash('success','alur kelas successfully delete')
-      res.redirect(`/kategoris/${kategoriId}`)
+      await this.alurKelasService.remove(alurKelasId, kelasId);
+      req.flash('success', 'alur kelas successfully delete');
+      res.redirect(`/alur-kelas`);
     } catch (error) {
-      req.flash('error','alur kelas failed to delete')
-      res.redirect(`/kategoris/${kategoriId}`)
+      req.flash('error', 'alur kelas failed to delete');
+      res.redirect(`/alur-kelas`);
     }
   }
 }

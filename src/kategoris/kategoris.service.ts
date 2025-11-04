@@ -25,10 +25,6 @@ export class KategorisService {
     return await this.kategoriRepository.find()
   }
 
-  async findAlurKelas(kategoriId: number){
-    return await this.alurKelasRepository.find({where: {kategori: {id: kategoriId} }, order: {alur_ke: 'ASC'}})
-  }
-
   async findOne(kategoriId: number) {
     const kategori = await this.kategoriRepository.findOne({where: {id: kategoriId}})
     if(!kategori){
