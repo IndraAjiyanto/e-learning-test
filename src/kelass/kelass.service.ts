@@ -25,6 +25,7 @@ import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Mentor } from 'src/entities/mentor.entity';
 import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import { Logbook } from 'src/entities/logbook.entity';
+import { Teknologi } from 'src/entities/teknologi.entity';
 
 @Injectable()
 export class KelassService {
@@ -63,6 +64,8 @@ export class KelassService {
     private readonly progresQuizRepository: Repository<ProgresQuiz>,
     @InjectRepository(Logbook)
     private readonly logbookRepository: Repository<Logbook>,
+    @InjectRepository(Teknologi)
+    private readonly teknologiRepository: Repository<Teknologi>,
   ) {}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -78,10 +81,23 @@ export class KelassService {
     if (!jenis_kelas) {
       throw new NotFoundException('jenis_kelas ini tidak ada');
     }
+
+    // Get teknologi entities if teknologiIds provided
+    let teknologi: Teknologi[] = [];
+    if (
+      createKelassDto.teknologiIds &&
+      createKelassDto.teknologiIds.length > 0
+    ) {
+      teknologi = await this.teknologiRepository.findBy({
+        id: In(createKelassDto.teknologiIds),
+      });
+    }
+
     const kelas = await this.kelasRepository.create({
       ...createKelassDto,
       kategori: kategori,
       jenis_kelas: jenis_kelas,
+      teknologi: teknologi,
     });
     return await this.kelasRepository.save(kelas);
   }
@@ -601,14 +617,25 @@ export class KelassService {
     });
   }
 
-  async checkUserInKelas(kelasId:number, userId:number){
-    return await this.userKelasRepository.findOne({where: {kelas: {id: kelasId}, user: {id: userId}}})
+  async checkUserInKelas(kelasId: number, userId: number) {
+    return await this.userKelasRepository.findOne({
+      where: { kelas: { id: kelasId }, user: { id: userId } },
+    });
   }
 
   async findOne(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
-      relations: ['user_kelas', 'user_kelas.user', 'kategori', 'kategori.alur_kelas', 'kategori.benefit_kelas', 'jenis_kelas', 'mentor', 'pertanyaan_kelas'],
+      relations: [
+        'user_kelas',
+        'user_kelas.user',
+        'kategori',
+        'kategori.alur_kelas',
+        'kategori.benefit_kelas',
+        'jenis_kelas',
+        'mentor',
+        'pertanyaan_kelas',
+      ],
     });
     if (!kelas) {
       throw new NotFoundException();

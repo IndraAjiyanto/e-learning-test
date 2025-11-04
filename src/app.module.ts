@@ -45,6 +45,7 @@ import { KategoriBlogModule } from './kategori_blog/kategori_blog.module';
 import { CicilanModule } from './cicilan/cicilan.module';
 import { GambarBenefitModule } from './gambar_benefit/gambar_benefit.module';
 import { TentangModule } from './tentang/tentang.module';
+import { TeknologiModule } from './teknologi/teknologi.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { TentangModule } from './tentang/tentang.module';
     CicilanModule,
     GambarBenefitModule,
     TentangModule,
+    TeknologiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

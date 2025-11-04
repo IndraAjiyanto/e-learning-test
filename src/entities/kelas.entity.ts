@@ -23,6 +23,7 @@ import { PertanyaanKelas } from './pertanyaan_kelas.entity';
 import { Mentor } from './mentor.entity';
 import { Alumni } from './alumni.entity';
 import { Cicilan } from './cicilan.entity';
+import { Teknologi } from './teknologi.entity';
 
 export type Metode = 'online' | 'offline';
 export type Proses = 'acc' | 'proces' | 'rejected';
@@ -59,8 +60,16 @@ export class Kelas {
   @Column({ default: false })
   launch: boolean;
 
-  @Column('jsonb')
-  teknologi: string[];
+  @ManyToMany(() => Teknologi, (teknologi) => teknologi.kelas, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinTable({
+    name: 'kelas_teknologi',
+    joinColumn: { name: 'kelasId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'teknologiId', referencedColumnName: 'id' },
+  })
+  teknologi: Teknologi[];
 
   @Column({
     type: 'enum',

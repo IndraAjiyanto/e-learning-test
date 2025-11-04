@@ -1,44 +1,52 @@
-import { IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsString } from "class-validator";
-import { Metode, Proses } from "src/entities/kelas.entity";
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Metode, Proses } from 'src/entities/kelas.entity';
 
 export class CreateKelassDto {
-    @IsString()
-    nama_kelas: string
+  @IsString()
+  nama_kelas: string;
 
-          @IsEnum(['online' , 'offline'])
-      metode: Metode;
+  @IsEnum(['online', 'offline'])
+  metode: Metode;
 
-      @IsInt()
-      kategoriId: number;
-      
-      @IsString()
-      lokasi: string
+  @IsInt()
+  kategoriId: number;
 
-      @IsInt()
-      jenis_kelasId: number;
-      
-      @IsInt()
-      harga: number;
+  @IsString()
+  lokasi: string;
 
-      @IsBoolean()
-      @IsOptional()
-      launch: boolean
+  @IsInt()
+  jenis_kelasId: number;
 
-          @IsString()
-          teknologi: string[]
-      
-          @IsArray()
-          materi: string[];
+  @IsInt()
+  harga: number;
 
-      @IsArray()
-      target_pembelajaran: string[];
+  @IsBoolean()
+  @IsOptional()
+  launch: boolean;
 
-    @IsString()
-    gambar: string
+  @IsArray()
+  @IsInt({ each: true })
+  @IsOptional()
+  teknologiIds: number[];
 
-        @IsEnum(['acc' , 'proces' , 'rejected'])
-        proses: Proses;
+  @IsArray()
+  materi: string[];
+  @IsArray()
+  target_pembelajaran: string[];
 
-    @IsString()
-    deskripsi: string
+  @IsString()
+  gambar: string;
+
+  @IsEnum(['acc', 'proces', 'rejected'])
+  proses: Proses;
+
+  @IsString()
+  deskripsi: string;
 }

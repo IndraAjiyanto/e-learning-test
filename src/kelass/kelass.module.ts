@@ -23,9 +23,35 @@ import { Mentor } from 'src/entities/mentor.entity';
 import { CommonModule } from 'src/common/common.module';
 import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import { Logbook } from 'src/entities/logbook.entity';
+import { Teknologi } from 'src/entities/teknologi.entity';
 
 @Module({
-  imports: [CommonModule ,TypeOrmModule.forFeature([Logbook, UserKelas, Mentor, Kelas, User, Pertemuan, Absen, Kategori, Minggu, ProgresMinggu, JenisKelas, Nilai, Quiz, JawabanTugas, ProgresPertemuan, Pembayaran, ProgresQuiz]), PertanyaansModule, JawabanUsersModule, UsersModule],
+  imports: [
+    CommonModule,
+    TypeOrmModule.forFeature([
+      Teknologi,
+      Logbook,
+      UserKelas,
+      Mentor,
+      Kelas,
+      User,
+      Pertemuan,
+      Absen,
+      Kategori,
+      Minggu,
+      ProgresMinggu,
+      JenisKelas,
+      Nilai,
+      Quiz,
+      JawabanTugas,
+      ProgresPertemuan,
+      Pembayaran,
+      ProgresQuiz,
+    ]),
+    PertanyaansModule,
+    JawabanUsersModule,
+    UsersModule,
+  ],
   controllers: [KelassController],
   providers: [KelassService],
   exports: [KelassService],

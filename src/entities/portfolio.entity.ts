@@ -16,9 +16,6 @@ export class Portfolio{
     @Column()
     deskripsi: string
 
-      @Column("jsonb")
-  teknologi: string[];
-
 
             @CreateDateColumn()
             createdAt: Date;
