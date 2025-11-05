@@ -48,6 +48,8 @@ import { TentangModule } from './tentang/tentang.module';
 import { TeknologiModule } from './teknologi/teknologi.module';
 import { IntenshifModule } from './intenshif/intenshif.module';
 import { TeamLeadModule } from './team_lead/team_lead.module';
+import { ValueModule } from './value/value.module';
+import { CommitmentModule } from './commitment/commitment.module';
 
 @Module({
   imports: [
@@ -100,6 +102,8 @@ import { TeamLeadModule } from './team_lead/team_lead.module';
     TeknologiModule,
     IntenshifModule,
     TeamLeadModule,
+    ValueModule,
+    CommitmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
