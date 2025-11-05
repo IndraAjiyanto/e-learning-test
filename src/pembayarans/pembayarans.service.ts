@@ -8,6 +8,7 @@ import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { v2 as cloudinary } from 'cloudinary';
 import { UserKelas } from 'src/entities/user_kelas.entity';
+import { Pendaftaran } from 'src/entities/pendaftaran.entity';
 
 
 @Injectable()
@@ -19,6 +20,8 @@ export class PembayaransService {
     private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Pendaftaran)
+    private readonly pendaftaranRepository: Repository<Pendaftaran>,
     @InjectRepository(UserKelas)
     private readonly userKelasRepository: Repository<UserKelas>
   ){}
@@ -104,6 +107,10 @@ export class PembayaransService {
     }
   }
 
+  async findPendaftaran(userId: number){
+    return await this.pendaftaranRepository.find({where: {user: {id: userId}}, relations: ['kelas', 'kelas.kategori']})
+  }
+
   async findAll() {
     const pembayaran = await this.pembayaranRepository.find({relations: ['user', 'kelas', 'kelas.kategori']})
     if(!pembayaran){
@@ -111,6 +118,10 @@ export class PembayaransService {
     }else{
       return pembayaran
     }
+  }
+
+  async findAllPendaftaran(){
+    return await this.pendaftaranRepository.find({relations: ['user', 'kelas', 'kelas.kategori']})
   }
 
   async findOne(pembayaranId: number) {

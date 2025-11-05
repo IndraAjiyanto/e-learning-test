@@ -44,7 +44,8 @@ export class PembayaransController {
   @Get('riwayat/:userId')
   async riwayat(@Param('userId') userId: number, @Res() res:Response, @Req() req:Request){
     const pembayaran = await this.pembayaransService.findPembayaran(userId)
-    res.render('user/riwayat', {user: req.user, pembayaran}) 
+    const pendaftaran = await this.pembayaransService.findPendaftaran(userId)
+    res.render('user/riwayat', {user: req.user, pembayaran, pendaftaran}) 
   }
 
   @Roles('user')
@@ -58,7 +59,8 @@ export class PembayaransController {
   @Get()
   async findAll(@Res() res:Response, @Req() req:any) {
     const pembayaran = await this.pembayaransService.findAll();
-    res.render('super_admin/pembayaran/index', {user: req.user, pembayaran})
+    const pendaftaran = await this.pembayaransService.findAllPendaftaran();
+    res.render('super_admin/pembayaran/index', {user: req.user, pembayaran, pendaftaran })
   }
 
   @Roles('super_admin')

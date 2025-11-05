@@ -47,13 +47,6 @@ export class PendaftaranController {
     return await this.pendaftaranService.findAll();
   }
 
-  @Roles('user')
-  @Get('riwayat/:userId')
-  async riwayat(@Param('userId') userId: number, @Res() res:Response, @Req() req:Request){
-    const pendaftaran = await this.pendaftaranService.findPendaftaran(userId)
-    res.render('user/riwayat/pendaftaran', {user: req.user, pendaftaran}) 
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.pendaftaranService.findOne(+id);

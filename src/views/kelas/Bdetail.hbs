@@ -259,11 +259,11 @@
                 Technologies
               </h4>
               <div class='flex gap-2 flex-wrap'>
-            {{#each kelas.teknologi}} 
-            <div class="w-6 h-6 flex items-center justify-center">
-              {{{this.svg}}}
-            </div>
-            {{/each}}
+                {{#each kelas.teknologi}}
+                  <div class='w-6 h-6 flex items-center justify-center'>
+                    {{{this.svg}}}
+                  </div>
+                {{/each}}
               </div>
             </div>
 
@@ -283,25 +283,25 @@
 
               <!-- Benefit 1 -->
               {{#each kelas.benefit_kelas}}
-              <div
-                class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all'
-              >
-                <div class='flex items-start gap-4'>
-                  <div
-                    class='bg-gray-100 p-3 rounded-full ring-1 ring-gray-200'
-                  >
-                    <i class='{{computeIcon this.icon}}'></i>
-                  </div>
-                  <div>
-                    <h4
-                      class='font-semibold text-gray-900 text-lg mb-2'
-                    >{{this.benefit}}</h4>
-                    <p class='text-gray-700 leading-relaxed'>
-                      {{this.isi}}
-                    </p>
+                <div
+                  class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all'
+                >
+                  <div class='flex items-start gap-4'>
+                    <div
+                      class='bg-gray-100 p-3 rounded-full ring-1 ring-gray-200'
+                    >
+                      <i class='{{computeIcon this.icon}}'></i>
+                    </div>
+                    <div>
+                      <h4
+                        class='font-semibold text-gray-900 text-lg mb-2'
+                      >{{this.benefit}}</h4>
+                      <p class='text-gray-700 leading-relaxed'>
+                        {{this.isi}}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
               {{/each}}
 
             </div>
@@ -320,26 +320,27 @@
             <div class='space-y-4' x-data='{ openFaq: null }'>
               <!-- FAQ Item 1 -->
               {{#each kelas.pertanyaan_kelas}}
-              <div class='border border-gray-200 rounded-xl overflow-hidden'>
-                <button
-                  class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
-                  @click='openFaq = openFaq === 1 ? null : 1'
-                >
-                  <span class='font-montserrat font-semibold text-gray-800'>Do I
-                    {{this.pertanyaan}}</span>
-                  <i
-                    class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
-                    :class="{'rotate-180': openFaq === 1}"
-                  ></i>
-                </button>
-                <div
-                  class='font-inter px-5 pb-5 text-gray-700'
-                  x-show='openFaq === 1'
-                  x-transition
-                >
-                  {{this.jawaban}}
+                <div class='border border-gray-200 rounded-xl overflow-hidden'>
+                  <button
+                    class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
+                    @click='openFaq = openFaq === 1 ? null : 1'
+                  >
+                    <span class='font-montserrat font-semibold text-gray-800'>Do
+                      I
+                      {{this.pertanyaan}}</span>
+                    <i
+                      class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
+                      :class="{'rotate-180': openFaq === 1}"
+                    ></i>
+                  </button>
+                  <div
+                    class='font-inter px-5 pb-5 text-gray-700'
+                    x-show='openFaq === 1'
+                    x-transition
+                  >
+                    {{this.jawaban}}
+                  </div>
                 </div>
-              </div>
               {{/each}}
 
             </div>
@@ -360,26 +361,26 @@
               <div class='space-y-10'>
                 <!-- Phase 1 -->
                 {{#each kelas.alur_kelas}}
-                <div class='flex gap-6'>
-                  <div class='flex flex-col items-center'>
-                    <div
-                      class='w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-800 rounded-full flex items-center justify-center text-white font-bold shadow-lg'
-                    >
-                      {{this.alur_ke}}
+                  <div class='flex gap-6'>
+                    <div class='flex flex-col items-center'>
+                      <div
+                        class='w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-800 rounded-full flex items-center justify-center text-white font-bold shadow-lg'
+                      >
+                        {{this.alur_ke}}
+                      </div>
+                      <div
+                        class='flex-1 w-0.5 bg-gradient-to-b from-gray-600 to-gray-800 mt-2'
+                      ></div>
                     </div>
-                    <div
-                      class='flex-1 w-0.5 bg-gradient-to-b from-gray-600 to-gray-800 mt-2'
-                    ></div>
+                    <div class='flex-1 pb-10'>
+                      <h4
+                        class='font-montserrat text-xl font-bold text-gray-900 mb-2'
+                      >{{this.judul}}</h4>
+                      <p class='font-inter text-gray-700 mb-3'>
+                        {{this.isi}}
+                      </p>
+                    </div>
                   </div>
-                  <div class='flex-1 pb-10'>
-                    <h4
-                      class='font-montserrat text-xl font-bold text-gray-900 mb-2'
-                    >{{this.judul}}</h4>
-                    <p class='font-inter text-gray-700 mb-3'>
-                      {{this.isi}}
-                    </p>
-                  </div>
-                </div>
                 {{/each}}
               </div>
             </div>
@@ -486,136 +487,219 @@
       >
         <!-- Harga -->
         {{#if check_user}}{{else}}
-          <div class='space-y-4'>
-            <!-- Payment Type Toggle -->
-            <div class='flex gap-2 p-1 bg-gray-100 rounded-xl'>
-              <button
-                @click="paymentType = 'full'"
-                :class="paymentType === 'full' ? 'bg-white shadow-md' : 'bg-transparent'"
-                class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
-              >
-                <i class='fas fa-money-bill-wave mr-2'></i>
-                Full Payment
-              </button>
-              <button
-                @click="paymentType = 'installment'"
-                :class="paymentType === 'installment' ? 'bg-white shadow-md' : 'bg-transparent'"
-                class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
-              >
-                <i class='fas fa-calendar-alt mr-2'></i>
-                Installment
-              </button>
-            </div>
-
-            <!-- Full Payment Display -->
-            <div
-              x-show="paymentType === 'full'"
-              x-transition
-              class='text-center space-y-2'
-            >
-              <!-- Harga coret -->
-              <p class='text-lg text-gray-400 line-through'>
-                {{formatRupiah kelas.promo}}
-              </p>
-
-              <!-- Harga promo -->
-              <p
-                class='text-4xl font-bold bg-gradient-to-r animate-pulse from-slate-700 to-slate-900 bg-clip-text text-transparent'
-              >
-                {{formatRupiah kelas.harga}}
-              </p>
-              <p class='text-sm text-gray-600'>One-time payment</p>
-            </div>
-
-            <!-- Installment Payment Display -->
-            <div
-              x-show="paymentType === 'installment'"
-              x-transition
-              class='space-y-4'
-            >
-              <!-- Installment Options -->
-              <div class='bg-white rounded-xl p-4 border-2 border-slate-200'>
-                <label class='block text-sm font-semibold text-slate-700 mb-3'>
-                  <i class='fas fa-clock mr-2'></i>
-                  Choose Installment Period
-                </label>
-                <div class='grid grid-cols-3 gap-2'>
-                  <button
-                    @click='installmentMonths = 3'
-                    :class="installmentMonths === 3 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
-                    class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
-                  >
-                    3 Months
-                  </button>
-                  <button
-                    @click='installmentMonths = 6'
-                    :class="installmentMonths === 6 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
-                    class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
-                  >
-                    6 Months
-                  </button>
-                  <button
-                    @click='installmentMonths = 12'
-                    :class="installmentMonths === 12 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
-                    class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
-                  >
-                    12 Months
-                  </button>
-                </div>
-              </div>
-
-              <!-- Installment Price Display -->
-              <div
-                class='bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl p-6 text-white'
-              >
-                <p class='text-sm text-slate-300 mb-2'>Monthly Payment</p>
-                <div class='flex items-baseline gap-2 mb-3'>
-                  <span
-                    class='text-4xl font-bold'
-                    x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'
-                  ></span>
-                  <span class='text-lg text-slate-300'>/month</span>
-                </div>
-                <div
-                  class='flex items-center justify-between pt-3 border-t border-slate-600'
+          {{#if kelas.check_paid}}
+            <div class='space-y-4'>
+              <!-- Payment Type Toggle -->
+              <div class='flex gap-2 p-1 bg-gray-100 rounded-xl'>
+                <button
+                  @click="paymentType = 'full'"
+                  :class="paymentType === 'full' ? 'bg-white shadow-md' : 'bg-transparent'"
+                  class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
                 >
-                  <div>
-                    <p class='text-xs text-slate-300'>Total</p>
-                    <p class='text-lg font-semibold'>{{formatRupiah
-                        kelas.harga
-                      }}</p>
-                  </div>
-                  <div>
-                    <p class='text-xs text-slate-300'>Duration</p>
-                    <p
-                      class='text-lg font-semibold'
-                      x-text='installmentMonths + " Months"'
-                    ></p>
-                  </div>
-                </div>
+                  <i class='fas fa-money-bill-wave mr-2'></i>
+                  Full Payment
+                </button>
+                <button
+                  @click="paymentType = 'installment'"
+                  :class="paymentType === 'installment' ? 'bg-white shadow-md' : 'bg-transparent'"
+                  class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
+                >
+                  <i class='fas fa-calendar-alt mr-2'></i>
+                  Installment
+                </button>
               </div>
 
-              <!-- Installment Info -->
-              <div class='bg-amber-50 border border-amber-200 rounded-xl p-4'>
-                <div class='flex items-start gap-3'>
-                  <i class='fas fa-info-circle text-amber-600 mt-1'></i>
-                  <div class='text-sm text-amber-800'>
-                    <p class='font-semibold mb-1'>Installment Information:</p>
-                    <ul class='list-disc pl-4 space-y-1'>
-                      <li>No additional fees or interest</li>
-                      <li>Pay monthly until completed</li>
-                      <li>Full access after first payment</li>
-                    </ul>
+              <!-- Full Payment Display -->
+              <div
+                x-show="paymentType === 'full'"
+                x-transition
+                class='text-center space-y-2'
+              >
+                <!-- Harga coret -->
+                <p class='text-lg text-gray-400 line-through'>
+                  {{formatRupiah kelas.promo}}
+                </p>
+
+                <!-- Harga promo -->
+                <p
+                  class='text-4xl font-bold bg-gradient-to-r animate-pulse from-slate-700 to-slate-900 bg-clip-text text-transparent'
+                >
+                  {{formatRupiah kelas.harga}}
+                </p>
+                <p class='text-sm text-gray-600'>One-time payment</p>
+              </div>
+
+              <!-- Installment Payment Display -->
+              <div
+                x-show="paymentType === 'installment'"
+                x-transition
+                class='space-y-4'
+              >
+                <!-- Installment Options -->
+                <div class='bg-white rounded-xl p-4 border-2 border-slate-200'>
+                  <label
+                    class='block text-sm font-semibold text-slate-700 mb-3'
+                  >
+                    <i class='fas fa-clock mr-2'></i>
+                    Choose Installment Period
+                  </label>
+                  <div class='grid grid-cols-3 gap-2'>
+                    <button
+                      @click='installmentMonths = 3'
+                      :class="installmentMonths === 3 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
+                      class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
+                    >
+                      3 Months
+                    </button>
+                    <button
+                      @click='installmentMonths = 6'
+                      :class="installmentMonths === 6 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
+                      class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
+                    >
+                      6 Months
+                    </button>
+                    <button
+                      @click='installmentMonths = 12'
+                      :class="installmentMonths === 12 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
+                      class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
+                    >
+                      12 Months
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Installment Price Display -->
+                <div
+                  class='bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl p-6 text-white'
+                >
+                  <p class='text-sm text-slate-300 mb-2'>Monthly Payment</p>
+                  <div class='flex items-baseline gap-2 mb-3'>
+                    <span
+                      class='text-4xl font-bold'
+                      x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'
+                    ></span>
+                    <span class='text-lg text-slate-300'>/month</span>
+                  </div>
+                  <div
+                    class='flex items-center justify-between pt-3 border-t border-slate-600'
+                  >
+                    <div>
+                      <p class='text-xs text-slate-300'>Total</p>
+                      <p class='text-lg font-semibold'>{{formatRupiah
+                          kelas.harga
+                        }}</p>
+                    </div>
+                    <div>
+                      <p class='text-xs text-slate-300'>Duration</p>
+                      <p
+                        class='text-lg font-semibold'
+                        x-text='installmentMonths + " Months"'
+                      ></p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Installment Info -->
+                <div class='bg-amber-50 border border-amber-200 rounded-xl p-4'>
+                  <div class='flex items-start gap-3'>
+                    <i class='fas fa-info-circle text-amber-600 mt-1'></i>
+                    <div class='text-sm text-amber-800'>
+                      <p class='font-semibold mb-1'>Installment Information:</p>
+                      <ul class='list-disc pl-4 space-y-1'>
+                        <li>No additional fees or interest</li>
+                        <li>Pay monthly until completed</li>
+                        <li>Full access after first payment</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          {{else}}
+            <!-- Free Class Display -->
+            <div class='text-center space-y-4'>
+              <!-- Free Badge with Animation -->
+              <div class='relative inline-block'>
+                <div
+                  class='absolute inset-0 bg-gradient-to-r from-emerald-400 to-green-500 rounded-2xl blur-xl opacity-50 animate-pulse'
+                ></div>
+                <div
+                  class='relative bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-2xl shadow-2xl'
+                >
+                  <div class='flex items-center gap-3'>
+                    <i class='fas fa-gift text-3xl'></i>
+                    <div class='text-left'>
+                      <p class='text-sm font-medium opacity-90'>100% Free</p>
+                      <p class='text-2xl font-bold'>No Payment Required</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Free Features -->
+              <div
+                class='bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-6 border-2 border-emerald-200'
+              >
+                <h4
+                  class='font-bold text-emerald-800 text-lg mb-4 flex items-center justify-center gap-2'
+                >
+                  <i class='fas fa-check-circle'></i>
+                  What's Included
+                </h4>
+                <div class='space-y-3 text-left'>
+                  <div class='flex items-start gap-3'>
+                    <i
+                      class='fas fa-check text-emerald-600 mt-1 flex-shrink-0'
+                    ></i>
+                    <span class='text-emerald-800 font-medium'>Full course
+                      access</span>
+                  </div>
+                  <div class='flex items-start gap-3'>
+                    <i
+                      class='fas fa-check text-emerald-600 mt-1 flex-shrink-0'
+                    ></i>
+                    <span class='text-emerald-800 font-medium'>Lifetime learning
+                      materials</span>
+                  </div>
+                  <div class='flex items-start gap-3'>
+                    <i
+                      class='fas fa-check text-emerald-600 mt-1 flex-shrink-0'
+                    ></i>
+                    <span class='text-emerald-800 font-medium'>Certificate of
+                      completion</span>
+                  </div>
+                  <div class='flex items-start gap-3'>
+                    <i
+                      class='fas fa-check text-emerald-600 mt-1 flex-shrink-0'
+                    ></i>
+                    <span class='text-emerald-800 font-medium'>Community support</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Info Card -->
+              <div
+                class='bg-white border-2 border-emerald-200 rounded-xl p-5 shadow-sm'
+              >
+                <div class='flex items-start gap-3'>
+                  <i
+                    class='fas fa-info-circle text-emerald-600 text-xl mt-1'
+                  ></i>
+                  <div class='text-left text-sm text-emerald-800'>
+                    <p class='font-semibold mb-1'>How to Join:</p>
+                    <p>Simply click the "Enroll for Free" button below to start
+                      learning immediately. No credit card or payment required!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {{/if}}
+
         {{/if}}
 
         <!-- Card No Rekening -->
         {{#if user}}
-          {{#if (roles kelas.kategori.nama_kategori 'Short Class')}}{{else}}
+          {{#if kelas.check_paid}}
             {{#if (check daftar kelas.kuota)}}
               <div
                 class='bg-gradient-to-br from-slate-800 to-slate-900 text-white p-6 rounded-2xl shadow-lg'
@@ -718,6 +802,42 @@
                   capacity</p>
               </div>
             {{/if}}
+          {{else}}
+            <!-- Free Class Registration Instructions -->
+            <div
+              class='bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-xl p-5'
+            >
+              <h4
+                class='font-bold text-emerald-800 flex items-center gap-2 mb-3'
+              >
+                <i class='fas fa-clipboard-check'></i>
+                Free Class Registration Instructions
+              </h4>
+              <ol class='list-decimal pl-5 space-y-2 text-sm text-emerald-700'>
+                <li>Click the registration form link below:
+                  <div
+                    class='mt-2 bg-white rounded-lg p-3 border border-emerald-300'
+                  >
+                    <a
+                      href='{{kelas.form}}'
+                      target='_blank'
+                      class='text-emerald-600 hover:text-emerald-800 font-semibold break-all flex items-center gap-2'
+                    >
+                      <i class='fas fa-external-link-alt'></i>
+                      Open Registration Form
+                    </a>
+                  </div>
+                </li>
+                <li>Fill in all required information in the form accurately</li>
+                <li>Submit the form and take a screenshot of the confirmation
+                  page</li>
+                <li>Upload the screenshot as proof of registration below</li>
+                <li>After uploading, your registration status will be
+                  "Processing"</li>
+                <li>Wait for admin confirmation. Once approved, you'll get
+                  immediate class access</li>
+              </ol>
+            </div>
           {{/if}}
 
           <!-- Form Upload -->
@@ -730,21 +850,7 @@
               Continue Learning
             </a>
           {{else}}
-            {{#if (roles kelas.kategori.nama_kategori 'Short Class')}}
-              <form
-                action='/pembayarans/{{user.id}}/{{kelas.id}}'
-                method='post'
-                class='space-y-4'
-              >
-                <button
-                  type='submit'
-                  class='w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
-                >
-                  <i class='fas fa-play-circle mr-2'></i>
-                  Enroll Now - Free
-                </button>
-              </form>
-            {{else if (roles kelas.kategori.nama_kategori 'Course')}}
+            {{#if kelas.check_paid}}
               {{#if (check daftar kelas.kuota)}}
                 <form
                   action='/pembayarans/{{user.id}}/{{kelas.id}}'
@@ -840,55 +946,27 @@
                   </button>
                 </form>
               {{/if}}
-            {{else if (roles kelas.kategori.nama_kategori 'Bootcamp')}}
+            {{else}}
               {{#if (check daftar kelas.kuota)}}
+                <!-- Free Class Registration Form -->
                 <form
-                  action='/pembayarans/{{user.id}}/{{kelas.id}}'
+                  action='/pendaftaran/{{user.id}}/{{kelas.id}}'
                   enctype='multipart/form-data'
                   method='post'
                   class='space-y-4'
                 >
-                  <!-- Hidden inputs for payment info -->
-                  <input
-                    type='hidden'
-                    name='payment_type'
-                    :value='paymentType'
-                  />
-                  <input
-                    type='hidden'
-                    name='installment_months'
-                    :value='installmentMonths'
-                  />
-                  <input
-                    type='hidden'
-                    name='installment_amount'
-                    :value='installmentAmount'
-                  />
-
-                  <!-- Payment Summary Badge -->
+                  <!-- Free Registration Badge -->
                   <div
-                    class='bg-slate-100 border border-slate-300 rounded-xl p-4'
+                    class='bg-gradient-to-r from-emerald-100 to-green-100 border-2 border-emerald-300 rounded-xl p-4'
                   >
-                    <div class='flex items-center justify-between'>
+                    <div class='flex items-center justify-center gap-3'>
+                      <i class='fas fa-gift text-emerald-600 text-2xl'></i>
                       <div>
                         <p
-                          class='text-xs font-semibold text-slate-600 uppercase'
-                        >Payment Type</p>
-                        <p
-                          class='text-sm font-bold text-slate-900'
-                          x-text="paymentType === 'full' ? 'Full Payment' : 'Installment (' + installmentMonths + ' months)'"
-                        ></p>
-                      </div>
-                      <div class='text-right'>
-                        <p
-                          class='text-xs font-semibold text-slate-600 uppercase'
-                        >Amount</p>
-                        <p
-                          class='text-sm font-bold text-slate-900'
-                          x-text="paymentType === 'full' ? '{{formatRupiah
-                            kelas.harga
-                          }}' : 'Rp ' + installmentAmount.toLocaleString('id-ID') + '/mo'"
-                        ></p>
+                          class='text-xs font-semibold text-emerald-600 uppercase'
+                        >Registration Type</p>
+                        <p class='text-sm font-bold text-emerald-800'>Free Class
+                          - No Payment Required</p>
                       </div>
                     </div>
                   </div>
@@ -897,18 +975,22 @@
                     <label
                       class='block text-sm font-semibold text-slate-700 mb-2'
                     >
-                      <i class='fas fa-receipt mr-2'></i>
-                      Upload Payment Proof
-                      <span
-                        x-show="paymentType === 'installment'"
-                        class='text-purple-600'
-                      >(First Installment)</span>
+                      <i class='fas fa-file-image mr-2'></i>
+                      Upload Registration Proof
                     </label>
+                    <div
+                      class='bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-2'
+                    >
+                      <p class='text-xs text-emerald-700'>
+                        <i class='fas fa-info-circle mr-1'></i>
+                        Upload a screenshot of your completed registration form
+                      </p>
+                    </div>
                     <input
                       type='file'
                       name='file'
                       required
-                      class='w-full bg-white border-2 border-slate-300 rounded-xl p-3 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 transition-all'
+                      class='w-full bg-white border-2 border-emerald-300 rounded-xl p-3 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all'
                       @change='previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null'
                     />
                   </div>
@@ -920,19 +1002,17 @@
                       <img
                         :src='previewUrl'
                         alt='Preview'
-                        class='rounded-xl border-2 border-slate-200 max-h-48 w-full object-contain'
+                        class='rounded-xl border-2 border-emerald-200 max-h-48 w-full object-contain'
                       />
                     </div>
                   </template>
 
                   <button
                     type='submit'
-                    class='w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
+                    class='w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-emerald-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
                   >
-                    <i class='fas fa-rocket mr-2'></i>
-                    <span
-                      x-text="paymentType === 'full' ? 'Enroll in Bootcamp' : 'Enroll with Installment'"
-                    ></span>
+                    <i class='fas fa-user-plus mr-2'></i>
+                    Enroll for Free
                   </button>
                 </form>
               {{/if}}
