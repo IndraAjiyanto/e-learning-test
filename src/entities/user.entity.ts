@@ -16,6 +16,7 @@ import { Sertifikat } from './sertifikat.entity';
 import { UserKelas } from './user_kelas.entity';
 import { LogbookMentor } from './logbook_mentor.entity';
 import { ProgresQuiz } from './progres_quiz.entity';
+import { Mentoring } from './mentoring.entity';
 
 export type UserRole = 'super_admin' |'admin' | 'user';
 
@@ -95,6 +96,14 @@ progres_quiz: ProgresQuiz[];
 
 @OneToMany(() => Sertifikat, (sertifikat) => sertifikat.user, { cascade: true, onDelete: 'CASCADE' })
 sertifikat: Sertifikat[];
+
+
+  @OneToMany(() => Mentoring, (mentoring) => mentoring.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  mentoring: Mentoring[];
+
 
     @OneToOne(() => Biodata, (biodata) => biodata.user, { cascade: true, onDelete: 'CASCADE' }) 
     biodata: Biodata

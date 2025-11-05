@@ -26,6 +26,8 @@ import { Mentor } from 'src/entities/mentor.entity';
 import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
+import { Mentoring } from 'src/entities/mentoring.entity';
+import { Bulan } from 'src/entities/bulan.entity';
 
 @Injectable()
 export class KelassService {
@@ -66,6 +68,10 @@ export class KelassService {
     private readonly logbookRepository: Repository<Logbook>,
     @InjectRepository(Teknologi)
     private readonly teknologiRepository: Repository<Teknologi>,
+    @InjectRepository(Mentoring)
+    private readonly mentoringRepository: Repository<Mentoring>,
+    @InjectRepository(Bulan)
+    private readonly bulanRepository: Repository<Bulan>,
   ) {}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -80,6 +86,13 @@ export class KelassService {
     });
     if (!jenis_kelas) {
       throw new NotFoundException('jenis_kelas ini tidak ada');
+    }
+
+    const bulan = await this.bulanRepository.findOne({
+      where: { id: createKelassDto.bulanId },
+    });
+    if (!bulan) {
+      throw new NotFoundException('bulan ini tidak ada');
     }
 
     // Get teknologi entities if teknologiIds provided
@@ -98,8 +111,57 @@ export class KelassService {
       kategori: kategori,
       jenis_kelas: jenis_kelas,
       teknologi: teknologi,
+      bulan: bulan,
     });
     return await this.kelasRepository.save(kelas);
+  }
+
+  async createMentoring(userId: number, kelasId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, role: 'admin' },
+    });
+    if (!user) {
+      throw new NotFoundException('User tidak ada');
+    }
+
+    const kelas = await this.kelasRepository.findOne({
+      where: { id: kelasId },
+    });
+    if (!kelas) {
+      throw new NotFoundException('Kelas tidak ada');
+    }
+
+    const mentoring = await this.mentoringRepository.create({
+      kelas: kelas,
+      user: user,
+    });
+    return await this.mentoringRepository.save(mentoring);
+  }
+
+  async updateMentoring(userId: number, kelasId: number) {
+    // Cari mentoring yang sudah ada untuk kelas ini
+    const existingMentoring = await this.mentoringRepository.findOne({
+      where: { kelas: { id: kelasId } },
+      relations: ['kelas', 'user'],
+    });
+
+    if (!existingMentoring) {
+      throw new NotFoundException('Mentoring untuk kelas ini tidak ditemukan');
+    }
+
+    // Cari user admin baru yang akan jadi mentoring
+    const newMentorUser = await this.userRepository.findOne({
+      where: { id: userId, role: 'admin' },
+    });
+
+    if (!newMentorUser) {
+      throw new NotFoundException('User admin tidak ditemukan');
+    }
+
+    // Update mentoring dengan user baru
+    existingMentoring.user = newMentorUser;
+
+    return await this.mentoringRepository.save(existingMentoring);
   }
 
   async addUserToKelas(userId: number, kelasId: number): Promise<UserKelas> {
@@ -173,9 +235,31 @@ export class KelassService {
     });
   }
 
+  async findMentoring() {
+    return await this.userRepository.find({ where: { role: 'admin' } });
+  }
+
   async findMentor(kelasId) {
     return await this.mentorRepository.find({
       where: { kelas: { id: kelasId } },
+    });
+  }
+
+  async findBulan() {
+    return await this.bulanRepository.find();
+  }
+
+  async findKelasByMentoring(userId: number) {
+    return await this.kelasRepository.find({
+      where: { mentoring: { user: { id: userId } } },
+      relations: [
+        'user_kelas',
+        'user_kelas.user',
+        'kategori',
+        'jenis_kelas',
+        'mentoring',
+        'mentoring.user',
+      ],
     });
   }
 
@@ -613,7 +697,15 @@ export class KelassService {
   async allClassExcept(kelasId: number) {
     return await this.kelasRepository.find({
       where: { id: Not(kelasId) },
-      relations: ['user_kelas', 'user_kelas.user', 'kategori', 'jenis_kelas', 'teknologi'],
+      relations: [
+        'user_kelas',
+        'user_kelas.user',
+        'kategori',
+        'jenis_kelas',
+        'teknologi',
+        'bulan',
+        'mentoring',
+      ],
     });
   }
 
@@ -640,6 +732,9 @@ export class KelassService {
         'mentor',
         'pertanyaan_kelas',
         'teknologi',
+        'mentoring',
+        'mentoring.user',
+        'bulan',
       ],
     });
     if (!kelas) {
@@ -680,6 +775,20 @@ export class KelassService {
       }
 
       kelas.kategori = kategori;
+    }
+
+    if (updateKelassDto.bulanId) {
+      const bulan = await this.bulanRepository.findOne({
+        where: { id: updateKelassDto.bulanId },
+      });
+
+      if (!bulan) {
+        throw new NotFoundException(
+          `Bulan dengan ID ${updateKelassDto.bulanId} tidak ditemukan`,
+        );
+      }
+
+      kelas.bulan = bulan;
     }
 
     if (updateKelassDto.jenis_kelasId) {

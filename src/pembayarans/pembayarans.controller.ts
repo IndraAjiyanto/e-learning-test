@@ -19,28 +19,7 @@ export class PembayaransController {
   async create(@Param('userId') userId: number, @Param('kelasId') kelasId: number, @Body() createPembayaranDto: CreatePembayaranDto,   @UploadedFile() file: Express.Multer.File, @Res() res:Response, @Req() req:Request
   ) {
     try {
-    const kelas = await this.pembayaransService.findKelas(kelasId)
-    if(kelas?.kategori.nama_kategori == "Short Class"){
-      try {
-            createPembayaranDto.kelasId = kelasId
-            createPembayaranDto.userId = userId
-            createPembayaranDto.proses = 'acc'
-            const pembayaran = await this.pembayaransService.create(createPembayaranDto);
-            if(pembayaran == false){
-              req.flash('info', 'anda sudah terdaftar di kelas')
-              res.redirect(`/pembayarans/riwayat/${userId}`)
-            }else{
-              await this.pembayaransService.addUserToKelas(userId, kelasId);
-              req.flash('success', 'anda telah terdaftar kelas')
-              res.redirect(`/pembayarans/riwayat/${userId}`)
-            }
-      } catch (error) {
-        console.log(error)
-        req.flash('error', 'anda gagal terdaftar kelas')
-        res.redirect(`/pembayarans/riwayat/${userId}`)
-      }
 
-    }else{
     createPembayaranDto.file = file.path
     createPembayaranDto.kelasId = kelasId
     createPembayaranDto.userId = userId
@@ -54,9 +33,8 @@ export class PembayaransController {
         req.flash('success', 'bukti pembayaran berhasil di kirim, silahkan tunggu admin')
         res.redirect(`/pembayarans/riwayat/${userId}`)
     }
-    }
+    
     } catch (error) {
-    console.log(error)
     req.flash('error', 'bukti pembayaran gagal dikirim ')
     res.redirect(`/pembayarans/riwayat/${userId}`)
     }

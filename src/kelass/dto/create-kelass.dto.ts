@@ -25,11 +25,24 @@ export class CreateKelassDto {
   jenis_kelasId: number;
 
   @IsInt()
+  mentoringId: number;
+
+  @IsInt()
+  bulanId: number
+
+  @IsInt()
   harga: number;
 
   @IsBoolean()
   @IsOptional()
   launch: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  check_paid: boolean;
+
+  @IsString()
+  paid_check: string;
 
   @IsArray()
   @IsInt({ each: true })

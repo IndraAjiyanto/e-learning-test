@@ -24,6 +24,8 @@ import { CommonModule } from 'src/common/common.module';
 import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
+import { Mentoring } from 'src/entities/mentoring.entity';
+import { Bulan } from 'src/entities/bulan.entity';
 
 @Module({
   imports: [
@@ -47,6 +49,8 @@ import { Teknologi } from 'src/entities/teknologi.entity';
       ProgresPertemuan,
       Pembayaran,
       ProgresQuiz,
+      Mentoring,
+      Bulan
     ]),
     PertanyaansModule,
     JawabanUsersModule,

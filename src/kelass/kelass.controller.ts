@@ -52,7 +52,7 @@ export class KelassController {
     minHeight: 1000,
     maxHeight: 1080,
     folder: 'nestjs/images/banner/class',
-    maxSize: 2 * 1024 * 1024, 
+    maxSize: 2 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
@@ -62,8 +62,32 @@ export class KelassController {
   ) {
     try {
       createKelassDto.gambar = req.body.uploadedImageUrls?.[0];
-      createKelassDto.proses = 'proces';
-      await this.kelassService.create(createKelassDto);
+
+      if (createKelassDto.paid_check === 'true') {
+        createKelassDto.check_paid = false;
+        if (req.user!.role === 'super_admin') {
+          createKelassDto.proses = 'acc';
+        } else if (req.user!.role === 'admin') {
+          createKelassDto.proses = 'proces';
+        }
+      } else if (createKelassDto.paid_check === 'false') {
+        createKelassDto.check_paid = true;
+        if (req.user!.role === 'super_admin') {
+          createKelassDto.proses = 'acc';
+        } else if (req.user!.role === 'admin') {
+          createKelassDto.proses = 'proces';
+        }
+      }
+      const kelas = await this.kelassService.create(createKelassDto);
+      if (req.user!.role === 'super_admin') {
+        await this.kelassService.createMentoring(
+          createKelassDto.mentoringId,
+          kelas.id,
+        );
+      }
+      if (req.user!.role === 'admin') {
+        await this.kelassService.createMentoring(req.user!.id, kelas.id);
+      }
       req.flash('success', 'class successfully created');
       res.redirect('/kelass');
     } catch (error) {
@@ -104,8 +128,14 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const kelas = await this.kelassService.allKelas();
-    res.render('admin/kelas/index', { user: req.user, kelas });
+    if (req.user!.role === 'super_admin') {
+      const kelas = await this.kelassService.allKelas();
+      res.render('admin/kelas/index', { user: req.user, kelas });
+    } else if (req.user!.role === 'admin') {
+      const kelas = await this.kelassService.findKelasByMentoring(req.user!.id);
+      console.log(kelas);
+      res.render('admin/kelas/index', { user: req.user, kelas });
+    }
   }
 
   // Form create class
@@ -114,12 +144,16 @@ export class KelassController {
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const kategori = await this.kelassService.findKategori();
     const jenis_kelas = await this.kelassService.findJenisKelas();
-    const teknologi = await this.kelassService.findTeknologi()
+    const teknologi = await this.kelassService.findTeknologi();
+    const bulan = await this.kelassService.findBulan();
+    const mentoring = await this.kelassService.findMentoring();
     return res.render('admin/kelas/create', {
       user: req.user,
       kategori,
       jenis_kelas,
-      teknologi
+      teknologi,
+      bulan,
+      mentoring,
     });
   }
 
@@ -152,17 +186,21 @@ export class KelassController {
     const kelas = await this.kelassService.findOne(kelasId);
     const kategori = await this.kelassService.findKategori();
     const jenis_kelas = await this.kelassService.findJenisKelas();
-    const teknologi = await this.kelassService.findTeknologi()
+    const teknologi = await this.kelassService.findTeknologi();
+    const bulan = await this.kelassService.findBulan();
+    const mentoring = await this.kelassService.findMentoring();
     return res.render('admin/kelas/edit', {
       user: req.user,
       kelas,
       kategori,
       jenis_kelas,
-      teknologi
+      teknologi,
+      bulan,
+      mentoring,
     });
   }
 
-  @Roles('admin','super_admin')
+  @Roles('admin', 'super_admin')
   @Get('/detail/kelas/admin/:kelasId')
   async detailKelas(
     @Param('kelasId') kelasId: number,
@@ -201,7 +239,10 @@ export class KelassController {
     @Req() req: Request,
   ) {
     const kelas = await this.kelassService.findOne(kelasId);
-    const check_user = await this.kelassService.checkUserInKelas(kelas.id, req.user!.id);
+    const check_user = await this.kelassService.checkUserInKelas(
+      kelas.id,
+      req.user!.id,
+    );
     const kelass = await this.kelassService.allClassExcept(kelas.id);
     res.render('kelas/Bdetail', { kelas, user: req.user, kelass, check_user });
   }
@@ -268,9 +309,26 @@ export class KelassController {
         await this.usersService.getPublicIdFromUrl(kelas.gambar);
         updateKelassDto.gambar = gambar.path;
       }
+
+      if(updateKelassDto.mentoringId){
+              if(kelas.mentoring[0].user.id != updateKelassDto.mentoringId){
+        await this.kelassService.updateMentoring(updateKelassDto.mentoringId, kelas.id)
+      }
+      }
+
+
+      // Handle paid_check logic
+      if (updateKelassDto.paid_check === 'true') {
+        updateKelassDto.check_paid = false;
+      } else if (updateKelassDto.paid_check === 'false') {
+        updateKelassDto.check_paid = true;
+      }
+
+      // Super admin always approve
       if (req.user?.role === 'super_admin') {
         updateKelassDto.proses = 'acc';
       }
+
       await this.kelassService.update(kelasId, updateKelassDto);
       req.flash('success', 'Successfully update kelas');
       if (req.user?.role == 'super_admin') {
@@ -326,7 +384,7 @@ export class KelassController {
     }
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Delete(':userId/kelas/:kelasId')
   async removeUserKelas(
     @Param('userId') userId: number,

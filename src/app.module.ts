@@ -50,6 +50,7 @@ import { IntenshifModule } from './intenshif/intenshif.module';
 import { TeamLeadModule } from './team_lead/team_lead.module';
 import { ValueModule } from './value/value.module';
 import { CommitmentModule } from './commitment/commitment.module';
+import { PendaftaranModule } from './pendaftaran/pendaftaran.module';
 
 @Module({
   imports: [
@@ -104,6 +105,7 @@ import { CommitmentModule } from './commitment/commitment.module';
     TeamLeadModule,
     ValueModule,
     CommitmentModule,
+    PendaftaranModule,
   ],
   controllers: [AppController],
   providers: [AppService],
