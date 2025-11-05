@@ -6,28 +6,40 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
-export class Social {
+@Entity('team_leads')
+export class TeamLead {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  linkedin: string;
+  profile: string;
 
   @Column()
-  instragram: string;
+  nama: string;
 
   @Column()
-  youtube: string;
+  posisi: string;
+
+  @Column()
+  deskripsi: string;
 
   @Column()
   email: string;
 
   @Column()
-  alamat: string;
+  phone: string;
+
+  @Column('text')
+  background: string;
+
+  @Column('text')
+  awards: string;
+
+  @Column('text')
+  experience: string;
 
   @Column()
-  nomor: string;
+  linkedin: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,0 +1,294 @@
+<div class='py-10'>
+  <div
+    class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+      previewUrl: null,
+      errorMessage: '',
+      isValid: true,
+      fileName: '',
+      fileSize: 0,
+      imageWidth: 0,
+      imageHeight: 0,
+      hasFile: false,
+
+      validateImage(file) {
+        if (!file) {
+          this.hasFile = false;
+          return;
+        }
+
+        this.hasFile = true;
+        this.fileName = file.name;
+        this.fileSize = file.size;
+        this.errorMessage = '';
+        this.isValid = true;
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+          this.isValid = false;
+          this.previewUrl = null;
+          return;
+        }
+
+        const maxSize = 1 * 1024 * 1024; // 1MB
+        if (file.size > maxSize) {
+          this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 1MB`;
+          this.isValid = false;
+          this.previewUrl = null;
+          return;
+        }
+
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+
+        img.onload = () => {
+          this.imageWidth = img.width;
+          this.imageHeight = img.height;
+
+          if (img.width < 300 || img.width > 500 || img.height < 300 || img.height > 500) {
+            this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 500x500 pixels`;
+            this.isValid = false;
+            this.previewUrl = null;
+            URL.revokeObjectURL(objectUrl);
+          } else {
+            this.previewUrl = objectUrl;
+            this.isValid = true;
+            this.errorMessage = '';
+          }
+        };
+
+        img.onerror = () => {
+          this.errorMessage = 'Failed to load image';
+          this.isValid = false;
+          this.previewUrl = null;
+          URL.revokeObjectURL(objectUrl);
+        };
+
+        img.src = objectUrl;
+      },
+
+      clearFile() {
+        this.previewUrl = null;
+        this.errorMessage = '';
+        this.isValid = true;
+        this.fileName = '';
+        this.fileSize = 0;
+        this.imageWidth = 0;
+        this.imageHeight = 0;
+        this.hasFile = false;
+        this.$refs.fileInput.value = null;
+      },
+
+      canSubmit() {
+        if (this.hasFile) {
+          return this.isValid;
+        }
+        return true;
+      }
+    }"
+  >
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Team Lead</h2>
+
+    <form
+      action='/team-lead'
+      method='post'
+      class='space-y-6'
+      enctype='multipart/form-data'
+      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix image validation errors before submitting.'); }"
+    >
+      <!-- Upload Section -->
+      <div class='space-y-3'>
+        <label
+          for='profile'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Profile Photo
+        </label>
+        <input
+          type='file'
+          id='profile'
+          name='profile'
+          accept='image/*'
+          x-ref='fileInput'
+          class='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          @change='validateImage($event.target.files[0])'
+        />
+
+        <!-- Preview -->
+        <template x-if='previewUrl'>
+          <div class='relative w-32 h-32'>
+            <img
+              :src='previewUrl'
+              alt='Preview Profile'
+              class='w-32 h-32 object-cover rounded-lg border border-gray-300'
+            />
+            <button
+              type='button'
+              class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600'
+              @click='clearFile()'
+            >
+              &times;
+            </button>
+          </div>
+        </template>
+      </div>
+
+      <!-- Name -->
+      <div>
+        <label
+          for='nama'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Name</label>
+        <input
+          type='text'
+          id='nama'
+          name='nama'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        />
+      </div>
+
+      <!-- Position -->
+      <div>
+        <label
+          for='posisi'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Position</label>
+        <input
+          type='text'
+          id='posisi'
+          name='posisi'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        />
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label
+          for='email'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Email</label>
+        <input
+          type='email'
+          id='email'
+          name='email'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        />
+      </div>
+
+      <!-- Phone -->
+      <div>
+        <label
+          for='phone'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Phone</label>
+        <input
+          type='text'
+          id='phone'
+          name='phone'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        />
+      </div>
+
+      <!-- LinkedIn -->
+      <div>
+        <label
+          for='linkedin'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >LinkedIn URL</label>
+        <input
+          type='url'
+          id='linkedin'
+          name='linkedin'
+          required
+          placeholder='https://linkedin.com/in/username'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        />
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label
+          for='deskripsi'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Description</label>
+        <textarea
+          id='deskripsi'
+          name='deskripsi'
+          required
+          rows='3'
+          placeholder='Short description about the team lead...'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        ></textarea>
+      </div>
+
+      <!-- Background -->
+      <div>
+        <label
+          for='background'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Background</label>
+        <textarea
+          id='background'
+          name='background'
+          required
+          rows='4'
+          placeholder='Educational and professional background...'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        ></textarea>
+      </div>
+
+      <!-- Experience -->
+      <div>
+        <label
+          for='experience'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Experience</label>
+        <textarea
+          id='experience'
+          name='experience'
+          required
+          rows='4'
+          placeholder='Work experience and expertise...'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        ></textarea>
+      </div>
+
+      <!-- Awards -->
+      <div>
+        <label
+          for='awards'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Awards & Achievements</label>
+        <textarea
+          id='awards'
+          name='awards'
+          required
+          rows='3'
+          placeholder='Awards, certifications, and achievements...'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        ></textarea>
+      </div>
+
+      <!-- Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+        >
+          Create
+        </button>
+        <a
+          href='/team-lead'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -9,7 +9,7 @@ export class Story {
     paragraph: string;
 
     @Column()
-    no: number;
+    link: number;
 
           @CreateDateColumn()
           createdAt: Date;

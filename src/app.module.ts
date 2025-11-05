@@ -47,6 +47,7 @@ import { GambarBenefitModule } from './gambar_benefit/gambar_benefit.module';
 import { TentangModule } from './tentang/tentang.module';
 import { TeknologiModule } from './teknologi/teknologi.module';
 import { IntenshifModule } from './intenshif/intenshif.module';
+import { TeamLeadModule } from './team_lead/team_lead.module';
 
 @Module({
   imports: [
@@ -98,6 +99,7 @@ import { IntenshifModule } from './intenshif/intenshif.module';
     TentangModule,
     TeknologiModule,
     IntenshifModule,
+    TeamLeadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

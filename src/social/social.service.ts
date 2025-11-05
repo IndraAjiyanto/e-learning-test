@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSocialDto } from './dto/create-social.dto';
 import { UpdateSocialDto } from './dto/update-social.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Social } from 'src/entities/social.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SocialService {
-  create(createSocialDto: CreateSocialDto) {
-    return 'This action adds a new social';
+  constructor(
+    @InjectRepository(Social)
+    private readonly socialRepository: Repository<Social>,
+  ) {}
+
+  async create(createSocialDto: CreateSocialDto) {
+    const social = this.socialRepository.create(createSocialDto);
+    return await this.socialRepository.save(social);
   }
 
-  findAll() {
-    return `This action returns all social`;
+  async findAll() {
+    return await this.socialRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} social`;
+  async findOne(id: number) {
+    const social = await this.socialRepository.findOne({ where: { id } });
+    if (!social) {
+      throw new NotFoundException('Social media not found');
+    }
+    return social;
   }
 
-  update(id: number, updateSocialDto: UpdateSocialDto) {
-    return `This action updates a #${id} social`;
+  async update(id: number, updateSocialDto: UpdateSocialDto) {
+    const social = await this.findOne(id);
+    if (!social) {
+      throw new NotFoundException('Social media not found');
+    }
+    Object.assign(social, updateSocialDto);
+    return await this.socialRepository.save(social);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} social`;
+  async remove(id: number) {
+    const social = await this.findOne(id);
+    if (!social) {
+      throw new NotFoundException('Social media not found');
+    }
+    await this.socialRepository.remove(social);
   }
 }
