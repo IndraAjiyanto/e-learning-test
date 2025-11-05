@@ -450,6 +450,36 @@
                 <input type='hidden' name='promo' x-model='value' />
               </div>
             </div>
+
+            <!-- Fields that appear when paid_check is false (not active) -->
+            <div x-show='!paidClass' x-transition class='space-y-6'>
+              <!-- Form -->
+              <div
+                x-data="{
+                          display: '',
+                          value: '',
+                          formatForm(event) {
+                              let angka = event.target.value.replace(/\D/g, ''); 
+                              this.value = angka;
+                              this.display = new Intl.NumberFormat('id-ID').format(angka);
+                          }
+                      }"
+              >
+                <label
+                  for='form1'
+                  class='block text-sm font-semibold text-gray-700 mb-1'
+                >Form</label>
+                <input
+                  type='text'
+                  id='form1'
+                  x-model='display'
+                  @input='formatForm($event)'
+                  placeholder='Enter form value'
+                  class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <input type='hidden' name='form' x-model='value' />
+              </div>
+            </div>
           {{/if}}
         </div>
       </div>

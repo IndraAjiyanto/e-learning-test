@@ -28,10 +28,23 @@ export class CreateKelassDto {
   mentoringId: number;
 
   @IsInt()
-  bulanId: number
+  bulanId: number;
 
   @IsInt()
+  @IsOptional()
   harga: number;
+
+  @IsInt()
+  @IsOptional()
+  promo: number;
+
+  @IsInt()
+  @IsOptional()
+  kuota: number;
+
+  @IsInt()
+  @IsOptional()
+  form: number;
 
   @IsBoolean()
   @IsOptional()
@@ -62,4 +75,8 @@ export class CreateKelassDto {
 
   @IsString()
   deskripsi: string;
+
+  @IsArray()
+  @IsOptional()
+  kriteria: string[];
 }
