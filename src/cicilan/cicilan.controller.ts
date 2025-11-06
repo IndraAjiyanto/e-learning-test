@@ -23,10 +23,13 @@ export class CicilanController {
   constructor(private readonly cicilanService: CicilanService) {}
 
   @Roles('super_admin')
-  @Get('formCreate')
-  async formCreate(@Req() req: Request, @Res() res: Response) {
-    const kelas = await this.cicilanService.getAllKelas();
-    res.render('super_admin/cicilan/create', { user: req.user, kelas });
+  @Get('formCreate/:kelasId')
+  async formCreate(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('kelasId') kelasId: number,
+  ) {
+    res.render('super_admin/cicilan/create', { user: req.user, kelasId });
   }
 
   @Roles('super_admin')
@@ -36,9 +39,8 @@ export class CicilanController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const cicilan = await this.cicilanService.findOne(+id);
-    const kelas = await this.cicilanService.getAllKelas();
-    res.render('super_admin/cicilan/edit', { user: req.user, cicilan, kelas });
+    const cicilan = await this.cicilanService.findOne(id);
+    res.render('super_admin/cicilan/edit', { user: req.user, cicilan });
   }
 
   @Roles('super_admin')
@@ -50,14 +52,21 @@ export class CicilanController {
     @Param('kelasId') kelasId: number,
   ) {
     try {
-      createCicilanDto.kelasId = kelasId;
+      // Convert harga array from string to number
+      if (createCicilanDto.harga && Array.isArray(createCicilanDto.harga)) {
+        createCicilanDto.harga = createCicilanDto.harga.map((h) => Number(h));
+      }
+
+      createCicilanDto.kelasId = Number(kelasId);
+      createCicilanDto.bulan = Number(createCicilanDto.bulan) as 3 | 6 | 12;
+
       await this.cicilanService.create(createCicilanDto);
       req.flash('success', 'Cicilan created successfully');
-      res.redirect('/cicilan');
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       console.log(error);
       req.flash('error', 'Failed to create cicilan');
-      res.redirect('/cicilan');
+            res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -70,13 +79,22 @@ export class CicilanController {
     @Res() res: Response,
   ) {
     try {
-      await this.cicilanService.update(id, updateCicilanDto);
+      // Convert harga array from string to number
+      if (updateCicilanDto.harga && Array.isArray(updateCicilanDto.harga)) {
+        updateCicilanDto.harga = updateCicilanDto.harga.map((h) => Number(h));
+      }
+
+      if (updateCicilanDto.bulan) {
+        updateCicilanDto.bulan = Number(updateCicilanDto.bulan) as 3 | 6 | 12;
+      }
+
+      const cicilan = await this.cicilanService.update(id, updateCicilanDto);
       req.flash('success', 'Cicilan updated successfully');
-      res.redirect('/cicilan');
+      res.redirect(`/kelass/detail/kelas/admin/${cicilan.kelas.id}`);
     } catch (error) {
-      console.log(error);
+      const cicilan = await this.cicilanService.findOne(id);
       req.flash('error', 'Failed to update cicilan');
-      res.redirect('/cicilan');
+      res.redirect(`/kelass/detail/kelas/admin/${cicilan.kelas.id}`);
     }
   }
 
@@ -88,13 +106,17 @@ export class CicilanController {
     @Res() res: Response,
   ) {
     try {
-      await this.cicilanService.remove(+id);
+      const cicilan = await this.cicilanService.findOne(id);
+      const kelasId = cicilan.kelas.id;
+      await this.cicilanService.remove(id);
       req.flash('success', 'Cicilan deleted successfully');
-      res.redirect('/cicilan');
+                  res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+
     } catch (error) {
-      console.log(error);
+            const cicilan = await this.cicilanService.findOne(id);
+      const kelasId = cicilan.kelas.id;
       req.flash('error', 'Failed to delete cicilan');
-      res.redirect('/cicilan');
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 }

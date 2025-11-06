@@ -93,12 +93,6 @@ export class CicilanService {
 
   async remove(id: number) {
     const cicilan = await this.findOne(id);
-    await this.cicilanRepository.remove(cicilan);
-  }
-
-  async getAllKelas() {
-    return await this.kelasRepository.find({
-      order: { nama_kelas: 'ASC' },
-    });
+    return await this.cicilanRepository.remove(cicilan);
   }
 }

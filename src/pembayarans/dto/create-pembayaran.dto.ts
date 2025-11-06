@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString } from "class-validator";
 import { Proses } from "src/entities/pembayaran.entity";
 
 export class CreatePembayaranDto {
@@ -10,9 +10,17 @@ export class CreatePembayaranDto {
     @IsOptional()
       proses: Proses;
     
-        @IsNumber()
+        @IsInt()
         userId: number
 
-        @IsNumber()
+        @IsInt()
         kelasId: number
+
+        @IsInt()
+        @IsOptional()
+        cicilanId: number
+
+        @IsString()
+        @IsOptional()
+        no: string
 }

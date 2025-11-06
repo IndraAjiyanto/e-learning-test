@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
+import { Pembayaran } from './pembayaran.entity';
 
 export type Bulan = 3 | 6 | 12;
 
@@ -30,4 +32,9 @@ export class Cicilan {
 
   @ManyToOne(() => Kelas, (kelas) => kelas.cicilan, { onDelete: 'CASCADE' })
   kelas: Kelas;
+
+  @OneToOne(() => Pembayaran, (pembayaran) => pembayaran.cicilan, {
+    onDelete: 'CASCADE',
+  })
+  pembayaran: Pembayaran;
 }

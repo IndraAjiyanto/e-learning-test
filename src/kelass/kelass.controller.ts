@@ -64,14 +64,17 @@ export class KelassController {
       createKelassDto.gambar = req.body.uploadedImageUrls?.[0];
 
       if (createKelassDto.paid_check === 'true') {
-        createKelassDto.check_paid = false;
+        createKelassDto.form = ''
+        createKelassDto.check_paid = true;
         if (req.user!.role === 'super_admin') {
           createKelassDto.proses = 'acc';
         } else if (req.user!.role === 'admin') {
           createKelassDto.proses = 'proces';
         }
       } else if (createKelassDto.paid_check === 'false') {
-        createKelassDto.check_paid = true;
+        createKelassDto.check_paid = false;
+        createKelassDto.harga = 0;
+        createKelassDto.promo = 0;
         if (req.user!.role === 'super_admin') {
           createKelassDto.proses = 'acc';
         } else if (req.user!.role === 'admin') {
@@ -91,6 +94,7 @@ export class KelassController {
       req.flash('success', 'class successfully created');
       res.redirect('/kelass');
     } catch (error) {
+      console.log(error)
       req.flash('error', 'class failed created');
       res.redirect('/kelass');
     }
@@ -239,6 +243,7 @@ export class KelassController {
     @Req() req: Request,
   ) {
     const kelas = await this.kelassService.findOne(kelasId);
+      const daftar = await this.kelassService.sumStudent(kelas.id);
     const check_user = await this.kelassService.checkUserInKelas(
       kelas.id,
       req.user!.id,

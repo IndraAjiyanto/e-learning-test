@@ -40,6 +40,34 @@ export class PembayaransController {
     }
   }
 
+
+  @Roles('user')
+  @Post(':userId/:kelasId/:cicilanId')
+  @UseInterceptors(FileInterceptor('file', multerConfigPayment))
+  async createPembayaranCicilan(@Param('cicilanId') cicilanId: number,  @Param('userId') userId: number, @Param('kelasId') kelasId: number, @Body() createPembayaranDto: CreatePembayaranDto,   @UploadedFile() file: Express.Multer.File, @Res() res:Response, @Req() req:Request
+  ) {
+    try {
+    createPembayaranDto.cicilanId = cicilanId
+    createPembayaranDto.file = file.path
+    createPembayaranDto.kelasId = kelasId
+    createPembayaranDto.userId = userId
+    createPembayaranDto.proses = 'proces'
+    const pembayaran = await this.pembayaransService.create(createPembayaranDto);
+    if(pembayaran == false){
+        await this.pembayaransService.getPublicIdFromUrl(createPembayaranDto.file);
+        req.flash('info', 'anda sudah mengirimkan bukti pembayaran, silahkan tunggu info selanjutnya dari admin')
+        res.redirect(`/pembayarans/riwayat/${userId}`)
+    }else{
+        req.flash('success', 'bukti pembayaran berhasil di kirim, silahkan tunggu admin')
+        res.redirect(`/pembayarans/riwayat/${userId}`)
+    }
+    
+    } catch (error) {
+    req.flash('error', 'bukti pembayaran gagal dikirim ')
+    res.redirect(`/pembayarans/riwayat/${userId}`)
+    }
+  }
+
   @Roles('user')
   @Get('riwayat/:userId')
   async riwayat(@Param('userId') userId: number, @Res() res:Response, @Req() req:Request){
@@ -57,7 +85,7 @@ export class PembayaransController {
 
   @Roles('super_admin')
   @Get()
-  async findAll(@Res() res:Response, @Req() req:any) {
+  async findAll(@Res() res:Response, @Req() req:Request) {
     const pembayaran = await this.pembayaransService.findAll();
     const pendaftaran = await this.pembayaransService.findAllPendaftaran();
     res.render('super_admin/pembayaran/index', {user: req.user, pembayaran, pendaftaran })

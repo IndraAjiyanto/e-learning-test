@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { Metode, Proses } from 'src/entities/kelas.entity';
 
 export class CreateKelassDto {
@@ -42,9 +43,9 @@ export class CreateKelassDto {
   @IsOptional()
   kuota: number;
 
-  @IsInt()
+  @IsString()
   @IsOptional()
-  form: number;
+  form: string;
 
   @IsBoolean()
   @IsOptional()
@@ -64,13 +65,16 @@ export class CreateKelassDto {
 
   @IsArray()
   materi: string[];
+
   @IsArray()
   target_pembelajaran: string[];
 
   @IsString()
+  @IsOptional()
   gambar: string;
 
   @IsEnum(['acc', 'proces', 'rejected'])
+  @IsOptional()
   proses: Proses;
 
   @IsString()

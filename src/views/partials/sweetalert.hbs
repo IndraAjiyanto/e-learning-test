@@ -1,63 +1,86 @@
-    <script>
-{{#if success}}
-Swal.fire({
-    icon: 'success',
-    title: 'Success!',
-    text: '{{success}}',
-    toast: true,
-    position: 'bottom-start',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true
-});
-{{/if}}
+<script>
+  {{#if success}}
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: '{{success}}',
+      toast: true,
+      position: 'bottom-start',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    });
+  {{/if}}
 
-{{#if info}}
-Swal.fire({
-    icon: 'info',
-    title: 'info!',
-    text: '{{info}}',
-    toast: true,
-    position: 'bottom-start',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true
-});
-{{/if}}
+  {{#if info}}
+    Swal.fire({
+      icon: 'info',
+      title: 'Info!',
+      text: '{{info}}',
+      toast: true,
+      position: 'bottom-start',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    });
+  {{/if}}
 
-{{#if error}}
-Swal.fire({
-    icon: 'error',
-    title: 'Fail!',
-    text: '{{error}}',
-    toast: true,
-    position: 'bottom-start',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true
-});
-{{/if}}
+  {{#if error}}
+    Swal.fire({
+      icon: 'error',
+      title: 'Fail!',
+      text: '{{error}}',
+      toast: true,
+      position: 'bottom-start',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    });
+  {{/if}}
 
-
-function confirmDelete(button) {
+  function confirmDelete(button) {
     const form = button.closest("form");
-Swal.fire({
-  title: "Are you sure?",
-  text: "This data will be deleted!",
-  icon: "warning",
-  showCancelButton: true,
-  buttonsStyling: false,
-  confirmButtonText: "Yes, delete!",
-  cancelButtonText: "cancel",
-  customClass: {
-    confirmButton: "px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition",
-    cancelButton: "px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition",
-    actions: "flex gap-4 justify-center"
-  }
-}).then((result) => {
-      if (result.isConfirmed) {
-        form.submit();
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This data will be deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      buttonsStyling: false,
+      confirmButtonText: "Yes, delete!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        confirmButton:
+          "px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition",
+        cancelButton:
+          "px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition",
+        actions: "flex gap-4 justify-center"
       }
+    }).then((result) => {
+      if (result.isConfirmed) form.submit();
     });
   }
-    </script>
+
+  function confirmAction(button, message) {
+    const form = button.closest("form");
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: message,
+      icon: "warning",
+      showCancelButton: true,
+      buttonsStyling: false,
+      confirmButtonText: "Yes, proceed!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        confirmButton:
+          "px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition",
+        cancelButton:
+          "px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition",
+        actions: "flex gap-4 justify-center"
+      }
+    }).then((result) => {
+      if (result.isConfirmed) form.submit();
+    });
+  }
+</script>

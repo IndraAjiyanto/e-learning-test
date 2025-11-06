@@ -92,7 +92,7 @@ export class Kelas {
   kuota: number;
 
   @Column({ nullable: true })
-  form: number;
+  form: string;
 
   @Column({default: false})
   check_paid: boolean

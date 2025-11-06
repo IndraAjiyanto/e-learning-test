@@ -15,6 +15,7 @@ import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.f
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+
   app.useGlobalFilters(new ForbiddenExceptionFilter());
   app.useStaticAssets(join(__dirname, '..', 'src', 'common', 'public'), {
     prefix: '/public/',

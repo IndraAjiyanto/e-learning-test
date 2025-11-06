@@ -468,17 +468,42 @@
         previewUrl: null, 
         copied: false, 
         paymentType: 'full',
-        installmentMonths: 3,
+        installmentMonths: {{#each kelas.cicilan}}{{#if @first}}{{this.bulan}}{{/if}}{{else}}3{{/each}},
+        cicilanData: [
+          {{#each kelas.cicilan}}
+            {
+              bulan: {{this.bulan}},
+              harga: {{json this.harga}}
+            }{{#unless @last}},{{/unless}}
+          {{/each}}
+        ],
         copyToClipboard() { 
           navigator.clipboard.writeText('2847 9237 4298 1234'); 
           this.copied = true; 
           setTimeout(() => this.copied = false, 2000); 
         },
-        calculateInstallment(total, months) {
-          return Math.ceil(total / months);
+        getCicilanByMonth(months) {
+          const cicilan = this.cicilanData.find(c => c.bulan === months);
+          return cicilan ? cicilan.harga : [];
         },
         get installmentAmount() {
-          return this.calculateInstallment({{kelas.harga}}, this.installmentMonths);
+          const hargaArray = this.getCicilanByMonth(this.installmentMonths);
+          if (hargaArray.length > 0) {
+            // Return first month payment from cicilan data
+            return hargaArray[0];
+          }
+          // Fallback to equal division if no cicilan data
+          return Math.ceil({{kelas.harga}} / this.installmentMonths);
+        },
+        get totalCicilanAmount() {
+          const hargaArray = this.getCicilanByMonth(this.installmentMonths);
+          if (hargaArray.length > 0) {
+            return hargaArray.reduce((sum, h) => sum + h, 0);
+          }
+          return {{kelas.harga}};
+        },
+        get availableMonths() {
+          return this.cicilanData.map(c => c.bulan);
         }
       }"
     >
@@ -544,27 +569,15 @@
                     Choose Installment Period
                   </label>
                   <div class='grid grid-cols-3 gap-2'>
-                    <button
-                      @click='installmentMonths = 3'
-                      :class="installmentMonths === 3 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
-                      class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
-                    >
-                      3 Months
-                    </button>
-                    <button
-                      @click='installmentMonths = 6'
-                      :class="installmentMonths === 6 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
-                      class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
-                    >
-                      6 Months
-                    </button>
-                    <button
-                      @click='installmentMonths = 12'
-                      :class="installmentMonths === 12 ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
-                      class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
-                    >
-                      12 Months
-                    </button>
+                    {{#each kelas.cicilan}}
+                      <button
+                        @click='installmentMonths = {{this.bulan}}'
+                        :class="installmentMonths === {{this.bulan}} ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
+                        class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
+                      >
+                        {{this.bulan}} Months
+                      </button>
+                    {{/each}}
                   </div>
                 </div>
 
@@ -572,7 +585,7 @@
                 <div
                   class='bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl p-6 text-white'
                 >
-                  <p class='text-sm text-slate-300 mb-2'>Monthly Payment</p>
+                  <p class='text-sm text-slate-300 mb-2'>First Month Payment</p>
                   <div class='flex items-baseline gap-2 mb-3'>
                     <span
                       class='text-4xl font-bold'
@@ -584,10 +597,11 @@
                     class='flex items-center justify-between pt-3 border-t border-slate-600'
                   >
                     <div>
-                      <p class='text-xs text-slate-300'>Total</p>
-                      <p class='text-lg font-semibold'>{{formatRupiah
-                          kelas.harga
-                        }}</p>
+                      <p class='text-xs text-slate-300'>Total to Pay</p>
+                      <p 
+                        class='text-lg font-semibold'
+                        x-text='`Rp ${totalCicilanAmount.toLocaleString("id-ID")}`'
+                      ></p>
                     </div>
                     <div>
                       <p class='text-xs text-slate-300'>Duration</p>
@@ -607,10 +621,30 @@
                       <p class='font-semibold mb-1'>Installment Information:</p>
                       <ul class='list-disc pl-4 space-y-1'>
                         <li>No additional fees or interest</li>
-                        <li>Pay monthly until completed</li>
+                        <li>Pay monthly as per schedule below</li>
                         <li>Full access after first payment</li>
                       </ul>
                     </div>
+                  </div>
+                </div>
+
+                <!-- Monthly Payment Breakdown -->
+                <div class='bg-white rounded-xl p-4 border-2 border-slate-200'>
+                  <h4 class='font-semibold text-slate-700 mb-3 flex items-center gap-2'>
+                    <i class='fas fa-list-ul'></i>
+                    Payment Schedule
+                  </h4>
+                  <div class='space-y-2'>
+                    <template x-for='(amount, index) in getCicilanByMonth(installmentMonths)' :key='index'>
+                      <div class='flex justify-between items-center py-2 px-3 bg-slate-50 rounded-lg'>
+                        <span class='text-sm font-medium text-slate-600' x-text='`Month ${index + 1}`'></span>
+                        <span class='text-sm font-bold text-slate-900' x-text='`Rp ${amount.toLocaleString("id-ID")}`'></span>
+                      </div>
+                    </template>
+                  </div>
+                  <div class='mt-3 pt-3 border-t border-slate-200 flex justify-between items-center'>
+                    <span class='text-sm font-bold text-slate-700'>Total Amount:</span>
+                    <span class='text-lg font-bold text-slate-900' x-text='`Rp ${totalCicilanAmount.toLocaleString("id-ID")}`'></span>
                   </div>
                 </div>
               </div>
@@ -950,7 +984,7 @@
               {{#if (check daftar kelas.kuota)}}
                 <!-- Free Class Registration Form -->
                 <form
-                  action='/pendaftaran/{{user.id}}/{{kelas.id}}'
+                  action="/pendaftaran/{{user.id}}/{{kelas.id}}"
                   enctype='multipart/form-data'
                   method='post'
                   class='space-y-4'

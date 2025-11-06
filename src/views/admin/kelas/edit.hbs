@@ -155,7 +155,7 @@
 {{/if}}
 
                     <!-- Paid Class Toggle -->
-                    <div x-data='{ paidClass: {{#if kelas.check_paid}}false{{else}}true{{/if}} }' class='space-y-6'>
+                    <div x-data='{ paidClass: {{#if kelas.check_paid}}true{{else}}false{{/if}} }' class='space-y-6'>
                         <div class='flex items-center gap-3'>
                             <label class='relative inline-flex items-center cursor-pointer'>
                                 <input type='checkbox' x-model='paidClass' class='sr-only' />
@@ -382,7 +382,7 @@
                         class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
                         Update
                     </button>
-                    <a href="{{#if (roles user.role "admin")}}/kelass/detail/kelas/admin/{{kelas.id}}{{else if (roles user.role "super_admin")}}/kelass{{/if}}"
+                    <a href="/kelass/detail/kelas/admin/{{kelas.id}}"
                         class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
                         Cancel
                     </a>

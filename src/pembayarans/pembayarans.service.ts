@@ -9,6 +9,7 @@ import { User } from 'src/entities/user.entity';
 import { v2 as cloudinary } from 'cloudinary';
 import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
+import { Cicilan } from 'src/entities/cicilan.entity';
 
 
 @Injectable()
@@ -22,6 +23,8 @@ export class PembayaransService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Pendaftaran)
     private readonly pendaftaranRepository: Repository<Pendaftaran>,
+    @InjectRepository(Cicilan)
+    private readonly cicilanRepository: Repository<Cicilan>,
     @InjectRepository(UserKelas)
     private readonly userKelasRepository: Repository<UserKelas>
   ){}
@@ -37,6 +40,26 @@ export class PembayaransService {
           return
         }
 
+        if(createPembayaranDto.cicilanId){
+        const cicilan = await this.cicilanRepository.findOne({where: {id: createPembayaranDto.cicilanId}})
+        if(!cicilan){
+          return
+        }
+                const check = await  this.checkPembayaran(createPembayaranDto.userId, createPembayaranDto.kelasId)
+        if(check == false){
+          return false 
+        }else{
+          const pembayaran = await this.pembayaranRepository.create({
+          ...createPembayaranDto,
+          user: user,
+          kelas: kelas,
+          cicilan: cicilan
+          
+        })
+        return await this.pembayaranRepository.save(pembayaran)
+      }
+      }
+
         const check = await  this.checkPembayaran(createPembayaranDto.userId, createPembayaranDto.kelasId)
         if(check == false){
           return false 
@@ -44,7 +67,8 @@ export class PembayaransService {
           const pembayaran = await this.pembayaranRepository.create({
           ...createPembayaranDto,
           user: user,
-          kelas: kelas
+          kelas: kelas,
+          
         })
         return await this.pembayaranRepository.save(pembayaran)
       }
@@ -99,7 +123,7 @@ export class PembayaransService {
   }
 
   async findPembayaran(userId: number){
-    const pembayaran = await this.pembayaranRepository.find({where: {user: {id: userId}}, relations: ['kelas', 'kelas.kategori']})
+    const pembayaran = await this.pembayaranRepository.find({where: {user: {id: userId}}, relations: ['kelas', 'kelas.kategori', 'cicilan']})
   if(!pembayaran){
       return
     }else{
@@ -118,6 +142,10 @@ export class PembayaransService {
     }else{
       return pembayaran
     }
+  }
+
+  async findCicilan(userId: number){
+    return await this.cicilanRepository.find({where: {pembayaran: {user: {id: userId}}}, relations: ['kelas', 'kelas.kategori']})
   }
 
   async findAllPendaftaran(){

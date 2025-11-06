@@ -28,6 +28,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
 import { Bulan } from 'src/entities/bulan.entity';
+import { Pendaftaran } from 'src/entities/pendaftaran.entity';
 
 @Injectable()
 export class KelassService {
@@ -72,6 +73,8 @@ export class KelassService {
     private readonly mentoringRepository: Repository<Mentoring>,
     @InjectRepository(Bulan)
     private readonly bulanRepository: Repository<Bulan>,
+    @InjectRepository(Pendaftaran)
+    private readonly pendaftaranRepository: Repository<Pendaftaran>,
   ) {}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -189,9 +192,32 @@ export class KelassService {
       throw new BadRequestException('User sudah tergabung dalam kelas');
     }
 
+    if(kelas.check_paid === true){
     const daftar = await this.pembayaranRepository.find({
       where: { kelas: { id: kelasId }, proses: 'proces' },
     });
+  
+    const gabung = await this.userRepository.find({
+      where: { user_kelas: { kelas: { id: kelasId } } },
+    });
+    const jumlah_user = daftar.length + gabung.length;
+
+    if (jumlah_user >= kelas.kuota) {
+      throw new BadRequestException('Saat ini kelas sedang penuh');
+    }
+
+    const user_kelas = await this.userKelasRepository.create({
+      progres: false,
+      user: user,
+      kelas: kelas,
+    });
+
+    return await this.userKelasRepository.save(user_kelas);
+  }else {
+        const daftar = await this.pendaftaranRepository.find({
+      where: { kelas: { id: kelasId }, proses: 'proces' },
+    });
+  
     const gabung = await this.userRepository.find({
       where: { user_kelas: { kelas: { id: kelasId } } },
     });
@@ -209,8 +235,11 @@ export class KelassService {
 
     return await this.userKelasRepository.save(user_kelas);
   }
+  }
 
   async sumStudent(kelasId: number) {
+    const kelas = await this.findOne(kelasId);
+    if(kelas.check_paid === true){
     const daftar = await this.pembayaranRepository.find({
       where: { kelas: { id: kelasId }, proses: 'proces' },
     });
@@ -219,6 +248,16 @@ export class KelassService {
     });
     const jumlah_user = daftar.length + gabung.length;
     return jumlah_user;
+    }else {
+    const daftar = await this.pendaftaranRepository.find({
+      where: { kelas: { id: kelasId }, proses: 'proces' },
+    });
+    const gabung = await this.userKelasRepository.find({
+      where: { kelas: { id: kelasId } },
+    });
+    const jumlah_user = daftar.length + gabung.length;
+    return jumlah_user;
+  }
   }
 
   async findMyCourse(userId: number) {
@@ -735,6 +774,7 @@ export class KelassService {
         'mentoring',
         'mentoring.user',
         'bulan',
+        'cicilan'
       ],
     });
     if (!kelas) {

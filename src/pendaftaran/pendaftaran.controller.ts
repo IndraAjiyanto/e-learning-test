@@ -79,6 +79,7 @@ export class PendaftaranController {
       res.redirect('/pembayarans')
     }
     } catch (error) {
+      console.log(error)
         req.flash('error', 'proses pembayaran gagal diubah')
         res.redirect('/pembayarans')
     }
