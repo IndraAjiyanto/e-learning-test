@@ -1,4 +1,4 @@
-<div class="px-6 py-10 pt-28">
+<div class="px-6 py-10">
 <div class="max-w-5xl mx-auto" x-data="{ search: '' }">
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
@@ -657,7 +657,7 @@ function logbookTable({ logbooks }) {
   {{#if materipdf.length}}
     <ul class="space-y-2 mb-6">
       {{#each materipdf}}
-<li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+<li class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-lg hover:bg-gray-100 transition">
   <span class="text-gray-800">{{judul}}</span>
   <div class="flex space-x-2">
 
@@ -703,7 +703,7 @@ function logbookTable({ logbooks }) {
       {{/each}}
     </ul>
   {{else}}
-    <div class="mb-6 flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg">
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -714,7 +714,7 @@ function logbookTable({ logbooks }) {
     </div>
   {{/if}}
       <a href="/materis/formCreate/pdf/{{pertemuan.id}}" 
-     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border border-dashed rounded-lg hover:bg-gray-100 transition">
+     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
     <svg xmlns="http://www.w3.org/2000/svg" 
          class="h-12 w-12 text-gray-400 mb-3" 
          fill="none" viewBox="0 0 24 24" 
@@ -731,7 +731,7 @@ function logbookTable({ logbooks }) {
   {{#if materivideo.length}}
     <ul class="space-y-2 mb-6">
       {{#each materivideo}}
-<li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+<li class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-lg hover:bg-gray-100 transition">
   <span class="text-gray-800">{{judul}}</span>
   <div class="flex space-x-2">
     
@@ -775,7 +775,7 @@ function logbookTable({ logbooks }) {
       {{/each}}
     </ul>
   {{else}}
-    <div class="mb-6 flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg">
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -786,7 +786,7 @@ function logbookTable({ logbooks }) {
     </div>
   {{/if}}
         <a href="/materis/formCreate/video/{{pertemuan.id}}" 
-     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border border-dashed rounded-lg hover:bg-gray-100 transition">
+     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
     <svg xmlns="http://www.w3.org/2000/svg" 
          class="h-12 w-12 text-gray-400 mb-3" 
          fill="none" viewBox="0 0 24 24" 
@@ -803,7 +803,7 @@ function logbookTable({ logbooks }) {
   {{#if materippt.length}}
     <ul class="space-y-2 mb-6">
       {{#each materippt}}
-<li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
+<li class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-lg hover:bg-gray-100 transition">
   <span class="text-gray-800">{{judul}}</span>
   <div class="flex space-x-2">
     
@@ -855,7 +855,7 @@ function logbookTable({ logbooks }) {
       {{/each}}
     </ul>
   {{else}}
-    <div class="mb-6 flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg">
+    <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -866,7 +866,7 @@ function logbookTable({ logbooks }) {
     </div>
   {{/if}}
         <a href="/materis/formCreate/ppt/{{pertemuan.id}}" 
-     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border border-dashed rounded-lg hover:bg-gray-100 transition">
+     class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
     <svg xmlns="http://www.w3.org/2000/svg" 
          class="h-12 w-12 text-gray-400 mb-3" 
          fill="none" viewBox="0 0 24 24" 

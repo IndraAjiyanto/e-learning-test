@@ -114,7 +114,7 @@ export class LogbookController {
   }
 
 
-  @Roles('user')
+  @Roles('admin')
   @Get('formCreate')
   async formCreate(@Req() req: Request, @Res() res: Response) {
     const kelas = await this.logbookService.findKelasByUser(req.user!.id);

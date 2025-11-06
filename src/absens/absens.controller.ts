@@ -60,8 +60,9 @@ export class AbsensController {
 
   @Roles('admin')
   @Get('create/:pertemuanId')
-  async absenCreate(@Res() res: Response,  @Req() req: any, @Param('pertemuanId') pertemuanId: number){
+  async absenCreate(@Res() res: Response,  @Req() req: Request, @Param('pertemuanId') pertemuanId: number){
     const users = await this.absensService.findUsers(pertemuanId)
+    console.log(users)
     res.render('admin/absen/create', {user: req.user, users, pertemuanId})
   }
 

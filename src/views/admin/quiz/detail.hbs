@@ -1,4 +1,4 @@
-<div class="px-6 py-10 pt-28">
+<div class="px-6 py-10">
 <div class="max-w-5xl mx-auto">
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
@@ -19,7 +19,7 @@
 
     <div class="flex items-start justify-between">
       <div>
-        <h1 class="text-2xl font-bold mb-2 text-gray-900">Quiz {{quiz.nama_quzi}}</h1>
+        <h1 class="text-2xl font-bold mb-2 text-gray-900">Quiz {{quiz.nama_quiz}}</h1>
 
         <p class="text-gray-600 mb-1">
           <span class="font-semibold">Minimum Score :</span> {{quiz.nilai_minimal}}
@@ -36,8 +36,8 @@
 <div class="flex gap-3 pt-2">
 
   <!-- Tombol Edit -->
-  <a href="/pertanyaans/FormEdit/{{this.id}}" 
-     class="inline-flex items-center justify-center p-3 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition"
+  <a href="/quiz/formEdit/{{quiz.id}}" 
+     class="p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
      title="Edit">
     <!-- Icon Pencil -->
     <svg xmlns="http://www.w3.org/2000/svg" 
@@ -58,7 +58,7 @@
   <form action="/pertanyaans/{{this.id}}/{{../quiz.id}}?_method=DELETE" method="post">
     <button type="button" 
             onclick="confirmDelete(this)"
-            class="inline-flex items-center justify-center p-3 bg-red-600 text-white rounded-lg shadow hover:bg-red-500 transition"
+            class="p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm"
             title="Delete">
       <!-- Icon Trash -->
       <svg xmlns="http://www.w3.org/2000/svg" 

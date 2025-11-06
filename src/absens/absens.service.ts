@@ -65,12 +65,12 @@ export class AbsensService {
     return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['minggu', 'minggu.kelas']})
   }
 
-  async findUsers(mingguId: number){
-    const kelas = await this.kelasRepository.find({where: {minggu: {id: mingguId}}})
+  async findUsers(pertemuanId: number){
+    const kelas = await this.kelasRepository.findOne({where: {minggu: {pertemuan: {id: pertemuanId}}}})
     if(!kelas){
       return ''
     }
-    return await this.userRepository.find({where: {role: 'user', user_kelas: {kelas: {id: kelas['id']}}} })
+    return await this.userRepository.find({where: {role: 'user', user_kelas: {kelas: {id: kelas.id}}} })
   }
 
   async findKelas(){

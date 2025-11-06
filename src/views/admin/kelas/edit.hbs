@@ -1,6 +1,6 @@
 
-    <div class="pt-28 py-20">
-        <div class="max-w-6xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+    <div class="py-10">
+        <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
             <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Edit Class</h2>
 
             <form method="POST" action="/kelass/{{kelas.id}}?_method=PATCH" class="grid grid-cols-1 lg:grid-cols-2 gap-8" enctype="multipart/form-data">
@@ -38,9 +38,23 @@
                         </div>
                     </div>
 
+                    <!-- Class Name -->
+                    <div>
+                        <label for="nama_kelas" class="block text-sm font-semibold text-gray-700 mb-1">Class Name</label>
+                        <input type="text" id="nama_kelas" name="nama_kelas" value="{{kelas.nama_kelas}}" required
+                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                        <textarea id="deskripsi" name="deskripsi" rows="4"
+                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">{{kelas.deskripsi}}</textarea>
+                    </div>
+
                     <!-- Method -->
                     <div>
-                        <span class="block text-sm font-semibold text-gray-700 mb-2">Metode</span>
+                        <span class="block text-sm font-semibold text-gray-700 mb-2">Method</span>
                         <div class="grid grid-cols-2 gap-4">
                             <label class="cursor-pointer">
                                 <input type="radio" name="metode" value="online" class="hidden peer" {{#if (roles kelas.metode "online")}}checked{{/if}}>
@@ -65,94 +79,6 @@
                         <input type="text" id="lokasi" name="lokasi" value="{{kelas.lokasi}}" placeholder="Enter location"
                             class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
                     </div>
-
-                    <!-- Category -->
-                    <div>
-                        <label for="kategoriId" class="block text-sm font-semibold text-gray-700 mb-1">Category</label>
-                        <select name="kategoriId" id="kategoriId" 
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                            <option value="" disabled>-- Select Category --</option>
-                            {{#each kategori}}
-                                <option value="{{id}}" {{#if (roles id ../kelas.kategori.id)}}selected{{/if}}>{{nama_kategori}}</option>
-                            {{/each}}
-                        </select>
-                    </div>
-
-                    <!-- Jenis Kelas -->
-                    <div>
-                        <label for="jenis_kelasId" class="block text-sm font-semibold text-gray-700 mb-1">Jenis Kelas</label>
-                        <select name="jenis_kelasId" id="jenis_kelasId" 
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                            <option value="" disabled>-- Select Jenis Kelas --</option>
-                            {{#each jenis_kelas}}
-                                <option value="{{id}}" {{#if (roles id ../kelas.jenis_kelas.id)}}selected{{/if}}>{{nama_jenis_kelas}}</option>
-                            {{/each}}
-                        </select>
-                    </div>
-
-                    <!-- Bulan -->
-                    <div>
-                        <label for="bulanId" class="block text-sm font-semibold text-gray-700 mb-1">Bulan</label>
-                        <select name="bulanId" id="bulanId" 
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                            <option value="" disabled>-- Select Bulan --</option>
-                            {{#each bulan}}
-                                <option value="{{id}}" {{#if (roles id ../kelas.bulan.id)}}selected{{/if}}>{{bulan}}</option>
-                            {{/each}}
-                        </select>
-                    </div>
-
-                    <!-- Class Name -->
-                    <div>
-                        <label for="nama_kelas" class="block text-sm font-semibold text-gray-700 mb-1">Class Name</label>
-                        <input type="text" id="nama_kelas" name="nama_kelas" value="{{kelas.nama_kelas}}" required
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                    </div>
-
-                    <!-- Description -->
-                    <div>
-                        <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-                        <textarea id="deskripsi" name="deskripsi" rows="3"
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">{{kelas.deskripsi}}</textarea>
-                    </div>
-
-{{#if (roles user.role "super_admin")}}
-                    <!-- Kuota -->
-                    <div x-data="{
-                        display: '',
-                        value: '',
-                        formatKuota(event) {
-                            let angka = event.target.value.replace(/\D/g, ''); 
-                            this.value = angka;
-                            this.display = new Intl.NumberFormat('id-ID').format(angka);
-                        }
-                    }"
-                    x-init="
-                        value = '{{kelas.kuota}}';
-                        display = new Intl.NumberFormat('id-ID').format(value);
-                    " class="relative mb-6">
-                        <label for="kuota1" class="block text-sm font-semibold text-gray-700 mb-1">Kuota Class</label>
-                        <input type="text" 
-                               id="kuota1"
-                               x-model="display" 
-                               @input="formatKuota($event)" 
-                               placeholder="Enter quota"
-                               class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                        <input type="hidden" name="kuota" x-model="value">
-                    </div>
-
-                    <!-- Mentoring -->
-                    <div>
-                        <label for="mentoringId" class="block text-sm font-semibold text-gray-700 mb-1">Mentoring</label>
-                        <select name="mentoringId" id="mentoringId" 
-                            class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                            <option value="" disabled>-- Select Mentoring --</option>
-                            {{#each mentoring}}
-                                <option value="{{id}}" {{#if (roles id ../kelas.mentoring.[0].id)}}selected{{/if}}>{{username}}</option>
-                            {{/each}}
-                        </select>
-                    </div>
-{{/if}}
 
                     <!-- Paid Class Toggle -->
                     <div x-data='{ paidClass: {{#if kelas.check_paid}}true{{else}}false{{/if}} }' class='space-y-6'>
@@ -199,7 +125,7 @@
                                        x-model="display" 
                                        @input="formatHarga($event)" 
                                        placeholder="Enter price"
-                                       class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+                                       class="w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700">
                                 <input type="hidden" name="harga" x-model="value">
                             </div>
 
@@ -223,7 +149,7 @@
                                        x-model="display" 
                                        @input="formatPromo($event)" 
                                        placeholder="Enter promo price"
-                                       class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+                                       class="w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700">
                                 <input type="hidden" name="promo" x-model="value">
                             </div>
                         </div>
@@ -250,9 +176,33 @@
                                        x-model="display" 
                                        @input="formatForm($event)" 
                                        placeholder="Enter form value"
-                                       class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
+                                       class="w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700">
                                 <input type="hidden" name="form" x-model="value">
                             </div>
+                        </div>
+
+                        <!-- Quota - Always visible below Paid Class Toggle -->
+                        <div x-data="{
+                            display: '',
+                            value: '',
+                            formatKuota(event) {
+                                let angka = event.target.value.replace(/\D/g, ''); 
+                                this.value = angka;
+                                this.display = new Intl.NumberFormat('id-ID').format(angka);
+                            }
+                        }"
+                        x-init="
+                            value = '{{kelas.kuota}}';
+                            display = new Intl.NumberFormat('id-ID').format(value);
+                        ">
+                            <label for="kuota1" class="block text-sm font-semibold text-gray-700 mb-1">Class Quota</label>
+                            <input type="text" 
+                                   id="kuota1"
+                                   x-model="display" 
+                                   @input="formatKuota($event)" 
+                                   placeholder="Enter quota"
+                                   class="w-full border border-gray-300 bg-blue-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700">
+                            <input type="hidden" name="kuota" x-model="value">
                         </div>
 {{/if}}
                     </div>
@@ -260,6 +210,220 @@
 
                 <!-- RIGHT COLUMN -->
                 <div class="space-y-6">
+                    <!-- Category -->
+                    <div
+                      x-data="{
+                        search: '{{kelas.kategori.nama_kategori}}',
+                        selectedCategory: {{json kelas.kategori}},
+                        showDropdown: false,
+                        availableCategories: {{json kategori}},
+                        get filteredCategories() {
+                          return this.availableCategories.filter(c => 
+                            c.nama_kategori.toLowerCase().includes(this.search.toLowerCase())
+                          );
+                        },
+                        selectCategory(category) {
+                          this.selectedCategory = category;
+                          this.search = category.nama_kategori;
+                          this.showDropdown = false;
+                        }
+                      }"
+                      @click.away='showDropdown = false'
+                    >
+                      <label for='kategoriId' class='block text-sm font-semibold text-gray-700 mb-1'>Category</label>
+                      
+                      <div class='relative'>
+                        <input
+                          type='text'
+                          x-model='search'
+                          @focus='showDropdown = true'
+                          @input='showDropdown = true'
+                          placeholder='Search and select category...'
+                          class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                        />
+                        <i class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                        
+                        <div
+                          x-show='showDropdown && filteredCategories.length > 0'
+                          class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+                        >
+                          <template x-for='category in filteredCategories' :key='category.id'>
+                            <button
+                              type='button'
+                              @click='selectCategory(category)'
+                              class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                            >
+                              <span class='text-sm font-medium text-gray-700' x-text='category.nama_kategori'></span>
+                            </button>
+                          </template>
+                        </div>
+                        
+                        <input type='hidden' name='kategoriId' x-model='selectedCategory ? selectedCategory.id : ""' />
+                      </div>
+                    </div>
+
+                    <!-- Class Type -->
+                    <div
+                      x-data="{
+                        search: '{{kelas.jenis_kelas.nama_jenis_kelas}}',
+                        selectedJenisKelas: {{json kelas.jenis_kelas}},
+                        showDropdown: false,
+                        availableJenisKelas: {{json jenis_kelas}},
+                        get filteredJenisKelas() {
+                          return this.availableJenisKelas.filter(j => 
+                            j.nama_jenis_kelas.toLowerCase().includes(this.search.toLowerCase())
+                          );
+                        },
+                        selectJenisKelas(jenisKelas) {
+                          this.selectedJenisKelas = jenisKelas;
+                          this.search = jenisKelas.nama_jenis_kelas;
+                          this.showDropdown = false;
+                        }
+                      }"
+                      @click.away='showDropdown = false'
+                    >
+                      <label for='jenis_kelasId' class='block text-sm font-semibold text-gray-700 mb-1'>Class Type</label>
+                      
+                      <div class='relative'>
+                        <input
+                          type='text'
+                          x-model='search'
+                          @focus='showDropdown = true'
+                          @input='showDropdown = true'
+                          placeholder='Search and select class type...'
+                          class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                        />
+                        <i class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                        
+                        <div
+                          x-show='showDropdown && filteredJenisKelas.length > 0'
+                          class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+                        >
+                          <template x-for='jenisKelas in filteredJenisKelas' :key='jenisKelas.id'>
+                            <button
+                              type='button'
+                              @click='selectJenisKelas(jenisKelas)'
+                              class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                            >
+                              <span class='text-sm font-medium text-gray-700' x-text='jenisKelas.nama_jenis_kelas'></span>
+                            </button>
+                          </template>
+                        </div>
+                        
+                        <input type='hidden' name='jenis_kelasId' x-model='selectedJenisKelas ? selectedJenisKelas.id : ""' />
+                      </div>
+                    </div>
+
+                    <!-- Month -->
+                    <div
+                      x-data="{
+                        search: '{{kelas.bulan.bulan}}',
+                        selectedMonth: {{json kelas.bulan}},
+                        showDropdown: false,
+                        availableMonths: {{json bulan}},
+                        get filteredMonths() {
+                          if (!this.availableMonths) return [];
+                          return this.availableMonths.filter(b => {
+                            if (!b.bulan) return false;
+                            const bulanStr = String(b.bulan).toLowerCase();
+                            const searchStr = this.search.toLowerCase();
+                            return bulanStr.includes(searchStr);
+                          });
+                        },
+                        selectMonth(monthItem) {
+                          this.selectedMonth = monthItem;
+                          this.search = String(monthItem.bulan);
+                          this.showDropdown = false;
+                        }
+                      }"
+                      @click.away='showDropdown = false'
+                    >
+                      <label for='bulanId' class='block text-sm font-semibold text-gray-700 mb-1'>Month</label>
+                      
+                      <div class='relative'>
+                        <input
+                          type='text'
+                          x-model='search'
+                          @focus='showDropdown = true'
+                          @input='showDropdown = true'
+                          placeholder='Search and select month...'
+                          class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                        />
+                        <i class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                        
+                        <div
+                          x-show='showDropdown && filteredMonths.length > 0'
+                          class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+                        >
+                          <template x-for='monthItem in filteredMonths' :key='monthItem.id'>
+                            <button
+                              type='button'
+                              @click='selectMonth(monthItem)'
+                              class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                            >
+                              <span class='text-sm font-medium text-gray-700' x-text='monthItem.bulan'></span>
+                            </button>
+                          </template>
+                        </div>
+                        
+                        <input type='hidden' name='bulanId' x-model='selectedMonth ? selectedMonth.id : ""' />
+                      </div>
+                    </div>
+
+{{#if (roles user.role "super_admin")}}
+                    <!-- Mentoring -->
+                    <div
+                      x-data="{
+                        search: '{{#if kelas.mentoring.[0]}}{{kelas.mentoring.[0].username}}{{/if}}',
+                        selectedMentoring: {{#if kelas.mentoring.[0]}}{{json kelas.mentoring.[0]}}{{else}}null{{/if}},
+                        showDropdown: false,
+                        availableMentoring: {{json mentoring}},
+                        get filteredMentoring() {
+                          return this.availableMentoring.filter(m => 
+                            m.username.toLowerCase().includes(this.search.toLowerCase())
+                          );
+                        },
+                        selectMentoring(mentoring) {
+                          this.selectedMentoring = mentoring;
+                          this.search = mentoring.username;
+                          this.showDropdown = false;
+                        }
+                      }"
+                      @click.away='showDropdown = false'
+                    >
+                      <label for='mentoringId' class='block text-sm font-semibold text-gray-700 mb-1'>Mentoring</label>
+                      
+                      <div class='relative'>
+                        <input
+                          type='text'
+                          x-model='search'
+                          @focus='showDropdown = true'
+                          @input='showDropdown = true'
+                          placeholder='Search and select mentoring...'
+                          class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                        />
+                        <i class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                        
+                        <div
+                          x-show='showDropdown && filteredMentoring.length > 0'
+                          class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+                        >
+                          <template x-for='mentoring in filteredMentoring' :key='mentoring.id'>
+                            <button
+                              type='button'
+                              @click='selectMentoring(mentoring)'
+                              class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                            >
+                              <span class='text-sm font-medium text-gray-700' x-text='mentoring.username'></span>
+                            </button>
+                          </template>
+                        </div>
+                        
+                        <input type='hidden' name='mentoringId' x-model='selectedMentoring ? selectedMentoring.id : ""' />
+                      </div>
+                    </div>
+{{/if}}
+                    
                     <!-- Technologies -->
                     <div x-data="{
                       search: '',
@@ -358,12 +522,12 @@
                         </button>
                     </div>
 
-                    <!-- Kriteria -->
+                    <!-- Criteria -->
                     <div x-data="{ kriterias: {{json kelas.kriteria}} || [''] }" class="space-y-4 mt-6">
-                        <label class="block text-sm font-semibold text-gray-700">Kriteria</label>
+                        <label class="block text-sm font-semibold text-gray-700">Criteria</label>
                         <template x-for="(kriteria, index) in kriterias" :key="index">
                             <div class="flex items-center gap-3">
-                                <input type="text" x-model="kriterias[index]" name="kriteria[]" placeholder="Enter kriteria..."
+                                <input type="text" x-model="kriterias[index]" name="kriteria[]" placeholder="Enter criteria..."
                                     class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
                                 <button type="button" @click="kriterias.splice(index,1)" x-show="kriterias.length > 1"
                                     class="text-red-500 hover:text-red-700 font-bold text-lg">✕</button>

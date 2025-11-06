@@ -1,5 +1,16 @@
-<div class="px-6 py-10 pt-28 bg-gray-50 min-h-screen">
+<div class="px-6 py-10 bg-gray-50 min-h-screen">
   <div class="max-w-5xl mx-auto">
+    
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a href="/pertemuans/{{tugas.pertemuan.id}}" 
+         class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 transition-all duration-200">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Session
+      </a>
+    </div>
     
     <!-- Task PDF Section -->
     {{#if tugas.file}}
@@ -156,15 +167,5 @@
       </div>
     {{/if}}
 
-    <!-- Back Button -->
-    <div class="mt-8">
-      <a href="/pertemuans/{{tugas.pertemuan.id}}" 
-         class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold rounded-xl bg-white text-gray-900 border-2 border-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-200 shadow-lg hover:shadow-xl">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
-        Back
-      </a>
-    </div>
   </div>
 </div>
