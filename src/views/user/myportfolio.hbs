@@ -367,45 +367,91 @@
 </div>
 
 <script>
-  function portfolioApp() { return { allPortfolio:
-  {{{json portfolio}}}, allKategori:
-  {{{json kategori}}}, allJenisKelas:
-  {{{json jenis_kelas}}}, selectedKategori: '', selectedJenisKelas: '',
-  currentPage: 1, itemsPerPage: 6, init() { // Debug data di console
-  console.log('Portfolio data structure:', this.allPortfolio);
-  console.log('Portfolio items:', this.allPortfolio.items);
-  console.log('Kategori data:', this.allKategori); console.log('Jenis Kelas
-  data:', this.allJenisKelas); if (this.allPortfolio.items &&
-  this.allPortfolio.items.length > 0) { const firstItem =
-  this.allPortfolio.items[0]; console.log('First portfolio item:', firstItem);
-  console.log('Kelas structure:', firstItem.kelas); console.log('Kategori
-  structure:', firstItem.kelas?.kategori); console.log('Jenis kelas structure:',
-  firstItem.kelas?.jenis_kelas); console.log('Gambar structure:',
-  firstItem.gambar); console.log('Is gambar array?',
-  Array.isArray(firstItem.gambar)); } }, get portfolioItems() { return
-  this.allPortfolio.items || []; }, // Helper function untuk mendapatkan nama
-  kategori getCategoryName(item) { // Coba berbagai kemungkinan path data if
-  (item.kelas?.kategori?.nama_kategori) return
-  item.kelas.kategori.nama_kategori; if (item.kategori?.nama_kategori) return
-  item.kategori.nama_kategori; if (item.kelas?.nama_kategori) return
-  item.kelas.nama_kategori; return null; }, // Helper function untuk mendapatkan
-  nama jenis kelas getJenisKelasName(item) { // Coba berbagai kemungkinan path
-  data if (item.kelas?.jenis_kelas?.nama_jenis_kelas) return
-  item.kelas.jenis_kelas.nama_jenis_kelas; if
-  (item.jenis_kelas?.nama_jenis_kelas) return item.jenis_kelas.nama_jenis_kelas;
-  if (item.kelas?.nama_jenis_kelas) return item.kelas.nama_jenis_kelas; return
-  null; }, get filteredPortfolio() { return this.portfolioItems.filter(item => {
-  const itemCategory = this.getCategoryName(item); const itemJenisKelas =
-  this.getJenisKelasName(item); console.log('Filtering item:', item.judul,
-  'Category:', itemCategory, 'Jenis Kelas:', itemJenisKelas); const
-  kategoriMatch = this.selectedKategori === '' || itemCategory ===
-  this.selectedKategori; const jenisKelasMatch = this.selectedJenisKelas === ''
-  || itemJenisKelas === this.selectedJenisKelas; return kategoriMatch &&
-  jenisKelasMatch; }); }, get totalPages() { return
-  Math.ceil(this.filteredPortfolio.length / this.itemsPerPage); }, get
-  paginatedPortfolio() { const start = (this.currentPage - 1) *
-  this.itemsPerPage; const end = start + this.itemsPerPage; return
-  this.filteredPortfolio.slice(start, end); }, resetFilters() {
-  this.selectedKategori = ''; this.selectedJenisKelas = ''; this.currentPage =
-  1; } }; }
+  function portfolioApp() {
+    return {
+      allPortfolio: {{{json portfolio}}},
+      allKategori: {{{json kategori}}},
+      allJenisKelas: {{{json jenis_kelas}}},
+
+      selectedKategori: '',
+      selectedJenisKelas: '',
+      currentPage: 1,
+      itemsPerPage: 6,
+
+      init() {
+        // Debug data di console
+        console.log('Portfolio data structure:', this.allPortfolio);
+        console.log('Portfolio items:', this.allPortfolio.items);
+        console.log('Kategori data:', this.allKategori);
+        console.log('Jenis Kelas data:', this.allJenisKelas);
+
+        if (this.allPortfolio.items && this.allPortfolio.items.length > 0) {
+          const firstItem = this.allPortfolio.items[0];
+          console.log('First portfolio item:', firstItem);
+          console.log('Kelas structure:', firstItem.kelas);
+          console.log('Kategori structure:', firstItem.kelas?.kategori);
+          console.log('Jenis kelas structure:', firstItem.kelas?.jenis_kelas);
+          console.log('Gambar structure:', firstItem.gambar);
+          console.log('Is gambar array?', Array.isArray(firstItem.gambar));
+        }
+      },
+
+      get portfolioItems() {
+        return this.allPortfolio.items || [];
+      },
+
+      // Helper: mendapatkan nama kategori
+      getCategoryName(item) {
+        if (item.kelas?.kategori?.nama_kategori) return item.kelas.kategori.nama_kategori;
+        if (item.kategori?.nama_kategori) return item.kategori.nama_kategori;
+        if (item.kelas?.nama_kategori) return item.kelas.nama_kategori;
+        return null;
+      },
+
+      // Helper: mendapatkan nama jenis kelas
+      getJenisKelasName(item) {
+        if (item.kelas?.jenis_kelas?.nama_jenis_kelas) return item.kelas.jenis_kelas.nama_jenis_kelas;
+        if (item.jenis_kelas?.nama_jenis_kelas) return item.jenis_kelas.nama_jenis_kelas;
+        if (item.kelas?.nama_jenis_kelas) return item.kelas.nama_jenis_kelas;
+        return null;
+      },
+
+      // Filter berdasarkan kategori dan jenis kelas
+      get filteredPortfolio() {
+        return this.portfolioItems.filter(item => {
+          const itemCategory = this.getCategoryName(item);
+          const itemJenisKelas = this.getJenisKelasName(item);
+
+          console.log(
+            'Filtering item:', item.judul,
+            'Category:', itemCategory,
+            'Jenis Kelas:', itemJenisKelas
+          );
+
+          const kategoriMatch = this.selectedKategori === '' || itemCategory === this.selectedKategori;
+          const jenisKelasMatch = this.selectedJenisKelas === '' || itemJenisKelas === this.selectedJenisKelas;
+
+          return kategoriMatch && jenisKelasMatch;
+        });
+      },
+
+      // Pagination
+      get totalPages() {
+        return Math.ceil(this.filteredPortfolio.length / this.itemsPerPage);
+      },
+
+      get paginatedPortfolio() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        return this.filteredPortfolio.slice(start, end);
+      },
+
+      // Reset filter
+      resetFilters() {
+        this.selectedKategori = '';
+        this.selectedJenisKelas = '';
+        this.currentPage = 1;
+      }
+    };
+  }
 </script>

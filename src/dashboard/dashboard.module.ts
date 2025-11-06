@@ -15,9 +15,13 @@ import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
 import { Blog } from 'src/entities/blog.entity';
 import { Tentang } from 'src/entities/tentang.entity';
+import { Value } from 'src/entities/value.entity';
+import { VisiMisi } from 'src/entities/visi_misi.entity';
+import { TeamLead } from 'src/entities/team_lead.entity';
+import { Commitment } from 'src/entities/commitment.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Tentang,Blog ,Social ,Team, Benefit, Kelas, PertanyaanUmum, Alumni, Portfolio, GambarBenefit, Kategori, JenisKelas, KerjaSama])],
+    imports: [TypeOrmModule.forFeature([Commitment,TeamLead,VisiMisi,Value,Tentang,Blog ,Social ,Team, Benefit, Kelas, PertanyaanUmum, Alumni, Portfolio, GambarBenefit, Kategori, JenisKelas, KerjaSama])],
   controllers: [DashboardController],
   providers: [DashboardService],
     exports: [DashboardService]

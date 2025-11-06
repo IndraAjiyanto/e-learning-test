@@ -51,6 +51,8 @@ import { TeamLeadModule } from './team_lead/team_lead.module';
 import { ValueModule } from './value/value.module';
 import { CommitmentModule } from './commitment/commitment.module';
 import { PendaftaranModule } from './pendaftaran/pendaftaran.module';
+import { WipModule } from './wip/wip.module';
+import { InHouseTrainingModule } from './in_house_training/in_house_training.module';
 
 @Module({
   imports: [
@@ -106,6 +108,8 @@ import { PendaftaranModule } from './pendaftaran/pendaftaran.module';
     ValueModule,
     CommitmentModule,
     PendaftaranModule,
+    WipModule,
+    InHouseTrainingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

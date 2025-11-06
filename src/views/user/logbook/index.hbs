@@ -1,8 +1,4 @@
-<div
-  class='pt-24 min-h-screen bg-white'
-  x-data='initLogbookApp(window.KELAS_DATA || [])'
-  x-init='init()'
->
+<div class='pt-24 min-h-screen bg-white' x-data='logbookApp()'>
   <div class='container mx-auto px-4 pb-16'>
     <!-- Header -->
     <div class='text-center mb-12'>
@@ -10,7 +6,7 @@
         class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'
       >Logbook</h1>
       <p class='text-gray-600 max-w-2xl mx-auto text-lg font-inter'>
-        Kelola dan pantau aktivitas logbook Anda dengan mudah
+        Manage and monitor your logbook activities easily
       </p>
     </div>
 
@@ -38,7 +34,7 @@
             <!-- Kelas Filter -->
             <select
               x-model='filterKelas'
-              @change='currentPage = 1; fetchLogbooks()'
+              @change='currentPage = 1'
               class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
             >
               <option value=''>Semua Kelas</option>
@@ -46,22 +42,6 @@
                 <option :value='kelas.id' x-text='kelas.nama_kelas'></option>
               </template>
             </select>
-
-            <!-- Date From -->
-            <input
-              type='date'
-              x-model='filterDateFrom'
-              @change='currentPage = 1; fetchLogbooks()'
-              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
-            />
-
-            <!-- Date To -->
-            <input
-              type='date'
-              x-model='filterDateTo'
-              @change='currentPage = 1; fetchLogbooks()'
-              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
-            />
 
             <!-- Reset Button -->
             <button
@@ -105,16 +85,6 @@
             x-text='getKelasName()'
           ></span>
           <span
-            x-show='filterDateFrom'
-            class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium'
-            x-text="'Dari: ' + filterDateFrom"
-          ></span>
-          <span
-            x-show='filterDateTo'
-            class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium'
-            x-text="'Sampai: ' + filterDateTo"
-          ></span>
-          <span
             x-show='search'
             class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium flex items-center gap-1'
           >
@@ -127,7 +97,7 @@
 
     <!-- Loading Skeleton -->
     <div
-      x-show='loading'
+      x-show='false'
       class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'
     >
       <div class='overflow-x-auto'>
@@ -202,7 +172,7 @@
 
     <!-- Data Table -->
     <div
-      x-show='!loading'
+      x-show='true'
       class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'
     >
 
@@ -211,78 +181,83 @@
           <thead class='bg-gradient-to-r from-slate-50 to-slate-100'>
             <tr>
               <th
-                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
+                class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >No</th>
               <th
-                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
+                class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Kegiatan</th>
               <th
-                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
+                class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Rincian</th>
               <th
-                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
+                class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Kendala</th>
               <th
-                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
+                class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Dokumentasi</th>
               <th
-                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
+                class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Kelas</th>
               <th
-                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
+                class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Status</th>
               <th
-                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
+                class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Tanggal</th>
               <th
-                class='px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
+                class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Action</th>
             </tr>
           </thead>
           <tbody class='divide-y divide-gray-200 bg-white'>
-            <template x-for='(logbook, index) in allLogbooks' :key='logbook.id'>
+            <template
+              x-for='(logbook, index) in paginatedLogbooks'
+              :key='logbook.id'
+            >
               <tr class='hover:bg-slate-50 transition-colors'>
                 <td
-                  class='px-6 py-4 text-sm font-medium text-gray-900'
+                  class='px-3 py-2 text-xs font-medium text-gray-900'
                   x-text='((currentPage - 1) * itemsPerPage) + index + 1'
                 ></td>
                 <td
-                  class='px-6 py-4 text-sm font-semibold text-gray-900'
-                  x-text='logbook.kegiatan'
+                  class='px-3 py-2 text-xs font-semibold text-gray-900'
+                  x-text='logbook.kegiatan || "-"'
                 ></td>
-                <td class='px-6 py-4 text-sm text-gray-700'>
+                <td class='px-3 py-2 text-xs text-gray-700'>
                   <div
                     class='max-w-xs truncate'
                     :title='logbook.rincian_kegiatan'
-                    x-text='logbook.rincian_kegiatan'
+                    x-text='logbook.rincian_kegiatan || "-"'
                   ></div>
                 </td>
-                <td class='px-6 py-4 text-sm text-gray-700'>
+                <td class='px-3 py-2 text-xs text-gray-700'>
                   <div
                     class='max-w-xs truncate'
                     :title='logbook.kendala'
-                    x-text='logbook.kendala'
+                    x-text='logbook.kendala || "-"'
                   ></div>
                 </td>
-                <td class='px-6 py-4'>
+                <td class='px-3 py-2'>
                   <img
                     :src='logbook.dokumentasi'
                     alt='Dokumentasi'
-                    class='w-20 h-20 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-slate-400 hover:shadow-md transition-all transform hover:scale-105'
+                    class='w-12 h-12 object-cover rounded-lg border border-gray-200 cursor-pointer hover:border-slate-400 hover:shadow-md transition-all transform hover:scale-105'
                     @click="window.open(logbook.dokumentasi, '_blank')"
                   />
                 </td>
-                <td class='px-6 py-4'>
+                <td class='px-3 py-2'>
                   <span
-                    class='inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-300'
+                    class='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-300'
                   >
-                    <i class='fas fa-graduation-cap mr-1.5'></i>
-                    <span x-text='logbook.kelas'></span>
+                    <i class='fas fa-graduation-cap mr-1 text-xs'></i>
+                    <span
+                      x-text='logbook.pertemuan?.minggu?.kelas?.nama_kelas || "-"'
+                    ></span>
                   </span>
                 </td>
-                <td class='px-6 py-4'>
+                <td class='px-3 py-2'>
                   <span
-                    class='inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide'
+                    class='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide'
                     :class="{
                       'bg-green-100 text-green-700 border border-green-300': logbook.proses === 'acc',
                       'bg-yellow-100 text-yellow-700 border border-yellow-300': logbook.proses === 'proces',
@@ -290,7 +265,7 @@
                     }"
                   >
                     <i
-                      class='fas mr-1.5'
+                      class='fas mr-1 text-xs'
                       :class="{
                       'fa-check-circle': logbook.proses === 'acc',
                       'fa-clock': logbook.proses === 'proces',
@@ -303,16 +278,16 @@
                   </span>
                 </td>
                 <td
-                  class='px-6 py-4 text-sm text-gray-700'
+                  class='px-3 py-2 text-xs text-gray-700'
                   x-text='formatDate(logbook.createdAt)'
                 ></td>
-                <td class='px-6 py-4 text-sm'>
-                  <div class='flex items-center gap-3'>
+                <td class='px-3 py-2 text-xs'>
+                  <div class='flex items-center gap-2'>
                     <a
                       :href='`/logbook/formEdit/${logbook.id}`'
-                      class='inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-semibold hover:underline transition-colors'
+                      class='inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-semibold hover:underline transition-colors'
                     >
-                      <i class='fas fa-edit'></i>
+                      <i class='fas fa-edit text-xs'></i>
                       <span>Edit</span>
                     </a>
                     <form
@@ -322,10 +297,10 @@
                     >
                       <button
                         type='button'
-                        class='inline-flex items-center gap-1.5 text-red-600 hover:text-red-900 font-semibold hover:underline transition-colors'
+                        class='inline-flex items-center gap-1 text-red-600 hover:text-red-900 font-semibold hover:underline transition-colors'
                         @click='confirmDelete($event)'
                       >
-                        <i class='fas fa-trash'></i>
+                        <i class='fas fa-trash text-xs'></i>
                         <span>Delete</span>
                       </button>
                     </form>
@@ -338,10 +313,7 @@
       </div>
 
       <!-- No Data -->
-      <div
-        x-show='!loading && allLogbooks.length === 0'
-        class='text-center py-16'
-      >
+      <div x-show='filteredLogbooks.length === 0' class='text-center py-16'>
         <div
           class='w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4'
         >
@@ -365,10 +337,10 @@
     <!-- Pagination -->
     <div
       class='flex justify-center items-center gap-4 mt-12'
-      x-show='!loading && totalPages > 1'
+      x-show='totalPages > 1'
     >
       <button
-        @click='currentPage = Math.max(1, currentPage - 1); fetchLogbooks()'
+        @click='currentPage = Math.max(1, currentPage - 1)'
         :disabled='currentPage === 1'
         class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md'
       >
@@ -377,7 +349,7 @@
 
       <template x-for='page in totalPages' :key='page'>
         <button
-          @click='currentPage = page; fetchLogbooks()'
+          @click='currentPage = page'
           class='w-12 h-12 rounded-xl text-lg font-semibold transition-all border shadow-sm'
           :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
           x-text='page'
@@ -385,7 +357,7 @@
       </template>
 
       <button
-        @click='currentPage = Math.min(totalPages, currentPage + 1); fetchLogbooks()'
+        @click='currentPage = Math.min(totalPages, currentPage + 1)'
         :disabled='currentPage === totalPages'
         class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md'
       >
@@ -395,56 +367,125 @@
   </div>
 </div>
 
-<!-- Load external logbook script -->
-<script>// Logbook App Component for Alpine.js window.initLogbookApp = function
-  (kelasData) { console.log('🔧 Logbook App factory called', { kelasCount:
-  kelasData.length, }); return { allLogbooks: [], kelasList: kelasData,
-  searchInput: '', search: '', searchTimeout: null, filterKelas: '',
-  filterDateFrom: '', filterDateTo: '', currentPage: 1, itemsPerPage: 10,
-  totalPages: 1, loading: true, async init() { console.log('🚀 Component init()
-  called'); await this.fetchLogbooks(); }, debounceSearch() {
-  clearTimeout(this.searchTimeout); this.searchTimeout = setTimeout(() => {
-  this.search = this.searchInput; this.currentPage = 1; this.fetchLogbooks(); },
-  500); }, async fetchLogbooks() { try { console.log('📡 fetchLogbooks()
-  started'); this.loading = true; const params = new URLSearchParams({ page:
-  this.currentPage.toString(), limit: this.itemsPerPage.toString(), }); if
-  (this.filterKelas) params.append('kelas', this.filterKelas); if
-  (this.filterDateFrom) params.append('dateFrom', this.filterDateFrom); if
-  (this.filterDateTo) params.append('dateTo', this.filterDateTo); if
-  (this.search) params.append('search', this.search); const url =
-  `/logbook/data?${params}`; console.log('🚀 Fetching:', url); const response =
-  await fetch(url); console.log('📡 Response:', response.status, response.ok);
-  if (!response.ok) { throw new Error(`HTTP ${response.status}`); } const data =
-  await response.json(); console.log('📦 Data:', data); this.allLogbooks =
-  data.items.map((log) => ({ id: log.id, kegiatan: log.kegiatan || '-',
-  rincian_kegiatan: log.rincian_kegiatan || '-', kendala: log.kendala || '-',
-  dokumentasi: log.dokumentasi || '', kelas:
-  log.pertemuan?.minggu?.kelas?.nama_kelas || '-', proses: log.proses ||
-  'proces', createdAt: log.createdAt, })); this.totalPages = data.totalPages;
-  this.loading = false; console.log('✅ Done! Items:', this.allLogbooks.length);
-  } catch (error) { console.error('❌ Error:', error); this.loading = false; }
-  }, resetFilters() { this.searchInput = ''; this.search = ''; this.filterKelas
-  = ''; this.filterDateFrom = ''; this.filterDateTo = ''; this.currentPage = 1;
-  this.fetchLogbooks(); }, hasActiveFilters() { return ( this.filterKelas ||
-  this.filterDateFrom || this.filterDateTo || this.search ); }, getKelasName() {
-  const kelas = this.kelasList.find((k) => k.id == this.filterKelas); return
-  kelas ? kelas.nama_kelas : ''; }, formatDate(date) { if (!date) return '-';
-  const d = new Date(date); return d.toLocaleDateString('id-ID', { year:
-  'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-  }); }, async exportToExcel() { try { const params = new URLSearchParams(); if
-  (this.filterKelas) params.append('kelas', this.filterKelas); if
-  (this.filterDateFrom) params.append('dateFrom', this.filterDateFrom); if
-  (this.filterDateTo) params.append('dateTo', this.filterDateTo); if
-  (this.search) params.append('search', this.search); window.location.href =
-  `/logbook/export?${params}`; } catch (error) { console.error('Error
-  exporting:', error); alert('Gagal export data'); } }, confirmDelete(event) {
-  if (confirm('Apakah Anda yakin ingin menghapus logbook ini?')) {
-  event.target.closest('form').submit(); } }, }; };
-
-</script>
-
 <script>
-  // Set kelas data in global scope for Alpine to access window.KELAS_DATA =
-  {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}}; console.log('✅ Kelas data
-  loaded:', window.KELAS_DATA ? window.KELAS_DATA.length : 0, 'items');
+  function logbookApp() {
+    return {
+      allLogbooksRaw: {{{json logbook}}},
+      allLogbooks: [],
+      kelasList: {{{json kelas}}},
+
+      // Filters & pagination
+      searchInput: '',
+      search: '',
+      filterKelas: '',
+      currentPage: 1,
+      itemsPerPage: 10,
+      searchTimeout: null,
+
+      init() {
+        console.log('Logbook data:', this.allLogbooksRaw);
+        console.log('Kelas data:', this.kelasList);
+      },
+
+      // Debounce pencarian
+      debounceSearch() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+          this.search = this.searchInput;
+          this.currentPage = 1;
+        }, 500);
+      },
+
+      // Filter berdasarkan kelas dan search
+      get filteredLogbooks() {
+        let filtered = this.allLogbooksRaw;
+
+        // Filter kelas
+        if (this.filterKelas) {
+          filtered = filtered.filter(
+            (log) => log.pertemuan?.minggu?.kelas?.id == this.filterKelas
+          );
+        }
+
+        // Filter pencarian
+        if (this.search) {
+          const searchLower = this.search.toLowerCase();
+          filtered = filtered.filter(
+            (log) =>
+              (log.kegiatan || '').toLowerCase().includes(searchLower) ||
+              (log.rincian_kegiatan || '').toLowerCase().includes(searchLower) ||
+              (log.kendala || '').toLowerCase().includes(searchLower) ||
+              (log.pertemuan?.minggu?.kelas?.nama_kelas || '')
+                .toLowerCase()
+                .includes(searchLower)
+          );
+        }
+
+        return filtered;
+      },
+
+      // Total halaman
+      get totalPages() {
+        return Math.ceil(this.filteredLogbooks.length / this.itemsPerPage);
+      },
+
+      // Data sesuai halaman (pagination)
+      get paginatedLogbooks() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        return this.filteredLogbooks.slice(start, end);
+      },
+
+      // Reset filter
+      resetFilters() {
+        this.searchInput = '';
+        this.search = '';
+        this.filterKelas = '';
+        this.currentPage = 1;
+      },
+
+      // Cek apakah ada filter aktif
+      hasActiveFilters() {
+        return this.filterKelas || this.search;
+      },
+
+      // Ambil nama kelas dari ID
+      getKelasName() {
+        const kelas = this.kelasList.find((k) => k.id == this.filterKelas);
+        return kelas ? kelas.nama_kelas : '';
+      },
+
+      // Format tanggal
+      formatDate(date) {
+        if (!date) return '-';
+        return new Date(date).toLocaleDateString('id-ID', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      },
+
+      // Export ke Excel
+      async exportToExcel() {
+        try {
+          const params = new URLSearchParams();
+          if (this.filterKelas) params.append('kelas', this.filterKelas);
+          if (this.search) params.append('search', this.search);
+          window.location.href = `/logbook/export?${params}`;
+        } catch (error) {
+          console.error('Export error:', error);
+          alert('Gagal export data');
+        }
+      },
+
+      // Konfirmasi hapus data
+      confirmDelete(event) {
+        if (confirm('Apakah Anda yakin ingin menghapus logbook ini?')) {
+          event.target.closest('form').submit();
+        }
+      }
+    };
+  }
 </script>

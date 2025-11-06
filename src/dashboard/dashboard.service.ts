@@ -18,6 +18,10 @@ import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
 import { Blog } from 'src/entities/blog.entity';
 import { Tentang } from 'src/entities/tentang.entity';
+import { Value } from 'src/entities/value.entity';
+import { TeamLead } from 'src/entities/team_lead.entity';
+import { VisiMisi } from 'src/entities/visi_misi.entity';
+import { Commitment } from 'src/entities/commitment.entity';
 
 @Injectable()
 export class DashboardService {
@@ -48,6 +52,14 @@ export class DashboardService {
     private readonly blogRepository: Repository<Blog>,
     @InjectRepository(Tentang)
     private readonly tentangRepository: Repository<Tentang>,
+    @InjectRepository(Value)
+    private readonly valueRepository: Repository<Value>,
+    @InjectRepository(TeamLead)
+    private readonly teamLeadRepository: Repository<TeamLead>,
+    @InjectRepository(VisiMisi)
+    private readonly visiMisiRepository: Repository<VisiMisi>,
+    @InjectRepository(Commitment)
+    private readonly commitmentRepository: Repository<Commitment>,
   ) {}
 
   async findAllKelas() {

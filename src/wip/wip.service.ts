@@ -1,0 +1,34 @@
+import { Injectable } from '@nestjs/common';
+import { CreateWipDto } from './dto/create-wip.dto';
+import { UpdateWipDto } from './dto/update-wip.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Kelas } from 'src/entities/kelas.entity';
+import { Repository } from 'typeorm';
+import { JenisKelas } from 'src/entities/jenis_kelas.entity';
+import { Kategori } from 'src/entities/kategori.entity';
+
+@Injectable()
+export class WipService {
+      constructor(
+        @InjectRepository(Kelas)
+        private readonly kelasRepository: Repository<Kelas>,
+        @InjectRepository(JenisKelas)
+        private readonly jenisKelasRepository: Repository<JenisKelas>,
+        @InjectRepository(Kategori)
+        private readonly kategoriRepository: Repository<Kategori>,
+
+      ) {}
+
+  create(createWipDto: CreateWipDto) {
+    return 'This action adds a new wip';
+  }
+
+  async findAll() {
+    return await this.kelasRepository.find({where: {kategori: {nama_kategori : 'wip'
+    }}});
+  }
+
+  async findJenisKelas(){
+    return await this.jenisKelasRepository.find()
+  }
+}

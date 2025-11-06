@@ -108,21 +108,12 @@
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-<div class="flex flex-col sm:flex-row gap-4 w-full" 
-     x-data="{ 
-        viewDemo() { alert('Opening live demo...'); },
-        viewGithub() { alert('Opening GitHub repository...'); }
-     }">
-    <button @click="viewDemo()" 
-            class="w-full sm:flex-1 btn text-xl bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-600 hover:to-slate-800 px-8  border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
-        View Live Demo
-    </button>
-    <button @click="viewGithub()" 
-            class="w-full sm:flex-1 btn text-xl bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-8  border-0 hover:border-slate-400 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
-        View on GitHub
-    </button>
-</div>
+            <!-- Action Button -->
+            <div class="w-full">
+                <a href="{{portfolio.link}}" class="w-full btn text-xl bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-600 hover:to-slate-800 px-8 py-4 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+                    View Project
+                </a>
+            </div>
         </div>
 
         <!-- Sidebar -->

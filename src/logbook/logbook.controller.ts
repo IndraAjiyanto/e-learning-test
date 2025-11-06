@@ -21,10 +21,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigImage } from 'src/common/config/multer.config';
 import { Request, Response } from 'express';
 import { Proses } from 'src/entities/logbook.entity';
-import {
-  Paginate,
-  PaginationParams,
-} from 'src/common/decorators/pagination.decorator';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('logbook')
@@ -95,10 +91,12 @@ export class LogbookController {
   async findAll(@Req() req: Request, @Res() res: Response) {
     const logbook = await this.logbookService.findAll();
     const logbook_mentor = await this.logbookService.findLogBookMentor();
+    const kelas = await this.logbookService.findAllKelas();
     res.render('super_admin/logbook/index', {
       user: req.user,
       logbook,
       logbook_mentor,
+      kelas,
     });
   }
 
@@ -110,83 +108,11 @@ export class LogbookController {
       res.render('admin/logbook/index', { user: req.user, kelas });
     } else if (req.user!.role === 'user') {
       const kelas = await this.logbookService.findKelasByUser(req.user!.id);
-      res.render('user/logbook/index', { user: req.user, kelas });
+      const logbook = await this.logbookService.findLogBookByUser(req.user!.id);
+      res.render('user/logbook/index', { user: req.user, kelas, logbook });
     }
   }
 
-  @Roles('user', 'admin')
-  @Get('data')
-  async logbookData(
-    @Paginate({ defaultLimit: 10 }) pagination: PaginationParams,
-    @Req() req: Request,
-  ) {
-    console.log('📊 Logbook data endpoint hit!', {
-      role: req.user?.role,
-      userId: req.user?.id,
-      pagination,
-    });
-
-    if (req.user!.role === 'admin') {
-      const result = await this.logbookService.paginateLogbook(pagination);
-      console.log('📦 Admin result:', {
-        total: result.total,
-        itemsCount: result.items.length,
-      });
-      return result;
-    } else if (req.user!.role === 'user') {
-      const result = await this.logbookService.paginateLogbook(
-        pagination,
-        req.user!.id,
-      );
-      console.log('📦 User result:', {
-        total: result.total,
-        itemsCount: result.items.length,
-      });
-      return result;
-    }
-  }
-
-  @Roles('user', 'admin')
-  @Get('export')
-  async exportLogbook(@Req() req: Request, @Res() res: Response) {
-    try {
-      const { kelas, dateFrom, dateTo, search } = req.query;
-
-      const filters = {
-        kelas: kelas as string,
-        dateFrom: dateFrom as string,
-        dateTo: dateTo as string,
-        search: search as string,
-      };
-
-      let logbooks;
-      if (req.user!.role === 'admin') {
-        logbooks = await this.logbookService.findAllFiltered(filters);
-      } else {
-        logbooks = await this.logbookService.findAllFiltered(
-          filters,
-          req.user!.id,
-        );
-      }
-      const excelBuffer = await this.logbookService.generateExcel(logbooks);
-
-      const date = new Date();
-      const filename = `Logbook_${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}.xlsx`;
-
-      res.setHeader(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      );
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename="${filename}"`,
-      );
-      res.send(excelBuffer);
-    } catch (error) {
-      console.error('Export error:', error);
-      res.status(500).json({ error: 'Failed to export data' });
-    }
-  }
 
   @Roles('user')
   @Get('formCreate')

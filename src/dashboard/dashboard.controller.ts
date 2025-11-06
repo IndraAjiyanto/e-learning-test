@@ -88,12 +88,6 @@ export class DashboardController {
   }
 
 
-  @Get('blog')
-  async blog(@Req() req: Request, @Res() res: Response) {
-    // Ambil semua data sekaligus
-    const blogList = await this.dashboardService.findBlog();
-    res.render('blog', { user: req.user, blog: blogList });
-  }
 
   @Get('kategori/:kategoriName')
   async program(
@@ -109,6 +103,12 @@ export class DashboardController {
       res.render('kelas/course', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'Short Class') {
       res.render('kelas/short_class', { kelas, user: req.user, jenis_kelas });
+    }
+    else if (kategoriName === 'in_house_training') {
+      res.render('inhouse', { kelas, user: req.user, jenis_kelas });
+    }
+    else if (kategoriName === 'wip') {
+      res.render('wip', { kelas, user: req.user, jenis_kelas });
     }
   }
 
