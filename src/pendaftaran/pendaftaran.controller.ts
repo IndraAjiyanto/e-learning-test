@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Res, Req, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  UseInterceptors,
+  Res,
+  Req,
+  UploadedFile,
+} from '@nestjs/common';
 import { PendaftaranService } from './pendaftaran.service';
 import { CreatePendaftaranDto } from './dto/create-pendaftaran.dto';
 import { UpdatePendaftaranDto } from './dto/update-pendaftaran.dto';
@@ -7,6 +20,9 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigPayment } from 'src/common/config/multer.config';
 import { Request, Response } from 'express';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { memoryStorage } from 'multer';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('pendaftaran')
@@ -15,29 +31,50 @@ export class PendaftaranController {
 
   @Roles('user')
   @Post(':userId/:kelasId')
-  @UseInterceptors(FileInterceptor('file', multerConfigPayment))
-  async create(@Param('userId') userId: number, @Param('kelasId') kelasId: number, @Body() createPendaftaranDto: CreatePendaftaranDto,   @UploadedFile() file: Express.Multer.File, @Res() res:Response, @Req() req:Request
+  @UseInterceptors(
+    FileInterceptor('file', { storage: memoryStorage() }),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/registration',
+  })
+  async create(
+    @Param('userId') userId: number,
+    @Param('kelasId') kelasId: number,
+    @Body() createPendaftaranDto: CreatePendaftaranDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+    @Req() req: Request,
   ) {
     try {
-
-    createPendaftaranDto.file = file.path
-    createPendaftaranDto.kelasId = kelasId
-    createPendaftaranDto.userId = userId
-    createPendaftaranDto.proses = 'proces'
-    const pendaftaran = await this.pendaftaranService.create(createPendaftaranDto);
-    if(pendaftaran == false){
-        await this.pendaftaranService.getPublicIdFromUrl(createPendaftaranDto.file);
-        req.flash('info', 'anda sudah mengirimkan bukti pembayaran, silahkan tunggu info selanjutnya dari admin')
-        res.redirect(`/pembayarans/riwayat/${userId}`)
-    }else{
-        req.flash('success', 'bukti pembayaran berhasil di kirim, silahkan tunggu admin')
-        res.redirect(`/pembayarans/riwayat/${userId}`)
-    }
-    
+      createPendaftaranDto.file = req.body.uploadedImageUrls?.[0];
+      createPendaftaranDto.kelasId = kelasId;
+      createPendaftaranDto.userId = userId;
+      createPendaftaranDto.proses = 'proces';
+      const pendaftaran =
+        await this.pendaftaranService.create(createPendaftaranDto);
+      if (pendaftaran == false) {
+        await this.pendaftaranService.getPublicIdFromUrl(
+          createPendaftaranDto.file,
+        );
+        req.flash(
+          'info',
+          'anda sudah mengirimkan bukti pembayaran, silahkan tunggu info selanjutnya dari admin',
+        );
+        res.redirect(`/pembayarans/riwayat/${userId}`);
+      } else {
+        req.flash(
+          'success',
+          'bukti pembayaran berhasil di kirim, silahkan tunggu admin',
+        );
+        res.redirect(`/pembayarans/riwayat/${userId}`);
+      }
     } catch (error) {
-    console.log(error)
-    req.flash('error', 'bukti pembayaran gagal dikirim ')
-    res.redirect(`/pembayarans/riwayat/${userId}`)
+      console.log(error);
+      req.flash('error', 'bukti pembayaran gagal dikirim ');
+      res.redirect(`/pembayarans/riwayat/${userId}`);
     }
   }
 
@@ -54,34 +91,49 @@ export class PendaftaranController {
 
   @Roles('super_admin')
   @Patch(':proses/:pendaftaranId')
-  async update(@Param('pendaftaranId') pendaftaranId: number, @Param('proses') proses: string, @Body() updatePendaftaranDto: UpdatePendaftaranDto, @Res() res:Response, @Req() req:Request) {
+  async update(
+    @Param('pendaftaranId') pendaftaranId: number,
+    @Param('proses') proses: string,
+    @Body() updatePendaftaranDto: UpdatePendaftaranDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-    const pendaftaran = await this.pendaftaranService.findOne(pendaftaranId)
-    if(!pendaftaran){
-      return null
-    }
-    if(proses === 'acc'){
-    updatePendaftaranDto.file = pendaftaran['file']
-    updatePendaftaranDto.userId = pendaftaran['user']['id']
-    updatePendaftaranDto.kelasId = pendaftaran['kelas']['id']
-    updatePendaftaranDto.proses = 'acc'
-    await this.pendaftaranService.update(pendaftaranId,updatePendaftaranDto)
-    await this.pendaftaranService.addUserToKelas(pendaftaran['user']['id'], pendaftaran['kelas']['id']);
-    req.flash('success', 'proces successfully change acc')
-    res.redirect('/pembayarans')
-    } else if (proses === 'rejected'){
-      updatePendaftaranDto.file = pendaftaran['file']
-      updatePendaftaranDto.userId = pendaftaran['user']['id']
-      updatePendaftaranDto.kelasId = pendaftaran['kelas']['id']
-      updatePendaftaranDto.proses = 'rejected'
-      await this.pendaftaranService.update(pendaftaranId,updatePendaftaranDto)
-      req.flash('success', 'proces successfully change rejected')
-      res.redirect('/pembayarans')
-    }
+      const pendaftaran = await this.pendaftaranService.findOne(pendaftaranId);
+      if (!pendaftaran) {
+        return null;
+      }
+      if (proses === 'acc') {
+        updatePendaftaranDto.file = pendaftaran['file'];
+        updatePendaftaranDto.userId = pendaftaran['user']['id'];
+        updatePendaftaranDto.kelasId = pendaftaran['kelas']['id'];
+        updatePendaftaranDto.proses = 'acc';
+        await this.pendaftaranService.update(
+          pendaftaranId,
+          updatePendaftaranDto,
+        );
+        await this.pendaftaranService.addUserToKelas(
+          pendaftaran['user']['id'],
+          pendaftaran['kelas']['id'],
+        );
+        req.flash('success', 'proces successfully change acc');
+        res.redirect('/pembayarans');
+      } else if (proses === 'rejected') {
+        updatePendaftaranDto.file = pendaftaran['file'];
+        updatePendaftaranDto.userId = pendaftaran['user']['id'];
+        updatePendaftaranDto.kelasId = pendaftaran['kelas']['id'];
+        updatePendaftaranDto.proses = 'rejected';
+        await this.pendaftaranService.update(
+          pendaftaranId,
+          updatePendaftaranDto,
+        );
+        req.flash('success', 'proces successfully change rejected');
+        res.redirect('/pembayarans');
+      }
     } catch (error) {
-      console.log(error)
-        req.flash('error', 'proses pembayaran gagal diubah')
-        res.redirect('/pembayarans')
+      console.log(error);
+      req.flash('error', 'proses pembayaran gagal diubah');
+      res.redirect('/pembayarans');
     }
   }
 

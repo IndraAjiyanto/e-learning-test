@@ -126,14 +126,27 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
+  @Roles('user', 'admin', 'super_admin')
   @Patch(':id')
   async update(
     @Param('id') id: number,
     @Res() res: Response,
+    @Req() req: Request,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    await this.usersService.update(id, updateUserDto);
-    res.redirect('/users/profile');
+    try {
+      if(req.user!.id === id){
+      await this.usersService.update(id, updateUserDto);
+      req.flash('success', 'User successfully updated');
+      res.redirect('/users/profile');
+      }else{
+      req.flash('error', 'Failed to update user');
+      }
+    } catch (error) {
+      req.flash('error', 'Failed to update user');
+      res.redirect('/users/profile');
+    }
+    
   }
 
   // update user
@@ -162,16 +175,29 @@ export class UsersController {
     }
   }
 
+  @Roles('user', 'admin', 'super_admin')
   @Patch('password/:id')
   async updatePassword(
     @Param('id') id: number,
     @Res() res: Response,
-    @Body() updatePaaswordDto: UpdatePasswordDto,
+    @Req() req: Request,
+    @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    await this.usersService.updatePassword(id, updatePaaswordDto);
-    res.redirect('/users/profile');
+    try {
+      if(req.user!.id === id){
+      await this.usersService.updatePassword(id, updatePasswordDto);
+      req.flash('success', 'Password successfully updated');
+      res.redirect('/users/profile');
+      }else{
+      req.flash('error', 'Failed to update password');
+      }
+    } catch (error) {
+      req.flash('error', 'Failed to update password');
+      res.redirect('/users/profile');
+    }
   }
 
+  @Roles('user', 'admin', 'super_admin')
   @Patch('update/profile/:userId')
   @UseInterceptors(
     FileInterceptor(
@@ -203,9 +229,13 @@ export class UsersController {
         }
         updateProfileDto.profile = req.body.uploadedImageUrls?.[0];
       }
+      if(req.user!.id === userId){
       await this.usersService.updateProfile(userId, updateProfileDto);
       req.flash('success', 'update profile success');
       res.redirect('/users/profile');
+      }else{
+      req.flash('error', 'update profile failed');
+      }
     } catch (error) {
       console.log(error);
       req.flash('error', 'update profile failed');

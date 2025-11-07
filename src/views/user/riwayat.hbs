@@ -14,19 +14,25 @@
       </p>
     </div>
 
-    <!-- Main Tabs: Pembayaran & Pendaftaran -->
+    <!-- Main Tabs: Full Payment, Registration & Installment -->
     <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 px-4">
       <button @click="mainTab = 'pembayaran'; statusTab = 'all'"
         :class="mainTab === 'pembayaran' ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
-        class="px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-base md:text-lg">
+        class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
         <i class="fas fa-credit-card"></i>
-        <span>Payments</span>
+        <span>Full Payment</span>
       </button>
       <button @click="mainTab = 'pendaftaran'; statusTab = 'all'"
         :class="mainTab === 'pendaftaran' ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200'"
-        class="px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-base md:text-lg">
+        class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
         <i class="fas fa-user-plus"></i>
-        <span>Registrations</span>
+        <span>Registration</span>
+      </button>
+      <button @click="mainTab = 'cicilan'; statusTab = 'all'"
+        :class="mainTab === 'cicilan' ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-blue-50 border border-slate-200'"
+        class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
+        <i class="fas fa-calendar-check"></i>
+        <span>Installment</span>
       </button>
     </div>
 
@@ -106,7 +112,7 @@
                 <div class="space-y-2 md:space-y-3">
                   <div class="bg-slate-600 text-white px-3 py-1 rounded-lg inline-flex items-center gap-2 text-xs font-semibold mb-2">
                     <i class="fas fa-credit-card"></i>
-                    <span>PAYMENT</span>
+                    <span>FULL PAYMENT</span>
                   </div>
                   
                   <h3 class="text-lg md:text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors font-montserrat line-clamp-2">
@@ -190,8 +196,149 @@
         <div class="text-center py-12 md:py-16 px-4">
           <div class="p-8 md:p-12 max-w-md mx-auto">
             <i class="fas fa-receipt text-5xl md:text-6xl text-slate-400 mb-4 md:mb-6"></i>
-            <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">No Payment History</h3>
-            <p class="text-sm md:text-base text-slate-600 font-inter">You haven't made any payments yet. Start exploring our courses!</p>
+            <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">No Full Payment History</h3>
+            <p class="text-sm md:text-base text-slate-600 font-inter">You haven't made any full payments yet. Start exploring our courses!</p>
+          </div>
+        </div>
+      {{/if}}
+    </div>
+
+    <!-- Cicilan Content -->
+    <div x-show="mainTab === 'cicilan'" x-transition>
+      {{#if cicilan.length}}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          {{#each cicilan}}
+            <div 
+              x-show="statusTab === 'all' 
+                || (statusTab === 'acc' && '{{this.proses}}' === 'acc') 
+                || (statusTab === 'proces' && '{{this.proses}}' === 'proces') 
+                || (statusTab === 'rejected' && '{{this.proses}}' === 'rejected')"
+              x-transition:enter="transition ease-out duration-300"
+              x-transition:enter-start="opacity-0 transform scale-95"
+              x-transition:enter-end="opacity-100 transform scale-100"
+              class="group relative rounded-2xl shadow-lg overflow-hidden border transition-all duration-300 transform hover:scale-105 hover:shadow-2xl
+                {{#if (roles this.proses 'acc')}} bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-200
+                {{else if (roles this.proses 'proces')}} bg-gradient-to-br from-amber-50 to-orange-100 border-amber-200 hover:from-amber-100 hover:to-orange-200
+                {{else}} bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:from-red-100 hover:to-red-200 {{/if}}">
+
+              <div class="absolute top-4 right-4 z-10">
+                {{#if (roles this.proses 'acc')}}
+                  <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <i class="fas fa-check"></i>
+                    <span class="hidden sm:inline">ACCEPTED</span>
+                    <span class="sm:hidden">ACC</span>
+                  </div>
+                {{else if (roles this.proses 'proces')}}
+                  <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <i class="fas fa-clock"></i>
+                    <span class="hidden sm:inline">PROCESSING</span>
+                    <span class="sm:hidden">PROC</span>
+                  </div>
+                {{else}}
+                  <div class="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <i class="fas fa-times"></i>
+                    <span class="hidden sm:inline">REJECTED</span>
+                    <span class="sm:hidden">REJ</span>
+                  </div>
+                {{/if}}
+              </div>
+
+              <div class="p-4 md:p-6 lg:p-8 space-y-4 md:space-y-6">
+                <div class="space-y-2 md:space-y-3">
+                  <div class="bg-blue-600 text-white px-3 py-1 rounded-lg inline-flex items-center gap-2 text-xs font-semibold mb-2">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>INSTALLMENT</span>
+                  </div>
+                  
+                  <h3 class="text-lg md:text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors font-montserrat line-clamp-2">
+                    <i class="fas fa-graduation-cap mr-2 text-slate-600 text-sm md:text-base"></i>
+                    {{this.kelas.nama_kelas}}
+                  </h3>
+                  
+                  <div class="flex items-center text-slate-600 text-xs md:text-sm font-inter">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    <span class="font-medium">Payment Date:</span>
+                    <span class="ml-2">{{formatTanggal this.createdAt}}</span>
+                  </div>
+
+                  <div class="flex items-center text-xs md:text-sm">
+                    <i class="fas fa-money-bill-wave mr-2 text-blue-600"></i>
+                    <span class="font-medium text-slate-700">Installment:</span>
+                    <span class="ml-2 text-blue-700 font-bold">{{this.cicilan.nama_cicilan}}</span>
+                  </div>
+
+                  <div class="flex items-center text-xs md:text-sm">
+                    <i class="fas fa-info-circle mr-2 text-slate-500"></i>
+                    <span class="font-medium text-slate-700">Status:</span>
+                    {{#if (roles this.proses 'acc')}}
+                      <span class="ml-2 text-emerald-700 font-bold">ACCEPTED</span>
+                    {{else if (roles this.proses 'proces')}}
+                      <span class="ml-2 text-amber-700 font-bold">PROCESSING</span>
+                    {{else}}
+                      <span class="ml-2 text-red-700 font-bold">REJECTED</span>
+                    {{/if}}
+                  </div>
+                </div>
+
+                <!-- WhatsApp Contact for Processing and Rejected -->
+                {{#if (roles this.proses 'proces')}}
+                  <div class="bg-amber-100 border border-amber-300 rounded-xl p-3 md:p-4 space-y-2">
+                    <div class="flex items-center gap-2 text-amber-800 font-semibold text-xs md:text-sm">
+                      <i class="fas fa-info-circle"></i>
+                      <span>Payment Under Review</span>
+                    </div>
+                    <p class="text-amber-700 text-xs md:text-sm">Your installment payment is being verified. If you have questions, contact us:</p>
+                    <a 
+                      href="https://wa.me/6281234567890?text=Hi,%20I%20have%20a%20question%20about%20my%20installment%20payment%20for%20{{this.kelas.nama_kelas}}" 
+                      target="_blank"
+                      class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
+                      <i class="fab fa-whatsapp text-base md:text-lg"></i>
+                      <span>Contact Admin via WhatsApp</span>
+                    </a>
+                  </div>
+                {{else if (roles this.proses 'rejected')}}
+                  <div class="bg-red-100 border border-red-300 rounded-xl p-3 md:p-4 space-y-2">
+                    <div class="flex items-center gap-2 text-red-800 font-semibold text-xs md:text-sm">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <span>Payment Rejected</span>
+                    </div>
+                    <p class="text-red-700 text-xs md:text-sm">Your installment payment was rejected. Please contact admin for assistance:</p>
+                    <a 
+                      href="https://wa.me/6281234567890?text=Hi,%20my%20installment%20payment%20for%20{{this.kelas.nama_kelas}}%20was%20rejected.%20I%20need%20help." 
+                      target="_blank"
+                      class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
+                      <i class="fab fa-whatsapp text-base md:text-lg"></i>
+                      <span>Contact Admin via WhatsApp</span>
+                    </a>
+                  </div>
+                {{/if}}
+
+                <div class="flex flex-col sm:flex-row gap-2 md:gap-3 pt-4 md:pt-6">
+                  <button 
+                    @click="open = true; imageSrc = '{{this.file}}'" 
+                    class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-semibold text-xs md:text-sm hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-eye"></i>
+                    <span>View Proof</span>
+                  </button>
+                  <a 
+                    href="/kelass/{{this.kelas.id}}" 
+                    class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-white text-slate-800 border-2 border-slate-200 font-semibold text-xs md:text-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>View Class</span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="text-center py-12 md:py-16 px-4">
+          <div class="p-8 md:p-12 max-w-md mx-auto">
+            <i class="fas fa-calendar-check text-5xl md:text-6xl text-blue-400 mb-4 md:mb-6"></i>
+            <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">No Installment History</h3>
+            <p class="text-sm md:text-base text-slate-600 font-inter">You haven't made any installment payments yet. Choose installment option when enrolling!</p>
           </div>
         </div>
       {{/if}}

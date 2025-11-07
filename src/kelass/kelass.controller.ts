@@ -324,9 +324,9 @@ export class KelassController {
 
       // Handle paid_check logic
       if (updateKelassDto.paid_check === 'true') {
-        updateKelassDto.check_paid = false;
-      } else if (updateKelassDto.paid_check === 'false') {
         updateKelassDto.check_paid = true;
+      } else if (updateKelassDto.paid_check === 'false') {
+        updateKelassDto.check_paid = false;
       }
 
       // Super admin always approve

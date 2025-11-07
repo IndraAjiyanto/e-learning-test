@@ -278,7 +278,7 @@
                   class='px-3 py-2 text-xs text-gray-700'
                   x-text='formatDate(logbook.createdAt)'
                 ></td>
-      
+
               </tr>
             </template>
           </tbody>
@@ -340,125 +340,138 @@
   </div>
 </div>
 
+<!-- SheetJS Library for Excel Export -->
+<script
+  src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
+></script>
+
 <script>
-  function logbookApp() {
-    return {
-      allLogbooksRaw: {{{json logbook}}},
-      allLogbooks: [],
-      kelasList: {{{json kelas}}},
+function logbookApp() {
+  return {
+    allLogbooksRaw: {{{json logbook}}},
+    allLogbooks: [],
+    kelasList: {{{json kelas}}},
 
-      // Filters & pagination
-      searchInput: '',
-      search: '',
-      filterKelas: '',
-      currentPage: 1,
-      itemsPerPage: 10,
-      searchTimeout: null,
+    searchInput: '',
+    search: '',
+    filterKelas: '',
+    currentPage: 1,
+    itemsPerPage: 10,
+    searchTimeout: null,
 
-      init() {
-        console.log('Logbook data:', this.allLogbooksRaw);
-        console.log('Kelas data:', this.kelasList);
-      },
-
-      // Debounce pencarian
-      debounceSearch() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(() => {
-          this.search = this.searchInput;
-          this.currentPage = 1;
-        }, 500);
-      },
-
-      // Filter berdasarkan kelas dan search
-      get filteredLogbooks() {
-        let filtered = this.allLogbooksRaw;
-
-        // Filter kelas
-        if (this.filterKelas) {
-          filtered = filtered.filter(
-            (log) => log.pertemuan?.minggu?.kelas?.id == this.filterKelas
-          );
-        }
-
-        // Filter pencarian
-        if (this.search) {
-          const searchLower = this.search.toLowerCase();
-          filtered = filtered.filter(
-            (log) =>
-              (log.kegiatan || '').toLowerCase().includes(searchLower) ||
-              (log.rincian_kegiatan || '').toLowerCase().includes(searchLower) ||
-              (log.kendala || '').toLowerCase().includes(searchLower) ||
-              (log.pertemuan?.minggu?.kelas?.nama_kelas || '')
-                .toLowerCase()
-                .includes(searchLower)
-          );
-        }
-
-        return filtered;
-      },
-
-      // Total halaman
-      get totalPages() {
-        return Math.ceil(this.filteredLogbooks.length / this.itemsPerPage);
-      },
-
-      // Data sesuai halaman (pagination)
-      get paginatedLogbooks() {
-        const start = (this.currentPage - 1) * this.itemsPerPage;
-        const end = start + this.itemsPerPage;
-        return this.filteredLogbooks.slice(start, end);
-      },
-
-      // Reset filter
-      resetFilters() {
-        this.searchInput = '';
-        this.search = '';
-        this.filterKelas = '';
+    debounceSearch() {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(() => {
+        this.search = this.searchInput;
         this.currentPage = 1;
-      },
+      }, 500);
+    },
 
-      // Cek apakah ada filter aktif
-      hasActiveFilters() {
-        return this.filterKelas || this.search;
-      },
+    get filteredLogbooks() {
+      let filtered = this.allLogbooksRaw;
 
-      // Ambil nama kelas dari ID
-      getKelasName() {
-        const kelas = this.kelasList.find((k) => k.id == this.filterKelas);
-        return kelas ? kelas.nama_kelas : '';
-      },
-
-      // Format tanggal
-      formatDate(date) {
-        if (!date) return '-';
-        return new Date(date).toLocaleDateString('id-ID', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-        });
-      },
-
-      // Export ke Excel
-      async exportToExcel() {
-        try {
-          const params = new URLSearchParams();
-          if (this.filterKelas) params.append('kelas', this.filterKelas);
-          if (this.search) params.append('search', this.search);
-          window.location.href = `/logbook/export?${params}`;
-        } catch (error) {
-          console.error('Export error:', error);
-          alert('Gagal export data');
-        }
-      },
-
-      // Konfirmasi hapus data
-      confirmDelete(event) {
-        if (confirm('Apakah Anda yakin ingin menghapus logbook ini?')) {
-          event.target.closest('form').submit();
-        }
+      if (this.filterKelas) {
+        filtered = filtered.filter(
+          (log) => log.pertemuan?.minggu?.kelas?.id == this.filterKelas
+        );
       }
-    };
-  }
+
+      if (this.search) {
+        const s = this.search.toLowerCase();
+        filtered = filtered.filter((log) =>
+          (log.kegiatan || '').toLowerCase().includes(s) ||
+          (log.rincian_kegiatan || '').toLowerCase().includes(s) ||
+          (log.kendala || '').toLowerCase().includes(s) ||
+          (log.pertemuan?.minggu?.kelas?.nama_kelas || '')
+            .toLowerCase()
+            .includes(s)
+        );
+      }
+
+      return filtered;
+    },
+
+    get totalPages() {
+      return Math.ceil(this.filteredLogbooks.length / this.itemsPerPage);
+    },
+
+    get paginatedLogbooks() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.filteredLogbooks.slice(start, start + this.itemsPerPage);
+    },
+
+    resetFilters() {
+      this.searchInput = '';
+      this.search = '';
+      this.filterKelas = '';
+      this.currentPage = 1;
+    },
+
+    hasActiveFilters() {
+      return this.filterKelas || this.search;
+    },
+
+    getKelasName() {
+      const kelas = this.kelasList.find((k) => k.id == this.filterKelas);
+      return kelas ? kelas.nama_kelas : '';
+    },
+
+    formatDate(date) {
+      if (!date) return '-';
+      return new Date(date).toLocaleDateString('id-ID', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    },
+
+    async exportToExcel() {
+      try {
+        const dataToExport = this.filteredLogbooks.map((log, index) => ({
+          No: index + 1,
+          Kegiatan: log.kegiatan || '-',
+          'Rincian Kegiatan': log.rincian_kegiatan || '-',
+          Kendala: log.kendala || '-',
+          Kelas: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
+          Status:
+            log.proses === 'acc'
+              ? 'Approved'
+              : log.proses === 'proces'
+              ? 'Process'
+              : 'Rejected',
+          Tanggal: this.formatDate(log.createdAt),
+          Dokumentasi: log.dokumentasi || '-'
+        }));
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+        ws['!cols'] = [
+          { wch: 5 },
+          { wch: 30 },
+          { wch: 50 },
+          { wch: 40 },
+          { wch: 25 },
+          { wch: 12 },
+          { wch: 20 },
+          { wch: 60 }
+        ];
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Logbook');
+        XLSX.writeFile(wb, `Logbook_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        error('Gagal export data ke Excel');
+      } catch (error) {
+        error('Gagal export data ke Excel');
+      }
+    },
+
+    confirmDelete(event) {
+      if (confirm('Apakah Anda yakin ingin menghapus logbook ini?')) {
+        event.target.closest('form').submit();
+      }
+    }
+  };
+}
 </script>

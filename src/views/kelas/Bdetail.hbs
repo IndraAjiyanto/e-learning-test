@@ -469,9 +469,16 @@
         copied: false, 
         paymentType: 'full',
         installmentMonths: {{#each kelas.cicilan}}{{#if @first}}{{this.bulan}}{{/if}}{{else}}3{{/each}},
+        fileError: '',
+        waError: '',
+        isValidFile: false,
+        isValidWa: false,
+        fileInputTouched: false,
+        waInputTouched: false,
         cicilanData: [
           {{#each kelas.cicilan}}
             {
+              id: {{this.id}},
               bulan: {{this.bulan}},
               harga: {{json this.harga}}
             }{{#unless @last}},{{/unless}}
@@ -504,6 +511,67 @@
         },
         get availableMonths() {
           return this.cicilanData.map(c => c.bulan);
+        },
+        validateFile(event) {
+          const file = event.target.files[0];
+          this.fileError = '';
+          this.isValidFile = false;
+          this.previewUrl = null;
+          this.fileInputTouched = true;
+
+          if (!file) return;
+
+          // Validate file type
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.fileError = 'File type not allowed. Please upload JPG, JPEG, or PNG only.';
+            event.target.value = '';
+            return;
+          }
+
+          // Validate file size (max 5MB)
+          const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+          if (file.size > maxSize) {
+            this.fileError = `File size exceeds 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`;
+            event.target.value = '';
+            return;
+          }
+
+          // File is valid
+          this.isValidFile = true;
+          this.previewUrl = URL.createObjectURL(file);
+        },
+        validateWa(event) {
+          const value = event.target.value;
+          this.waError = '';
+          this.isValidWa = false;
+          this.waInputTouched = true;
+
+          if (!value) return;
+
+          // Remove spaces and special characters for validation
+          const cleanValue = value.replace(/[\s\-\(\)]/g, '');
+
+          // Check if only contains numbers
+          if (!/^\d+$/.test(cleanValue)) {
+            this.waError = 'WhatsApp number must contain only numbers.';
+            return;
+          }
+
+          // Check length (10-13 digits)
+          if (cleanValue.length < 10 || cleanValue.length > 13) {
+            this.waError = `WhatsApp number must be 10-13 digits. Current: ${cleanValue.length} digits.`;
+            return;
+          }
+
+          // Check if starts with 0 or 62 (Indonesian format)
+          if (!cleanValue.startsWith('0') && !cleanValue.startsWith('62')) {
+            this.waError = 'WhatsApp number must start with 0 or 62 (e.g., 08123456789 or 628123456789).';
+            return;
+          }
+
+          // Valid
+          this.isValidWa = true;
         }
       }"
     >
@@ -593,23 +661,12 @@
                     ></span>
                     <span class='text-lg text-slate-300'>/month</span>
                   </div>
-                  <div
-                    class='flex items-center justify-between pt-3 border-t border-slate-600'
-                  >
-                    <div>
-                      <p class='text-xs text-slate-300'>Total to Pay</p>
-                      <p 
-                        class='text-lg font-semibold'
-                        x-text='`Rp ${totalCicilanAmount.toLocaleString("id-ID")}`'
-                      ></p>
-                    </div>
-                    <div>
-                      <p class='text-xs text-slate-300'>Duration</p>
-                      <p
-                        class='text-lg font-semibold'
-                        x-text='installmentMonths + " Months"'
-                      ></p>
-                    </div>
+                  <div class='pt-3 border-t border-slate-600'>
+                    <p class='text-xs text-slate-300'>Duration</p>
+                    <p
+                      class='text-lg font-semibold'
+                      x-text='installmentMonths + " Months"'
+                    ></p>
                   </div>
                 </div>
 
@@ -642,10 +699,7 @@
                       </div>
                     </template>
                   </div>
-                  <div class='mt-3 pt-3 border-t border-slate-200 flex justify-between items-center'>
-                    <span class='text-sm font-bold text-slate-700'>Total Amount:</span>
-                    <span class='text-lg font-bold text-slate-900' x-text='`Rp ${totalCicilanAmount.toLocaleString("id-ID")}`'></span>
-                  </div>
+      
                 </div>
               </div>
             </div>
@@ -733,6 +787,8 @@
 
         <!-- Card No Rekening -->
         {{#if user}}
+        {{#if check_user}}
+        {{else}}
           {{#if kelas.check_paid}}
             {{#if (check daftar kelas.kuota)}}
               <div
@@ -783,6 +839,7 @@
                       class='font-bold bg-blue-100 px-2 py-1 rounded'
                     >{{formatRupiah kelas.harga}}</span></li>
                   <li>Use your name as the transfer reference</li>
+                  <li>Enter your WhatsApp number in the form below</li>
                   <li>Upload proof of payment below</li>
                   <li>After uploading proof, the payment status will be
                     "Processing"</li>
@@ -794,24 +851,25 @@
 
               <!-- Installment Payment Instructions -->
               <div
-                class='bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-5'
+                class='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5'
                 x-show="paymentType === 'installment'"
                 x-transition
               >
                 <h4
-                  class='font-bold text-purple-800 flex items-center gap-2 mb-3'
+                  class='font-bold text-blue-800 flex items-center gap-2 mb-3'
                 >
                   <i class='fas fa-calendar-check'></i>
                   Installment Payment Instructions
                 </h4>
-                <ol class='list-decimal pl-5 space-y-2 text-sm text-purple-700'>
+                <ol class='list-decimal pl-5 space-y-2 text-sm text-blue-700'>
                   <li>Transfer the first installment of
                     <span
-                      class='font-bold bg-purple-100 px-2 py-1 rounded'
+                      class='font-bold bg-blue-100 px-2 py-1 rounded'
                       x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'
                     ></span></li>
                   <li>Include "Installment 1/[Total Months] - [Your Name]" in
                     the transfer notes</li>
+                  <li>Enter your WhatsApp number in the form below</li>
                   <li>Upload proof of first payment below</li>
                   <li>You'll receive class access after first payment
                     confirmation</li>
@@ -873,6 +931,7 @@
               </ol>
             </div>
           {{/if}}
+          {{/if}}
 
           <!-- Form Upload -->
           {{#if check_user}}
@@ -886,30 +945,16 @@
           {{else}}
             {{#if kelas.check_paid}}
               {{#if (check daftar kelas.kuota)}}
+                <!-- Full Payment Form -->
                 <form
+                  x-show="paymentType === 'full'"
                   action='/pembayarans/{{user.id}}/{{kelas.id}}'
                   enctype='multipart/form-data'
                   method='post'
                   class='space-y-4'
                 >
-                  <!-- Hidden inputs for payment info -->
-                  <input
-                    type='hidden'
-                    name='payment_type'
-                    :value='paymentType'
-                  />
-                  <input
-                    type='hidden'
-                    name='installment_months'
-                    :value='installmentMonths'
-                  />
-                  <input
-                    type='hidden'
-                    name='installment_amount'
-                    :value='installmentAmount'
-                  />
 
-                  <!-- Payment Summary Badge -->
+                  <!-- Full Payment Summary Badge -->
                   <div
                     class='bg-slate-100 border border-slate-300 rounded-xl p-4'
                   >
@@ -920,8 +965,7 @@
                         >Payment Type</p>
                         <p
                           class='text-sm font-bold text-slate-900'
-                          x-text="paymentType === 'full' ? 'Full Payment' : 'Installment (' + installmentMonths + ' months)'"
-                        ></p>
+                        >Full Payment</p>
                       </div>
                       <div class='text-right'>
                         <p
@@ -929,12 +973,59 @@
                         >Amount</p>
                         <p
                           class='text-sm font-bold text-slate-900'
-                          x-text="paymentType === 'full' ? '{{formatRupiah
-                            kelas.harga
-                          }}' : 'Rp ' + installmentAmount.toLocaleString('id-ID') + '/mo'"
-                        ></p>
+                        >{{formatRupiah kelas.harga}}</p>
                       </div>
                     </div>
+                  </div>
+
+                  <!-- WhatsApp Number Input -->
+                  <div>
+                    <label
+                      class='block text-sm font-semibold text-slate-700 mb-2'
+                    >
+                      <i class='fab fa-whatsapp mr-2 text-green-500'></i>
+                      WhatsApp Number
+                      <span class='text-red-500'>*</span>
+                    </label>
+                    <div
+                      class='bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2'
+                    >
+                      <p class='text-xs text-blue-700'>
+                        <i class='fas fa-info-circle mr-1'></i>
+                        We will contact you via WhatsApp for payment confirmation
+                      </p>
+                    </div>
+                    <input
+                      type='text'
+                      name='no'
+                      required
+                      placeholder='e.g. 08123456789 or 628123456789'
+                      @input='validateWa($event)'
+                      :class="waError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : isValidWa ? 'border-green-500 focus:border-green-500 focus:ring-green-200' : 'border-slate-300'"
+                      class='w-full bg-white border-2 rounded-xl px-4 py-3 focus:ring-2 transition-all'
+                    />
+                    
+                    <!-- Error Message -->
+                    <div x-show='waError' x-transition class='mt-2'>
+                      <p class='text-xs text-red-600 flex items-start gap-1'>
+                        <i class='fas fa-exclamation-circle mt-0.5'></i>
+                        <span x-text='waError'></span>
+                      </p>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div x-show='isValidWa && !waError' x-transition class='mt-2'>
+                      <p class='text-xs text-green-600 flex items-center gap-1'>
+                        <i class='fas fa-check-circle'></i>
+                        <span>Valid WhatsApp number</span>
+                      </p>
+                    </div>
+
+                    <!-- Helper Text -->
+                    <p class='text-xs text-slate-500 mt-1' x-show='!waError && !isValidWa'>
+                      <i class='fas fa-info-circle mr-1'></i>
+                      Enter 10-13 digits (e.g., 08123456789 or 628123456789)
+                    </p>
                   </div>
 
                   <div>
@@ -943,42 +1034,218 @@
                     >
                       <i class='fas fa-receipt mr-2'></i>
                       Upload Payment Proof
-                      <span
-                        x-show="paymentType === 'installment'"
-                        class='text-purple-600'
-                      >(First Installment)</span>
+                      <span class='text-red-500'>*</span>
                     </label>
+                    <div
+                      class='bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2'
+                    >
+                      <p class='text-xs text-blue-700'>
+                        <i class='fas fa-info-circle mr-1'></i>
+                        Max size: 5MB | Allowed: JPG, JPEG, PNG
+                      </p>
+                    </div>
                     <input
                       type='file'
                       name='file'
                       required
-                      class='w-full bg-white border-2 border-slate-300 rounded-xl p-3 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 transition-all'
-                      @change='previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null'
+                      accept='image/jpeg,image/jpg,image/png'
+                      @change='validateFile($event)'
+                      :class="fileError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : isValidFile ? 'border-green-500 focus:border-green-500 focus:ring-green-200' : 'border-slate-300'"
+                      class='w-full bg-white border-2 rounded-xl p-3 focus:ring-2 transition-all'
                     />
+                    
+                    <!-- Error Message -->
+                    <div x-show='fileError' x-transition class='mt-2'>
+                      <p class='text-xs text-red-600 flex items-start gap-1'>
+                        <i class='fas fa-exclamation-circle mt-0.5'></i>
+                        <span x-text='fileError'></span>
+                      </p>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div x-show='isValidFile && !fileError' x-transition class='mt-2'>
+                      <p class='text-xs text-green-600 flex items-center gap-1'>
+                        <i class='fas fa-check-circle'></i>
+                        <span>File is valid and ready to upload</span>
+                      </p>
+                    </div>
                   </div>
 
                   <!-- Preview -->
-                  <template x-if='previewUrl'>
+                  <template x-if='previewUrl && isValidFile'>
                     <div class='mt-3'>
                       <p class='text-xs text-slate-500 mb-2'>Preview:</p>
                       <img
                         :src='previewUrl'
                         alt='Preview'
-                        class='rounded-xl border-2 border-slate-200 max-h-48 w-full object-contain'
+                        class='rounded-xl border-2 border-green-200 max-h-48 w-full object-contain'
                       />
                     </div>
                   </template>
 
                   <button
                     type='submit'
-                    class='w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
+                    :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)'
+                    :class="((fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-slate-800 hover:to-slate-950 transform hover:-translate-y-1'"
+                    class='w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                   >
                     <i class='fas fa-credit-card mr-2'></i>
-                    <span
-                      x-text="paymentType === 'full' ? 'Enroll Now' : 'Enroll with Installment'"
-                    ></span>
+                    <span>Enroll Now - Full Payment</span>
                   </button>
                 </form>
+
+                <!-- Installment Payment Form -->
+                <template x-for="cicilan in cicilanData" :key="cicilan.bulan">
+                  <form
+                    x-show="paymentType === 'installment' && installmentMonths === cicilan.bulan"
+                    :action="`/pembayarans/{{user.id}}/{{kelas.id}}/${cicilan.id}`"
+                    enctype='multipart/form-data'
+                    method='post'
+                    class='space-y-4'
+                  >
+                    <!-- Installment Payment Summary Badge -->
+                    <div
+                      class='bg-slate-100 border border-slate-300 rounded-xl p-4'
+                    >
+                      <div class='flex items-center justify-between'>
+                        <div>
+                          <p
+                            class='text-xs font-semibold text-slate-600 uppercase'
+                          >Payment Type</p>
+                          <p
+                            class='text-sm font-bold text-slate-900'
+                            x-text="`Installment (${cicilan.bulan} months)`"
+                          ></p>
+                        </div>
+                        <div class='text-right'>
+                          <p
+                            class='text-xs font-semibold text-slate-600 uppercase'
+                          >First Payment</p>
+                          <p
+                            class='text-sm font-bold text-slate-900'
+                            x-text="`Rp ${cicilan.harga[0]?.toLocaleString('id-ID') || 0}`"
+                          ></p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- WhatsApp Number Input -->
+                    <div>
+                      <label
+                        class='block text-sm font-semibold text-slate-700 mb-2'
+                      >
+                        <i class='fab fa-whatsapp mr-2 text-green-500'></i>
+                        WhatsApp Number
+                        <span class='text-red-500'>*</span>
+                      </label>
+                      <div
+                        class='bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2'
+                      >
+                        <p class='text-xs text-blue-700'>
+                          <i class='fas fa-info-circle mr-1'></i>
+                          We will contact you via WhatsApp for payment confirmation
+                        </p>
+                      </div>
+                      <input
+                        type='text'
+                        name='no'
+                        required
+                        placeholder='e.g. 08123456789 or 628123456789'
+                        @input='validateWa($event)'
+                        :class="waError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : isValidWa ? 'border-green-500 focus:border-green-500 focus:ring-green-200' : 'border-slate-300'"
+                        class='w-full bg-white border-2 rounded-xl px-4 py-3 focus:ring-2 transition-all'
+                      />
+                      
+                      <!-- Error Message -->
+                      <div x-show='waError' x-transition class='mt-2'>
+                        <p class='text-xs text-red-600 flex items-start gap-1'>
+                          <i class='fas fa-exclamation-circle mt-0.5'></i>
+                          <span x-text='waError'></span>
+                        </p>
+                      </div>
+
+                      <!-- Success Message -->
+                      <div x-show='isValidWa && !waError' x-transition class='mt-2'>
+                        <p class='text-xs text-green-600 flex items-center gap-1'>
+                          <i class='fas fa-check-circle'></i>
+                          <span>Valid WhatsApp number</span>
+                        </p>
+                      </div>
+
+                      <!-- Helper Text -->
+                      <p class='text-xs text-slate-500 mt-1' x-show='!waError && !isValidWa'>
+                        <i class='fas fa-info-circle mr-1'></i>
+                        Enter 10-13 digits (e.g., 08123456789 or 628123456789)
+                      </p>
+                    </div>
+
+                    <div>
+                      <label
+                        class='block text-sm font-semibold text-slate-700 mb-2'
+                      >
+                        <i class='fas fa-receipt mr-2'></i>
+                        Upload Payment Proof
+                        <span class='text-blue-600'>(First Installment)</span>
+                        <span class='text-red-500'>*</span>
+                      </label>
+                      <div
+                        class='bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2'
+                      >
+                        <p class='text-xs text-blue-700'>
+                          <i class='fas fa-info-circle mr-1'></i>
+                          Max size: 5MB | Allowed: JPG, JPEG, PNG
+                        </p>
+                      </div>
+                      <input
+                        type='file'
+                        name='file'
+                        required
+                        accept='image/jpeg,image/jpg,image/png'
+                        @change='validateFile($event)'
+                        :class="fileError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : isValidFile ? 'border-green-500 focus:border-green-500 focus:ring-green-200' : 'border-slate-300'"
+                        class='w-full bg-white border-2 rounded-xl p-3 focus:ring-2 transition-all'
+                      />
+                      
+                      <!-- Error Message -->
+                      <div x-show='fileError' x-transition class='mt-2'>
+                        <p class='text-xs text-red-600 flex items-start gap-1'>
+                          <i class='fas fa-exclamation-circle mt-0.5'></i>
+                          <span x-text='fileError'></span>
+                        </p>
+                      </div>
+
+                      <!-- Success Message -->
+                      <div x-show='isValidFile && !fileError' x-transition class='mt-2'>
+                        <p class='text-xs text-green-600 flex items-center gap-1'>
+                          <i class='fas fa-check-circle'></i>
+                          <span>File is valid and ready to upload</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <!-- Preview -->
+                    <template x-if='previewUrl && isValidFile'>
+                      <div class='mt-3'>
+                        <p class='text-xs text-slate-500 mb-2'>Preview:</p>
+                        <img
+                          :src='previewUrl'
+                          alt='Preview'
+                          class='rounded-xl border-2 border-green-200 max-h-48 w-full object-contain'
+                        />
+                      </div>
+                    </template>
+
+                    <button
+                      type='submit'
+                      :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)'
+                      :class="((fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-slate-800 hover:to-slate-950 transform hover:-translate-y-1'"
+                      class='w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
+                    >
+                      <i class='fas fa-calendar-check mr-2'></i>
+                      <span x-text="`Enroll Now - Installment (${cicilan.bulan} months)`"></span>
+                    </button>
+                  </form>
+                </template>
               {{/if}}
             {{else}}
               {{#if (check daftar kelas.kuota)}}
@@ -1011,26 +1278,45 @@
                     >
                       <i class='fas fa-file-image mr-2'></i>
                       Upload Registration Proof
+                      <span class='text-red-500'>*</span>
                     </label>
                     <div
                       class='bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-2'
                     >
                       <p class='text-xs text-emerald-700'>
                         <i class='fas fa-info-circle mr-1'></i>
-                        Upload a screenshot of your completed registration form
+                        Upload a screenshot of your completed registration form (Max: 5MB, Format: JPG/JPEG/PNG)
                       </p>
                     </div>
                     <input
                       type='file'
                       name='file'
                       required
-                      class='w-full bg-white border-2 border-emerald-300 rounded-xl p-3 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all'
-                      @change='previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null'
+                      accept='image/jpeg,image/jpg,image/png'
+                      @change='validateFile($event)'
+                      :class="fileError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : isValidFile ? 'border-emerald-500 focus:border-emerald-500 focus:ring-emerald-200' : 'border-emerald-300'"
+                      class='w-full bg-white border-2 rounded-xl p-3 focus:ring-2 transition-all'
                     />
+                    
+                    <!-- Error Message -->
+                    <div x-show='fileError' x-transition class='mt-2'>
+                      <p class='text-xs text-red-600 flex items-start gap-1'>
+                        <i class='fas fa-exclamation-circle mt-0.5'></i>
+                        <span x-text='fileError'></span>
+                      </p>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div x-show='isValidFile && !fileError' x-transition class='mt-2'>
+                      <p class='text-xs text-emerald-600 flex items-center gap-1'>
+                        <i class='fas fa-check-circle'></i>
+                        <span>File is valid and ready to upload</span>
+                      </p>
+                    </div>
                   </div>
 
                   <!-- Preview -->
-                  <template x-if='previewUrl'>
+                  <template x-if='previewUrl && isValidFile'>
                     <div class='mt-3'>
                       <p class='text-xs text-slate-500 mb-2'>Preview:</p>
                       <img
@@ -1043,7 +1329,9 @@
 
                   <button
                     type='submit'
-                    class='w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-emerald-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
+                    :disabled='(fileError) || (!isValidFile && fileInputTouched)'
+                    :class="((fileError) || (!isValidFile && fileInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-emerald-600 hover:to-green-700 transform hover:-translate-y-1'"
+                    class='w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                   >
                     <i class='fas fa-user-plus mr-2'></i>
                     Enroll for Free

@@ -65,7 +65,6 @@ async myPortfolio(@Req() req:Request, @Res() res:Response, @Param('userId') user
   @Get(':portofolioId')
   async findOne(@Param('portofolioId') portofolioId: number, @Res() res:Response, @Req() req:Request) {
     const portfolio = await this.portfoliosService.findOne(portofolioId)
-    console.log(portfolio.kelas.teknologi);
     res.render('user/portofolio/detail', {user: req.user, portfolio})
   }
 

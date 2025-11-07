@@ -3,7 +3,7 @@ import { CreatePembayaranDto } from './dto/create-pembayaran.dto';
 import { UpdatePembayaranDto } from './dto/update-pembayaran.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pembayaran } from 'src/entities/pembayaran.entity';
-import { Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { v2 as cloudinary } from 'cloudinary';
@@ -122,13 +122,30 @@ export class PembayaransService {
     }
   }
 
-  async findPembayaran(userId: number){
-    const pembayaran = await this.pembayaranRepository.find({where: {user: {id: userId}}, relations: ['kelas', 'kelas.kategori', 'cicilan']})
-  if(!pembayaran){
+async findPembayaran(userId: number){
+    const pembayaran = await this.pembayaranRepository.find({
+      where: {
+        user: {id: userId},
+        cicilan: IsNull()
+      }, 
+      relations: ['kelas', 'kelas.kategori', 'cicilan']
+    })
+    
+    if(!pembayaran){
       return
     }else{
       return pembayaran
     }
+  }
+
+async findCicilan(userId: number){
+    return await this.pembayaranRepository.find({
+      where: {
+        user: {id: userId},
+        cicilan: Not(IsNull())
+      }, 
+      relations: ['kelas', 'kelas.kategori', 'cicilan']
+    })
   }
 
   async findPendaftaran(userId: number){
@@ -142,10 +159,6 @@ export class PembayaransService {
     }else{
       return pembayaran
     }
-  }
-
-  async findCicilan(userId: number){
-    return await this.cicilanRepository.find({where: {pembayaran: {user: {id: userId}}}, relations: ['kelas', 'kelas.kategori']})
   }
 
   async findAllPendaftaran(){
