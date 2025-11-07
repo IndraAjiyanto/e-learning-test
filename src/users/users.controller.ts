@@ -72,7 +72,7 @@ export class UsersController {
     }
   }
 
-  @Roles('user','admin','super_admin')
+  @Roles('user', 'admin', 'super_admin')
   @Get('profile')
   async profile(@Res() res: Response, @Req() req: Request) {
     if (!req.user) {
@@ -197,13 +197,17 @@ export class UsersController {
     try {
       const user = await this.usersService.findOne(userId);
       if (profile) {
-        await this.usersService.getPublicIdFromUrl(user.profile);
+        // Hanya hapus foto lama jika user sudah punya foto profile sebelumnya
+        if (user.profile) {
+          await this.usersService.getPublicIdFromUrl(user.profile);
+        }
         updateProfileDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.usersService.updateProfile(userId, updateProfileDto);
       req.flash('success', 'update profile success');
       res.redirect('/users/profile');
     } catch (error) {
+      console.log(error);
       req.flash('error', 'update profile failed');
       res.redirect('/users/profile');
     }

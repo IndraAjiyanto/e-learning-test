@@ -53,8 +53,11 @@ export class UsersService {
     });
   }
 
-  async findPortfolio(userId: number){
-    return await this.portfolioRepository.find({where: {user: {id: userId}},relations: ['user','kelas','kelas.jenis_kelas','kelas.kategori']});
+  async findPortfolio(userId: number) {
+    return await this.portfolioRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user', 'kelas', 'kelas.jenis_kelas', 'kelas.kategori'],
+    });
   }
 
   async findAll() {
@@ -119,6 +122,11 @@ export class UsersService {
   }
 
   async getPublicIdFromUrl(url: string) {
+    // Cek jika url null atau undefined
+    if (!url) {
+      return null;
+    }
+
     // Pisahkan berdasarkan "/upload/"
     const parts = url.split('/upload/');
     if (parts.length < 2) {

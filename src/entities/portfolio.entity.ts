@@ -16,6 +16,8 @@ export class Portfolio{
     @Column()
     deskripsi: string
 
+    @Column()
+    link: string;
 
             @CreateDateColumn()
             createdAt: Date;

@@ -28,21 +28,18 @@ async function bootstrap() {
     {
       username: 'super admin',
       email: 'super@gmail.com',
-      profile: 'logo_wiratek.png',
       password: hashedPassword,
       role: 'super_admin',
     },
     {
       username: 'mentor',
       email: 'mentor@gmail.com',
-      profile: 'logo_wiratek.png',
       password: hashedPassword,
       role: 'admin',
     },
     {
       username: 'indra',
       email: 'indra@gmail.com',
-      profile: 'logo_wiratek.png',
       password: hashedPassword,
       role: 'user',
     },
@@ -130,6 +127,7 @@ async function bootstrap() {
       ],
       jenis_kelas: { id: 1 },
       kategori: { id: 1 },
+      bulan: {id: 2}
     },
   ]);
 

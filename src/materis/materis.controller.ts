@@ -56,10 +56,10 @@ export class MaterisController {
     allowedTypes: ['application/pdf'],
     fileExtensions: ['.pdf'],
     folder: 'nestjs/pdf',
+    resourceType: 'raw'
   })
   async createPdf(
     @Body() createMaterisDto: CreateMaterisDto,
-    @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
     @Param('pertemuanId') pertemuanId: number,
     @Req() req: Request,

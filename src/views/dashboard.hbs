@@ -66,7 +66,7 @@
         <div class='absolute bottom-12 right-8 w-6 h-6 bg-slate-400/20 rounded-full animate-bounce-subtle animation-delay-2000 pointer-events-none z-10'></div>
 
         <img
-          src='{{#if tentang.[0].gambar}}{{tentang.[0].gambar}}{{else}}/images/hero-placeholder.jpg{{/if}}'
+          src='{{#if tentang.[0].gambar}}{{tentang.[0].gambar}}{{else}}/public/image/orang.png{{/if}}'
           class='relative w-full transform transition-transform duration-300 z-10'
         />
 
@@ -89,7 +89,7 @@
         class='text-4xl sm:text-5xl md:text-6xl font-bold leading-tight font-montserrat mb-4'
       >
         <span
-          class='bg-gradient-to-r from-slate-700 whitespace-nowrap via-slate-800 to-slate-900 bg-clip-text text-transparent'
+          class='bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 bg-clip-text text-transparent'
         >
           {{#if tentang.[0].judul}}{{tentang.[0].judul}}{{else}}Transform Your Career with Kesatria Academy{{/if}}
         </span>
@@ -107,7 +107,8 @@
         class='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'
       >
         <button
-          class='group btn text-xl bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-600 hover:to-slate-800 px-8 sm:px-16 lg:px-20 border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden'
+          onclick="document.getElementById('courses-section').scrollIntoView({ behavior: 'smooth', block: 'start' })"
+          class=' btn text-xl bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-600 hover:to-slate-800 px-8 sm:px-16 lg:px-20 border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden cursor-pointer' 
         >
           <span class='relative z-10 flex items-center gap-2'>
             <i class='fas fa-rocket'></i>
@@ -118,7 +119,7 @@
           ></div>
         </button>
         <button
-          class='group btn text-xl bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-8 sm:px-16 lg:px-20 border-2 border-slate-300 hover:border-slate-400 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2'
+          class=' btn text-xl bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-8 sm:px-16 lg:px-20 border-2 border-slate-300 hover:border-slate-400 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2'
         >
           <span class='flex items-center gap-2'>
             <i class='fas fa-comments'></i>
@@ -848,6 +849,7 @@
   }"
   class='bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 py-20 px-6 lg:px-20 relative overflow-visible'
   x-init="$watch('tab', () => currentPage = 1); $watch('selectedMethod', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
+  id='courses-section'
 >
 
   <!-- Header Section -->

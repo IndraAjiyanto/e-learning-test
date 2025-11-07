@@ -5,101 +5,106 @@ import {
   CallHandler,
   BadRequestException,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import {
-  VALIDATE_FILE_KEY,
-  ValidateFileOptions,
-} from '../decorators/validate-file.decorator';
 import { Observable } from 'rxjs';
-import { Request } from 'express';
-import { UploadService } from '../upload/upload.service';
+import { v2 as cloudinary } from 'cloudinary';
+import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class ValidateFileInterceptor implements NestInterceptor {
-  constructor(
-    private reflector: Reflector,
-    private uploadService: UploadService,
-  ) {}
+  constructor(private reflector: Reflector) {}
 
   async intercept(
     context: ExecutionContext,
     next: CallHandler,
   ): Promise<Observable<any>> {
-    const request = context.switchToHttp().getRequest<Request>();
-    const options = this.reflector.get<ValidateFileOptions>(
-      VALIDATE_FILE_KEY,
-      context.getHandler(),
-    );
+    const request = context.switchToHttp().getRequest();
+    const file = request.file;
 
-    // kalau handler gak pakai @ValidateFile, langsung lanjut aja
-    if (!options) return next.handle();
-
-    // deteksi apakah pakai FileInterceptor atau FilesInterceptor atau FileFieldsInterceptor
-    const files: Express.Multer.File[] = [];
-
-    if (Array.isArray(request.files)) {
-      // FilesInterceptor - banyak file dengan nama sama
-      files.push(...(request.files as Express.Multer.File[]));
-    } else if (typeof request.files === 'object' && request.files !== null) {
-      // FileFieldsInterceptor - banyak file dengan nama beda
-      Object.values(
-        request.files as { [fieldname: string]: Express.Multer.File[] },
-      ).forEach((fileArray) => {
-        files.push(...fileArray);
-      });
-    } else if (request.file) {
-      // FileInterceptor - satu file
-      files.push(request.file as Express.Multer.File);
+    if (!file) {
+      return next.handle();
     }
 
-    // kalau gak ada file, skip
-    if (!files.length) return next.handle();
+    const options = this.reflector.get('validateFile', context.getHandler());
+
+    if (!options) {
+      return next.handle();
+    }
+
+    const {
+      maxSize,
+      allowedTypes,
+      fileExtensions,
+      folder,
+      resourceType = 'auto', // Default 'auto', bisa diubah ke 'raw', 'image', 'video'
+    } = options;
+
+    // Validate file size
+    if (maxSize && file.size > maxSize) {
+      throw new BadRequestException(
+        `File size exceeds maximum allowed size of ${maxSize / 1024 / 1024}MB`,
+      );
+    }
+
+    // Validate file type
+    if (allowedTypes && !allowedTypes.includes(file.mimetype)) {
+      throw new BadRequestException(
+        `File type ${file.mimetype} is not allowed. Allowed types: ${allowedTypes.join(', ')}`,
+      );
+    }
+
+    // Validate file extension
+    if (fileExtensions) {
+      const fileExt = `.${file.originalname.split('.').pop()}`;
+      if (!fileExtensions.includes(fileExt.toLowerCase())) {
+        throw new BadRequestException(
+          `File extension ${fileExt} is not allowed. Allowed extensions: ${fileExtensions.join(', ')}`,
+        );
+      }
+    }
 
     try {
-      const uploadResults: string[] = [];
+      // Upload to Cloudinary with specified resource_type
+      const uploadResult: any = await new Promise((resolve, reject) => {
+        const uploadOptions: any = {
+          folder: folder || 'uploads',
+        };
 
-      for (const file of files) {
-        // Validasi file size
-        if (options.maxSize && file.size > options.maxSize) {
-          throw new Error(
-            `File size exceeds maximum allowed size of ${(options.maxSize / 1024 / 1024).toFixed(2)}MB`,
-          );
+        // Set resource_type based on file type or explicit option
+        if (resourceType === 'raw' || file.mimetype === 'application/pdf') {
+          uploadOptions.resource_type = 'raw';
+        } else if (resourceType === 'image' || file.mimetype.startsWith('image/')) {
+          uploadOptions.resource_type = 'image';
+        } else if (resourceType === 'video' || file.mimetype.startsWith('video/')) {
+          uploadOptions.resource_type = 'video';
+        } else {
+          uploadOptions.resource_type = 'auto';
         }
 
-        // Validasi file type (MIME type)
-        if (
-          options.allowedTypes &&
-          !options.allowedTypes.includes(file.mimetype)
-        ) {
-          throw new Error(
-            `File type ${file.mimetype} is not allowed. Allowed types: ${options.allowedTypes.join(', ')}`,
-          );
-        }
-
-        // Validasi file extension
-        if (options.fileExtensions) {
-          const fileExt = file.originalname
-            .toLowerCase()
-            .substring(file.originalname.lastIndexOf('.'));
-          if (!options.fileExtensions.includes(fileExt)) {
-            throw new Error(
-              `File extension ${fileExt} is not allowed. Allowed extensions: ${options.fileExtensions.join(', ')}`,
-            );
-          }
-        }
-
-        // Upload ke Cloudinary
-        const fileUrl = await this.uploadService.uploadToCloudinary(
-          file,
-          options.folder,
+        const uploadStream = cloudinary.uploader.upload_stream(
+          uploadOptions,
+          (error, result) => {
+            if (error) {
+              console.error('Cloudinary upload error:', error);
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          },
         );
-        uploadResults.push(fileUrl);
-      }
 
-      // taruh hasil upload di body agar bisa diakses di controller
-      request.body.uploadedFileUrls = uploadResults;
-    } catch (err) {
-      throw new BadRequestException(err.message);
+        uploadStream.end(file.buffer);
+      });
+
+      // Store uploaded file URL in request body
+      if (!request.body.uploadedFileUrls) {
+        request.body.uploadedFileUrls = [];
+      }
+      request.body.uploadedFileUrls.push(uploadResult.secure_url);
+
+      console.log('File uploaded to Cloudinary:', uploadResult.secure_url);
+    } catch (error) {
+      console.error('Error uploading to Cloudinary:', error);
+      throw new BadRequestException('Failed to upload file to cloud storage');
     }
 
     return next.handle();

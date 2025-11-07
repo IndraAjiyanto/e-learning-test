@@ -24,6 +24,16 @@
                 rows="6"
                 class="w-full text-gray-700 bg-white/70 border border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 hover:bg-white resize-none">{{portfolio.deskripsi}}</textarea>
             </div>
+
+            <!-- Link -->
+            <div>
+              <label for="link" class="block text-lg font-semibold text-gray-700 mb-3">Link <span class="text-red-500">*</span></label>
+              <input type="url" id="link" name="link" required
+                placeholder="Enter link (e.g., https://example.com)..."
+                value="{{portfolio.link}}"
+                class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white" />
+              <p class="text-xs text-slate-500 mt-2">Enter a valid URL starting with http:// or https://</p>
+            </div>
           </div>
 
           <!-- Kolom Kanan -->
@@ -67,6 +77,10 @@
 
             <!-- Upload Gambar Baru -->
             <div x-data="{ newFiles: [] }" class="space-y-4">
+              <label class="block text-lg font-semibold text-gray-700 mb-3">
+                Add New Images
+              </label>
+              <p class="text-xs text-slate-500 mb-3">Allowed: JPG, JPEG, PNG, GIF. Max size: 5MB per image</p>
               
               <template x-for="(file, index) in newFiles" :key="index">
                 <div class="space-y-4">
@@ -75,11 +89,36 @@
                       <input 
                         type="file" 
                         name="gambar"
-                        accept="image/*"
-                        @change="const fileInput = $event.target;
-                                if (fileInput.files && fileInput.files[0]) {
-                                  file.preview = URL.createObjectURL(fileInput.files[0]);
-                                }"
+                        accept="image/jpeg,image/jpg,image/png,image/gif"
+                        x-ref="fileInput"
+                        @change="
+                          file.error = '';
+                          const selectedFile = $event.target.files[0];
+                          if (selectedFile) {
+                            // Validasi tipe file
+                            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                            if (!allowedTypes.includes(selectedFile.type)) {
+                              file.error = 'Only JPG, JPEG, PNG, and GIF images are allowed!';
+                              $event.target.value = null;
+                              file.preview = null;
+                              return;
+                            }
+                            
+                            // Validasi ukuran file (max 5MB)
+                            const maxSize = 5 * 1024 * 1024; // 5MB
+                            if (selectedFile.size > maxSize) {
+                              file.error = 'File size must not exceed 5MB!';
+                              $event.target.value = null;
+                              file.preview = null;
+                              return;
+                            }
+                            
+                            // Set preview jika valid
+                            file.preview = URL.createObjectURL(selectedFile);
+                          } else {
+                            file.preview = null;
+                          }
+                        "
                         class="w-full border border-slate-300 rounded-xl px-5 py-4 bg-white/70 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
                     </div>
 
@@ -90,6 +129,16 @@
                       </svg>
                     </button>
                   </div>
+
+                  <!-- Error Message -->
+                  <template x-if="file.error">
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span class="text-sm font-medium" x-text="file.error"></span>
+                    </div>
+                  </template>
 
                   <!-- Image Preview -->
                   <template x-if="file.preview">
@@ -116,7 +165,7 @@
               </template>
 
               <!-- Add New Image Button -->
-              <button type="button" @click="newFiles.push({ preview: null })"
+              <button type="button" @click="newFiles.push({ preview: null, error: '' })"
                 class="w-full border-2 border-dashed border-slate-300 rounded-xl px-6 py-4 text-slate-500 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2 transition-all duration-300 group">
                 <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>

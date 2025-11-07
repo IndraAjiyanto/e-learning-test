@@ -1,13 +1,12 @@
 import { SetMetadata } from '@nestjs/common';
 
-export const VALIDATE_FILE_KEY = 'validateFileOptions';
-
 export interface ValidateFileOptions {
-  folder: string;
-  maxSize?: number; // in bytes (e.g., 50 * 1024 * 1024 = 50MB)
-  allowedTypes?: string[]; // e.g., ['application/pdf', 'video/mp4']
-  fileExtensions?: string[]; // e.g., ['.pdf', '.ppt', '.pptx']
+  maxSize?: number;
+  allowedTypes?: string[];
+  fileExtensions?: string[];
+  folder?: string;
+  resourceType?: 'auto' | 'image' | 'raw' | 'video'; // Tambahkan resourceType
 }
 
 export const ValidateFile = (options: ValidateFileOptions) =>
-  SetMetadata(VALIDATE_FILE_KEY, options);
+  SetMetadata('validateFile', options);

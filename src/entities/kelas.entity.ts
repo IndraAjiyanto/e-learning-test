@@ -11,7 +11,6 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from './user.entity';
 import { Portfolio } from './portfolio.entity';
 import { Kategori } from './kategori.entity';
 import { Pembayaran } from './pembayaran.entity';

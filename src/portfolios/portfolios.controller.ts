@@ -19,7 +19,7 @@ export class PortfoliosController {
   @Post(':kelasId')
       @UseInterceptors(FilesInterceptor('gambar', 100 ,multerConfigMemory), ValidateImageInterceptor)
     @ValidateImage({ minWidth: 1900, maxWidth: 1920, minHeight: 1000, maxHeight: 1080, folder: 'nestjs/images/portfolio/user' }) 
-  async create(@UploadedFiles() gambar: Express.Multer.File[], @Param('kelasId') kelasId: number, @Body() createPortfolioDto: CreatePortfolioDto, @Res() res:Response, @Req() req:Request) {
+  async create( @Param('kelasId') kelasId: number, @Body() createPortfolioDto: CreatePortfolioDto, @Res() res:Response, @Req() req:Request) {
     try {
       createPortfolioDto.kelasId = kelasId
       createPortfolioDto.gambar = req.body.uploadedImageUrls;
@@ -65,6 +65,7 @@ async myPortfolio(@Req() req:Request, @Res() res:Response, @Param('userId') user
   @Get(':portofolioId')
   async findOne(@Param('portofolioId') portofolioId: number, @Res() res:Response, @Req() req:Request) {
     const portfolio = await this.portfoliosService.findOne(portofolioId)
+    console.log(portfolio.kelas.teknologi);
     res.render('user/portofolio/detail', {user: req.user, portfolio})
   }
 

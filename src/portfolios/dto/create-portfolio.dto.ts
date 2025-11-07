@@ -10,6 +10,9 @@ export class CreatePortfolioDto {
     @IsString()
     deskripsi: string
 
+    @IsString()
+    link: string;
+
     @IsArray()
     teknologi: string[]
     

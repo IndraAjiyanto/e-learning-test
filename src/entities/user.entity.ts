@@ -34,7 +34,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({nullable: true})
   profile: string;
 
   @Column({ type: 'enum', enum: ['super_admin', 'admin', 'user'], default: 'user' })

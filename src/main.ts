@@ -15,7 +15,6 @@ import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.f
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-
   app.useGlobalFilters(new ForbiddenExceptionFilter());
   app.useStaticAssets(join(__dirname, '..', 'src', 'common', 'public'), {
     prefix: '/public/',
@@ -131,6 +130,7 @@ async function bootstrap() {
     };
     return d.toLocaleDateString('en-US', options);
   });
+
   hbs.registerPartials(join(__dirname, '..', 'src', 'views', 'partials'));
   app.set('view options', { layout: 'layouts/main' });
   app.use(methodOverride('_method'));

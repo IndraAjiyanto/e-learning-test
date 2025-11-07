@@ -229,11 +229,11 @@
                   </div>
                 </template>
 
-                <!-- Kategori Badge -->
+                <!-- Nama Kelas Badge -->
                 <div
                   class='absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md'
                 >
-                  <span x-text="getCategoryName(item) || 'No Category'"></span>
+                  <span x-text="item.kelas?.nama_kelas || 'No Class'"></span>
                 </div>
 
                 <!-- Dots Indicator (jika ada lebih dari 1 gambar) -->
