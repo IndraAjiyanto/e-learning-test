@@ -24,7 +24,7 @@ export class WipService {
   }
 
   async findAll() {
-    return await this.kelasRepository.find({where: {kategori: {nama_kategori : 'wip'
+    return await this.kelasRepository.find({where: {kategori: {nama_kategori : 'WIP'
     }}});
   }
 
