@@ -105,6 +105,18 @@ export class LogbookService {
     });
   }
 
+  async findUsers(pertemuanId: number) {
+    return await this.userRepository.find({
+      where: {
+        user_kelas: {
+          kelas: { minggu: { pertemuan: { id: pertemuanId } } },
+        },
+      },
+      relations: ['user_kelas', 'user_kelas.user', 'user_kelas.kelas'],
+    });
+  }
+  
+
   async findPertemuan(pertemuanId: number) {
     const pertemuan = await this.pertemuanRepository.findOne({
       where: { id: pertemuanId },
@@ -224,7 +236,11 @@ export class LogbookService {
     return await this.logBookRepository.save(logbook);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} logbook`;
+  async remove(logbookId: number) {
+    const logbook = await this.findOne(logbookId);
+    if (!logbook) {
+      throw new NotFoundException('logbook not found');
+    }
+    await this.logBookRepository.remove(logbook);
   }
 }

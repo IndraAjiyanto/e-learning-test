@@ -18,7 +18,9 @@ import { UpdateLogbookDto } from './dto/update-logbook.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigImage } from 'src/common/config/multer.config';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { memoryStorage } from 'multer';
 import { Request, Response } from 'express';
 import { Proses } from 'src/entities/logbook.entity';
 
@@ -29,7 +31,15 @@ export class LogbookController {
 
   @Roles('user')
   @Post(':pertemuanId')
-  @UseInterceptors(FileInterceptor('dokumentasi', multerConfigImage))
+  @UseInterceptors(
+    FileInterceptor('dokumentasi', { storage: memoryStorage() }),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/logbook/user',
+  })
   async create(
     @Param('pertemuanId') pertemuanId: number,
     @Body() createLogbookDto: CreateLogbookDto,
@@ -38,7 +48,16 @@ export class LogbookController {
     @Req() req: Request,
   ) {
     try {
-      createLogbookDto.dokumentasi = dokumentasi.path;
+      console.log('Request body:', req.body);
+      console.log('Uploaded image URLs:', req.body.uploadedImageUrls);
+      console.log('File object:', dokumentasi);
+
+      // Pastikan file berhasil diupload
+      if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
+        throw new Error('Image upload failed. Please try again.');
+      }
+
+      createLogbookDto.dokumentasi = req.body.uploadedImageUrls[0];
       createLogbookDto.userId = req.user!.id;
       if (req.user?.role === 'user') {
         createLogbookDto.proses = 'proces';
@@ -55,8 +74,10 @@ export class LogbookController {
         res.redirect(`/kelass/${pertemuan.minggu.kelas.id}`);
       }
     } catch (error) {
+      console.log('Error creating logbook:', error);
       const pertemuan = await this.logbookService.findPertemuan(pertemuanId);
-      req.flash('error', 'Failed to add log book');
+      const errorMessage = error.message || 'Failed to add log book';
+      req.flash('error', errorMessage);
       if (req.user?.role === 'admin') {
         res.redirect('/logbook');
       } else if (req.user?.role === 'user') {
@@ -66,23 +87,45 @@ export class LogbookController {
   }
 
   @Roles('admin')
-  @Post()
-  @UseInterceptors(FileInterceptor('dokumentasi', multerConfigImage))
+  @Post('create/:pertemuanId')
+  @UseInterceptors(
+    FileInterceptor('dokumentasi', { storage: memoryStorage() }),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/logbook/user',
+  })
   async createLogBook(
     @Body() createLogbookDto: CreateLogbookDto,
     @UploadedFile() dokumentasi: Express.Multer.File,
     @Res() res: Response,
     @Req() req: Request,
+    @Param('pertemuanId') pertemuanId: number,
   ) {
+    console.log('=== CREATE LOGBOOK START ===');
+    console.log('Request body:', req.body);
+    console.log('Uploaded image URLs:', req.body.uploadedImageUrls);
+    console.log('File object:', dokumentasi);
+
     try {
-      createLogbookDto.dokumentasi = dokumentasi.path;
-      createLogbookDto.userId = req.user!.id;
+      // Pastikan file berhasil diupload
+      if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
+        throw new Error('Image upload failed. Please try again.');
+      }
+
+      createLogbookDto.dokumentasi = req.body.uploadedImageUrls[0];
+      createLogbookDto.userId = createLogbookDto.userId;
+      createLogbookDto.pertemuanId = pertemuanId;
       await this.logbookService.create(createLogbookDto);
       req.flash('success', 'Log book added successfully');
-      res.redirect('/logbook');
+      res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'Failed to add log book');
-      res.redirect('/logbook');
+      console.log('Error creating logbook:', error);
+      const errorMessage = error.message || 'Failed to add log book';
+      req.flash('error', errorMessage);
+      res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }
 
@@ -112,7 +155,6 @@ export class LogbookController {
       res.render('user/logbook/index', { user: req.user, kelas, logbook });
     }
   }
-
 
   @Roles('admin')
   @Get('formCreate')
@@ -158,9 +200,29 @@ export class LogbookController {
     res.render('user/logbook/detail', { user: req.user, logbook });
   }
 
+  @Roles('admin')
+  @Get('create/:pertemuanId')
+  async createLogbookUser(
+    @Param('pertemuanId') pertemuanId: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const users = await this.logbookService.findUsers(pertemuanId);
+    console.log(users);
+    res.render('admin/logbook/create', { user: req.user, pertemuanId, users });
+  }
+
   @Roles('admin', 'user')
   @Patch(':logbookId')
-  @UseInterceptors(FileInterceptor('dokumentasi', multerConfigImage))
+  @UseInterceptors(
+    FileInterceptor('dokumentasi', { storage: memoryStorage() }),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/logbook/user',
+  })
   async update(
     @UploadedFile() dokumentasi: Express.Multer.File,
     @Param('logbookId') logbookId: number,
@@ -172,7 +234,8 @@ export class LogbookController {
       const logbook = await this.logbookService.findOne(logbookId);
       if (dokumentasi) {
         await this.logbookService.getPublicIdFromUrl(logbook.dokumentasi);
-        updateLogbookDto.dokumentasi = dokumentasi.path;
+        updateLogbookDto.dokumentasi =
+          req.body.uploadedImageUrls?.[0] || dokumentasi.path;
       }
       updateLogbookDto.proses = 'proces';
       await this.logbookService.update(logbookId, updateLogbookDto);
@@ -215,9 +278,21 @@ export class LogbookController {
     }
   }
 
-  @Roles('user', 'admin')
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.logbookService.remove(+id);
+  @Roles('admin')
+  @Delete(':pertemuanId/:logbookId')
+  async remove(
+    @Param('logbookId') logbookId: number,
+    @Param('pertemuanId') pertemuanId: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.logbookService.remove(logbookId);
+      req.flash('success', 'logbook successfully deleted');
+      res.redirect(`/pertemuans/${pertemuanId}`);
+    } catch (error) {
+      req.flash('error', 'logbook failed to delete');
+      res.redirect(`/pertemuans/${pertemuanId}`);
+    }
   }
 }

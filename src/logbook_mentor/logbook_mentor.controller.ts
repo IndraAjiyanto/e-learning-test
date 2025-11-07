@@ -34,7 +34,8 @@ export class LogbookMentorController {
   @Get()
   async findAll(@Res() res:Response, @Req() req:Request) {
     const logbook_mentor =  await this.logbookMentorService.findAll();
-    res.render('admin/logbook_mentor/index', {user:req.user, logbook_mentor})
+    const kelas = await this.logbookMentorService.getKelasList(req.user!.id);
+    res.render('admin/logbook_mentor/index', {user:req.user, logbook_mentor, kelas})
   }
 
   @Roles('admin')
@@ -77,13 +78,15 @@ export class LogbookMentorController {
   }
 
   @Roles('admin')
-  @Delete(':logbook_mentorId')
-  async remove(@Param('logbook_mentorId') logbook_mentorId: number) {
+  @Delete(':pertemuanId/:logbook_mentorId')
+  async remove(@Param('logbook_mentorId') logbook_mentorId: number, @Param('pertemuanId') pertemuanId: number, @Res() res:Response, @Req() req:Request) {
     try {
       await this.logbookMentorService.remove(logbook_mentorId);
-
+      req.flash('success', 'logbook successfully deleted');
+      res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      
+      req.flash('error', 'logbook failed to delete');
+      res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }
 }

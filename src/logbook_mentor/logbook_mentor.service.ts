@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { User } from 'src/entities/user.entity';
 import cloudinary from 'src/common/config/multer.config';
+import { Kelas } from 'src/entities/kelas.entity';
 
 @Injectable()
 export class LogbookMentorService {
@@ -16,6 +17,8 @@ export class LogbookMentorService {
     private readonly pertemuanRepository: Repository<Pertemuan>
     @InjectRepository(User)
     private readonly userRepository: Repository<User>
+    @InjectRepository(Kelas)
+    private readonly kelasRepository: Repository<Kelas>
 
   async create(createLogbookMentorDto: CreateLogbookMentorDto) {
         const user = await this.userRepository.findOne({where: {id: createLogbookMentorDto.userId}})
@@ -32,6 +35,11 @@ export class LogbookMentorService {
       pertemuan: pertemuan
     })
     return await this.logBookMentorRepository.save(logbook)
+  }
+
+
+  async getKelasList(userId: number) {
+    return await this.kelasRepository.find({where: {mentoring: {user: {id: userId}}}});
   }
 
   async findAll() {
