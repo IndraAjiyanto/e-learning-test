@@ -8,11 +8,12 @@ import { Portfolio } from 'src/entities/portfolio.entity';
 import { UploadService } from 'src/common/upload/upload.service';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { CommonModule } from 'src/common/common.module';
+import { EmailService } from 'src/common/email/email.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Kelas, Portfolio]), CommonModule],
   controllers: [UsersController],
-  providers: [UsersService,],
+  providers: [UsersService, EmailService],
   exports: [UsersService],
 })
 export class UsersModule {}

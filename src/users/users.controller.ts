@@ -22,6 +22,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   createMemoryConfig,
@@ -33,13 +35,82 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
-@UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // ============================================
+  // PUBLIC ROUTES - Forgot & Reset Password (No Auth Required)
+  // ============================================
+
+  @Get('forgot-password')
+  forgotPasswordPage(@Res() res: Response) {
+    return res.render('forgot-password');
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.usersService.forgotPassword(forgotPasswordDto);
+      req.flash(
+        'success',
+        'Password reset link has been sent to your email. Please check your inbox.',
+      );
+      res.redirect('/users/forgot-password');
+    } catch (error) {
+      console.log(error);
+      req.flash(
+        'error',
+        error.message || 'Failed to process password reset request',
+      );
+      res.redirect('/users/forgot-password');
+    }
+  }
+
+  @Get('reset-password')
+  resetPasswordPage(
+    @Query('token') token: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if (!token) {
+      req.flash('error', 'Invalid or missing reset token');
+      return res.redirect('/login');
+    }
+    return res.render('reset-password', { token });
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.usersService.resetPassword(resetPasswordDto);
+      req.flash(
+        'success',
+        'Password has been reset successfully! You can now login with your new password.',
+      );
+      res.redirect('/login');
+    } catch (error) {
+      console.log(error);
+      req.flash('error', error.message || 'Failed to reset password');
+      res.redirect(`/users/reset-password?token=${resetPasswordDto.token}`);
+    }
+  }
+
+  // ============================================
+  // PROTECTED ROUTES - Require Authentication
+  // ============================================
+
+  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Post()
   @UseInterceptors(

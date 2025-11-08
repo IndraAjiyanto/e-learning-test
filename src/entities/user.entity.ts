@@ -1,5 +1,18 @@
-import { BeforeInsert, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToMany, JoinTable, BeforeUpdate, OneToOne, JoinColumn } from 'typeorm';
-import * as bcrypt from "bcrypt";
+import {
+  BeforeInsert,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+  BeforeUpdate,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { Absen } from './absen.entity';
 import { Kelas } from './kelas.entity';
 import { Biodata } from './biodata.entity';
@@ -18,7 +31,7 @@ import { LogbookMentor } from './logbook_mentor.entity';
 import { ProgresQuiz } from './progres_quiz.entity';
 import { Mentoring } from './mentoring.entity';
 
-export type UserRole = 'super_admin' |'admin' | 'user';
+export type UserRole = 'super_admin' | 'admin' | 'user';
 
 @Entity('user')
 export class User {
@@ -34,11 +47,21 @@ export class User {
   @Column()
   password: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   profile: string;
 
-  @Column({ type: 'enum', enum: ['super_admin', 'admin', 'user'], default: 'user' })
+  @Column({
+    type: 'enum',
+    enum: ['super_admin', 'admin', 'user'],
+    default: 'user',
+  })
   role: UserRole;
+
+  @Column({ nullable: true })
+  resetPasswordToken: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  resetPasswordExpires: Date;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -47,7 +70,7 @@ export class User {
   updatedAt: Date;
 
   @BeforeInsert()
-  async hashPassword(){
+  async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
@@ -58,45 +81,84 @@ export class User {
     }
   }
 
-@OneToMany(() => Absen, (absen) => absen.user, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => Absen, (absen) => absen.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   absen: Absen[];
 
-@OneToMany(() => Logbook, (logbook) => logbook.user, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => Logbook, (logbook) => logbook.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   logbook: Logbook[];
 
-@OneToMany(() => LogbookMentor, (logbook_mentor) => logbook_mentor.user, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => LogbookMentor, (logbook_mentor) => logbook_mentor.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   logbook_mentor: LogbookMentor[];
 
-@OneToMany(() => Portfolio, (portfolio) => portfolio.user, { cascade: true, onDelete: 'CASCADE'  })
+  @OneToMany(() => Portfolio, (portfolio) => portfolio.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   portfolio: Portfolio[];
 
-@OneToMany(() => Pembayaran, (pembayaran) => pembayaran.user, { cascade: true,  onDelete: 'CASCADE' })
+  @OneToMany(() => Pembayaran, (pembayaran) => pembayaran.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   pembayaran: Pembayaran[];
 
-@OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.user, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   jawaban_user: JawabanUser[];
 
-@OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.user, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   jawaban_tugas: JawabanTugas[];
 
-   @OneToMany(() => UserKelas, (user_kelas) => user_kelas.user, {cascade: true, onDelete : 'CASCADE'})
-    user_kelas: UserKelas[]
+  @OneToMany(() => UserKelas, (user_kelas) => user_kelas.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  user_kelas: UserKelas[];
 
-@OneToMany(() => Nilai, (nilai) => nilai.user, { cascade: true, onDelete: 'CASCADE' })
-nilai: Nilai[];
+  @OneToMany(() => Nilai, (nilai) => nilai.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  nilai: Nilai[];
 
-@OneToMany(() => ProgresMinggu, (progres_minggu) => progres_minggu.user, { cascade: true, onDelete: 'CASCADE' })
-progres_minggu: ProgresMinggu[];
+  @OneToMany(() => ProgresMinggu, (progres_minggu) => progres_minggu.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  progres_minggu: ProgresMinggu[];
 
-@OneToMany(() => ProgresPertemuan, (progres_pertemuan) => progres_pertemuan.user, { cascade: true, onDelete: 'CASCADE' })
-progres_pertemuan: ProgresPertemuan[];
+  @OneToMany(
+    () => ProgresPertemuan,
+    (progres_pertemuan) => progres_pertemuan.user,
+    { cascade: true, onDelete: 'CASCADE' },
+  )
+  progres_pertemuan: ProgresPertemuan[];
 
-@OneToMany(() => ProgresQuiz, (progres_quiz) => progres_quiz.user, { cascade: true, onDelete: 'CASCADE' })
-progres_quiz: ProgresQuiz[];
+  @OneToMany(() => ProgresQuiz, (progres_quiz) => progres_quiz.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  progres_quiz: ProgresQuiz[];
 
-@OneToMany(() => Sertifikat, (sertifikat) => sertifikat.user, { cascade: true, onDelete: 'CASCADE' })
-sertifikat: Sertifikat[];
-
+  @OneToMany(() => Sertifikat, (sertifikat) => sertifikat.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  sertifikat: Sertifikat[];
 
   @OneToMany(() => Mentoring, (mentoring) => mentoring.user, {
     cascade: true,
@@ -104,10 +166,15 @@ sertifikat: Sertifikat[];
   })
   mentoring: Mentoring[];
 
+  @OneToOne(() => Biodata, (biodata) => biodata.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  biodata: Biodata;
 
-    @OneToOne(() => Biodata, (biodata) => biodata.user, { cascade: true, onDelete: 'CASCADE' }) 
-    biodata: Biodata
-
-    @OneToOne(() => BiodataMentor, (biodata_mentor) => biodata_mentor.user, { cascade: true, onDelete: 'CASCADE' }) 
-    biodata_mentor: BiodataMentor
+  @OneToOne(() => BiodataMentor, (biodata_mentor) => biodata_mentor.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  biodata_mentor: BiodataMentor;
 }
