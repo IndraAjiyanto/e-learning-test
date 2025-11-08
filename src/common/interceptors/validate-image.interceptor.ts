@@ -94,6 +94,7 @@ export class ValidateImageInterceptor implements NestInterceptor {
         const imageUrl = await this.uploadService.uploadToCloudinary(
           file,
           options.folder,
+          options.skipTransformation ?? false, // use option from decorator, default false
         );
         uploadResults.push(imageUrl);
       }

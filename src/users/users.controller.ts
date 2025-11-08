@@ -54,6 +54,7 @@ export class UsersController {
     maxSize: 1 * 1024 * 1024, // 3MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/profile',
+    skipTransformation: true, // profile images are already validated, no need transformation
   })
   async create(
     @Body() createUserDto: CreateUserDto,
@@ -135,24 +136,36 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     try {
-      if(req.user!.id === id){
-      await this.usersService.update(id, updateUserDto);
-      req.flash('success', 'User successfully updated');
-      res.redirect('/users/profile');
-      }else{
-      req.flash('error', 'Failed to update user');
+      if (req.user!.id === id) {
+        await this.usersService.update(id, updateUserDto);
+        req.flash('success', 'User successfully updated');
+        res.redirect('/users/profile');
+      } else {
+        req.flash('error', 'Failed to update user');
       }
     } catch (error) {
       req.flash('error', 'Failed to update user');
       res.redirect('/users/profile');
     }
-    
   }
 
   // update user
   @Roles('super_admin')
   @Patch('super_admin/:userId')
-  @UseInterceptors(FileInterceptor('profile', multerConfigImage))
+  @UseInterceptors(
+    FileInterceptor('profile', multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 300,
+    maxWidth: 500,
+    minHeight: 300,
+    maxHeight: 500,
+    maxSize: 1 * 1024 * 1024, // 1MB max
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/profile',
+    skipTransformation: true, // profile images are already validated, no need transformation
+  })
   async updateAdmin(
     @UploadedFile() profile: Express.Multer.File,
     @Param('userId') userId: number,
@@ -163,8 +176,10 @@ export class UsersController {
     try {
       const user = await this.usersService.findOne(userId);
       if (profile) {
-        await this.usersService.getPublicIdFromUrl(user.profile);
-        updateUserDto.profile = profile.path;
+        if (user.profile) {
+          await this.usersService.getPublicIdFromUrl(user.profile);
+        }
+        updateUserDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.usersService.update(userId, updateUserDto);
       req.flash('success', 'User successfully updated');
@@ -184,12 +199,12 @@ export class UsersController {
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
     try {
-      if(req.user!.id === id){
-      await this.usersService.updatePassword(id, updatePasswordDto);
-      req.flash('success', 'Password successfully updated');
-      res.redirect('/users/profile');
-      }else{
-      req.flash('error', 'Failed to update password');
+      if (req.user!.id === id) {
+        await this.usersService.updatePassword(id, updatePasswordDto);
+        req.flash('success', 'Password successfully updated');
+        res.redirect('/users/profile');
+      } else {
+        req.flash('error', 'Failed to update password');
       }
     } catch (error) {
       req.flash('error', 'Failed to update password');
@@ -200,10 +215,7 @@ export class UsersController {
   @Roles('user', 'admin', 'super_admin')
   @Patch('update/profile/:userId')
   @UseInterceptors(
-    FileInterceptor(
-      'profile',
-      createMemoryConfig({ fileTypes: ['image'], maxSize: 5 }),
-    ),
+    FileInterceptor('profile', multerConfigMemory),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -211,7 +223,10 @@ export class UsersController {
     maxWidth: 500,
     minHeight: 300,
     maxHeight: 500,
+    maxSize: 5 * 1024 * 1024, // 5MB max
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/profile',
+    skipTransformation: true, // profile images are already validated, no need transformation
   })
   async updateProfile(
     @Param('userId') userId: number,
@@ -221,22 +236,41 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
+      console.log('=== UPDATE PROFILE START ===');
+      console.log('userId param:', userId, 'type:', typeof userId);
+      console.log('req.user.id:', req.user?.id, 'type:', typeof req.user?.id);
+      console.log('Profile file received:', profile ? 'YES' : 'NO');
+      console.log('File size:', profile?.size);
+      console.log('Uploaded URLs:', req.body.uploadedImageUrls);
+
       const user = await this.usersService.findOne(userId);
       if (profile) {
+        console.log('Processing profile update...');
         // Hanya hapus foto lama jika user sudah punya foto profile sebelumnya
         if (user.profile) {
+          console.log('Deleting old profile:', user.profile);
           await this.usersService.getPublicIdFromUrl(user.profile);
         }
         updateProfileDto.profile = req.body.uploadedImageUrls?.[0];
+        console.log('New profile URL:', updateProfileDto.profile);
       }
-      if(req.user!.id === userId){
-      await this.usersService.updateProfile(userId, updateProfileDto);
-      req.flash('success', 'update profile success');
-      res.redirect('/users/profile');
-      }else{
-      req.flash('error', 'update profile failed');
+
+      // Convert userId to number for comparison (param comes as string)
+      const userIdNum = Number(userId);
+      console.log('Comparing:', req.user!.id, '===', userIdNum);
+
+      if (req.user!.id === userIdNum) {
+        await this.usersService.updateProfile(userIdNum, updateProfileDto);
+        console.log('=== UPDATE PROFILE SUCCESS ===');
+        req.flash('success', 'update profile success');
+        res.redirect('/users/profile');
+      } else {
+        console.log('=== UPDATE PROFILE FAILED: Unauthorized ===');
+        req.flash('error', 'update profile failed');
+        res.redirect('/users/profile');
       }
     } catch (error) {
+      console.log('=== UPDATE PROFILE ERROR ===');
       console.log(error);
       req.flash('error', 'update profile failed');
       res.redirect('/users/profile');

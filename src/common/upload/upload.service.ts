@@ -7,7 +7,12 @@ import * as streamifier from 'streamifier';
 export class UploadService {
   async validateImageDimensions(
     file: Express.Multer.File,
-    options: { minWidth: number; maxWidth: number; minHeight: number; maxHeight: number },
+    options: {
+      minWidth: number;
+      maxWidth: number;
+      minHeight: number;
+      maxHeight: number;
+    },
   ) {
     if (!file) throw new BadRequestException('No image uploaded');
 
@@ -16,7 +21,8 @@ export class UploadService {
     }
 
     const { width, height } = imageSize(file.buffer);
-    if (!width || !height) throw new BadRequestException('Invalid image dimensions');
+    if (!width || !height)
+      throw new BadRequestException('Invalid image dimensions');
 
     if (
       width < options.minWidth ||
@@ -33,16 +39,39 @@ export class UploadService {
   async uploadToCloudinary(
     file: Express.Multer.File,
     folder: string,
+    skipTransformation = false,
   ): Promise<string> {
+    console.log('📤 Starting Cloudinary upload...');
+    console.log('File size:', (file.size / 1024).toFixed(2), 'KB');
+    console.log('Folder:', folder);
+    console.log('Skip transformation:', skipTransformation);
+
+    const uploadOptions: any = {
+      folder,
+      resource_type: 'auto',
+      timeout: 60000, // 60 second timeout
+    };
+
+    // Skip transformation for profile images (already validated dimensions)
+    if (!skipTransformation) {
+      uploadOptions.transformation = [
+        { quality: 'auto', fetch_format: 'auto' },
+      ];
+    }
+
+    const startTime = Date.now();
     const result: any = await new Promise((resolve, reject) => {
       const upload = cloudinary.uploader.upload_stream(
-        {
-          folder,
-          transformation: [{ width: 500, height: 500, crop: 'limit' }],
-        },
+        uploadOptions,
         (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
+          if (error) {
+            console.error('❌ Cloudinary upload error:', error);
+            reject(error);
+          } else if (result) {
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+            console.log(`✅ Upload success in ${elapsed}s:`, result.secure_url);
+            resolve(result);
+          }
         },
       );
       streamifier.createReadStream(file.buffer).pipe(upload);

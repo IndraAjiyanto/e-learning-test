@@ -10,6 +10,7 @@ export interface ValidateImageOptions {
   folder: string;
   maxSize?: number; // in bytes (e.g., 3 * 1024 * 1024 = 3MB)
   allowedTypes?: string[]; // e.g., ['image/jpeg', 'image/png', 'image/webp']
+  skipTransformation?: boolean; // skip cloudinary transformation (for already validated images)
 }
 
 export const ValidateImage = (options: ValidateImageOptions) =>

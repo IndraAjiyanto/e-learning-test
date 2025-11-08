@@ -4,22 +4,44 @@ import { promisify } from 'util';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import cloudinary from './multer.config';
+import * as os from 'os';
 
 const execAsync = promisify(exec);
 
 @Injectable()
 export class LibreOfficeService {
   private libreOfficePath: string;
+  private tempDir: string;
 
   constructor() {
-    // Path ke LibreOffice di Windows
-    // Sesuaikan dengan lokasi instalasi LibreOffice Anda
-    this.libreOfficePath =
-      'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
+    // Deteksi OS dan set path LibreOffice
+    const platform = os.platform();
+    
+    if (platform === 'win32') {
+      // Windows (Development)
+      this.libreOfficePath =
+        process.env.LIBREOFFICE_PATH ||
+        'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
+    } else if (platform === 'linux') {
+      // Linux/Ubuntu (Production)
+      this.libreOfficePath = process.env.LIBREOFFICE_PATH || 'libreoffice';
+    } else if (platform === 'darwin') {
+      // macOS
+      this.libreOfficePath =
+        process.env.LIBREOFFICE_PATH ||
+        '/Applications/LibreOffice.app/Contents/MacOS/soffice';
+    } else {
+      // Default fallback
+      this.libreOfficePath = 'libreoffice';
+    }
 
-    // Alternatif path lain yang mungkin:
-    // 'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
-    // atau cek di: process.env.LIBREOFFICE_PATH
+    // Set temporary directory
+    this.tempDir = process.env.LIBREOFFICE_TEMP_DIR || os.tmpdir();
+
+    console.log('LibreOffice Configuration:');
+    console.log('- Platform:', platform);
+    console.log('- LibreOffice Path:', this.libreOfficePath);
+    console.log('- Temp Directory:', this.tempDir);
   }
 
   /**
@@ -37,12 +59,25 @@ export class LibreOfficeService {
       // --headless: jalankan tanpa GUI
       // --convert-to pdf: format output
       // --outdir: direktori output
-      const command = `"${this.libreOfficePath}" --headless --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
+      const platform = os.platform();
+      let command: string;
+
+      if (platform === 'win32') {
+        // Windows command
+        command = `"${this.libreOfficePath}" --headless --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
+      } else {
+        // Linux/Unix command
+        command = `${this.libreOfficePath} --headless --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
+      }
 
       console.log('Executing LibreOffice command:', command);
 
       const { stdout, stderr } = await execAsync(command, {
         timeout: 60000, // 60 detik timeout
+        env: { 
+          ...process.env, 
+          HOME: this.tempDir // Set HOME untuk LibreOffice di Linux
+        }
       });
 
       if (stderr && !stderr.includes('Warning')) {
@@ -52,8 +87,7 @@ export class LibreOfficeService {
       console.log('LibreOffice stdout:', stdout);
 
       // Dapatkan nama file output (nama file sama tapi ekstensi jadi .pdf)
-      const inputFileName =
-        inputPath.split('\\').pop() || inputPath.split('/').pop();
+      const inputFileName = inputPath.split(/[/\\]/).pop();
       const pdfFileName = inputFileName!.replace(/\.(ppt|pptx)$/i, '.pdf');
       const pdfPath = join(outputDir, pdfFileName);
 
@@ -136,7 +170,15 @@ export class LibreOfficeService {
    */
   async checkLibreOfficeInstalled(): Promise<boolean> {
     try {
-      const command = `"${this.libreOfficePath}" --version`;
+      const platform = os.platform();
+      let command: string;
+
+      if (platform === 'win32') {
+        command = `"${this.libreOfficePath}" --version`;
+      } else {
+        command = `${this.libreOfficePath} --version`;
+      }
+
       const { stdout } = await execAsync(command);
       console.log('LibreOffice version:', stdout);
       return true;

@@ -64,7 +64,7 @@ export class KelassController {
       createKelassDto.gambar = req.body.uploadedImageUrls?.[0];
 
       if (createKelassDto.paid_check === 'true') {
-        createKelassDto.form = ''
+        createKelassDto.form = '';
         createKelassDto.check_paid = true;
         if (req.user!.role === 'super_admin') {
           createKelassDto.proses = 'acc';
@@ -94,7 +94,7 @@ export class KelassController {
       req.flash('success', 'class successfully created');
       res.redirect('/kelass');
     } catch (error) {
-      console.log(error)
+      console.log(error);
       req.flash('error', 'class failed created');
       res.redirect('/kelass');
     }
@@ -243,7 +243,7 @@ export class KelassController {
     @Req() req: Request,
   ) {
     const kelas = await this.kelassService.findOne(kelasId);
-      const daftar = await this.kelassService.sumStudent(kelas.id);
+    const daftar = await this.kelassService.sumStudent(kelas.id);
     const check_user = await this.kelassService.checkUserInKelas(
       kelas.id,
       req.user!.id,
@@ -300,7 +300,19 @@ export class KelassController {
   // update kelas
   @Roles('admin', 'super_admin')
   @Patch(':kelasId')
-  @UseInterceptors(FileInterceptor('gambar', multerConfigImage))
+  @UseInterceptors(
+    FileInterceptor('gambar', multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 1900,
+    maxWidth: 1920,
+    minHeight: 1000,
+    maxHeight: 1080,
+    folder: 'nestjs/images/banner/class',
+    maxSize: 2 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+  })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
     @Param('kelasId') kelasId: number,
@@ -311,16 +323,20 @@ export class KelassController {
     try {
       const kelas = await this.kelassService.findOne(kelasId);
       if (gambar) {
+        // delete previous image in cloud (if exists)
         await this.usersService.getPublicIdFromUrl(kelas.gambar);
-        updateKelassDto.gambar = gambar.path;
+        // use uploadedImageUrls provided by validator/uploader (memory upload -> cloud)
+        updateKelassDto.gambar = req.body.uploadedImageUrls?.[0];
       }
 
-      if(updateKelassDto.mentoringId){
-              if(kelas.mentoring[0].user.id != updateKelassDto.mentoringId){
-        await this.kelassService.updateMentoring(updateKelassDto.mentoringId, kelas.id)
+      if (updateKelassDto.mentoringId) {
+        if (kelas.mentoring[0].user.id != updateKelassDto.mentoringId) {
+          await this.kelassService.updateMentoring(
+            updateKelassDto.mentoringId,
+            kelas.id,
+          );
+        }
       }
-      }
-
 
       // Handle paid_check logic
       if (updateKelassDto.paid_check === 'true') {
