@@ -12,7 +12,7 @@
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
         {{#each jenis_kelas}}
-        { value: '{{this.nama_jenis_kelas}}', icon: 'fa-code', title: '{{this.nama_jenis_kelas}}', desc: '{{this.deskripsi}}' },
+        { value: '{{this.nama_jenis_kelas}}', icon: '{{computeIcon this.icon}}', title: '{{this.nama_jenis_kelas}}', desc: '{{this.deskripsi}}' },
         {{/each}}
       ],
       
@@ -155,37 +155,17 @@
 
     <div class='max-w-6xl mx-auto'>
       <div class='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
+        {{#each jenis_kelas}}
         <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all'>
           <div class='w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='fas fa-code text-white text-xl'></i>
+            <i class='{{computeIcon this.icon}} text-white'></i>
           </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Web Development</h3>
-          <p class='text-gray-600 text-sm font-inter'>Frontend, Backend, dan Fullstack Development</p>
+          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>{{this.nama_jenis_kelas}}</h3>
+          <p class='text-gray-600 text-sm font-inter'>{{this.deskripsi}}</p>
         </div>
+        {{/each}}
         
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all'>
-          <div class='w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='fas fa-mobile-alt text-white text-xl'></i>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Mobile Development</h3>
-          <p class='text-gray-600 text-sm font-inter'>Android, iOS, dan Cross-platform Development</p>
-        </div>
-        
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all'>
-          <div class='w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='fas fa-database text-white text-xl'></i>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Data Science</h3>
-          <p class='text-gray-600 text-sm font-inter'>Analisis Data, Machine Learning, dan AI</p>
-        </div>
-        
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all'>
-          <div class='w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='fas fa-shield-alt text-white text-xl'></i>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Cyber Security</h3>
-          <p class='text-gray-600 text-sm font-inter'>Keamanan Sistem dan Jaringan</p>
-        </div>
+
       </div>
     </div>
   </div>
@@ -206,7 +186,7 @@
             <span class='text-2xl font-bold text-gray-800'>1</span>
           </div>
           <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Daftar</h3>
-          <p class='text-gray-600 font-inter'>Pilih program yang sesuai dengan minat dan kemampuanmu</p>
+          <p class='text-gray-600 font-inter'>Pilih program yang sesuai dengan minat dan kemampuanmu dan isi form pendafatarannya</p>
         </div>
         
         <div class='text-center'>
@@ -214,15 +194,15 @@
             <span class='text-2xl font-bold text-gray-800'>2</span>
           </div>
           <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Seleksi</h3>
-          <p class='text-gray-600 font-inter'>Ikuti proses seleksi untuk memastikan kesiapanmu</p>
+          <p class='text-gray-600 font-inter'>Form yang sudah diisi akan diperiksa dan dinilai oleh tim kami untuk proses seleksi</p>
         </div>
         
         <div class='text-center'>
           <div class='w-20 h-20 bg-white border-2 border-gray-800 rounded-full flex items-center justify-center mx-auto mb-4'>
             <span class='text-2xl font-bold text-gray-800'>3</span>
           </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Pelatihan</h3>
-          <p class='text-gray-600 font-inter'>Ikuti pelatihan intensif dengan mentor berpengalaman</p>
+          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Wawancara</h3>
+          <p class='text-gray-600 font-inter'>Peserta yang lolos seleksi akan diundang untuk mengikuti wawancara</p>
         </div>
         
         <div class='text-center'>
@@ -238,51 +218,121 @@
 </section>
 
 <!-- Testimonials Section -->
-<section class='py-20 bg-white'>
-  <div class='container mx-auto px-4'>
-    <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Kata Alumni</h2>
-      <p class='text-gray-600 text-lg font-inter'>Pengalaman langsung dari mereka yang telah menyelesaikan program</p>
+<section
+  class='bg-white py-20 px-6 lg:px-20'
+  x-data='{
+        active: 0, 
+        slides: [0,1,2],
+        init() {
+            // Auto slide setiap 5 detik
+            setInterval(() => {
+                this.active = (this.active + 1) % this.slides.length;
+            }, 5000);
+        }
+    }'
+>
+  <!-- Title -->
+  <div class='text-center mb-16'>
+    <h2 class='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat'>
+      Wiratek Internship Program Alumni
+    </h2>
+    <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptas quas
+      dolor illum, minima aliquam dolores? Optio, voluptatibus. Ab corrupti,
+      temporibus modi perferendis a similique placeat, dicta vitae sapiente quia
+      quo.
+    </p>
+  </div>
+
+  <!-- Carousel -->
+  <div class='relative w-full max-w-5xl mx-auto overflow-hidden'>
+
+    {{#if alumni}}
+    <!-- Slide Wrapper -->
+    <div
+      class='flex transition-transform duration-500'
+      :style='`transform: translateX(-${active * 100}%);`'
+    >
+
+      <!-- Slide (Dynamic from data) -->
+      {{#each alumni}}
+        <div class='w-full flex-shrink-0 flex justify-center px-4'>
+          <div
+            class='bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-2xl p-10 max-w-3xl border border-slate-200'
+          >
+            <span class='text-6xl text-slate-400 font-bold'>❝</span>
+            <p class='text-gray-800 text-xl leading-relaxed mb-8 italic'>
+              {{pesan}}
+            </p>
+            <div class='flex items-center gap-6'>
+              <img
+                src='{{profile}}'
+                alt='Alumni'
+                class='w-16 h-16 rounded-full border-4 border-slate-200'
+              />
+              <div>
+                <p class='font-bold text-gray-900 text-lg'>{{nama}}</p>
+                <p class='text-slate-600'>{{posisi_sekarang}}</p>
+                <p class='text-slate-500 text-sm'>{{kelas.nama_kelas}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
     </div>
 
-    <div class='max-w-6xl mx-auto'>
-      <div class='grid md:grid-cols-3 gap-8'>
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200'>
-          <div class='flex items-center mb-4'>
-            <div class='w-12 h-12 bg-gray-300 rounded-full mr-4'></div>
-            <div>
-              <h4 class='font-bold text-gray-900 font-montserrat'>Ahmad Rizki</h4>
-              <p class='text-gray-600 text-sm font-inter'>Fullstack Developer</p>
-            </div>
+    <!-- Navigation Buttons -->
+    <button
+      class='absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white text-slate-700 border-2 border-slate-300 hover:bg-slate-600 hover:text-white hover:border-slate-600 shadow-lg transition-all duration-300'
+      @click='active = (active - 1 + slides.length) % slides.length'
+    >
+      <i class='fas fa-chevron-left'></i>
+    </button>
+    <button
+      class='absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white text-slate-700 border-2 border-slate-300 hover:bg-slate-600 hover:text-white hover:border-slate-600 shadow-lg transition-all duration-300'
+      @click='active = (active + 1) % slides.length'
+    >
+      <i class='fas fa-chevron-right'></i>
+    </button>
+
+    <!-- Dot Indicators -->
+    <div class='flex justify-center mt-8 gap-3'>
+      <template x-for='(s, i) in slides' :key='i'>
+        <button
+          class='w-4 h-4 rounded-full transition-all duration-300'
+          :class="active === i ? 'bg-slate-600 scale-125' : 'bg-slate-300 hover:bg-slate-400'"
+          @click='active = i'
+        ></button>
+      </template>
+    </div>
+    {{else}}
+    <!-- Fallback - No Alumni Data -->
+    <div class='text-center py-12'>
+      <div
+        class='bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-2xl p-10 max-w-3xl mx-auto border border-slate-200'
+      >
+        <span class='text-6xl text-slate-400 font-bold'>❝</span>
+        <p class='text-gray-800 text-xl leading-relaxed mb-8 italic'>
+          This bootcamp transformed my career completely! The mentors were amazing, and the curriculum was very comprehensive. Now I work at a leading tech company with a great salary.
+        </p>
+        <div class='flex items-center gap-6 justify-center'>
+          <img
+            src='https://ui-avatars.com/api/?name=John+Doe&background=64748b&color=fff&size=128'
+            alt='Alumni'
+            class='w-16 h-16 rounded-full border-4 border-slate-200'
+          />
+          <div class='text-left'>
+            <p class='font-bold text-gray-900 text-lg'>John Doe</p>
+            <p class='text-slate-600'>Senior Software Engineer</p>
+            <p class='text-slate-500 text-sm'>Full Stack Development Bootcamp</p>
           </div>
-          <p class='text-gray-600 font-inter italic'>"Program ini memberikan pengalaman nyata yang tidak bisa didapatkan di bangku kuliah. Mentor yang berpengalaman membantu saya memahami workflow industri."</p>
-        </div>
-        
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200'>
-          <div class='flex items-center mb-4'>
-            <div class='w-12 h-12 bg-gray-300 rounded-full mr-4'></div>
-            <div>
-              <h4 class='font-bold text-gray-900 font-montserrat'>Sari Dewi</h4>
-              <p class='text-gray-600 text-sm font-inter'>Data Analyst</p>
-            </div>
-          </div>
-          <p class='text-gray-600 font-inter italic'>"Setelah menyelesaikan program, saya langsung direkrut oleh perusahaan mitra. Skills yang diajarkan sangat relevan dengan kebutuhan industri saat ini."</p>
-        </div>
-        
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200'>
-          <div class='flex items-center mb-4'>
-            <div class='w-12 h-12 bg-gray-300 rounded-full mr-4'></div>
-            <div>
-              <h4 class='font-bold text-gray-900 font-montserrat'>Budi Santoso</h4>
-              <p class='text-gray-600 text-sm font-inter'>Mobile Developer</p>
-            </div>
-          </div>
-          <p class='text-gray-600 font-inter italic'>"Project-based learning membuat saya lebih siap menghadapi tantangan di dunia kerja. Saya sekarang percaya diri untuk mengerjakan proyek kompleks."</p>
         </div>
       </div>
     </div>
+    {{/if}}
   </div>
 </section>
+
 
 <!-- Filter & Programs Section -->
 <section class='bg-gray-50 py-20 px-6 lg:px-20 relative overflow-visible' id='programs'>
@@ -500,15 +550,17 @@
         data-nama='{{nama_kelas}}'
         data-deskripsi='{{deskripsi}}'
         data-location='{{metode}}'
-        x-show="(tab === 'all' || tab === '{{kategori.nama_kategori}}') && paginatedKelas($el)"
+        x-show="paginatedKelas($el)"
         x-transition
       >
-        <!-- Gambar lebih besar -->
-        <img
-          src='{{gambar}}'
-          alt='{{nama_kelas}}'
-          class='h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-lg'
-        />
+        <!-- Gambar Kelas -->
+        <div class='w-full h-56 overflow-hidden bg-gray-100'>
+          <img
+            src='{{gambar}}'
+            alt='{{nama_kelas}}'
+            class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+          />
+        </div>
 
         <div class='card-body p-6'>
           <div class='flex gap-2 mb-3'>
@@ -571,7 +623,8 @@
             >
               <div
                 class='h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out'
-                :style='`width: ${({{user_kelas.length}} / {{kuota}}) * 100}%`'
+                                :style='`width: ${({{user_kelas.length}} / {{kuota}}) * 100}%`'
+
               >
               </div>
             </div>

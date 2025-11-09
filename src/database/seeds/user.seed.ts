@@ -67,9 +67,9 @@ async function bootstrap() {
       deskripsi: 'Wiratek InternShip Program',
     },
     {
-      nama_kategori: 'Inthensif',
-      icon: 'inthenshif.png',
-      deskripsi: 'Inthenshif Program',
+      nama_kategori: 'In House Training Program',
+      icon: 'inhouse.png',
+      deskripsi: 'Inhouse Training Program',
     },
   ]);
 

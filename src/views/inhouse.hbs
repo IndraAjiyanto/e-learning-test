@@ -1,4 +1,3 @@
-{{> navbar}}
 
 <div
   x-data="{
@@ -14,7 +13,7 @@
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
         {{#each jenis_kelas}}
-        { value: '{{this.nama_jenis_kelas}}', icon: 'fa-code', title: '{{this.nama_jenis_kelas}}', desc: '{{this.deskripsi}}' },
+        { value: '{{this.nama_jenis_kelas}}', icon: '{{computeIcon this.icon}}', title: '{{this.nama_jenis_kelas}}', desc: '{{this.deskripsi}}' },
         {{/each}}
       ],
       
@@ -78,7 +77,7 @@
       <!-- Logo/Icon -->
       <div class='mb-8 flex justify-center'>
         <div class='w-24 h-24 bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300'>
-          <img src='/public/images/InHouseTraining.png' alt='In-House Training' class='w-16 h-16'>
+          <img src='/public/image/InHouseTraining.png' alt='In-House Training' class='w-16 h-16'>
         </div>
       </div>
 
@@ -301,9 +300,9 @@
     <!-- Header Section -->
     <div class='text-center mb-16 relative'>
       <h2 class='text-4xl font-extrabold text-gray-900 mb-4 relative z-10 font-montserrat'>
-        Available Training Programs
+        Program Magang Tersedia
       </h2>
-      <p class='text-gray-600 text-lg font-inter'>Choose the program that fits your team's needs</p>
+      <p class='text-gray-600 text-lg font-inter'>Pilih program yang sesuai dengan tujuan karirmu</p>
     </div>
 
     <!-- Filter Section -->
@@ -312,8 +311,8 @@
         
         <!-- Filter Title -->
         <div class='flex items-center gap-3 mb-6'>
-          <div class='w-1 h-8 bg-gradient-to-b from-slate-700 to-slate-900 rounded-full'></div>
-          <h3 class='text-2xl font-bold text-gray-900 font-montserrat'>Find the Right Training</h3>
+          <div class='w-1 h-8 bg-gradient-to-b from-gray-700 to-gray-900 rounded-full'></div>
+          <h3 class='text-2xl font-bold text-gray-900 font-montserrat'>Temukan Program yang Tepat</h3>
         </div>
 
         <!-- Filter Controls -->
@@ -322,17 +321,17 @@
           <!-- Course Type Filter -->
           <div @click.away='typeDropdownOpen = false' class='group relative'>
             <label class='flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide'>
-              <i class='fas fa-layer-group text-slate-700'></i>
+              <i class='fas fa-layer-group text-gray-700'></i>
               Program Type
             </label>
 
             <button
               @click='typeDropdownOpen = !typeDropdownOpen'
               type='button'
-              class='w-full px-5 py-4 pr-12 bg-white backdrop-blur-md border border-gray-300 rounded-2xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:border-slate-400 text-left relative'
+              class='w-full px-5 py-4 pr-12 bg-white backdrop-blur-md border border-gray-300 rounded-2xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 hover:border-gray-400 text-left relative'
             >
               <div class='flex items-center gap-3'>
-                <i :class='selectedTypeItem.icon' class='fas text-slate-700'></i>
+                <i :class='selectedTypeItem.icon' class='fas text-gray-700'></i>
                 <span x-text='selectedTypeItem.title'></span>
               </div>
               <div
@@ -353,12 +352,12 @@
                 <button
                   type='button'
                   @click='selectedType = type.value; typeDropdownOpen = false'
-                  class='w-full px-5 py-4 text-left hover:bg-slate-50 transition-colors duration-200 flex items-start gap-4 group/item'
-                  :class="selectedType === type.value ? 'bg-slate-50 border-r-4 border-slate-700' : ''"
+                  class='w-full px-5 py-4 text-left hover:bg-gray-50 transition-colors duration-200 flex items-start gap-4 group/item'
+                  :class="selectedType === type.value ? 'bg-gray-50 border-r-4 border-gray-700' : ''"
                 >
                   <div
-                    class='w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors'
-                    :class="selectedType === type.value ? 'bg-slate-700 text-white' : 'text-slate-700'"
+                    class='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-gray-200 transition-colors'
+                    :class="selectedType === type.value ? 'bg-gray-700 text-white' : 'text-gray-700'"
                   >
                     <i :class='type.icon' class='fas'></i>
                   </div>
@@ -367,7 +366,7 @@
                     <p class='text-sm text-gray-600 font-inter' x-text='type.desc'></p>
                   </div>
                   <div x-show='selectedType === type.value' class='flex-shrink-0'>
-                    <i class='fas fa-check text-slate-700'></i>
+                    <i class='fas fa-check text-gray-700'></i>
                   </div>
                 </button>
               </template>
@@ -377,17 +376,17 @@
           <!-- Method Filter -->
           <div @click.away='methodDropdownOpen = false' class='group relative'>
             <label class='flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide'>
-              <i class='fas fa-laptop text-slate-700'></i>
+              <i class='fas fa-laptop text-gray-700'></i>
               Method
             </label>
 
             <button
               @click='methodDropdownOpen = !methodDropdownOpen'
               type='button'
-              class='w-full px-5 py-4 pr-12 bg-white backdrop-blur-md border border-gray-300 rounded-2xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:border-slate-400 text-left relative'
+              class='w-full px-5 py-4 pr-12 bg-white backdrop-blur-md border border-gray-300 rounded-2xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 hover:border-gray-400 text-left relative'
             >
               <div class='flex items-center gap-3'>
-                <i :class='selectedMethodItem.icon' class='fas text-slate-700'></i>
+                <i :class='selectedMethodItem.icon' class='fas text-gray-700'></i>
                 <span x-text='selectedMethodItem.title'></span>
               </div>
               <div
@@ -408,12 +407,12 @@
                 <button
                   type='button'
                   @click='selectedMethod = method.value; methodDropdownOpen = false'
-                  class='w-full px-5 py-4 text-left hover:bg-slate-50 transition-colors duration-200 flex items-start gap-4 group/item'
-                  :class="selectedMethod === method.value ? 'bg-slate-50 border-r-4 border-slate-700' : ''"
+                  class='w-full px-5 py-4 text-left hover:bg-gray-50 transition-colors duration-200 flex items-start gap-4 group/item'
+                  :class="selectedMethod === method.value ? 'bg-gray-50 border-r-4 border-gray-700' : ''"
                 >
                   <div
-                    class='w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors'
-                    :class="selectedMethod === method.value ? 'bg-slate-700 text-white' : 'text-slate-700'"
+                    class='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-gray-200 transition-colors'
+                    :class="selectedMethod === method.value ? 'bg-gray-700 text-white' : 'text-gray-700'"
                   >
                     <i :class='method.icon' class='fas'></i>
                   </div>
@@ -422,7 +421,7 @@
                     <p class='text-sm text-gray-600 font-inter' x-text='method.desc'></p>
                   </div>
                   <div x-show='selectedMethod === method.value' class='flex-shrink-0'>
-                    <i class='fas fa-check text-slate-700'></i>
+                    <i class='fas fa-check text-gray-700'></i>
                   </div>
                 </button>
               </template>
@@ -432,20 +431,20 @@
           <!-- Search Input -->
           <div class='group'>
             <label class='flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide'>
-              <i class='fas fa-search text-slate-700'></i>
+              <i class='fas fa-search text-gray-700'></i>
               Search
             </label>
             <div class='relative'>
               <input
                 type='text'
                 x-model='searchQuery'
-                placeholder='Search training...'
-                class='w-full px-5 py-4 pr-12 bg-white backdrop-blur-md border border-gray-300 rounded-2xl text-gray-900 placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:border-slate-400'
+                placeholder='Cari program...'
+                class='w-full px-5 py-4 pr-12 bg-white backdrop-blur-md border border-gray-300 rounded-2xl text-gray-900 placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 hover:border-gray-400'
               />
               <button
                 x-show="searchQuery !== ''"
                 @click="searchQuery = ''"
-                class='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-700 transition-colors duration-200'
+                class='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors duration-200'
               >
                 <i class='fas fa-times-circle text-xl'></i>
               </button>
@@ -462,26 +461,26 @@
             <span class='text-gray-600 text-sm font-medium'>Active Filters:</span>
             <span
               x-show="selectedType !== 'all'"
-              class='px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium border border-slate-300'
+              class='px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium border border-gray-300'
             >
               <i class='fas fa-layer-group mr-2'></i><span x-text='selectedType'></span>
             </span>
             <span
               x-show="selectedMethod !== 'all'"
-              class='px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium border border-slate-300'
+              class='px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium border border-gray-300'
             >
               <i class='fas fa-laptop mr-2'></i><span x-text='selectedMethod'></span>
             </span>
             <span
               x-show="searchQuery !== ''"
-              class='px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium border border-slate-300'
+              class='px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium border border-gray-300'
             >
               <i class='fas fa-search mr-2'></i>"<span x-text='searchQuery'></span>"
             </span>
           </div>
           <button
             @click='resetFilters()'
-            class='px-6 py-2.5 bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-600 hover:to-slate-800 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg font-medium'
+            class='px-6 py-2.5 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg font-medium'
           >
             <i class='fas fa-redo mr-2'></i>Reset All
           </button>
@@ -491,106 +490,117 @@
       <!-- Results Counter -->
       <div class='mt-6 text-center'>
         <p class='text-gray-600 font-inter'>
-          Showing
+          Menampilkan
           <span class='text-gray-900 font-bold' x-text='filteredKelas.filter((el, idx) => paginatedKelas(el)).length'></span>
-          of
+          dari
           <span class='text-gray-900 font-bold' x-text='filteredKelas.length'></span>
-          programs
+          program
         </p>
       </div>
     </div>
 
     <!-- Programs Grid -->
     <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto' x-ref='kelasList'>
-      {{#each kelas}}
+    {{#each kelas}}
       <div
-        class='group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-200'
+        class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
+        data-kategori='{{kategori.nama_kategori}}'
         data-category='{{jenis_kelas.nama_jenis_kelas}}'
         data-nama='{{nama_kelas}}'
         data-deskripsi='{{deskripsi}}'
         data-location='{{metode}}'
-        x-show='paginatedKelas($el)'
+        x-show="paginatedKelas($el)"
         x-transition
       >
-        <!-- Image -->
-        <div class='relative h-56 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200'>
-          {{#if gambar}}
-            <img src='{{gambar}}' alt='{{nama_kelas}}' class='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'>
-          {{else}}
-            <div class='w-full h-full flex items-center justify-center'>
-              <i class='fas fa-chalkboard-teacher text-6xl text-slate-400'></i>
-            </div>
-          {{/if}}
-          <div class='absolute top-4 right-4'>
-            <span class='bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-slate-700'>
-              In-House
-            </span>
-          </div>
-          <div class='absolute top-4 left-4'>
-            <span class='bg-gradient-to-r from-slate-700 to-slate-900 text-white px-3 py-1 rounded-full text-xs font-semibold'>
-              {{jenis_kelas.nama_jenis_kelas}}
-            </span>
-          </div>
+        <!-- Gambar Kelas -->
+        <div class='w-full h-56 overflow-hidden bg-gray-100'>
+          <img
+            src='{{gambar}}'
+            alt='{{nama_kelas}}'
+            class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+          />
         </div>
 
-        <!-- Content -->
-        <div class='p-6'>
+        <div class='card-body p-6'>
           <div class='flex gap-2 mb-3'>
-            <span class='badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1'>
-              <i class='fas fa-laptop text-xs'></i>
-              {{metode}}
+            <span
+              class='badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full'
+            >
+              {{kategori.nama_kategori}}
             </span>
-            <span class='badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1'>
-              <i class='fas fa-map-marker-alt text-xs'></i>
-              {{lokasi}}
+            <span
+              class='badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
+            >
+              {{jenis_kelas.nama_jenis_kelas}}
             </span>
+
           </div>
 
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat group-hover:text-slate-700 transition-colors'>
-            {{nama_kelas}}
-          </h3>
-          
-          <p class='text-gray-600 text-sm mb-4 font-inter line-clamp-2 leading-relaxed'>
+          <div class='flex flex-wrap gap-2 mb-4 text-sm text-gray-700'>
+            <div
+              class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
+            >
+              <i class='fas fa-laptop text-slate-500'></i>
+              <span>{{metode}}</span>
+            </div>
+            <div
+              class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
+            >
+              <i class='fas fa-user-tie text-slate-500'></i>
+              <span>{{lokasi}}</span>
+            </div>
+          </div>
+
+          <h2
+            class='card-title text-gray-900 text-xl font-bold mb-3'
+          >{{nama_kelas}}</h2>
+
+          <p class='text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed'>
             {{deskripsi}}
           </p>
 
-          <!-- Info -->
-          <div class='bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200'>
-            <div class='flex justify-between items-center mb-3'>
-              <span class='text-sm font-semibold text-slate-700 flex items-center gap-2'>
-                <i class='fas fa-users text-slate-600'></i>
-                Participant Quota
-              </span>
-              <span class='text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm'>
-                {{#if user_kelas}}{{user_kelas.length}}{{else}}0{{/if}} / {{kuota}}
+          <div
+            class='bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200'
+          >
+            <div class='flex items-center justify-between mb-3'>
+              <div class='flex items-center gap-2'>
+                <i class='fas fa-users text-slate-600 animate-pulse'></i>
+                <span class='text-sm font-medium text-slate-600'>Kuota</span>
+              </div>
+              <span
+                class='text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm'
+              >
+                {{user_kelas.length}}
+                /
+                {{kuota}}
+                peserta
               </span>
             </div>
-            <div class='w-full bg-slate-200 rounded-full h-2 overflow-hidden'>
+
+            <div
+              class='w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2'
+            >
               <div
-                class='h-2 rounded-full bg-gradient-to-r from-slate-400 to-slate-700 transition-all duration-500'
-                style='width: {{#if user_kelas}}{{multiply (divide user_kelas.length kuota) 100}}{{else}}0{{/if}}%'
-              ></div>
+                class='h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out'
+                                :style='`width: ${({{user_kelas.length}} / {{kuota}}) * 100}%`'
+
+              >
+              </div>
             </div>
+
           </div>
 
-          <!-- Price & CTA -->
-          <div class='flex items-center justify-between pt-4 border-t border-gray-200'>
-            <div>
-              {{#if harga}}
-                <div class='text-2xl font-bold text-slate-800'>
-                  Rp {{formatPrice harga}}
-                </div>
-              {{else}}
-                <div class='text-lg font-bold text-slate-800'>Contact Us</div>
-              {{/if}}
-            </div>
-            <a href='/kelass/{{id}}' class='bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-600 hover:to-slate-800 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'>
-              Learn More
+          <div class='card-actions'>
+            <a
+              href='/kelass/{{id}}'
+              class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
+            >
+              View Program
             </a>
           </div>
         </div>
       </div>
-      {{/each}}
+    {{/each}}
     </div>
 
     <!-- No Results -->
@@ -598,11 +608,11 @@
       <div class='bg-gray-100 backdrop-blur-md border border-gray-200 w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center'>
         <i class='fas fa-inbox text-5xl text-gray-400'></i>
       </div>
-      <h3 class='text-3xl font-bold text-gray-900 mb-3 font-montserrat'>No Programs Found</h3>
-      <p class='text-gray-600 text-lg mb-6 font-inter'>Try adjusting your search or filter criteria.</p>
+      <h3 class='text-3xl font-bold text-gray-900 mb-3 font-montserrat'>Program Tidak Ditemukan</h3>
+      <p class='text-gray-600 text-lg mb-6 font-inter'>Coba sesuaikan pencarian atau filter kriteria.</p>
       <button
         @click='resetFilters()'
-        class='px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-600 hover:to-slate-800 text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold shadow-md'
+        class='px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold shadow-md'
       >
         <i class='fas fa-redo mr-2'></i>Clear All Filters
       </button>
@@ -613,7 +623,7 @@
       <button
         @click='currentPage = Math.max(1, currentPage - 1)'
         :disabled='currentPage === 1'
-        class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+        class='px-5 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
       >
         <i class='fas fa-chevron-left'></i>
       </button>
@@ -622,7 +632,7 @@
         <button
           @click='currentPage = page'
           class='w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm'
-          :class="currentPage === page ? 'bg-gradient-to-r from-slate-700 to-slate-900 text-white border-slate-800 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+          :class="currentPage === page ? 'bg-gradient-to-r from-gray-700 to-gray-900 text-white border-gray-800 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
           x-text='page'
         ></button>
       </template>
@@ -630,308 +640,11 @@
       <button
         @click='currentPage = Math.min(totalPages, currentPage + 1)'
         :disabled='currentPage === totalPages'
-        class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+        class='px-5 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
       >
         <i class='fas fa-chevron-right'></i>
       </button>
     </div>
-  </div>
-</section>
-
-<!-- FAQ Section -->
-<section class='py-20 bg-gradient-to-br from-slate-50 via-white to-slate-100'>
-  <div class='container mx-auto px-6 max-w-6xl'>
-    <h2 class='text-4xl md:text-5xl font-bold text-center mb-16 text-gray-900 font-montserrat'>
-      Frequently Asked Questions
-    </h2>
-
-    <div class='max-w-4xl mx-auto space-y-6'>
-      <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>How long is a typical training program?</h3>
-        <p class='text-gray-600 leading-relaxed text-lg font-inter'>Training duration varies based on your needs, typically ranging from 2-5 days for intensive workshops or 4-12 weeks for comprehensive programs.</p>
-      </div>
-      
-      <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>Can the training be customized for our industry?</h3>
-        <p class='text-gray-600 leading-relaxed text-lg font-inter'>Absolutely! We specialize in creating tailored programs that address your specific industry challenges and business objectives.</p>
-      </div>
-      
-      <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>Do you provide certificates?</h3>
-        <p class='text-gray-600 leading-relaxed text-lg font-inter'>Yes, participants receive industry-recognized certificates upon successful completion of the training program.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-</div>
-
-{{> footer}}
-<section
-  class='relative pt-32 pb-20 bg-gradient-to-br from-emerald-900 via-teal-900 to-cyan-900 overflow-hidden'
->
-  <!-- Background Pattern -->
-  <div class='absolute inset-0 opacity-10'>
-    <div
-      class='absolute inset-0'
-      style='background-image: url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");'
-    ></div>
-  </div>
-
-  <div class='container mx-auto px-4 relative z-10'>
-    <div class='max-w-4xl mx-auto text-center'>
-      <!-- Logo/Icon -->
-      <div class='mb-8 flex justify-center'>
-        <div
-          class='w-24 h-24 bg-white rounded-2xl shadow-2xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300'
-        >
-          <img
-            src='/public/images/InHouseTraining.png'
-            alt='In-House Training'
-            class='w-16 h-16'
-          />
-        </div>
-      </div>
-
-      <h1
-        class='text-5xl md:text-6xl font-bold text-white mb-6 font-montserrat leading-tight'
-      >
-        In-House Training
-      </h1>
-      <p class='text-xl md:text-2xl text-emerald-100 mb-8 font-inter'>
-        Customized Corporate Training Solutions
-      </p>
-      <p
-        class='text-lg text-emerald-200 max-w-3xl mx-auto font-inter leading-relaxed'
-      >
-        Empower your team with tailored training programs designed specifically
-        for your organization's needs. Boost productivity, enhance skills, and
-        drive innovation with our expert-led training sessions.
-      </p>
-
-      <!-- Stats -->
-      <div class='grid grid-cols-3 gap-8 mt-12 max-w-2xl mx-auto'>
-        <div class='text-center'>
-          <div class='text-4xl font-bold text-white mb-2'>50+</div>
-          <div class='text-emerald-200 text-sm'>Companies</div>
-        </div>
-        <div class='text-center'>
-          <div class='text-4xl font-bold text-white mb-2'>1000+</div>
-          <div class='text-emerald-200 text-sm'>Participants</div>
-        </div>
-        <div class='text-center'>
-          <div class='text-4xl font-bold text-white mb-2'>4.9/5</div>
-          <div class='text-emerald-200 text-sm'>Satisfaction</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Wave Divider -->
-  <div class='absolute bottom-0 left-0 right-0'>
-    <svg viewBox='0 0 1440 120' fill='none' xmlns='http://www.w3.org/2000/svg'>
-      <path
-        d='M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z'
-        fill='white'
-      />
-    </svg>
-  </div>
-</section>
-
-<!-- Benefits Section -->
-<section class='py-20 bg-white'>
-  <div class='container mx-auto px-4'>
-    <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Why
-        Choose Our Training</h2>
-      <p class='text-gray-600 text-lg font-inter'>Benefits for your organization</p>
-    </div>
-
-    <div
-      class='grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center max-w-7xl mx-auto'
-    >
-      <div
-        class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'
-      >
-        <div class='flex justify-center mb-6'>
-          <div
-            class='w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-2xl group-hover:from-slate-600 group-hover:to-slate-800 group-hover:text-white transition-all duration-300'
-          >
-            <i class='fas fa-cogs'></i>
-          </div>
-        </div>
-        <h3
-          class='text-xl font-bold text-gray-900 mb-4 font-montserrat'
-        >Customized</h3>
-        <p class='text-gray-600 text-lg leading-relaxed font-inter'>Tailored
-          content to match your business needs</p>
-      </div>
-
-      <div
-        class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'
-      >
-        <div class='flex justify-center mb-6'>
-          <div
-            class='w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-2xl group-hover:from-slate-600 group-hover:to-slate-800 group-hover:text-white transition-all duration-300'
-          >
-            <i class='fas fa-user-tie'></i>
-          </div>
-        </div>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 font-montserrat'>Expert
-          Trainers</h3>
-        <p class='text-gray-600 text-lg leading-relaxed font-inter'>Industry
-          professionals with real experience</p>
-      </div>
-
-      <div
-        class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'
-      >
-        <div class='flex justify-center mb-6'>
-          <div
-            class='w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-2xl group-hover:from-slate-600 group-hover:to-slate-800 group-hover:text-white transition-all duration-300'
-          >
-            <i class='fas fa-map-marked-alt'></i>
-          </div>
-        </div>
-        <h3
-          class='text-xl font-bold text-gray-900 mb-4 font-montserrat'
-        >Flexible Location</h3>
-        <p class='text-gray-600 text-lg leading-relaxed font-inter'>On-site or
-          online, your choice</p>
-      </div>
-
-      <div
-        class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'
-      >
-        <div class='flex justify-center mb-6'>
-          <div
-            class='w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-2xl group-hover:from-slate-600 group-hover:to-slate-800 group-hover:text-white transition-all duration-300'
-          >
-            <i class='fas fa-chart-line'></i>
-          </div>
-        </div>
-        <h3
-          class='text-xl font-bold text-gray-900 mb-4 font-montserrat'
-        >Measurable Results</h3>
-        <p class='text-gray-600 text-lg leading-relaxed font-inter'>Track
-          progress and ROI effectively</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Programs Section -->
-<section class='py-20 bg-gradient-to-b from-gray-50 to-white' id='programs'>
-  <div class='container mx-auto px-4'>
-    <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Training
-        Programs</h2>
-      <p class='text-gray-600 text-lg font-inter'>Professional courses designed
-        for your team</p>
-    </div>
-
-    <div class='grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto'>
-      {{#each kelas}}
-        <div
-          class='group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100'
-        >
-          <!-- Image -->
-          <div
-            class='relative h-56 overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100'
-          >
-            {{#if gambar}}
-              <img
-                src='{{gambar}}'
-                alt='{{nama_kelas}}'
-                class='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
-              />
-            {{else}}
-              <div class='w-full h-full flex items-center justify-center'>
-                <i
-                  class='fas fa-chalkboard-teacher text-6xl text-emerald-300'
-                ></i>
-              </div>
-            {{/if}}
-            <div class='absolute top-4 right-4'>
-              <span
-                class='bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-emerald-600'
-              >
-                In-House
-              </span>
-            </div>
-          </div>
-
-          <!-- Content -->
-          <div class='p-6'>
-            <h3
-              class='text-xl font-bold text-gray-900 mb-3 font-montserrat group-hover:text-emerald-600 transition-colors'
-            >
-              {{nama_kelas}}
-            </h3>
-
-            <p class='text-gray-600 text-sm mb-4 font-inter line-clamp-3'>
-              {{deskripsi}}
-            </p>
-
-            <!-- Info -->
-            <div class='flex items-center justify-between mb-6'>
-              <div class='flex items-center gap-2 text-sm text-gray-500'>
-                <i class='far fa-clock'></i>
-                <span>{{durasi}} Days</span>
-              </div>
-              <div class='flex items-center gap-2 text-sm text-gray-500'>
-                <i class='fas fa-users'></i>
-                <span>Group Training</span>
-              </div>
-            </div>
-
-            <!-- Price & CTA -->
-            <div
-              class='flex items-center justify-between pt-6 border-t border-gray-100'
-            >
-              <div>
-                {{#if harga}}
-                  <div class='text-2xl font-bold text-emerald-600'>
-                    Rp
-                    {{formatPrice harga}}
-                  </div>
-                  <div class='text-xs text-gray-500'>Per participant</div>
-                {{else}}
-                  <div class='text-lg font-bold text-emerald-600'>Contact Us</div>
-                  <div class='text-xs text-gray-500'>For pricing</div>
-                {{/if}}
-              </div>
-              <a
-                href='/kelass/{{id}}'
-                class='bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-              >
-                Learn More
-              </a>
-            </div>
-          </div>
-        </div>
-      {{/each}}
-    </div>
-
-    {{#unless kelas}}
-      <div class='text-center py-20'>
-        <div
-          class='w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6'
-        >
-          <i class='fas fa-inbox text-gray-400 text-5xl'></i>
-        </div>
-        <h3 class='text-2xl font-bold text-gray-900 mb-4 font-montserrat'>No
-          Programs Available</h3>
-        <p class='text-gray-600 font-inter mb-8'>We're preparing new training
-          programs for your team</p>
-        <a
-          href='/dashboard'
-          class='inline-block bg-emerald-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-all'
-        >
-          Back to Home
-        </a>
-      </div>
-    {{/unless}}
   </div>
 </section>
 
@@ -1053,3 +766,34 @@
     </div>
   </div>
 </section>
+
+<!-- FAQ Section -->
+<section class='py-20 bg-gradient-to-br from-slate-50 via-white to-slate-100'>
+  <div class='container mx-auto px-6 max-w-6xl'>
+    <h2 class='text-4xl md:text-5xl font-bold text-center mb-16 text-gray-900 font-montserrat'>
+      Frequently Asked Questions
+    </h2>
+
+    <div class='max-w-4xl mx-auto space-y-6'>
+      <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
+        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>How long is a typical training program?</h3>
+        <p class='text-gray-600 leading-relaxed text-lg font-inter'>Training duration varies based on your needs, typically ranging from 2-5 days for intensive workshops or 4-12 weeks for comprehensive programs.</p>
+      </div>
+      
+      <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
+        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>Can the training be customized for our industry?</h3>
+        <p class='text-gray-600 leading-relaxed text-lg font-inter'>Absolutely! We specialize in creating tailored programs that address your specific industry challenges and business objectives.</p>
+      </div>
+      
+      <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
+        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>Do you provide certificates?</h3>
+        <p class='text-gray-600 leading-relaxed text-lg font-inter'>Yes, participants receive industry-recognized certificates upon successful completion of the training program.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</div>
+
+

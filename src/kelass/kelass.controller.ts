@@ -193,6 +193,14 @@ export class KelassController {
     const teknologi = await this.kelassService.findTeknologi();
     const bulan = await this.kelassService.findBulan();
     const mentoring = await this.kelassService.findMentoring();
+
+    // Debug: log mentoring data
+    console.log('Kelas mentoring:', JSON.stringify(kelas.mentoring, null, 2));
+    console.log(
+      'Available mentoring list:',
+      JSON.stringify(mentoring, null, 2),
+    );
+
     return res.render('admin/kelas/edit', {
       user: req.user,
       kelas,
@@ -330,9 +338,16 @@ export class KelassController {
       }
 
       if (updateKelassDto.mentoringId) {
-        if (kelas.mentoring[0].user.id != updateKelassDto.mentoringId) {
+        // Check if mentoring exists and if we need to update it
+        const currentMentoringUserId = kelas.mentoring?.[0]?.user?.id;
+        const newMentoringUserId = Number(updateKelassDto.mentoringId);
+
+        console.log('Current mentoring user ID:', currentMentoringUserId);
+        console.log('New mentoring user ID:', newMentoringUserId);
+
+        if (currentMentoringUserId !== newMentoringUserId) {
           await this.kelassService.updateMentoring(
-            updateKelassDto.mentoringId,
+            newMentoringUserId,
             kelas.id,
           );
         }
@@ -358,6 +373,7 @@ export class KelassController {
         res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
       }
     } catch (error) {
+      console.log(error);
       req.flash('error', 'failed update kelas');
       res.redirect('/kelass');
     }

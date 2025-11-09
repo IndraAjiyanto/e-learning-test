@@ -361,8 +361,8 @@
                     <!-- Mentoring -->
                     <div
                       x-data="{
-                        search: '{{#if kelas.mentoring.[0]}}{{kelas.mentoring.[0].username}}{{/if}}',
-                        selectedMentoring: {{#if kelas.mentoring.[0]}}{{json kelas.mentoring.[0]}}{{else}}null{{/if}},
+                        search: '{{#if kelas.mentoring.[0].user}}{{kelas.mentoring.[0].user.username}}{{/if}}',
+                        selectedMentoring: {{#if kelas.mentoring.[0].user}}{{json kelas.mentoring.[0].user}}{{else}}null{{/if}},
                         showDropdown: false,
                         availableMentoring: {{json mentoring}},
                         get filteredMentoring() {
@@ -379,6 +379,8 @@
                       @click.away='showDropdown = false'
                     >
                       <label for='mentoringId' class='block text-sm font-semibold text-gray-700 mb-1'>Mentoring</label>
+                      
+  
                       
                       <div class='relative'>
                         <input

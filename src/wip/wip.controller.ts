@@ -13,7 +13,8 @@ export class WipController {
   async findAll(@Req() req: Request, @Res() res: Response,) {
     const kelas = await this.wipService.findAll();
     const jenis_kelas = await this.wipService.findJenisKelas();
+    const alumni = await this.wipService.findAlumni();
     console.log(kelas);
-    res.render('wip',{kelas, jenis_kelas, user: req.user})
+    res.render('wip',{kelas, jenis_kelas, alumni, user: req.user})
   }
 }

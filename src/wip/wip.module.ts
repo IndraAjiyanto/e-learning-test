@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Kategori } from 'src/entities/kategori.entity';
+import { Alumni } from 'src/entities/alumni.entity';
 
 @Module({
-      imports: [TypeOrmModule.forFeature([Kelas, JenisKelas, Kategori])],
+      imports: [TypeOrmModule.forFeature([Kelas, JenisKelas, Kategori, Alumni])],
   controllers: [WipController],
   providers: [WipService],
 })

@@ -1,26 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { CreateInHouseTrainingDto } from './dto/create-in_house_training.dto';
 import { UpdateInHouseTrainingDto } from './dto/update-in_house_training.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Kelas } from 'src/entities/kelas.entity';
+import { Repository } from 'typeorm';
+import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 
 @Injectable()
 export class InHouseTrainingService {
-  create(createInHouseTrainingDto: CreateInHouseTrainingDto) {
-    return 'This action adds a new inHouseTraining';
+  constructor(
+    @InjectRepository(Kelas)
+    private readonly kelasRepository: Repository<Kelas>,
+    @InjectRepository(JenisKelas)
+    private readonly jenisKelasRepository: Repository<JenisKelas>,
+  ) {}
+
+  async findAll() {
+    return await this.kelasRepository.find({where: { kategori: { nama_kategori: 'In House Training Program' } }, relations: ['kategori', 'jenis_kelas', 'user_kelas']});
   }
 
-  findAll() {
-    return `This action returns all inHouseTraining`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} inHouseTraining`;
-  }
-
-  update(id: number, updateInHouseTrainingDto: UpdateInHouseTrainingDto) {
-    return `This action updates a #${id} inHouseTraining`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} inHouseTraining`;
+  async findJenisKelas() {  
+    return await this.jenisKelasRepository.find();
   }
 }
