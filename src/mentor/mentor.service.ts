@@ -4,14 +4,17 @@ import { UpdateMentorDto } from './dto/update-mentor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Mentor } from 'src/entities/mentor.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import cloudinary from 'src/common/config/multer.config';
+import { Teknologi } from 'src/entities/teknologi.entity';
 
 @Injectable()
 export class MentorService {
     constructor(
       @InjectRepository(Mentor)
       private readonly mentorRepository: Repository<Mentor>,
+      @InjectRepository(Teknologi)
+      private readonly teknologiRepository: Repository<Teknologi>,
       @InjectRepository(Kelas)
       private readonly kelasRepository: Repository<Kelas>
     ){}
@@ -21,15 +24,29 @@ export class MentorService {
     if(!kelas){
       throw new NotFoundException('kelas not found')
     }
+    let teknologi: Teknologi[] = [];
+    if (
+      createMentorDto.teknologiIds &&
+      createMentorDto.teknologiIds.length > 0
+    ) {
+      teknologi = await this.teknologiRepository.findBy({
+        id: In(createMentorDto.teknologiIds),
+      });
+    }
     const mentor = await this.mentorRepository.create({
       ...createMentorDto,
-      kelas: kelas
+      kelas: kelas,
+      teknologi: teknologi
     })
     return await this.mentorRepository.save(mentor)
   }
 
+  async findTeknologi(){
+    return await this.teknologiRepository.find()
+  }
+
   async findOne(mentorId: number) {
-    const mentor = await this.mentorRepository.findOne({where: {id: mentorId}, relations: ['kelas']})
+    const mentor = await this.mentorRepository.findOne({where: {id: mentorId}, relations: ['kelas', 'teknologi']})
     if(!mentor){
       throw new NotFoundException('mentor not found')
     }
@@ -41,8 +58,21 @@ export class MentorService {
     if(!mentor){
       throw new NotFoundException('kelas not found')
     }
-    Object.assign(mentor, updateMentorDto)
-    return await this.mentorRepository.save(mentor)
+        if (updateMentorDto.teknologiIds !== undefined) {
+          if (updateMentorDto.teknologiIds.length > 0) {
+            mentor.teknologi = await this.teknologiRepository.findBy({
+              id: In(updateMentorDto.teknologiIds),
+            });
+          } else {
+            mentor.teknologi = [];
+          }
+        }
+    
+        const { teknologiIds, ...otherProperties } =
+          updateMentorDto;
+        Object.assign(mentor, otherProperties);
+
+        return await this.mentorRepository.save(mentor);
   }
 
   async remove(mentorId: number) {

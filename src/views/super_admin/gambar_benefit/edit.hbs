@@ -94,8 +94,7 @@
     }
   }"
   >
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Edit
-      Benefit Image</h2>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Benefit Image</h2>
 
     <form
       action='/gambar-benefit/{{gambar_benefit.id}}?_method=PATCH'
@@ -229,23 +228,19 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          :disabled='!canSubmit()'
-          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition flex items-center gap-2'
         >
-          <i class='fas fa-save'></i>
           Save Changes
         </button>
         <a
           href='/gambar-benefit'
           class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
         >
-          <i class='fas fa-times'></i>
           Cancel
         </a>
       </div>
 
-      <!-- Submit Warning -->
+      <!-- Submit Warning (only when invalid new file present) -->
       <template x-if='hasNewFile && !isValid'>
         <div
           class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'

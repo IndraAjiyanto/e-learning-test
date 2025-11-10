@@ -791,6 +791,7 @@ export class KelassService {
         'benefit_kelas',
         'jenis_kelas',
         'mentor',
+        'mentor.teknologi',
         'pertanyaan_kelas',
         'teknologi',
         'mentoring',

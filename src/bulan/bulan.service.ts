@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateBulanDto } from './dto/create-bulan.dto';
 import { UpdateBulanDto } from './dto/update-bulan.dto';
+import { Bulan } from 'src/entities/bulan.entity';
 
 @Injectable()
 export class BulanService {
-  create(createBulanDto: CreateBulanDto) {
-    return 'This action adds a new bulan';
+  constructor(
+    @InjectRepository(Bulan)
+    private readonly bulanRepository: Repository<Bulan>,
+  ) {}
+
+  async create(createBulanDto: CreateBulanDto) {
+    const ent = this.bulanRepository.create(createBulanDto);
+    return await this.bulanRepository.save(ent);
   }
 
-  findAll() {
-    return `This action returns all bulan`;
+  async findAll() {
+    return await this.bulanRepository.find({ relations: ['kelas'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} bulan`;
+  async findOne(id: number) {
+    return await this.bulanRepository.findOne({
+      where: { id },
+      relations: ['kelas'],
+    });
   }
 
-  update(id: number, updateBulanDto: UpdateBulanDto) {
-    return `This action updates a #${id} bulan`;
+  async update(id: number, updateBulanDto: UpdateBulanDto) {
+    await this.bulanRepository.update(id, updateBulanDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} bulan`;
+  async remove(id: number) {
+    return await this.bulanRepository.delete(id);
   }
 }

@@ -1,166 +1,377 @@
-<div class="pt-28 py-20">
-  <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Create Mentor</h2>
+<div class='py-10'>
+  <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-3xl font-bold mb-8 text-gray-900 text-center'>Create Mentor</h2>
+    <form
+      method='POST'
+      action='/mentor/{{kelasId}}'
+      enctype='multipart/form-data'
+      class='space-y-8'
+    >
 
-    <form method="POST" action="/mentor/{{kelasId}}" enctype="multipart/form-data" class="space-y-8">
+      <div class='grid grid-cols-1 md:grid-cols-2 gap-8'>
+        <!-- LEFT COLUMN -->
+        <div class='space-y-6'>
+          <!-- Profile / Foto -->
+          <div
+            x-data="{
+                previewUrl: null,
+                oldPhoto: '/images/default-avatar.png',
+                errorMessage: '',
+                isValid: true,
+                fileName: '',
+                fileSize: 0,
+                imageWidth: 0,
+                imageHeight: 0,
+                hasFile: false,
+                validateImage(file) {
+                  if (!file) { this.hasFile = false; return; }
+                  this.hasFile = true;
+                  this.fileName = file.name;
+                  this.fileSize = file.size;
+                  this.errorMessage = '';
+                  this.isValid = true;
+                  const allowedTypes = ['image/jpeg','image/jpg','image/png'];
+                  if (!allowedTypes.includes(file.type)) {
+                    this.errorMessage = 'Only JPEG, JPG and PNG formats are allowed';
+                    this.isValid = false; this.previewUrl = null; return;
+                  }
+                  const maxSize = 5 * 1024 * 1024; // 5MB
+                  if (file.size > maxSize) {
+                    this.errorMessage = `File size too large (${(file.size/1024/1024).toFixed(2)}MB). Maximum 5MB`;
+                    this.isValid = false; this.previewUrl = null; return;
+                  }
+                  const img = new Image();
+                  const objectUrl = URL.createObjectURL(file);
+                  img.onload = () => {
+                    this.imageWidth = img.width; this.imageHeight = img.height;
+                    if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+                      this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000`;
+                      this.isValid = false; this.previewUrl = null; URL.revokeObjectURL(objectUrl);
+                    } else {
+                      this.previewUrl = objectUrl; this.isValid = true; this.errorMessage = '';
+                    }
+                  };
+                  img.onerror = () => { this.errorMessage = 'Failed to load image'; this.isValid = false; this.previewUrl = null; URL.revokeObjectURL(objectUrl); };
+                  img.src = objectUrl;
+                },
+                clearFile() { this.previewUrl = null; this.errorMessage = ''; this.isValid = true; this.fileName = ''; this.fileSize = 0; this.imageWidth = 0; this.imageHeight = 0; this.hasFile = false; $refs.profileFile.value = null; }
+              }"
+            class='space-y-3'
+          >
+            <label
+              for='profile'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Profile Photo
+              <span class='text-xs text-gray-500 font-normal'>(300x300 -
+                2000x2000px, max 5MB, JPG/PNG)</span></label>
+            <input
+              type='file'
+              id='profile'
+              name='profile'
+              accept='image/jpeg,image/jpg,image/png'
+              x-ref='profileFile'
+              class='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              @change='validateImage($event.target.files[0])'
+            />
 
-      <!-- Profile / Foto -->
-      <div x-data="{ previewUrl: null }" class="space-y-3">
-        <label for="profile" class="block text-sm font-semibold text-gray-700 mb-1">Profile Photo</label>
-        <input 
-          type="file" 
-          id="profile" 
-          name="profile" 
-          accept="image/*" 
-          x-ref="fileInput"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
-          @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-        >
+            <template x-if='!isValid && errorMessage'>
+              <div
+                class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <div class='text-red-600 font-semibold'>Invalid image</div>
+                <div class='text-sm text-red-700' x-text='errorMessage'></div>
+              </div>
+            </template>
 
-        <!-- Preview -->
-        <template x-if="previewUrl">
-          <div class="relative w-32 h-32">
-            <img 
-              :src="previewUrl" 
-              alt="Preview" 
-              class="w-32 h-32 object-cover rounded-lg border border-gray-300"
-            >
-            <button 
-              type="button" 
-              class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
-              @click="previewUrl = null; $refs.fileInput.value = null;">
-              &times;
-            </button>
+            <template x-if='previewUrl && isValid'>
+              <div class='space-y-2'>
+                <div
+                  class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+                >
+                  <div class='text-xs text-green-700'><span
+                      class='font-semibold'
+                    >Valid image:</span>
+                    <span
+                      x-text='`${imageWidth}x${imageHeight}px, ${(fileSize/1024/1024).toFixed(2)}MB`'
+                    ></span></div>
+                </div>
+                <div class='relative w-32 h-32'>
+                  <img
+                    :src='previewUrl'
+                    alt='Preview'
+                    class='w-32 h-32 object-cover rounded-lg border-2 border-green-500'
+                  />
+                  <button
+                    type='button'
+                    class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center'
+                    @click='clearFile()'
+                  >&times;</button>
+                </div>
+              </div>
+            </template>
           </div>
-        </template>
-      </div>
 
-      <!-- Nama -->
-      <div>
-        <label for="nama" class="block text-sm font-semibold text-gray-700 mb-1">Nama Mentor</label>
-        <input 
-          type="text" 
-          id="nama" 
-          name="nama" 
-          placeholder="Enter mentor name" 
-          required
-          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 
-                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
-
-      <!-- Posisi -->
-      <div>
-        <label for="posisi" class="block text-sm font-semibold text-gray-700 mb-1">Posisi</label>
-        <input 
-          type="text" 
-          id="posisi" 
-          name="posisi" 
-          placeholder="Enter position (e.g., Web Developer, UI/UX Designer)" 
-          required
-          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 
-                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
-
-                          <div x-data="{ techs: [''] }">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
-                        <template x-for="(tech, index) in techs" :key="index">
-                            <div class="flex items-center gap-3 mb-3">
-                                <input type="text" x-model="techs[index]" name="teknologi[]" placeholder="Enter a technology"
-                                    class="flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 
-                                           focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                                <button type="button" @click="techs.splice(index,1)" x-show="techs.length > 1"
-                                    class="text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center">
-                                    ✕
-                                </button>
-                            </div>
-                        </template>
-                        <button type="button" @click="techs.push('')"
-                            class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 
-                                   text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition">
-                            + Add Technology
-                        </button>
-                    </div>
-
-
-      <!-- Deskripsi -->
-      <div>
-        <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
-        <textarea 
-          id="deskripsi" 
-          name="deskripsi" 
-          rows="4" 
-          placeholder="Write a short description about the mentor..."
-          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 
-                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"></textarea>
-      </div>
-
-            <div>
-        <label for="linkedin" class="block text-sm font-semibold text-gray-700 mb-1">Linkedin</label>
-        <input 
-          type="text" 
-          id="linkedin" 
-          name="linkedin" 
-          placeholder="link linkedin" 
-          required
-          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 
-                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
-
-            <div>
-        <label for="github" class="block text-sm font-semibold text-gray-700 mb-1">Github</label>
-        <input 
-          type="text" 
-          id="github" 
-          name="github" 
-          placeholder="Link github" 
-          required
-          class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 
-                 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-      </div>
-
-
-            <div x-data="{ previewUrl: null }" class="space-y-3">
-        <label for="ttd" class="block text-sm font-semibold text-gray-700 mb-1">TTD</label>
-        <input 
-          type="file"
-          id="ttd" 
-          name="ttd" 
-          accept="image/*" 
-          x-ref="fileInput"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
-          @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-        >
-
-        <!-- Preview -->
-        <template x-if="previewUrl">
-          <div class="relative w-32 h-32">
-            <img 
-              :src="previewUrl" 
-              alt="Preview" 
-              class="w-32 h-32 object-cover rounded-lg border border-gray-300"
-            >
-            <button 
-              type="button" 
-              class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
-              @click="previewUrl = null; $refs.fileInput.value = null;">
-              &times;
-            </button>
+          <!-- Nama -->
+          <div>
+            <label
+              for='nama'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Nama Mentor</label>
+            <input
+              type='text'
+              id='nama'
+              name='nama'
+              placeholder='Enter mentor name'
+              required
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
           </div>
-        </template>
+
+          <!-- Posisi -->
+          <div>
+            <label
+              for='posisi'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Posisi</label>
+            <input
+              type='text'
+              id='posisi'
+              name='posisi'
+              placeholder='Enter position (e.g., Web Developer, UI/UX Designer)'
+              required
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+          </div>
+          <div
+            x-data="{
+          search: '',
+          selectedTechs: [],
+          showDropdown: false,
+          availableTechs: {{json teknologi}},
+          get filteredTechs() {
+            return this.availableTechs.filter(t => 
+              t.nama.toLowerCase().includes(this.search.toLowerCase()) &&
+              !this.selectedTechs.find(s => s.id === t.id)
+            );
+          },
+          selectTech(tech) {
+            this.selectedTechs.push(tech);
+            this.search = '';
+            this.showDropdown = false;
+          },
+          removeTech(techId) {
+            this.selectedTechs = this.selectedTechs.filter(t => t.id !== techId);
+          }
+        }"
+            @click.away='showDropdown = false'
+          >
+            <label
+              class='block text-sm font-semibold text-gray-700 mb-2'
+            >Technologies</label>
+
+            <!-- Selected Technologies -->
+            <div
+              class='flex flex-wrap gap-2 mb-3'
+              x-show='selectedTechs.length > 0'
+            >
+              <template x-for='tech in selectedTechs' :key='tech.id'>
+                <div
+                  class='flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2'
+                >
+                  <div
+                    class='w-6 h-6 flex items-center justify-center'
+                    x-html='tech.svg'
+                  ></div>
+                  <span
+                    class='text-sm font-medium text-gray-700'
+                    x-text='tech.nama'
+                  ></span>
+                  <button
+                    type='button'
+                    @click='removeTech(tech.id)'
+                    class='text-red-500 hover:text-red-700 ml-2'
+                  >
+                    <i class='fas fa-times'></i>
+                  </button>
+                  <input type='hidden' name='teknologiIds[]' :value='tech.id' />
+                </div>
+              </template>
+            </div>
+
+            <!-- Search Input -->
+            <div class='relative'>
+              <input
+                type='text'
+                x-model='search'
+                @focus='showDropdown = true'
+                @input='showDropdown = true'
+                placeholder='Search and select technologies...'
+                class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <i
+                class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+              ></i>
+
+              <!-- Dropdown -->
+              <div
+                x-show='showDropdown && filteredTechs.length > 0'
+                class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+              >
+                <template x-for='tech in filteredTechs' :key='tech.id'>
+                  <button
+                    type='button'
+                    @click='selectTech(tech)'
+                    class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                  >
+                    <div
+                      class='w-8 h-8 flex items-center justify-center flex-shrink-0'
+                      x-html='tech.svg'
+                    ></div>
+                    <span
+                      class='text-sm font-medium text-gray-700'
+                      x-text='tech.nama'
+                    ></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+
+            <p class='text-xs text-gray-500 mt-2'>Click to select technologies
+              from the list</p>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class='space-y-6'>
+          <!-- Deskripsi -->
+          <div>
+            <label
+              for='deskripsi'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Deskripsi</label>
+            <textarea
+              id='deskripsi'
+              name='deskripsi'
+              rows='6'
+              placeholder='Write a short description about the mentor...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+          </div>
+
+          <div>
+            <label
+              for='linkedin'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Linkedin</label>
+            <input
+              type='text'
+              id='linkedin'
+              name='linkedin'
+              placeholder='link linkedin'
+              required
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+          </div>
+
+          <div>
+            <label
+              for='github'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Github</label>
+            <input
+              type='text'
+              id='github'
+              name='github'
+              placeholder='Link github'
+              required
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+          </div>
+
+          <!-- TTD -->
+          <!-- TTD (signature) - validation mirrors profile -->
+          <div
+            x-data="{
+                previewUrl: null,
+                errorMessage: '',
+                isValid: true,
+                fileName: '',
+                fileSize: 0,
+                imageWidth: 0,
+                imageHeight: 0,
+                hasFile: false,
+                validateImage(file) {
+                  if (!file) { this.hasFile = false; return; }
+                  this.hasFile = true; this.fileName = file.name; this.fileSize = file.size; this.errorMessage = ''; this.isValid = true;
+                  const allowedTypes = ['image/jpeg','image/jpg','image/png'];
+                  if (!allowedTypes.includes(file.type)) { this.errorMessage = 'Only JPEG, JPG and PNG formats are allowed'; this.isValid = false; this.previewUrl = null; return; }
+                  const maxSize = 5 * 1024 * 1024;
+                  if (file.size > maxSize) { this.errorMessage = `File size too large (${(file.size/1024/1024).toFixed(2)}MB). Maximum 5MB`; this.isValid = false; this.previewUrl = null; return; }
+                  const img = new Image(); const objectUrl = URL.createObjectURL(file);
+                  img.onload = () => { this.imageWidth = img.width; this.imageHeight = img.height; if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) { this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000`; this.isValid = false; this.previewUrl = null; URL.revokeObjectURL(objectUrl); } else { this.previewUrl = objectUrl; this.isValid = true; this.errorMessage = ''; } };
+                  img.onerror = () => { this.errorMessage = 'Failed to load image'; this.isValid = false; this.previewUrl = null; URL.revokeObjectURL(objectUrl); };
+                  img.src = objectUrl;
+                },
+                clearFile() { this.previewUrl = null; this.errorMessage = ''; this.isValid = true; this.fileName = ''; this.fileSize = 0; this.imageWidth = 0; this.imageHeight = 0; this.hasFile = false; $refs.ttdFile.value = null; }
+              }"
+            class='space-y-3'
+          >
+            <label
+              for='ttd'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >TTD
+              <span class='text-xs text-gray-500'>(300x300 - 2000x2000px, max
+                5MB, JPG/PNG)</span></label>
+            <input
+              type='file'
+              id='ttd'
+              name='ttd'
+              accept='image/jpeg,image/jpg,image/png'
+              x-ref='ttdFile'
+              class='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              @change='validateImage($event.target.files[0])'
+            />
+
+            <template x-if='!isValid && errorMessage'>
+              <div
+                class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <div class='text-red-600 font-semibold'>Invalid image</div>
+                <div class='text-sm text-red-700' x-text='errorMessage'></div>
+              </div>
+            </template>
+
+            <template x-if='previewUrl && isValid'>
+              <div class='space-y-2'>
+                <div class='relative w-32 h-32'>
+                  <img
+                    :src='previewUrl'
+                    alt='Preview'
+                    class='w-32 h-32 object-cover rounded-lg border border-gray-300'
+                  />
+                  <button
+                    type='button'
+                    class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center'
+                    @click='clearFile()'
+                  >&times;</button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
       </div>
 
       <!-- Buttons -->
-      <div class="flex space-x-4">
-        <button type="submit"
-          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-          Create
-        </button>
-        <a href="/mentors"
-          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-          Cancel
-        </a>
+      <div class='flex justify-end space-x-4'>
+        <a
+          href='/kelass/detail/kelas/admin/{{kelasId}}'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+        >Cancel</a>
+        <button
+          type='submit'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+        >Create</button>
       </div>
-
     </form>
   </div>
 </div>

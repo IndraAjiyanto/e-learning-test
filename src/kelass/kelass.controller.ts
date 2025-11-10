@@ -194,12 +194,6 @@ export class KelassController {
     const bulan = await this.kelassService.findBulan();
     const mentoring = await this.kelassService.findMentoring();
 
-    // Debug: log mentoring data
-    console.log('Kelas mentoring:', JSON.stringify(kelas.mentoring, null, 2));
-    console.log(
-      'Available mentoring list:',
-      JSON.stringify(mentoring, null, 2),
-    );
 
     return res.render('admin/kelas/edit', {
       user: req.user,

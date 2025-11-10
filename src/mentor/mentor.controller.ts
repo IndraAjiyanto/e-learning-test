@@ -41,10 +41,10 @@ export class MentorController {
   )
   @ValidateImage({
     minWidth: 300,
-    maxWidth: 1000,
+    maxWidth: 2000,
     minHeight: 300,
-    maxHeight: 1000,
-    maxSize: 3 * 1024 * 1024, // 3MB max
+    maxHeight: 2000,
+    maxSize: 5 * 1024 * 1024, // 3MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/mentor',
   })
@@ -58,12 +58,14 @@ export class MentorController {
       createMentorDto.kelasId = kelasId;
       const uploadedImages = req.body.uploadedImageUrls || [];
 
-      // uploadedImages akan berisi array dengan urutan: [profile, ttd]
-      if (uploadedImages[0]) {
-        createMentorDto.profile = uploadedImages[0];
+      // uploadedImages berisi array, tapi urutan tergantung pada yang diupload
+      // Gunakan req.files untuk menentukan field mana
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      if (files?.profile?.length) {
+        createMentorDto.profile = uploadedImages[0]; // asumsikan urutan sesuai dengan files
       }
-      if (uploadedImages[1]) {
-        createMentorDto.ttd = uploadedImages[1];
+      if (files?.ttd?.length) {
+        createMentorDto.ttd = uploadedImages[files.profile ? 1 : 0];
       }
 
       await this.mentorService.create(createMentorDto);
@@ -76,14 +78,19 @@ export class MentorController {
     }
   }
 
-  @Roles('admin')
+  @Roles('super_admin')
   @Get('formCreate/:kelasId')
   async formCreate(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    res.render('super_admin/mentor/create', { user: req.user, kelasId });
+    const teknologi = await this.mentorService.findTeknologi();
+    res.render('super_admin/mentor/create', {
+      user: req.user,
+      kelasId,
+      teknologi,
+    });
   }
 
   @Roles('super_admin')
@@ -94,7 +101,12 @@ export class MentorController {
     @Req() req: Request,
   ) {
     const mentor = await this.mentorService.findOne(mentorId);
-    res.render('super_admin/mentor/detail', { user: req.user, mentor });
+    const teknologi = await this.mentorService.findTeknologi();
+    res.render('super_admin/mentor/detail', {
+      user: req.user,
+      mentor,
+      teknologi,
+    });
   }
 
   @Roles('super_admin')
@@ -105,7 +117,12 @@ export class MentorController {
     @Req() req: Request,
   ) {
     const mentor = await this.mentorService.findOne(mentorId);
-    res.render('super_admin/mentor/edit', { user: req.user, mentor });
+    const teknologi = await this.mentorService.findTeknologi();
+    res.render('super_admin/mentor/edit', {
+      user: req.user,
+      mentor,
+      teknologi,
+    });
   }
 
   @Roles('super_admin')
@@ -122,10 +139,10 @@ export class MentorController {
   )
   @ValidateImage({
     minWidth: 300,
-    maxWidth: 1000,
+    maxWidth: 2000,
     minHeight: 300,
-    maxHeight: 1000,
-    maxSize: 3 * 1024 * 1024, // 3MB max
+    maxHeight: 2000,
+    maxSize: 5 * 1024 * 1024, // 3MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/mentor',
   })
@@ -140,16 +157,17 @@ export class MentorController {
       const mentor = await this.mentorService.findOne(mentorId);
       const uploadedImages = req.body.uploadedImageUrls || [];
 
-      // uploadedImages akan berisi array dengan urutan: [profile, ttd]
-      if (uploadedImages[0]) {
+      // uploadedImages berisi array, urutan sesuai dengan files
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      if (files?.profile?.length) {
         updateMentorDto.profile = uploadedImages[0];
         if (mentor.profile) {
           await this.mentorService.getPublicIdFromUrl(mentor.profile);
         }
       }
 
-      if (uploadedImages[1]) {
-        updateMentorDto.ttd = uploadedImages[1];
+      if (files?.ttd?.length) {
+        updateMentorDto.ttd = uploadedImages[files.profile ? 1 : 0];
         if (mentor.ttd) {
           await this.mentorService.getPublicIdFromUrl(mentor.ttd);
         }
@@ -158,16 +176,13 @@ export class MentorController {
       await this.mentorService.update(mentorId, updateMentorDto);
       req.flash('success', 'mentor successfully update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-
     } catch (error) {
       req.flash('error', 'mentor failed to update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-      
-      
     }
   }
 
-  @Roles('admin')
+  @Roles('super_admin')
   @Delete(':mentorId/:kelasId')
   async remove(
     @Param('mentorId') mentorId: number,
@@ -179,18 +194,16 @@ export class MentorController {
       const mentor = await this.mentorService.findOne(mentorId);
       if (!mentor) {
         req.flash('error', 'mentor not found');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-        
+        res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
       }
       await this.mentorService.getPublicIdFromUrl(mentor.profile);
+      await this.mentorService.getPublicIdFromUrl(mentor.ttd);
       await this.mentorService.remove(mentorId);
       req.flash('success', 'mentor successfully deleted');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-      
     } catch (error) {
       req.flash('error', 'mentor failed to delete');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-      
     }
   }
 }

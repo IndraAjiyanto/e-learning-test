@@ -17,13 +17,18 @@ export class ParagrafService {
     return await this.paragrafRepository.save(paragraf);
   }
 
-  async noPertemuan(){
-    const paragraf_old = await this.paragrafRepository.findOne({ order: { p_ke: 'DESC' } });
-    if(!paragraf_old){
-      return 0
+  async noPertemuan() {
+    // TypeORM's `findOne` requires selection conditions in v0.3+.
+    // To get the highest `p_ke`, fetch the first row ordered by p_ke desc.
+    const paragrafList = await this.paragrafRepository.find({
+      order: { p_ke: 'DESC' },
+      take: 1,
+    });
+    const paragraf_old = paragrafList[0];
+    if (!paragraf_old) {
+      return 0;
     }
-    const paragraf_new = paragraf_old.p_ke + 1
-    return paragraf_new
+    return paragraf_old.p_ke + 1;
   }
 
   async findAll() {
@@ -31,7 +36,9 @@ export class ParagrafService {
   }
 
   async findOne(paragrafId: number) {
-    const paragraf = await this.paragrafRepository.findOne({ where: { id: paragrafId } });
+    const paragraf = await this.paragrafRepository.findOne({
+      where: { id: paragrafId },
+    });
     if (!paragraf) {
       throw new NotFoundException('paragraf not found');
     }

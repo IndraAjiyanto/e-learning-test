@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
+import { Mentor } from './mentor.entity';
 
 @Entity()
 export class Teknologi {
@@ -21,6 +22,9 @@ export class Teknologi {
 
   @ManyToMany(() => Kelas, (kelas) => kelas.teknologi)
   kelas: Kelas[];
+
+  @ManyToMany(() => Mentor, (mentor) => mentor.teknologi)
+  mentors: Mentor[];
 
   @CreateDateColumn()
   createdAt: Date;

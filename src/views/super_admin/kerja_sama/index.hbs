@@ -174,15 +174,50 @@
 </div>
 
 <script>
-  function kerjaSamaTable({ kerjaSama }) { return { searchInput: "", search: "",
-  pageNumber: 0, size: 5, kerjaSama, amount: 0, get filteredKerjaSama() { let
-  filtered = this.kerjaSama.filter(k =>
-  (`${k.gambar}`).toLowerCase().includes(this.search.toLowerCase()) );
-  this.amount = filtered.length; const start = this.pageNumber * this.size;
-  const end = start + this.size; return filtered.slice(start, end).map(k =>
-  k.id.toString()); }, pages() { return Array.from({ length: this.pageCount()
-  }); }, pageCount() { return Math.ceil(this.amount / this.size); }, nextPage()
-  { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; }, prevPage() {
-  if (this.pageNumber > 0) this.pageNumber--; }, viewPage(index) {
-  this.pageNumber = index; }, } }
+  function kerjaSamaTable({ kerjaSama }) {
+    return {
+      searchInput: '',
+      search: '',
+      pageNumber: 0,
+      size: 5,
+      kerjaSama,
+      amount: 0,
+
+      get filteredKerjaSama() {
+        const filtered = this.kerjaSama.filter(k =>
+          `${k.gambar}`.toLowerCase().includes(this.search.toLowerCase())
+        );
+
+        this.amount = filtered.length;
+        const start = this.pageNumber * this.size;
+        const end = start + this.size;
+
+        return filtered.slice(start, end).map(k => k.id.toString());
+      },
+
+      pageCount() {
+        return Math.ceil(this.amount / this.size);
+      },
+
+      pages() {
+        return Array.from({ length: this.pageCount() });
+      },
+
+      nextPage() {
+        if (this.pageNumber < this.pageCount() - 1) {
+          this.pageNumber++;
+        }
+      },
+
+      prevPage() {
+        if (this.pageNumber > 0) {
+          this.pageNumber--;
+        }
+      },
+
+      viewPage(index) {
+        this.pageNumber = index;
+      }
+    };
+  }
 </script>

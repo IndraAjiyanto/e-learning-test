@@ -15,7 +15,7 @@ export class ParagrafController {
   @Post()
   async create(@Body() createParagrafDto: CreateParagrafDto, @Req() req:Request, @Res() res:Response) {
     try {
-      await this.paragrafService.noPertemuan()
+      createParagrafDto.p_ke = await this.paragrafService.noPertemuan();
       await this.paragrafService.create(createParagrafDto);
       req.flash('success', 'paragraph succesfuly create')
       res.redirect('/paragraf');
