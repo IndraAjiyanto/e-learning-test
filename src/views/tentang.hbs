@@ -145,77 +145,15 @@
               </div>
             </div>
 
+{{#each paragraf}}
             <p
               class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'
             >
-              Kesatria Academy was born from a vision to create a technology
-              learning ecosystem that is accessible, high-quality, and relevant
-              to industry needs. We believe that every individual has the
-              potential to become a "knight" in the technology field, with
-              proper dedication and guidance.
+ {{this.paragraf}}
             </p>
-
-            <p
-              class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-6 sm:mb-8 font-inter'
-            >
-              Since our establishment, we have been committed to providing
-              learning that not only focuses on technical aspects but also
-              develops the soft skills and mindset needed to succeed in the
-              digital era. With an always-updated curriculum and experienced
-              instructors from the industry, we ensure every participant gets
-              the maximum learning experience.
-            </p>
-
-            <p
-              class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-6 sm:mb-8 font-inter'
-            >
-              Since our establishment, we have been committed to providing
-              learning that not only focuses on technical aspects but also
-              develops the soft skills and mindset needed to succeed in the
-              digital era. With an always-updated curriculum and experienced
-              instructors from the industry, we ensure every participant gets
-              the maximum learning experience.
-            </p>
-
+{{/each}}
             <div class='clear-both'></div>
 
-            <div
-              class='grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 my-8 sm:my-12'
-            >
-              <div
-                class='text-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg sm:rounded-xl border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-              >
-                <div
-                  class='text-2xl sm:text-3xl font-bold text-slate-800 mb-1 sm:mb-2'
-                >10K+</div>
-                <div class='text-xs sm:text-sm text-slate-600'>Active Students</div>
-              </div>
-              <div
-                class='text-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg sm:rounded-xl border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-              >
-                <div
-                  class='text-2xl sm:text-3xl font-bold text-slate-800 mb-1 sm:mb-2'
-                >500+</div>
-                <div class='text-xs sm:text-sm text-slate-600'>Available Classes</div>
-              </div>
-              <div
-                class='text-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg sm:rounded-xl border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-              >
-                <div
-                  class='text-2xl sm:text-3xl font-bold text-slate-800 mb-1 sm:mb-2'
-                >95%</div>
-                <div class='text-xs sm:text-sm text-slate-600'>Satisfaction Rate</div>
-              </div>
-              <div
-                class='text-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg sm:rounded-xl border border-slate-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-              >
-                <div
-                  class='text-2xl sm:text-3xl font-bold text-slate-800 mb-1 sm:mb-2'
-                >50+</div>
-                <div class='text-xs sm:text-sm text-slate-600'>Expert
-                  Instructors</div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -345,55 +283,23 @@
               class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-4 sm:mb-6 font-montserrat'
             >Our Commitment</h3>
             <div class='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6'>
+              {{#each commitment}}
               <div
                 class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
               >
                 <div
                   class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
                 >
-                  <i class='fas fa-star text-white text-sm sm:text-base'></i>
+                  <i class='{{computeIcon icon}} text-white text-sm sm:text-base'></i>
                 </div>
                 <div>
                   <h4
                     class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'
-                  >Guaranteed Quality</h4>
-                  <p class='text-slate-600 text-xs sm:text-sm font-inter'>Always
-                    updated curriculum and industry-experienced instructors</p>
+                  >{{judul}}</h4>
+                  <p class='text-slate-600 text-xs sm:text-sm font-inter'>{{deskripsi}}</p>
                 </div>
               </div>
-              <div
-                class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-              >
-                <div
-                  class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
-                >
-                  <i class='fas fa-users text-white text-sm sm:text-base'></i>
-                </div>
-                <div>
-                  <h4
-                    class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'
-                  >Solid Community</h4>
-                  <p
-                    class='text-slate-600 text-xs sm:text-sm font-inter'
-                  >Building a professional network that supports each other</p>
-                </div>
-              </div>
-              <div
-                class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-              >
-                <div
-                  class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
-                >
-                  <i class='fas fa-rocket text-white text-sm sm:text-base'></i>
-                </div>
-                <div>
-                  <h4
-                    class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'
-                  >Continuous Innovation</h4>
-                  <p class='text-slate-600 text-xs sm:text-sm font-inter'>Always
-                    adopting the latest technology and learning methodologies</p>
-                </div>
-              </div>
+              {{/each}}
             </div>
           </div>
         </div>
@@ -654,8 +560,7 @@
                   <p
                     class='text-slate-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4'
                   >
-                    Former Lead Designer at Tokopedia with expertise in UX/UI
-                    Design and Product Strategy
+{{deskripsi}}
                   </p>
                   <div class='flex justify-center space-x-3'>
                     <a
@@ -684,34 +589,6 @@
                 <i
                   class='fas fa-user text-white text-lg sm:text-xl lg:text-2xl'
                 ></i>
-              </div>
-              <div class='text-center'>
-                <h3
-                  class='text-base sm:text-lg lg:text-xl font-bold text-slate-800 mb-1 sm:mb-2'
-                >Budi Santoso</h3>
-                <p
-                  class='text-slate-600 font-medium mb-2 sm:mb-3 text-sm sm:text-base'
-                >Lead Instructor</p>
-                <p
-                  class='text-slate-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4'
-                >
-                  Full-stack Developer with 8+ years of experience in unicorn
-                  startups and tech companies
-                </p>
-                <div class='flex justify-center space-x-3'>
-                  <a
-                    href='#'
-                    class='w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors'
-                  >
-                    <i class='fab fa-github text-slate-600 text-sm'></i>
-                  </a>
-                  <a
-                    href='#'
-                    class='w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors'
-                  >
-                    <i class='fab fa-twitter text-slate-600 text-sm'></i>
-                  </a>
-                </div>
               </div>
             </div>
           </div>
@@ -757,6 +634,7 @@
           </div>
 
           <div class='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8'>
+            {{#each value}}
             <div
               class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
             >
@@ -764,86 +642,19 @@
                 class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
               >
                 <i
-                  class='fas fa-lightbulb text-white text-lg sm:text-xl lg:text-2xl'
+                  class='{{computeIcon icon}} text-white text-lg sm:text-xl lg:text-2xl'
                 ></i>
               </div>
               <h3
                 class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-              >Innovation</h3>
+              >{{tittle}}</h3>
               <p
                 class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
               >
-                We always seek new and better ways to deliver exceptional
-                learning experiences. Innovation is in our DNA when facing
-                digital education challenges.
+              {{description}}
               </p>
             </div>
-
-            <div
-              class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-            >
-              <div
-                class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
-              >
-                <i
-                  class='fas fa-handshake text-white text-lg sm:text-xl lg:text-2xl'
-                ></i>
-              </div>
-              <h3
-                class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-              >Integrity</h3>
-              <p
-                class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-              >
-                Honesty and transparency are the foundation of trust with
-                students, instructors, and partners. We are committed to always
-                act with high integrity.
-              </p>
-            </div>
-
-            <div
-              class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-            >
-              <div
-                class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
-              >
-                <i
-                  class='fas fa-users text-white text-lg sm:text-xl lg:text-2xl'
-                ></i>
-              </div>
-              <h3
-                class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-              >Collaboration</h3>
-              <p
-                class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-              >
-                We believe the best learning happens in collaborative
-                environments. Building a supportive community is our top
-                priority.
-              </p>
-            </div>
-
-            <div
-              class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-            >
-              <div
-                class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
-              >
-                <i
-                  class='fas fa-trophy text-white text-lg sm:text-xl lg:text-2xl'
-                ></i>
-              </div>
-              <h3
-                class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-              >Excellence</h3>
-              <p
-                class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-              >
-                High standards in every aspect of our service. From curriculum
-                to user experience, we always strive to deliver the best for
-                student success.
-              </p>
-            </div>
+            {{/each}}
           </div>
         </div>
 

@@ -178,7 +178,7 @@
 <script>
   function logbookTable({ logbooks, classes }) {
     return {
-      // State
+      // ===== State =====
       searchInput: "",
       search: "",
       selectedKelas: "",
@@ -188,88 +188,110 @@
       classes,
       amount: 0,
 
-      // Get filtered + paginated logbook IDs
+      // ===== Computed: Filter + Pagination =====
       get filteredLogbooks() {
-        const filtered = this.logbooks.filter(l => {
-          const kelasMatch = !this.selectedKelas ||
-            l.pertemuan?.minggu?.kelas?.id?.toString() === this.selectedKelas;
+        const filtered = this.logbooks.filter(log => {
+          const kelasMatch =
+            !this.selectedKelas ||
+            log.pertemuan?.minggu?.kelas?.id?.toString() === this.selectedKelas;
 
-          const searchMatch = `
-            ${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}
-          `.toLowerCase().includes(this.search.toLowerCase());
+          const searchText = `${log.kegiatan} ${log.rincian_kegiatan} ${log.kendala}`.toLowerCase();
+          const searchMatch = searchText.includes(this.search.toLowerCase());
 
           return kelasMatch && searchMatch;
         });
 
         this.amount = filtered.length;
+
         const start = this.pageNumber * this.size;
         return filtered.slice(start, start + this.size).map(l => l.id.toString());
       },
 
-      // Export data sesuai dengan tampilan tabel (filtered + paginated)
+      // ===== Export to Excel =====
       exportExcel() {
-        const filtered = this.logbooks.filter(l => {
-          const kelasMatch = !this.selectedKelas ||
-            l.pertemuan?.minggu?.kelas?.id?.toString() === this.selectedKelas;
+        try {
+          const filtered = this.logbooks.filter(log => {
+            const kelasMatch =
+              !this.selectedKelas ||
+              log.pertemuan?.minggu?.kelas?.id?.toString() === this.selectedKelas;
 
-          const searchMatch = `
-            ${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}
-          `.toLowerCase().includes(this.search.toLowerCase());
+            const searchText = `${log.kegiatan} ${log.rincian_kegiatan} ${log.kendala}`.toLowerCase();
+            const searchMatch = searchText.includes(this.search.toLowerCase());
 
-          return kelasMatch && searchMatch;
-        });
+            return kelasMatch && searchMatch;
+          });
 
-        const start = this.pageNumber * this.size;
-        const currentPageData = filtered.slice(start, start + this.size);
+          const dataToExport = filtered.map((log, index) => ({
+            No: index + 1,
+            Kegiatan: log.kegiatan || "-",
+            Rincian: log.rincian_kegiatan || "-",
+            Kendala: log.kendala || "-",
+            Dokumentasi: log.dokumentasi || "-",
+            Kelas: log.pertemuan?.minggu?.kelas?.nama_kelas || "-",
+            User: log.user?.username || "-",
+            Tanggal: this.formatDate(log.createdAt),
+          }));
 
-        const rows = [[
-          "No", "Kegiatan", "Rincian", "Kendala",
-          "Dokumentasi", "User", "Kelas", "Created At"
-        ]];
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(dataToExport);
 
-        currentPageData.forEach((l, i) => {
-          rows.push([
-            start + i + 1,
-            l.kegiatan,
-            l.rincian_kegiatan,
-            l.kendala,
-            l.dokumentasi,
-            l.user?.username ?? "-",
-            l.pertemuan?.minggu?.kelas?.nama_kelas ?? "-",
-            l.createdAt
-          ]);
-        });
+          ws["!cols"] = [
+            { wch: 5 },
+            { wch: 30 },
+            { wch: 50 },
+            { wch: 40 },
+            { wch: 60 },
+            { wch: 25 },
+            { wch: 20 },
+            { wch: 20 },
+          ];
 
-        const worksheet = XLSX.utils.aoa_to_sheet(rows);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Logbook");
-        XLSX.writeFile(workbook, "logbook_mentor.xlsx");
+          XLSX.utils.book_append_sheet(wb, ws, "Logbook");
+          XLSX.writeFile(wb, `Logbook_Mentor_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        } catch (err) {
+          console.error(err);
+          alert("Gagal export data ke Excel");
+        }
       },
 
-      // Pagination helpers
-      pages() {
-        return Array.from({ length: this.pageCount() });
+      // ===== Helper Format Date =====
+      formatDate(date) {
+        if (!date) return "-";
+        return new Date(date).toLocaleDateString("id-ID", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
       },
 
+      // ===== Pagination =====
       pageCount() {
         return Math.ceil(this.amount / this.size);
       },
 
+      pages() {
+        return Array.from({ length: this.pageCount() }, (_, i) => i);
+      },
+
       nextPage() {
-        if (this.pageNumber < this.pageCount() - 1) {
-          this.pageNumber++;
-        }
+        if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
       },
 
       prevPage() {
-        if (this.pageNumber > 0) {
-          this.pageNumber--;
-        }
+        if (this.pageNumber > 0) this.pageNumber--;
       },
 
       viewPage(index) {
         this.pageNumber = index;
-      }
+      },
     };
   }
 </script>
+
+
+<!-- SheetJS Library for Excel Export -->
+<script
+  src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
+></script>
