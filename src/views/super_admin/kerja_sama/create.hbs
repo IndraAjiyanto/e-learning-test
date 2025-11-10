@@ -47,8 +47,8 @@
         this.imageWidth = img.width;
         this.imageHeight = img.height;
         
-        if (img.width < 300 || img.width > 500 || img.height < 300 || img.height > 500) {
-          this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 500x500 pixels`;
+        if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+          this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`;
           this.isValid = false;
           this.previewUrl = null;
           URL.revokeObjectURL(objectUrl);
@@ -85,8 +85,7 @@
     }
   }"
   >
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Create New
-      Cooperation</h2>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Cooperation</h2>
 
     <form
       action='/kerja-sama'
@@ -104,8 +103,8 @@
         >
           Image
           <span class='text-red-500'>*</span>
-          <span class='text-xs text-gray-500 font-normal'>(300x300 - 500x500px,
-            max 5MB, JPG/PNG)</span>
+          <span class='text-xs text-gray-500 font-normal'>(300x300 -
+            2000x2000px, max 5MB, JPG/PNG)</span>
         </label>
 
         <input
@@ -186,8 +185,8 @@
         <button
           type='submit'
           :disabled='!canSubmit()'
-          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed text-white px-6 py-2 rounded-lg shadow' : 'bg-gray-900 hover:bg-gray-600 text-white px-6 py-2 rounded-lg shadow'"
+          class='transition flex items-center gap-2'
         >
           <i class='fas fa-upload'></i>
           Upload

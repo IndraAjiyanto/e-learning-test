@@ -242,37 +242,20 @@
         ></textarea>
       </div>
 
-      <!-- Experience -->
-      <div>
-        <label
-          for='experience'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Experience</label>
-        <textarea
-          id='experience'
-          name='experience'
-          required
-          rows='4'
-          placeholder='Work experience and expertise...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        ></textarea>
-      </div>
+<!-- Experience -->
+<div>
+  <label class="block text-sm font-semibold text-gray-700 mb-1">Experience</label>
+  <div id="experience-editor" class="bg-white border border-gray-300 rounded-lg" style="height: 150px;"></div>
+  <input type="hidden" name="experience" id="experience">
+</div>
 
-      <!-- Awards -->
-      <div>
-        <label
-          for='awards'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Awards & Achievements</label>
-        <textarea
-          id='awards'
-          name='awards'
-          required
-          rows='3'
-          placeholder='Awards, certifications, and achievements...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        ></textarea>
-      </div>
+<!-- Awards -->
+<div>
+  <label class="block text-sm font-semibold text-gray-700 mb-1">Awards & Achievements</label>
+  <div id="awards-editor" class="bg-white border border-gray-300 rounded-lg" style="height: 150px;"></div>
+  <input type="hidden" name="awards" id="awards">
+</div>
+
 
       <!-- Buttons -->
       <div class='flex gap-3'>
@@ -292,3 +275,46 @@
     </form>
   </div>
 </div>
+
+<script>
+  const toolbarOptions = [
+    [{ 'font': [] }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'color': [] }, { 'background': [] }],
+
+    [{ 'script': 'sub'}, { 'script': 'super' }],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'indent': '-1'}, { 'indent': '+1' }],
+    [{ 'direction': 'rtl' }],
+
+    [{ 'align': [] }],
+
+    ['blockquote', 'code-block'],
+
+    ['link', 'image', 'video'],
+
+    ['clean']
+  ];
+
+  const quillExperience = new Quill('#experience-editor', {
+    modules: { toolbar: toolbarOptions },
+    theme: 'snow',
+    placeholder: 'Work experience and expertise...',
+  });
+
+  const quillAwards = new Quill('#awards-editor', {
+    modules: { toolbar: toolbarOptions },
+    theme: 'snow',
+    placeholder: 'Awards, certifications, and achievements...',
+  });
+
+  // Pindahkan isi quill ke hidden input saat submit
+  document.querySelector('form').addEventListener('submit', function () {
+    document.getElementById('experience').value = quillExperience.root.innerHTML;
+    document.getElementById('awards').value = quillAwards.root.innerHTML;
+  });
+</script>
+

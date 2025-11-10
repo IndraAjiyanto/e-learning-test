@@ -2,14 +2,14 @@ import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { User } from "./user.entity";
 import { Pertemuan } from "./pertemuan.entity";
 
-export type Status = 'permission' | 'present' | 'sick' | 'absent' | 'no information';
+export type Status = 'permission' | 'present' | 'sick' | 'absent' | 'no_information';
 
 @Entity()
 export class Absen {
     @PrimaryGeneratedColumn()
     id: number
 
-  @Column({ type: 'enum', enum: ['permission', 'present', 'sick', 'absent', 'no information'], default: 'no information' })
+  @Column({ type: 'enum', enum: ['permission', 'present', 'sick', 'absent', 'no_information'], default: 'no_information' })
   status: Status;
 
     @Column()

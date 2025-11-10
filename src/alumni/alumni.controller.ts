@@ -45,10 +45,10 @@ export class AlumniController {
   )
   @ValidateImage({
     minWidth: 300,
-    maxWidth: 500,
+    maxWidth: 2000,
     minHeight: 300,
-    maxHeight: 500,
-    maxSize: 1 * 1024 * 1024, // 1MB max
+    maxHeight: 2000,
+    maxSize: 5 * 1024 * 1024, // 1MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/alumni',
   })
@@ -97,7 +97,19 @@ export class AlumniController {
 
   @Roles('super_admin')
   @Patch(':alumniId')
-  @UseInterceptors(FileInterceptor('profile', multerConfigImage))
+  @UseInterceptors(
+    FileInterceptor('profile', multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 300,
+    maxWidth: 2000,
+    minHeight: 300,
+    maxHeight: 2000,
+    maxSize: 5 * 1024 * 1024, // 5MB max (kept consistent with create)
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/alumni',
+  })
   async update(
     @UploadedFile() profile: Express.Multer.File,
     @Param('alumniId') alumniId: number,
@@ -108,13 +120,16 @@ export class AlumniController {
     try {
       const alumni = await this.alumniService.findOne(alumniId);
       if (profile) {
+        // remove old image if exists (public id extraction)
         await this.alumniService.getPublicIdFromUrl(alumni.profile);
-        updateAlumnusDto.profile = profile.path;
+        // ValidateImageInterceptor uploads and sets uploadedImageUrls on the body (same as create)
+        updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
       req.flash('success', 'Alumni successfully updated');
       res.redirect('/alumni');
     } catch (error) {
+      console.log(error);
       req.flash('error', 'Alumni failed to update');
       res.redirect('/alumni');
     }

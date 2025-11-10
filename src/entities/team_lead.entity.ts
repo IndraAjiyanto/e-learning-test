@@ -32,11 +32,13 @@ export class TeamLead {
   @Column('text')
   background: string;
 
-  @Column('text')
-  awards: string;
+// Entity
+@Column({ type: 'text' })
+experience: string;
 
-  @Column('text')
-  experience: string;
+@Column({ type: 'text' })
+awards: string;
+
 
   @Column()
   linkedin: string;

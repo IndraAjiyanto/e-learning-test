@@ -1,0 +1,588 @@
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class Update1762753904286 implements MigrationInterface {
+  name = 'Update1762753904286';
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // Release transaction to add enum value (Postgres requires this)
+    await queryRunner.commitTransaction();
+
+    // Add missing enum value for absen_status_enum if it doesn't exist
+    await queryRunner.query(`
+          DO $$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_enum e
+              JOIN pg_type t ON e.enumtypid = t.oid
+              WHERE t.typname = 'absen_status_enum' AND e.enumlabel = 'no_information'
+            ) THEN
+              ALTER TYPE "public"."absen_status_enum" ADD VALUE 'no_information';
+            END IF;
+          END
+          $$;
+        `);
+
+    // Start new transaction for the rest of the migration
+    await queryRunner.startTransaction();
+
+    await queryRunner.query(
+      `CREATE TABLE "visi_misi" ("id" SERIAL NOT NULL, "visi" character varying NOT NULL, "misi" text NOT NULL, "icon" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_65e9a18f1ddbe914a33849b0597" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "biodata" ("id" SERIAL NOT NULL, "nama_lengkap" character varying NOT NULL, "no" character varying NOT NULL, "jenis_kelamin" character varying NOT NULL, "kota" character varying NOT NULL, "pendidikan" character varying NOT NULL, "program_studi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer NOT NULL, CONSTRAINT "REL_477a671c8b8c738777b03a2c60" UNIQUE ("userId"), CONSTRAINT "PK_5e0c867deda29cac97995e52bcc" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "kategori" ("id" SERIAL NOT NULL, "nama_kategori" character varying NOT NULL, "icon" character varying NOT NULL, "deskripsi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_06a98d8feabd77edd2f8cb69090" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "cicilan" ("id" SERIAL NOT NULL, "harga" jsonb NOT NULL, "bulan" "public"."cicilan_bulan_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_3af47c41193bb3c6a3f9d2b3277" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "pembayaran" ("id" SERIAL NOT NULL, "file" character varying, "no" character varying, "proses" "public"."pembayaran_proses_enum" NOT NULL DEFAULT 'rejected', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "kelasId" integer, "cicilanId" integer, CONSTRAINT "REL_ba748cc92803680791eaab0f31" UNIQUE ("cicilanId"), CONSTRAINT "PK_95db0e6865638afc787f5eff480" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "jawaban_user" ("id" SERIAL NOT NULL, "pertanyaanId" integer, "jawabanId" integer, "userId" integer, CONSTRAINT "PK_d735cb2682804d9f3d80d6b1f52" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "jawaban" ("id" SERIAL NOT NULL, "jawaban" character varying NOT NULL, "jawaban_benar" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "pertanyaanId" integer, CONSTRAINT "PK_c53d70a5bd3fa2c973b66f624e9" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "pertanyaan" ("id" SERIAL NOT NULL, "pertanyaan_soal" character varying NOT NULL, "gambar" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "quizId" integer, CONSTRAINT "PK_e06d4388c49799a7acd5c485e55" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "nilai" ("id" SERIAL NOT NULL, "nilai" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "quizId" integer, CONSTRAINT "PK_2e246b2c6af3007586ea96514ac" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "progres_quiz" ("id" SERIAL NOT NULL, "proses" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "quizId" integer, CONSTRAINT "PK_f547f63f1929e54bebb09fc4037" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "quiz" ("id" SERIAL NOT NULL, "nama_quiz" character varying NOT NULL, "nilai_minimal" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "mingguId" integer, CONSTRAINT "PK_422d974e7217414e029b3e641d0" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "progres_minggu" ("id" SERIAL NOT NULL, "quiz" boolean NOT NULL DEFAULT false, "proses" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "mingguId" integer, CONSTRAINT "PK_5901edf0ff58d103286ab612af4" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "minggu" ("id" SERIAL NOT NULL, "minggu_ke" integer NOT NULL, "keterangan" character varying NOT NULL, "akhir" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_d22d15e0823e34c0ddd1b6ad8bf" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "sertifikat" ("id" SERIAL NOT NULL, "sertif" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, "userId" integer, CONSTRAINT "PK_89325f6ae1935ad1e97a2e0455a" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "jenis_kelas" ("id" SERIAL NOT NULL, "nama_jenis_kelas" character varying NOT NULL, "icon" character varying NOT NULL, "deskripsi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_117021c99481c4dee1de217b90c" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "user_kelas" ("id" SERIAL NOT NULL, "progres" boolean NOT NULL DEFAULT false, "userId" integer, "kelasId" integer, CONSTRAINT "PK_f94a218e7cd6b6755003f913d2c" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "pertanyaan_kelas" ("id" SERIAL NOT NULL, "pertanyaan" character varying NOT NULL, "jawaban" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_26aeeff57906871c4a092b67c29" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "mentor" ("id" SERIAL NOT NULL, "nama" character varying NOT NULL, "posisi" character varying NOT NULL, "linkedin" character varying NOT NULL, "github" character varying NOT NULL, "teknologi" jsonb NOT NULL, "profile" character varying NOT NULL, "deskripsi" character varying NOT NULL, "ttd" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_9fcebd0a40237e9b6defcbd9d74" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "alumni" ("id" SERIAL NOT NULL, "profile" character varying NOT NULL, "nama" character varying NOT NULL, "pesan" character varying NOT NULL, "alumni" character varying NOT NULL, "posisi_sekarang" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_6947d90e8215d18adec98799895" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "teknologi" ("id" SERIAL NOT NULL, "nama" character varying NOT NULL, "svg" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_27c90f2f1ca8221754eb60cc439" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "alur_kelas" ("id" SERIAL NOT NULL, "alur_ke" integer NOT NULL, "judul" character varying NOT NULL, "isi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_286d4f6a5ad27c6fc1f15aa4abe" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "benefit_kelas" ("id" SERIAL NOT NULL, "benefit" character varying NOT NULL, "isi" character varying NOT NULL, "icon" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_a58a617620bc9d4c20e38e47abc" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "bulan" ("id" SERIAL NOT NULL, "bulan" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_a40e5c5cb129468399c546ca989" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "mentoring" ("id" SERIAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "kelasId" integer, CONSTRAINT "PK_7c4e8636242b5454992c004899b" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "kelas" ("id" SERIAL NOT NULL, "nama_kelas" character varying NOT NULL, "deskripsi" character varying NOT NULL, "gambar" character varying NOT NULL, "harga" integer, "promo" integer, "lokasi" character varying NOT NULL, "metode" "public"."kelas_metode_enum" NOT NULL, "kriteria" jsonb NOT NULL, "launch" boolean NOT NULL DEFAULT false, "proses" "public"."kelas_proses_enum" NOT NULL DEFAULT 'rejected', "materi" jsonb NOT NULL, "target_pembelajaran" jsonb NOT NULL, "kuota" integer, "form" character varying, "check_paid" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kategoriId" integer, "bulanId" integer, "jenis_kelasId" integer, CONSTRAINT "PK_55bb4fb74bbbd202d55118b0417" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "portfolio" ("id" SERIAL NOT NULL, "gambar" jsonb NOT NULL, "judul" character varying NOT NULL, "deskripsi" character varying NOT NULL, "link" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "kelasId" integer, CONSTRAINT "PK_6936bb92ca4b7cda0ff28794e48" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "biodata_mentor" ("id" SERIAL NOT NULL, "role" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, CONSTRAINT "REL_c0c27aa65c8c2919f26b8dca81" UNIQUE ("userId"), CONSTRAINT "PK_96f4303e31f8afb777e8df4c4f1" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "komentar" ("id" SERIAL NOT NULL, "komentar" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "jawaban_tugasId" integer, CONSTRAINT "PK_ce46d94a01d70df4392b4742a18" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "jawaban_tugas" ("id" SERIAL NOT NULL, "file" character varying NOT NULL, "nilai" integer NOT NULL, "proses" "public"."jawaban_tugas_proses_enum" NOT NULL DEFAULT 'rejected', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "tugasId" integer, "userId" integer, CONSTRAINT "PK_f20a8e0a076b2a166975f227218" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "logbook" ("id" SERIAL NOT NULL, "kegiatan" character varying NOT NULL, "rincian_kegiatan" character varying NOT NULL, "dokumentasi" character varying NOT NULL, "proses" "public"."logbook_proses_enum" NOT NULL DEFAULT 'rejected', "kendala" character varying NOT NULL, "dokumentasi_lain" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "pertemuanId" integer, CONSTRAINT "PK_bf9f4ef320dc561b0d9a63b1853" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "progres_pertemuan" ("id" SERIAL NOT NULL, "logbook" boolean NOT NULL DEFAULT false, "absen" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "pertemuanId" integer, CONSTRAINT "PK_b83a17c95b81ff0c9946e73506c" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "logbook_mentor" ("id" SERIAL NOT NULL, "kegiatan" character varying NOT NULL, "rincian_kegiatan" character varying NOT NULL, "dokumentasi" character varying NOT NULL, "kendala" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "pertemuanId" integer, CONSTRAINT "PK_24121515a5be7f33be6ee49f68a" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "user" ("id" SERIAL NOT NULL, "username" character varying NOT NULL, "email" character varying NOT NULL, "password" character varying NOT NULL, "profile" character varying, "role" "public"."user_role_enum" NOT NULL DEFAULT 'user', "resetPasswordToken" character varying, "resetPasswordExpires" TIMESTAMP, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "absen" ("id" SERIAL NOT NULL, "status" "public"."absen_status_enum" NOT NULL DEFAULT 'no_information', "waktu_absen" TIMESTAMP NOT NULL, "keterangan" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "pertemuanId" integer, CONSTRAINT "PK_10b7c13f5c38584c3813a02853a" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "materi" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "file" character varying NOT NULL, "slides" jsonb, "jenis_file" "public"."materi_jenis_file_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "pertemuanId" integer, CONSTRAINT "PK_8635051686af32e69dca1bc2347" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "pertemuan" ("id" SERIAL NOT NULL, "topik" character varying NOT NULL, "pertemuan_ke" integer NOT NULL, "tanggal" TIMESTAMP NOT NULL, "lokasi" character varying NOT NULL, "waktu_awal" TIME NOT NULL, "waktu_akhir" TIME NOT NULL, "akhir" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "mingguId" integer, CONSTRAINT "PK_d011636a1033d77ddcc92971b9f" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "tugas" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "file" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "pertemuanId" integer, CONSTRAINT "PK_c47128bea268a373b07dd6ba74a" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "value" ("id" SERIAL NOT NULL, "title" character varying NOT NULL, "description" character varying NOT NULL, "icon" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_0af87b1623a34dd5357bfdb38a4" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "tentang" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "text" character varying NOT NULL, "gambar" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_1c52d49c55f3195679f8733a79a" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "team_leads" ("id" SERIAL NOT NULL, "profile" character varying NOT NULL, "nama" character varying NOT NULL, "posisi" character varying NOT NULL, "deskripsi" character varying NOT NULL, "email" character varying NOT NULL, "phone" character varying NOT NULL, "background" text NOT NULL, "experience" text NOT NULL, "awards" text NOT NULL, "linkedin" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_fd18dad91eb7dcd6707fdb4fe9f" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "team" ("id" SERIAL NOT NULL, "profile" character varying NOT NULL, "nama" character varying NOT NULL, "team_ke" integer NOT NULL, "posisi" character varying NOT NULL, "linkedin" character varying NOT NULL, "deskripsi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_f57d8293406df4af348402e4b74" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "story" ("id" SERIAL NOT NULL, "paragraph" character varying NOT NULL, "link" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_28fce6873d61e2cace70a0f3361" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "social" ("id" SERIAL NOT NULL, "linkedin" character varying NOT NULL, "instragram" character varying NOT NULL, "youtube" character varying NOT NULL, "email" character varying NOT NULL, "alamat" character varying NOT NULL, "nomor" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_645aa1cff2b9f7b0e3e73d66b4d" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "pertanyaan_umum" ("id" SERIAL NOT NULL, "pertanyaan" character varying NOT NULL, "jawaban" character varying NOT NULL, "for" "public"."pertanyaan_umum_for_enum" NOT NULL DEFAULT 'general', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_5a8d3b8bb81ea68e6dc76c5b30d" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "pendaftaran" ("id" SERIAL NOT NULL, "file" character varying, "proses" "public"."pendaftaran_proses_enum" NOT NULL DEFAULT 'rejected', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "kelasId" integer, CONSTRAINT "PK_91d9ce9610fdc917540ada54d65" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "paragraf" ("id" SERIAL NOT NULL, "paragraf" character varying NOT NULL, "p_ke" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_0e7724a4270e2cf870f8a4b2638" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "kerja_sama" ("id" SERIAL NOT NULL, "gambar" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_b91d40b096deeb72507fbd8debf" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "blog" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "isi" character varying NOT NULL, "gambar" jsonb NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kategoriBlogId" integer, CONSTRAINT "PK_85c6532ad065a448e9de7638571" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "kategori_blog" ("id" SERIAL NOT NULL, "nama" character varying NOT NULL, "icon" character varying NOT NULL, "deskripsi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_19b027e0e966bae1142d53588d5" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "info" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "text" character varying NOT NULL, "icon" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_687dc5e25f4f1ee093a45b68bb7" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "header" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "text" character varying NOT NULL, "gambar" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_007a885cf40484eb750d0355339" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "gambar_benefit" ("id" SERIAL NOT NULL, "gambar" character varying NOT NULL, "no" "public"."gambar_benefit_no_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_3531a1f5c126974440b4141989e" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "commitment" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "deskripsi" character varying NOT NULL, "icon" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_7a0899978d100f72269b3045d7e" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "benefit" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "text" character varying NOT NULL, "icon" character varying NOT NULL, "no" "public"."benefit_no_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_c024dccb30e6f4702adffe884d1" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "kelas_teknologi" ("kelasId" integer NOT NULL, "teknologiId" integer NOT NULL, CONSTRAINT "PK_b902836f2bdb762a070efaced2c" PRIMARY KEY ("kelasId", "teknologiId"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_77113e55b2a2023499da5b40f6" ON "kelas_teknologi" ("kelasId") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_4f92d42fe71299ee0aa072ced3" ON "kelas_teknologi" ("teknologiId") `,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "biodata" ADD CONSTRAINT "FK_477a671c8b8c738777b03a2c607" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "cicilan" ADD CONSTRAINT "FK_9bc2223d71ca2cd6beb891f816c" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pembayaran" ADD CONSTRAINT "FK_398ad2aad8f28ebd953cf63ba47" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pembayaran" ADD CONSTRAINT "FK_ffffb1021d14348ae16f0cf7051" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pembayaran" ADD CONSTRAINT "FK_ba748cc92803680791eaab0f31d" FOREIGN KEY ("cicilanId") REFERENCES "cicilan"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_user" ADD CONSTRAINT "FK_932636e0ba18fc9dedac59aed20" FOREIGN KEY ("pertanyaanId") REFERENCES "pertanyaan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_user" ADD CONSTRAINT "FK_b50fdf127cd4e230c5acb71a905" FOREIGN KEY ("jawabanId") REFERENCES "jawaban"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_user" ADD CONSTRAINT "FK_bf422127c8fab65abcdd772e26f" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban" ADD CONSTRAINT "FK_3c08617c5f034c4971b4738a615" FOREIGN KEY ("pertanyaanId") REFERENCES "pertanyaan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pertanyaan" ADD CONSTRAINT "FK_a8d79717c0dea3a67b2f37a32a3" FOREIGN KEY ("quizId") REFERENCES "quiz"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "nilai" ADD CONSTRAINT "FK_83742310b1ddb2a60525f3e9a1f" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "nilai" ADD CONSTRAINT "FK_b49b6e9e9b553654f33b7fd2365" FOREIGN KEY ("quizId") REFERENCES "quiz"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_quiz" ADD CONSTRAINT "FK_310eff946ea2abb350d260603e2" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_quiz" ADD CONSTRAINT "FK_246a41b5cf841ad8138dfbd34e0" FOREIGN KEY ("quizId") REFERENCES "quiz"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "quiz" ADD CONSTRAINT "FK_8c7de4e4d4401526b4c9fa96807" FOREIGN KEY ("mingguId") REFERENCES "minggu"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_minggu" ADD CONSTRAINT "FK_6874c79eafd79eba86ef7e6f140" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_minggu" ADD CONSTRAINT "FK_b45ebee048a3f25dea303a1e16e" FOREIGN KEY ("mingguId") REFERENCES "minggu"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "minggu" ADD CONSTRAINT "FK_b69181682249c347c225f57b818" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "sertifikat" ADD CONSTRAINT "FK_4a6ffdc5c6616ca525f60898f5f" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "sertifikat" ADD CONSTRAINT "FK_87bc2a5d85fed3f1a2e07d86942" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_kelas" ADD CONSTRAINT "FK_d23d4f7772d181abfb4ff25ac76" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_kelas" ADD CONSTRAINT "FK_31705317a82c5c6057d36f6bca8" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pertanyaan_kelas" ADD CONSTRAINT "FK_2141a01e67ebab8aed7eb4b5f02" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "mentor" ADD CONSTRAINT "FK_20cbfca83ecf51eadd3f4ff0032" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "alumni" ADD CONSTRAINT "FK_3dcca2bc9a925f0206e18a7baa9" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "alur_kelas" ADD CONSTRAINT "FK_da82c730e16c96240b90d0f2fca" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "benefit_kelas" ADD CONSTRAINT "FK_a3a99572bc9e518f60697636eb7" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "mentoring" ADD CONSTRAINT "FK_e3937b0a9f65cf4cf87ce1c7119" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "mentoring" ADD CONSTRAINT "FK_08301855b186e5e01c43d4f07af" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "kelas" ADD CONSTRAINT "FK_3126d08fc69f21ced5b9a4e8223" FOREIGN KEY ("kategoriId") REFERENCES "kategori"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "kelas" ADD CONSTRAINT "FK_9e56d453945eace6caf537d72cc" FOREIGN KEY ("bulanId") REFERENCES "bulan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "kelas" ADD CONSTRAINT "FK_cdce265cc9c2575fd5124dfdbfa" FOREIGN KEY ("jenis_kelasId") REFERENCES "jenis_kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "portfolio" ADD CONSTRAINT "FK_9d041c43c782a9135df1388ae16" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "portfolio" ADD CONSTRAINT "FK_154136295c649bd370330be4501" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "biodata_mentor" ADD CONSTRAINT "FK_c0c27aa65c8c2919f26b8dca818" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "komentar" ADD CONSTRAINT "FK_0d47ff3107d25a3e622d1aa9cea" FOREIGN KEY ("jawaban_tugasId") REFERENCES "jawaban_tugas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_tugas" ADD CONSTRAINT "FK_4177e5c68c0f47895d0ade363b3" FOREIGN KEY ("tugasId") REFERENCES "tugas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_tugas" ADD CONSTRAINT "FK_d1bb0fa3821cf4a823e1be6420a" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "logbook" ADD CONSTRAINT "FK_a5f70abbe7f92a7e363b1231fba" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "logbook" ADD CONSTRAINT "FK_d4bcf4cb786b2aa92cb725e334d" FOREIGN KEY ("pertemuanId") REFERENCES "pertemuan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_pertemuan" ADD CONSTRAINT "FK_3fdcbab09e1e09dabb560c61b8c" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_pertemuan" ADD CONSTRAINT "FK_d2ad48a6b17a0e2e49f0448c94b" FOREIGN KEY ("pertemuanId") REFERENCES "pertemuan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "logbook_mentor" ADD CONSTRAINT "FK_26e646717dbc68eb7c083cff0dc" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "logbook_mentor" ADD CONSTRAINT "FK_eb81580d284633ce9e64002821d" FOREIGN KEY ("pertemuanId") REFERENCES "pertemuan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "absen" ADD CONSTRAINT "FK_de7d9a1aced2983b37c6d8ece55" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "absen" ADD CONSTRAINT "FK_557708c43c7ff517d34cd577482" FOREIGN KEY ("pertemuanId") REFERENCES "pertemuan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "materi" ADD CONSTRAINT "FK_fb825ba8148529711b3d0052cd6" FOREIGN KEY ("pertemuanId") REFERENCES "pertemuan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pertemuan" ADD CONSTRAINT "FK_77fcf90289c4a3fafca6a123100" FOREIGN KEY ("mingguId") REFERENCES "minggu"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tugas" ADD CONSTRAINT "FK_dfe0b834578448cce571c120847" FOREIGN KEY ("pertemuanId") REFERENCES "pertemuan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pendaftaran" ADD CONSTRAINT "FK_41b2fb089361275d6e5b29118c3" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pendaftaran" ADD CONSTRAINT "FK_422065c0547c29d258d2aafe069" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "blog" ADD CONSTRAINT "FK_c15649552f3e4b16e3f90ec8c98" FOREIGN KEY ("kategoriBlogId") REFERENCES "kategori_blog"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "kelas_teknologi" ADD CONSTRAINT "FK_77113e55b2a2023499da5b40f6e" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "kelas_teknologi" ADD CONSTRAINT "FK_4f92d42fe71299ee0aa072ced36" FOREIGN KEY ("teknologiId") REFERENCES "teknologi"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "kelas_teknologi" DROP CONSTRAINT "FK_4f92d42fe71299ee0aa072ced36"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "kelas_teknologi" DROP CONSTRAINT "FK_77113e55b2a2023499da5b40f6e"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "blog" DROP CONSTRAINT "FK_c15649552f3e4b16e3f90ec8c98"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pendaftaran" DROP CONSTRAINT "FK_422065c0547c29d258d2aafe069"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pendaftaran" DROP CONSTRAINT "FK_41b2fb089361275d6e5b29118c3"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tugas" DROP CONSTRAINT "FK_dfe0b834578448cce571c120847"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pertemuan" DROP CONSTRAINT "FK_77fcf90289c4a3fafca6a123100"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "materi" DROP CONSTRAINT "FK_fb825ba8148529711b3d0052cd6"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "absen" DROP CONSTRAINT "FK_557708c43c7ff517d34cd577482"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "absen" DROP CONSTRAINT "FK_de7d9a1aced2983b37c6d8ece55"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "logbook_mentor" DROP CONSTRAINT "FK_eb81580d284633ce9e64002821d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "logbook_mentor" DROP CONSTRAINT "FK_26e646717dbc68eb7c083cff0dc"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_pertemuan" DROP CONSTRAINT "FK_d2ad48a6b17a0e2e49f0448c94b"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_pertemuan" DROP CONSTRAINT "FK_3fdcbab09e1e09dabb560c61b8c"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "logbook" DROP CONSTRAINT "FK_d4bcf4cb786b2aa92cb725e334d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "logbook" DROP CONSTRAINT "FK_a5f70abbe7f92a7e363b1231fba"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_tugas" DROP CONSTRAINT "FK_d1bb0fa3821cf4a823e1be6420a"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_tugas" DROP CONSTRAINT "FK_4177e5c68c0f47895d0ade363b3"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "komentar" DROP CONSTRAINT "FK_0d47ff3107d25a3e622d1aa9cea"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "biodata_mentor" DROP CONSTRAINT "FK_c0c27aa65c8c2919f26b8dca818"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "portfolio" DROP CONSTRAINT "FK_154136295c649bd370330be4501"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "portfolio" DROP CONSTRAINT "FK_9d041c43c782a9135df1388ae16"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "kelas" DROP CONSTRAINT "FK_cdce265cc9c2575fd5124dfdbfa"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "kelas" DROP CONSTRAINT "FK_9e56d453945eace6caf537d72cc"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "kelas" DROP CONSTRAINT "FK_3126d08fc69f21ced5b9a4e8223"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "mentoring" DROP CONSTRAINT "FK_08301855b186e5e01c43d4f07af"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "mentoring" DROP CONSTRAINT "FK_e3937b0a9f65cf4cf87ce1c7119"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "benefit_kelas" DROP CONSTRAINT "FK_a3a99572bc9e518f60697636eb7"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "alur_kelas" DROP CONSTRAINT "FK_da82c730e16c96240b90d0f2fca"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "alumni" DROP CONSTRAINT "FK_3dcca2bc9a925f0206e18a7baa9"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "mentor" DROP CONSTRAINT "FK_20cbfca83ecf51eadd3f4ff0032"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pertanyaan_kelas" DROP CONSTRAINT "FK_2141a01e67ebab8aed7eb4b5f02"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_kelas" DROP CONSTRAINT "FK_31705317a82c5c6057d36f6bca8"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_kelas" DROP CONSTRAINT "FK_d23d4f7772d181abfb4ff25ac76"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "sertifikat" DROP CONSTRAINT "FK_87bc2a5d85fed3f1a2e07d86942"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "sertifikat" DROP CONSTRAINT "FK_4a6ffdc5c6616ca525f60898f5f"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "minggu" DROP CONSTRAINT "FK_b69181682249c347c225f57b818"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_minggu" DROP CONSTRAINT "FK_b45ebee048a3f25dea303a1e16e"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_minggu" DROP CONSTRAINT "FK_6874c79eafd79eba86ef7e6f140"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "quiz" DROP CONSTRAINT "FK_8c7de4e4d4401526b4c9fa96807"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_quiz" DROP CONSTRAINT "FK_246a41b5cf841ad8138dfbd34e0"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "progres_quiz" DROP CONSTRAINT "FK_310eff946ea2abb350d260603e2"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "nilai" DROP CONSTRAINT "FK_b49b6e9e9b553654f33b7fd2365"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "nilai" DROP CONSTRAINT "FK_83742310b1ddb2a60525f3e9a1f"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pertanyaan" DROP CONSTRAINT "FK_a8d79717c0dea3a67b2f37a32a3"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban" DROP CONSTRAINT "FK_3c08617c5f034c4971b4738a615"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_user" DROP CONSTRAINT "FK_bf422127c8fab65abcdd772e26f"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_user" DROP CONSTRAINT "FK_b50fdf127cd4e230c5acb71a905"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "jawaban_user" DROP CONSTRAINT "FK_932636e0ba18fc9dedac59aed20"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pembayaran" DROP CONSTRAINT "FK_ba748cc92803680791eaab0f31d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pembayaran" DROP CONSTRAINT "FK_ffffb1021d14348ae16f0cf7051"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "pembayaran" DROP CONSTRAINT "FK_398ad2aad8f28ebd953cf63ba47"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "cicilan" DROP CONSTRAINT "FK_9bc2223d71ca2cd6beb891f816c"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "biodata" DROP CONSTRAINT "FK_477a671c8b8c738777b03a2c607"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_4f92d42fe71299ee0aa072ced3"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_77113e55b2a2023499da5b40f6"`,
+    );
+    await queryRunner.query(`DROP TABLE "kelas_teknologi"`);
+    await queryRunner.query(`DROP TABLE "benefit"`);
+    await queryRunner.query(`DROP TABLE "commitment"`);
+    await queryRunner.query(`DROP TABLE "gambar_benefit"`);
+    await queryRunner.query(`DROP TABLE "header"`);
+    await queryRunner.query(`DROP TABLE "info"`);
+    await queryRunner.query(`DROP TABLE "kategori_blog"`);
+    await queryRunner.query(`DROP TABLE "blog"`);
+    await queryRunner.query(`DROP TABLE "kerja_sama"`);
+    await queryRunner.query(`DROP TABLE "paragraf"`);
+    await queryRunner.query(`DROP TABLE "pendaftaran"`);
+    await queryRunner.query(`DROP TABLE "pertanyaan_umum"`);
+    await queryRunner.query(`DROP TABLE "social"`);
+    await queryRunner.query(`DROP TABLE "story"`);
+    await queryRunner.query(`DROP TABLE "team"`);
+    await queryRunner.query(`DROP TABLE "team_leads"`);
+    await queryRunner.query(`DROP TABLE "tentang"`);
+    await queryRunner.query(`DROP TABLE "value"`);
+    await queryRunner.query(`DROP TABLE "tugas"`);
+    await queryRunner.query(`DROP TABLE "pertemuan"`);
+    await queryRunner.query(`DROP TABLE "materi"`);
+    await queryRunner.query(`DROP TABLE "absen"`);
+    await queryRunner.query(`DROP TABLE "user"`);
+    await queryRunner.query(`DROP TABLE "logbook_mentor"`);
+    await queryRunner.query(`DROP TABLE "progres_pertemuan"`);
+    await queryRunner.query(`DROP TABLE "logbook"`);
+    await queryRunner.query(`DROP TABLE "jawaban_tugas"`);
+    await queryRunner.query(`DROP TABLE "komentar"`);
+    await queryRunner.query(`DROP TABLE "biodata_mentor"`);
+    await queryRunner.query(`DROP TABLE "portfolio"`);
+    await queryRunner.query(`DROP TABLE "kelas"`);
+    await queryRunner.query(`DROP TABLE "mentoring"`);
+    await queryRunner.query(`DROP TABLE "bulan"`);
+    await queryRunner.query(`DROP TABLE "benefit_kelas"`);
+    await queryRunner.query(`DROP TABLE "alur_kelas"`);
+    await queryRunner.query(`DROP TABLE "teknologi"`);
+    await queryRunner.query(`DROP TABLE "alumni"`);
+    await queryRunner.query(`DROP TABLE "mentor"`);
+    await queryRunner.query(`DROP TABLE "pertanyaan_kelas"`);
+    await queryRunner.query(`DROP TABLE "user_kelas"`);
+    await queryRunner.query(`DROP TABLE "jenis_kelas"`);
+    await queryRunner.query(`DROP TABLE "sertifikat"`);
+    await queryRunner.query(`DROP TABLE "minggu"`);
+    await queryRunner.query(`DROP TABLE "progres_minggu"`);
+    await queryRunner.query(`DROP TABLE "quiz"`);
+    await queryRunner.query(`DROP TABLE "progres_quiz"`);
+    await queryRunner.query(`DROP TABLE "nilai"`);
+    await queryRunner.query(`DROP TABLE "pertanyaan"`);
+    await queryRunner.query(`DROP TABLE "jawaban"`);
+    await queryRunner.query(`DROP TABLE "jawaban_user"`);
+    await queryRunner.query(`DROP TABLE "pembayaran"`);
+    await queryRunner.query(`DROP TABLE "cicilan"`);
+    await queryRunner.query(`DROP TABLE "kategori"`);
+    await queryRunner.query(`DROP TABLE "biodata"`);
+    await queryRunner.query(`DROP TABLE "visi_misi"`);
+  }
+}

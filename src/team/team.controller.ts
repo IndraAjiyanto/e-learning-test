@@ -43,11 +43,7 @@ export class TeamController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 300,
-    maxWidth: 500,
-    minHeight: 300,
-    maxHeight: 500,
-    maxSize: 1 * 1024 * 1024, // 1MB max
+    maxSize: 5 * 1024 * 1024, // 1MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/profile',
   })
@@ -96,22 +92,16 @@ export class TeamController {
 
   @Roles('super_admin')
   @Patch(':teamId')
-  @UseInterceptors(
-    FileInterceptor(
-      'profile',
-      createMemoryConfig({ fileTypes: ['image'], maxSize: 5 }),
-    ),
-    ValidateImageInterceptor,
-  )
-  @ValidateImage({
-    minWidth: 300,
-    maxWidth: 500,
-    minHeight: 300,
-    maxHeight: 500,
-    folder: 'nestjs/images/profile',
-  })
+@UseInterceptors(
+  FileInterceptor('profile', multerConfigMemory),
+  ValidateImageInterceptor,
+)
+@ValidateImage({
+  maxSize: 5 * 1024 * 1024, // 5MB
+  allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+  folder: 'nestjs/images/profile',
+})
   async update(
-    @UploadedFile() profile: Express.Multer.File,
     @Param('teamId') teamId: number,
     @Body() updateTeamDto: UpdateTeamDto,
     @Res() res: Response,
@@ -119,7 +109,7 @@ export class TeamController {
   ) {
     try {
       const team = await this.teamService.findOne(teamId);
-      if (profile) {
+      if (req.body.uploadedImageUrls?.length) {
         await this.teamService.getPublicIdFromUrl(team.profile);
         updateTeamDto.profile = req.body.uploadedImageUrls?.[0];
       }

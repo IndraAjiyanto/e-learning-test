@@ -8,8 +8,9 @@ export class VisiMisi{
     @Column()
     visi: string
 
-    @Column()
-    misi: string
+@Column({ type: 'text' })
+misi: string
+
 
     @Column()
     icon: string
