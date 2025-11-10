@@ -11,11 +11,13 @@ import { id } from 'date-fns/locale';
 import { RolesGuard } from './common/guards/roles.guard';
 import flash from 'connect-flash';
 import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.filter';
+import { NotFoundExceptionFilter } from './common/filters/not-found-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useGlobalFilters(new ForbiddenExceptionFilter());
+  app.useGlobalFilters(new NotFoundExceptionFilter());
   app.useStaticAssets(join(__dirname, '..', 'src', 'common', 'public'), {
     prefix: '/public/',
   });

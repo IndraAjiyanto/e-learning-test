@@ -1,177 +1,386 @@
-<div 
-  x-data="{ tab: 'user', openDetail: false, selectedLog: null }"
-  class="max-w-7xl mx-auto px-6 py-10 pt-24"
+<div
+  x-data="{
+    tab: 'user', 
+    openDetail: false, 
+    selectedLog: null,
+    selectedKelasId: '',
+    searchQuery: '',
+    get uniqueKelas() {
+      const allLogs = this.tab === 'user' ? {{{json logbook}}} : {{{json
+    logbook_mentor
+  }}};
+      const kelasMap = new Map();
+      allLogs.forEach(log => {
+        const kelas = log.pertemuan?.minggu?.kelas;
+        if (kelas && !kelasMap.has(kelas.id)) {
+          kelasMap.set(kelas.id, kelas);
+        }
+      });
+      return Array.from(kelasMap.values());
+    },
+    get filteredLogs() {
+      let allLogs = this.tab === 'user' ? {{{json logbook}}} : {{{json
+    logbook_mentor
+  }}};
+      
+      // Filter by kelas
+      if (this.selectedKelasId) {
+        allLogs = allLogs.filter(log => 
+          log.pertemuan?.minggu?.kelas?.id == this.selectedKelasId
+        );
+      }
+      
+      // Filter by search query
+      if (this.searchQuery.trim()) {
+        const query = this.searchQuery.toLowerCase();
+        allLogs = allLogs.filter(log => 
+          log.kegiatan?.toLowerCase().includes(query) ||
+          log.rincian_kegiatan?.toLowerCase().includes(query) ||
+          log.kendala?.toLowerCase().includes(query) ||
+          log.user?.nama?.toLowerCase().includes(query) ||
+          log.user?.username?.toLowerCase().includes(query) ||
+          log.user?.email?.toLowerCase().includes(query) ||
+          log.pertemuan?.minggu?.kelas?.nama_kelas?.toLowerCase().includes(query)
+        );
+      }
+      
+      return allLogs;
+    },
+    exportToExcel() {
+      const dataToExport = this.filteredLogs.map((log, index) => ({
+        No: index + 1,
+        Kegiatan: log.kegiatan || '-',
+        'Rincian Kegiatan': log.rincian_kegiatan || '-',
+        Proses: log.proses || '-',
+        Kendala: log.kendala || '-',
+        Kelas: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
+        Minggu: log.pertemuan?.minggu?.minggu_ke || '-',
+        Pertemuan: log.pertemuan?.pertemuan_ke || '-',
+        User: log.user?.nama || '-',
+        Email: log.user?.email || '-',
+        Tanggal: log.createdAt ? new Date(log.createdAt).toLocaleDateString('id-ID') : '-'
+      }));
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+      // Set column widths
+      ws['!cols'] = [
+        { wch: 5 },   // No
+        { wch: 30 },  // Kegiatan
+        { wch: 40 },  // Rincian Kegiatan
+        { wch: 20 },  // Proses
+        { wch: 30 },  // Kendala
+        { wch: 20 },  // Kelas
+        { wch: 10 },  // Minggu
+        { wch: 10 },  // Pertemuan
+        { wch: 20 },  // User
+        { wch: 25 },  // Email
+        { wch: 15 }   // Tanggal
+      ];
+
+      XLSX.utils.book_append_sheet(wb, ws, `${this.tab === 'user' ? 'Logbook User' : 'Logbook Mentor'}`);
+      XLSX.writeFile(wb, `Logbook_${this.tab}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    }
+  }"
+  class='max-w-7xl mx-auto px-6 py-10 pt-24'
 >
   <!-- Header -->
-  <div class="text-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">Log Book</h1>
-    <p class="text-gray-600">Pilih log book yang ingin ditampilkan</p>
+  <div class='text-center mb-8'>
+    <h1 class='text-3xl font-bold text-gray-900 mb-2'>Log Book</h1>
+    <p class='text-gray-600'>Pilih log book yang ingin ditampilkan</p>
   </div>
 
   <!-- Tab Buttons -->
-  <div class="flex justify-center gap-4 mb-8">
-    <button 
-      @click="tab = 'user'"
+  <div class='flex justify-center gap-4 mb-8'>
+    <button
+      @click="tab = 'user'; selectedKelasId = ''"
       :class="tab === 'user' 
         ? 'bg-gray-900 text-white' 
         : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
-      class="px-5 py-2 rounded-lg font-medium transition"
+      class='px-5 py-2 rounded-lg font-medium transition'
     >
       Log Book User
     </button>
-    <button 
-      @click="tab = 'mentor'"
+    <button
+      @click="tab = 'mentor'; selectedKelasId = ''"
       :class="tab === 'mentor' 
         ? 'bg-gray-900 text-white' 
         : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
-      class="px-5 py-2 rounded-lg font-medium transition"
+      class='px-5 py-2 rounded-lg font-medium transition'
     >
       Log Book Mentor
     </button>
   </div>
 
+  <!-- Filter Section -->
+  <div class='bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6'>
+    <div
+      class='flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between'
+    >
+      <div class='flex-1 grid grid-cols-1 md:grid-cols-2 gap-4'>
+        <!-- Search -->
+        <div>
+          <label
+            class='block text-sm font-medium text-gray-700 mb-2'
+          >Search</label>
+          <div class='relative'>
+            <input
+              type='text'
+              x-model='searchQuery'
+              placeholder='Search by activity, user, class...'
+              class='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent'
+            />
+            <div
+              class='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'
+            >
+              <i class='fas fa-search text-gray-400'></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter by Class -->
+        <div>
+          <label class='block text-sm font-medium text-gray-700 mb-2'>Filter by
+            Class</label>
+          <select
+            x-model='selectedKelasId'
+            class='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent'
+          >
+            <option value=''>All Classes</option>
+            <template x-for='kelas in uniqueKelas' :key='kelas.id'>
+              <option :value='kelas.id' x-text='kelas.nama_kelas'></option>
+            </template>
+          </select>
+        </div>
+      </div>
+
+      <div class='flex items-center gap-3'>
+        <span class='text-sm text-gray-600'>Total:
+          <span x-text='filteredLogs.length' class='font-semibold'></span>
+          entries</span>
+        <div class='flex gap-2'>
+          <button
+            @click="selectedKelasId = ''; searchQuery = ''"
+            class='px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm'
+          >
+            <i class='fas fa-undo mr-1'></i>
+            Reset
+          </button>
+          <button
+            @click='exportToExcel()'
+            :disabled='filteredLogs.length === 0'
+            class='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed'
+          >
+            <i class='fas fa-file-excel mr-1'></i>
+            Export Excel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Log Book User Table -->
   <div x-show="tab === 'user'" x-transition>
-    {{#if logbook.length}}
-      <div class="overflow-x-auto shadow rounded-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200 bg-white text-sm">
-          <thead class="bg-gray-50">
-            <tr class="text-gray-700">
-              <th class="px-4 py-3 text-left font-semibold">No</th>
-              <th class="px-4 py-3 text-left font-semibold">Kegiatan</th>
-              <th class="px-4 py-3 text-left font-semibold">Pertemuan</th>
-              <th class="px-4 py-3 text-left font-semibold">Minggu</th>
-              <th class="px-4 py-3 text-left font-semibold">Kelas</th>
-              <th class="px-4 py-3 text-left font-semibold">User</th>
-              <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
-              <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+    <template x-if='filteredLogs.length'>
+      <div class='overflow-x-auto shadow rounded-lg border border-gray-200'>
+        <table class='min-w-full divide-y divide-gray-200 bg-white text-sm'>
+          <thead class='bg-gray-50'>
+            <tr class='text-gray-700'>
+              <th class='px-4 py-3 text-left font-semibold'>No</th>
+              <th class='px-4 py-3 text-left font-semibold'>Kegiatan</th>
+              <th class='px-4 py-3 text-left font-semibold'>Pertemuan</th>
+              <th class='px-4 py-3 text-left font-semibold'>Minggu</th>
+              <th class='px-4 py-3 text-left font-semibold'>Kelas</th>
+              <th class='px-4 py-3 text-left font-semibold'>User</th>
+              <th class='px-4 py-3 text-left font-semibold'>Tanggal</th>
+              <th class='px-4 py-3 text-center font-semibold'>Aksi</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-100">
-            {{#each logbook}}
-            <tr class="hover:bg-gray-50">
-              <td class="px-4 py-3 text-gray-900 font-medium">{{this.kegiatan}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.pertemuan_ke}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.minggu_ke}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.kelas.nama_kelas}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.user.username}}</td>
-              <td class="px-4 py-3 text-gray-500">{{this.createdAt}}</td>
-              <td class="px-4 py-3 text-center">
-                <button 
-                  @click="openDetail = true; selectedLog = {{json this}}"
-                  class="bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition"
-                >
-                  Detail
-                </button>
-              </td>
-            </tr>
-            {{/each}}
+          <tbody class='divide-y divide-gray-100'>
+            <template x-for='(log, index) in filteredLogs' :key='log.id'>
+              <tr class='hover:bg-gray-50'>
+                <td
+                  class='px-4 py-3 text-gray-900 font-medium'
+                  x-text='index + 1'
+                ></td>
+                <td class='px-4 py-3 text-gray-700' x-text='log.kegiatan'></td>
+                <td
+                  class='px-4 py-3 text-gray-700'
+                  x-text="log.pertemuan?.pertemuan_ke ?? '-'"
+                ></td>
+                <td
+                  class='px-4 py-3 text-gray-700'
+                  x-text="log.pertemuan?.minggu?.minggu_ke ?? '-'"
+                ></td>
+                <td
+                  class='px-4 py-3 text-gray-700'
+                  x-text="log.pertemuan?.minggu?.kelas?.nama_kelas ?? '-'"
+                ></td>
+                <td
+                  class='px-4 py-3 text-gray-700'
+                  x-text="log.user?.username ?? '-'"
+                ></td>
+                <td class='px-4 py-3 text-gray-500' x-text='log.createdAt'></td>
+                <td class='px-4 py-3 text-center'>
+                  <button
+                    @click='openDetail = true; selectedLog = log'
+                    class='bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition'
+                  >
+                    Detail
+                  </button>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
-    {{else}}
-      <p class="text-center text-gray-500 italic mt-6">Belum ada data logbook user.</p>
-    {{/if}}
+    </template>
+    <template x-if='filteredLogs.length === 0'>
+      <p class='text-center text-gray-500 italic mt-6'>Belum ada data logbook
+        user.</p>
+    </template>
   </div>
 
   <!-- Log Book Mentor Table -->
   <div x-show="tab === 'mentor'" x-transition>
-    {{#if logbook_mentor.length}}
-      <div class="overflow-x-auto shadow rounded-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200 bg-white text-sm">
-          <thead class="bg-gray-50">
-            <tr class="text-gray-700">
-              <th class="px-4 py-3 text-left font-semibold">No</th>
-              <th class="px-4 py-3 text-left font-semibold">Kegiatan</th>
-              <th class="px-4 py-3 text-left font-semibold">Pertemuan</th>
-              <th class="px-4 py-3 text-left font-semibold">Minggu</th>
-              <th class="px-4 py-3 text-left font-semibold">Kelas</th>
-              <th class="px-4 py-3 text-left font-semibold">User</th>
-              <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
-              <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+    <template x-if='filteredLogs.length'>
+      <div class='overflow-x-auto shadow rounded-lg border border-gray-200'>
+        <table class='min-w-full divide-y divide-gray-200 bg-white text-sm'>
+          <thead class='bg-gray-50'>
+            <tr class='text-gray-700'>
+              <th class='px-4 py-3 text-left font-semibold'>No</th>
+              <th class='px-4 py-3 text-left font-semibold'>Kegiatan</th>
+              <th class='px-4 py-3 text-left font-semibold'>Pertemuan</th>
+              <th class='px-4 py-3 text-left font-semibold'>Minggu</th>
+              <th class='px-4 py-3 text-left font-semibold'>Kelas</th>
+              <th class='px-4 py-3 text-left font-semibold'>User</th>
+              <th class='px-4 py-3 text-left font-semibold'>Tanggal</th>
+              <th class='px-4 py-3 text-center font-semibold'>Aksi</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-100">
-            {{#each logbook_mentor}}
-            <tr class="hover:bg-gray-50">
-              <td class="px-4 py-3 text-gray-900 font-medium">{{this.kegiatan}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.pertemuan_ke}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.minggu_ke}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.kelas.nama_kelas}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.user.username}}</td>
-              <td class="px-4 py-3 text-gray-500">{{this.createdAt}}</td>
-              <td class="px-4 py-3 text-center">
-                <button 
-                  @click="openDetail = true; selectedLog = {{json this}}"
-                  class="bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition"
-                >
-                  Detail
-                </button>
-              </td>
-            </tr>
-            {{/each}}
+          <tbody class='divide-y divide-gray-100'>
+            <template x-for='(log, index) in filteredLogs' :key='log.id'>
+              <tr class='hover:bg-gray-50'>
+                <td
+                  class='px-4 py-3 text-gray-900 font-medium'
+                  x-text='index + 1'
+                ></td>
+                <td class='px-4 py-3 text-gray-700' x-text='log.kegiatan'></td>
+                <td
+                  class='px-4 py-3 text-gray-700'
+                  x-text="log.pertemuan?.pertemuan_ke ?? '-'"
+                ></td>
+                <td
+                  class='px-4 py-3 text-gray-700'
+                  x-text="log.pertemuan?.minggu?.minggu_ke ?? '-'"
+                ></td>
+                <td
+                  class='px-4 py-3 text-gray-700'
+                  x-text="log.pertemuan?.minggu?.kelas?.nama_kelas ?? '-'"
+                ></td>
+                <td
+                  class='px-4 py-3 text-gray-700'
+                  x-text="log.user?.username ?? '-'"
+                ></td>
+                <td class='px-4 py-3 text-gray-500' x-text='log.createdAt'></td>
+                <td class='px-4 py-3 text-center'>
+                  <button
+                    @click='openDetail = true; selectedLog = log'
+                    class='bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition'
+                  >
+                    Detail
+                  </button>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
-    {{else}}
-      <p class="text-center text-gray-500 italic mt-6">Belum ada data logbook mentor.</p>
-    {{/if}}
+    </template>
+    <template x-if='filteredLogs.length === 0'>
+      <p class='text-center text-gray-500 italic mt-6'>Belum ada data logbook
+        mentor.</p>
+    </template>
   </div>
 
   <!-- Modal Detail -->
-  <div 
-    x-show="openDetail"
+  <div
+    x-show='openDetail'
     x-transition
-    class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+    class='fixed inset-0 bg-black/40 flex items-center justify-center z-50'
   >
-    <div 
-      @click.away="openDetail = false" 
-      class="bg-white rounded-xl p-6 max-w-lg w-full shadow-lg relative"
+    <div
+      @click.away='openDetail = false'
+      class='bg-white rounded-xl p-6 max-w-lg w-full shadow-lg relative'
     >
-      <button 
-        @click="openDetail = false" 
-        class="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+      <button
+        @click='openDetail = false'
+        class='absolute top-3 right-3 text-gray-500 hover:text-gray-800'
       >
         ✕
       </button>
 
-      <h2 class="text-xl font-semibold mb-4 text-gray-900">Detail Logbook</h2>
+      <h2 class='text-xl font-semibold mb-4 text-gray-900'>Detail Logbook</h2>
 
       <!-- Info Kelas & Pertemuan -->
-      <div class="bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1">
-        <p><strong>Kelas:</strong> <span x-text="selectedLog?.pertemuan?.minggu?.kelas?.nama_kelas ?? '-'"></span></p>
-        <p><strong>Minggu:</strong> <span x-text="selectedLog?.pertemuan?.minggu?.minggu_ke ?? '-'"></span></p>
-        <p><strong>Pertemuan:</strong> <span x-text="selectedLog?.pertemuan?.pertemuan_ke ?? '-'"></span></p>
+      <div
+        class='bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1'
+      >
+        <p><strong>Kelas:</strong>
+          <span
+            x-text="selectedLog?.pertemuan?.minggu?.kelas?.nama_kelas ?? '-'"
+          ></span></p>
+        <p><strong>Minggu:</strong>
+          <span
+            x-text="selectedLog?.pertemuan?.minggu?.minggu_ke ?? '-'"
+          ></span></p>
+        <p><strong>Pertemuan:</strong>
+          <span x-text="selectedLog?.pertemuan?.pertemuan_ke ?? '-'"></span></p>
       </div>
 
       <!-- Info User -->
-      <div class="bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1">
-        <p><strong>Nama User:</strong> <span x-text="selectedLog?.user?.nama ?? '-'"></span></p>
-        <p><strong>Email:</strong> <span x-text="selectedLog?.user?.email ?? '-'"></span></p>
+      <div
+        class='bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1'
+      >
+        <p><strong>Nama User:</strong>
+          <span x-text="selectedLog?.user?.nama ?? '-'"></span></p>
+        <p><strong>Email:</strong>
+          <span x-text="selectedLog?.user?.email ?? '-'"></span></p>
       </div>
 
       <!-- Info Logbook -->
-      <div class="space-y-2 text-gray-700">
-        <p><strong>Kegiatan:</strong> <span x-text="selectedLog?.kegiatan"></span></p>
-        <p><strong>Rincian Kegiatan:</strong> <span x-text="selectedLog?.rincian_kegiatan"></span></p>
-        <template x-if="selectedLog?.proses">
-          <p><strong>Proses:</strong> <span x-text="selectedLog?.proses"></span></p>
+      <div class='space-y-2 text-gray-700'>
+        <p><strong>Kegiatan:</strong>
+          <span x-text="selectedLog?.kegiatan ?? '-'"></span></p>
+        <p><strong>Rincian Kegiatan:</strong>
+          <span x-text="selectedLog?.rincian_kegiatan ?? '-'"></span></p>
+        <template x-if='selectedLog?.proses'>
+          <p><strong>Proses:</strong>
+            <span x-text="selectedLog?.proses ?? '-'"></span></p>
         </template>
-        <p><strong>Kendala:</strong> <span x-text="selectedLog?.kendala"></span></p>
-        <p><strong>Tanggal:</strong> <span x-text="selectedLog?.createdAt"></span></p>
+        <p><strong>Kendala:</strong>
+          <span x-text="selectedLog?.kendala ?? '-'"></span></p>
+        <p><strong>Tanggal:</strong>
+          <span x-text="selectedLog?.createdAt ?? '-'"></span></p>
       </div>
 
       <!-- Dokumentasi -->
-      <template x-if="selectedLog?.dokumentasi">
-        <div class="mt-4">
-          <p class="font-semibold mb-2">Dokumentasi:</p>
-          <img 
-            :src="selectedLog?.dokumentasi" 
-            alt="Dokumentasi" 
-            class="rounded-lg border max-h-64 object-contain mx-auto"
+      <template x-if='selectedLog?.dokumentasi'>
+        <div class='mt-4'>
+          <p class='font-semibold mb-2'>Dokumentasi:</p>
+          <img
+            :src='selectedLog?.dokumentasi'
+            alt='Dokumentasi'
+            class='rounded-lg border max-h-64 object-contain mx-auto'
           />
         </div>
       </template>
     </div>
   </div>
 </div>
+
+<!-- SheetJS Library for Excel Export -->
+<script
+  src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
+></script>

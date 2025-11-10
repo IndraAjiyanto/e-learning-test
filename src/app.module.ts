@@ -55,6 +55,7 @@ import { WipModule } from './wip/wip.module';
 import { InHouseTrainingModule } from './in_house_training/in_house_training.module';
 import { BulanModule } from './bulan/bulan.module';
 import { ParagrafModule } from './paragraf/paragraf.module';
+import { ContactModule } from './contact/contact.module';
 
 @Module({
   imports: [
@@ -114,6 +115,7 @@ import { ParagrafModule } from './paragraf/paragraf.module';
     InHouseTrainingModule,
     BulanModule,
     ParagrafModule,
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [AppService],

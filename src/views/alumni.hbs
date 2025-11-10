@@ -1,4 +1,5 @@
-<div class='pt-24 min-h-screen bg-white' x-data='alumniApp()' x-init='init()'>
+
+  <div class='pt-24 min-h-screen bg-white' x-data='alumniApp()' x-init='init()'>
 
   <div class='container mx-auto px-4 pb-16'>
     <div class='text-center mb-12'>
@@ -61,7 +62,7 @@
 
             <div class='space-y-2'>
               <button
-                @click='selectKelas(null)'
+                @click="selectKelas(null)"
                 :class="!selectedKelasId ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
                 class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
               >
@@ -215,7 +216,7 @@
             alumni.</p>
           <button
             @click='resetFilters()'
-            class='bg-gradient-to-r from-[#055C90] to-[#003060] text-white px-6 py-3 rounded-lg hover:from-[#68BBE3] hover:to-[#055C90] transition-all duration-300 border-0 shadow-lg'
+            class='bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all duration-300 border border-gray-700'
           >
             Reset Filters
           </button>
@@ -229,7 +230,7 @@
           <button
             @click='changePage(Math.max(1, currentPage - 1))'
             :disabled='currentPage === 1'
-            class='px-5 py-3 bg-[#055C90] border border-[#003060] hover:bg-[#003060] text-white rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+            class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
           >
             <i class='fas fa-chevron-left'></i>
           </button>
@@ -238,7 +239,7 @@
             <button
               @click='changePage(page)'
               class='w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm'
-              :class="currentPage === page ? 'bg-gradient-to-r from-[#055C90] to-[#003060] text-white border-[#003060] shadow-md' : 'bg-white text-[#003060] border-[#68BBE3] hover:bg-[#68BBE3]/10'"
+              :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
               x-text='page'
             ></button>
           </template>
@@ -246,7 +247,7 @@
           <button
             @click='changePage(Math.min(totalPages, currentPage + 1))'
             :disabled='currentPage === totalPages'
-            class='px-5 py-3 bg-[#055C90] border border-[#003060] hover:bg-[#003060] text-white rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+            class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
           >
             <i class='fas fa-chevron-right'></i>
           </button>
@@ -257,85 +258,95 @@
 </div>
 
 <script>
-function alumniApp() {
-  return {
-    allAlumni: {{#if alumni}}{{{json alumni}}}{{else}}[]{{/if}},
-    displayedAlumni: [],
-    kelasList: {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}},
+  function alumniApp() {
+    return {
+      allAlumni: {{#if alumni}}{{{json alumni}}}{{else}}[]{{/if}},
+      displayedAlumni: [],
+      kelasList: {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}},
+      selectedKelas: '',
+      selectedKelasId: '',
+      currentPage: 1,
+      itemsPerPage: 6,
+      totalPages: 1,
+      loading: false,
 
-    selectedKelas: '',
-    selectedKelasId: '',
-    currentPage: 1,
-    itemsPerPage: 6,
-    totalPages: 1,
-    loading: false,
+      init() {
+        this.filterAndPaginate();
+      },
 
-    init() {
-      this.filterAndPaginate();
-    },
+      filterAndPaginate() {
+        
+        // Filter berdasarkan kelas
+        let filtered = this.allAlumni;
+        
+        if (this.selectedKelasId) {
+          filtered = this.allAlumni.filter(alumni => {
+            return alumni.kelas && alumni.kelas.id == this.selectedKelasId;
+          });
+        }
+        
+        // Hitung total pages
+        this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
+        
+        // Pagination
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        
+        this.displayedAlumni = filtered.slice(startIndex, endIndex);
 
-    filterAndPaginate() {
-      // Filter berdasarkan kelas
-      let filtered = this.allAlumni;
-      if (this.selectedKelasId) {
-        filtered = filtered.filter(alumni => alumni.kelas && alumni.kelas.id == this.selectedKelasId);
-      }
+      },
 
-      // Hitung total halaman
-      this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
+      get alumniItems() {
+        return this.displayedAlumni || [];
+      },
 
-      // Ambil data untuk pagination
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
+      get totalItems() {
+        let filtered = this.allAlumni;
+        
+        if (this.selectedKelasId) {
+          filtered = this.allAlumni.filter(alumni => {
+            return alumni.kelas && alumni.kelas.id == this.selectedKelasId;
+          });
+        }
+        
+        return filtered.length;
+      },
 
-      this.displayedAlumni = filtered.slice(startIndex, endIndex);
-    },
+      selectKelas(kelasId) {
 
-    get alumniItems() {
-      return this.displayedAlumni || [];
-    },
+        
+        this.selectedKelasId = kelasId;
+        this.currentPage = 1;
+        this.filterAndPaginate();
+        
+        // Set selected name untuk display
+        if (kelasId) {
+          const kelas = this.kelasList.find(k => k.id == kelasId);
+          this.selectedKelas = kelas ? kelas.nama_kelas : '';
+        } else {
+          this.selectedKelas = '';
+        }
+      },
 
-    get totalItems() {
-      let filtered = this.allAlumni;
-      if (this.selectedKelasId) {
-        filtered = filtered.filter(alumni => alumni.kelas && alumni.kelas.id == this.selectedKelasId);
-      }
-      return filtered.length;
-    },
+      changePage(page) {
+        this.currentPage = page;
+        this.filterAndPaginate();
+      },
 
-    selectKelas(kelasId) {
-      this.selectedKelasId = kelasId;
-      this.currentPage = 1;
-      this.filterAndPaginate();
-
-      // Set selected nama kelas untuk tampilan
-      if (kelasId) {
-        const kelas = this.kelasList.find(k => k.id == kelasId);
-        this.selectedKelas = kelas ? kelas.nama_kelas : '';
-      } else {
+      resetFilters() {
+        this.selectedKelasId = null;
         this.selectedKelas = '';
+        this.currentPage = 1;
+        this.filterAndPaginate();
+      },
+
+      getKelasName(alumni) {
+        return alumni.kelas?.nama_kelas || 'Unknown';
       }
-    },
+    };
+  }
 
-    changePage(page) {
-      this.currentPage = page;
-      this.filterAndPaginate();
-    },
-
-    resetFilters() {
-      this.selectedKelasId = null;
-      this.selectedKelas = '';
-      this.currentPage = 1;
-      this.filterAndPaginate();
-    },
-
-    getKelasName(alumni) {
-      return alumni.kelas?.nama_kelas || 'Unknown';
-    }
-  };
-}
-
-document.addEventListener('alpine:init', () => {
-  Alpine.data('alumniApp', alumniApp);
-});
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('alumniApp', alumniApp);
+  });
 </script>
