@@ -10,8 +10,6 @@ import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import { paginateQuery } from 'src/common/utils/pagination.helper';
-import { PaginationParams } from 'src/common/decorators/pagination.decorator';
 import { KerjaSama } from 'src/entities/kerja_sama.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
@@ -68,6 +66,22 @@ export class DashboardService {
       order: { id: 'DESC' },
       relations: ['kategori', 'jenis_kelas', 'user_kelas'],
     });
+  }
+
+  async findVisiMisi() {
+    return await this.visiMisiRepository.find();
+  }
+
+  async findCommitment() {
+    return await this.commitmentRepository.find();
+  }
+
+  async findValue() {
+    return await this.valueRepository.find();
+  }
+
+  async findTeamLead() {
+    return await this.teamLeadRepository.find();
   }
 
   async findTentang() {

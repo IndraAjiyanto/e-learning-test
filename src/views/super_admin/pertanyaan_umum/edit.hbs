@@ -28,6 +28,25 @@
           class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">{{pertanyaan_umum.jawaban}}</textarea>
       </div>
 
+            <div>
+        <label
+          for="for"
+          class="block text-sm font-semibold text-gray-700 mb-1"
+        >For</label>
+        <select
+          name="for"
+          id="for"
+          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
+        >
+          <option value="" disabled>-- Select For --</option>
+          <option value="wip" {{#if (eq pertanyaan_umum.for "wip")}}selected{{/if}}>WIP</option>
+          <option value="general" {{#if (eq pertanyaan_umum.for "general")}}selected{{/if}}>General</option>
+          <option value="short_class" {{#if (eq pertanyaan_umum.for "short_class")}}selected{{/if}}>Admin</option>
+          <option value="bootcamp" {{#if (eq pertanyaan_umum.for "bootcamp")}}selected{{/if}}>Bootcamp</option>
+          <option value="course" {{#if (eq pertanyaan_umum.for "course")}}selected{{/if}}>Course</option>
+        </select>
+      </div>
+
       <!-- Action buttons -->
       <div class="flex gap-3">
         <button type="submit" 

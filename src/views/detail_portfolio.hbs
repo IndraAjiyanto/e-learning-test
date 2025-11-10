@@ -2,9 +2,9 @@
     
     <!-- Header -->
     <div class="text-center mb-10">
-        <div class="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full mb-6 shadow-lg border border-slate-200">
-            <i class="fas fa-graduation-cap text-slate-600"></i>
-            <span class="text-slate-700 font-semibold">{{portfolio.kelas.nama_kelas}}</span>
+        <div class="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full mb-6 shadow-lg border border-[#68BBE3]">
+            <i class="fas fa-graduation-cap text-[#055C90]"></i>
+            <span class="text-[#003060] font-semibold">{{portfolio.kelas.nama_kelas}}</span>
         </div>
         
         <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight font-montserrat">
@@ -71,7 +71,7 @@
                 <template x-for="(image, index) in images" :key="index">
                     <button @click="goTo(index)" 
                             class="flex-shrink-0 w-20 h-20 rounded-lg border-2 transition-all duration-300 hover:shadow-lg"
-                            :class="currentIndex === index ? 'border-slate-700 scale-105' : 'border-slate-300 hover:border-slate-500'">
+                            :class="currentIndex === index ? 'border-[#055C90] scale-105' : 'border-[#68BBE3]/50 hover:border-[#055C90]'">
                         <img :src="image" 
                              alt="Thumbnail" 
                              class="w-full h-full object-cover rounded-md">
@@ -110,7 +110,7 @@
 
             <!-- Action Button -->
             <div class="w-full">
-                <a href="{{portfolio.link}} " target="_blank" class="w-full btn text-xl bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-600 hover:to-slate-800 px-8 py-4 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+                <a href="{{portfolio.link}} " target="_blank" class="w-full btn text-xl bg-gradient-to-r from-[#055C90] to-[#003060] text-white hover:from-[#68BBE3] hover:to-[#055C90] px-8 py-4 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
                     View Project
                 </a>
             </div>

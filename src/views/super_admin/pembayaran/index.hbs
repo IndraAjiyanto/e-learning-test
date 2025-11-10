@@ -16,7 +16,15 @@
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
       </svg>
-      Payments
+      Full Payments
+    </button>
+    <button @click="mainTab = 'installment'; statusTab = 'all'"
+      :class="mainTab === 'installment' ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+      </svg>
+      Installments
     </button>
     <button @click="mainTab = 'pendaftaran'; statusTab = 'all'"
       :class="mainTab === 'pendaftaran' ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 border border-slate-200 hover:bg-emerald-50'"
@@ -137,6 +145,139 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
                     <span class="text-sm font-medium">{{this.user.username}}</span>
+                  </div>
+                  
+                  <div class="flex items-center gap-2 text-slate-600">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V6a2 2 0 012-2h4a2 2 0 012 2v1M8 7h8m-9 4a2 2 0 002 2h6a2 2 0 002-2v-4H7v4z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">{{formatTanggal this.createdAt}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-3">
+                <button 
+                  @click="open = true; imageSrc = '{{this.file}}'" 
+                  class="w-full py-3 rounded-xl bg-gradient-to-r from-slate-700 to-slate-800 text-white font-semibold text-sm hover:from-slate-800 hover:to-slate-900 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                  View Payment Proof
+                </button>
+
+                {{#if (roles this.proses 'proces')}}
+                  <div class="flex gap-2">
+                    <form action="/pembayarans/acc/{{this.id}}?_method=PATCH" method="post" class="flex-1">
+                      <button type="submit"
+                        class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold text-sm hover:from-emerald-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Accept
+                      </button>
+                    </form>
+                    <form action="/pembayarans/rejected/{{this.id}}?_method=PATCH" method="post" class="flex-1">
+                      <button type="submit"
+                        class="w-full py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold text-sm hover:from-red-600 hover:to-rose-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Reject
+                      </button>
+                    </form>
+                  </div>
+                {{/if}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="text-center py-16">
+          <div class="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+            <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-slate-700 mb-2">No Payment History</h3>
+          <p class="text-slate-500">Payment transactions will appear here once they are submitted.</p>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <div x-show="mainTab === 'installment'" x-transition>
+    <div class="bg-white shadow-xl rounded-2xl p-8 border border-slate-100">
+      {{#if cicilan.length}}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {{#each cicilan}}
+            <div 
+              x-show="statusTab === 'all' 
+                || (statusTab === 'acc' && '{{this.proses}}' === 'acc') 
+                || (statusTab === 'proces' && '{{this.proses}}' === 'proces') 
+                || (statusTab === 'rejected' && '{{this.proses}}' === 'rejected')"
+              x-transition
+              class="rounded-2xl border-2 p-6 relative transition-all duration-300 hover:shadow-xl hover:scale-[1.02] group
+                {{#if (roles this.proses 'acc')}} bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200 hover:border-emerald-300
+                {{else if (roles this.proses 'proces')}} bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 hover:border-amber-300
+                {{else}} bg-gradient-to-br from-red-50 to-rose-50 border-red-200 hover:border-red-300 {{/if}}">
+
+              <div class="absolute -top-3 -right-3">
+                {{#if (roles this.proses 'acc')}}
+                  <span class="px-4 py-2 text-xs font-bold rounded-full bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    ACCEPTED
+                  </span>
+                {{else if (roles this.proses 'proces')}}
+                  <span class="px-4 py-2 text-xs font-bold rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    PROCESSING
+                  </span>
+                {{else}}
+                  <span class="px-4 py-2 text-xs font-bold rounded-full bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    REJECTED
+                  </span>
+                {{/if}}
+              </div>
+
+              <div class="space-y-3 mb-6">
+                <div class="bg-slate-600 text-white px-3 py-1 rounded-lg inline-flex items-center gap-2 text-xs font-semibold mb-2">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                  </svg>
+                  {{this.cicilan.bulan}} MONTH PAYMENT
+                </div>
+                
+                <h3 class="text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors">{{this.kelas.nama_kelas}}</h3>
+                
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2 text-slate-600">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">{{this.kelas.kategori.nama_kategori}}</span>
+                  </div>
+                  
+                  <div class="flex items-center gap-2 text-slate-600">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">{{this.user.username}}</span>
+                  </div>
+
+                  <div class="flex items-center gap-2 text-slate-600">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">{{this.user.email}}</span>
                   </div>
                   
                   <div class="flex items-center gap-2 text-slate-600">

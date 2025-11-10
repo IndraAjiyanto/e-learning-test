@@ -153,12 +153,11 @@ async findCicilan(userId: number){
   }
 
   async findAll() {
-    const pembayaran = await this.pembayaranRepository.find({relations: ['user', 'kelas', 'kelas.kategori']})
-    if(!pembayaran){
-      return
-    }else{
-      return pembayaran
-    }
+    return await this.pembayaranRepository.find({where: {cicilan: IsNull()}, relations: ['user', 'kelas', 'kelas.kategori']})
+  }
+
+  async findAllCicilan(){
+    return await this.pembayaranRepository.find({where: {cicilan: Not(IsNull())}, relations: ['user', 'kelas', 'kelas.kategori', 'cicilan']})
   }
 
   async findAllPendaftaran(){

@@ -59,6 +59,8 @@ export class TeamController {
   ) {
     try {
       createTeamDto.profile = req.body.uploadedImageUrls?.[0];
+        createTeamDto.team_ke = await this.teamService.noPertemuan()
+
       await this.teamService.create(createTeamDto);
       req.flash('success', 'team successfully created');
       res.redirect('/team');

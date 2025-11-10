@@ -159,6 +159,7 @@ export class PembayaransController {
   async findAll(@Res() res: Response, @Req() req: Request) {
     const pembayaran = await this.pembayaransService.findAll();
     const pendaftaran = await this.pembayaransService.findAllPendaftaran();
+    const cicilan = await this.pembayaransService.findAllCicilan();
     res.render('super_admin/pembayaran/index', {
       user: req.user,
       pembayaran,

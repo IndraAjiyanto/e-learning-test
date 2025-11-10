@@ -1,27 +1,15 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class Team{
+export class Paragraf {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    profile: string
-    
-    @Column()
-    nama: string
-
-        @Column()
-        team_ke: number
+    paragraf: string
 
     @Column()
-    posisi: string
-
-    @Column()
-    linkedin: string
-
-    @Column()
-    deskripsi: string
+    p_ke: number
 
                         @CreateDateColumn()
                         createdAt: Date;

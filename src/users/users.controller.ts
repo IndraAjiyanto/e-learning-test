@@ -275,10 +275,13 @@ export class UsersController {
         req.flash('success', 'Password successfully updated');
         res.redirect('/users/profile');
       } else {
-        req.flash('error', 'Failed to update password');
+        req.flash('error', 'Unauthorized access');
+        res.redirect('/users/profile');
       }
     } catch (error) {
-      req.flash('error', 'Failed to update password');
+      // Tangkap error message spesifik dari service
+      const errorMessage = error.message || 'Failed to update password';
+      req.flash('error', errorMessage);
       res.redirect('/users/profile');
     }
   }

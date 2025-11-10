@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateTeamDto {
   @IsString()
@@ -9,6 +9,9 @@ export class CreateTeamDto {
 
   @IsString()
   posisi: string;
+
+  @IsNumber()
+  team_ke: number;
 
   @IsString()
   linkedin: string;

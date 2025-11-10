@@ -53,6 +53,8 @@ import { CommitmentModule } from './commitment/commitment.module';
 import { PendaftaranModule } from './pendaftaran/pendaftaran.module';
 import { WipModule } from './wip/wip.module';
 import { InHouseTrainingModule } from './in_house_training/in_house_training.module';
+import { BulanModule } from './bulan/bulan.module';
+import { ParagrafModule } from './paragraf/paragraf.module';
 
 @Module({
   imports: [
@@ -110,6 +112,8 @@ import { InHouseTrainingModule } from './in_house_training/in_house_training.mod
     PendaftaranModule,
     WipModule,
     InHouseTrainingModule,
+    BulanModule,
+    ParagrafModule,
   ],
   controllers: [AppController],
   providers: [AppService],
