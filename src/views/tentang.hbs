@@ -145,13 +145,13 @@
               </div>
             </div>
 
-{{#each paragraf}}
-            <p
-              class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'
-            >
- {{this.paragraf}}
-            </p>
-{{/each}}
+            {{#each paragraf}}
+              <p
+                class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'
+              >
+                {{this.paragraf}}
+              </p>
+            {{/each}}
             <div class='clear-both'></div>
 
           </div>
@@ -189,7 +189,7 @@
                 <p
                   class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                 >
-                {{visi.[0].visi}}
+                  {{visi.[0].visi}}
                 </p>
               </div>
             </div>
@@ -213,17 +213,17 @@
                 >Our Mission</h3>
                 <ul class='space-y-3 sm:space-y-4'>
                   {{#each misi}}
-                  <li class='flex items-start space-x-3'>
-                    <i
-                      class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
-                    ></i>
-                    <p
-                      class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-                    >
-                      <strong>{{content}}:</strong>
-                      {{isi}}
-                    </p>
-                  </li>
+                    <li class='flex items-start space-x-3'>
+                      <i
+                        class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
+                      ></i>
+                      <p
+                        class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+                      >
+                        <strong>{{content}}:</strong>
+                        {{isi}}
+                      </p>
+                    </li>
                   {{/each}}
                 </ul>
               </div>
@@ -236,21 +236,26 @@
             >Our Commitment</h3>
             <div class='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6'>
               {{#each commitment}}
-              <div
-                class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-              >
                 <div
-                  class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
+                  class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
                 >
-                  <i class='{{computeIcon icon}} text-white text-sm sm:text-base'></i>
+                  <div
+                    class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
+                  >
+                    <i
+                      class='{{computeIcon icon}}
+                        text-white text-sm sm:text-base'
+                    ></i>
+                  </div>
+                  <div>
+                    <h4
+                      class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'
+                    >{{judul}}</h4>
+                    <p
+                      class='text-slate-600 text-xs sm:text-sm font-inter'
+                    >{{deskripsi}}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4
-                    class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'
-                  >{{judul}}</h4>
-                  <p class='text-slate-600 text-xs sm:text-sm font-inter'>{{deskripsi}}</p>
-                </div>
-              </div>
               {{/each}}
             </div>
           </div>
@@ -302,7 +307,7 @@
                 <p
                   class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter'
                 >
-{{teamLead.[0].deskripsi}}
+                  {{teamLead.[0].deskripsi}}
                 </p>
                 <div class='flex justify-center md:justify-start space-x-3'>
                   <a
@@ -312,10 +317,10 @@
                     <i class='fab fa-linkedin text-slate-700 text-base'></i>
                   </a>
                   <a
-                    href='{{teamLead.[0].twitter}}'
+                    href='{{teamLead.[0].instagram}}'
                     class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
                   >
-                    <i class='fab fa-twitter text-slate-700 text-base'></i>
+                    <i class='fab fa-instagram text-slate-700 text-base'></i>
                   </a>
                   <a
                     href='{{teamLead.[0].github}}'
@@ -356,21 +361,13 @@
                   class='px-4 py-3 border-t border-slate-200 bg-slate-50'
                 >
                   <ul class='space-y-2 text-sm sm:text-base text-slate-700'>
+                    {{#each background}}
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-check text-slate-600 mt-1'></i>
-                      <span><strong>S2 Computer Science</strong>
-                        - Stanford University (2012-2014)</span>
+                      <span><strong>{{content}}</strong>
+                        - {{isi}}</span>
                     </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-check text-slate-600 mt-1'></i>
-                      <span><strong>S1 Teknik Informatika</strong>
-                        - Institut Teknologi Bandung (2008-2012)</span>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-check text-slate-600 mt-1'></i>
-                      <span><strong>Certified Solutions Architect</strong>
-                        - AWS (2015)</span>
-                    </li>
+                    {{/each}}
                   </ul>
                 </div>
               </div>
@@ -402,26 +399,13 @@
                   class='px-4 py-3 border-t border-slate-200 bg-slate-50'
                 >
                   <ul class='space-y-2 text-sm sm:text-base text-slate-700'>
+                    {{#each award}}
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-award text-amber-500 mt-1'></i>
-                      <span><strong>Top 40 Under 40</strong>
-                        - Tech Leaders Indonesia (2023)</span>
+                      <span><strong>{{content}}</strong>
+                        - {{isi}}</span>
                     </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-award text-amber-500 mt-1'></i>
-                      <span><strong>Best EdTech Startup</strong>
-                        - Startup Indonesia Awards (2022)</span>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-award text-amber-500 mt-1'></i>
-                      <span><strong>Google Developer Expert</strong>
-                        - Cloud Platform (2018-2021)</span>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-award text-amber-500 mt-1'></i>
-                      <span><strong>Forbes 30 Under 30</strong>
-                        - Asia Technology (2019)</span>
-                    </li>
+                    {{/each}}
                   </ul>
                 </div>
               </div>
@@ -453,31 +437,15 @@
                   class='px-4 py-3 border-t border-slate-200 bg-slate-50'
                 >
                   <ul class='space-y-3 text-sm sm:text-base text-slate-700'>
+                    {{#each experience}}
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-building text-slate-600 mt-1'></i>
                       <div>
-                        <strong>Senior Software Engineer - Google</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'>2015-2020 |
-                          Led development of cloud infrastructure serving 100M+
-                          users</p>
+                        <strong>{{content}}</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'>{{isi}}</p>
                       </div>
                     </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div>
-                        <strong>Tech Lead - Gojek</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'>2013-2015 |
-                          Built scalable microservices architecture</p>
-                      </div>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-code text-slate-600 mt-1'></i>
-                      <div>
-                        <strong>Open Source Contributor</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'>Contributor
-                          to Kubernetes, Docker, and React projects</p>
-                      </div>
-                    </li>
+                    {{/each}}
                   </ul>
                 </div>
               </div>
@@ -510,7 +478,7 @@
                   <p
                     class='text-slate-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4'
                   >
-{{deskripsi}}
+                    {{deskripsi}}
                   </p>
                   <div class='flex justify-center space-x-3'>
                     <a
@@ -530,17 +498,7 @@
               </div>
             {{/each}}
 
-            <div
-              class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-            >
-              <div
-                class='w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full flex items-center justify-center mb-3 sm:mb-4 mx-auto'
-              >
-                <i
-                  class='fas fa-user text-white text-lg sm:text-xl lg:text-2xl'
-                ></i>
-              </div>
-            </div>
+    
           </div>
 
           <div
@@ -585,25 +543,26 @@
 
           <div class='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8'>
             {{#each value}}
-            <div
-              class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
-            >
               <div
-                class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
+                class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
               >
-                <i
-                  class='{{computeIcon icon}} text-white text-lg sm:text-xl lg:text-2xl'
-                ></i>
+                <div
+                  class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
+                >
+                  <i
+                    class='{{computeIcon icon}}
+                      text-white text-lg sm:text-xl lg:text-2xl'
+                  ></i>
+                </div>
+                <h3
+                  class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
+                >{{tittle}}</h3>
+                <p
+                  class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+                >
+                  {{description}}
+                </p>
               </div>
-              <h3
-                class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-              >{{tittle}}</h3>
-              <p
-                class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-              >
-              {{description}}
-              </p>
-            </div>
             {{/each}}
           </div>
         </div>
@@ -624,18 +583,18 @@
             >We're ready to help your technology learning journey</p>
           </div>
 
-          <div class='grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8'>
-            <div>
-              <h3
-                class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-4 sm:mb-6 font-montserrat'
-              >Contact Information</h3>
-              <div class='space-y-4 sm:space-y-6'>
-                <div class='flex items-start space-x-3 sm:space-x-4'>
+          <div class='grid grid-cols-1 gap-6 sm:gap-8'>
+            <div class='max-w-2xl mx-auto'>
+
+              <div class='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6'>
+                <div
+                  class='flex flex-col items-center text-center space-y-3 sm:space-y-4'
+                >
                   <div
-                    class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
+                    class='w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center'
                   >
                     <i
-                      class='fas fa-envelope text-white text-sm sm:text-base'
+                      class='fas fa-envelope text-white text-lg sm:text-xl'
                     ></i>
                   </div>
                   <div>
@@ -651,11 +610,13 @@
                   </div>
                 </div>
 
-                <div class='flex items-start space-x-3 sm:space-x-4'>
+                <div
+                  class='flex flex-col items-center text-center space-y-3 sm:space-y-4'
+                >
                   <div
-                    class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
+                    class='w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center'
                   >
-                    <i class='fas fa-phone text-white text-sm sm:text-base'></i>
+                    <i class='fas fa-phone text-white text-lg sm:text-xl'></i>
                   </div>
                   <div>
                     <h4
@@ -668,12 +629,14 @@
                   </div>
                 </div>
 
-                <div class='flex items-start space-x-3 sm:space-x-4'>
+                <div
+                  class='flex flex-col items-center text-center space-y-3 sm:space-y-4'
+                >
                   <div
-                    class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
+                    class='w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center'
                   >
                     <i
-                      class='fas fa-map-marker-alt text-white text-sm sm:text-base'
+                      class='fas fa-map-marker-alt text-white text-lg sm:text-xl'
                     ></i>
                   </div>
                   <div>
@@ -687,155 +650,45 @@
                 </div>
               </div>
 
-              <div class='mt-6 sm:mt-8'>
+              <div class='mt-8 sm:mt-10 text-center'>
                 <h4
-                  class='font-semibold text-sm sm:text-base text-slate-800 mb-3 sm:mb-4 font-montserrat'
-                >Social Media</h4>
-                <div class='flex space-x-3 sm:space-x-4'>
+                  class='font-semibold text-sm sm:text-base text-slate-800 mb-4 sm:mb-6 font-montserrat'
+                >Follow Us on Social Media</h4>
+                <div class='flex justify-center space-x-4 sm:space-x-6'>
                   <a
                     href='#'
-                    class='w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
+                    class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
-                    <i class='fab fa-instagram text-slate-600 text-xl'></i>
+                    <i
+                      class='fab fa-instagram text-slate-600 text-xl sm:text-2xl'
+                    ></i>
                   </a>
                   <a
                     href='#'
-                    class='w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
+                    class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
-                    <i class='fab fa-twitter text-slate-600 text-xl'></i>
+                    <i
+                      class='fab fa-twitter text-slate-600 text-xl sm:text-2xl'
+                    ></i>
                   </a>
                   <a
                     href='#'
-                    class='w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
+                    class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
-                    <i class='fab fa-linkedin text-slate-600 text-xl'></i>
+                    <i
+                      class='fab fa-linkedin text-slate-600 text-xl sm:text-2xl'
+                    ></i>
                   </a>
                   <a
                     href='#'
-                    class='w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
+                    class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
-                    <i class='fab fa-youtube text-slate-600 text-xl'></i>
+                    <i
+                      class='fab fa-youtube text-slate-600 text-xl sm:text-2xl'
+                    ></i>
                   </a>
                 </div>
               </div>
-            </div>
-
-            <div
-              class='bg-gradient-to-br from-slate-50 to-slate-100 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-slate-200'
-              x-data="{
-                formData: { nama: '', email: '', subject: '', message: '' },
-                isSubmitting: false,
-                message: '',
-                messageType: '',
-                async submitForm() {
-                  this.isSubmitting = true;
-                  this.message = '';
-                  try {
-                    const response = await fetch('/contact', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify(this.formData)
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                      this.message = result.message;
-                      this.messageType = 'success';
-                      this.formData = { nama: '', email: '', subject: '', message: '' };
-                    } else {
-                      this.message = result.message;
-                      this.messageType = 'error';
-                    }
-                  } catch (error) {
-                    this.message = 'Network error. Please try again.';
-                    this.messageType = 'error';
-                  }
-                  this.isSubmitting = false;
-                }
-              }"
-            >
-              <h3
-                class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-4 sm:mb-6 font-montserrat'
-              >Send Message</h3>
-
-              <!-- Message Display -->
-              <div
-                x-show='message'
-                :class="messageType === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'"
-                class='p-4 rounded-lg border mb-6'
-              >
-                <div class='flex items-center'>
-                  <i
-                    :class="messageType === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"
-                    class='mr-2'
-                  ></i>
-                  <span x-text='message'></span>
-                </div>
-              </div>
-
-              <form
-                @submit.prevent='submitForm()'
-                class='space-y-4 sm:space-y-6'
-              >
-                <div>
-                  <label
-                    class='block text-xs sm:text-sm font-medium text-slate-700 mb-1.5 sm:mb-2'
-                  >Full Name</label>
-                  <input
-                    type='text'
-                    x-model='formData.nama'
-                    required
-                    class='w-full bg-white px-3 py-2 sm:px-4 sm:py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base'
-                  />
-                </div>
-                <div>
-                  <label
-                    class='block text-xs sm:text-sm font-medium text-slate-700 mb-1.5 sm:mb-2'
-                  >Email</label>
-                  <input
-                    type='email'
-                    x-model='formData.email'
-                    required
-                    class='w-full bg-white px-3 py-2 sm:px-4 sm:py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base'
-                  />
-                </div>
-                <div>
-                  <label
-                    class='block text-xs sm:text-sm font-medium text-slate-700 mb-1.5 sm:mb-2'
-                  >Subject</label>
-                  <input
-                    type='text'
-                    x-model='formData.subject'
-                    required
-                    class='w-full bg-white px-3 py-2 sm:px-4 sm:py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base'
-                  />
-                </div>
-                <div>
-                  <label
-                    class='block text-xs sm:text-sm font-medium text-slate-700 mb-1.5 sm:mb-2'
-                  >Message</label>
-                  <textarea
-                    rows='4'
-                    x-model='formData.message'
-                    required
-                    class='w-full bg-white px-3 py-2 sm:px-4 sm:py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base'
-                  ></textarea>
-                </div>
-                <button
-                  type='submit'
-                  :disabled='isSubmitting'
-                  class='w-full bg-gradient-to-r from-slate-600 to-slate-800 text-white py-2.5 px-5 sm:py-3 sm:px-6 rounded-lg hover:from-slate-700 hover:to-slate-900 transition-all duration-200 flex items-center justify-center space-x-2 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed'
-                >
-                  <i
-                    :class="isSubmitting ? 'fas fa-spinner fa-spin' : 'fas fa-paper-plane'"
-                    class='text-xs sm:text-sm'
-                  ></i>
-                  <span
-                    x-text="isSubmitting ? 'Sending...' : 'Send Message'"
-                  ></span>
-                </button>
-              </form>
             </div>
           </div>
         </div>

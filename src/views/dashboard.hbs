@@ -86,12 +86,14 @@
       </div>
 
       <h1
-        class='text-4xl sm:text-5xl md:text-6xl font-bold leading-tight font-montserrat mb-4'
+        class='text-[3.2rem]  font-bold leading-tight font-montserrat mb-4'
       >
         <span
-          class='bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 bg-clip-text text-transparent'
+          class='bg-gradient-to-r  from-slate-700 via-slate-800 to-slate-900 bg-clip-text text-transparent'
         >
-          {{#if tentang.[0].judul}}{{tentang.[0].judul}}{{else}}Transform Your Career with Kesatria Academy{{/if}}
+          {{#if tentang.[0].judul}}{{tentang.[0].judul}}{{else}}Kesatria Academy
+Empowering Future Digital Tech Talent’s
+{{/if}}
         </span>
       </h1>
 
@@ -99,7 +101,7 @@
         {{#if tentang.[0].text}}
           {{{nl2br tentang.[0].text}}}
         {{else}}
-          Join thousands of students who have successfully transformed their careers through our comprehensive bootcamp programs. Learn from industry experts and build real-world projects.
+        Be part of the next generation of digital talents. Kesatria Academy helps you learn technology in an interactive, relevant and engaging way. 
         {{/if}}
       </p>
 
@@ -134,11 +136,15 @@
       >
         <div class='flex items-center gap-2 text-slate-600'>
           <i class='fas fa-shield-alt text-slate-700'></i>
-          <span class='text-sm font-semibold'>Money Back Guarantee</span>
+          <span class='text-sm font-semibold'>Job Placement</span>
         </div>
         <div class='flex items-center gap-2 text-slate-600'>
           <i class='fas fa-headset text-slate-700'></i>
           <span class='text-sm font-semibold'>24/7 Support</span>
+        </div>
+        <div class='flex items-center gap-2 text-slate-600'>
+          <i class='fas fa-graduation-cap text-slate-700'></i>
+          <span class='text-sm font-semibold'>Capstone Project</span>
         </div>
       </div>
     </div>
@@ -251,16 +257,13 @@
     <h2
       class='text-4xl md:text-5xl font-bold text-white leading-tight font-montserrat'
     >
-      Kesatria Academy Program Experience
+  Our Experience
     </h2>
 
     <p
       class='py-6 text-lg text-white leading-relaxed max-w-2xl mx-auto font-inter'
     >
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum ab,
-      aliquid, molestias placeat blanditiis fugiat tenetur quos aperiam natus
-      quasi sunt adipisci distinctio. Suscipit sapiente, beatae itaque quae
-      natus consectetur?
+We believe every professional deserves the chance to grow without giving up their main career. Through flexible programs and expert mentorship, Kesatria Academy helps you master essential IT skills and get to compete in the global tech industry.
     </p>
   </div>
 
@@ -281,11 +284,10 @@
         </div>
       </div>
       <h3 class='text-xl font-bold text-gray-900 mb-4'>
-        Weekend Online Learning
+        Free Class to Discover Potential
       </h3>
       <p class='text-gray-600 text-lg leading-relaxed'>
-        Eliminate the fear of not being able to attend classes because your job
-        requires you to work overtime until night.
+Join our free class to explore your interests and discover your true potential in the IT field. Get hands-on experience with the basics of technology.
       </p>
     </div>
 
@@ -304,8 +306,7 @@
         Expert Mentor Guidance
       </h3>
       <p class='text-gray-600 text-lg leading-relaxed'>
-        Learn directly from industry professionals with years of experience in
-        top tech companies.
+        Learn directly from experienced industry professionals who have worked in leading tech companies. Gain real-world insights, hands-on knowledge, and personalized.
       </p>
     </div>
 
@@ -324,24 +325,12 @@
         Career Preparation Support
       </h3>
       <p class='text-gray-600 text-lg leading-relaxed'>
-        Get help with CV, portfolio, and interview preparation from our
-        dedicated talent support team.
+Get full career support — from crafting your CV and portfolio to preparing for interviews — with guidance from our dedicated talent support team.
       </p>
     </div>
   </div>
 </div>
 
-<!-- Benefits Section -->
-{{!--
-  Partial: benefits-section
-  Usage: {{> benefits-section benefits=benefits}}
-  Expected data shape:
-  benefits: [
-    { icon: "star", title: "...", description: "...", featured: false },
-    { icon: "briefcase", title: "...", description: "...", featured: false },
-    { icon: "money-bill-wave", title: "...", description: "...", featured: true }
-  ]
---}}
 
 <section
   class='bg-gradient-to-br from-slate-50 via-white to-slate-100 py-20 px-6 lg:px-20'
@@ -351,7 +340,7 @@
       Imagine!
     </h2>
     <p class='text-lg text-gray-600 max-w-2xl mx-auto'>
-      You will get all these benefits after joining our 4-month bootcamp!
+Imagine joining a 3-month intensive journey where you learn directly from industry experts, work on real-world projects, and build a professional portfolio that opens doors to your dream career in tech.
     </p>
   </div>
 
@@ -382,10 +371,10 @@
           </div>
           <div>
             <h3 class='text-2xl font-extrabold text-gray-900 mb-2'>
-              {{#if benefit_1.judul}}{{benefit_1.judul}}{{else}}Job Guarantee{{/if}}
+              {{#if benefit_1.judul}}{{benefit_1.judul}}{{else}}Job/Internship Placement{{/if}}
             </h3>
             <p class='text-gray-700 text-lg leading-relaxed'>
-              {{#if benefit_1.text}}{{benefit_1.text}}{{else}}Get guaranteed job placement after completing the bootcamp with our hiring partner network.{{/if}}
+              {{#if benefit_1.text}}{{benefit_1.text}}{{else}}Get the opportunity for job or internship placement through our hiring partner network after completing the bootcamp. We’ll help you start your career with strong industry connections.{{/if}}
             </p>
             <span class='sr-only'>This is the most desired benefit by most
               learners.</span>
@@ -403,10 +392,10 @@
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{#if benefit_2.judul}}{{benefit_2.judul}}{{else}}Expert Mentors{{/if}}
+            {{#if benefit_2.judul}}{{benefit_2.judul}}{{else}}Capstone Project{{/if}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
-            {{#if benefit_2.text}}{{benefit_2.text}}{{else}}Learn directly from industry professionals with years of experience in top tech companies.{{/if}}
+            {{#if benefit_2.text}}{{benefit_2.text}}{{else}}Apply everything you’ve learned through a real-world capstone project that reflects real industry challenges — a strong proof of your technical and problem-solving skills.{{/if}}
           </p>
         </div>
       </div>
@@ -421,10 +410,10 @@
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{#if benefit_3.judul}}{{benefit_3.judul}}{{else}}Official Certificate{{/if}}
+            {{#if benefit_3.judul}}{{benefit_3.judul}}{{else}}Portfolio Building{{/if}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
-            {{#if benefit_3.text}}{{benefit_3.text}}{{else}}Receive an industry-recognized certificate upon successful completion of the program.{{/if}}
+            {{#if benefit_3.text}}{{benefit_3.text}}{{else}}Build a powerful portfolio showcasing your best work and projects throughout the bootcamp — your professional identity and key to standing out in the job market.{{/if}}
           </p>
         </div>
       </div>
@@ -465,7 +454,8 @@
         Our Special Programs
       </h2>
       <p class='text-lg text-gray-600 max-w-2xl mx-auto font-inter'>
-        Specialized program options designed for different needs. From professional internships to corporate training solutions.
+Specialized program options designed to meet different goals — from professional internships to corporate training solutions.
+
       </p>
     </div>
 
@@ -494,7 +484,7 @@
               Wiratek Internship Program
             </h3>
             <p class='text-gray-600 text-lg leading-relaxed mb-6 font-inter'>
-              Professional internship program with real work experience. Get guidance from experienced mentors and earn a competency certificate.
+A professional internship program offering real-world experience. Learn under the guidance of experienced mentors and earn a recognized competency certificate.
             </p>
 
             <!-- Features List -->
@@ -503,13 +493,13 @@
                 <div class='w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0'>
                   <i class='fas fa-check text-white text-xs'></i>
                 </div>
-                <span class='font-medium'>3-6 months duration</span>
+                <span class='font-medium'>3-6 Month’s Duration</span>
               </li>
               <li class='flex items-center gap-3 text-gray-700'>
                 <div class='w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0'>
                   <i class='fas fa-check text-white text-xs'></i>
                 </div>
-                <span class='font-medium'>Real industry projects</span>
+                <span class='font-medium'>Real Industry Projects</span>
               </li>
               <li class='flex items-center gap-3 text-gray-700'>
                 <div class='w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0'>
@@ -549,10 +539,10 @@
 
             <!-- Content -->
             <h3 class='text-3xl font-bold text-gray-900 mb-4 font-montserrat group-hover:text-gray-700 transition-colors'>
-              In-House Training
+              In House Training
             </h3>
             <p class='text-gray-600 text-lg leading-relaxed mb-6 font-inter'>
-              Corporate training tailored to your team's needs. Enhance employee skills with customized curriculum designed for your organization.
+              Corporate training tailored to your team’s needs. Enhance employee skills with a structured and fully customizable curriculum designed for your organization.
             </p>
 
             <!-- Features List -->
@@ -561,19 +551,19 @@
                 <div class='w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0'>
                   <i class='fas fa-check text-white text-xs'></i>
                 </div>
-                <span class='font-medium'>Customizable curriculum</span>
+                <span class='font-medium'>Customizable Curriculum</span>
               </li>
               <li class='flex items-center gap-3 text-gray-700'>
                 <div class='w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0'>
                   <i class='fas fa-check text-white text-xs'></i>
                 </div>
-                <span class='font-medium'>Expert trainers</span>
+                <span class='font-medium'>Expert Trainers</span>
               </li>
               <li class='flex items-center gap-3 text-gray-700'>
                 <div class='w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0'>
                   <i class='fas fa-check text-white text-xs'></i>
                 </div>
-                <span class='font-medium'>Flexible location</span>
+                <span class='font-medium'>Flexible Location</span>
               </li>
             </ul>
 
@@ -610,13 +600,10 @@
   <!-- Title -->
   <div class='text-center mb-16'>
     <h2 class='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat'>
-      Stories from Kesatria Academy Alumni
+      Stories from Alumni
     </h2>
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
-      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptas quas
-      dolor illum, minima aliquam dolores? Optio, voluptatibus. Ab corrupti,
-      temporibus modi perferendis a similique placeat, dicta vitae sapiente quia
-      quo.
+Every alumnus has their own unique journey — from the first step of learning, facing challenges, to finally building a successful career in tech. Hear how their experience with Kesatria Academy opened new opportunities and transformed their future.
     </p>
   </div>
 
@@ -715,13 +702,10 @@
 >
   <div class='text-center mb-16'>
     <h2 class='text-4xl md:text-5xl font-bold text-gray-900'>
-      Kesatria Academy Partnered
+      Our Partnered
     </h2>
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem ut earum
-      iste sequi, tenetur voluptas harum temporibus odio tempore consectetur
-      possimus ducimus, fugit expedita rerum facere natus itaque, necessitatibus
-      ipsum.
+Kesatria Academy has partnered with various organizations, institutions, and companies to strengthen an industry-driven learning ecosystem. Through these collaborations, we provide training programs that are relevant to real-world job demands and create broader career opportunities for our participants.
     </p>
   </div>
 
@@ -860,10 +844,7 @@
       Kesatria Academy Program
     </h1>
     <p class='text-lg text-slate-300 max-w-2xl mx-auto relative z-10'>
-      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Unde veniam
-      dicta nesciunt quasi odio consectetur optio aperiam voluptates, quidem
-      maxime? Laborum, sapiente libero doloremque blanditiis repudiandae
-      officia! Commodi, veritatis unde?
+Elevate your competence to the highest level. The Kesatria Academy Program is designed to forge outstanding individuals ready to face global challenges. Gain access to cutting-edge curriculum and mentorship from leading experts to reach your maximum career potential.
     </p>
   </div>
 

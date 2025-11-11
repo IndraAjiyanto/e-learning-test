@@ -6480,6 +6480,10 @@ details.collapse summary::-webkit-details-marker {
   font-size: 10px;
 }
 
+.text-\[3\.2rem\] {
+  font-size: 3.2rem;
+}
+
 .text-base {
   font-size: 1rem;
   line-height: 1.5rem;
@@ -8146,10 +8150,6 @@ details.collapse summary::-webkit-details-marker {
     margin-top: 2.5rem;
   }
 
-  .sm\:mt-8 {
-    margin-top: 2rem;
-  }
-
   .sm\:inline {
     display: inline;
   }
@@ -8240,6 +8240,12 @@ details.collapse summary::-webkit-details-marker {
     margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
   }
 
+  .sm\:space-x-6 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 0;
+    margin-right: calc(1.5rem * var(--tw-space-x-reverse));
+    margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
+  }
+
   .sm\:space-y-0 > :not([hidden]) ~ :not([hidden]) {
     --tw-space-y-reverse: 0;
     margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
@@ -8250,12 +8256,6 @@ details.collapse summary::-webkit-details-marker {
     --tw-space-y-reverse: 0;
     margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(1rem * var(--tw-space-y-reverse));
-  }
-
-  .sm\:space-y-6 > :not([hidden]) ~ :not([hidden]) {
-    --tw-space-y-reverse: 0;
-    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
-    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
   }
 
   .sm\:rounded-2xl {
@@ -8282,11 +8282,6 @@ details.collapse summary::-webkit-details-marker {
   .sm\:px-16 {
     padding-left: 4rem;
     padding-right: 4rem;
-  }
-
-  .sm\:px-4 {
-    padding-left: 1rem;
-    padding-right: 1rem;
   }
 
   .sm\:px-6 {
@@ -8320,11 +8315,6 @@ details.collapse summary::-webkit-details-marker {
   .sm\:text-3xl {
     font-size: 1.875rem;
     line-height: 2.25rem;
-  }
-
-  .sm\:text-5xl {
-    font-size: 3rem;
-    line-height: 1;
   }
 
   .sm\:text-9xl {
