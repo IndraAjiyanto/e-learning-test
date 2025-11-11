@@ -19,6 +19,10 @@ import { Value } from 'src/entities/value.entity';
 import { Visi } from 'src/entities/visi.entity';
 import { TeamLead } from 'src/entities/team_lead.entity';
 import { Commitment } from 'src/entities/commitment.entity';
+import { Misi } from 'src/entities/misi.entity';
+import { Experience } from 'src/entities/experience.entity';
+import { Award } from 'src/entities/award.entity';
+import { Background } from 'src/entities/background.entity';
 
 @Module({
   imports: [
@@ -40,6 +44,10 @@ import { Commitment } from 'src/entities/commitment.entity';
       Kategori,
       JenisKelas,
       KerjaSama,
+      Misi,
+      Experience,
+      Award,
+      Background
     ]),
   ],
   controllers: [DashboardController],

@@ -8,5 +8,6 @@ import { AwardController } from './award.controller';
   imports: [TypeOrmModule.forFeature([Award])],
   controllers: [AwardController],
   providers: [AwardService],
+  exports: [AwardService]
 })
 export class AwardModule {}

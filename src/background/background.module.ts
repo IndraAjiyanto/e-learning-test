@@ -8,5 +8,6 @@ import { BackgroundController } from './background.controller';
   imports: [TypeOrmModule.forFeature([Background])],
   controllers: [BackgroundController],
   providers: [BackgroundService],
+  exports: [BackgroundService]
 })
 export class BackgroundModule {}

@@ -52,7 +52,7 @@ export class KelassController {
     minHeight: 1000,
     maxHeight: 1080,
     folder: 'nestjs/images/banner/class',
-    maxSize: 2 * 1024 * 1024,
+    maxSize: 10 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
@@ -312,7 +312,7 @@ export class KelassController {
     minHeight: 1000,
     maxHeight: 1080,
     folder: 'nestjs/images/banner/class',
-    maxSize: 2 * 1024 * 1024,
+    maxSize: 10 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async update(

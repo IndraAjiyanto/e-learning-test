@@ -62,10 +62,10 @@
                                 return;
                             }
 
-                            // Validasi ukuran file (5MB max berdasarkan multer config umum)
-                            const maxSize = 5 * 1024 * 1024; // 5MB
+                            // Validasi ukuran file (10MB max berdasarkan multer config umum)
+                            const maxSize = 10 * 1024 * 1024; // 10MB
                             if (file.size > maxSize) {
-                                this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
+                                this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 10MB`;
                                 this.isValid = false;
                                 this.previewUrl = null;
                                 $dispatch('cover-validation', { isValid: false, hasFile: true });
@@ -126,7 +126,7 @@
           >
             Cover Class
             <span class='text-xs text-gray-500 font-normal'>(1900x1000 -
-              1920x1080px, max 5MB, JPG/PNG)</span>
+              1920x1080px, max 10MB, JPG/PNG)</span>
           </label>
           <input
             type='file'
