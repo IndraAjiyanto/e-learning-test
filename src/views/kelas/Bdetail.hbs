@@ -151,12 +151,12 @@
                     {{#if (roles kelas.metode 'online')}}
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{kelas.lokasi}}</h4>
+                      ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer">{{kelas.lokasi}}</a></h4>
                     {{else}}
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1 truncate'
                         title='{{kelas.lokasi}}'
-                      >{{kelas.lokasi}}</h4>
+                      ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer">{{kelas.lokasi}}</a></h4>
                     {{/if}}
                   </div>
                 </div>

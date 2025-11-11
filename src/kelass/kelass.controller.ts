@@ -336,8 +336,6 @@ export class KelassController {
         const currentMentoringUserId = kelas.mentoring?.[0]?.user?.id;
         const newMentoringUserId = Number(updateKelassDto.mentoringId);
 
-        console.log('Current mentoring user ID:', currentMentoringUserId);
-        console.log('New mentoring user ID:', newMentoringUserId);
 
         if (currentMentoringUserId !== newMentoringUserId) {
           await this.kelassService.updateMentoring(
@@ -361,13 +359,10 @@ export class KelassController {
 
       await this.kelassService.update(kelasId, updateKelassDto);
       req.flash('success', 'Successfully update kelas');
-      if (req.user?.role == 'super_admin') {
-        res.redirect('/kelass');
-      } else {
+
         res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-      }
+      
     } catch (error) {
-      console.log(error);
       req.flash('error', 'failed update kelas');
       res.redirect('/kelass');
     }

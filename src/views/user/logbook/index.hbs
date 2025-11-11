@@ -19,7 +19,7 @@
           <div class='relative'>
             <input
               type='text'
-              placeholder='Cari kegiatan, rincian, atau kendala...'
+              placeholder='Search activities, details, or issues...'
               x-model='searchInput'
               @input='debounceSearch()'
               class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
@@ -37,7 +37,7 @@
               @change='currentPage = 1'
               class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
             >
-              <option value=''>Semua Kelas</option>
+              <option value=''>All Classes</option>
               <template x-for='kelas in kelasList' :key='kelas.id'>
                 <option :value='kelas.id' x-text='kelas.nama_kelas'></option>
               </template>
@@ -77,7 +77,7 @@
         <div class='flex flex-wrap items-center gap-2 text-sm'>
           <div class='flex items-center gap-2 text-gray-600 font-semibold'>
             <i class='fas fa-filter'></i>
-            <span>Filter aktif:</span>
+            <span>Active filters:</span>
           </div>
           <span
             x-show='filterKelas'
@@ -109,16 +109,16 @@
               >No</th>
               <th
                 class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-              >Kegiatan</th>
+              >Activity</th>
               <th
                 class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-              >Rincian</th>
+              >Details</th>
               <th
                 class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-              >Kendala</th>
+              >Issues</th>
               <th
                 class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-              >Dokumentasi</th>
+              >Documentation</th>
               <th
                 class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
               >Kelas</th>
@@ -185,16 +185,16 @@
               >No</th>
               <th
                 class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
-              >Kegiatan</th>
+              >Activity</th>
               <th
                 class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
-              >Rincian</th>
+              >Details</th>
               <th
                 class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
-              >Kendala</th>
+              >Issues</th>
               <th
                 class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
-              >Dokumentasi</th>
+              >Documentation</th>
               <th
                 class='px-3 py-2 text-left text-xs font-bold text-slate-700 uppercase tracking-wider'
               >Kelas</th>
@@ -237,7 +237,7 @@
                 <td class='px-3 py-2'>
                   <img
                     :src='logbook.dokumentasi'
-                    alt='Dokumentasi'
+                    alt='Documentation'
                     class='w-12 h-12 object-cover rounded-lg border border-gray-200 cursor-pointer hover:border-slate-400 hover:shadow-md transition-all transform hover:scale-105'
                     @click="window.open(logbook.dokumentasi, '_blank')"
                   />
@@ -292,17 +292,17 @@
         >
           <i class='fas fa-clipboard-list text-slate-400 text-4xl'></i>
         </div>
-        <h3 class='text-xl font-bold text-gray-900 mb-2 font-montserrat'>Tidak
-          Ada Logbook</h3>
+        <h3 class='text-xl font-bold text-gray-900 mb-2 font-montserrat'>No
+          Logbook Found</h3>
         <p class='text-gray-600 mb-6 font-inter max-w-md mx-auto'>
-          Belum ada data logbook yang sesuai dengan filter yang Anda pilih.
+          No logbook data matches your selected filters.
         </p>
         <button
           @click='resetFilters()'
           class='bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-700 hover:to-slate-900 text-white px-8 py-3 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-semibold'
         >
           <i class='fas fa-undo-alt mr-2'></i>
-          Reset Filter
+          Reset Filters
         </button>
       </div>
     </div>
@@ -346,132 +346,130 @@
 ></script>
 
 <script>
-function logbookApp() {
-  return {
-    allLogbooksRaw: {{{json logbook}}},
-    allLogbooks: [],
-    kelasList: {{{json kelas}}},
+  function logbookApp() {
+    return {
+      allLogbooksRaw: {{{json logbook}}},
+      allLogbooks: [],
+      kelasList: {{{json kelas}}},
+      
+      searchInput: '',
+      search: '',
+      filterKelas: '',
+      currentPage: 1,
+      itemsPerPage: 10,
+      searchTimeout: null,
 
-    searchInput: '',
-    search: '',
-    filterKelas: '',
-    currentPage: 1,
-    itemsPerPage: 10,
-    searchTimeout: null,
+      debounceSearch() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+          this.search = this.searchInput;
+          this.currentPage = 1;
+        }, 500);
+      },
 
-    debounceSearch() {
-      clearTimeout(this.searchTimeout);
-      this.searchTimeout = setTimeout(() => {
-        this.search = this.searchInput;
+      get filteredLogbooks() {
+        let filtered = this.allLogbooksRaw;
+
+        if (this.filterKelas) {
+          filtered = filtered.filter(
+            log => log.pertemuan?.minggu?.kelas?.id == this.filterKelas
+          );
+        }
+
+        if (this.search) {
+          const s = this.search.toLowerCase();
+          filtered = filtered.filter(log =>
+            (log.kegiatan || '').toLowerCase().includes(s) ||
+            (log.rincian_kegiatan || '').toLowerCase().includes(s) ||
+            (log.kendala || '').toLowerCase().includes(s) ||
+            (log.pertemuan?.minggu?.kelas?.nama_kelas || '').toLowerCase().includes(s)
+          );
+        }
+
+        return filtered;
+      },
+
+      get totalPages() {
+        return Math.ceil(this.filteredLogbooks.length / this.itemsPerPage);
+      },
+
+      get paginatedLogbooks() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        return this.filteredLogbooks.slice(start, start + this.itemsPerPage);
+      },
+
+      resetFilters() {
+        this.searchInput = '';
+        this.search = '';
+        this.filterKelas = '';
         this.currentPage = 1;
-      }, 500);
-    },
+      },
 
-    get filteredLogbooks() {
-      let filtered = this.allLogbooksRaw;
+      hasActiveFilters() {
+        return this.filterKelas || this.search;
+      },
 
-      if (this.filterKelas) {
-        filtered = filtered.filter(
-          (log) => log.pertemuan?.minggu?.kelas?.id == this.filterKelas
-        );
+      getKelasName() {
+        const kelas = this.kelasList.find(k => k.id == this.filterKelas);
+        return kelas ? kelas.nama_kelas : '';
+      },
+
+      formatDate(date) {
+        if (!date) return '-';
+        return new Date(date).toLocaleDateString('id-ID', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      },
+
+      async exportToExcel() {
+        try {
+          const dataToExport = this.filteredLogbooks.map((log, index) => ({
+            No: index + 1,
+            Activity: log.kegiatan || '-',
+            'Activity Details': log.rincian_kegiatan || '-',
+            Issues: log.kendala || '-',
+            Class: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
+            Status:
+              log.proses === 'acc'
+                ? 'Approved'
+                : log.proses === 'proces'
+                ? 'Process'
+                : 'Rejected',
+            Date: this.formatDate(log.createdAt),
+            Documentation: log.dokumentasi || '-'
+          }));
+
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+          ws['!cols'] = [
+            { wch: 5 },
+            { wch: 30 },
+            { wch: 50 },
+            { wch: 40 },
+            { wch: 25 },
+            { wch: 12 },
+            { wch: 20 },
+            { wch: 60 }
+          ];
+
+          XLSX.utils.book_append_sheet(wb, ws, 'Logbook');
+          XLSX.writeFile(wb, `Logbook_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        } catch (err) {
+          alert('Failed to export data to Excel');
+          console.error(err);
+        }
+      },
+
+      confirmDelete(event) {
+        if (confirm('Are you sure you want to delete this logbook?')) {
+          event.target.closest('form').submit();
+        }
       }
-
-      if (this.search) {
-        const s = this.search.toLowerCase();
-        filtered = filtered.filter((log) =>
-          (log.kegiatan || '').toLowerCase().includes(s) ||
-          (log.rincian_kegiatan || '').toLowerCase().includes(s) ||
-          (log.kendala || '').toLowerCase().includes(s) ||
-          (log.pertemuan?.minggu?.kelas?.nama_kelas || '')
-            .toLowerCase()
-            .includes(s)
-        );
-      }
-
-      return filtered;
-    },
-
-    get totalPages() {
-      return Math.ceil(this.filteredLogbooks.length / this.itemsPerPage);
-    },
-
-    get paginatedLogbooks() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      return this.filteredLogbooks.slice(start, start + this.itemsPerPage);
-    },
-
-    resetFilters() {
-      this.searchInput = '';
-      this.search = '';
-      this.filterKelas = '';
-      this.currentPage = 1;
-    },
-
-    hasActiveFilters() {
-      return this.filterKelas || this.search;
-    },
-
-    getKelasName() {
-      const kelas = this.kelasList.find((k) => k.id == this.filterKelas);
-      return kelas ? kelas.nama_kelas : '';
-    },
-
-    formatDate(date) {
-      if (!date) return '-';
-      return new Date(date).toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    },
-
-    async exportToExcel() {
-      try {
-        const dataToExport = this.filteredLogbooks.map((log, index) => ({
-          No: index + 1,
-          Kegiatan: log.kegiatan || '-',
-          'Rincian Kegiatan': log.rincian_kegiatan || '-',
-          Kendala: log.kendala || '-',
-          Kelas: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
-          Status:
-            log.proses === 'acc'
-              ? 'Approved'
-              : log.proses === 'proces'
-              ? 'Process'
-              : 'Rejected',
-          Tanggal: this.formatDate(log.createdAt),
-          Dokumentasi: log.dokumentasi || '-'
-        }));
-
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(dataToExport);
-
-        ws['!cols'] = [
-          { wch: 5 },
-          { wch: 30 },
-          { wch: 50 },
-          { wch: 40 },
-          { wch: 25 },
-          { wch: 12 },
-          { wch: 20 },
-          { wch: 60 }
-        ];
-
-        XLSX.utils.book_append_sheet(wb, ws, 'Logbook');
-        XLSX.writeFile(wb, `Logbook_${new Date().toISOString().slice(0, 10)}.xlsx`);
-        error('Gagal export data ke Excel');
-      } catch (error) {
-        error('Gagal export data ke Excel');
-      }
-    },
-
-    confirmDelete(event) {
-      if (confirm('Apakah Anda yakin ingin menghapus logbook ini?')) {
-        event.target.closest('form').submit();
-      }
-    }
-  };
-}
+    };
+  }
 </script>

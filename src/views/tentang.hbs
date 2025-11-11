@@ -603,10 +603,7 @@
                     >Email</h4>
                     <p
                       class='text-xs sm:text-sm text-slate-600 font-inter'
-                    >info@kesatriaacademy.com</p>
-                    <p
-                      class='text-xs sm:text-sm text-slate-600 font-inter'
-                    >support@kesatriaacademy.com</p>
+                    >{{social.email}}</p>
                   </div>
                 </div>
 
@@ -622,10 +619,7 @@
                     <h4
                       class='font-semibold text-sm sm:text-base text-slate-800 mb-1 font-montserrat'
                     >Phone</h4>
-                    <p class='text-xs sm:text-sm text-slate-600 font-inter'>+62
-                      21 1234 5678</p>
-                    <p class='text-xs sm:text-sm text-slate-600 font-inter'>+62
-                      812 3456 7890</p>
+                    <p class='text-xs sm:text-sm text-slate-600 font-inter'>{{social.nomor}}</p>
                   </div>
                 </div>
 
@@ -643,9 +637,7 @@
                     <h4
                       class='font-semibold text-sm sm:text-base text-slate-800 mb-1 font-montserrat'
                     >Address</h4>
-                    <p class='text-xs sm:text-sm text-slate-600 font-inter'>Jl.
-                      Teknologi No. 123<br />South Jakarta 12345<br
-                      />Indonesia</p>
+                    <p class='text-xs sm:text-sm text-slate-600 font-inter'>{{social.alamat}}</p>
                   </div>
                 </div>
               </div>
@@ -656,7 +648,7 @@
                 >Follow Us on Social Media</h4>
                 <div class='flex justify-center space-x-4 sm:space-x-6'>
                   <a
-                    href='#'
+                    href='{{social.instagram}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
@@ -664,15 +656,7 @@
                     ></i>
                   </a>
                   <a
-                    href='#'
-                    class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
-                  >
-                    <i
-                      class='fab fa-twitter text-slate-600 text-xl sm:text-2xl'
-                    ></i>
-                  </a>
-                  <a
-                    href='#'
+                    href='{{social.linkedin}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
@@ -680,7 +664,7 @@
                     ></i>
                   </a>
                   <a
-                    href='#'
+                    href='{{social.youtube}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
