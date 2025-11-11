@@ -45,8 +45,17 @@ export class VisiController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const visi = await this.visiService.findAll();
-    res.render('super_admin/visi/index', { user: req.user, visi });
+    try {
+      const visi = await this.visiService.findAll();
+      console.log('Visi data:', visi);
+      res.render('super_admin/visi/index', {
+        user: req.user,
+        visi: visi || [],
+      });
+    } catch (error) {
+      console.log('Error fetching visi:', error);
+      res.render('super_admin/visi/index', { user: req.user, visi: [] });
+    }
   }
 
   @Roles('super_admin')
@@ -56,7 +65,7 @@ export class VisiController {
   }
 
   @Roles('super_admin')
-  @Get(':visiId')
+  @Get('formEdit/:visiId')
   async findOne(
     @Param('visiId') visiId: number,
     @Res() res: Response,

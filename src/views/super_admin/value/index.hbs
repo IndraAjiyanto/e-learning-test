@@ -177,14 +177,59 @@
 </div>
 
 <script>
-  function valueTable({ values }) { return { searchInput: '', search: '',
-  pageNumber: 0, size: 5, values, amount: 0, get filteredValues() { let filtered
-  = this.values.filter(v => (`${v.title} ${v.description}`).toLowerCase()
-  .includes(this.search.toLowerCase()) ); this.amount = filtered.length; const
-  start = this.pageNumber * this.size; const end = start + this.size; return
-  filtered.slice(start, end).map(v => v.id.toString()); }, pages() { return
-  Array.from({ length: this.pageCount() }); }, pageCount() { return
-  Math.ceil(this.amount / this.size); }, nextPage() { if (this.pageNumber <
-  this.pageCount()-1) this.pageNumber++; }, prevPage() { if (this.pageNumber >
-  0) this.pageNumber--; }, viewPage(index) { this.pageNumber = index; }, } }
+  function valueTable({ values }) {
+    return {
+      // State
+      searchInput: "",
+      search: "",
+      pageNumber: 0,
+      size: 5,
+      values,
+      amount: 0,
+
+      // Filter + Pagination
+      get filteredValues() {
+        const filtered = this.values.filter(v =>
+          `${v.title} ${v.description}`
+            .toLowerCase()
+            .includes(this.search.toLowerCase())
+        );
+
+        this.amount = filtered.length;
+
+        const start = this.pageNumber * this.size;
+        const end = start + this.size;
+
+        return filtered
+          .slice(start, end)
+          .map(v => v.id.toString());
+      },
+
+      // Pagination helper
+      pages() {
+        return Array.from({ length: this.pageCount() });
+      },
+
+      pageCount() {
+        return Math.ceil(this.amount / this.size);
+      },
+
+      // Pagination action
+      nextPage() {
+        if (this.pageNumber < this.pageCount() - 1) {
+          this.pageNumber++;
+        }
+      },
+
+      prevPage() {
+        if (this.pageNumber > 0) {
+          this.pageNumber--;
+        }
+      },
+
+      viewPage(index) {
+        this.pageNumber = index;
+      }
+    };
+  }
 </script>

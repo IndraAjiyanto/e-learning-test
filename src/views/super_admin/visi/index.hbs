@@ -1,5 +1,5 @@
 <div
-  class='max-w-5xl mx-auto px-6 py-10 pt-28'
+  class='max-w-5xl mx-auto px-6 py-10'
   x-data='visiTable({ data: {{json visi}} })'
 >
 
@@ -169,16 +169,63 @@
 </div>
 
 <script>
-  function visiMisiTable({ data }) { return { // State searchInput: "", search:
-  "", pageNumber: 0, size: 5, data, amount: 0, // Get data yang sudah difilter +
-  pagination get filteredData() { const filtered = this.data.filter(v =>
-  `${v.visi} ${v.misi}` .toLowerCase() .includes(this.search.toLowerCase()) );
-  this.amount = filtered.length; const start = this.pageNumber * this.size;
-  const end = start + this.size; return filtered .slice(start, end) .map(v =>
-  v.id.toString()); }, // Generate array untuk pagination (loop page) pages() {
-  return Array.from({ length: this.pageCount() }); }, // Total halaman
-  pageCount() { return Math.ceil(this.amount / this.size); }, // Pagination
-  action nextPage() { if (this.pageNumber < this.pageCount() - 1) {
-  this.pageNumber++; } }, prevPage() { if (this.pageNumber > 0) {
-  this.pageNumber--; } }, viewPage(index) { this.pageNumber = index; } }; }
+  function visiTable({ data }) {
+    return {
+      // State
+      searchInput: "",
+      search: "",
+      pageNumber: 0,
+      size: 5,
+      data,
+      amount: 0,
+
+      // Filter + Pagination
+      get filteredData() {
+        if (!this.data || !Array.isArray(this.data)) {
+          console.log("Data is not array:", this.data);
+          return [];
+        }
+
+        const filtered = this.data.filter(v =>
+          v?.visi?.toLowerCase().includes(this.search.toLowerCase())
+        );
+
+        this.amount = filtered.length;
+
+        const start = this.pageNumber * this.size;
+        const end = start + this.size;
+
+        return filtered
+          .slice(start, end)
+          .map(v => v.id.toString());
+      },
+
+      // Pagination List (loop page)
+      pages() {
+        return Array.from({ length: this.pageCount() });
+      },
+
+      // Total Page
+      pageCount() {
+        return Math.ceil(this.amount / this.size);
+      },
+
+      // Pagination Actions
+      nextPage() {
+        if (this.pageNumber < this.pageCount() - 1) {
+          this.pageNumber++;
+        }
+      },
+
+      prevPage() {
+        if (this.pageNumber > 0) {
+          this.pageNumber--;
+        }
+      },
+
+      viewPage(index) {
+        this.pageNumber = index;
+      }
+    };
+  }
 </script>

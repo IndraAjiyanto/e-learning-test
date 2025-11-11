@@ -21,6 +21,12 @@ export class Team{
     linkedin: string
 
     @Column()
+    github: string;
+
+    @Column()
+    instagram: string;
+
+    @Column()
     deskripsi: string
 
                         @CreateDateColumn()

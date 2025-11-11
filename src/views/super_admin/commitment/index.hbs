@@ -177,15 +177,56 @@
 </div>
 
 <script>
-  function commitmentTable({ commitments }) { return { searchInput: '', search:
-  '', pageNumber: 0, size: 5, commitments, amount: 0, get filteredCommitments()
-  { let filtered = this.commitments.filter(c => (`${c.judul}
-  ${c.deskripsi}`).toLowerCase() .includes(this.search.toLowerCase()) );
-  this.amount = filtered.length; const start = this.pageNumber * this.size;
-  const end = start + this.size; return filtered.slice(start, end).map(c =>
-  c.id.toString()); }, pages() { return Array.from({ length: this.pageCount()
-  }); }, pageCount() { return Math.ceil(this.amount / this.size); }, nextPage()
-  { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; }, prevPage() {
-  if (this.pageNumber > 0) this.pageNumber--; }, viewPage(index) {
-  this.pageNumber = index; }, } }
+  function commitmentTable({ commitments }) {
+    return {
+      // State
+      searchInput: '',
+      search: '',
+      pageNumber: 0,
+      size: 5,
+      commitments,
+      amount: 0,
+
+      // Filter + Pagination
+      get filteredCommitments() {
+        const filtered = this.commitments.filter(c =>
+          `${c.judul} ${c.deskripsi}`
+            .toLowerCase()
+            .includes(this.search.toLowerCase())
+        );
+
+        this.amount = filtered.length;
+
+        const start = this.pageNumber * this.size;
+        const end = start + this.size;
+
+        return filtered
+          .slice(start, end)
+          .map(c => c.id.toString());
+      },
+
+      // Generate pagination list
+      pages() {
+        return Array.from({ length: this.pageCount() });
+      },
+
+      // Total page
+      pageCount() {
+        return Math.ceil(this.amount / this.size);
+      },
+
+      // Pagination actions
+      nextPage() {
+        if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+      },
+
+      prevPage() {
+        if (this.pageNumber > 0) this.pageNumber--;
+      },
+
+      viewPage(index) {
+        this.pageNumber = index;
+      }
+    }
+  }
 </script>

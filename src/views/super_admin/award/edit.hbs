@@ -16,7 +16,7 @@
           id='content'
           name='content'
           rows='4'
-          class='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
           placeholder='Enter content...'
           required
         >{{award.content}}</textarea>
@@ -31,21 +31,21 @@
           id='isi'
           name='isi'
           rows='6'
-          class='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
           placeholder='Enter isi...'
           required
         >{{award.isi}}</textarea>
       </div>
 
-      <div class='flex justify-end gap-4'>
-        <a
-          href='/award'
-          class='bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition'
-        >Cancel</a>
+      <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
         >Update</button>
+        <a
+          href='/award'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+        >Cancel</a>
       </div>
     </form>
   </div>

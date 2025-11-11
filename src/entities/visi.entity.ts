@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('visi_misi')
+@Entity('visi')
 export class Visi {
   @PrimaryGeneratedColumn()
   id: number;
