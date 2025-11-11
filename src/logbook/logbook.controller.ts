@@ -48,9 +48,6 @@ export class LogbookController {
     @Req() req: Request,
   ) {
     try {
-      console.log('Request body:', req.body);
-      console.log('Uploaded image URLs:', req.body.uploadedImageUrls);
-      console.log('File object:', dokumentasi);
 
       // Pastikan file berhasil diupload
       if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {

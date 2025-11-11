@@ -1,177 +1,435 @@
-<div 
-  x-data="{ tab: 'user', openDetail: false, selectedLog: null }"
-  class="max-w-7xl mx-auto px-6 py-10 pt-24"
+<div
+  x-data="{ 
+    tab: 'user', 
+    openDetail: false, 
+    selectedLog: null,
+    search: '',
+    filterKelas: '',
+    pageNumberUser: 0,
+    pageNumberMentor: 0,
+    size: 5,
+    logbook: {{json logbook}},
+    logbook_mentor: {{json logbook_mentor}},
+    kelas: {{json kelas}},
+    get filteredLogbook() {
+      return this.logbook.filter(item => 
+        item.kegiatan.toLowerCase().includes(this.search.toLowerCase()) &&
+        (this.filterKelas === '' || item.pertemuan.minggu.kelas.nama_kelas === this.filterKelas)
+      );
+    },
+    get filteredLogbookMentor() {
+      return this.logbook_mentor.filter(item => 
+        item.kegiatan.toLowerCase().includes(this.search.toLowerCase()) &&
+        (this.filterKelas === '' || item.pertemuan.minggu.kelas.nama_kelas === this.filterKelas)
+      );
+    },
+    get paginatedLogbook() {
+      const start = this.pageNumberUser * this.size;
+      return this.filteredLogbook.slice(start, start + this.size);
+    },
+    get paginatedLogbookMentor() {
+      const start = this.pageNumberMentor * this.size;
+      return this.filteredLogbookMentor.slice(start, start + this.size);
+    },
+    get uniqueKelas() {
+      return this.kelas.map(k => k.nama_kelas);
+    },
+    get pageCountUser() {
+      return Math.ceil(this.filteredLogbook.length / this.size);
+    },
+    get pageCountMentor() {
+      return Math.ceil(this.filteredLogbookMentor.length / this.size);
+    },
+    pagesUser() {
+      return Array.from({ length: this.pageCountUser });
+    },
+    pagesMentor() {
+      return Array.from({ length: this.pageCountMentor });
+    },
+    nextPageUser() {
+      if (this.pageNumberUser < this.pageCountUser - 1) {
+        this.pageNumberUser++;
+      }
+    },
+    prevPageUser() {
+      if (this.pageNumberUser > 0) {
+        this.pageNumberUser--;
+      }
+    },
+    viewPageUser(index) {
+      this.pageNumberUser = index;
+    },
+    nextPageMentor() {
+      if (this.pageNumberMentor < this.pageCountMentor - 1) {
+        this.pageNumberMentor++;
+      }
+    },
+    prevPageMentor() {
+      if (this.pageNumberMentor > 0) {
+        this.pageNumberMentor--;
+      }
+    },
+    viewPageMentor(index) {
+      this.pageNumberMentor = index;
+    },
+    exportExcel() {
+      const data = this.tab === 'user' ? this.filteredLogbook : this.filteredLogbookMentor;
+      const wsData = [
+        ['No', 'Kegiatan', 'Pertemuan', 'Minggu', 'Kelas', 'User', 'Tanggal'],
+        ...data.map((item, index) => [
+          index + 1,
+          item.kegiatan,
+          item.pertemuan?.pertemuan_ke || '',
+          item.pertemuan?.minggu?.minggu_ke || '',
+          item.pertemuan?.minggu?.kelas?.nama_kelas || '',
+          item.user?.username || '',
+          item.createdAt
+        ])
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Logbook');
+      XLSX.writeFile(wb, 'logbook.xlsx');
+    }
+  }"
+  class='max-w-7xl mx-auto px-6 py-10'
 >
   <!-- Header -->
-  <div class="text-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">Log Book</h1>
-    <p class="text-gray-600">Pilih log book yang ingin ditampilkan</p>
+  <div class='text-center mb-8'>
+    <h1 class='text-3xl font-bold text-gray-900 mb-2'>Log Book</h1>
+    <p class='text-gray-600'>Pilih log book yang ingin ditampilkan</p>
   </div>
 
   <!-- Tab Buttons -->
-  <div class="flex justify-center gap-4 mb-8">
-    <button 
+  <div class='flex justify-center gap-4 mb-8'>
+    <button
       @click="tab = 'user'"
       :class="tab === 'user' 
         ? 'bg-gray-900 text-white' 
         : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
-      class="px-5 py-2 rounded-lg font-medium transition"
+      class='px-5 py-2 rounded-lg font-medium transition'
     >
       Log Book User
     </button>
-    <button 
+    <button
       @click="tab = 'mentor'"
       :class="tab === 'mentor' 
         ? 'bg-gray-900 text-white' 
         : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
-      class="px-5 py-2 rounded-lg font-medium transition"
+      class='px-5 py-2 rounded-lg font-medium transition'
     >
       Log Book Mentor
     </button>
   </div>
 
+  <!-- Search and Filter -->
+  <div class='flex justify-center gap-4 mb-6'>
+    <div class='relative'>
+      <input
+        type='text'
+        x-model='search'
+        @input='pageNumberUser=0; pageNumberMentor=0'
+        placeholder='Cari kegiatan...'
+        class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-64'
+      />
+      <button
+        class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500'
+      >
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          class='h-5 w-5'
+          fill='none'
+          viewBox='0 0 24 24'
+          stroke='currentColor'
+        >
+          <path
+            stroke-linecap='round'
+            stroke-linejoin='round'
+            stroke-width='2'
+            d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z'
+          />
+        </svg>
+      </button>
+    </div>
+    <select
+      x-model='filterKelas'
+      @change='pageNumberUser=0; pageNumberMentor=0'
+      class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 w-48'
+    >
+      <option value=''>Semua Kelas</option>
+      <template x-for='kelas in uniqueKelas' :key='kelas'>
+        <option :value='kelas' x-text='kelas'></option>
+      </template>
+    </select>
+    <button
+      @click='exportExcel()'
+      class='bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition'
+    >
+      Export Excel
+    </button>
+  </div>
+
   <!-- Log Book User Table -->
   <div x-show="tab === 'user'" x-transition>
-    {{#if logbook.length}}
-      <div class="overflow-x-auto shadow rounded-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200 bg-white text-sm">
-          <thead class="bg-gray-50">
-            <tr class="text-gray-700">
-              <th class="px-4 py-3 text-left font-semibold">No</th>
-              <th class="px-4 py-3 text-left font-semibold">Kegiatan</th>
-              <th class="px-4 py-3 text-left font-semibold">Pertemuan</th>
-              <th class="px-4 py-3 text-left font-semibold">Minggu</th>
-              <th class="px-4 py-3 text-left font-semibold">Kelas</th>
-              <th class="px-4 py-3 text-left font-semibold">User</th>
-              <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
-              <th class="px-4 py-3 text-center font-semibold">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-            {{#each logbook}}
-            <tr class="hover:bg-gray-50">
-              <td class="px-4 py-3 text-gray-900 font-medium">{{this.kegiatan}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.pertemuan_ke}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.minggu_ke}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.kelas.nama_kelas}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.user.username}}</td>
-              <td class="px-4 py-3 text-gray-500">{{this.createdAt}}</td>
-              <td class="px-4 py-3 text-center">
-                <button 
-                  @click="openDetail = true; selectedLog = {{json this}}"
-                  class="bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition"
+    <div class='overflow-x-auto shadow rounded-lg border border-gray-200'>
+      <table class='min-w-full divide-y divide-gray-200 bg-white text-sm'>
+        <thead class='bg-gray-50'>
+          <tr class='text-gray-700'>
+            <th class='px-4 py-3 text-left font-semibold'>No</th>
+            <th class='px-4 py-3 text-left font-semibold'>Kegiatan</th>
+            <th class='px-4 py-3 text-left font-semibold'>Pertemuan</th>
+            <th class='px-4 py-3 text-left font-semibold'>Minggu</th>
+            <th class='px-4 py-3 text-left font-semibold'>Kelas</th>
+            <th class='px-4 py-3 text-left font-semibold'>User</th>
+            <th class='px-4 py-3 text-left font-semibold'>Tanggal</th>
+            <th class='px-4 py-3 text-center font-semibold'>Aksi</th>
+          </tr>
+        </thead>
+        <tbody class='divide-y divide-gray-100'>
+          <template x-for='(item, index) in paginatedLogbook' :key='item.id'>
+            <tr class='hover:bg-gray-50'>
+              <td
+                class='px-4 py-3 text-gray-900 font-medium'
+                x-text='(pageNumberUser * size + index + 1)'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-900 font-medium'
+                x-text='item.kegiatan'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-700'
+                x-text='item.pertemuan.pertemuan_ke'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-700'
+                x-text='item.pertemuan.minggu.minggu_ke'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-700'
+                x-text='item.pertemuan.minggu.kelas.nama_kelas'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-700'
+                x-text='item.user.username'
+              ></td>
+              <td class='px-4 py-3 text-gray-500' x-text='item.createdAt'></td>
+              <td class='px-4 py-3 text-center'>
+                <button
+                  @click='openDetail = true; selectedLog = item'
+                  class='bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition'
                 >
                   Detail
                 </button>
               </td>
             </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    {{else}}
-      <p class="text-center text-gray-500 italic mt-6">Belum ada data logbook user.</p>
-    {{/if}}
+          </template>
+        </tbody>
+      </table>
+    </div>
+    <!-- Pagination User -->
+    <div
+      class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center'
+      x-show='pageCountUser > 1'
+    >
+      <button
+        @click='prevPageUser'
+        :disabled='pageNumberUser==0'
+        class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+        :class="{ 'opacity-50 cursor-not-allowed': pageNumberUser==0 }"
+      >Prev</button>
+
+      <template x-for='(page,index) in pagesUser()' :key='index'>
+        <button
+          @click='viewPageUser(index)'
+          class='px-3 py-1 rounded'
+          :class="{ 'bg-gray-900 text-white font-bold': index===pageNumberUser }"
+          x-text='index+1'
+        ></button>
+      </template>
+
+      <button
+        @click='nextPageUser'
+        :disabled='pageNumberUser >= pageCountUser-1'
+        class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+        :class="{ 'opacity-50 cursor-not-allowed': pageNumberUser >= pageCountUser-1 }"
+      >Next</button>
+    </div>
+    <p
+      x-show='filteredLogbook.length === 0'
+      class='text-center text-gray-500 italic mt-6'
+    >Belum ada data logbook user yang sesuai filter.</p>
   </div>
 
   <!-- Log Book Mentor Table -->
   <div x-show="tab === 'mentor'" x-transition>
-    {{#if logbook_mentor.length}}
-      <div class="overflow-x-auto shadow rounded-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200 bg-white text-sm">
-          <thead class="bg-gray-50">
-            <tr class="text-gray-700">
-              <th class="px-4 py-3 text-left font-semibold">No</th>
-              <th class="px-4 py-3 text-left font-semibold">Kegiatan</th>
-              <th class="px-4 py-3 text-left font-semibold">Pertemuan</th>
-              <th class="px-4 py-3 text-left font-semibold">Minggu</th>
-              <th class="px-4 py-3 text-left font-semibold">Kelas</th>
-              <th class="px-4 py-3 text-left font-semibold">User</th>
-              <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
-              <th class="px-4 py-3 text-center font-semibold">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-            {{#each logbook_mentor}}
-            <tr class="hover:bg-gray-50">
-              <td class="px-4 py-3 text-gray-900 font-medium">{{this.kegiatan}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.pertemuan_ke}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.minggu_ke}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.pertemuan.minggu.kelas.nama_kelas}}</td>
-              <td class="px-4 py-3 text-gray-700">{{this.user.username}}</td>
-              <td class="px-4 py-3 text-gray-500">{{this.createdAt}}</td>
-              <td class="px-4 py-3 text-center">
-                <button 
-                  @click="openDetail = true; selectedLog = {{json this}}"
-                  class="bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition"
+    <div class='overflow-x-auto shadow rounded-lg border border-gray-200'>
+      <table class='min-w-full divide-y divide-gray-200 bg-white text-sm'>
+        <thead class='bg-gray-50'>
+          <tr class='text-gray-700'>
+            <th class='px-4 py-3 text-left font-semibold'>No</th>
+            <th class='px-4 py-3 text-left font-semibold'>Kegiatan</th>
+            <th class='px-4 py-3 text-left font-semibold'>Pertemuan</th>
+            <th class='px-4 py-3 text-left font-semibold'>Minggu</th>
+            <th class='px-4 py-3 text-left font-semibold'>Kelas</th>
+            <th class='px-4 py-3 text-left font-semibold'>User</th>
+            <th class='px-4 py-3 text-left font-semibold'>Tanggal</th>
+            <th class='px-4 py-3 text-center font-semibold'>Aksi</th>
+          </tr>
+        </thead>
+        <tbody class='divide-y divide-gray-100'>
+          <template
+            x-for='(item, index) in paginatedLogbookMentor'
+            :key='item.id'
+          >
+            <tr class='hover:bg-gray-50'>
+              <td
+                class='px-4 py-3 text-gray-900 font-medium'
+                x-text='(pageNumberMentor * size + index + 1)'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-900 font-medium'
+                x-text='item.kegiatan'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-700'
+                x-text='item.pertemuan.pertemuan_ke'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-700'
+                x-text='item.pertemuan.minggu.minggu_ke'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-700'
+                x-text='item.pertemuan.minggu.kelas.nama_kelas'
+              ></td>
+              <td
+                class='px-4 py-3 text-gray-700'
+                x-text='item.user.username'
+              ></td>
+              <td class='px-4 py-3 text-gray-500' x-text='item.createdAt'></td>
+              <td class='px-4 py-3 text-center'>
+                <button
+                  @click='openDetail = true; selectedLog = item'
+                  class='bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition'
                 >
                   Detail
                 </button>
               </td>
             </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    {{else}}
-      <p class="text-center text-gray-500 italic mt-6">Belum ada data logbook mentor.</p>
-    {{/if}}
+          </template>
+        </tbody>
+      </table>
+    </div>
+    <!-- Pagination Mentor -->
+    <div
+      class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center'
+      x-show='pageCountMentor > 1'
+    >
+      <button
+        @click='prevPageMentor'
+        :disabled='pageNumberMentor==0'
+        class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+        :class="{ 'opacity-50 cursor-not-allowed': pageNumberMentor==0 }"
+      >Prev</button>
+
+      <template x-for='(page,index) in pagesMentor()' :key='index'>
+        <button
+          @click='viewPageMentor(index)'
+          class='px-3 py-1 rounded'
+          :class="{ 'bg-gray-900 text-white font-bold': index===pageNumberMentor }"
+          x-text='index+1'
+        ></button>
+      </template>
+
+      <button
+        @click='nextPageMentor'
+        :disabled='pageNumberMentor >= pageCountMentor-1'
+        class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+        :class="{ 'opacity-50 cursor-not-allowed': pageNumberMentor >= pageCountMentor-1 }"
+      >Next</button>
+    </div>
+    <p
+      x-show='filteredLogbookMentor.length === 0'
+      class='text-center text-gray-500 italic mt-6'
+    >Belum ada data logbook mentor yang sesuai filter.</p>
   </div>
 
   <!-- Modal Detail -->
-  <div 
-    x-show="openDetail"
+  <div
+    x-show='openDetail'
     x-transition
-    class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+    class='fixed inset-0 bg-black/40 flex items-center justify-center z-50'
   >
-    <div 
-      @click.away="openDetail = false" 
-      class="bg-white rounded-xl p-6 max-w-lg w-full shadow-lg relative"
+    <div
+      @click.away='openDetail = false'
+      class='bg-white rounded-xl p-6 max-w-lg w-full shadow-lg relative'
     >
-      <button 
-        @click="openDetail = false" 
-        class="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+      <button
+        @click='openDetail = false'
+        class='absolute top-3 right-3 text-gray-500 hover:text-gray-800'
       >
         ✕
       </button>
 
-      <h2 class="text-xl font-semibold mb-4 text-gray-900">Detail Logbook</h2>
+      <h2 class='text-xl font-semibold mb-4 text-gray-900'>Detail Logbook</h2>
 
       <!-- Info Kelas & Pertemuan -->
-      <div class="bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1">
-        <p><strong>Kelas:</strong> <span x-text="selectedLog?.pertemuan?.minggu?.kelas?.nama_kelas ?? '-'"></span></p>
-        <p><strong>Minggu:</strong> <span x-text="selectedLog?.pertemuan?.minggu?.minggu_ke ?? '-'"></span></p>
-        <p><strong>Pertemuan:</strong> <span x-text="selectedLog?.pertemuan?.pertemuan_ke ?? '-'"></span></p>
+      <div
+        class='bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1'
+      >
+        <p><strong>Kelas:</strong>
+          <span
+            x-text="selectedLog?.pertemuan?.minggu?.kelas?.nama_kelas ?? '-'"
+          ></span></p>
+        <p><strong>Minggu:</strong>
+          <span
+            x-text="selectedLog?.pertemuan?.minggu?.minggu_ke ?? '-'"
+          ></span></p>
+        <p><strong>Pertemuan:</strong>
+          <span x-text="selectedLog?.pertemuan?.pertemuan_ke ?? '-'"></span></p>
       </div>
 
       <!-- Info User -->
-      <div class="bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1">
-        <p><strong>Nama User:</strong> <span x-text="selectedLog?.user?.nama ?? '-'"></span></p>
-        <p><strong>Email:</strong> <span x-text="selectedLog?.user?.email ?? '-'"></span></p>
+      <div
+        class='bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1'
+      >
+        <p><strong>Nama User:</strong>
+          <span x-text="selectedLog?.user?.nama ?? '-'"></span></p>
+        <p><strong>Email:</strong>
+          <span x-text="selectedLog?.user?.email ?? '-'"></span></p>
       </div>
 
       <!-- Info Logbook -->
-      <div class="space-y-2 text-gray-700">
-        <p><strong>Kegiatan:</strong> <span x-text="selectedLog?.kegiatan"></span></p>
-        <p><strong>Rincian Kegiatan:</strong> <span x-text="selectedLog?.rincian_kegiatan"></span></p>
-        <template x-if="selectedLog?.proses">
-          <p><strong>Proses:</strong> <span x-text="selectedLog?.proses"></span></p>
+      <div class='space-y-2 text-gray-700'>
+        <p><strong>Kegiatan:</strong>
+          <span x-text='selectedLog?.kegiatan'></span></p>
+        <p><strong>Rincian Kegiatan:</strong>
+          <span x-text='selectedLog?.rincian_kegiatan'></span></p>
+        <template x-if='selectedLog?.proses'>
+          <p><strong>Proses:</strong>
+            <span x-text='selectedLog?.proses'></span></p>
         </template>
-        <p><strong>Kendala:</strong> <span x-text="selectedLog?.kendala"></span></p>
-        <p><strong>Tanggal:</strong> <span x-text="selectedLog?.createdAt"></span></p>
+        <p><strong>Kendala:</strong>
+          <span x-text='selectedLog?.kendala'></span></p>
+        <p><strong>Tanggal:</strong>
+          <span x-text='selectedLog?.createdAt'></span></p>
       </div>
 
       <!-- Dokumentasi -->
-      <template x-if="selectedLog?.dokumentasi">
-        <div class="mt-4">
-          <p class="font-semibold mb-2">Dokumentasi:</p>
-          <img 
-            :src="selectedLog?.dokumentasi" 
-            alt="Dokumentasi" 
-            class="rounded-lg border max-h-64 object-contain mx-auto"
+      <template x-if='selectedLog?.dokumentasi'>
+        <div class='mt-4'>
+          <p class='font-semibold mb-2'>Dokumentasi:</p>
+          <img
+            :src='selectedLog?.dokumentasi'
+            alt='Dokumentasi'
+            class='rounded-lg border max-h-64 object-contain mx-auto'
           />
         </div>
       </template>
     </div>
   </div>
 </div>
+
+<script
+  src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+></script>
