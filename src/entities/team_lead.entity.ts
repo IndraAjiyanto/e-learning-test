@@ -23,24 +23,14 @@ export class TeamLead {
   @Column()
   deskripsi: string;
 
-  @Column()
-  email: string;
+  @Column({nullable: true})
+  twitter: string;
 
-  @Column()
-  phone: string;
-
-  @Column('text')
-  background: string;
-
-// Entity
-@Column({ type: 'text' })
-experience: string;
-
-@Column({ type: 'text' })
-awards: string;
+  @Column({nullable: true})
+  github: string;
 
 
-  @Column()
+  @Column({nullable: true})
   linkedin: string;
 
   @CreateDateColumn()

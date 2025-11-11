@@ -51,6 +51,9 @@ export class Kelas {
   @Column({ nullable: true })
   promo: number;
 
+  @Column({ nullable: true })
+  link_lokasi: string;
+
   @Column()
   lokasi: string;
 

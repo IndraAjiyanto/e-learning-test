@@ -18,8 +18,12 @@ import { Blog } from 'src/entities/blog.entity';
 import { Tentang } from 'src/entities/tentang.entity';
 import { Value } from 'src/entities/value.entity';
 import { TeamLead } from 'src/entities/team_lead.entity';
-import { VisiMisi } from 'src/entities/visi_misi.entity';
+import { Visi } from 'src/entities/visi.entity';
 import { Commitment } from 'src/entities/commitment.entity';
+import { Misi } from 'src/entities/misi.entity';
+import { Experience } from 'src/entities/experience.entity';
+import { Award } from 'src/entities/award.entity';
+import { Background } from 'src/entities/background.entity';
 
 @Injectable()
 export class DashboardService {
@@ -54,10 +58,18 @@ export class DashboardService {
     private readonly valueRepository: Repository<Value>,
     @InjectRepository(TeamLead)
     private readonly teamLeadRepository: Repository<TeamLead>,
-    @InjectRepository(VisiMisi)
-    private readonly visiMisiRepository: Repository<VisiMisi>,
+    @InjectRepository(Visi)
+    private readonly visiRepository: Repository<Visi>,
     @InjectRepository(Commitment)
     private readonly commitmentRepository: Repository<Commitment>,
+    @InjectRepository(Misi)
+    private readonly misiRepository: Repository<Misi>,
+    @InjectRepository(Experience)
+    private readonly experienceRepository: Repository<Experience>,
+    @InjectRepository(Award)
+    private readonly awardRepository: Repository<Award>,
+    @InjectRepository(Background)
+    private readonly backgroundRepository: Repository<Background>,
   ) {}
 
   async findAllKelas() {
@@ -69,7 +81,7 @@ export class DashboardService {
   }
 
   async findVisiMisi() {
-    return await this.visiMisiRepository.find();
+    return await this.visiRepository.find();
   }
 
   async findCommitment() {
@@ -82,6 +94,22 @@ export class DashboardService {
 
   async findTeamLead() {
     return await this.teamLeadRepository.find();
+  }
+
+  async findMisi() {
+    return await this.misiRepository.find();
+  }
+
+  async findExperience() {
+    return await this.experienceRepository.find();
+  }
+
+  async findAward() {
+    return await this.awardRepository.find();
+  }
+
+  async findBackground() {
+    return await this.backgroundRepository.find();
   }
 
   async findTentang() {
@@ -160,7 +188,7 @@ export class DashboardService {
     });
   }
 
-  async findSocial(){
+  async findSocial() {
     return await this.socialRepository.find();
   }
 
@@ -168,16 +196,16 @@ export class DashboardService {
     return await this.kategoriRepository.find();
   }
 
-  async findBenefit1(){
-    return await this.benefitRepository.findOne({where: {no: 1}});
+  async findBenefit1() {
+    return await this.benefitRepository.findOne({ where: { no: 1 } });
   }
 
-  async findBenefit2(){
-    return await this.benefitRepository.findOne({where: {no: 2}});
+  async findBenefit2() {
+    return await this.benefitRepository.findOne({ where: { no: 2 } });
   }
 
-  async findBenefit3(){
-    return await this.benefitRepository.findOne({where: {no: 3}});
+  async findBenefit3() {
+    return await this.benefitRepository.findOne({ where: { no: 3 } });
   }
 
   async findJenisKelas() {

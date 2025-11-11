@@ -1,8 +1,6 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class CreateVisiMisiDto {
-    @IsString()
-    visi: string;
-    @IsString()
-    misi: string;
+  @IsString()
+  visi: string;
 }

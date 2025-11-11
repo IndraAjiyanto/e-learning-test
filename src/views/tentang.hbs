@@ -189,9 +189,7 @@
                 <p
                   class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                 >
-                  To become Indonesia's leading technology learning platform
-                  that produces high-quality digital talent ready to compete on
-                  the global stage.
+                {{visi.[0].visi}}
                 </p>
               </div>
             </div>
@@ -214,6 +212,7 @@
                   class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
                 >Our Mission</h3>
                 <ul class='space-y-3 sm:space-y-4'>
+                  {{#each misi}}
                   <li class='flex items-start space-x-3'>
                     <i
                       class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
@@ -221,58 +220,11 @@
                     <p
                       class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                     >
-                      <strong>Accessible Education:</strong>
-                      Provide quality technology education that is accessible to
-                      all levels of society across Indonesia
+                      <strong>{{content}}:</strong>
+                      {{isi}}
                     </p>
                   </li>
-                  <li class='flex items-start space-x-3'>
-                    <i
-                      class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
-                    ></i>
-                    <p
-                      class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-                    >
-                      <strong>Practical Learning:</strong>
-                      Develop curriculum that is practical and relevant to real
-                      industry needs
-                    </p>
-                  </li>
-                  <li class='flex items-start space-x-3'>
-                    <i
-                      class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
-                    ></i>
-                    <p
-                      class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-                    >
-                      <strong>Career Development:</strong>
-                      Help students build successful careers in the technology
-                      industry
-                    </p>
-                  </li>
-                  <li class='flex items-start space-x-3'>
-                    <i
-                      class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
-                    ></i>
-                    <p
-                      class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-                    >
-                      <strong>Innovation & Growth:</strong>
-                      Foster a culture of continuous innovation and lifelong
-                      learning
-                    </p>
-                  </li>
-                  <li class='flex items-start space-x-3'>
-                    <i
-                      class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
-                    ></i>
-                    <p
-                      class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-                    >
-                      <strong>Community Building:</strong>
-                      Build a strong and supportive learning community
-                    </p>
-                  </li>
+                  {{/each}}
                 </ul>
               </div>
             </div>
@@ -341,34 +293,32 @@
                 >
                   <h3
                     class='text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 font-montserrat'
-                  >Ahmad Rizki</h3>
+                  >{{teamLead.[0].nama}}</h3>
 
                 </div>
                 <p
                   class='text-slate-600 font-semibold mb-2 sm:mb-3 text-base sm:text-lg font-inter'
-                >Founder & Chief Executive Officer</p>
+                >{{teamLead.[0].posisi}}</p>
                 <p
                   class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter'
                 >
-                  Ex-Senior Engineer at Google with 10+ years of experience in
-                  large-scale system development. Passionate about building
-                  technology education ecosystem in Indonesia.
+{{teamLead.[0].deskripsi}}
                 </p>
                 <div class='flex justify-center md:justify-start space-x-3'>
                   <a
-                    href='#'
+                    href='{{teamLead.[0].linkedin}}'
                     class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
                   >
                     <i class='fab fa-linkedin text-slate-700 text-base'></i>
                   </a>
                   <a
-                    href='#'
+                    href='{{teamLead.[0].twitter}}'
                     class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
                   >
                     <i class='fab fa-twitter text-slate-700 text-base'></i>
                   </a>
                   <a
-                    href='#'
+                    href='{{teamLead.[0].github}}'
                     class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
                   >
                     <i class='fab fa-github text-slate-700 text-base'></i>

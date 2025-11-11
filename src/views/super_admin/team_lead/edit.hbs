@@ -68,43 +68,6 @@
       </div>
 
       <div>
-        <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-        <input 
-          type="email" 
-          id="email" 
-          name="email" 
-          value="{{teamLead.email}}" 
-          required
-          class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-        >
-      </div>
-
-      <div>
-        <label for="phone" class="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
-        <input 
-          type="text" 
-          id="phone" 
-          name="phone" 
-          value="{{teamLead.phone}}" 
-          required
-          class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-        >
-      </div>
-
-      <div>
-        <label for="linkedin" class="block text-sm font-semibold text-gray-700 mb-1">LinkedIn URL</label>
-        <input 
-          type="url" 
-          id="linkedin" 
-          name="linkedin" 
-          value="{{teamLead.linkedin}}" 
-          required
-          placeholder="https://linkedin.com/in/username"
-          class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-        >
-      </div>
-
-      <div>
         <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
         <textarea 
           id="deskripsi" 
@@ -117,28 +80,39 @@
       </div>
 
       <div>
-        <label for="background" class="block text-sm font-semibold text-gray-700 mb-1">Background</label>
-        <textarea 
-          id="background" 
-          name="background" 
-          required
-          rows="4"
-          placeholder="Educational and professional background..."
+        <label for="twitter" class="block text-sm font-semibold text-gray-700 mb-1">Twitter URL</label>
+        <input 
+          type="url" 
+          id="twitter" 
+          name="twitter" 
+          value="{{teamLead.twitter}}" 
+          placeholder="https://twitter.com/username"
           class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
-        >{{teamLead.background}}</textarea>
+        >
       </div>
 
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">Experience</label>
-        <div id="experience-editor" class="bg-white border border-gray-300 rounded-lg" style="height:150px"></div>
-        <input type="hidden" name="experience" id="experience" value="{{teamLead.experience}}">
+        <label for="github" class="block text-sm font-semibold text-gray-700 mb-1">GitHub URL</label>
+        <input 
+          type="url" 
+          id="github" 
+          name="github" 
+          value="{{teamLead.github}}" 
+          placeholder="https://github.com/username"
+          class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+        >
       </div>
 
-      <!-- Awards (Quill) -->
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">Awards & Achievements</label>
-        <div id="awards-editor" class="bg-white border border-gray-300 rounded-lg" style="height:150px"></div>
-        <input type="hidden" name="awards" id="awards" value="{{teamLead.awards}}">
+        <label for="linkedin" class="block text-sm font-semibold text-gray-700 mb-1">LinkedIn URL</label>
+        <input 
+          type="url" 
+          id="linkedin" 
+          name="linkedin" 
+          value="{{teamLead.linkedin}}" 
+          placeholder="https://linkedin.com/in/username"
+          class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+        >
       </div>
 
       <div class="flex space-x-4">
@@ -156,34 +130,3 @@
 </div>
 
 
-<script>
-  const toolbarOptions = [
-    [{ 'font': [] }], [{ 'size': ['small', false, 'large', 'huge'] }],
-    [{ 'header': [1,2,3,4,5,6,false] }],
-    ['bold','italic','underline','strike'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'list':'ordered'}, { 'list':'bullet'}],
-    [{ 'align': [] }],
-    ['blockquote', 'code-block'],
-    ['link','image','video'],
-    ['clean']
-  ];
-
-  const quillExperience = new Quill('#experience-editor', {
-    modules:{ toolbar:toolbarOptions }, theme:'snow'
-  });
-
-  const quillAwards = new Quill('#awards-editor', {
-    modules:{ toolbar:toolbarOptions }, theme:'snow'
-  });
-
-  // ✅ Set isi awal dari database
-  quillExperience.root.innerHTML = document.getElementById('experience').value;
-  quillAwards.root.innerHTML = document.getElementById('awards').value;
-
-  // ✅ Saat submit simpan ke hidden input
-  document.querySelector('form').addEventListener('submit', function() {
-    document.getElementById('experience').value = quillExperience.root.innerHTML;
-    document.getElementById('awards').value = quillAwards.root.innerHTML;
-  });
-</script>

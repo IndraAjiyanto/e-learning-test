@@ -154,12 +154,16 @@ export class DashboardController {
   async about(@Req() req: Request, @Res() res: Response) {
     const team = await this.dashboardService.findTeam();
     const social = await this.dashboardService.findSocial();
-    const visi_misi = await this.dashboardService.findVisiMisi();
+    const visi = await this.dashboardService.findVisiMisi();
     const commitment = await this.dashboardService.findCommitment();
     const tentang = await this.dashboardService.findTentang();
     const value = await this.dashboardService.findValue();
     const teamLead = await this.dashboardService.findTeamLead();
-    res.render('tentang', { user: req.user, team, social, visi_misi, commitment, tentang, value, teamLead });
+    const misi = await this.dashboardService.findMisi();
+    const experience = await this.dashboardService.findExperience();
+    const award = await this.dashboardService.findAward();
+    const background = await this.dashboardService.findBackground();
+    res.render('tentang', { user: req.user, team, social, visi, commitment, tentang, value, teamLead, misi, experience, award, background});
   }
 
   @Get(':id')

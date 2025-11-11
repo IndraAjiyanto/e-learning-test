@@ -38,7 +38,7 @@ import { MentorModule } from './mentor/mentor.module';
 import { AlurKelasModule } from './alur_kelas/alur_kelas.module';
 import { BenefitKelasModule } from './benefit_kelas/benefit_kelas.module';
 import { TeamModule } from './team/team.module';
-import { VisiMisiModule } from './visi_misi/visi_misi.module';
+import { VisiModule } from './visi/visi.module';
 import { SocialModule } from './social/social.module';
 import { BlogModule } from './blog/blog.module';
 import { KategoriBlogModule } from './kategori_blog/kategori_blog.module';
@@ -56,6 +56,10 @@ import { InHouseTrainingModule } from './in_house_training/in_house_training.mod
 import { BulanModule } from './bulan/bulan.module';
 import { ParagrafModule } from './paragraf/paragraf.module';
 import { ContactModule } from './contact/contact.module';
+import { AwardModule } from './award/award.module';
+import { ExperienceModule } from './experience/experience.module';
+import { BackgroundModule } from './background/background.module';
+import { MisiModule } from './misi/misi.module';
 
 @Module({
   imports: [
@@ -98,7 +102,7 @@ import { ContactModule } from './contact/contact.module';
     AlurKelasModule,
     BenefitKelasModule,
     TeamModule,
-    VisiMisiModule,
+    VisiModule,
     SocialModule,
     BlogModule,
     KategoriBlogModule,
@@ -116,6 +120,10 @@ import { ContactModule } from './contact/contact.module';
     BulanModule,
     ParagrafModule,
     ContactModule,
+    AwardModule,
+    ExperienceModule,
+    BackgroundModule,
+    MisiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

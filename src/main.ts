@@ -183,6 +183,40 @@ async function bootstrap() {
     return new hbs.SafeString(escaped.replace(/\n/g, '<br>'));
   });
 
+  // Helper untuk check if string is valid JSON
+  hbs.registerHelper('isJSON', function (str) {
+    if (!str || typeof str !== 'string') return false;
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  });
+
+  // Helper untuk convert TinyMCE JSON to plain text
+  hbs.registerHelper('jsonToText', function (jsonStr) {
+    if (!jsonStr || typeof jsonStr !== 'string') return '';
+    try {
+      const data = JSON.parse(jsonStr);
+      if (data.html) {
+        // Remove HTML tags and decode entities
+        return data.html
+          .replace(/<[^>]*>/g, '')
+          .replace(/&nbsp;/g, ' ')
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .trim();
+      } else if (data.text) {
+        return data.text;
+      }
+      return '';
+    } catch (e) {
+      return jsonStr; // Return as-is if not JSON
+    }
+  });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
