@@ -1,6 +1,9 @@
 <div
   class='pt-28 py-20'
-  x-data='{ bulan: {{cicilan.bulan}}, hargaInputs: {{json cicilan.harga}} }'
+  x-data='{ bulan: {{cicilan.bulan}}, hargaValues: {{json
+    cicilan.harga
+  }}, hargaDisplays: [], dpValue: "{{cicilan.dp}}", dpDisplay: "", formatNumber(event, index = null) { let angka = event.target.value.replace(/\D/g, ""); if (index !== null) { this.hargaValues[index] = angka; this.hargaDisplays[index] = new Intl.NumberFormat("id-ID").format(angka); } else { this.dpValue = angka; this.dpDisplay = new Intl.NumberFormat("id-ID").format(angka); } } }'
+  x-init="hargaDisplays = hargaValues.map(h => new Intl.NumberFormat('id-ID').format(h)); dpDisplay = new Intl.NumberFormat('id-ID').format(dpValue);"
 >
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Cicilan</h2>
@@ -23,7 +26,7 @@
           id='bulan'
           name='bulan'
           x-model='bulan'
-          @change="hargaInputs = Array(parseInt(bulan)).fill('')"
+          @change="hargaDisplays = Array(parseInt(bulan)).fill(''); hargaValues = Array(parseInt(bulan)).fill('')"
           required
           class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
         >
@@ -47,15 +50,15 @@
             Down Payment (DP)
           </label>
           <input
-            type='number'
+            type='text'
             id='dp'
-            name='dp'
+            x-model='dpDisplay'
+            @input='formatNumber($event)'
             placeholder='Enter down payment amount'
             required
-            min='0'
-            value='{{cicilan.dp}}'
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
           />
+          <input type='hidden' name='dp' x-model='dpValue' />
         </div>
         <div class='space-y-2'>
           <template x-for='(price, index) in parseInt(bulan)' :key='index'>
@@ -65,13 +68,17 @@
                 x-text="'Month ' + (index + 1)"
               ></span>
               <input
-                type='number'
-                :name="'harga[' + index + ']'"
-                x-model='hargaInputs[index]'
+                type='text'
+                x-model='hargaDisplays[index]'
+                @input='formatNumber($event, index)'
                 placeholder='Enter amount'
                 required
-                min='0'
                 class='flex-1 border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <input
+                type='hidden'
+                name='harga[]'
+                x-model='hargaValues[index]'
               />
             </div>
           </template>
@@ -87,7 +94,8 @@
           Update
         </button>
         <a
-          href='/kelass/{{cicilan.kelas.id}}'
+                    href='/kelass/detail/kelas/admin/{{cicilan.kelas.id}}'
+
           class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
         >
           Cancel

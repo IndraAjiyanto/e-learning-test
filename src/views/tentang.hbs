@@ -151,6 +151,12 @@
               >
                 {{this.paragraf}}
               </p>
+            {{else}}
+              <p
+                class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'
+              >
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </p>
             {{/each}}
             <div class='clear-both'></div>
 
@@ -189,7 +195,11 @@
                 <p
                   class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                 >
-                  {{visi.[0].visi}}
+                  {{#if visi.[0]}}
+                    {{visi.[0].visi}}
+                  {{else}}
+                    To become the leading technology education platform in Indonesia, empowering millions of learners to master digital skills and drive innovation across the nation.
+                  {{/if}}
                 </p>
               </div>
             </div>
@@ -224,6 +234,29 @@
                         {{isi}}
                       </p>
                     </li>
+                  {{else}}
+                    <li class='flex items-start space-x-3'>
+                      <i
+                        class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
+                      ></i>
+                      <p
+                        class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+                      >
+                        <strong>Education:</strong>
+                        Provide high-quality, accessible technology education to learners nationwide.
+                      </p>
+                    </li>
+                    <li class='flex items-start space-x-3'>
+                      <i
+                        class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
+                      ></i>
+                      <p
+                        class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+                      >
+                        <strong>Innovation:</strong>
+                        Foster innovation through cutting-edge curriculum and practical learning experiences.
+                      </p>
+                    </li>
                   {{/each}}
                 </ul>
               </div>
@@ -254,6 +287,58 @@
                     <p
                       class='text-slate-600 text-xs sm:text-sm font-inter'
                     >{{deskripsi}}</p>
+                  </div>
+                </div>
+              {{else}}
+                <div
+                  class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
+                >
+                  <div
+                    class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
+                  >
+                    <i class='fas fa-star text-white text-sm sm:text-base'></i>
+                  </div>
+                  <div>
+                    <h4
+                      class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'
+                    >Quality Education</h4>
+                    <p
+                      class='text-slate-600 text-xs sm:text-sm font-inter'
+                    >Committed to delivering top-notch learning experiences.</p>
+                  </div>
+                </div>
+                <div
+                  class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
+                >
+                  <div
+                    class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
+                  >
+                    <i class='fas fa-users text-white text-sm sm:text-base'></i>
+                  </div>
+                  <div>
+                    <h4
+                      class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'
+                    >Community Focus</h4>
+                    <p
+                      class='text-slate-600 text-xs sm:text-sm font-inter'
+                    >Building a supportive learning community for all.</p>
+                  </div>
+                </div>
+                <div
+                  class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
+                >
+                  <div
+                    class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
+                  >
+                    <i class='fas fa-lightbulb text-white text-sm sm:text-base'></i>
+                  </div>
+                  <div>
+                    <h4
+                      class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'
+                    >Innovation</h4>
+                    <p
+                      class='text-slate-600 text-xs sm:text-sm font-inter'
+                    >Embracing new technologies to enhance learning.</p>
                   </div>
                 </div>
               {{/each}}
@@ -298,32 +383,48 @@
                 >
                   <h3
                     class='text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 font-montserrat'
-                  >{{teamLead.[0].nama}}</h3>
+                  >
+                    {{#if teamLead.[0]}}
+                      {{teamLead.[0].nama}}
+                    {{else}}
+                      John Doe
+                    {{/if}}
+                  </h3>
 
                 </div>
                 <p
                   class='text-slate-600 font-semibold mb-2 sm:mb-3 text-base sm:text-lg font-inter'
-                >{{teamLead.[0].posisi}}</p>
+                >
+                  {{#if teamLead.[0]}}
+                    {{teamLead.[0].posisi}}
+                  {{else}}
+                    CEO & Founder
+                  {{/if}}
+                </p>
                 <p
                   class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter'
                 >
-                  {{teamLead.[0].deskripsi}}
+                  {{#if teamLead.[0]}}
+                    {{teamLead.[0].deskripsi}}
+                  {{else}}
+                    Experienced technology leader with a passion for education and innovation.
+                  {{/if}}
                 </p>
                 <div class='flex justify-center md:justify-start space-x-3'>
                   <a
-                    href='{{teamLead.[0].linkedin}}'
+                    href='{{#if teamLead.[0]}}{{teamLead.[0].linkedin}}{{else}}https://linkedin.com{{/if}}'
                     class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
                   >
                     <i class='fab fa-linkedin text-slate-700 text-base'></i>
                   </a>
                   <a
-                    href='{{teamLead.[0].instagram}}'
+                    href='{{#if teamLead.[0]}}{{teamLead.[0].instagram}}{{else}}https://instagram.com{{/if}}'
                     class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
                   >
                     <i class='fab fa-instagram text-slate-700 text-base'></i>
                   </a>
                   <a
-                    href='{{teamLead.[0].github}}'
+                    href='{{#if teamLead.[0]}}{{teamLead.[0].github}}{{else}}https://github.com{{/if}}'
                     class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
                   >
                     <i class='fab fa-github text-slate-700 text-base'></i>
@@ -367,6 +468,17 @@
                       <span><strong>{{content}}</strong>
                         - {{isi}}</span>
                     </li>
+                    {{else}}
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-check text-slate-600 mt-1'></i>
+                      <span><strong>Bachelor's Degree</strong>
+                        - Computer Science, University of Indonesia</span>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-check text-slate-600 mt-1'></i>
+                      <span><strong>Master's Degree</strong>
+                        - Technology Management, Stanford University</span>
+                    </li>
                     {{/each}}
                   </ul>
                 </div>
@@ -404,6 +516,17 @@
                       <i class='fas fa-award text-amber-500 mt-1'></i>
                       <span><strong>{{content}}</strong>
                         - {{isi}}</span>
+                    </li>
+                    {{else}}
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-award text-amber-500 mt-1'></i>
+                      <span><strong>Tech Innovator Award</strong>
+                        - 2023, Recognized for contributions to edtech</span>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-award text-amber-500 mt-1'></i>
+                      <span><strong>Educator of the Year</strong>
+                        - 2022, National Education Excellence Award</span>
                     </li>
                     {{/each}}
                   </ul>
@@ -443,6 +566,21 @@
                       <div>
                         <strong>{{content}}</strong>
                         <p class='text-xs sm:text-sm text-slate-600'>{{isi}}</p>
+                      </div>
+                    </li>
+                    {{else}}
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-building text-slate-600 mt-1'></i>
+                      <div>
+                        <strong>TechCorp Inc.</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'>Senior Software Engineer (2018-2023)</p>
+                      </div>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-building text-slate-600 mt-1'></i>
+                      <div>
+                        <strong>EduTech Solutions</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'>CTO & Co-Founder (2015-2018)</p>
                       </div>
                     </li>
                     {{/each}}
@@ -488,6 +626,79 @@
                       <i class='fab fa-linkedin text-slate-600 text-sm'></i>
                     </a>
                     <a
+                      href='#' 
+                      class='w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors'
+                    >
+                      <i class='fab fa-dribbble text-slate-600 text-sm'></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {{else}}
+              <div
+                class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
+              >
+                <div
+                  class='w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full flex items-center justify-center mb-3 sm:mb-4 mx-auto'
+                >
+                  <i class='fas fa-user text-white text-lg sm:text-xl lg:text-2xl'></i>
+                </div>
+                <div class='text-center'>
+                  <h3
+                    class='text-base sm:text-lg lg:text-xl font-bold text-slate-800 mb-1 sm:mb-2'
+                  >Jane Smith</h3>
+                  <p
+                    class='text-slate-600 font-medium mb-2 sm:mb-3 text-sm sm:text-base'
+                  >Lead Instructor</p>
+                  <p
+                    class='text-slate-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4'
+                  >
+                    Passionate educator with 10+ years of experience in tech training.
+                  </p>
+                  <div class='flex justify-center space-x-3'>
+                    <a
+                      href='https://linkedin.com'
+                      class='w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors'
+                    >
+                      <i class='fab fa-linkedin text-slate-600 text-sm'></i>
+                    </a>
+                    <a
+                      href='#'
+                      class='w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors'
+                    >
+                      <i class='fab fa-dribbble text-slate-600 text-sm'></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div
+                class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
+              >
+                <div
+                  class='w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full flex items-center justify-center mb-3 sm:mb-4 mx-auto'
+                >
+                  <i class='fas fa-user text-white text-lg sm:text-xl lg:text-2xl'></i>
+                </div>
+                <div class='text-center'>
+                  <h3
+                    class='text-base sm:text-lg lg:text-xl font-bold text-slate-800 mb-1 sm:mb-2'
+                  >Mike Johnson</h3>
+                  <p
+                    class='text-slate-600 font-medium mb-2 sm:mb-3 text-sm sm:text-base'
+                  >Curriculum Developer</p>
+                  <p
+                    class='text-slate-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4'
+                  >
+                    Expert in designing comprehensive tech learning programs.
+                  </p>
+                  <div class='flex justify-center space-x-3'>
+                    <a
+                      href='https://linkedin.com'
+                      class='w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors'
+                    >
+                      <i class='fab fa-linkedin text-slate-600 text-sm'></i>
+                    </a>
+                    <a
                       href='#'
                       class='w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors'
                     >
@@ -499,9 +710,7 @@
             {{/each}}
 
     
-          </div>
-
-          <div
+          </div>          <div
             class='mt-8 sm:mt-10 lg:mt-12 bg-gradient-to-br from-slate-50 to-slate-100 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-slate-200'
           >
             <h3
@@ -563,6 +772,41 @@
                   {{description}}
                 </p>
               </div>
+            {{else}}
+              <div
+                class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
+              >
+                <div
+                  class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
+                >
+                  <i class='fas fa-heart text-white text-lg sm:text-xl lg:text-2xl'></i>
+                </div>
+                <h3
+                  class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
+                >Integrity</h3>
+                <p
+                  class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+                >
+                  We uphold the highest standards of honesty and transparency in everything we do.
+                </p>
+              </div>
+              <div
+                class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
+              >
+                <div
+                  class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
+                >
+                  <i class='fas fa-users text-white text-lg sm:text-xl lg:text-2xl'></i>
+                </div>
+                <h3
+                  class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
+                >Collaboration</h3>
+                <p
+                  class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+                >
+                  We believe in the power of teamwork and collective achievement.
+                </p>
+              </div>
             {{/each}}
           </div>
         </div>
@@ -603,7 +847,13 @@
                     >Email</h4>
                     <p
                       class='text-xs sm:text-sm text-slate-600 font-inter'
-                    >{{social.email}}</p>
+                    >
+                      {{#if social}}
+                        {{social.email}}
+                      {{else}}
+                        info@kesatriaacademy.com
+                      {{/if}}
+                    </p>
                   </div>
                 </div>
 
@@ -619,7 +869,13 @@
                     <h4
                       class='font-semibold text-sm sm:text-base text-slate-800 mb-1 font-montserrat'
                     >Phone</h4>
-                    <p class='text-xs sm:text-sm text-slate-600 font-inter'>{{social.nomor}}</p>
+                    <p class='text-xs sm:text-sm text-slate-600 font-inter'>
+                      {{#if social}}
+                        {{social.nomor}}
+                      {{else}}
+                        +62 21 1234 5678
+                      {{/if}}
+                    </p>
                   </div>
                 </div>
 
@@ -637,7 +893,13 @@
                     <h4
                       class='font-semibold text-sm sm:text-base text-slate-800 mb-1 font-montserrat'
                     >Address</h4>
-                    <p class='text-xs sm:text-sm text-slate-600 font-inter'>{{social.alamat}}</p>
+                    <p class='text-xs sm:text-sm text-slate-600 font-inter'>
+                      {{#if social}}
+                        {{social.alamat}}
+                      {{else}}
+                        Jakarta, Indonesia
+                      {{/if}}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -648,7 +910,7 @@
                 >Follow Us on Social Media</h4>
                 <div class='flex justify-center space-x-4 sm:space-x-6'>
                   <a
-                    href='{{social.instagram}}' target="_blank"
+                    href='{{#if social}}{{social.instagram}}{{else}}https://instagram.com/kesatriaacademy{{/if}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
@@ -656,7 +918,7 @@
                     ></i>
                   </a>
                   <a
-                    href='{{social.linkedin}}' target="_blank"
+                    href='{{#if social}}{{social.linkedin}}{{else}}https://linkedin.com/company/kesatriaacademy{{/if}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
@@ -664,7 +926,7 @@
                     ></i>
                   </a>
                   <a
-                    href='{{social.youtube}}' target="_blank"
+                    href='{{#if social}}{{social.youtube}}{{else}}https://youtube.com/@kesatriaacademy{{/if}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
