@@ -70,23 +70,20 @@
             <div
               class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200'
             >
-                  <th class='px-3 py-2'>Price</th>
+              <h3
                 class='font-montserrat text-3xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
               >
                 {{kelas.nama_kelas}}
               </h3>
               <p
                 class='font-inter text-justify text-gray-700 leading-relaxed text-lg'
-                  <td class='px-3 py-2'>
-                    <div class='flex flex-col'>
-                      <span>DP: Rp {{formatRupiah dp}}</span>
-                      <div class='flex gap-2 items-center'>
-                        {{#each harga}}
-                          <span class='bg-gray-100 px-2 py-1 rounded text-xs'>Rp {{this}}</span>
-                        {{/each}}
-                      </div>
-                    </div>
-                  </td>
+              >
+                {{kelas.deskripsi}}
+              </p>
+            </div>
+
+            <!-- Method, Location & Capacity Grid -->
+            <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
 
               <!-- Learning Method Card -->
               {{#if (roles kelas.metode 'online')}}
@@ -1446,31 +1443,84 @@
 </div>
 
 <script>
-  function kelasPagination() { return { currentPage: 1, itemsPerPage: 6, // Data
-  kelas dari server (dikonversi dari Handlebars) allKelas: [
-  {{#each kelass}}
-    { id:
-    {{id}}, nama_kelas: "{{nama_kelas}}", deskripsi: "{{deskripsi}}", gambar: "{{gambar}}",
-    harga:
-    {{harga}}, promo:
-    {{promo}}, kategori: { nama_kategori: "{{kategori.nama_kategori}}" },
-    jenis_kelas: { nama_jenis_kelas: "{{jenis_kelas.nama_jenis_kelas}}" } }{{#unless
-      @last
-    }},{{/unless}}
-  {{/each}}
-  ], get displayedKelas() { return this.allKelas; }, get totalPages() { return
-  Math.ceil(this.allKelas.length / this.itemsPerPage); }, isVisible(index) {
-  const startIndex = (this.currentPage - 1) * this.itemsPerPage; const endIndex
-  = startIndex + this.itemsPerPage; return index >= startIndex && index <
-  endIndex; }, nextPage() { if (this.currentPage < this.totalPages) {
-  this.currentPage++; this.scrollToTop(); } }, previousPage() { if
-  (this.currentPage > 1) { this.currentPage--; this.scrollToTop(); } },
-  scrollToTop() { const element = document.querySelector('[x-ref="kelasList"]');
-  if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } }, // Fungsi formatRupiah untuk Alpine.js formatRupiah(angka) { if (!angka)
-  return 'Rp 0'; const number_string = angka.toString(); const sisa =
-  number_string.length % 3; let rupiah = number_string.substr(0, sisa); const
-  ribuan = number_string.substr(sisa).match(/\d{3}/g); if (ribuan) { const
-  separator = sisa ? '.' : ''; rupiah += separator + ribuan.join('.'); } return
-  'Rp ' + rupiah; } }; }
+  function kelasPagination() {
+    return {
+      // State pagination
+      currentPage: 1,
+      itemsPerPage: 6,
+
+      // Data kelas dari server (dikonversi dari Handlebars)
+      allKelas: [
+        {{#each kelass}}
+        {
+          id: {{id}},
+          nama_kelas: "{{nama_kelas}}",
+          deskripsi: "{{deskripsi}}",
+          gambar: "{{gambar}}",
+          harga: {{harga}},
+          promo: {{promo}},
+          kategori: { nama_kategori: "{{kategori.nama_kategori}}" },
+          jenis_kelas: { nama_jenis_kelas: "{{jenis_kelas.nama_jenis_kelas}}" }
+        }{{#unless @last}},{{/unless}}
+        {{/each}}
+      ],
+
+      // Getter untuk kelas yang ditampilkan
+      get displayedKelas() {
+        return this.allKelas;
+      },
+
+      // Total halaman
+      get totalPages() {
+        return Math.ceil(this.allKelas.length / this.itemsPerPage);
+      },
+
+      // Cek apakah item visible di halaman saat ini
+      isVisible(index) {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        return index >= startIndex && index < endIndex;
+      },
+
+      // Fungsi navigasi halaman
+      nextPage() {
+        if (this.currentPage < this.totalPages) {
+          this.currentPage++;
+          this.scrollToTop();
+        }
+      },
+
+      previousPage() {
+        if (this.currentPage > 1) {
+          this.currentPage--;
+          this.scrollToTop();
+        }
+      },
+
+      // Scroll ke atas daftar kelas
+      scrollToTop() {
+        const element = document.querySelector('[x-ref="kelasList"]');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      },
+
+      // Fungsi format Rupiah untuk Alpine.js
+      formatRupiah(angka) {
+        if (!angka) return 'Rp 0';
+
+        const number_string = angka.toString();
+        const sisa = number_string.length % 3;
+        let rupiah = number_string.substr(0, sisa);
+        const ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+        if (ribuan) {
+          const separator = sisa ? '.' : '';
+          rupiah += separator + ribuan.join('.');
+        }
+
+        return 'Rp ' + rupiah;
+      }
+    };
+  }
 </script>

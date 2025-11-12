@@ -94,7 +94,6 @@ export class KelassController {
       req.flash('success', 'class successfully created');
       res.redirect('/kelass');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'class failed created');
       res.redirect('/kelass');
     }
@@ -111,21 +110,11 @@ export class KelassController {
     try {
       await this.kelassService.addUserToKelas(userId, kelasId);
       req.flash('success', 'user successfuly add to class');
-      res.redirect('/kelass');
+      res.redirect(`/kelass/addUser/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'user failed add to class');
-      res.redirect('/kelass');
+      res.redirect(`/kelass/addUser/${kelasId}`);
     }
-  }
-
-  @Roles('super_admin')
-  @Get('/addPrice/:kelasId')
-  async addPrice(
-    @Param('kelasId') kelasId: number,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    res.render('super_admin/kelas/create', { user: req.user });
   }
 
   // Get all class
@@ -418,11 +407,11 @@ export class KelassController {
     try {
       await this.kelassService.removeUserKelas(userId, kelasId);
       req.flash('success', 'class successfuly delete');
-      res.redirect('/kelass');
+            res.redirect(`/kelass/addUser/${kelasId}`);
+
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'class unsuccess delete');
-      res.redirect('/kelass');
+      res.redirect(`/kelass/addUser/${kelasId}`);
     }
   }
 }
