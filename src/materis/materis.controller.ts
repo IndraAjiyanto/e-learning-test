@@ -56,7 +56,7 @@ export class MaterisController {
     allowedTypes: ['application/pdf'],
     fileExtensions: ['.pdf'],
     folder: 'nestjs/pdf',
-    resourceType: 'raw'
+    resourceType: 'raw',
   })
   async createPdf(
     @Body() createMaterisDto: CreateMaterisDto,

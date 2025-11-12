@@ -1,19 +1,25 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Paragraf {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    paragraf: string
+  @Column()
+  paragraf: string;
 
-    @Column()
-    p_ke: number
+  @Column()
+  p_ke: number;
 
-                        @CreateDateColumn()
-                        createdAt: Date;
-                        
-                        @UpdateDateColumn()
-                        updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

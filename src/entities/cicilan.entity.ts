@@ -18,6 +18,9 @@ export class Cicilan {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  dp: number;
+
   @Column('jsonb')
   harga: number[];
 

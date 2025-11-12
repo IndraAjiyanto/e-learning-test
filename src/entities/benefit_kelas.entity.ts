@@ -1,28 +1,37 @@
-import { IsString } from "class-validator";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Kategori } from "./kategori.entity";
-import { Kelas } from "./kelas.entity";
+import { IsString } from 'class-validator';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Kategori } from './kategori.entity';
+import { Kelas } from './kelas.entity';
 
 @Entity()
-export class BenefitKelas{
-    @PrimaryGeneratedColumn()
-    id: number
+export class BenefitKelas {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    benefit: string
+  @Column()
+  benefit: string;
 
-    @Column()
-    isi: string
+  @Column()
+  isi: string;
 
-    @Column()
-    icon: string
+  @Column()
+  icon: string;
 
-                    @CreateDateColumn()
-                    createdAt: Date;
-                    
-                    @UpdateDateColumn()
-                    updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @ManyToOne(() => Kelas, (kelas) => kelas.benefit_kelas, {onDelete : 'CASCADE'})
-                    kelas: Kelas
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ManyToOne(() => Kelas, (kelas) => kelas.benefit_kelas, {
+    onDelete: 'CASCADE',
+  })
+  kelas: Kelas;
 }

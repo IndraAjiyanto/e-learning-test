@@ -8,9 +8,9 @@ import { Sertifikat } from 'src/entities/sertifikat.entity';
 import { Biodata } from 'src/entities/biodata.entity';
 
 @Module({
-      imports: [TypeOrmModule.forFeature([Kelas, User, Sertifikat, Biodata])],
+  imports: [TypeOrmModule.forFeature([Kelas, User, Sertifikat, Biodata])],
   controllers: [SertifikatController],
   providers: [SertifikatService],
-  exports: [SertifikatService]
+  exports: [SertifikatService],
 })
 export class SertifikatModule {}

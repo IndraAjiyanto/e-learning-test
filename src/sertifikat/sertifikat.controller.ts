@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  Req,
+} from '@nestjs/common';
 import { SertifikatService } from './sertifikat.service';
 import { CreateSertifikatDto } from './dto/create-sertifikat.dto';
 import { UpdateSertifikatDto } from './dto/update-sertifikat.dto';
@@ -10,18 +20,25 @@ export class SertifikatController {
   constructor(private readonly sertifikatService: SertifikatService) {}
 
   @Roles('user')
-    @Get(':kelasId')
-  async generate(@Param('kelasId') kelasId: number, @Res() res: Response, @Req() req:Request) {
-    if(req.user){
-      const biodata = await this.sertifikatService.findBiodata(req.user.id)
-      if(!biodata){
-        req.flash('info','isi biodata terlebih dahulu')
-        res.redirect('/users/profile')
-      }else{
-      const sertifikat = await this.sertifikatService.generateCertificate(kelasId, req.user.id);
-      res.render('user/sertifikat/detail', {user: req.user, sertifikat})
+  @Get(':kelasId')
+  async generate(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if (req.user) {
+      const biodata = await this.sertifikatService.findBiodata(req.user.id);
+      if (!biodata) {
+        req.flash('info', 'isi biodata terlebih dahulu');
+        res.redirect('/users/profile');
+      } else {
+        const sertifikat = await this.sertifikatService.generateCertificate(
+          kelasId,
+          req.user.id,
+        );
+        res.render('user/sertifikat/detail', { user: req.user, sertifikat });
       }
-    } 
+    }
   }
 
   @Get()
@@ -35,7 +52,10 @@ export class SertifikatController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSertifikatDto: UpdateSertifikatDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateSertifikatDto: UpdateSertifikatDto,
+  ) {
     return this.sertifikatService.update(+id, updateSertifikatDto);
   }
 

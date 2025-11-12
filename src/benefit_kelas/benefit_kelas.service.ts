@@ -45,8 +45,8 @@ export class BenefitKelasService {
     return kelas;
   }
 
-  async findKelas(kelasId: number){
-    return await this.kelasRepository.findOne({where: {id: kelasId}})
+  async findKelas(kelasId: number) {
+    return await this.kelasRepository.findOne({ where: { id: kelasId } });
   }
 
   async findOne(benefitKelasId: number) {

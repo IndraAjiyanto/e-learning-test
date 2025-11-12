@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { IntenshifService } from './intenshif.service';
 import { CreateIntenshifDto } from './dto/create-intenshif.dto';
 import { UpdateIntenshifDto } from './dto/update-intenshif.dto';
@@ -23,7 +31,10 @@ export class IntenshifController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateIntenshifDto: UpdateIntenshifDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateIntenshifDto: UpdateIntenshifDto,
+  ) {
     return this.intenshifService.update(+id, updateIntenshifDto);
   }
 

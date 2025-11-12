@@ -1,22 +1,28 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { User } from "./user.entity";
-import { Kelas } from "./kelas.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { User } from './user.entity';
+import { Kelas } from './kelas.entity';
 
 @Entity()
 export class Mentoring {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-          @ManyToOne(() => User, user => user.mentoring, {onDelete : 'CASCADE'})  
-          user: User;
-    
-                  @ManyToOne(() => Kelas, (kelas) => kelas.mentoring, {onDelete : 'CASCADE'})
-                  kelas: Kelas
+  @ManyToOne(() => User, (user) => user.mentoring, { onDelete: 'CASCADE' })
+  user: User;
 
-               @CreateDateColumn()
-                createdAt: Date;
-                
-                @UpdateDateColumn()
-                updatedAt: Date;
+  @ManyToOne(() => Kelas, (kelas) => kelas.mentoring, { onDelete: 'CASCADE' })
+  kelas: Kelas;
 
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -6,7 +6,7 @@ import { KerjaSama } from 'src/entities/kerja_sama.entity';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
-        imports: [TypeOrmModule.forFeature([KerjaSama]), CommonModule],
+  imports: [TypeOrmModule.forFeature([KerjaSama]), CommonModule],
   controllers: [KerjaSamaController],
   providers: [KerjaSamaService],
 })

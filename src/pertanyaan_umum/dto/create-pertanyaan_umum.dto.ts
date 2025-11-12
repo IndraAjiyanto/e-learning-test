@@ -1,9 +1,9 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class CreatePertanyaanUmumDto {
-    @IsString()
-    pertanyaan: string
+  @IsString()
+  pertanyaan: string;
 
-    @IsString()
-    jawaban: string
+  @IsString()
+  jawaban: string;
 }

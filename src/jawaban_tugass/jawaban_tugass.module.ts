@@ -7,11 +7,10 @@ import { Tugas } from 'src/entities/tugas.entity';
 import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([JawabanTugas, Tugas, User])],
-  
+  imports: [TypeOrmModule.forFeature([JawabanTugas, Tugas, User])],
+
   controllers: [JawabanTugassController],
   providers: [JawabanTugassService],
-    exports: [JawabanTugassService]
-  
+  exports: [JawabanTugassService],
 })
 export class JawabanTugassModule {}

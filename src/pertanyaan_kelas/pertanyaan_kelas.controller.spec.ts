@@ -11,7 +11,9 @@ describe('PertanyaanKelasController', () => {
       providers: [PertanyaanKelasService],
     }).compile();
 
-    controller = module.get<PertanyaanKelasController>(PertanyaanKelasController);
+    controller = module.get<PertanyaanKelasController>(
+      PertanyaanKelasController,
+    );
   });
 
   it('should be defined', () => {

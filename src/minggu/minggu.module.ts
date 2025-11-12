@@ -8,9 +8,9 @@ import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Minggu, Kelas, User, Pertemuan])],
+  imports: [TypeOrmModule.forFeature([Minggu, Kelas, User, Pertemuan])],
   controllers: [MingguController],
   providers: [MingguService],
-    exports: [MingguService]
+  exports: [MingguService],
 })
 export class MingguModule {}

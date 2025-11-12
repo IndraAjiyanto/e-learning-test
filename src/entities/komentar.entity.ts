@@ -1,22 +1,31 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { JawabanTugas } from "./jawaban_tugas.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { JawabanTugas } from './jawaban_tugas.entity';
 
 @Entity()
-export class Komentar{
-    @PrimaryGeneratedColumn()
-    id: number
+export class Komentar {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    komentar: string
+  @Column()
+  komentar: string;
 
-@ManyToOne(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.komentar, {onDelete : 'CASCADE'})
-@JoinColumn({ name: "jawaban_tugasId" }) 
-jawaban_tugas: JawabanTugas
+  @ManyToOne(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.komentar, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'jawaban_tugasId' })
+  jawaban_tugas: JawabanTugas;
 
+  @CreateDateColumn()
+  createdAt: Date;
 
-            @CreateDateColumn()
-            createdAt: Date;
-            
-            @UpdateDateColumn()
-            updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

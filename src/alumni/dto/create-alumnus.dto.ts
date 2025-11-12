@@ -1,21 +1,21 @@
-import { IsInt, IsNumber, IsString } from "class-validator";
+import { IsInt, IsNumber, IsString } from 'class-validator';
 
 export class CreateAlumnusDto {
-    @IsString()
-    profile: string
+  @IsString()
+  profile: string;
 
-    @IsString()
-    nama: string
+  @IsString()
+  nama: string;
 
-    @IsString()
-    pesan: string
+  @IsString()
+  pesan: string;
 
-    @IsString()
-    alumni: string
+  @IsString()
+  alumni: string;
 
-    @IsString()
-    posisi_sekarang: string
+  @IsString()
+  posisi_sekarang: string;
 
-        @IsInt()
-        kelasId: number;
+  @IsInt()
+  kelasId: number;
 }

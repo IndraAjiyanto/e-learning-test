@@ -20,18 +20,15 @@ import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import {
-  multerConfigMemory,
-} from 'src/common/config/multer.config';
+import { multerConfigMemory } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
-
-  @UseGuards(AuthenticatedGuard)
-  @UseFilters(FileUploadExceptionFilter)
-  @UseInterceptors(MulterErrorInterceptor)
+@UseGuards(AuthenticatedGuard)
+@UseFilters(FileUploadExceptionFilter)
+@UseInterceptors(MulterErrorInterceptor)
 @Controller('blog')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
@@ -46,7 +43,7 @@ export class BlogController {
     });
   }
 
-    @Roles('super_admin')
+  @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const categories = await this.blogService.getAllCategories();
@@ -58,17 +55,17 @@ export class BlogController {
 
   @Roles('super_admin')
   @Get(':id')
-  async adminList(@Res() res: Response, @Req() req: Request, @Param('id') id: number) {
+  async adminList(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('id') id: number,
+  ) {
     const blog = await this.blogService.findOne(id);
     res.render('super_admin/blog/detail', {
       user: req.user,
       blog,
     });
   }
-
-
-
-  
 
   @Roles('super_admin')
   @Get('formEdit/:id')
@@ -117,7 +114,6 @@ export class BlogController {
       res.redirect('/blog');
     }
   }
-
 
   @Roles('super_admin')
   @Patch(':id')

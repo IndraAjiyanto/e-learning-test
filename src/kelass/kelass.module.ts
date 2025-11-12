@@ -52,7 +52,7 @@ import { Pendaftaran } from 'src/entities/pendaftaran.entity';
       ProgresQuiz,
       Mentoring,
       Bulan,
-      Pendaftaran
+      Pendaftaran,
     ]),
     PertanyaansModule,
     JawabanUsersModule,

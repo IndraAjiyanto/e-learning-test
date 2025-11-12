@@ -1,12 +1,12 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class CreateJenisKelaDto {
-    @IsString()
-    nama_jenis_kelas: string
+  @IsString()
+  nama_jenis_kelas: string;
 
-    @IsString()
-    icon: string
+  @IsString()
+  icon: string;
 
-    @IsString()
-    deskripsi: string
+  @IsString()
+  deskripsi: string;
 }

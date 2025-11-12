@@ -48,7 +48,6 @@ export class LogbookController {
     @Req() req: Request,
   ) {
     try {
-
       // Pastikan file berhasil diupload
       if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
         throw new Error('Image upload failed. Please try again.');

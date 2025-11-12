@@ -194,7 +194,6 @@ export class KelassController {
     const bulan = await this.kelassService.findBulan();
     const mentoring = await this.kelassService.findMentoring();
 
-
     return res.render('admin/kelas/edit', {
       user: req.user,
       kelas,
@@ -336,7 +335,6 @@ export class KelassController {
         const currentMentoringUserId = kelas.mentoring?.[0]?.user?.id;
         const newMentoringUserId = Number(updateKelassDto.mentoringId);
 
-
         if (currentMentoringUserId !== newMentoringUserId) {
           await this.kelassService.updateMentoring(
             newMentoringUserId,
@@ -360,8 +358,7 @@ export class KelassController {
       await this.kelassService.update(kelasId, updateKelassDto);
       req.flash('success', 'Successfully update kelas');
 
-        res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-      
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', 'failed update kelas');
       res.redirect('/kelass');

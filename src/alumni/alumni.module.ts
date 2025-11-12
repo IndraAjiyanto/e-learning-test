@@ -10,6 +10,6 @@ import { CommonModule } from 'src/common/common.module';
   imports: [TypeOrmModule.forFeature([Alumni, Kelas]), CommonModule],
   controllers: [AlumniController],
   providers: [AlumniService],
-  exports: [AlumniService]
+  exports: [AlumniService],
 })
 export class AlumniModule {}

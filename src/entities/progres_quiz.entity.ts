@@ -1,25 +1,31 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { User } from "./user.entity";
-import { Quiz } from "./quiz.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { User } from './user.entity';
+import { Quiz } from './quiz.entity';
 
 @Entity()
-export class ProgresQuiz{
-    @PrimaryGeneratedColumn()
-    id: number
+export class ProgresQuiz {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ default: false })
-    proses: boolean
+  @Column({ default: false })
+  proses: boolean;
 
-                        @ManyToOne(() => User, (user) => user.progres_quiz, {onDelete : 'CASCADE'})
-                        user: User
+  @ManyToOne(() => User, (user) => user.progres_quiz, { onDelete: 'CASCADE' })
+  user: User;
 
-                        @ManyToOne(() => Quiz, (quiz) => quiz.progres_quiz, {onDelete : 'CASCADE'})
-                        quiz: Quiz
+  @ManyToOne(() => Quiz, (quiz) => quiz.progres_quiz, { onDelete: 'CASCADE' })
+  quiz: Quiz;
 
-                                        @CreateDateColumn()
-                                        createdAt: Date;
-                                        
-                                        @UpdateDateColumn()
-                                        updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

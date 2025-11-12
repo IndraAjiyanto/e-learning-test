@@ -1,34 +1,51 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Tugas } from "./tugas.entity";
-import { Komentar } from "./komentar.entity";
-import { User } from "./user.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Tugas } from './tugas.entity';
+import { Komentar } from './komentar.entity';
+import { User } from './user.entity';
 
 export type Proses = 'acc' | 'proces' | 'rejected';
 
 @Entity()
-export class JawabanTugas{
-    @PrimaryGeneratedColumn()
-    id: number
+export class JawabanTugas {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    file: string
+  @Column()
+  file: string;
 
-    @Column()
-    nilai: number
+  @Column()
+  nilai: number;
 
-    @Column({ type: 'enum', enum: ['acc' , 'proces' , 'rejected'], default: 'rejected' })
-    proses: Proses
+  @Column({
+    type: 'enum',
+    enum: ['acc', 'proces', 'rejected'],
+    default: 'rejected',
+  })
+  proses: Proses;
 
-            @CreateDateColumn()
-            createdAt: Date;
-            
-            @UpdateDateColumn()
-            updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-                                          @ManyToOne(() => Tugas, (tugas) => tugas.jawaban_tugas, {onDelete : 'CASCADE'})
-                                          tugas: Tugas
-                        @OneToMany(() => Komentar, (komentar) => komentar.jawaban_tugas, {cascade:true, onDelete : 'CASCADE'})
-                        komentar: Komentar[]
-                                          @ManyToOne(() => User, (user) => user.jawaban_tugas, {onDelete : 'CASCADE'})
-                                          user: User
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ManyToOne(() => Tugas, (tugas) => tugas.jawaban_tugas, {
+    onDelete: 'CASCADE',
+  })
+  tugas: Tugas;
+  @OneToMany(() => Komentar, (komentar) => komentar.jawaban_tugas, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  komentar: Komentar[];
+  @ManyToOne(() => User, (user) => user.jawaban_tugas, { onDelete: 'CASCADE' })
+  user: User;
 }

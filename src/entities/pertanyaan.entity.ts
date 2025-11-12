@@ -1,31 +1,45 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Jawaban } from "./jawaban.entity";
-import { JawabanUser } from "./jawaban_user.entity";
-import { Quiz } from "./quiz.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Jawaban } from './jawaban.entity';
+import { JawabanUser } from './jawaban_user.entity';
+import { Quiz } from './quiz.entity';
 
 @Entity()
-export class Pertanyaan{
-    @PrimaryGeneratedColumn()
-    id:number
+export class Pertanyaan {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    pertanyaan_soal:string
+  @Column()
+  pertanyaan_soal: string;
 
-@Column({ nullable: true })
-gambar?: string;
+  @Column({ nullable: true })
+  gambar?: string;
 
-      @CreateDateColumn()
-      createdAt: Date;
-    
-      @UpdateDateColumn()
-      updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-      @ManyToOne(() => Quiz, (quiz) => quiz.pertanyaan, {onDelete : 'CASCADE'})
-      quiz: Quiz
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-      @OneToMany(() => Jawaban, (jawaban) => jawaban.pertanyaan, { cascade: true , onDelete : 'CASCADE' })
-      jawaban: Jawaban[];
+  @ManyToOne(() => Quiz, (quiz) => quiz.pertanyaan, { onDelete: 'CASCADE' })
+  quiz: Quiz;
 
-      @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.pertanyaan, { cascade: true, onDelete : 'CASCADE'})
-      jawaban_user: JawabanUser[];
+  @OneToMany(() => Jawaban, (jawaban) => jawaban.pertanyaan, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  jawaban: Jawaban[];
+
+  @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.pertanyaan, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  jawaban_user: JawabanUser[];
 }

@@ -1,21 +1,27 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 export type No = 1 | 2 | 3 | 4;
 
 @Entity()
-export class GambarBenefit{
-    @PrimaryGeneratedColumn()
-    id: number
+export class GambarBenefit {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    gambar: string
+  @Column()
+  gambar: string;
 
   @Column({ type: 'enum', enum: [1, 2, 3, 4] })
   no: No;
 
-                    @CreateDateColumn()
-                    createdAt: Date;
-                    
-                    @UpdateDateColumn()
-                    updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

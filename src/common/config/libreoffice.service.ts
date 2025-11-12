@@ -16,7 +16,7 @@ export class LibreOfficeService {
   constructor() {
     // Deteksi OS dan set path LibreOffice
     const platform = os.platform();
-    
+
     if (platform === 'win32') {
       // Windows (Development)
       this.libreOfficePath =
@@ -67,17 +67,17 @@ export class LibreOfficeService {
         command = `"${this.libreOfficePath}" --headless --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
       } else {
         // Linux/Unix command
-        command = `${this.libreOfficePath} --headless --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
+        command = `${this.libreOfficePath} --headless --norestore --nodefault --nofirststartwizard --nolockcheck --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
       }
 
       console.log('Executing LibreOffice command:', command);
 
       const { stdout, stderr } = await execAsync(command, {
         timeout: 60000, // 60 detik timeout
-        env: { 
-          ...process.env, 
-          HOME: this.tempDir // Set HOME untuk LibreOffice di Linux
-        }
+        env: {
+          ...process.env,
+          HOME: this.tempDir, // Set HOME untuk LibreOffice di Linux
+        },
       });
 
       if (stderr && !stderr.includes('Warning')) {
@@ -133,7 +133,7 @@ export class LibreOfficeService {
         out_dir: outputDir,
         out_prefix: 'slide',
         page: null, // null = all pages
-        scale: 2048, // resolution (higher = better quality)
+        scale: 1024, // resolution (higher = better quality)
       };
 
       await pdftopic.convert(pdfPath, options);
@@ -241,9 +241,7 @@ export class LibreOfficeService {
       });
 
       const uploadResults = await Promise.all(uploadPromises);
-      slideUrls.push(
-        ...(uploadResults.filter((url) => url !== null) as string[]),
-      );
+      slideUrls.push(...uploadResults.filter((url) => url !== null));
 
       // Step 4: Cleanup temporary files
       try {

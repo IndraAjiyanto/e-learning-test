@@ -16,10 +16,13 @@ export class InHouseTrainingService {
   ) {}
 
   async findAll() {
-    return await this.kelasRepository.find({where: { kategori: { nama_kategori: 'In House Training Program' } }, relations: ['kategori', 'jenis_kelas', 'user_kelas']});
+    return await this.kelasRepository.find({
+      where: { kategori: { nama_kategori: 'In House Training Program' } },
+      relations: ['kategori', 'jenis_kelas', 'user_kelas'],
+    });
   }
 
-  async findJenisKelas() {  
+  async findJenisKelas() {
     return await this.jenisKelasRepository.find();
   }
 }

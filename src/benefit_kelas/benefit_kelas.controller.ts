@@ -9,7 +9,6 @@ import {
   UseGuards,
   Res,
   Req,
-
 } from '@nestjs/common';
 import { BenefitKelasService } from './benefit_kelas.service';
 import { CreateBenefitKelaDto } from './dto/create-benefit_kela.dto';
@@ -18,12 +17,10 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
-
 @UseGuards(AuthenticatedGuard)
 @Controller('benefit-kelas')
 export class BenefitKelasController {
   constructor(private readonly benefitKelasService: BenefitKelasService) {}
-
 
   @Roles('super_admin')
   @Post(':kelasId')
@@ -38,7 +35,6 @@ export class BenefitKelasController {
       await this.benefitKelasService.create(createBenefitKelaDto);
       req.flash('success', 'benefit kelas successfully created');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-
     } catch (error) {
       req.flash('error', 'benefit kelas failed to create');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
@@ -86,11 +82,9 @@ export class BenefitKelasController {
       );
       req.flash('success', 'benefit kelas successfully update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-      
     } catch (error) {
       req.flash('error', 'benefit kelas failed to update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-      
     }
   }
 
@@ -110,13 +104,11 @@ export class BenefitKelasController {
       }
       await this.benefitKelasService.remove(benefitKelasId);
       req.flash('success', 'benefit kelas successfully delete');
-            res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', 'benefit kelas failed to delete');
-      
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
 
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 }

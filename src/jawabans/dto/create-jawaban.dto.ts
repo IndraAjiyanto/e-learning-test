@@ -1,13 +1,12 @@
-import { IsBoolean, IsInt, IsString } from "class-validator";
+import { IsBoolean, IsInt, IsString } from 'class-validator';
 
 export class CreateJawabanDto {
-    @IsString()
-    jawaban: string
+  @IsString()
+  jawaban: string;
 
-    @IsBoolean()
-    jawaban_benar: boolean
+  @IsBoolean()
+  jawaban_benar: boolean;
 
-    @IsInt()
-    pertanyaanId: number
-
+  @IsInt()
+  pertanyaanId: number;
 }

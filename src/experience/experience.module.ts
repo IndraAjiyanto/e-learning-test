@@ -8,6 +8,6 @@ import { ExperienceController } from './experience.controller';
   imports: [TypeOrmModule.forFeature([Experience])],
   controllers: [ExperienceController],
   providers: [ExperienceService],
-  exports: [ExperienceService]
+  exports: [ExperienceService],
 })
 export class ExperienceModule {}

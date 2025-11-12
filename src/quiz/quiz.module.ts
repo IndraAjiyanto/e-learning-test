@@ -9,9 +9,9 @@ import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Quiz, Minggu, Nilai, User, Pertanyaan])],
+  imports: [TypeOrmModule.forFeature([Quiz, Minggu, Nilai, User, Pertanyaan])],
   controllers: [QuizController],
   providers: [QuizService],
-    exports: [QuizService]
+  exports: [QuizService],
 })
 export class QuizModule {}

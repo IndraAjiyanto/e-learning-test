@@ -45,8 +45,8 @@ export class WipService {
 
   async findAlumni() {
     return await this.alumniRepository.find({
-      where: { kelas : { kategori: { nama_kategori: 'WIP' } } },
-      relations: [ 'kelas'],
+      where: { kelas: { kategori: { nama_kategori: 'WIP' } } },
+      relations: ['kelas'],
     });
   }
 }

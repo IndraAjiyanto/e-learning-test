@@ -35,7 +35,7 @@ export class ValidateFileOnlyInterceptor implements NestInterceptor {
 
     if (Array.isArray(request.files)) {
       // FilesInterceptor - banyak file dengan nama sama
-      files.push(...(request.files as Express.Multer.File[]));
+      files.push(...request.files);
     } else if (typeof request.files === 'object' && request.files !== null) {
       // FileFieldsInterceptor - banyak file dengan nama beda
       Object.values(
@@ -45,7 +45,7 @@ export class ValidateFileOnlyInterceptor implements NestInterceptor {
       });
     } else if (request.file) {
       // FileInterceptor - satu file
-      files.push(request.file as Express.Multer.File);
+      files.push(request.file);
     }
 
     // kalau gak ada file, skip

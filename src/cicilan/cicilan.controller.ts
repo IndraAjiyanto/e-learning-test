@@ -57,6 +57,11 @@ export class CicilanController {
         createCicilanDto.harga = createCicilanDto.harga.map((h) => Number(h));
       }
 
+      // Convert dp to number if present (down payment)
+      if (createCicilanDto.dp !== undefined) {
+        createCicilanDto.dp = Number(createCicilanDto.dp);
+      }
+
       createCicilanDto.kelasId = Number(kelasId);
       createCicilanDto.bulan = Number(createCicilanDto.bulan) as 3 | 6 | 12;
 
@@ -66,7 +71,7 @@ export class CicilanController {
     } catch (error) {
       console.log(error);
       req.flash('error', 'Failed to create cicilan');
-            res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -82,6 +87,11 @@ export class CicilanController {
       // Convert harga array from string to number
       if (updateCicilanDto.harga && Array.isArray(updateCicilanDto.harga)) {
         updateCicilanDto.harga = updateCicilanDto.harga.map((h) => Number(h));
+      }
+
+      // Convert dp to number if present
+      if (updateCicilanDto.dp !== undefined) {
+        updateCicilanDto.dp = Number(updateCicilanDto.dp);
       }
 
       if (updateCicilanDto.bulan) {
@@ -110,10 +120,9 @@ export class CicilanController {
       const kelasId = cicilan.kelas.id;
       await this.cicilanService.remove(id);
       req.flash('success', 'Cicilan deleted successfully');
-                  res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-            const cicilan = await this.cicilanService.findOne(id);
+      const cicilan = await this.cicilanService.findOne(id);
       const kelasId = cicilan.kelas.id;
       req.flash('error', 'Failed to delete cicilan');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);

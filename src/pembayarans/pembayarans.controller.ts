@@ -140,7 +140,12 @@ export class PembayaransController {
     const pembayaran = await this.pembayaransService.findPembayaran(userId);
     const pendaftaran = await this.pembayaransService.findPendaftaran(userId);
     const cicilan = await this.pembayaransService.findCicilan(userId);
-    res.render('user/riwayat', { user: req.user, pembayaran, pendaftaran, cicilan });
+    res.render('user/riwayat', {
+      user: req.user,
+      pembayaran,
+      pendaftaran,
+      cicilan,
+    });
   }
 
   @Roles('user')

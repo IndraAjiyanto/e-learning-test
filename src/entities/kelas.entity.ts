@@ -96,8 +96,8 @@ export class Kelas {
   @Column({ nullable: true })
   form: string;
 
-  @Column({default: false})
-  check_paid: boolean
+  @Column({ default: false })
+  check_paid: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -179,9 +179,9 @@ export class Kelas {
   })
   cicilan: Cicilan[];
 
-              @OneToMany(() => AlurKelas, (alur_kelas) => alur_kelas.kelas)
-            alur_kelas: AlurKelas[]
+  @OneToMany(() => AlurKelas, (alur_kelas) => alur_kelas.kelas)
+  alur_kelas: AlurKelas[];
 
-            @OneToMany(() => BenefitKelas, (benefit_kelas) => benefit_kelas.kelas)
-            benefit_kelas: BenefitKelas[]
+  @OneToMany(() => BenefitKelas, (benefit_kelas) => benefit_kelas.kelas)
+  benefit_kelas: BenefitKelas[];
 }

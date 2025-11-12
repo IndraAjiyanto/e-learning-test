@@ -1,35 +1,35 @@
-import { IsArray, IsInt, IsOptional, IsString } from "class-validator";
+import { IsArray, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateMentorDto {
-    @IsString()
-    nama: string
+  @IsString()
+  nama: string;
 
-    @IsString()
-    posisi: string
+  @IsString()
+  posisi: string;
 
-    @IsString()
-    profile: string
+  @IsString()
+  profile: string;
 
-    @IsString()
-    ttd: string
+  @IsString()
+  ttd: string;
 
-              @IsString()
-          teknologi: string[]
+  @IsString()
+  teknologi: string[];
 
-    @IsString()
-    linkedin: string
+  @IsString()
+  linkedin: string;
 
-      @IsArray()
-      @IsInt({ each: true })
-      @IsOptional()
-      teknologiIds: number[];
+  @IsArray()
+  @IsInt({ each: true })
+  @IsOptional()
+  teknologiIds: number[];
 
-    @IsString()
-    github: string
+  @IsString()
+  github: string;
 
-    @IsString()
-    deskripsi: string
+  @IsString()
+  deskripsi: string;
 
-    @IsInt()
-    kelasId: number
+  @IsInt()
+  kelasId: number;
 }

@@ -5,9 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 
 @Module({
-      imports: [TypeOrmModule.forFeature([JenisKelas])],
+  imports: [TypeOrmModule.forFeature([JenisKelas])],
   controllers: [JenisKelasController],
   providers: [JenisKelasService],
-  exports: [JenisKelasService]
+  exports: [JenisKelasService],
 })
 export class JenisKelasModule {}

@@ -1,12 +1,12 @@
-import { IsInt, IsString } from "class-validator";
+import { IsInt, IsString } from 'class-validator';
 
 export class CreateQuizDto {
-    @IsString()
-    nama_quiz: string;
+  @IsString()
+  nama_quiz: string;
 
-    @IsInt()
-    nilai_minimal: number;
+  @IsInt()
+  nilai_minimal: number;
 
-    @IsInt()
-    mingguId: number;
+  @IsInt()
+  mingguId: number;
 }

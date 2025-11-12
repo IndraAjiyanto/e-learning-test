@@ -1,35 +1,52 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Pertanyaan } from "./pertanyaan.entity";
-import { Nilai } from "./nilai.entity";
-import { Minggu } from "./minggu.entity";
-import { ProgresQuiz } from "./progres_quiz.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Pertanyaan } from './pertanyaan.entity';
+import { Nilai } from './nilai.entity';
+import { Minggu } from './minggu.entity';
+import { ProgresQuiz } from './progres_quiz.entity';
 
 @Entity()
 export class Quiz {
-    @PrimaryGeneratedColumn()
-    id: number 
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    nama_quiz: string
+  @Column()
+  nama_quiz: string;
 
-    @Column()
-    nilai_minimal: number
+  @Column()
+  nilai_minimal: number;
 
-                @CreateDateColumn()
-                createdAt: Date;
-                
-                @UpdateDateColumn()
-                updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @OneToMany(() => Pertanyaan, (pertanyaan) => pertanyaan.quiz, { cascade: true, onDelete : 'CASCADE' })
-    pertanyaan: Pertanyaan[]
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    @OneToMany(() => Nilai, (nilai) => nilai.quiz, { cascade: true, onDelete : 'CASCADE' })
-    nilai: Nilai[]
+  @OneToMany(() => Pertanyaan, (pertanyaan) => pertanyaan.quiz, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  pertanyaan: Pertanyaan[];
 
-    @OneToMany(() => ProgresQuiz, (progres_quiz) => progres_quiz.quiz, { cascade: true, onDelete: 'CASCADE' })
-    progres_quiz: ProgresQuiz[];
+  @OneToMany(() => Nilai, (nilai) => nilai.quiz, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  nilai: Nilai[];
 
-    @ManyToOne(() => Minggu, (minggu) => minggu.quiz, {onDelete : 'CASCADE'})
-    minggu: Minggu
+  @OneToMany(() => ProgresQuiz, (progres_quiz) => progres_quiz.quiz, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  progres_quiz: ProgresQuiz[];
+
+  @ManyToOne(() => Minggu, (minggu) => minggu.quiz, { onDelete: 'CASCADE' })
+  minggu: Minggu;
 }

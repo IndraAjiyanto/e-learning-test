@@ -47,7 +47,7 @@ import { Background } from 'src/entities/background.entity';
       Misi,
       Experience,
       Award,
-      Background
+      Background,
     ]),
   ],
   controllers: [DashboardController],

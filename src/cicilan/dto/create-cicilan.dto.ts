@@ -13,4 +13,8 @@ export class CreateCicilanDto {
   @IsNumber()
   @IsNotEmpty()
   kelasId: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  dp: number;
 }

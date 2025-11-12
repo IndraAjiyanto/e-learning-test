@@ -40,9 +40,9 @@ export class KategoriBlogService {
       throw new NotFoundException('Kategori Blog not found');
     }
 
-        Object.assign(kategori, updateKategoriBlogDto);
-        return await this.kategoriBlogRepository.save(kategori);
-    }
+    Object.assign(kategori, updateKategoriBlogDto);
+    return await this.kategoriBlogRepository.save(kategori);
+  }
 
   async remove(id: number) {
     const kategori = await this.findOne(id);

@@ -1,17 +1,29 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-export type For = 'wip' | 'internship' | 'general' | 'short_class' | 'bootcamp' | 'course';
+export type For =
+  | 'wip'
+  | 'internship'
+  | 'general'
+  | 'short_class'
+  | 'bootcamp'
+  | 'course';
 
 @Entity()
-export class PertanyaanUmum{
-    @PrimaryGeneratedColumn()
-    id: number
+export class PertanyaanUmum {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    pertanyaan: string
+  @Column()
+  pertanyaan: string;
 
-    @Column()
-    jawaban: string
+  @Column()
+  jawaban: string;
 
   @Column({
     type: 'enum',
@@ -20,9 +32,9 @@ export class PertanyaanUmum{
   })
   for: For;
 
-                @CreateDateColumn()
-                createdAt: Date;
-                
-                @UpdateDateColumn()
-                updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

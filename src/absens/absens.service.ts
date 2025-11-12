@@ -11,7 +11,7 @@ import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 
 @Injectable()
 export class AbsensService {
-  constructor (
+  constructor(
     @InjectRepository(Absen)
     private readonly absenRepository: Repository<Absen>,
 
@@ -25,63 +25,80 @@ export class AbsensService {
     private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
 
     @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>
-  ){}
+    private readonly kelasRepository: Repository<Kelas>,
+  ) {}
 
   async create(CreateAbsenDto: CreateAbsenDto) {
-    const pertemuan = await this.pertemuanRepository.findOne({where: {id: CreateAbsenDto.pertemuanId}, relations: ['minggu']})
-    const user = await this.userRepository.findOne({where: {id: CreateAbsenDto.userId}})
-    if(!pertemuan){
-      throw new NotFoundException('pertemuan ini tidak ada')
+    const pertemuan = await this.pertemuanRepository.findOne({
+      where: { id: CreateAbsenDto.pertemuanId },
+      relations: ['minggu'],
+    });
+    const user = await this.userRepository.findOne({
+      where: { id: CreateAbsenDto.userId },
+    });
+    if (!pertemuan) {
+      throw new NotFoundException('pertemuan ini tidak ada');
     }
-    if(!user){
-      throw new NotFoundException('user ini tidak ada')
+    if (!user) {
+      throw new NotFoundException('user ini tidak ada');
     }
     const absen = await this.absenRepository.create({
       ...CreateAbsenDto,
       pertemuan: pertemuan,
-      user: user
-    })
+      user: user,
+    });
 
-    const pertemuan_selanjutnya = await this.pertemuanRepository.findOne({where: {pertemuan_ke: pertemuan.pertemuan_ke + 1, minggu: {id: pertemuan.minggu.id}}})
-    if(pertemuan_selanjutnya){
-          await this.progresPertemuanRepository.create({
-      pertemuan: {id: pertemuan_selanjutnya.id},
-      user: {id: user.id},
-      absen: true
-    })
+    const pertemuan_selanjutnya = await this.pertemuanRepository.findOne({
+      where: {
+        pertemuan_ke: pertemuan.pertemuan_ke + 1,
+        minggu: { id: pertemuan.minggu.id },
+      },
+    });
+    if (pertemuan_selanjutnya) {
+      await this.progresPertemuanRepository.create({
+        pertemuan: { id: pertemuan_selanjutnya.id },
+        user: { id: user.id },
+        absen: true,
+      });
     }
 
-    return await this.absenRepository.save(absen)
+    return await this.absenRepository.save(absen);
   }
 
   async findAll() {
-      return await this.absenRepository.find({
-      relations: ['pertemuan','user','pertemuan.kelas']
-    })
+    return await this.absenRepository.find({
+      relations: ['pertemuan', 'user', 'pertemuan.kelas'],
+    });
   }
 
-  async findPertemuan(pertemuanId: number){
-    return await this.pertemuanRepository.findOne({where: {id: pertemuanId}, relations: ['minggu', 'minggu.kelas']})
+  async findPertemuan(pertemuanId: number) {
+    return await this.pertemuanRepository.findOne({
+      where: { id: pertemuanId },
+      relations: ['minggu', 'minggu.kelas'],
+    });
   }
 
-  async findUsers(pertemuanId: number){
-    const kelas = await this.kelasRepository.findOne({where: {minggu: {pertemuan: {id: pertemuanId}}}})
-    if(!kelas){
-      return ''
+  async findUsers(pertemuanId: number) {
+    const kelas = await this.kelasRepository.findOne({
+      where: { minggu: { pertemuan: { id: pertemuanId } } },
+    });
+    if (!kelas) {
+      return '';
     }
-    return await this.userRepository.find({where: {role: 'user', user_kelas: {kelas: {id: kelas.id}}} })
+    return await this.userRepository.find({
+      where: { role: 'user', user_kelas: { kelas: { id: kelas.id } } },
+    });
   }
 
-  async findKelas(){
-    return await this.kelasRepository.find({relations: ['pertemuan']})
+  async findKelas() {
+    return await this.kelasRepository.find({ relations: ['pertemuan'] });
   }
 
   async findOne(id: number) {
     const absen = await this.absenRepository.findOne({
-      where: {id},
-      relations: ['pertemuan','user', 'pertemuan.minggu.kelas']
-    })
+      where: { id },
+      relations: ['pertemuan', 'user', 'pertemuan.minggu.kelas'],
+    });
     if (!absen) {
       throw new NotFoundException(`absen tidak ditemukan`);
     }
@@ -97,19 +114,19 @@ export class AbsensService {
   }
 
   async update(id: number, updateAbsenDto: UpdateAbsenDto) {
-    const absen = await this.findOne(id)
-    if(!absen){
+    const absen = await this.findOne(id);
+    if (!absen) {
       throw new NotFoundException('absen tidak ditemukan');
     }
-    Object.assign(absen, updateAbsenDto)
-    return await this.absenRepository.save(absen)
+    Object.assign(absen, updateAbsenDto);
+    return await this.absenRepository.save(absen);
   }
 
   async remove(id: number) {
-    const absen = await this.findOne(id)
-    if(!absen){
-      throw new NotFoundException('absen tidak ditemukan')
+    const absen = await this.findOne(id);
+    if (!absen) {
+      throw new NotFoundException('absen tidak ditemukan');
     }
-    return await this.absenRepository.remove(absen)
+    return await this.absenRepository.remove(absen);
   }
 }

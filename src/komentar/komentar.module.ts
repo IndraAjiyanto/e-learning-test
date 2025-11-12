@@ -6,9 +6,9 @@ import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
 import { Komentar } from 'src/entities/komentar.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([JawabanTugas, Komentar])],
+  imports: [TypeOrmModule.forFeature([JawabanTugas, Komentar])],
   controllers: [KomentarController],
   providers: [KomentarService],
-  exports: [KomentarService]
+  exports: [KomentarService],
 })
 export class KomentarModule {}

@@ -7,38 +7,45 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class PertanyaanUmumService {
-    constructor(
-      @InjectRepository(PertanyaanUmum)
-      private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
-    ){}
+  constructor(
+    @InjectRepository(PertanyaanUmum)
+    private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
+  ) {}
 
   async create(createPertanyaanUmumDto: CreatePertanyaanUmumDto) {
-    const data = await this.pertanyaanUmumRepository.create(createPertanyaanUmumDto)
-    return await this.pertanyaanUmumRepository.save(data)
+    const data = await this.pertanyaanUmumRepository.create(
+      createPertanyaanUmumDto,
+    );
+    return await this.pertanyaanUmumRepository.save(data);
   }
 
   async findAll() {
-    return await this.pertanyaanUmumRepository.find()
+    return await this.pertanyaanUmumRepository.find();
   }
 
   async findOne(pertanyaan_umumId: number) {
-    return await this.pertanyaanUmumRepository.findOne({where: {id: pertanyaan_umumId}})
+    return await this.pertanyaanUmumRepository.findOne({
+      where: { id: pertanyaan_umumId },
+    });
   }
 
-  async update(pertanyaan_umumId: number, updatePertanyaanUmumDto: UpdatePertanyaanUmumDto) {
-         const pertanyaan_umum = await this.findOne(pertanyaan_umumId)
-        if(!pertanyaan_umum){
-                  throw new NotFoundException('pertanyaan umum tidak ada');
-        }
-        Object.assign(pertanyaan_umum, updatePertanyaanUmumDto)
-        return await this.pertanyaanUmumRepository.save(pertanyaan_umum)
+  async update(
+    pertanyaan_umumId: number,
+    updatePertanyaanUmumDto: UpdatePertanyaanUmumDto,
+  ) {
+    const pertanyaan_umum = await this.findOne(pertanyaan_umumId);
+    if (!pertanyaan_umum) {
+      throw new NotFoundException('pertanyaan umum tidak ada');
+    }
+    Object.assign(pertanyaan_umum, updatePertanyaanUmumDto);
+    return await this.pertanyaanUmumRepository.save(pertanyaan_umum);
   }
 
   async remove(pertanyaan_umumId: number) {
-        const pertanyaan_umum = await this.findOne(pertanyaan_umumId)
-    if(!pertanyaan_umum){
-      throw new NotFoundException('pertanyaan umum tidak ada')
+    const pertanyaan_umum = await this.findOne(pertanyaan_umumId);
+    if (!pertanyaan_umum) {
+      throw new NotFoundException('pertanyaan umum tidak ada');
     }
-    return await this.pertanyaanUmumRepository.remove(pertanyaan_umum)
+    return await this.pertanyaanUmumRepository.remove(pertanyaan_umum);
   }
 }

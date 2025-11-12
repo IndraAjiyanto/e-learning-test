@@ -12,9 +12,20 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Pertemuan, LogbookMentor ,Kelas, User, Pertanyaan, Minggu, Logbook]), MaterisModule],
+  imports: [
+    TypeOrmModule.forFeature([
+      Pertemuan,
+      LogbookMentor,
+      Kelas,
+      User,
+      Pertanyaan,
+      Minggu,
+      Logbook,
+    ]),
+    MaterisModule,
+  ],
   controllers: [PertemuansController],
   providers: [PertemuansService],
-  exports: [PertemuansService]
+  exports: [PertemuansService],
 })
 export class PertemuansModule {}

@@ -28,45 +28,45 @@ import { memoryStorage } from 'multer';
 export class TugassController {
   constructor(private readonly tugassService: TugassService) {}
 
-@Roles('admin')
-@Post(':pertemuanId')
-@UseInterceptors(
-  FileInterceptor('file', { storage: memoryStorage() }),
-  ValidateFileInterceptor,
-)
-@ValidateFile({
-  maxSize: 10 * 1024 * 1024, // 10MB
-  allowedTypes: ['application/pdf'],
-  fileExtensions: ['.pdf'],
-  folder: 'assignments',
-  resourceType: 'raw', // Penting: gunakan 'raw' untuk PDF
-})
-async create(
-  @Body() createTugassDto: CreateTugassDto,
-  @UploadedFile() file: Express.Multer.File,
-  @Param('pertemuanId') pertemuanId: number,
-  @Res() res: Response,
-  @Req() req: Request,
-) {
-  try {
-    // Pastikan file berhasil diupload ke Cloudinary
-    if (!req.body.uploadedFileUrls || !req.body.uploadedFileUrls[0]) {
-      throw new Error('File upload failed. Please try again.');
-    }
+  @Roles('admin')
+  @Post(':pertemuanId')
+  @UseInterceptors(
+    FileInterceptor('file', { storage: memoryStorage() }),
+    ValidateFileInterceptor,
+  )
+  @ValidateFile({
+    maxSize: 10 * 1024 * 1024, // 10MB
+    allowedTypes: ['application/pdf'],
+    fileExtensions: ['.pdf'],
+    folder: 'assignments',
+    resourceType: 'raw', // Penting: gunakan 'raw' untuk PDF
+  })
+  async create(
+    @Body() createTugassDto: CreateTugassDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      // Pastikan file berhasil diupload ke Cloudinary
+      if (!req.body.uploadedFileUrls || !req.body.uploadedFileUrls[0]) {
+        throw new Error('File upload failed. Please try again.');
+      }
 
-    createTugassDto.pertemuanId = pertemuanId;
-    createTugassDto.file = req.body.uploadedFileUrls[0];
-    createTugassDto.nilai = 0;
-    await this.tugassService.create(createTugassDto);
-    req.flash('success', 'Assignment successfully created');
-    res.redirect(`/pertemuans/${pertemuanId}`);
-  } catch (error) {
-    console.log('Error creating assignment:', error);
-    const errorMessage = error.message || 'Failed to create assignment';
-    req.flash('error', errorMessage);
-    res.redirect(`/pertemuans/${pertemuanId}`);
+      createTugassDto.pertemuanId = pertemuanId;
+      createTugassDto.file = req.body.uploadedFileUrls[0];
+      createTugassDto.nilai = 0;
+      await this.tugassService.create(createTugassDto);
+      req.flash('success', 'Assignment successfully created');
+      res.redirect(`/pertemuans/${pertemuanId}`);
+    } catch (error) {
+      console.log('Error creating assignment:', error);
+      const errorMessage = error.message || 'Failed to create assignment';
+      req.flash('error', errorMessage);
+      res.redirect(`/pertemuans/${pertemuanId}`);
+    }
   }
-}
 
   @Roles('admin')
   @Get('formCreate/:pertemuanId')

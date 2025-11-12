@@ -6,9 +6,9 @@ import { Team } from 'src/entities/team.entity';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
-      imports: [TypeOrmModule.forFeature([Team]), CommonModule],
+  imports: [TypeOrmModule.forFeature([Team]), CommonModule],
   controllers: [TeamController],
   providers: [TeamService],
-  exports: [TeamService]
+  exports: [TeamService],
 })
 export class TeamModule {}

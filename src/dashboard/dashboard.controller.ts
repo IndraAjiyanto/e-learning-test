@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, Param, Req, Res } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { Request, Response } from 'express';
 
@@ -31,10 +25,10 @@ export class DashboardController {
         const kategori = await this.dashboardService.findKategori();
         const alumni = await this.dashboardService.findAlumni();
         const kerja_sama = await this.dashboardService.findKerjaSama();
-        const benefit_1 = await this.dashboardService.findBenefit1()
-        const benefit_2 = await this.dashboardService.findBenefit2()
-        const benefit_3 = await this.dashboardService.findBenefit3()
-        const tentang = await this.dashboardService.findTentang()
+        const benefit_1 = await this.dashboardService.findBenefit1();
+        const benefit_2 = await this.dashboardService.findBenefit2();
+        const benefit_3 = await this.dashboardService.findBenefit3();
+        const tentang = await this.dashboardService.findTentang();
         res.render('dashboard', {
           user: req.user,
           kelas,
@@ -50,44 +44,42 @@ export class DashboardController {
           benefit_1,
           benefit_2,
           benefit_3,
-          tentang
+          tentang,
         });
       }
     } else {
       const pertanyaan_umum = await this.dashboardService.findFAQ();
-              const gambar_benefit_1 = await this.dashboardService.findGambar1();
-        const gambar_benefit_2 = await this.dashboardService.findGambar2();
-        const gambar_benefit_3 = await this.dashboardService.findGambar3();
-        const gambar_benefit_4 = await this.dashboardService.findGambar4();
+      const gambar_benefit_1 = await this.dashboardService.findGambar1();
+      const gambar_benefit_2 = await this.dashboardService.findGambar2();
+      const gambar_benefit_3 = await this.dashboardService.findGambar3();
+      const gambar_benefit_4 = await this.dashboardService.findGambar4();
       const jenis_kelas = await this.dashboardService.findJenisKelas();
       const kategori = await this.dashboardService.findKategori();
-        const alumni = await this.dashboardService.findAlumni();
-        const kerja_sama = await this.dashboardService.findKerjaSama()
-          const benefit_1 = await this.dashboardService.findBenefit1()
-        const benefit_2 = await this.dashboardService.findBenefit2()
-        const benefit_3 = await this.dashboardService.findBenefit3()
-        const tentang = await this.dashboardService.findTentang()
+      const alumni = await this.dashboardService.findAlumni();
+      const kerja_sama = await this.dashboardService.findKerjaSama();
+      const benefit_1 = await this.dashboardService.findBenefit1();
+      const benefit_2 = await this.dashboardService.findBenefit2();
+      const benefit_3 = await this.dashboardService.findBenefit3();
+      const tentang = await this.dashboardService.findTentang();
       res.render('dashboard', {
         user: req.user,
         kelas,
         pertanyaan_umum,
-                  gambar_benefit_1,
-          gambar_benefit_2,
-          gambar_benefit_3,
-          gambar_benefit_4,
+        gambar_benefit_1,
+        gambar_benefit_2,
+        gambar_benefit_3,
+        gambar_benefit_4,
         jenis_kelas,
         kategori,
         alumni,
         kerja_sama,
-                  benefit_1,
-          benefit_2,
-          benefit_3,
-          tentang
+        benefit_1,
+        benefit_2,
+        benefit_3,
+        tentang,
       });
     }
   }
-
-
 
   @Get('kategori/:kategoriName')
   async program(
@@ -103,11 +95,9 @@ export class DashboardController {
       res.render('kelas/course', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'Short Class') {
       res.render('kelas/short_class', { kelas, user: req.user, jenis_kelas });
-    }
-    else if (kategoriName === 'in_house_training') {
+    } else if (kategoriName === 'in_house_training') {
       res.render('inhouse', { kelas, user: req.user, jenis_kelas });
-    }
-    else if (kategoriName === 'wip') {
+    } else if (kategoriName === 'wip') {
       res.render('wip', { kelas, user: req.user, jenis_kelas });
     }
   }
@@ -163,7 +153,20 @@ export class DashboardController {
     const experience = await this.dashboardService.findExperience();
     const award = await this.dashboardService.findAward();
     const background = await this.dashboardService.findBackground();
-    res.render('tentang', { user: req.user, team, social, visi, commitment, tentang, value, teamLead, misi, experience, award, background});
+    res.render('tentang', {
+      user: req.user,
+      team,
+      social,
+      visi,
+      commitment,
+      tentang,
+      value,
+      teamLead,
+      misi,
+      experience,
+      award,
+      background,
+    });
   }
 
   @Get(':id')

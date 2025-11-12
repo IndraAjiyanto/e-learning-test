@@ -1,32 +1,35 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Kelas } from "./kelas.entity";
-import { BenefitKelas } from "./benefit_kelas.entity";
-import { AlurKelas } from "./alur_kelas.entity";
-
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Kelas } from './kelas.entity';
+import { BenefitKelas } from './benefit_kelas.entity';
+import { AlurKelas } from './alur_kelas.entity';
 
 @Entity()
-export class Kategori{
-    @PrimaryGeneratedColumn()
-    id: number
+export class Kategori {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    nama_kategori: string
+  @Column()
+  nama_kategori: string;
 
-    @Column()
-    icon: string
+  @Column()
+  icon: string;
 
-    @Column()
-    deskripsi: string
+  @Column()
+  deskripsi: string;
 
-        @CreateDateColumn()
-        createdAt: Date;
-        
-        @UpdateDateColumn()
-        updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-            @OneToMany(() => Kelas, (kelas) => kelas.kategori)
-            kelas: Kelas[]
-            
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-
+  @OneToMany(() => Kelas, (kelas) => kelas.kategori)
+  kelas: Kelas[];
 }

@@ -1,17 +1,15 @@
-import { ValidateNested, IsArray, IsInt } from "class-validator";
-import { Type } from "class-transformer";
+import { ValidateNested, IsArray, IsInt } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class JawabanUserDto {
-    @IsInt()
-    jawabanId: number
+  @IsInt()
+  jawabanId: number;
 
-    @IsInt()
-    pertanyaanId: number
+  @IsInt()
+  pertanyaanId: number;
 
-    @IsInt()
-    userId: number
-
-  
+  @IsInt()
+  userId: number;
 }
 
 export class CreateJawabanUserDto {
@@ -20,4 +18,3 @@ export class CreateJawabanUserDto {
   @Type(() => JawabanUserDto)
   jawabanUser: JawabanUserDto[];
 }
-    

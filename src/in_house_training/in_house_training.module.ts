@@ -7,7 +7,7 @@ import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Kelas, JenisKelas, Kategori])],
+  imports: [TypeOrmModule.forFeature([Kelas, JenisKelas, Kategori])],
   controllers: [InHouseTrainingController],
   providers: [InHouseTrainingService],
 })

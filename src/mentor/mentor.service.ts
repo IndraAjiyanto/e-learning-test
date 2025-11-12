@@ -10,19 +10,21 @@ import { Teknologi } from 'src/entities/teknologi.entity';
 
 @Injectable()
 export class MentorService {
-    constructor(
-      @InjectRepository(Mentor)
-      private readonly mentorRepository: Repository<Mentor>,
-      @InjectRepository(Teknologi)
-      private readonly teknologiRepository: Repository<Teknologi>,
-      @InjectRepository(Kelas)
-      private readonly kelasRepository: Repository<Kelas>
-    ){}
+  constructor(
+    @InjectRepository(Mentor)
+    private readonly mentorRepository: Repository<Mentor>,
+    @InjectRepository(Teknologi)
+    private readonly teknologiRepository: Repository<Teknologi>,
+    @InjectRepository(Kelas)
+    private readonly kelasRepository: Repository<Kelas>,
+  ) {}
 
   async create(createMentorDto: CreateMentorDto) {
-    const kelas = await this.kelasRepository.findOne({where: {id:createMentorDto.kelasId}})
-    if(!kelas){
-      throw new NotFoundException('kelas not found')
+    const kelas = await this.kelasRepository.findOne({
+      where: { id: createMentorDto.kelasId },
+    });
+    if (!kelas) {
+      throw new NotFoundException('kelas not found');
     }
     let teknologi: Teknologi[] = [];
     if (
@@ -36,87 +38,88 @@ export class MentorService {
     const mentor = await this.mentorRepository.create({
       ...createMentorDto,
       kelas: kelas,
-      teknologi: teknologi
-    })
-    return await this.mentorRepository.save(mentor)
+      teknologi: teknologi,
+    });
+    return await this.mentorRepository.save(mentor);
   }
 
-  async findTeknologi(){
-    return await this.teknologiRepository.find()
+  async findTeknologi() {
+    return await this.teknologiRepository.find();
   }
 
   async findOne(mentorId: number) {
-    const mentor = await this.mentorRepository.findOne({where: {id: mentorId}, relations: ['kelas', 'teknologi']})
-    if(!mentor){
-      throw new NotFoundException('mentor not found')
+    const mentor = await this.mentorRepository.findOne({
+      where: { id: mentorId },
+      relations: ['kelas', 'teknologi'],
+    });
+    if (!mentor) {
+      throw new NotFoundException('mentor not found');
     }
-    return mentor
+    return mentor;
   }
 
   async update(mentorId: number, updateMentorDto: UpdateMentorDto) {
-    const mentor = await this.findOne(mentorId)
-    if(!mentor){
-      throw new NotFoundException('kelas not found')
+    const mentor = await this.findOne(mentorId);
+    if (!mentor) {
+      throw new NotFoundException('kelas not found');
     }
-        if (updateMentorDto.teknologiIds !== undefined) {
-          if (updateMentorDto.teknologiIds.length > 0) {
-            mentor.teknologi = await this.teknologiRepository.findBy({
-              id: In(updateMentorDto.teknologiIds),
-            });
-          } else {
-            mentor.teknologi = [];
-          }
-        }
-    
-        const { teknologiIds, ...otherProperties } =
-          updateMentorDto;
-        Object.assign(mentor, otherProperties);
+    if (updateMentorDto.teknologiIds !== undefined) {
+      if (updateMentorDto.teknologiIds.length > 0) {
+        mentor.teknologi = await this.teknologiRepository.findBy({
+          id: In(updateMentorDto.teknologiIds),
+        });
+      } else {
+        mentor.teknologi = [];
+      }
+    }
 
-        return await this.mentorRepository.save(mentor);
+    const { teknologiIds, ...otherProperties } = updateMentorDto;
+    Object.assign(mentor, otherProperties);
+
+    return await this.mentorRepository.save(mentor);
   }
 
   async remove(mentorId: number) {
-        const mentor = await this.findOne(mentorId)
-    if(!mentor){
-      throw new NotFoundException('kelas not found')
+    const mentor = await this.findOne(mentorId);
+    if (!mentor) {
+      throw new NotFoundException('kelas not found');
     }
-    return await this.mentorRepository.remove(mentor)
+    return await this.mentorRepository.remove(mentor);
   }
 
-    async getPublicIdFromUrl(url: string) {
-      // Pisahkan berdasarkan "/upload/"
-      const parts = url.split('/upload/');
-      if (parts.length < 2) {
-        return null;
-      }
-  
-      // Ambil bagian setelah upload/
-      let path = parts[1];
-  
-      // Hapus "v1234567890/" (versi auto Cloudinary)
-      path = path.replace(/^v[0-9]+\/?/, '');
-  
-      // Buang extension (.jpg, .png, .pdf, dll)
-      path = path.replace(/\.[^.]+$/, '');
-  
-      console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
-  
-      await this.deleteFileIfExists(path);
-    }
-  
-    async deleteFileIfExists(publicId: string) {
-      try {
-        const result = await cloudinary.uploader.destroy(publicId);
-  
-        if (result.result === 'not found') {
-          console.log('File not found in Cloudinary.');
-        } else {
-          console.log('File deleted from Cloudinary:', result);
-        }
-      } catch (error) {
-        console.error('Error deleting file from Cloudinary:', error);
-        throw error;
-      }
+  async getPublicIdFromUrl(url: string) {
+    // Pisahkan berdasarkan "/upload/"
+    const parts = url.split('/upload/');
+    if (parts.length < 2) {
+      return null;
     }
 
+    // Ambil bagian setelah upload/
+    let path = parts[1];
+
+    // Hapus "v1234567890/" (versi auto Cloudinary)
+    path = path.replace(/^v[0-9]+\/?/, '');
+
+    // Buang extension (.jpg, .png, .pdf, dll)
+    path = path.replace(/\.[^.]+$/, '');
+
+    console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
+
+    await this.deleteFileIfExists(path);
+  }
+
+  async deleteFileIfExists(publicId: string) {
+    try {
+      const result = await cloudinary.uploader.destroy(publicId);
+
+      if (result.result === 'not found') {
+        console.log('File not found in Cloudinary.');
+      } else {
+        console.log('File deleted from Cloudinary:', result);
+      }
+    } catch (error) {
+      console.error('Error deleting file from Cloudinary:', error);
+      throw error;
+    }
+  }
 }

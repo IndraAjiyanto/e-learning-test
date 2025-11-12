@@ -11,6 +11,6 @@ import { Kelas } from 'src/entities/kelas.entity';
   imports: [TypeOrmModule.forFeature([LogbookMentor, User, Pertemuan, Kelas])],
   controllers: [LogbookMentorController],
   providers: [LogbookMentorService],
-  exports: [LogbookMentorService]
+  exports: [LogbookMentorService],
 })
 export class LogbookMentorModule {}

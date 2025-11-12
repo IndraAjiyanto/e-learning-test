@@ -1,26 +1,26 @@
-import { IsEnum, IsInt, IsNumber, IsOptional, IsString } from "class-validator";
-import { Proses } from "src/entities/pembayaran.entity";
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Proses } from 'src/entities/pembayaran.entity';
 
 export class CreatePembayaranDto {
-      @IsString()
-      @IsOptional()
-      file: string
-    
-      @IsEnum(['acc' , 'proces' , 'rejected'])
-    @IsOptional()
-      proses: Proses;
-    
-        @IsInt()
-        userId: number
+  @IsString()
+  @IsOptional()
+  file: string;
 
-        @IsInt()
-        kelasId: number
+  @IsEnum(['acc', 'proces', 'rejected'])
+  @IsOptional()
+  proses: Proses;
 
-        @IsInt()
-        @IsOptional()
-        cicilanId: number
+  @IsInt()
+  userId: number;
 
-        @IsString()
-        @IsOptional()
-        no: string
+  @IsInt()
+  kelasId: number;
+
+  @IsInt()
+  @IsOptional()
+  cicilanId: number;
+
+  @IsString()
+  @IsOptional()
+  no: string;
 }

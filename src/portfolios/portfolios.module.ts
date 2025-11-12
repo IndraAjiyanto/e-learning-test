@@ -10,9 +10,12 @@ import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Portfolio, User, Kelas, Kategori, JenisKelas]), CommonModule],
+  imports: [
+    TypeOrmModule.forFeature([Portfolio, User, Kelas, Kategori, JenisKelas]),
+    CommonModule,
+  ],
   controllers: [PortfoliosController],
   providers: [PortfoliosService],
-  exports: [PortfoliosService]
+  exports: [PortfoliosService],
 })
 export class PortfoliosModule {}

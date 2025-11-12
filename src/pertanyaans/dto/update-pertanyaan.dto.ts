@@ -3,10 +3,10 @@ import { CreatePertanyaanDto } from './create-pertanyaan.dto';
 import { IsArray, IsString } from 'class-validator';
 
 export class UpdatePertanyaanDto extends PartialType(CreatePertanyaanDto) {
-      @IsString()
+  @IsString()
   pertanyaan_soal: string;
 
-    @IsString()
+  @IsString()
   gambar?: string;
 
   @IsArray()

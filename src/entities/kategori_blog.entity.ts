@@ -1,27 +1,36 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Blog } from "./blog.entity";
-
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Blog } from './blog.entity';
 
 @Entity()
 export class KategoriBlog {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    nama: string;
+  @Column()
+  nama: string;
 
-    @Column()
-    icon: string
+  @Column()
+  icon: string;
 
-    @Column()
-    deskripsi: string
+  @Column()
+  deskripsi: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-        @OneToMany(() => Blog, (blog) => blog.kategori_blog, { cascade: true, onDelete : 'CASCADE' })
-        blog: Blog[];
+  @OneToMany(() => Blog, (blog) => blog.kategori_blog, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  blog: Blog[];
 }

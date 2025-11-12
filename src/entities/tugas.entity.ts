@@ -1,27 +1,40 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Pertemuan } from "./pertemuan.entity";
-import { JawabanTugas } from "./jawaban_tugas.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Pertemuan } from './pertemuan.entity';
+import { JawabanTugas } from './jawaban_tugas.entity';
 
 @Entity()
-export class Tugas{
-    @PrimaryGeneratedColumn()
-    id: number
+export class Tugas {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-        @Column()
-    judul: string;
-    
-    @Column()
-    file: string
+  @Column()
+  judul: string;
 
-      @CreateDateColumn()
-      createdAt: Date;
-    
-      @UpdateDateColumn()
-      updatedAt: Date;
+  @Column()
+  file: string;
 
-          @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.tugas, {onDelete : 'CASCADE'})
-          pertemuan: Pertemuan
+  @CreateDateColumn()
+  createdAt: Date;
 
-                @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.tugas, { cascade: true, onDelete : 'CASCADE' })
-                jawaban_tugas: JawabanTugas[];
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.tugas, {
+    onDelete: 'CASCADE',
+  })
+  pertemuan: Pertemuan;
+
+  @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.tugas, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  jawaban_tugas: JawabanTugas[];
 }

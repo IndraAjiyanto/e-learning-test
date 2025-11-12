@@ -55,7 +55,13 @@ export class PortfoliosService {
   async findByUser(userId: number) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
-      relations: ['kelas', 'user', 'kelas.kategori', 'kelas.jenis_kelas', 'kelas.teknologi'],
+      relations: [
+        'kelas',
+        'user',
+        'kelas.kategori',
+        'kelas.jenis_kelas',
+        'kelas.teknologi',
+      ],
     });
   }
 
@@ -114,7 +120,7 @@ export class PortfoliosService {
   async findOne(portfolioId: number) {
     const portfolio = await this.portfolioRepository.findOne({
       where: { id: portfolioId },
-      relations: ['kelas','kelas.teknologi'],
+      relations: ['kelas', 'kelas.teknologi'],
     });
     if (!portfolio) {
       throw new NotFoundException('portfolio not found');

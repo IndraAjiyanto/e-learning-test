@@ -754,6 +754,7 @@
           <tr>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Bulan</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">DP</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Harga Per Bulan</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
@@ -765,6 +766,9 @@
               x-show="filteredInstallment.includes('{{id}}')">
             <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
             <td class="px-6 py-4 text-sm text-gray-800">{{bulan}} Months</td>
+            <td class="px-6 py-4 text-sm text-gray-800">
+              <div>Rp {{formatRupiah dp}}</div>
+            </td>
             <td class="px-6 py-4 text-sm text-gray-800">
               <div class="space-y-1">
                 {{#each harga}}

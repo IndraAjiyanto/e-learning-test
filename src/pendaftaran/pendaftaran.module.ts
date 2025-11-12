@@ -9,7 +9,10 @@ import { UserKelas } from 'src/entities/user_kelas.entity';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Kelas, User, Pendaftaran, UserKelas]), CommonModule],
+  imports: [
+    TypeOrmModule.forFeature([Kelas, User, Pendaftaran, UserKelas]),
+    CommonModule,
+  ],
   controllers: [PendaftaranController],
   providers: [PendaftaranService],
 })

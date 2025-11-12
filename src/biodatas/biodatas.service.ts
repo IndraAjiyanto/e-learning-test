@@ -7,30 +7,33 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class BiodatasService {
-    constructor(
-      @InjectRepository(Biodata)
-      private readonly biodataRepository: Repository<Biodata>
-    ) {}
+  constructor(
+    @InjectRepository(Biodata)
+    private readonly biodataRepository: Repository<Biodata>,
+  ) {}
   async create(createBiodataDto: CreateBiodataDto) {
-    const biodata = await this.biodataRepository.create(createBiodataDto)
-    return await this.biodataRepository.save(biodata)
+    const biodata = await this.biodataRepository.create(createBiodataDto);
+    return await this.biodataRepository.save(biodata);
   }
 
   async findOne(biodataId: number) {
-    const biodata = await this.biodataRepository.findOne({where: {id:biodataId}, relations: ['user']})
-    if(!biodata){
-      throw new NotFoundException('biodata not found')
+    const biodata = await this.biodataRepository.findOne({
+      where: { id: biodataId },
+      relations: ['user'],
+    });
+    if (!biodata) {
+      throw new NotFoundException('biodata not found');
     }
-    return biodata
+    return biodata;
   }
 
   async update(biodataId: number, updateBiodataDto: UpdateBiodataDto) {
-    const biodata = await this.findOne(biodataId)
-    if(!biodata){
-      throw new NotFoundException('biodata not found')
+    const biodata = await this.findOne(biodataId);
+    if (!biodata) {
+      throw new NotFoundException('biodata not found');
     }
-            Object.assign(biodata, updateBiodataDto)
-        return await this.biodataRepository.save(biodata)
+    Object.assign(biodata, updateBiodataDto);
+    return await this.biodataRepository.save(biodata);
   }
 
   remove(id: number) {

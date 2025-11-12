@@ -9,28 +9,30 @@ import { AlurKelas } from 'src/entities/alur_kelas.entity';
 
 @Injectable()
 export class KategorisService {
-    constructor(
-      @InjectRepository(Kategori)
-      private readonly kategoriRepository: Repository<Kategori>,
-      @InjectRepository(AlurKelas)
-      private readonly alurKelasRepository: Repository<AlurKelas>
-    ){}
+  constructor(
+    @InjectRepository(Kategori)
+    private readonly kategoriRepository: Repository<Kategori>,
+    @InjectRepository(AlurKelas)
+    private readonly alurKelasRepository: Repository<AlurKelas>,
+  ) {}
 
-    async create(createKategorisDto: CreateKategorisDto) {
+  async create(createKategorisDto: CreateKategorisDto) {
     const kategori = await this.kategoriRepository.create(createKategorisDto);
     return await this.kategoriRepository.save(kategori);
   }
 
   async findAll() {
-    return await this.kategoriRepository.find()
+    return await this.kategoriRepository.find();
   }
 
   async findOne(kategoriId: number) {
-    const kategori = await this.kategoriRepository.findOne({where: {id: kategoriId}})
-    if(!kategori){
-      throw new NotFoundException('kategori not found')
+    const kategori = await this.kategoriRepository.findOne({
+      where: { id: kategoriId },
+    });
+    if (!kategori) {
+      throw new NotFoundException('kategori not found');
     }
-    return kategori
+    return kategori;
   }
 
   async update(kategoriId: number, updateKategorisDto: UpdateKategorisDto) {
@@ -43,12 +45,11 @@ export class KategorisService {
   }
 
   async remove(kategoriId: number) {
-    const kategori =  await this.findOne(kategoriId);
+    const kategori = await this.findOne(kategoriId);
     if (!kategori) {
       throw new NotFoundException();
     }
     await this.kategoriRepository.remove(kategori);
-    return {message: 'kategori successfully deleted'
-  };
+    return { message: 'kategori successfully deleted' };
   }
 }

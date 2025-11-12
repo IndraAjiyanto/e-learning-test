@@ -11,7 +11,9 @@ describe('InHouseTrainingController', () => {
       providers: [InHouseTrainingService],
     }).compile();
 
-    controller = module.get<InHouseTrainingController>(InHouseTrainingController);
+    controller = module.get<InHouseTrainingController>(
+      InHouseTrainingController,
+    );
   });
 
   it('should be defined', () => {

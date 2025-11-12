@@ -119,7 +119,7 @@ export class MaterisService {
   ) {
     // Pisahkan berdasarkan "/upload/"
     // Untuk raw files, URL bisa jadi: .../raw/upload/... atau .../upload/...
-    let parts = url.split('/upload/');
+    const parts = url.split('/upload/');
     if (parts.length < 2) {
       return null;
     }

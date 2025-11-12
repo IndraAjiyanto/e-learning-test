@@ -1,28 +1,28 @@
-import { IsEnum, IsInt, IsString } from "class-validator";
-import { Proses } from "src/entities/logbook.entity";
+import { IsEnum, IsInt, IsString } from 'class-validator';
+import { Proses } from 'src/entities/logbook.entity';
 
 export class CreateLogbookDto {
-    @IsString()
-    kegiatan: string;
+  @IsString()
+  kegiatan: string;
 
-    @IsString()
-    rincian_kegiatan: string;
+  @IsString()
+  rincian_kegiatan: string;
 
-    @IsString()
-    dokumentasi: string;
+  @IsString()
+  dokumentasi: string;
 
-    @IsString()
-    dokumentasi_lain: string;
+  @IsString()
+  dokumentasi_lain: string;
 
-    @IsString()
-    kendala: string;
+  @IsString()
+  kendala: string;
 
-    @IsInt()
-    userId: number;
+  @IsInt()
+  userId: number;
 
-        @IsEnum(['acc' , 'proces' , 'rejected'])
-        proses: Proses;
+  @IsEnum(['acc', 'proces', 'rejected'])
+  proses: Proses;
 
-    @IsInt()
-    pertemuanId: number;
+  @IsInt()
+  pertemuanId: number;
 }

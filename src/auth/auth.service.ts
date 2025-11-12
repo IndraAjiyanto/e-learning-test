@@ -7,7 +7,10 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UsersService, private kelasService: KelassService) {}
+  constructor(
+    private userService: UsersService,
+    private kelasService: KelassService,
+  ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.userService.findByEmail(email);
@@ -17,22 +20,24 @@ export class AuthService {
     return null;
   }
 
-  async createAcount(createUserDto: CreateUserDto){
-      const isMatch = await bcrypt.compare(createUserDto.password, createUserDto.confirm_password);
-      if (!isMatch) {
-      createUserDto.profile = 'logo_wiratek.png'
-            return await this.userService.create(createUserDto)
-      }else{
-           throw new BadRequestException('Password no match');
-      }
-
+  async createAcount(createUserDto: CreateUserDto) {
+    const isMatch = await bcrypt.compare(
+      createUserDto.password,
+      createUserDto.confirm_password,
+    );
+    if (!isMatch) {
+      createUserDto.profile = 'logo_wiratek.png';
+      return await this.userService.create(createUserDto);
+    } else {
+      throw new BadRequestException('Password no match');
+    }
   }
 
-  async findAllKelas(){
-    return await this.kelasService.findAllLaunch()
+  async findAllKelas() {
+    return await this.kelasService.findAllLaunch();
   }
 
-  async findKelas(id: number){
-    return await this.kelasService.findOne(id)
+  async findKelas(id: number) {
+    return await this.kelasService.findOne(id);
   }
 }

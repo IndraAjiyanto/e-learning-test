@@ -47,7 +47,12 @@ export class SertifikatService {
       relations: ['kelas'],
     });
     if (!sertifikat) {
-      const templatePath = path.join(process.cwd(), 'common', 'assets', 'sertifikat.pdf');
+      const templatePath = path.join(
+        process.cwd(),
+        'common',
+        'assets',
+        'sertifikat.pdf',
+      );
       const templateBytes = fs.readFileSync(templatePath);
 
       const pdfDoc = await PDFDocument.load(templateBytes);
@@ -161,10 +166,10 @@ export class SertifikatService {
         }
       }
 
-      let startY = height - 200;
-      let cellWidth = 150;
-      let cellHeight = 30;
-      let startX = 190;
+      const startY = height - 200;
+      const cellWidth = 150;
+      const cellHeight = 30;
+      const startX = 190;
 
       // Header
       headers.forEach((header, i) => {

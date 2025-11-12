@@ -18,13 +18,15 @@ export class TeamService {
     return await this.teamRepository.save(team);
   }
 
-    async noPertemuan(){
-    const team_old = await this.teamRepository.findOne({ order: {team_ke: 'DESC'}  });
-    if(!team_old){
-      return 0
+  async noPertemuan() {
+    const team_old = await this.teamRepository.findOne({
+      order: { team_ke: 'DESC' },
+    });
+    if (!team_old) {
+      return 0;
     }
-    const team_new = team_old.team_ke + 1
-    return team_new
+    const team_new = team_old.team_ke + 1;
+    return team_new;
   }
   async findAll() {
     return await this.teamRepository.find();

@@ -1,37 +1,43 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
-export class Team{
-    @PrimaryGeneratedColumn()
-    id: number
+export class Team {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    profile: string
-    
-    @Column()
-    nama: string
+  @Column()
+  profile: string;
 
-        @Column()
-        team_ke: number
+  @Column()
+  nama: string;
 
-    @Column()
-    posisi: string
+  @Column()
+  team_ke: number;
 
-    @Column()
-    linkedin: string
+  @Column()
+  posisi: string;
 
-    @Column()
-    github: string;
+  @Column()
+  linkedin: string;
 
-    @Column()
-    instagram: string;
+  @Column()
+  github: string;
 
-    @Column()
-    deskripsi: string
+  @Column()
+  instagram: string;
 
-                        @CreateDateColumn()
-                        createdAt: Date;
-                        
-                        @UpdateDateColumn()
-                        updatedAt: Date;
+  @Column()
+  deskripsi: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -55,7 +55,7 @@ export class TeamController {
   ) {
     try {
       createTeamDto.profile = req.body.uploadedImageUrls?.[0];
-        createTeamDto.team_ke = await this.teamService.noPertemuan()
+      createTeamDto.team_ke = await this.teamService.noPertemuan();
 
       await this.teamService.create(createTeamDto);
       req.flash('success', 'team successfully created');
@@ -92,15 +92,15 @@ export class TeamController {
 
   @Roles('super_admin')
   @Patch(':teamId')
-@UseInterceptors(
-  FileInterceptor('profile', multerConfigMemory),
-  ValidateImageInterceptor,
-)
-@ValidateImage({
-  maxSize: 5 * 1024 * 1024, // 5MB
-  allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-  folder: 'nestjs/images/profile',
-})
+  @UseInterceptors(
+    FileInterceptor('profile', multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'nestjs/images/profile',
+  })
   async update(
     @Param('teamId') teamId: number,
     @Body() updateTeamDto: UpdateTeamDto,

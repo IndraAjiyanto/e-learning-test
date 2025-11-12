@@ -72,9 +72,15 @@ export class ValidateFileInterceptor implements NestInterceptor {
         // Set resource_type based on file type or explicit option
         if (resourceType === 'raw' || file.mimetype === 'application/pdf') {
           uploadOptions.resource_type = 'raw';
-        } else if (resourceType === 'image' || file.mimetype.startsWith('image/')) {
+        } else if (
+          resourceType === 'image' ||
+          file.mimetype.startsWith('image/')
+        ) {
           uploadOptions.resource_type = 'image';
-        } else if (resourceType === 'video' || file.mimetype.startsWith('video/')) {
+        } else if (
+          resourceType === 'video' ||
+          file.mimetype.startsWith('video/')
+        ) {
           uploadOptions.resource_type = 'video';
         } else {
           uploadOptions.resource_type = 'auto';

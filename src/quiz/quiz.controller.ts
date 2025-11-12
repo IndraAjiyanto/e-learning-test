@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Res,
+  Req,
+} from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
@@ -13,14 +24,19 @@ export class QuizController {
 
   @Roles('admin')
   @Post(':mingguId')
-  async create(@Param('mingguId') mingguId:number, @Body() createQuizDto: CreateQuizDto, @Res() res:Response, @Req() req:Request) {
+  async create(
+    @Param('mingguId') mingguId: number,
+    @Body() createQuizDto: CreateQuizDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-          createQuizDto.mingguId = mingguId;
-    await this.quizService.create(createQuizDto);
-    req.flash('success', 'Quiz created successfully');
-    res.redirect(`/minggu/${mingguId}`);
+      createQuizDto.mingguId = mingguId;
+      await this.quizService.create(createQuizDto);
+      req.flash('success', 'Quiz created successfully');
+      res.redirect(`/minggu/${mingguId}`);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       req.flash('error', 'Failed to create quiz');
       res.redirect(`/minggu/${mingguId}`);
     }
@@ -28,63 +44,93 @@ export class QuizController {
 
   @Roles('admin')
   @Get('formCreate/:mingguId')
-  async formCreate(@Param('mingguId') mingguId: number, @Res() res:Response, @Req() req:Request) {
-    res.render('admin/quiz/create', {mingguId, user: req.user});
+  async formCreate(
+    @Param('mingguId') mingguId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    res.render('admin/quiz/create', { mingguId, user: req.user });
   }
 
   @Roles('admin')
   @Get(':quizId')
-  async findOne(@Param('quizId') quizId: number, @Res() res:Response, @Req() req:Request) {
+  async findOne(
+    @Param('quizId') quizId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     const quiz = await this.quizService.findOne(quizId);
-    res.render('admin/quiz/detail', {user: req.user, quiz})
+    res.render('admin/quiz/detail', { user: req.user, quiz });
   }
 
   @Roles('admin')
   @Get('formEdit/:quizId')
-  async formEdit(@Param('quizId') quizId:number, @Res() res:Response, @Req() req:Request){
-    const quiz = await this.quizService.findOne(quizId)
-    res.render('admin/quiz/edit', {user:req.user, quiz})
+  async formEdit(
+    @Param('quizId') quizId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const quiz = await this.quizService.findOne(quizId);
+    res.render('admin/quiz/edit', { user: req.user, quiz });
   }
 
   @Roles('user')
   @Get('form/:quizId')
-  async formQuiz(@Param('quizId') quizId:number, @Res() res:Response, @Req() req:Request){
-    const quiz = await this.quizService.findOne(quizId)
-    const nilai = await this.quizService.findNilaiUser(req.user!.id, quizId)
+  async formQuiz(
+    @Param('quizId') quizId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const quiz = await this.quizService.findOne(quizId);
+    const nilai = await this.quizService.findNilaiUser(req.user!.id, quizId);
 
-    res.render('user/quiz/quiz', {user: req.user, quiz, nilai})
+    res.render('user/quiz/quiz', { user: req.user, quiz, nilai });
   }
 
   @Roles('user')
   @Get('start/:quizId')
-  async startQuiz(@Param('quizId') quizId:number, @Res() res:Response, @Req() req:Request){
-    const pertanyaan = await this.quizService.findPertanyaan(quizId)
-    res.render('user/quiz/start', {user: req.user, quizId, pertanyaan})
+  async startQuiz(
+    @Param('quizId') quizId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const pertanyaan = await this.quizService.findPertanyaan(quizId);
+    res.render('user/quiz/start', { user: req.user, quizId, pertanyaan });
   }
 
   @Roles('admin')
   @Patch(':quizId')
-  async update(@Param('quizId') quizId: number, @Body() updateQuizDto: UpdateQuizDto, @Res() res:Response, @Req() req:Request) {
+  async update(
+    @Param('quizId') quizId: number,
+    @Body() updateQuizDto: UpdateQuizDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-      await this.quizService.update(quizId, updateQuizDto)
-          req.flash('success', 'Quiz updated successfully');
-    res.redirect(`/quiz/${quizId}`);
+      await this.quizService.update(quizId, updateQuizDto);
+      req.flash('success', 'Quiz updated successfully');
+      res.redirect(`/quiz/${quizId}`);
     } catch (error) {
-                req.flash('error', 'Quiz failed to updated ');
-    res.redirect(`/quiz/${quizId}`);
+      req.flash('error', 'Quiz failed to updated ');
+      res.redirect(`/quiz/${quizId}`);
     }
   }
 
   @Roles('admin')
   @Delete(':quizId/:mingguId')
-  async remove(@Param('mingguId') mingguId:number ,@Param('quizId') quizId: number, @Res() res:Response, @Req() req:Request) {
+  async remove(
+    @Param('mingguId') mingguId: number,
+    @Param('quizId') quizId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
-    await this.quizService.remove(quizId);
-                req.flash('success', 'Quiz deleted successfully');
-    res.redirect(`/minggu/${mingguId}`);
+      await this.quizService.remove(quizId);
+      req.flash('success', 'Quiz deleted successfully');
+      res.redirect(`/minggu/${mingguId}`);
     } catch (error) {
-                      req.flash('error', 'Quiz Failed to deleted');
-    res.redirect(`/minggu/${mingguId}`);
+      req.flash('error', 'Quiz Failed to deleted');
+      res.redirect(`/minggu/${mingguId}`);
     }
   }
 }

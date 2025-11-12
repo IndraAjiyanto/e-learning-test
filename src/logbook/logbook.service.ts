@@ -57,7 +57,6 @@ export class LogbookService {
     });
   }
 
-
   async findLogBookByUser(userId: number) {
     return await this.logBookRepository.find({
       where: { user: { id: userId } },
@@ -115,7 +114,6 @@ export class LogbookService {
       relations: ['user_kelas', 'user_kelas.user', 'user_kelas.kelas'],
     });
   }
-  
 
   async findPertemuan(pertemuanId: number) {
     const pertemuan = await this.pertemuanRepository.findOne({

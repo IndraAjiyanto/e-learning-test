@@ -27,25 +27,28 @@ const FILE_TYPES: Record<string, FileTypeConfig> = {
   image: {
     mimeTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     extensions: ['.jpg', '.jpeg', '.png'],
-    errorMessage: 'Format file tidak valid. Hanya file gambar (JPG, JPEG, PNG) yang diperbolehkan'
+    errorMessage:
+      'Format file tidak valid. Hanya file gambar (JPG, JPEG, PNG) yang diperbolehkan',
   },
   pdf: {
     mimeTypes: ['application/pdf'],
     extensions: ['.pdf'],
-    errorMessage: 'Format file tidak valid. Hanya file PDF yang diperbolehkan'
+    errorMessage: 'Format file tidak valid. Hanya file PDF yang diperbolehkan',
   },
   video: {
     mimeTypes: ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime'],
     extensions: ['.mp4', '.avi', '.mov'],
-    errorMessage: 'Format file tidak valid. Hanya file video (MP4, AVI, MOV) yang diperbolehkan'
+    errorMessage:
+      'Format file tidak valid. Hanya file video (MP4, AVI, MOV) yang diperbolehkan',
   },
   ppt: {
     mimeTypes: [
       'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     ],
     extensions: ['.ppt', '.pptx'],
-    errorMessage: 'Format file tidak valid. Hanya file PowerPoint (PPT, PPTX) yang diperbolehkan'
+    errorMessage:
+      'Format file tidak valid. Hanya file PowerPoint (PPT, PPTX) yang diperbolehkan',
   },
   document: {
     mimeTypes: [
@@ -53,16 +56,17 @@ const FILE_TYPES: Record<string, FileTypeConfig> = {
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ],
     extensions: ['.pdf', '.doc', '.docx', '.xls', '.xlsx'],
-    errorMessage: 'Format file tidak valid. Hanya file dokumen (PDF, DOC, DOCX, XLS, XLSX) yang diperbolehkan'
+    errorMessage:
+      'Format file tidak valid. Hanya file dokumen (PDF, DOC, DOCX, XLS, XLSX) yang diperbolehkan',
   },
   any: {
     mimeTypes: [],
     extensions: [],
-    errorMessage: 'Format file tidak valid'
-  }
+    errorMessage: 'Format file tidak valid',
+  },
 };
 
 interface CreateMemoryConfigOptions {
@@ -75,18 +79,20 @@ interface CreateMemoryConfigOptions {
  * Factory function untuk membuat memory storage config yang fleksibel
  * @param options - Konfigurasi untuk tipe file yang diperbolehkan
  * @returns MulterOptions untuk memory storage
- * 
+ *
  * @example
  * // Hanya gambar
  * createMemoryConfig({ fileTypes: ['image'] })
- * 
+ *
  * // Gambar dan PDF
  * createMemoryConfig({ fileTypes: ['image', 'pdf'] })
- * 
+ *
  * // Semua dokumen dengan custom size
  * createMemoryConfig({ fileTypes: ['document'], maxSize: 10 })
  */
-export const createMemoryConfig = (options: CreateMemoryConfigOptions): MulterOptions => {
+export const createMemoryConfig = (
+  options: CreateMemoryConfigOptions,
+): MulterOptions => {
   const { fileTypes, maxSize = 5, customErrorMessage } = options;
 
   // Gabungkan semua mime types dan extensions dari tipe file yang dipilih
@@ -94,7 +100,7 @@ export const createMemoryConfig = (options: CreateMemoryConfigOptions): MulterOp
   const allowedExtensions: string[] = [];
   let errorMessage = customErrorMessage;
 
-  fileTypes.forEach(type => {
+  fileTypes.forEach((type) => {
     const config = FILE_TYPES[type];
     allowedMimeTypes.push(...config.mimeTypes);
     allowedExtensions.push(...config.extensions);
@@ -106,9 +112,9 @@ export const createMemoryConfig = (options: CreateMemoryConfigOptions): MulterOp
   return {
     storage: memoryStorage(),
     fileFilter: (req, file, callback) => {
-      const fileExtension = file.originalname.toLowerCase().substring(
-        file.originalname.lastIndexOf('.')
-      );
+      const fileExtension = file.originalname
+        .toLowerCase()
+        .substring(file.originalname.lastIndexOf('.'));
 
       // Jika fileTypes adalah 'any', terima semua file
       if (fileTypes.includes('any')) {
@@ -123,7 +129,10 @@ export const createMemoryConfig = (options: CreateMemoryConfigOptions): MulterOp
       if (isValidMimeType && isValidExtension) {
         callback(null, true);
       } else {
-        callback(new Error(errorMessage || 'Format file tidak valid') as any, false);
+        callback(
+          new Error(errorMessage || 'Format file tidak valid') as any,
+          false,
+        );
       }
     },
     limits: {
@@ -145,37 +154,39 @@ interface CreateCloudinaryConfigOptions {
  * Factory function untuk membuat Cloudinary storage config yang fleksibel
  * @param options - Konfigurasi untuk upload ke Cloudinary
  * @returns MulterOptions untuk Cloudinary storage
- * 
+ *
  * @example
  * // Upload gambar ke Cloudinary
- * createCloudinaryConfig({ 
- *   folder: 'nestjs/images/profile', 
+ * createCloudinaryConfig({
+ *   folder: 'nestjs/images/profile',
  *   fileTypes: ['image'],
  *   transformation: [{ width: 500, height: 500, crop: 'limit' }]
  * })
- * 
+ *
  * // Upload PDF ke Cloudinary
- * createCloudinaryConfig({ 
- *   folder: 'nestjs/documents', 
+ * createCloudinaryConfig({
+ *   folder: 'nestjs/documents',
  *   fileTypes: ['pdf'],
  *   resourceType: 'raw'
  * })
  */
-export const createCloudinaryConfig = (options: CreateCloudinaryConfigOptions): MulterOptions => {
-  const { 
-    folder, 
-    fileTypes, 
-    maxSize = 5, 
+export const createCloudinaryConfig = (
+  options: CreateCloudinaryConfigOptions,
+): MulterOptions => {
+  const {
+    folder,
+    fileTypes,
+    maxSize = 5,
     resourceType = 'auto',
     transformation = [],
-    customErrorMessage 
+    customErrorMessage,
   } = options;
 
   // Gabungkan allowed formats
   const allowedFormats: string[] = [];
-  fileTypes.forEach(type => {
+  fileTypes.forEach((type) => {
     const config = FILE_TYPES[type];
-    config.extensions.forEach(ext => {
+    config.extensions.forEach((ext) => {
       allowedFormats.push(ext.replace('.', ''));
     });
   });
@@ -202,33 +213,33 @@ export const createCloudinaryConfig = (options: CreateCloudinaryConfigOptions): 
 // PREDEFINED CONFIGS (untuk backward compatibility)
 // ============================================
 
-export const multerConfigMemory = createMemoryConfig({ 
-  fileTypes: ['image'] 
+export const multerConfigMemory = createMemoryConfig({
+  fileTypes: ['image'],
 });
 
 export const multerConfigImage = createCloudinaryConfig({
   folder: 'nestjs/images/profile',
   fileTypes: ['image'],
   resourceType: 'image',
-  transformation: [{ width: 500, height: 500, crop: 'limit' }]
+  transformation: [{ width: 500, height: 500, crop: 'limit' }],
 });
 
 export const multerConfigPayment = createCloudinaryConfig({
   folder: 'nestjs/images/payment',
   fileTypes: ['image'],
-  resourceType: 'image'
+  resourceType: 'image',
 });
 
 export const multerConfigVideo = createCloudinaryConfig({
   folder: 'nestjs/videos',
   fileTypes: ['video'],
   resourceType: 'video',
-  maxSize: 100
+  maxSize: 100,
 });
 
 export const multerConfigPdf = createCloudinaryConfig({
   folder: 'nestjs/pdf',
   fileTypes: ['pdf'],
   resourceType: 'raw',
-  maxSize: 20
+  maxSize: 20,
 });

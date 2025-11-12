@@ -8,6 +8,6 @@ import { MisiController } from './misi.controller';
   imports: [TypeOrmModule.forFeature([Misi])],
   controllers: [MisiController],
   providers: [MisiService],
-  exports: [MisiService]
+  exports: [MisiService],
 })
 export class MisiModule {}

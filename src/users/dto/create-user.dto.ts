@@ -1,5 +1,14 @@
-import { IsArray, IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
-import { UserRole } from "src/entities/user.entity";
+import {
+  IsArray,
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { UserRole } from 'src/entities/user.entity';
 
 export class CreateUserDto {
   @IsString()
@@ -16,8 +25,8 @@ export class CreateUserDto {
   confirm_password: string;
 
   @IsString()
-  profile: string
-  
+  profile: string;
+
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })

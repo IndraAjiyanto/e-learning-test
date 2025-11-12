@@ -17,7 +17,7 @@ import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 
-  @UseGuards(AuthenticatedGuard)
+@UseGuards(AuthenticatedGuard)
 @Controller('kategori-blog')
 export class KategoriBlogController {
   constructor(private readonly kategoriBlogService: KategoriBlogService) {}

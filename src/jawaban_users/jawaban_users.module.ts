@@ -12,9 +12,20 @@ import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 import { Minggu } from 'src/entities/minggu.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Pertanyaan, Jawaban, User, JawabanUser, Nilai, Quiz, ProgresMinggu, Minggu])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Pertanyaan,
+      Jawaban,
+      User,
+      JawabanUser,
+      Nilai,
+      Quiz,
+      ProgresMinggu,
+      Minggu,
+    ]),
+  ],
   controllers: [JawabanUsersController],
   providers: [JawabanUsersService],
-  exports: [JawabanUsersService]
+  exports: [JawabanUsersService],
 })
 export class JawabanUsersModule {}
