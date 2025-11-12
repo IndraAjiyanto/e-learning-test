@@ -468,7 +468,7 @@
         previewUrl: null, 
         copied: false, 
         paymentType: 'full',
-        installmentMonths: {{#each kelas.cicilan}}{{#if @first}}{{this.bulan}}{{/if}}{{else}}3{{/each}},
+        installmentMonths: 0,
         fileError: '',
         waError: '',
         isValidFile: false,
@@ -485,16 +485,24 @@
             }{{#unless @last}},{{/unless}}
           {{/each}}
         ],
+        hasCicilan: {{#if kelas.cicilan.[0]}}true{{else}}false{{/if}},
         copyToClipboard() { 
           navigator.clipboard.writeText('2847 9237 4298 1234'); 
           this.copied = true; 
           setTimeout(() => this.copied = false, 2000); 
+        },
+        setPaymentType(type) {
+          this.paymentType = type;
+          if (type === 'installment' && this.installmentMonths === 0 && this.availableMonths.length > 0) {
+            this.installmentMonths = this.availableMonths[0];
+          }
         },
         getCicilanByMonth(months) {
           const cicilan = this.cicilanData.find(c => c.bulan === months);
           return cicilan ? cicilan : null;
         },
         get installmentAmount() {
+          if (!this.installmentMonths || this.installmentMonths === 0) return 0;
           const cicilan = this.getCicilanByMonth(this.installmentMonths);
           if (cicilan && cicilan.dp) {
             // Return DP as first payment
@@ -504,6 +512,7 @@
           return Math.ceil({{kelas.harga}} / this.installmentMonths);
         },
         get totalCicilanAmount() {
+          if (!this.installmentMonths || this.installmentMonths === 0) return {{kelas.harga}};
           const cicilan = this.getCicilanByMonth(this.installmentMonths);
           if (cicilan && cicilan.harga && cicilan.harga.length > 0) {
             return cicilan.harga.reduce((sum, h) => sum + h, 0);
@@ -586,7 +595,7 @@
               <!-- Payment Type Toggle -->
               <div class='flex gap-2 p-1 bg-gray-100 rounded-xl'>
                 <button
-                  @click="paymentType = 'full'"
+                  @click="setPaymentType('full')"
                   :class="paymentType === 'full' ? 'bg-white shadow-md' : 'bg-transparent'"
                   class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
                 >
@@ -594,9 +603,10 @@
                   Full Payment
                 </button>
                 <button
-                  @click="paymentType = 'installment'"
+                  @click="setPaymentType('installment')"
                   :class="paymentType === 'installment' ? 'bg-white shadow-md' : 'bg-transparent'"
                   class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
+                  x-show="hasCicilan"
                 >
                   <i class='fas fa-calendar-alt mr-2'></i>
                   Installment
@@ -652,6 +662,8 @@
 
                 <!-- Installment Price Display -->
                 <div
+                  x-show="installmentMonths > 0"
+                  x-transition
                   class='bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl p-6 text-white'
                 >
                   <div class='flex items-center justify-between mb-2'>
@@ -674,7 +686,11 @@
                 </div>
 
                 <!-- Installment Info -->
-                <div class='bg-amber-50 border border-amber-200 rounded-xl p-4'>
+                <div 
+                  x-show="installmentMonths > 0"
+                  x-transition
+                  class='bg-amber-50 border border-amber-200 rounded-xl p-4'
+                >
                   <div class='flex items-start gap-3'>
                     <i class='fas fa-info-circle text-amber-600 mt-1'></i>
                     <div class='text-sm text-amber-800'>
@@ -690,7 +706,11 @@
                 </div>
 
                 <!-- Monthly Payment Breakdown -->
-                <div class='bg-white rounded-xl p-4 border-2 border-slate-200'>
+                <div 
+                  x-show="installmentMonths > 0"
+                  x-transition
+                  class='bg-white rounded-xl p-4 border-2 border-slate-200'
+                >
                   <h4 class='font-semibold text-slate-700 mb-3 flex items-center gap-2'>
                     <i class='fas fa-list-ul'></i>
                     Payment Schedule
@@ -876,9 +896,9 @@
 
               <!-- Installment Payment Instructions -->
               <div
-                class='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5'
-                x-show="paymentType === 'installment'"
+                x-show="paymentType === 'installment' && installmentMonths > 0"
                 x-transition
+                class='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5'
               >
                 <h4
                   class='font-bold text-blue-800 flex items-center gap-2 mb-3'
@@ -1380,172 +1400,111 @@
   </div>
 
   <!-- Related Courses -->
-  <div class='max-w-7xl mx-auto px-6 mt-16' x-data='kelasPagination()'>
+  <div class='max-w-7xl mx-auto px-6 mt-16'>
     <h2
       class='font-montserrat text-3xl font-bold mb-8 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent'
     >Other Classes</h2>
 
     <div
-      class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto'
-      x-ref='kelasList'
+      class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto'
+      x-data="{ getQuotaPercentage(enrolled, total) { return total > 0 ? Math.min((enrolled / total) * 100, 100) : 0; } }"
     >
-      <template x-for='(kelas, index) in displayedKelas' :key='kelas.id'>
+      {{#each kelass}}
         <div
           class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
-          x-show='isVisible(index)'
+          data-kategori='{{kategori.nama_kategori}}'
+          data-category='{{jenis_kelas.nama_jenis_kelas}}'
+          data-nama='{{nama_kelas}}'
+          data-deskripsi='{{deskripsi}}'
+          data-location='{{metode}}'
         >
-          <figure>
-            <img
-              :src='kelas.gambar'
-              :alt='kelas.nama_kelas'
-              class='h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300'
-            />
-          </figure>
+          <!-- Gambar lebih besar -->
+          <img
+            src='{{gambar}}'
+            alt='{{nama_kelas}}'
+            class='h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-lg'
+          />
 
-          <div class='card-body p-8'>
-            <div class='flex gap-2 mb-4'>
+          <div class='card-body p-6'>
+            <div class='flex gap-2 mb-3'>
               <span
                 class='badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full'
-                x-text='kelas.kategori.nama_kategori'
-              ></span>
+              >
+                {{kategori.nama_kategori}}
+              </span>
               <span
                 class='badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
-                x-text='kelas.jenis_kelas.nama_jenis_kelas'
-              ></span>
-            </div>
-            <h2
-              class='font-montserrat card-title text-gray-900 text-2xl font-bold mb-3'
-              x-text='kelas.nama_kelas'
-            ></h2>
-            <p
-              class='font-inter text-base text-gray-600 line-clamp-3 leading-relaxed mb-4'
-              x-text='kelas.deskripsi'
-            ></p>
-            <div class='card-actions justify-end mt-6'>
-              <a
-                :href="'/kelass/' + kelas.id"
-                class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
               >
-                View Class
-              </a>
+                {{jenis_kelas.nama_jenis_kelas}}
+              </span>
+
             </div>
+
+            <div class='flex flex-wrap gap-2 mb-4 text-sm text-gray-700'>
+              <div
+                class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
+              >
+                <i class='fas fa-laptop text-slate-500'></i>
+                <span>{{metode}}</span>
+              </div>
+              <div
+                class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
+              >
+                <i class='fas fa-user-tie text-slate-500'></i>
+                <span>{{lokasi}}</span>
+              </div>
+            </div>
+
+            <h2
+              class='card-title text-gray-900 text-xl font-bold mb-3'
+            >{{nama_kelas}}</h2>
+
+            <p class='text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed'>
+              {{deskripsi}}
+            </p>
+
+            <div
+              class='bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200'
+            >
+              <div class='flex items-center justify-between mb-3'>
+                <div class='flex items-center gap-2'>
+                  <i class='fas fa-users text-slate-600 animate-pulse'></i>
+                  <span class='text-sm font-medium text-slate-600'>Kuota</span>
+                </div>
+                <span
+                  class='text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm'
+                >
+                  {{user_kelas.length}}
+                  /
+                  {{kuota}}
+                  peserta
+                </span>
+              </div>
+
+              <div
+                class='w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2'
+              >
+                <div
+                  class='h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out'
+                  :style='`width: ${getQuotaPercentage({{user_kelas.length}}, {{kuota}})}%`'
+                >
+                </div>
+              </div>
+
+            </div>
+
+  <div class='card-actions'>
+    <a
+      href='/kelass/{{id}}'
+      class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
+    >
+      View Program
+    </a>
+  </div>
           </div>
         </div>
-      </template>
-    </div>
+      {{/each}}
 
-    <!-- Pagination -->
-    <div
-      class='flex justify-center items-center gap-4 mt-12'
-      x-show='totalPages > 1'
-    >
-      <button
-        @click='previousPage()'
-        :disabled='currentPage === 1'
-        class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
-      >
-        <i class='fas fa-chevron-left'></i>
-      </button>
-
-      <template x-for='page in totalPages' :key='page'>
-        <button
-          @click='currentPage = page'
-          class='w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm'
-          :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
-          x-text='page'
-        ></button>
-      </template>
-
-      <button
-        @click='nextPage()'
-        :disabled='currentPage === totalPages'
-        class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
-      >
-        <i class='fas fa-chevron-right'></i>
-      </button>
     </div>
   </div>
 </div>
-
-<script>
-  function kelasPagination() {
-    return {
-      // State pagination
-      currentPage: 1,
-      itemsPerPage: 6,
-
-      // Data kelas dari server (dikonversi dari Handlebars)
-      allKelas: [
-        {{#each kelass}}
-        {
-          id: {{id}},
-          nama_kelas: "{{nama_kelas}}",
-          deskripsi: "{{deskripsi}}",
-          gambar: "{{gambar}}",
-          harga: {{harga}},
-          promo: {{promo}},
-          kategori: { nama_kategori: "{{kategori.nama_kategori}}" },
-          jenis_kelas: { nama_jenis_kelas: "{{jenis_kelas.nama_jenis_kelas}}" }
-        }{{#unless @last}},{{/unless}}
-        {{/each}}
-      ],
-
-      // Getter untuk kelas yang ditampilkan
-      get displayedKelas() {
-        return this.allKelas;
-      },
-
-      // Total halaman
-      get totalPages() {
-        return Math.ceil(this.allKelas.length / this.itemsPerPage);
-      },
-
-      // Cek apakah item visible di halaman saat ini
-      isVisible(index) {
-        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        const endIndex = startIndex + this.itemsPerPage;
-        return index >= startIndex && index < endIndex;
-      },
-
-      // Fungsi navigasi halaman
-      nextPage() {
-        if (this.currentPage < this.totalPages) {
-          this.currentPage++;
-          this.scrollToTop();
-        }
-      },
-
-      previousPage() {
-        if (this.currentPage > 1) {
-          this.currentPage--;
-          this.scrollToTop();
-        }
-      },
-
-      // Scroll ke atas daftar kelas
-      scrollToTop() {
-        const element = document.querySelector('[x-ref="kelasList"]');
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      },
-
-      // Fungsi format Rupiah untuk Alpine.js
-      formatRupiah(angka) {
-        if (!angka) return 'Rp 0';
-
-        const number_string = angka.toString();
-        const sisa = number_string.length % 3;
-        let rupiah = number_string.substr(0, sisa);
-        const ribuan = number_string.substr(sisa).match(/\d{3}/g);
-
-        if (ribuan) {
-          const separator = sisa ? '.' : '';
-          rupiah += separator + ribuan.join('.');
-        }
-
-        return 'Rp ' + rupiah;
-      }
-    };
-  }
-</script>

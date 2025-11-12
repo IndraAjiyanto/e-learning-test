@@ -300,9 +300,9 @@
     <!-- Header Section -->
     <div class='text-center mb-16 relative'>
       <h2 class='text-4xl font-extrabold text-gray-900 mb-4 relative z-10 font-montserrat'>
-        Program Magang Tersedia
+        Available Internship Programs
       </h2>
-      <p class='text-gray-600 text-lg font-inter'>Pilih program yang sesuai dengan tujuan karirmu</p>
+      <p class='text-gray-600 text-lg font-inter'>Choose a program that matches your career goals</p>
     </div>
 
     <!-- Filter Section -->
@@ -312,7 +312,7 @@
         <!-- Filter Title -->
         <div class='flex items-center gap-3 mb-6'>
           <div class='w-1 h-8 bg-gradient-to-b from-gray-700 to-gray-900 rounded-full'></div>
-          <h3 class='text-2xl font-bold text-gray-900 font-montserrat'>Temukan Program yang Tepat</h3>
+          <h3 class='text-2xl font-bold text-gray-900 font-montserrat'>Find the Right Program</h3>
         </div>
 
         <!-- Filter Controls -->
@@ -438,7 +438,7 @@
               <input
                 type='text'
                 x-model='searchQuery'
-                placeholder='Cari program...'
+                placeholder='Search programs...'
                 class='w-full px-5 py-4 pr-12 bg-white backdrop-blur-md border border-gray-300 rounded-2xl text-gray-900 placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 hover:border-gray-400'
               />
               <button
@@ -490,11 +490,11 @@
       <!-- Results Counter -->
       <div class='mt-6 text-center'>
         <p class='text-gray-600 font-inter'>
-          Menampilkan
+          Showing
           <span class='text-gray-900 font-bold' x-text='filteredKelas.filter((el, idx) => paginatedKelas(el)).length'></span>
-          dari
+          of
           <span class='text-gray-900 font-bold' x-text='filteredKelas.length'></span>
-          program
+          programs
         </p>
       </div>
     </div>
@@ -608,8 +608,8 @@
       <div class='bg-gray-100 backdrop-blur-md border border-gray-200 w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center'>
         <i class='fas fa-inbox text-5xl text-gray-400'></i>
       </div>
-      <h3 class='text-3xl font-bold text-gray-900 mb-3 font-montserrat'>Program Tidak Ditemukan</h3>
-      <p class='text-gray-600 text-lg mb-6 font-inter'>Coba sesuaikan pencarian atau filter kriteria.</p>
+      <h3 class='text-3xl font-bold text-gray-900 mb-3 font-montserrat'>Program Not Found</h3>
+      <p class='text-gray-600 text-lg mb-6 font-inter'>Try adjusting your search or filter criteria.</p>
       <button
         @click='resetFilters()'
         class='px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold shadow-md'
