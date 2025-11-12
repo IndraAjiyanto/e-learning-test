@@ -36,7 +36,7 @@ export class CommitmentController {
       req.flash('success', 'Commitment created successfully');
       res.redirect('/commitment');
     } catch (error) {
-      req.flash('error', 'Failed to create commitment');
+      req.flash('error', error.message || 'Failed to create commitment');
       res.redirect('/commitment/formCreate');
     }
   }
@@ -73,7 +73,7 @@ export class CommitmentController {
         error: req.flash('error'),
       };
     } catch (error) {
-      req.flash('error', 'Commitment not found');
+      req.flash('error', error.message || 'Commitment not found');
       return { redirect: '/commitment' };
     }
   }
@@ -90,7 +90,7 @@ export class CommitmentController {
       req.flash('success', 'Commitment updated successfully');
       res.redirect('/commitment');
     } catch (error) {
-      req.flash('error', 'Failed to update commitment');
+      req.flash('error', error.message || 'Failed to update commitment');
       res.redirect(`/commitment/formEdit/${id}`);
     }
   }
@@ -106,7 +106,7 @@ export class CommitmentController {
       req.flash('success', 'Commitment deleted successfully');
       res.redirect('/commitment');
     } catch (error) {
-      req.flash('error', 'Failed to delete commitment');
+      req.flash('error', error.message || 'Failed to delete commitment');
       res.redirect('/commitment');
     }
   }

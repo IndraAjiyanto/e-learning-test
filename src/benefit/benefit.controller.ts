@@ -34,7 +34,7 @@ export class BenefitController {
       req.flash('success', 'benefit successfully created');
       res.redirect('/benefit');
     } catch (error) {
-      req.flash('error', 'benefit failed to create');
+      req.flash('error', error.message || 'benefit failed to create');
       res.redirect('/benefit');
     }
   }
@@ -76,7 +76,7 @@ export class BenefitController {
       req.flash('success', 'benefit successfully updated');
       res.redirect('/benefit');
     } catch (error) {
-      req.flash('error', 'benefit failed  to updat');
+      req.flash('error', error.message || 'benefit failed  to updat');
       res.redirect('/benefit');
     }
   }
@@ -93,7 +93,7 @@ export class BenefitController {
       req.flash('success', 'benefit successfully deleted');
       res.redirect('/benefit');
     } catch (error) {
-      req.flash('error', 'benefit failed  to delete');
+      req.flash('error', error.message || 'benefit failed  to delete');
       res.redirect('/benefit');
     }
   }

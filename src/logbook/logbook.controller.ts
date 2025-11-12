@@ -243,7 +243,7 @@ export class LogbookController {
       }
     } catch (error) {
       const logbook = await this.logbookService.findOne(logbookId);
-      req.flash('error', 'logbook failed to update');
+      req.flash('error', error.message || 'logbook failed to update');
       if (req.user?.role === 'admin') {
         res.redirect('/logbook');
       } else if (req.user?.role === 'user') {
@@ -287,7 +287,7 @@ export class LogbookController {
       req.flash('success', 'logbook successfully deleted');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'logbook failed to delete');
+      req.flash('error', error.message || 'logbook failed to delete');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }

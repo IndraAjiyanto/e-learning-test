@@ -31,7 +31,7 @@ export class PertanyaanUmumController {
       req.flash('success', 'question successfully created');
       res.redirect('/pertanyaan-umum');
     } catch (error) {
-      req.flash('error', 'question failed to created');
+      req.flash('error', error.message || 'question failed to created');
       res.redirect('/pertanyaan-umum');
     }
   }
@@ -83,7 +83,7 @@ export class PertanyaanUmumController {
       req.flash('success', 'question successfully updated');
       res.redirect('/pertanyaan-umum');
     } catch (error) {
-      req.flash('error', 'question failed to update');
+      req.flash('error', error.message || 'question failed to update');
       res.redirect('/pertanyaan-umum');
     }
   }
@@ -100,7 +100,7 @@ export class PertanyaanUmumController {
       req.flash('success', 'question successfully delete');
       res.redirect('/pertanyaan-umum');
     } catch (error) {
-      req.flash('error', 'question failed to delete');
+      req.flash('error', error.message || 'question failed to delete');
       res.redirect('/pertanyaan-umum');
     }
   }

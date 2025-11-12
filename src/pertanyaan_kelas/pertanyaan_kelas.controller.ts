@@ -61,7 +61,7 @@ export class PertanyaanKelasController {
       req.flash('success', 'PertanyaanKelas created successfully');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'PertanyaanKelas failed to create');
+      req.flash('error', error.message || 'PertanyaanKelas failed to create');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -96,7 +96,7 @@ export class PertanyaanKelasController {
       req.flash('success', 'PertanyaanKelas updated successfully');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'PertanyaanKelas failed to update');
+      req.flash('error', error.message || 'PertanyaanKelas failed to update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -114,7 +114,7 @@ export class PertanyaanKelasController {
       req.flash('success', 'PertanyaanKelas deleted successfully');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'PertanyaanKelas failed to delete');
+      req.flash('error', error.message || 'PertanyaanKelas failed to delete');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }

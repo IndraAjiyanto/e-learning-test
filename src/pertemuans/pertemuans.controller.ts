@@ -40,7 +40,7 @@ export class PertemuansController {
       req.flash('success', 'session succesfuly create');
       res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`);
     } catch (error) {
-      req.flash('error', 'session unsucces create');
+      req.flash('error', error.message || 'session unsucces create');
       res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`);
     }
   }
@@ -61,7 +61,7 @@ export class PertemuansController {
       req.flash('success', 'session succesfuly create');
       res.redirect(`/minggu/${mingguId}`);
     } catch (error) {
-      req.flash('error', 'session unsucces create');
+      req.flash('error', error.message || 'session unsucces create');
       res.redirect(`/minggu/${mingguId}`);
     }
   }
@@ -148,7 +148,7 @@ export class PertemuansController {
       req.flash('success', 'Session successfuly update');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'Session unsuccess update');
+      req.flash('error', error.message || 'Session unsuccess update');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }
@@ -166,7 +166,7 @@ export class PertemuansController {
       req.flash('success', 'session successfuly delete');
       res.redirect(`/minggu/${mingguId}`);
     } catch (error) {
-      req.flash('error', 'session unsucces delete');
+      req.flash('error', error.message || 'session unsucces delete');
       res.redirect(`/minggu/${mingguId}`);
     }
   }

@@ -95,7 +95,7 @@ export class KelassController {
       res.redirect('/kelass');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'class failed created');
+      req.flash('error', error.message || 'class failed created');
       res.redirect('/kelass');
     }
   }
@@ -113,7 +113,7 @@ export class KelassController {
       req.flash('success', 'user successfuly add to class');
       res.redirect('/kelass');
     } catch (error) {
-      req.flash('error', 'user failed add to class');
+      req.flash('error', error.message || 'user failed add to class');
       res.redirect('/kelass');
     }
   }
@@ -360,7 +360,7 @@ export class KelassController {
 
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'failed update kelas');
+      req.flash('error', error.message || 'failed update kelas');
       res.redirect('/kelass');
     }
   }
@@ -379,7 +379,7 @@ export class KelassController {
       req.flash('success', 'class successfuly switch launch');
       res.redirect('/kelass');
     } catch (error) {
-      req.flash('error', 'class failed to launch');
+      req.flash('error', error.message || 'class failed to launch');
       res.redirect('/kelass');
     }
   }
@@ -402,7 +402,7 @@ export class KelassController {
       req.flash('success', 'Class successfully removed');
       res.redirect('/kelass');
     } catch (error) {
-      req.flash('error', 'Class failed removed');
+      req.flash('error', error.message || 'Class failed removed');
       res.redirect('/kelass');
     }
   }
@@ -421,7 +421,7 @@ export class KelassController {
       res.redirect('/kelass');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'class unsuccess delete');
+      req.flash('error', error.message || 'class unsuccess delete');
       res.redirect('/kelass');
     }
   }

@@ -73,7 +73,7 @@ export class PendaftaranController {
       }
     } catch (error) {
       console.log(error);
-      req.flash('error', 'bukti pembayaran gagal dikirim ');
+      req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
       res.redirect(`/pembayarans/riwayat/${userId}`);
     }
   }
@@ -132,7 +132,7 @@ export class PendaftaranController {
       }
     } catch (error) {
       console.log(error);
-      req.flash('error', 'proses pembayaran gagal diubah');
+      req.flash('error', error.message || 'proses pembayaran gagal diubah');
       res.redirect('/pembayarans');
     }
   }

@@ -61,7 +61,7 @@ export class TeamController {
       req.flash('success', 'team successfully created');
       res.redirect('/team');
     } catch (error) {
-      req.flash('error', 'team failed to create');
+      req.flash('error', error.message || 'team failed to create');
       res.redirect('/team');
     }
   }
@@ -117,7 +117,7 @@ export class TeamController {
       req.flash('success', 'team successfully updated');
       res.redirect('/team');
     } catch (error) {
-      req.flash('error', 'team failed to update');
+      req.flash('error', error.message || 'team failed to update');
       res.redirect('/team');
     }
   }
@@ -136,7 +136,7 @@ export class TeamController {
       req.flash('success', 'team successfully deleted');
       res.redirect('/team');
     } catch (error) {
-      req.flash('error', 'team failed to delete');
+      req.flash('error', error.message || 'team failed to delete');
       res.redirect('/team');
     }
   }

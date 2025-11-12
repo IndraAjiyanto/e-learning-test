@@ -63,7 +63,7 @@ export class KerjaSamaController {
       res.redirect('/kerja-sama');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'kerja sama failed to create');
+      req.flash('error', error.message || 'kerja sama failed to create');
       res.redirect('/kerja-sama');
     }
   }
@@ -139,7 +139,7 @@ export class KerjaSamaController {
       res.redirect('/kerja-sama');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'kerja_sama failed to update');
+      req.flash('error', error.message || 'kerja_sama failed to update');
       res.redirect('/kerja-sama');
     }
   }
@@ -162,7 +162,7 @@ export class KerjaSamaController {
       req.flash('success', 'kerja_sama successfully remove');
       res.redirect('/kerja-sama');
     } catch (error) {
-      req.flash('error', 'kerja_sama failed to remove');
+      req.flash('error', error.message || 'kerja_sama failed to remove');
       res.redirect('/kerja-sama');
     }
   }

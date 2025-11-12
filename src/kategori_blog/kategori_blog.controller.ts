@@ -67,7 +67,7 @@ export class KategoriBlogController {
       res.redirect('/kategori-blog');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Blog Category failed to create');
+      req.flash('error', error.message || 'Blog Category failed to create');
       res.redirect('/kategori-blog');
     }
   }
@@ -86,7 +86,7 @@ export class KategoriBlogController {
       res.redirect('/kategori-blog');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Blog Category failed to update');
+      req.flash('error', error.message || 'Blog Category failed to update');
       res.redirect('/kategori-blog');
     }
   }
@@ -108,7 +108,7 @@ export class KategoriBlogController {
       req.flash('success', 'Blog Category successfully removed');
       res.redirect('/kategori-blog');
     } catch (error) {
-      req.flash('error', 'Blog Category failed to remove');
+      req.flash('error', error.message || 'Blog Category failed to remove');
       res.redirect('/kategori-blog');
     }
   }

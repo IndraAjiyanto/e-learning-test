@@ -87,7 +87,7 @@ export class JenisKelasController {
       req.flash('success', 'Class type successfully update');
       res.redirect('/jenis-kelas');
     } catch (error) {
-      req.flash('error', 'Class type failed to updated');
+      req.flash('error', error.message || 'Class type failed to updated');
       res.redirect('/jenis-kelas');
     }
   }
@@ -110,7 +110,7 @@ export class JenisKelasController {
       req.flash('success', 'Class type successfully delete');
       res.redirect('/jenis-kelas');
     } catch (error) {
-      req.flash('error', 'Class type failed to deleted');
+      req.flash('error', error.message || 'Class type failed to deleted');
       res.redirect('/jenis-kelas');
     }
   }

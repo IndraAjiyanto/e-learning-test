@@ -63,7 +63,7 @@ export class TentangController {
       res.redirect('/tentang');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Tentang failed to create');
+      req.flash('error', error.message || 'Tentang failed to create');
       res.redirect('/tentang');
     }
   }
@@ -139,7 +139,7 @@ export class TentangController {
       res.redirect('/tentang');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Tentang failed to update');
+      req.flash('error', error.message || 'Tentang failed to update');
       res.redirect('/tentang');
     }
   }
@@ -159,7 +159,7 @@ export class TentangController {
       res.redirect('/tentang');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Tentang failed to delete');
+      req.flash('error', error.message || 'Tentang failed to delete');
       res.redirect('/tentang');
     }
   }

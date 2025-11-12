@@ -48,7 +48,7 @@ export class BulanController {
       res.redirect('/bulan');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Bulan failed to create');
+      req.flash('error', error.message || 'Bulan failed to create');
       res.redirect('/bulan');
     }
   }
@@ -78,7 +78,7 @@ export class BulanController {
       res.redirect('/bulan');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Bulan failed to update');
+      req.flash('error', error.message || 'Bulan failed to update');
       res.redirect('/bulan');
     }
   }
@@ -96,7 +96,7 @@ export class BulanController {
       res.redirect('/bulan');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Bulan failed to remove');
+      req.flash('error', error.message || 'Bulan failed to remove');
       res.redirect('/bulan');
     }
   }

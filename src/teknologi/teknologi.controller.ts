@@ -35,7 +35,7 @@ export class TeknologiController {
       res.redirect('/teknologi');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Teknologi failed to create');
+      req.flash('error', error.message || 'Teknologi failed to create');
       res.redirect('/teknologi');
     }
   }
@@ -77,7 +77,7 @@ export class TeknologiController {
       req.flash('success', 'Teknologi successfully updated');
       res.redirect('/teknologi');
     } catch (error) {
-      req.flash('error', 'Teknologi failed to update');
+      req.flash('error', error.message || 'Teknologi failed to update');
       res.redirect('/teknologi');
     }
   }
@@ -99,7 +99,7 @@ export class TeknologiController {
       req.flash('success', 'Teknologi successfully deleted');
       res.redirect('/teknologi');
     } catch (error) {
-      req.flash('error', 'Failed to delete teknologi');
+      req.flash('error', error.message || 'Failed to delete teknologi');
       res.redirect('/teknologi');
     }
   }

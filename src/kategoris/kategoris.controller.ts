@@ -37,7 +37,7 @@ export class KategorisController {
       res.redirect('/kategoris');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'kategori failed to create');
+      req.flash('error', error.message || 'kategori failed to create');
       res.redirect('/kategoris');
     }
   }
@@ -90,7 +90,7 @@ export class KategorisController {
       req.flash('success', 'kategori successfully updated');
       res.redirect('/kategoris');
     } catch (error) {
-      req.flash('error', 'kategori failed to update');
+      req.flash('error', error.message || 'kategori failed to update');
       res.redirect('/kategoris');
     }
   }

@@ -33,7 +33,7 @@ export class MingguController {
       req.flash('success', 'session succesfuly create');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'session unsucces create');
+      req.flash('error', error.message || 'session unsucces create');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -83,7 +83,7 @@ export class MingguController {
       req.flash('success', 'week successfully updated');
       res.redirect(`/minggu/${mingguId}`);
     } catch (error) {
-      req.flash('error', 'week failed updated');
+      req.flash('error', error.message || 'week failed updated');
       res.redirect(`/minggu/${mingguId}`);
     }
   }
@@ -101,7 +101,7 @@ export class MingguController {
       req.flash('success', 'week successfully deleted');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'week failed deleted');
+      req.flash('error', error.message || 'week failed deleted');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }

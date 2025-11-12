@@ -42,7 +42,7 @@ export class JawabanTugassController {
       req.flash('success', 'submission successfuly send');
       res.redirect(`/jawaban-tugass/${pertemuanId}/${tugasId}`);
     } catch (error) {
-      req.flash('error', 'submission unsuccess send');
+      req.flash('error', error.message || 'submission unsuccess send');
       res.redirect(`/jawaban-tugass/${pertemuanId}/${tugasId}`);
     }
   }

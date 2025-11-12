@@ -106,7 +106,7 @@ export class TugassController {
       req.flash('success', 'successfuly delete assignment');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'unsuccess delete assignment');
+      req.flash('error', error.message || 'unsuccess delete assignment');
       console.log(error);
       res.redirect(`/pertemuans/${pertemuanId}`);
     }

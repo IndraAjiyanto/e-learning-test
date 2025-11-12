@@ -63,7 +63,7 @@ export class GambarBenefitController {
       res.redirect('/gambar-benefit');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Gambar Benefit failed to create');
+      req.flash('error', error.message || 'Gambar Benefit failed to create');
       res.redirect('/gambar-benefit');
     }
   }
@@ -136,7 +136,7 @@ export class GambarBenefitController {
       res.redirect('/gambar-benefit');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Gambar Benefit failed to update');
+      req.flash('error', error.message || 'Gambar Benefit failed to update');
       res.redirect('/gambar-benefit');
     }
   }
@@ -159,7 +159,7 @@ export class GambarBenefitController {
       req.flash('success', 'Gambar Benefit successfully removed');
       res.redirect('/gambar-benefit');
     } catch (error) {
-      req.flash('error', 'Gambar Benefit failed to remove');
+      req.flash('error', error.message || 'Gambar Benefit failed to remove');
       res.redirect('/gambar-benefit');
     }
   }

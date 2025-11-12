@@ -62,7 +62,7 @@ export class AuthController {
       res.redirect('/login');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'failed to regis');
+      req.flash('error', error.message || 'failed to regis');
       res.redirect('/login');
     }
   }
@@ -89,7 +89,7 @@ export class AuthController {
       });
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Email atau password salah');
+      req.flash('error', error.message || 'Email atau password salah');
       return res.redirect('/login');
     }
   }

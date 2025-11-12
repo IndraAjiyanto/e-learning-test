@@ -70,7 +70,7 @@ export class CicilanController {
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Failed to create cicilan');
+      req.flash('error', error.message || 'Failed to create cicilan');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -103,7 +103,7 @@ export class CicilanController {
       res.redirect(`/kelass/detail/kelas/admin/${cicilan.kelas.id}`);
     } catch (error) {
       const cicilan = await this.cicilanService.findOne(id);
-      req.flash('error', 'Failed to update cicilan');
+      req.flash('error', error.message || 'Failed to update cicilan');
       res.redirect(`/kelass/detail/kelas/admin/${cicilan.kelas.id}`);
     }
   }
@@ -124,7 +124,7 @@ export class CicilanController {
     } catch (error) {
       const cicilan = await this.cicilanService.findOne(id);
       const kelasId = cicilan.kelas.id;
-      req.flash('error', 'Failed to delete cicilan');
+      req.flash('error', error.message || 'Failed to delete cicilan');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }

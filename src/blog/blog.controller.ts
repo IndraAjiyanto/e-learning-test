@@ -110,7 +110,7 @@ export class BlogController {
       res.redirect('/blog');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Blog failed to create');
+      req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }
   }
@@ -165,7 +165,7 @@ export class BlogController {
       res.redirect('/blog');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Blog failed to update');
+      req.flash('error', error.message || 'Blog failed to update');
       res.redirect('/blog');
     }
   }
@@ -193,7 +193,7 @@ export class BlogController {
       req.flash('success', 'Blog successfully removed');
       res.redirect('/blog');
     } catch (error) {
-      req.flash('error', 'Blog failed to remove');
+      req.flash('error', error.message || 'Blog failed to remove');
       res.redirect('/blog');
     }
   }

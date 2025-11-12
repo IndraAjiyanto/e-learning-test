@@ -72,7 +72,7 @@ export class MaterisController {
       req.flash('success', 'Successfully created PDF material');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'Failed to create PDF material');
+      req.flash('error', error.message || 'Failed to create PDF material');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }
@@ -177,7 +177,7 @@ export class MaterisController {
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
       console.error('PPT upload error:', error);
-      req.flash('error', 'Failed to upload PPT material');
+      req.flash('error', error.message || 'Failed to upload PPT material');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }
@@ -197,7 +197,7 @@ export class MaterisController {
       req.flash('success', 'Successfully created video material');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'Failed to create video material');
+      req.flash('error', error.message || 'Failed to create video material');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }
@@ -350,7 +350,7 @@ export class MaterisController {
       req.flash('success', 'successfully delete materi');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'failed delete materi');
+      req.flash('error', error.message || 'failed delete materi');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }

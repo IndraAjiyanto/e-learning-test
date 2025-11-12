@@ -64,7 +64,6 @@ export class UsersController {
       );
       res.redirect('/users/forgot-password');
     } catch (error) {
-      console.log(error);
       req.flash(
         'error',
         error.message || 'Failed to process password reset request',
@@ -139,7 +138,7 @@ export class UsersController {
       res.redirect('/users');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Failed to create user');
+      req.flash('error', error.message || 'Failed to create user');
       res.redirect('/users');
     }
   }
@@ -215,7 +214,7 @@ export class UsersController {
         req.flash('error', 'Failed to update user');
       }
     } catch (error) {
-      req.flash('error', 'Failed to update user');
+      req.flash('error', error.message || 'Failed to update user');
       res.redirect('/users/profile');
     }
   }
@@ -256,7 +255,7 @@ export class UsersController {
       req.flash('success', 'User successfully updated');
       res.redirect('/users');
     } catch (error) {
-      req.flash('error', 'User failed to update');
+      req.flash('error', error.message || 'User failed to update');
       res.redirect('/users');
     }
   }
@@ -346,7 +345,7 @@ export class UsersController {
     } catch (error) {
       console.log('=== UPDATE PROFILE ERROR ===');
       console.log(error);
-      req.flash('error', 'update profile failed');
+      req.flash('error', error.message || 'update profile failed');
       res.redirect('/users/profile');
     }
   }
@@ -371,7 +370,7 @@ export class UsersController {
       req.flash('success', 'User successfully deleted');
       res.redirect('/users');
     } catch (error) {
-      req.flash('error', 'Failed to delete user');
+      req.flash('error', error.message || 'Failed to delete user');
       res.redirect('/users');
     }
   }

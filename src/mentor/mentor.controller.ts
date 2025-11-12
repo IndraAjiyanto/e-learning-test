@@ -73,7 +73,7 @@ export class MentorController {
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       console.log(error);
-      req.flash('error', 'mentor failed to create');
+      req.flash('error', error.message || 'mentor failed to create');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -177,7 +177,7 @@ export class MentorController {
       req.flash('success', 'mentor successfully update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'mentor failed to update');
+      req.flash('error', error.message || 'mentor failed to update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -202,7 +202,7 @@ export class MentorController {
       req.flash('success', 'mentor successfully deleted');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'mentor failed to delete');
+      req.flash('error', error.message || 'mentor failed to delete');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }

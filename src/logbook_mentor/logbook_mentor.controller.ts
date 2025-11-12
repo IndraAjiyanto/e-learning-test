@@ -44,7 +44,7 @@ export class LogbookMentorController {
       req.flash('success', 'Log book added successfully');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'Log book failed to create');
+      req.flash('error', error.message || 'Log book failed to create');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }
@@ -121,7 +121,7 @@ export class LogbookMentorController {
       req.flash('success', 'logbook successfully updated');
       res.redirect(`/logbook-mentor/${logbook_mentorId}`);
     } catch (error) {
-      req.flash('error', 'logbook failed to updated');
+      req.flash('error', error.message || 'logbook failed to updated');
       res.redirect(`/logbook-mentor/${logbook_mentorId}`);
     }
   }
@@ -139,7 +139,7 @@ export class LogbookMentorController {
       req.flash('success', 'logbook successfully deleted');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'logbook failed to delete');
+      req.flash('error', error.message || 'logbook failed to delete');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }

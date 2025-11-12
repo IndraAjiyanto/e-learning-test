@@ -37,7 +37,7 @@ export class QuizController {
       res.redirect(`/minggu/${mingguId}`);
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Failed to create quiz');
+      req.flash('error', error.message || 'Failed to create quiz');
       res.redirect(`/minggu/${mingguId}`);
     }
   }
@@ -111,7 +111,7 @@ export class QuizController {
       req.flash('success', 'Quiz updated successfully');
       res.redirect(`/quiz/${quizId}`);
     } catch (error) {
-      req.flash('error', 'Quiz failed to updated ');
+      req.flash('error', error.message || 'Quiz failed to updated ');
       res.redirect(`/quiz/${quizId}`);
     }
   }
@@ -129,7 +129,7 @@ export class QuizController {
       req.flash('success', 'Quiz deleted successfully');
       res.redirect(`/minggu/${mingguId}`);
     } catch (error) {
-      req.flash('error', 'Quiz Failed to deleted');
+      req.flash('error', error.message || 'Quiz Failed to deleted');
       res.redirect(`/minggu/${mingguId}`);
     }
   }

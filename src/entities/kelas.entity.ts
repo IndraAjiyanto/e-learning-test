@@ -43,6 +43,9 @@ export class Kelas {
   deskripsi: string;
 
   @Column()
+  grup: string;
+
+  @Column()
   gambar: string;
 
   @Column({ nullable: true })

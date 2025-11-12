@@ -50,7 +50,7 @@ export class JawabanUsersController {
       req.flash('success', 'berhasil menjawab pertanyaan');
       res.redirect(`/quiz/form/${quizId}`);
     } catch (error) {
-      req.flash('error', 'gagal menjawab pertanyaan');
+      req.flash('error', error.message || 'gagal menjawab pertanyaan');
       res.redirect(`/quiz/form/${quizId}`);
     }
   }

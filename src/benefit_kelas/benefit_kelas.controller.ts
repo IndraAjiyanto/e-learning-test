@@ -36,7 +36,7 @@ export class BenefitKelasController {
       req.flash('success', 'benefit kelas successfully created');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'benefit kelas failed to create');
+      req.flash('error', error.message || 'benefit kelas failed to create');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -83,7 +83,7 @@ export class BenefitKelasController {
       req.flash('success', 'benefit kelas successfully update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'benefit kelas failed to update');
+      req.flash('error', error.message || 'benefit kelas failed to update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -106,7 +106,7 @@ export class BenefitKelasController {
       req.flash('success', 'benefit kelas successfully delete');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'benefit kelas failed to delete');
+      req.flash('error', error.message || 'benefit kelas failed to delete');
 
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }

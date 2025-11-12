@@ -64,7 +64,7 @@ export class PertanyaansController {
       req.flash('success', 'Berhasil membuat pertanyaan beserta jawabannya');
       return res.redirect(`/quiz/${quizId}`);
     } catch (err) {
-      req.flash('error', 'Gagal membuat pertanyaan');
+      req.flash('error', err.message || 'Gagal membuat pertanyaan');
       return res.redirect(`/quiz/${quizId}`);
     }
   }
@@ -160,7 +160,7 @@ export class PertanyaansController {
       req.flash('success', 'successfuly update question');
       res.redirect(`/quiz/${quizId}`);
     } catch (error) {
-      req.flash('error', 'unsuccess update question');
+      req.flash('error', error.message || 'unsuccess update question');
       res.redirect(`/quiz/${quizId}`);
     }
   }
@@ -182,7 +182,7 @@ export class PertanyaansController {
       req.flash('success', 'successfuly delete question');
       res.redirect(`/quiz/${quizId}`);
     } catch (error) {
-      req.flash('error', 'unsuccess delete question');
+      req.flash('error', error.message || 'unsuccess delete question');
       res.redirect(`/quiz/${quizId}`);
     }
   }

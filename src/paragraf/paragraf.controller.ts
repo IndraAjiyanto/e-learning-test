@@ -36,7 +36,7 @@ export class ParagrafController {
       res.redirect('/paragraf');
     } catch (error) {
       console.error(error);
-      req.flash('error', 'Failed to create paragraph');
+      req.flash('error', error.message || 'Failed to create paragraph');
       res.redirect('/paragraf');
     }
   }
@@ -78,7 +78,7 @@ export class ParagrafController {
       req.flash('success', 'paragraph succesfuly update');
       res.redirect('/paragraf');
     } catch (error) {
-      req.flash('error', 'Failed to update paragraph');
+      req.flash('error', error.message || 'Failed to update paragraph');
       res.redirect('/paragraf');
     }
   }
@@ -96,7 +96,7 @@ export class ParagrafController {
       res.redirect('/paragraf');
     } catch (error) {
       console.error(error);
-      req.flash('error', 'Failed to delete paragraph');
+      req.flash('error', error.message || 'Failed to delete paragraph');
       res.redirect('/paragraf');
     }
   }

@@ -41,7 +41,7 @@ export class KomentarController {
       req.flash('success', 'comment successfuly send');
       res.redirect(`/jawaban-tugass/${tugasId}`);
     } catch (error) {
-      req.flash('error', 'comment unsuccess send');
+      req.flash('error', error.message || 'comment unsuccess send');
       res.redirect(`/jawaban-tugass/${tugasId}`);
     }
   }

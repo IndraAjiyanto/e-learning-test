@@ -61,7 +61,7 @@ export class PortfoliosController {
       req.flash('success', 'portofolio successfully upload');
       res.redirect(`/kelass/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'Failed to upload portofolio');
+      req.flash('error', error.message || 'Failed to upload portofolio');
       res.redirect(`/kelass/${kelasId}`);
     }
   }
@@ -222,7 +222,7 @@ export class PortfoliosController {
         await Promise.allSettled(deleteNewImagesPromises);
       }
 
-      req.flash('error', 'Portfolio failed to update');
+      req.flash('error', error.message || 'Portfolio failed to update');
       return res.redirect(`/portfolios/${portfolioId}/edit`);
     }
   }

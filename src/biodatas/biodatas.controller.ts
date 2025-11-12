@@ -39,7 +39,7 @@ export class BiodatasController {
       res.redirect('/users/profile');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'biodata failed to create');
+      req.flash('error', error.message || 'biodata failed to create');
       res.redirect('/users/profile');
     }
   }
@@ -74,7 +74,7 @@ export class BiodatasController {
       req.flash('success', 'biodata successfully update');
       res.redirect('/users/profile');
     } catch (error) {
-      req.flash('error', 'biodata failed to update');
+      req.flash('error', error.message || 'biodata failed to update');
       res.redirect('/users/profile');
     }
   }
