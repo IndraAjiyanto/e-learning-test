@@ -122,8 +122,7 @@
             >Kesatria Academy</h1>
             <p
               class='text-base sm:text-lg lg:text-xl text-slate-600 leading-relaxed font-inter'
-            >Leading technology learning platform empowering Indonesia's digital
-              generation</p>
+            >Empowering Future Digital Tech Talent’s</p>
           </div>
 
           <div class='prose prose-lg max-w-none'>
@@ -144,20 +143,27 @@
                 </iframe>
               </div>
             </div>
-
+{{#if paragraf.[0]}}
             {{#each paragraf}}
               <p
                 class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'
               >
                 {{this.paragraf}}
               </p>
+            {{/each}}
+
             {{else}}
               <p
                 class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'
               >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Kesatria Academy merupakan layanan edukasi yang berfokus pada pengembangan talenta digital yang unggul di bidang teknologi informasi. Layanan Kesatria Academy dirancang untuk menjawab kebutuhan nyata industri sekaligus mendukung transformasi digital.
               </p>
-            {{/each}}
+              <p
+                class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'
+              >
+Kesatria Academy percaya bahwa pendidikan teknologi tidak hanya berhenti pada penguasaan teori, melainkan mampu melahirkan kemampuan praktis, etos kerja profesional, serta portofolio yang diakui secara global.
+              </p>
+              {{/if}}
             <div class='clear-both'></div>
 
           </div>
@@ -198,7 +204,7 @@
                   {{#if visi.[0]}}
                     {{visi.[0].visi}}
                   {{else}}
-                    To become the leading technology education platform in Indonesia, empowering millions of learners to master digital skills and drive innovation across the nation.
+To become a leading digital education institution that nurtures outstanding information technology talents job-ready and globally competitive to drive Indonesia’s digital transformation.
                   {{/if}}
                 </p>
               </div>
@@ -222,6 +228,7 @@
                   class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
                 >Our Mission</h3>
                 <ul class='space-y-3 sm:space-y-4'>
+                  {{#if misi.[0]}}
                   {{#each misi}}
                     <li class='flex items-start space-x-3'>
                       <i
@@ -234,6 +241,8 @@
                         {{isi}}
                       </p>
                     </li>
+                  {{/each}}
+
                   {{else}}
                     <li class='flex items-start space-x-3'>
                       <i
@@ -242,8 +251,8 @@
                       <p
                         class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                       >
-                        <strong>Education:</strong>
-                        Provide high-quality, accessible technology education to learners nationwide.
+                        <strong>To Become a Leading Provide</strong>
+                     of digital education that continuously innovates in line with advancements in information technology.
                       </p>
                     </li>
                     <li class='flex items-start space-x-3'>
@@ -253,11 +262,44 @@
                       <p
                         class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                       >
-                        <strong>Innovation:</strong>
-                        Foster innovation through cutting-edge curriculum and practical learning experiences.
+                        <strong>To Develop Exceptional Human Resources</strong>
+                     equipped with both technical expertise and soft skills that meet industry demands.
                       </p>
                     </li>
-                  {{/each}}
+                    <li class='flex items-start space-x-3'>
+                      <i
+                        class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
+                      ></i>
+                      <p
+                        class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+                      >
+                        <strong>To Prepare Job-Ready Graduates</strong>
+                     through practical learning programs and professional mentoring.
+                      </p>
+                    </li>
+                    <li class='flex items-start space-x-3'>
+                      <i
+                        class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
+                      ></i>
+                      <p
+                        class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+                      >
+                        <strong>To Build a Globally Competitive Generation</strong>
+                     with internationally recognized digital competencies.
+                      </p>
+                    </li>
+                    <li class='flex items-start space-x-3'>
+                      <i
+                        class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
+                      ></i>
+                      <p
+                        class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+                      >
+                        <strong>To Accelerate Digital Transformation</strong> by cultivating impactful and valuable talents.
+                      </p>
+                    </li>
+    
+                    {{/if}}
                 </ul>
               </div>
             </div>
@@ -268,6 +310,7 @@
               class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-4 sm:mb-6 font-montserrat'
             >Our Commitment</h3>
             <div class='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6'>
+              
               {{#each commitment}}
                 <div
                   class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
@@ -387,7 +430,7 @@
                     {{#if teamLead.[0]}}
                       {{teamLead.[0].nama}}
                     {{else}}
-                      John Doe
+                      Faisal Wirakusuma, S.Kom., M.Sc
                     {{/if}}
                   </h3>
 
@@ -398,18 +441,25 @@
                   {{#if teamLead.[0]}}
                     {{teamLead.[0].posisi}}
                   {{else}}
-                    CEO & Founder
+                    Founder & Chief Executive Officer
                   {{/if}}
                 </p>
-                <p
-                  class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter'
-                >
+
                   {{#if teamLead.[0]}}
+                                  <p
+                  class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'
+                >
                     {{teamLead.[0].deskripsi}}
-                  {{else}}
-                    Experienced technology leader with a passion for education and innovation.
-                  {{/if}}
                 </p>
+
+                  {{else}}
+                  <p class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
+                    Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including notable names such as Pertamina, Biofarma, Angkasa Pura II, and Bank DBS Indonesia. 
+                    </p>
+                    <p class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
+                    His deep expertise in technology and data analytics, combined with his experience serving major clients, serves as the core foundation for his vision to build an Edutech company. His goal is to bridge the gap and democratize technical up-skilling, leveraging technology to create flexible, scalable, and high-quality learning solutions that can significantly enhance the competitiveness of digital talent across Asia. His passion for continuous learning and commitment to achieving client business objectives now extends to a mission of elevating the competence of the wider community.
+                    </p>
+                  {{/if}}
                 <div class='flex justify-center md:justify-start space-x-3'>
                   <a
                     href='{{#if teamLead.[0]}}{{teamLead.[0].linkedin}}{{else}}https://linkedin.com{{/if}}'
@@ -471,13 +521,13 @@
                     {{else}}
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-check text-slate-600 mt-1'></i>
-                      <span><strong>Bachelor's Degree</strong>
-                        - Computer Science, University of Indonesia</span>
+                      <span><strong>Bachelor's Degree (S.Kom)</strong>
+                        - Information Technology at Universitas Islam Indonesia</span>
                     </li>
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-check text-slate-600 mt-1'></i>
-                      <span><strong>Master's Degree</strong>
-                        - Technology Management, Stanford University</span>
+                      <span><strong>Master's Degree (M.Sc)</strong>
+                        - Advanced Computer Science with Artificial Intelligence Pathway at Manchester University</span>
                     </li>
                     {{/each}}
                   </ul>
@@ -520,13 +570,17 @@
                     {{else}}
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-award text-amber-500 mt-1'></i>
-                      <span><strong>Tech Innovator Award</strong>
-                        - 2023, Recognized for contributions to edtech</span>
+                      <span><strong>Container Orchestration using Kubernetes</strong>
+                        - Big Data 101 - BD101N</span>
                     </li>
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-award text-amber-500 mt-1'></i>
-                      <span><strong>Educator of the Year</strong>
-                        - 2022, National Education Excellence Award</span>
+                      <span><strong>Duolingo German Fluency</strong>
+                        - Elementary (Estimated)</span>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-award text-amber-500 mt-1'></i>
+                      <span><strong>Accelerating Through Angular 2</strong></span>
                     </li>
                     {{/each}}
                   </ul>
@@ -572,15 +626,57 @@
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-building text-slate-600 mt-1'></i>
                       <div>
-                        <strong>TechCorp Inc.</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'>Senior Software Engineer (2018-2023)</p>
+                        <strong>Founder & Chief Executive Officer</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'> - PT. Wiratek Solusi Asia</p>
                       </div>
                     </li>
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-building text-slate-600 mt-1'></i>
                       <div>
-                        <strong>EduTech Solutions</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'>CTO & Co-Founder (2015-2018)</p>
+                        <strong>Co-Founder & Chief Technology Officer</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'> - Bunga Desa GIS</p>
+                      </div>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-building text-slate-600 mt-1'></i>
+                      <div>
+                        <strong>Information Technology Consultant</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'> - Kementerian Komunikasi dan Informatika Republik Indonesia</p>
+                      </div>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-building text-slate-600 mt-1'></i>
+                      <div>
+                        <strong>Co-Founder</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'> - My Coach Indonesia</p>
+                      </div>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-building text-slate-600 mt-1'></i>
+                      <div>
+                        <strong>Chief Technology Officer</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'> - Shopciety Indonesia</p>
+                      </div>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-building text-slate-600 mt-1'></i>
+                      <div>
+                        <strong>Data Science Assistant Manager</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'> - BDO in Indonesia</p>
+                      </div>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-building text-slate-600 mt-1'></i>
+                      <div>
+                        <strong>Lead Java Developer and System Analyst</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'> - Direktorat Jenderal Bea dan Cukai</p>
+                      </div>
+                    </li>
+                    <li class='flex items-start space-x-2'>
+                      <i class='fas fa-building text-slate-600 mt-1'></i>
+                      <div>
+                        <strong>Web Developer</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'> - Board of Information Systems at Universitas Islam Indonesia</p>
                       </div>
                     </li>
                     {{/each}}
