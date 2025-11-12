@@ -67,7 +67,7 @@ export class LibreOfficeService {
         command = `"${this.libreOfficePath}" --headless --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
       } else {
         // Linux/Unix command
-        command = `${this.libreOfficePath} --headless --norestore --nodefault --nofirststartwizard --nolockcheck --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
+        command = `/usr/bin/soffice --headless --nologo --norestore --nodefault --nofirststartwizard --nolockcheck --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
       }
 
       console.log('Executing LibreOffice command:', command);
@@ -76,7 +76,7 @@ export class LibreOfficeService {
         timeout: 60000, // 60 detik timeout
         env: {
           ...process.env,
-          HOME: this.tempDir, // Set HOME untuk LibreOffice di Linux
+          HOME:  '/tmp', // Set HOME untuk LibreOffice di Linux
         },
       });
 
