@@ -111,59 +111,32 @@ export class LibreOfficeService {
    * @param outputDir - Direktori output untuk file PNG
    * @returns Array path file PNG hasil konversi
    */
-  async convertPptToPng(
-    inputPath: string,
-    outputDir: string,
-  ): Promise<string[]> {
-    const pdftopic = require('pdf-poppler');
+async convertPptToPng(inputPath: string, outputDir: string): Promise<string[]> {
+  await fs.mkdir(outputDir, { recursive: true });
 
-    try {
-      // Pastikan output directory ada
-      await fs.mkdir(outputDir, { recursive: true });
+  // Convert PPT → PDF
+  const pdfPath = await this.convertPptToPdf(inputPath, outputDir);
 
-      // Step 1: Convert PPT ke PDF dulu menggunakan LibreOffice
-      console.log('Converting PPT to PDF...');
-      const pdfPath = await this.convertPptToPdf(inputPath, outputDir);
-      console.log('PDF created:', pdfPath);
+  // Convert PDF → PNG
+  const cmd = `pdftoppm -png "${pdfPath}" "${join(outputDir, 'slide')}"`;
+  await execAsync(cmd);
 
-      // Step 2: Convert PDF ke PNG menggunakan pdf-poppler
-      console.log('Converting PDF to PNG slides...');
-      const options = {
-        format: 'png',
-        out_dir: outputDir,
-        out_prefix: 'slide',
-        page: null, // null = all pages
-        scale: 1024, // resolution (higher = better quality)
-      };
-
-      await pdftopic.convert(pdfPath, options);
-
-      // Hapus file PDF setelah berhasil convert ke PNG
-      try {
-        await fs.unlink(pdfPath);
-        console.log('Cleaned up intermediate PDF file:', pdfPath);
-      } catch (unlinkError) {
-        console.error('Failed to delete PDF file:', unlinkError);
-      }
-
-      // Dapatkan semua file PNG yang dibuat
-      const files = await fs.readdir(outputDir);
-      const pngFiles = files
-        .filter((file) => file.startsWith('slide-') && file.endsWith('.png'))
-        .map((file) => join(outputDir, file))
-        .sort();
-
-      if (pngFiles.length === 0) {
-        throw new Error('No PNG files created from PDF');
-      }
-
-      console.log(`Successfully created ${pngFiles.length} PNG slides`);
-      return pngFiles;
-    } catch (error) {
-      console.error('PPT to PNG conversion error:', error);
-      throw new Error(`Failed to convert PPT to PNG: ${error.message}`);
-    }
+  // Hapus PDF setelah selesai convert
+  try {
+    await fs.unlink(pdfPath);
+    console.log('✅ Temp PDF deleted:', pdfPath);
+  } catch (err) {
+    console.error('⚠️ Failed to delete PDF file:', err);
   }
+
+  // Ambil semua PNG slide yang dihasilkan
+  const files = await fs.readdir(outputDir);
+
+  return files
+    .filter((file) => file.endsWith('.png'))
+    .map((file) => join(outputDir, file));
+}
+
 
   /**
    * Cek apakah LibreOffice terinstall dan bisa diakses
@@ -248,7 +221,7 @@ export class LibreOfficeService {
         await fs.unlink(inputPath);
         // Cleanup slide directory
         try {
-          await fs.rmdir(outputDir);
+          await fs.rm(outputDir, { recursive: true, force: true });
         } catch (rmdirError) {
           console.error('Failed to remove slide directory:', rmdirError);
         }
