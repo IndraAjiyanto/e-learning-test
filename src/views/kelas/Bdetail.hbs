@@ -480,6 +480,7 @@
             {
               id: {{this.id}},
               bulan: {{this.bulan}},
+              dp: {{this.dp}},
               harga: {{json this.harga}}
             }{{#unless @last}},{{/unless}}
           {{/each}}
@@ -491,21 +492,21 @@
         },
         getCicilanByMonth(months) {
           const cicilan = this.cicilanData.find(c => c.bulan === months);
-          return cicilan ? cicilan.harga : [];
+          return cicilan ? cicilan : null;
         },
         get installmentAmount() {
-          const hargaArray = this.getCicilanByMonth(this.installmentMonths);
-          if (hargaArray.length > 0) {
-            // Return first month payment from cicilan data
-            return hargaArray[0];
+          const cicilan = this.getCicilanByMonth(this.installmentMonths);
+          if (cicilan && cicilan.dp) {
+            // Return DP as first payment
+            return cicilan.dp;
           }
           // Fallback to equal division if no cicilan data
           return Math.ceil({{kelas.harga}} / this.installmentMonths);
         },
         get totalCicilanAmount() {
-          const hargaArray = this.getCicilanByMonth(this.installmentMonths);
-          if (hargaArray.length > 0) {
-            return hargaArray.reduce((sum, h) => sum + h, 0);
+          const cicilan = this.getCicilanByMonth(this.installmentMonths);
+          if (cicilan && cicilan.harga && cicilan.harga.length > 0) {
+            return cicilan.harga.reduce((sum, h) => sum + h, 0);
           }
           return {{kelas.harga}};
         },
@@ -653,13 +654,15 @@
                 <div
                   class='bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl p-6 text-white'
                 >
-                  <p class='text-sm text-slate-300 mb-2'>First Month Payment</p>
+                  <div class='flex items-center justify-between mb-2'>
+                    <p class='text-sm text-slate-300'>Down Payment (DP) - First Payment</p>
+                    <span class='bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold'>Required</span>
+                  </div>
                   <div class='flex items-baseline gap-2 mb-3'>
                     <span
-                      class='text-4xl font-bold'
+                      class='text-4xl font-bold animate-pulse'
                       x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'
                     ></span>
-                    <span class='text-lg text-slate-300'>/month</span>
                   </div>
                   <div class='pt-3 border-t border-slate-600'>
                     <p class='text-xs text-slate-300'>Duration</p>
@@ -677,9 +680,10 @@
                     <div class='text-sm text-amber-800'>
                       <p class='font-semibold mb-1'>Installment Information:</p>
                       <ul class='list-disc pl-4 space-y-1'>
+                        <li>Down Payment (DP) is required as the first payment for enrollment</li>
                         <li>No additional fees or interest</li>
                         <li>Pay monthly as per schedule below</li>
-                        <li>Full access after first payment</li>
+                        <li>Full access after DP payment</li>
                       </ul>
                     </div>
                   </div>
@@ -691,8 +695,29 @@
                     <i class='fas fa-list-ul'></i>
                     Payment Schedule
                   </h4>
+                  
+                  <!-- DP Payment - Highlighted -->
+                  <div class='mb-2'>
+                    <div class='bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-lg p-2'>
+                      <div class='flex items-center justify-between'>
+                        <div class='flex items-center gap-2'>
+                          <div>
+                            <p class='font-semibold text-amber-800 text-sm'>Down Payment (DP)</p>
+                            <p class='text-xs text-amber-600'>Pay now to enroll</p>
+                          </div>
+                        </div>
+                        <div class='text-right'>
+                          <p class='text-lg font-bold text-amber-800' x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'></p>
+                          <p class='text-xs text-amber-600'>Required</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Monthly Installments -->
                   <div class='space-y-2'>
-                    <template x-for='(amount, index) in getCicilanByMonth(installmentMonths)' :key='index'>
+                    <h5 class='font-medium text-slate-600 mb-2'>Monthly Installments (After DP)</h5>
+                    <template x-for='(amount, index) in getCicilanByMonth(installmentMonths)?.harga || []' :key='index'>
                       <div class='flex justify-between items-center py-2 px-3 bg-slate-50 rounded-lg'>
                         <span class='text-sm font-medium text-slate-600' x-text='`Month ${index + 1}`'></span>
                         <span class='text-sm font-bold text-slate-900' x-text='`Rp ${amount.toLocaleString("id-ID")}`'></span>
@@ -862,20 +887,20 @@
                   Installment Payment Instructions
                 </h4>
                 <ol class='list-decimal pl-5 space-y-2 text-sm text-blue-700'>
-                  <li>Transfer the first installment of
+                  <li>Transfer the Down Payment (DP) of
                     <span
                       class='font-bold bg-blue-100 px-2 py-1 rounded'
                       x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'
-                    ></span></li>
-                  <li>Include "Installment 1/[Total Months] - [Your Name]" in
+                    ></span> (First Payment)</li>
+                  <li>Include "DP Payment - [Your Name]" in
                     the transfer notes</li>
                   <li>Enter your WhatsApp number in the form below</li>
-                  <li>Upload proof of first payment below</li>
-                  <li>You'll receive class access after first payment
+                  <li>Upload proof of DP payment below</li>
+                  <li>You'll receive class access after DP payment
                     confirmation</li>
                   <li>Continue paying monthly installments:
                     <ul class='list-disc pl-5 mt-2 space-y-1'>
-                      <li>Same amount each month</li>
+                      <li>Same amount each month as per schedule</li>
                       <li>Upload proof for each payment</li>
                       <li>Use "Installment [Number]/[Total] - [Your Name]" in
                         notes</li>
