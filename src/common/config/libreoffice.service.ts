@@ -24,7 +24,7 @@ export class LibreOfficeService {
         'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
     } else if (platform === 'linux') {
       // Linux/Ubuntu (Production)
-      this.libreOfficePath = process.env.LIBREOFFICE_PATH || 'libreoffice';
+      this.libreOfficePath = process.env.LIBREOFFICE_PATH || '/usr/bin/soffice';
     } else if (platform === 'darwin') {
       // macOS
       this.libreOfficePath =
@@ -114,28 +114,29 @@ export class LibreOfficeService {
 async convertPptToPng(inputPath: string, outputDir: string): Promise<string[]> {
   await fs.mkdir(outputDir, { recursive: true });
 
-  // Convert PPT → PDF
+  // ✅ Convert PPT/PPTX → PDF
   const pdfPath = await this.convertPptToPdf(inputPath, outputDir);
 
-  // Convert PDF → PNG
-  const cmd = `pdftoppm -png "${pdfPath}" "${join(outputDir, 'slide')}"`;
-  await execAsync(cmd);
+  // ✅ Convert PDF → PNG via pdftoppm
+  const cmdPng = `pdftoppm -png "${pdfPath}" "${join(outputDir, 'slide')}"`;
+  await execAsync(cmdPng);
 
-  // Hapus PDF setelah selesai convert
+  // ✅ Delete PDF temp file
   try {
     await fs.unlink(pdfPath);
-    console.log('✅ Temp PDF deleted:', pdfPath);
+    console.log('✅ Deleted temp PDF:', pdfPath);
   } catch (err) {
-    console.error('⚠️ Failed to delete PDF file:', err);
+    console.error('⚠️ Failed to delete PDF:', err);
   }
 
-  // Ambil semua PNG slide yang dihasilkan
+  // ✅ Ambil semua file PNG hasil convert
   const files = await fs.readdir(outputDir);
 
   return files
     .filter((file) => file.endsWith('.png'))
     .map((file) => join(outputDir, file));
 }
+
 
 
   /**
