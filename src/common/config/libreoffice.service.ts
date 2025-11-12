@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import cloudinary from './multer.config';
 import * as os from 'os';
-
-const execAsync = promisify(exec);
 
 @Injectable()
 export class LibreOfficeService {
@@ -14,28 +11,22 @@ export class LibreOfficeService {
   private tempDir: string;
 
   constructor() {
-    // Deteksi OS dan set path LibreOffice
     const platform = os.platform();
 
     if (platform === 'win32') {
-      // Windows (Development)
       this.libreOfficePath =
         process.env.LIBREOFFICE_PATH ||
         'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
     } else if (platform === 'linux') {
-      // Linux/Ubuntu (Production)
       this.libreOfficePath = process.env.LIBREOFFICE_PATH || '/usr/bin/soffice';
     } else if (platform === 'darwin') {
-      // macOS
       this.libreOfficePath =
         process.env.LIBREOFFICE_PATH ||
         '/Applications/LibreOffice.app/Contents/MacOS/soffice';
     } else {
-      // Default fallback
       this.libreOfficePath = 'libreoffice';
     }
 
-    // Set temporary directory
     this.tempDir = process.env.LIBREOFFICE_TEMP_DIR || os.tmpdir();
 
     console.log('LibreOffice Configuration:');
@@ -44,152 +35,122 @@ export class LibreOfficeService {
     console.log('- Temp Directory:', this.tempDir);
   }
 
-  /**
-   * Convert PPT/PPTX ke PDF menggunakan LibreOffice
-   * @param inputPath - Path file PPT/PPTX input
-   * @param outputDir - Direktori output untuk file PDF
-   * @returns Path file PDF hasil konversi
-   */
+  // =======================
+  // Convert PPT/PPTX → PDF pakai spawn
+  // =======================
   async convertPptToPdf(inputPath: string, outputDir: string): Promise<string> {
-    try {
-      // Pastikan output directory ada
-      await fs.mkdir(outputDir, { recursive: true });
+    await fs.mkdir(outputDir, { recursive: true });
 
-      // Command LibreOffice untuk convert ke PDF
-      // --headless: jalankan tanpa GUI
-      // --convert-to pdf: format output
-      // --outdir: direktori output
-      const platform = os.platform();
-      let command: string;
+    const args = [
+      '--headless',
+      '--nologo',
+      '--norestore',
+      '--convert-to', 'pdf',
+      '--outdir', outputDir,
+      inputPath,
+    ];
 
-      if (platform === 'win32') {
-        // Windows command
-        command = `"${this.libreOfficePath}" --headless --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
-      } else {
-        // Linux/Unix command
-        command = `/usr/bin/soffice --headless --nologo --norestore --nodefault --nofirststartwizard --nolockcheck --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
-      }
+    console.log('Spawning LibreOffice:', this.libreOfficePath, args.join(' '));
 
-      console.log('Executing LibreOffice command:', command);
-
-      const { stdout, stderr } = await execAsync(command, {
-        timeout: 60000, // 60 detik timeout
-        env: {
-          ...process.env,
-          HOME:  '/tmp', // Set HOME untuk LibreOffice di Linux
-        },
+    await new Promise<void>((resolve, reject) => {
+      const proc = spawn(this.libreOfficePath, args, {
+        env: { ...process.env, HOME: '/tmp' },
       });
 
-      if (stderr && !stderr.includes('Warning')) {
-        console.error('LibreOffice stderr:', stderr);
-      }
+      proc.stdout.on('data', (data) => {
+        console.log('[LibreOffice stdout]', data.toString());
+      });
 
-      console.log('LibreOffice stdout:', stdout);
+      proc.stderr.on('data', (data) => {
+        console.error('[LibreOffice stderr]', data.toString());
+      });
 
-      // Dapatkan nama file output (nama file sama tapi ekstensi jadi .pdf)
-      const inputFileName = inputPath.split(/[/\\]/).pop();
-      const pdfFileName = inputFileName!.replace(/\.(ppt|pptx)$/i, '.pdf');
-      const pdfPath = join(outputDir, pdfFileName);
+      proc.on('close', (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`LibreOffice exited with code ${code}`));
+      });
+    });
 
-      // Cek apakah file PDF berhasil dibuat
-      try {
-        await fs.access(pdfPath);
-        console.log('PDF created successfully:', pdfPath);
-        return pdfPath;
-      } catch (error) {
-        throw new Error(`PDF file not created: ${pdfPath}`);
-      }
-    } catch (error) {
-      console.error('LibreOffice conversion error:', error);
-      throw new Error(`Failed to convert PPT to PDF: ${error.message}`);
+    const inputFileName = inputPath.split(/[/\\]/).pop();
+    const pdfFileName = inputFileName!.replace(/\.(ppt|pptx)$/i, '.pdf');
+    const pdfPath = join(outputDir, pdfFileName);
+
+    try {
+      await fs.access(pdfPath);
+      console.log('PDF created successfully:', pdfPath);
+      return pdfPath;
+    } catch {
+      throw new Error(`PDF file not created: ${pdfPath}`);
     }
   }
 
-  /**
-   * Convert PPT/PPTX ke PNG (gambar per slide) menggunakan LibreOffice + pdf-poppler
-   * @param inputPath - Path file PPT/PPTX input
-   * @param outputDir - Direktori output untuk file PNG
-   * @returns Array path file PNG hasil konversi
-   */
-async convertPptToPng(inputPath: string, outputDir: string): Promise<string[]> {
-  await fs.mkdir(outputDir, { recursive: true });
+  // =======================
+  // Convert PPT → PNG per slide
+  // =======================
+  async convertPptToPng(inputPath: string, outputDir: string): Promise<string[]> {
+    await fs.mkdir(outputDir, { recursive: true });
 
-  // ✅ Convert PPT/PPTX → PDF
-  const pdfPath = await this.convertPptToPdf(inputPath, outputDir);
+    const pdfPath = await this.convertPptToPdf(inputPath, outputDir);
 
-  // ✅ Convert PDF → PNG via pdftoppm
-  const cmdPng = `pdftoppm -png "${pdfPath}" "${join(outputDir, 'slide')}"`;
-  await execAsync(cmdPng);
+    const cmdArgs = ['-png', pdfPath, join(outputDir, 'slide')];
+    await new Promise<void>((resolve, reject) => {
+      const proc = spawn('pdftoppm', cmdArgs);
 
-  // ✅ Delete PDF temp file
-  try {
-    await fs.unlink(pdfPath);
-    console.log('✅ Deleted temp PDF:', pdfPath);
-  } catch (err) {
-    console.error('⚠️ Failed to delete PDF:', err);
+      proc.stdout.on('data', (data) => console.log('[pdftoppm stdout]', data.toString()));
+      proc.stderr.on('data', (data) => console.error('[pdftoppm stderr]', data.toString()));
+
+      proc.on('close', (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`pdftoppm exited with code ${code}`));
+      });
+    });
+
+    try {
+      await fs.unlink(pdfPath);
+      console.log('Deleted temp PDF:', pdfPath);
+    } catch (err) {
+      console.error('Failed to delete PDF:', err);
+    }
+
+    const files = await fs.readdir(outputDir);
+    return files.filter((file) => file.endsWith('.png')).map((file) => join(outputDir, file));
   }
 
-  // ✅ Ambil semua file PNG hasil convert
-  const files = await fs.readdir(outputDir);
-
-  return files
-    .filter((file) => file.endsWith('.png'))
-    .map((file) => join(outputDir, file));
-}
-
-
-
-  /**
-   * Cek apakah LibreOffice terinstall dan bisa diakses
-   */
+  // =======================
+  // Check LibreOffice installed
+  // =======================
   async checkLibreOfficeInstalled(): Promise<boolean> {
     try {
-      const platform = os.platform();
-      let command: string;
-
-      if (platform === 'win32') {
-        command = `"${this.libreOfficePath}" --version`;
-      } else {
-        command = `${this.libreOfficePath} --version`;
-      }
-
-      const { stdout } = await execAsync(command);
-      console.log('LibreOffice version:', stdout);
+      await new Promise<void>((resolve, reject) => {
+        const proc = spawn(this.libreOfficePath, ['--version']);
+        proc.on('close', (code) => (code === 0 ? resolve() : reject(new Error('Not found'))));
+      });
+      console.log('LibreOffice is installed.');
       return true;
-    } catch (error) {
-      console.error('LibreOffice not found or not accessible:', error.message);
+    } catch (err) {
+      console.error('LibreOffice not found:', err);
       return false;
     }
   }
 
-  /**
-   * Convert PPT ke PNG dan upload langsung ke Cloudinary
-   * @param inputPath - Path file PPT/PPTX input
-   * @param outputDir - Direktori temporary untuk proses konversi
-   * @param pertemuanId - ID pertemuan untuk naming folder di Cloudinary
-   * @returns Object berisi URL file PPT original dan array URL slides PNG
-   */
+  // =======================
+  // Convert PPT → PNG → Upload Cloudinary
+  // =======================
   async convertAndUploadPptToCloudinary(
     inputPath: string,
     outputDir: string,
     pertemuanId: number,
   ): Promise<{ pptUrl: string; slideUrls: string[] }> {
     try {
-      // Step 1: Convert PPT ke PNG
       const slidePaths = await this.convertPptToPng(inputPath, outputDir);
 
-      // Step 2: Upload file PPT original ke Cloudinary
-      console.log('Uploading original PPT to Cloudinary...');
       const pptUpload = await cloudinary.uploader.upload(inputPath, {
         folder: 'nestjs/ppt/files',
         public_id: `ppt-${pertemuanId}-${Date.now()}`,
-        resource_type: 'raw', // untuk file non-image
+        resource_type: 'raw',
       });
 
-      // Step 3: Upload semua slide PNG ke Cloudinary
-      console.log(`Uploading ${slidePaths.length} slides to Cloudinary...`);
       const slideUrls: string[] = [];
-
       const uploadPromises = slidePaths.map(async (slidePath, index) => {
         try {
           const uploadedSlide = await cloudinary.uploader.upload(slidePath, {
@@ -198,49 +159,26 @@ async convertPptToPng(inputPath: string, outputDir: string): Promise<string[]> {
             resource_type: 'image',
           });
           return uploadedSlide.secure_url;
-        } catch (uploadError) {
-          console.error(`Failed to upload slide ${index}:`, uploadError);
+        } catch (err) {
+          console.error(`Failed to upload slide ${index}:`, err);
           return null;
         } finally {
-          // Cleanup local slide file
-          try {
-            await fs.unlink(slidePath);
-          } catch (unlinkError) {
-            console.error(
-              `Failed to delete slide file ${slidePath}:`,
-              unlinkError,
-            );
-          }
+          try { await fs.unlink(slidePath); } catch (_) {}
         }
       });
 
       const uploadResults = await Promise.all(uploadPromises);
       slideUrls.push(...uploadResults.filter((url) => url !== null));
 
-      // Step 4: Cleanup temporary files
       try {
         await fs.unlink(inputPath);
-        // Cleanup slide directory
-        try {
-          await fs.rm(outputDir, { recursive: true, force: true });
-        } catch (rmdirError) {
-          console.error('Failed to remove slide directory:', rmdirError);
-        }
-      } catch (unlinkError) {
-        console.error('Failed to cleanup temp file:', unlinkError);
-      }
+        await fs.rm(outputDir, { recursive: true, force: true });
+      } catch (err) { console.error('Cleanup failed:', err); }
 
-      console.log(
-        `Successfully uploaded PPT and ${slideUrls.length} slides to Cloudinary`,
-      );
-
-      return {
-        pptUrl: pptUpload.secure_url,
-        slideUrls,
-      };
-    } catch (error) {
-      console.error('Convert and upload error:', error);
-      throw new Error(`Failed to convert and upload PPT: ${error.message}`);
+      return { pptUrl: pptUpload.secure_url, slideUrls };
+    } catch (err) {
+      console.error('Convert and upload failed:', err);
+      throw new Error(`Failed to convert and upload PPT: ${err.message}`);
     }
   }
 }
