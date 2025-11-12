@@ -43,7 +43,8 @@ export class AbsensController {
       console.log(error);
       req.flash(
         'error',
-        'You have already submitted attendance for this meeting',
+        error.message ||
+          'You have already submitted attendance for this meeting',
       );
       res.redirect(`/kelass/${kelasId}`);
     }
@@ -137,7 +138,7 @@ export class AbsensController {
       req.flash('success', 'Successfully updated attendance');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'Failed to update attendance');
+      req.flash('error', error.message || 'Failed to update attendance');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }
@@ -155,7 +156,7 @@ export class AbsensController {
       req.flash('success', 'Successfully delete attendace');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      req.flash('error', 'Failed to delete attendance');
+      req.flash('error', error.message || 'Failed to delete attendance');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }

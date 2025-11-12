@@ -13,6 +13,9 @@ export class CreateKelassDto {
   @IsString()
   nama_kelas: string;
 
+  @IsString()
+  grup: string;
+
   @IsEnum(['online', 'offline'])
   metode: Metode;
 

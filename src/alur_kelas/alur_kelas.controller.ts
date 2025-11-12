@@ -61,7 +61,7 @@ export class AlurKelasController {
       req.flash('success', 'alur kelas successfully created');
       res.redirect(`/alur-kelas`);
     } catch (error) {
-      req.flash('error', 'alur kelas failed to create');
+      req.flash('error', error.message || 'alur kelas failed to create');
       res.redirect(`/alur-kelas`);
     }
   }
@@ -80,7 +80,7 @@ export class AlurKelasController {
       req.flash('success', 'alur kelas successfully created');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'alur kelas failed to create');
+      req.flash('error', error.message || 'alur kelas failed to create');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -120,7 +120,7 @@ export class AlurKelasController {
       req.flash('success', 'alur kelas successfully updated');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'alur kelas failed to update');
+      req.flash('error', error.message || 'alur kelas failed to update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -138,7 +138,7 @@ export class AlurKelasController {
       req.flash('success', 'alur kelas successfully delete');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', 'alur kelas failed to delete');
+      req.flash('error', error.message || 'alur kelas failed to delete');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }

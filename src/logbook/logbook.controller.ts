@@ -269,7 +269,7 @@ export class LogbookController {
       res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
     } catch (error) {
       const logbook = await this.logbookService.findOne(logbookId);
-      req.flash('error', 'logbook failed to update proses');
+      req.flash('error', error.message || 'logbook failed to update proses');
       res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
     }
   }

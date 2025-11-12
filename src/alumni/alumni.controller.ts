@@ -64,7 +64,7 @@ export class AlumniController {
       res.redirect('/alumni');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Alumni failed to create');
+      req.flash('error', error.message || 'Alumni failed to create');
       res.redirect('/alumni');
     }
   }
@@ -130,7 +130,7 @@ export class AlumniController {
       res.redirect('/alumni');
     } catch (error) {
       console.log(error);
-      req.flash('error', 'Alumni failed to update');
+      req.flash('error', error.message || 'Alumni failed to update');
       res.redirect('/alumni');
     }
   }
@@ -153,7 +153,7 @@ export class AlumniController {
       req.flash('success', 'Alumni successfully removed');
       res.redirect('/alumni');
     } catch (error) {
-      req.flash('error', 'Alumni failed to remove');
+      req.flash('error', error.message || 'Alumni failed to remove');
       res.redirect('/alumni');
     }
   }
