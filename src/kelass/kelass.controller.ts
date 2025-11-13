@@ -126,7 +126,6 @@ export class KelassController {
       res.render('admin/kelas/index', { user: req.user, kelas });
     } else if (req.user!.role === 'admin') {
       const kelas = await this.kelassService.findKelasByMentoring(req.user!.id);
-      console.log(kelas);
       res.render('admin/kelas/index', { user: req.user, kelas });
     }
   }

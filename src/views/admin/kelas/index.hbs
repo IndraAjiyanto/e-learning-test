@@ -43,6 +43,9 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Proses</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kuota</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Student</th>
+          {{#if (roles user.role "super_admin")}}
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Mentor</th>
+          {{/if}}
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Launch</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
@@ -64,6 +67,13 @@
           {{#if (roles proses "acc")}}
           <td class="px-6 py-4 text-sm text-gray-800">{{kuota}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user_kelas.length}}</td>
+                    {{#if (roles ../user.role "super_admin")}}
+          <td class="px-6 py-4 text-sm text-gray-800">
+            {{#each mentoring}}
+            {{this.user.username}}<br>
+            {{/each}}
+          </td>
+          {{/if}}
           <td class="px-6 py-4 text-sm text-gray-800">
             <form action="/kelass/{{id}}/toggle-launch?_method=PATCH" method="POST">
               <button type="submit" 

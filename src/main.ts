@@ -87,6 +87,7 @@ async function bootstrap() {
   hbs.registerHelper('gte', (a, b) => a >= b);
   hbs.registerHelper('gt', (a, b) => a > b);
   hbs.registerHelper('multiply', (a, b) => a * b);
+  hbs.registerHelper('divide', (a, b) => (b !== 0 ? a / b : 0));
   hbs.registerHelper('subtract', (a, b) => a - b);
   hbs.registerHelper('isArray', (value) => Array.isArray(value));
   hbs.registerHelper('substring', (str, start, end) => {
