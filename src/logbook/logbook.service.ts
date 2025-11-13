@@ -30,7 +30,7 @@ export class LogbookService {
   private readonly progresPertemuanRepository: Repository<ProgresPertemuan>;
 
   async create(createLogbookDto: CreateLogbookDto) {
-    const user = await this.userRepository.findOne({
+          const user = await this.userRepository.findOne({
       where: { id: createLogbookDto.userId },
     });
     const pertemuan = await this.pertemuanRepository.findOne({
@@ -42,12 +42,14 @@ export class LogbookService {
     if (!pertemuan) {
       throw new Error('pertemuan tidak ada');
     }
-    const logbook = await this.logBookRepository.create({
+
+          const logbook = await this.logBookRepository.create({
       ...createLogbookDto,
       user: user,
       pertemuan: pertemuan,
     });
     return await this.logBookRepository.save(logbook);
+
   }
 
   async findByUser(userId: number) {

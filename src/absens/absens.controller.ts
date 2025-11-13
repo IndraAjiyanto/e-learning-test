@@ -40,7 +40,6 @@ export class AbsensController {
       req.flash('success', 'Successfully submitted attendance');
       res.redirect(`/kelass/${kelasId}`);
     } catch (error) {
-      console.log(error);
       req.flash(
         'error',
         error.message ||
@@ -64,8 +63,9 @@ export class AbsensController {
       req.flash('success', 'Successfully added attendance');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
+      console.log(error);
       req.flash(
-        'success',
+        'error',
         'Failed to add attendance, user has already submitted attendance for this session',
       );
       res.redirect(`/pertemuans/${pertemuanId}`);
@@ -152,7 +152,7 @@ export class AbsensController {
     @Req() req: Request,
   ) {
     try {
-      await this.absensService.remove(absenId);
+      await this.absensService.remove(absenId, pertemuanId);
       req.flash('success', 'Successfully delete attendace');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {

@@ -122,10 +122,17 @@ export class AbsensService {
     return await this.absenRepository.save(absen);
   }
 
-  async remove(id: number) {
+  async remove(id: number, pertemuanId: number) {
     const absen = await this.findOne(id);
     if (!absen) {
       throw new NotFoundException('absen tidak ditemukan');
+    }
+    const progres_pertemuan = await this.progresPertemuanRepository.findOne({
+      where: { user: { id: absen.user.id }, pertemuan: { id: pertemuanId } },
+    });
+
+    if (progres_pertemuan) {
+      await this.progresPertemuanRepository.remove(progres_pertemuan);
     }
     return await this.absenRepository.remove(absen);
   }

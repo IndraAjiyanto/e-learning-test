@@ -97,7 +97,6 @@ export class LogbookController {
     @Req() req: Request,
     @Param('pertemuanId') pertemuanId: number,
   ) {
-
     try {
       // Pastikan file berhasil diupload
       if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
@@ -142,13 +141,6 @@ export class LogbookController {
       const logbook = await this.logbookService.findLogBookByUser(req.user!.id);
       res.render('user/logbook/index', { user: req.user, kelas, logbook });
     }
-  }
-
-  @Roles('admin')
-  @Get('formCreate')
-  async formCreate(@Req() req: Request, @Res() res: Response) {
-    const kelas = await this.logbookService.findKelasByUser(req.user!.id);
-    res.render('user/logbook/create', { user: req.user, kelas });
   }
 
   @Roles('user')
@@ -196,7 +188,6 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     const users = await this.logbookService.findUsers(pertemuanId);
-    console.log(users);
     res.render('admin/logbook/create', { user: req.user, pertemuanId, users });
   }
 

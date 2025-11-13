@@ -12,11 +12,11 @@
       showUserDropdown: false,
       selectedUser: null,
       statuses: [
-        { value: 'hadir', label: 'Present' },
-        { value: 'izin', label: 'Permission' },
-        { value: 'sakit', label: 'Sick' },
-        { value: 'alfa', label: 'Absent' },
-        { value: 'tidak ada keterangan', label: 'No Information' }
+        { value: 'present', label: 'Present' },
+        { value: 'permission', label: 'Permission' },
+        { value: 'sick', label: 'Sick' },
+        { value: 'absent', label: 'Absent' },
+        { value: 'no_information', label: 'No Information' }
       ],
       searchStatus: '',
       showStatusDropdown: false,
@@ -71,8 +71,9 @@
             <div
               @click='selectUser(user)'
               class='px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700'
-              x-text='user.username'
             >
+              <div class="font-medium text-gray-900" x-text="user.username"></div>
+              <div class="text-xs text-gray-500" x-text="user.email"></div>
             </div>
           </template>
           <div

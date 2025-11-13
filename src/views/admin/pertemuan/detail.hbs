@@ -171,10 +171,12 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Details</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Obstacle</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Documentation</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Additional Documentation</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Class</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Confirm</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
@@ -188,6 +190,7 @@
           <td class="px-6 py-4 text-sm text-gray-800">
             <img src="{{dokumentasi}}" alt="Dokumentasi" class="w-16 h-16 object-cover rounded border" />
           </td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{dokumentasi_lain}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{pertemuan.minggu.kelas.nama_kelas}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.username}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{proses}}</td>
@@ -217,6 +220,22 @@
       </button>
     </form>
   </div>
+</td>
+<td class="px-6 py-4 text-sm text-gray-800">
+  <a href="/logbook/detail/{{id}}" 
+     class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                                       <svg xmlns="http://www.w3.org/2000/svg" 
+           fill="none" viewBox="0 0 24 24" 
+           stroke-width="1.5" stroke="currentColor" 
+           class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M12 6.75c-4.5 0-8.25 2.25-10.5 6 
+                 2.25 3.75 6 6 10.5 6s8.25-2.25 
+                 10.5-6c-2.25-3.75-6-6-10.5-6z" />
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+      </svg>
+  </a>
 </td>
 
         </tr>
@@ -257,7 +276,7 @@ function logbookTable({ logbooks }) {
     
     get filteredLogbooks() {
       let filtered = this.logbooks.filter(l =>
-        (`${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`).toLowerCase()
+        (`${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala} ${l.dokumentasi_lain} ${l.user?.username} `).toLowerCase()
           .includes(this.search.toLowerCase())
       );
 
@@ -283,6 +302,7 @@ function logbookTable({ logbooks }) {
           Details: log.rincian_kegiatan || '-',
           Obstacle: log.kendala || '-',
           Documentation: log.dokumentasi || '-',
+          AdditionalDocumentation: log.dokumentasi_lain || '-',
           Class: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
           User: log.user?.username || '-',
           Status: log.proses === 'acc' ? 'Approved' : log.proses === 'proces' ? 'Process' : 'Rejected',

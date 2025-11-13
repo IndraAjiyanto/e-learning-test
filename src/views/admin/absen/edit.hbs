@@ -8,25 +8,25 @@
       class='space-y-6'
       x-data="{
       statuses: [
-        { value: 'hadir', label: 'Present' },
-        { value: 'izin', label: 'Permission' },
-        { value: 'sakit', label: 'Sick' },
-        { value: 'alfa', label: 'Absent' },
-        { value: 'tidak ada keterangan', label: 'No Information' }
+        { value: 'present', label: 'Present' },
+        { value: 'permission', label: 'Permission' },
+        { value: 'sick', label: 'Sick' },
+        { value: 'absent', label: 'Absent' },
+        { value: 'no_information', label: 'No Information' }
       ],
-      searchStatus: '{{absen.status}}' === 'hadir' ? 'Present' : 
-                    '{{absen.status}}' === 'izin' ? 'Permission' : 
-                    '{{absen.status}}' === 'sakit' ? 'Sick' : 
-                    '{{absen.status}}' === 'alfa' ? 'Absent' : 
-                    '{{absen.status}}' === 'tidak ada keterangan' ? 'No Information' : '',
+      searchStatus: '{{absen.status}}' === 'present' ? 'Present' : 
+                    '{{absen.status}}' === 'permission' ? 'Permission' : 
+                    '{{absen.status}}' === 'sick' ? 'Sick' : 
+                    '{{absen.status}}' === 'absent' ? 'Absent' : 
+                    '{{absen.status}}' === 'no_information' ? 'No Information' : '',
       showStatusDropdown: false,
       selectedStatus: { 
         value: '{{absen.status}}',
-        label: '{{absen.status}}' === 'hadir' ? 'Present' : 
-               '{{absen.status}}' === 'izin' ? 'Permission' : 
-               '{{absen.status}}' === 'sakit' ? 'Sick' : 
-               '{{absen.status}}' === 'alfa' ? 'Absent' : 
-               '{{absen.status}}' === 'tidak ada keterangan' ? 'No Information' : ''
+        label: '{{absen.status}}' === 'present' ? 'Present' : 
+               '{{absen.status}}' === 'permission' ? 'Permission' : 
+               '{{absen.status}}' === 'sick' ? 'Sick' : 
+               '{{absen.status}}' === 'absent' ? 'Absent' : 
+               '{{absen.status}}' === 'no_information' ? 'No Information' : ''
       },
       get filteredStatuses() {
         if (!this.searchStatus) return this.statuses;
