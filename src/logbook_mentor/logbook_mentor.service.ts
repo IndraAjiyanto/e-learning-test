@@ -117,7 +117,12 @@ export class LogbookMentorService {
     return await this.logBookMentorRepository.save(logbook);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} logbookMentor`;
+  async remove(id: number) {
+    const logbook = await this.findOne(id);
+    if (!logbook) {
+      throw new NotFoundException('logbook not found');
+    }
+    await this.getPublicIdFromUrl(logbook.dokumentasi);
+    await this.logBookMentorRepository.remove(logbook); 
   }
 }

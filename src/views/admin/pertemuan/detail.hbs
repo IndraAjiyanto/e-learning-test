@@ -167,14 +167,14 @@
       <thead class="bg-gray-100">
         <tr>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kegiatan</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Rincian</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kendala</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Dokumentasi</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Activity</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Details</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Obstacle</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Documentation</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Class</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">status</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Confirm</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
@@ -188,7 +188,7 @@
           <td class="px-6 py-4 text-sm text-gray-800">
             <img src="{{dokumentasi}}" alt="Dokumentasi" class="w-16 h-16 object-cover rounded border" />
           </td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{kelas.nama_kelas}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{pertemuan.minggu.kelas.nama_kelas}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.username}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{proses}}</td>
 <td class="px-6 py-4 text-sm text-gray-800">
@@ -279,14 +279,14 @@ function logbookTable({ logbooks }) {
 
         const dataToExport = filtered.map((log, index) => ({
           No: index + 1,
-          Kegiatan: log.kegiatan || '-',
-          Rincian: log.rincian_kegiatan || '-',
-          Kendala: log.kendala || '-',
-          Dokumentasi: log.dokumentasi || '-',
-          Kelas: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
+          Activity: log.kegiatan || '-',
+          Details: log.rincian_kegiatan || '-',
+          Obstacle: log.kendala || '-',
+          Documentation: log.dokumentasi || '-',
+          Class: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
           User: log.user?.username || '-',
           Status: log.proses === 'acc' ? 'Approved' : log.proses === 'proces' ? 'Process' : 'Rejected',
-          Tanggal: this.formatDate(log.createdAt)
+          Date: this.formatDate(log.createdAt)
         }));
 
         const wb = XLSX.utils.book_new();
@@ -307,7 +307,7 @@ function logbookTable({ logbooks }) {
         XLSX.utils.book_append_sheet(wb, ws, "Logbook");
         XLSX.writeFile(wb, `Logbook_User_${new Date().toISOString().slice(0, 10)}.xlsx`);
       } catch (error) {
-        alert('Gagal export data ke Excel');
+        alert('Failed to export data to Excel');
       }
     },
 
@@ -389,11 +389,11 @@ function logbookTable({ logbooks }) {
       <thead class="bg-gray-100">
         <tr>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kegiatan</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Rincian</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kendala</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Dokumentasi</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Activity</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Details</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Obstacle</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Documentation</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Class</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
@@ -409,13 +409,14 @@ function logbookTable({ logbooks }) {
           <td class="px-6 py-4 text-sm text-gray-800">
             <img src="{{dokumentasi}}" alt="Dokumentasi" class="w-16 h-16 object-cover rounded border" />
           </td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{kelas.nama_kelas}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{pertemuan.minggu.kelas.nama_kelas}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.username}}</td>
 <td class="px-6 py-4 text-sm text-gray-800">
   <div class="flex items-center justify-center gap-2">
+    <!-- Detail Button -->
     <a href="/logbook-mentor/{{id}}" 
        class="p-2 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition" 
-       title="View Kelas">
+       title="View Detail">
       <svg xmlns="http://www.w3.org/2000/svg" 
            fill="none" viewBox="0 0 24 24" 
            stroke-width="1.5" stroke="currentColor" 
@@ -428,6 +429,22 @@ function logbookTable({ logbooks }) {
               d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
       </svg>
     </a>
+
+    <!-- Delete Button -->
+    <form action="/logbook-mentor/{{pertemuan.id}}/{{id}}?_method=DELETE" method="post" class="inline">
+      <button type="button" 
+              onclick="confirmDelete(this)"
+              class="p-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition" 
+              title="Delete">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             fill="none" viewBox="0 0 24 24" 
+             stroke-width="1.5" stroke="currentColor" 
+             class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" 
+                d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </form>
   </div>
 </td>
 
@@ -491,13 +508,13 @@ function logbookTable({ logbooks }) {
 
         const dataToExport = filtered.map((log, index) => ({
           No: index + 1,
-          Kegiatan: log.kegiatan || '-',
-          Rincian: log.rincian_kegiatan || '-',
-          Kendala: log.kendala || '-',
-          Dokumentasi: log.dokumentasi || '-',
-          Kelas: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
+          Activity: log.kegiatan || '-',
+          Details: log.rincian_kegiatan || '-',
+          Obstacle: log.kendala || '-',
+          Documentation: log.dokumentasi || '-',
+          Class: log.pertemuan?.minggu?.kelas?.nama_kelas || '-',
           User: log.user?.username || '-',
-          Tanggal: this.formatDate(log.createdAt)
+          Date: this.formatDate(log.createdAt)
         }));
 
         const wb = XLSX.utils.book_new();
@@ -517,7 +534,7 @@ function logbookTable({ logbooks }) {
         XLSX.utils.book_append_sheet(wb, ws, "Logbook");
         XLSX.writeFile(wb, `Logbook_Mentor_${new Date().toISOString().slice(0, 10)}.xlsx`);
       } catch (error) {
-        alert('Gagal export data ke Excel');
+        alert('Failed to export data to Excel');
       }
     },
 
@@ -564,7 +581,7 @@ function logbookTable({ logbooks }) {
         </button>
         <input 
           type="text" 
-          placeholder="Search perticipant..." 
+          placeholder="Search participant..." 
           x-model="searchInput"
           @input="search = searchInput; pageNumber=0"
           class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
@@ -585,10 +602,10 @@ function logbookTable({ logbooks }) {
       <thead class="bg-gray-100">
         <tr>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
@@ -1025,7 +1042,7 @@ function absenTable({ peserta }) {
         <div>
           <h2 class="text-2xl font-bold text-gray-900" x-text="materi.judul"></h2>
           <p class="text-sm text-gray-600 mt-1">
-            Jenis File: <span class="uppercase font-semibold" x-text="materi.jenis_file"></span>
+            File Type: <span class="uppercase font-semibold" x-text="materi.jenis_file"></span>
           </p>
         </div>
         <button @click="closeModal()" 

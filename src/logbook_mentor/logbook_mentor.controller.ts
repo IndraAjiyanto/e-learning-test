@@ -18,7 +18,9 @@ import { UpdateLogbookMentorDto } from './dto/update-logbook_mentor.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigImage } from 'src/common/config/multer.config';
+import { multerConfigMemory } from 'src/common/config/multer.config';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
@@ -28,7 +30,15 @@ export class LogbookMentorController {
 
   @Roles('admin')
   @Post(':pertemuanId')
-  @UseInterceptors(FileInterceptor('dokumentasi', multerConfigImage))
+  @UseInterceptors(
+    FileInterceptor('dokumentasi', multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    folder: 'nestjs/images/logbook_mentor',
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+  })
   async create(
     @Param('pertemuanId') pertemuanId: number,
     @Body() createLogbookMentorDto: CreateLogbookMentorDto,
@@ -37,7 +47,7 @@ export class LogbookMentorController {
     @UploadedFile() dokumentasi: Express.Multer.File,
   ) {
     try {
-      createLogbookMentorDto.dokumentasi = dokumentasi.path;
+      createLogbookMentorDto.dokumentasi = req.body.uploadedImageUrls?.[0];
       createLogbookMentorDto.userId = req.user!.id;
       createLogbookMentorDto.pertemuanId = pertemuanId;
       await this.logbookMentorService.create(createLogbookMentorDto);
@@ -100,7 +110,15 @@ export class LogbookMentorController {
 
   @Roles('admin')
   @Patch(':logbook_mentorId')
-  @UseInterceptors(FileInterceptor('dokumentasi', multerConfigImage))
+  @UseInterceptors(
+    FileInterceptor('dokumentasi', multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    folder: 'nestjs/images/logbook_mentor',
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+  })
   async update(
     @Param('logbook_mentorId') logbook_mentorId: number,
     @UploadedFile() dokumentasi: Express.Multer.File,
@@ -112,7 +130,7 @@ export class LogbookMentorController {
       const logbook = await this.logbookMentorService.findOne(logbook_mentorId);
       if (dokumentasi) {
         await this.logbookMentorService.getPublicIdFromUrl(logbook.dokumentasi);
-        updateLogbookMentorDto.dokumentasi = dokumentasi.path;
+        updateLogbookMentorDto.dokumentasi = req.body.uploadedImageUrls?.[0];
       }
       await this.logbookMentorService.update(
         logbook_mentorId,

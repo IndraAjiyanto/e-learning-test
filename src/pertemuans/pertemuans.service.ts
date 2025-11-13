@@ -130,13 +130,13 @@ export class PertemuansService {
 
   async findLogBook(pertemuanId: number) {
     return await this.logBookRepository.find({
-      where: { pertemuan: { id: pertemuanId } },
+      where: { pertemuan: { id: pertemuanId } }, relations: ['user','pertemuan','pertemuan.minggu','pertemuan.minggu.kelas'],
     });
   }
 
   async findLogBookMentor(pertemuanId: number) {
     return await this.logbookMentorRepository.find({
-      where: { pertemuan: { id: pertemuanId } },
+      where: { pertemuan: { id: pertemuanId } },relations: ['user','pertemuan','pertemuan.minggu','pertemuan.minggu.kelas'],
     });
   }
 

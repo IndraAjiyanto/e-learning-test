@@ -6,9 +6,10 @@ import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Kelas } from 'src/entities/kelas.entity';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LogbookMentor, User, Pertemuan, Kelas])],
+  imports: [TypeOrmModule.forFeature([LogbookMentor, User, Pertemuan, Kelas]), CommonModule],
   controllers: [LogbookMentorController],
   providers: [LogbookMentorService],
   exports: [LogbookMentorService],

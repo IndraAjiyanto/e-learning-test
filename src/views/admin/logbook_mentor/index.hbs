@@ -98,19 +98,19 @@
           >No</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Kegiatan</th>
+          >Activity</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Rincian</th>
+          >Details</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Kendala</th>
+          >Issues</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Dokumentasi</th>
+          >Documentation</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Kelas</th>
+          >Class</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >User</th>
@@ -190,7 +190,7 @@
 
       // ===== Computed: Filter + Pagination =====
       get filteredLogbooks() {
-        const filtered = this.logbooks.filter(log => {
+        const filtered = this.logbooks.filter((log) => {
           const kelasMatch =
             !this.selectedKelas ||
             log.pertemuan?.minggu?.kelas?.id?.toString() === this.selectedKelas;
@@ -204,13 +204,13 @@
         this.amount = filtered.length;
 
         const start = this.pageNumber * this.size;
-        return filtered.slice(start, start + this.size).map(l => l.id.toString());
+        return filtered.slice(start, start + this.size).map((l) => l.id.toString());
       },
 
       // ===== Export to Excel =====
       exportExcel() {
         try {
-          const filtered = this.logbooks.filter(log => {
+          const filtered = this.logbooks.filter((log) => {
             const kelasMatch =
               !this.selectedKelas ||
               log.pertemuan?.minggu?.kelas?.id?.toString() === this.selectedKelas;
@@ -250,11 +250,11 @@
           XLSX.writeFile(wb, `Logbook_Mentor_${new Date().toISOString().slice(0, 10)}.xlsx`);
         } catch (err) {
           console.error(err);
-          alert("Gagal export data ke Excel");
+          alert("Failed to export data to Excel");
         }
       },
 
-      // ===== Helper Format Date =====
+      // ===== Helper: Format Date =====
       formatDate(date) {
         if (!date) return "-";
         return new Date(date).toLocaleDateString("id-ID", {

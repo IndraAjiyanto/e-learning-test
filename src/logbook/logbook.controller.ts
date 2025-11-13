@@ -43,7 +43,6 @@ export class LogbookController {
   async create(
     @Param('pertemuanId') pertemuanId: number,
     @Body() createLogbookDto: CreateLogbookDto,
-    @UploadedFile() dokumentasi: Express.Multer.File,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -70,7 +69,6 @@ export class LogbookController {
         res.redirect(`/kelass/${pertemuan.minggu.kelas.id}`);
       }
     } catch (error) {
-      console.log('Error creating logbook:', error);
       const pertemuan = await this.logbookService.findPertemuan(pertemuanId);
       const errorMessage = error.message || 'Failed to add log book';
       req.flash('error', errorMessage);
@@ -95,15 +93,10 @@ export class LogbookController {
   })
   async createLogBook(
     @Body() createLogbookDto: CreateLogbookDto,
-    @UploadedFile() dokumentasi: Express.Multer.File,
     @Res() res: Response,
     @Req() req: Request,
     @Param('pertemuanId') pertemuanId: number,
   ) {
-    console.log('=== CREATE LOGBOOK START ===');
-    console.log('Request body:', req.body);
-    console.log('Uploaded image URLs:', req.body.uploadedImageUrls);
-    console.log('File object:', dokumentasi);
 
     try {
       // Pastikan file berhasil diupload
@@ -118,7 +111,6 @@ export class LogbookController {
       req.flash('success', 'Log book added successfully');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      console.log('Error creating logbook:', error);
       const errorMessage = error.message || 'Failed to add log book';
       req.flash('error', errorMessage);
       res.redirect(`/pertemuans/${pertemuanId}`);
