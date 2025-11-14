@@ -1,5 +1,5 @@
 <div
-  class='w-full shadow-lg fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white'
+  class='w-full shadow-lg fixed top-0 left-0 right-0 z-50 bg-gradient-to-br from-primary to-gray-800 text-white'
   x-data="{
     open: false,
     isDesktop: window.innerWidth >= 768,
@@ -8,7 +8,6 @@
       document.body.style.overflow = this.open ? 'hidden' : '';
     },
     init() {
-      // Update isDesktop on window resize
       window.addEventListener('resize', () => {
         this.isDesktop = window.innerWidth >= 768;
         if (this.isDesktop) {
@@ -24,23 +23,109 @@
       open: false,
       programOpen: false,
       userOpen: false,
-      active: localStorage.getItem('activeLink') || '/dashboard',
+      active: '/dashboard',
+      
+      // Function untuk set active
       setActive(path) {
-        this.active = path
-        localStorage.setItem('activeLink', path)
-        this.open = false
+        this.active = path;
+        this.open = false;
+        this.programOpen = false;
+        this.userOpen = false;
+        
+        // Debug: log current active state
+        console.log('Active path set to:', path);
+      },
+      
+      // Function untuk check jika path aktif - DIPERBAIKI
+      isActive(path) {
+        const currentPath = this.active;
+        console.log('Checking active:', path, 'vs current:', currentPath);
+        
+        // Exact match
+        if (path === currentPath) {
+          console.log('Exact match found');
+          return true;
+        }
+        
+        // Partial match untuk kategori program
+        if (path.includes('/kategori/') && currentPath.includes('/kategori/')) {
+          const pathCategory = path.split('/').pop();
+          const currentCategory = currentPath.split('/').pop();
+          if (pathCategory === currentCategory) {
+            console.log('Category match:', pathCategory);
+            return true;
+          }
+        }
+        
+        // Untuk user routes - lebih spesifik
+        if (path.includes('/users/profile') && currentPath.includes('/users/profile')) return true;
+        if (path.includes('/kelass/kelas_saya') && currentPath.includes('/kelass/kelas_saya')) return true;
+        if (path === '/logbook' && currentPath === '/logbook') return true;
+        if (path.includes('/portfolios/myportfolio') && currentPath.includes('/portfolios/myportfolio')) return true;
+        if (path.includes('/pembayarans/riwayat') && currentPath.includes('/pembayarans/riwayat')) return true;
+        
+        return false;
+      },
+      
+      // Check jika program dropdown aktif - DIPERBAIKI
+      isProgramActive() {
+        const currentPath = this.active;
+        console.log('Checking program active for:', currentPath);
+        return currentPath.includes('/kategori/') || 
+               currentPath === '/in-house-training' || 
+               currentPath === '/wip' ||
+               currentPath.includes('/dashboard/kategori/');
+      },
+      
+      // Check jika user dropdown aktif - DIPERBAIKI
+      isUserActive() {
+        const currentPath = this.active;
+        console.log('Checking user active for:', currentPath);
+        return currentPath.includes('/users/') || 
+               currentPath.includes('/kelass/kelas_saya') || 
+               currentPath.includes('/logbook') ||
+               currentPath.includes('/portfolios/myportfolio') ||
+               currentPath.includes('/pembayarans/riwayat');
+      },
+      
+      // Initialize dengan current path - DIPERBAIKI
+      init() {
+        // Set active berdasarkan current URL yang sebenarnya
+        this.active = window.location.pathname;
+        console.log('Initial active path:', this.active);
+        
+        // Listen untuk popstate (browser back/forward)
+        window.addEventListener('popstate', () => {
+          this.active = window.location.pathname;
+          console.log('Popstate - new active:', this.active);
+        });
+        
+        // Intercept semua klik link untuk update state
+        document.addEventListener('click', (e) => {
+          const link = e.target.closest('a');
+          if (link && link.href) {
+            const url = new URL(link.href);
+            if (url.origin === window.location.origin) {
+              // Delay sedikit untuk memastikan navigation sudah terjadi
+              setTimeout(() => {
+                this.active = window.location.pathname;
+                console.log('Link click - new active:', this.active);
+              }, 100);
+            }
+          }
+        });
       }
     }"
     class='flex flex-col max-w-screen-xl px-4 mx-auto md:items-center md:justify-between md:flex-row md:px-6 lg:px-8 h-16'
   >
     <!-- Logo & Toggle -->
     <div class='flex flex-row items-center justify-between h-16'>
-      <a href="/dashboard" class="inline-block">
-      <img
-        src='/public/image/logo_kotak_putih.png'
-        alt='Logo'
-        class='h-8 w-auto tracking-widest uppercase rounded-lg focus:outline-none focus:shadow-outline'
-      />
+      <a href="/dashboard" class="inline-block" @click="setActive('/dashboard')">
+        <img
+          src='/public/image/logo_kotak_putih.png'
+          alt='Logo'
+          class='h-8 w-auto tracking-widest uppercase rounded-lg focus:outline-none focus:shadow-outline'
+        />
       </a>
       <button
         class='rounded-lg md:hidden focus:outline-none focus:shadow-outline p-2 hover:bg-gray-800 transition-colors z-50'
@@ -90,12 +175,13 @@
         x-transition:leave-start="translate-y-0"
         x-transition:leave-end="translate-y-[-100%]"
         class="fixed inset-x-0 top-[64px] p-4 transform-gpu overflow-y-auto bg-gray-900 md:static md:p-0 md:flex md:space-x-4 md:items-center md:justify-end md:bg-transparent md:overflow-visible"
-    >
+      >
         {{#if (roles user.role 'user')}}
+        <!-- Menu untuk user yang login -->
         <a
           href='/dashboard'
           @click="setActive('/dashboard')"
-          :class="active === '/dashboard' 
+          :class="isActive('/dashboard')
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:mt-0'
@@ -103,8 +189,8 @@
 
         <a
           href='/dashboard/about'
-          @click="setActive('/about')"
-          :class="active === '/about' 
+          @click="setActive('/dashboard/about')"
+          :class="isActive('/dashboard/about')
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
@@ -115,13 +201,9 @@
           <button
             @click='programOpen = !programOpen'
             @click.away='programOpen = false'
-            :class="[
-        (active.includes('/dashboard/kategori/Bootcamp') || 
-         active.includes('/dashboard/kategori/Course') || 
-         active.includes('/dashboard/kategori/Short Class'))
-        ? 'bg-white text-gray-900'
-        : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'
-      ]"
+            :class="isProgramActive()
+              ? 'bg-white text-gray-900'
+              : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold text-left rounded-lg transition-colors md:w-auto'
           >
             <span>Program</span>
@@ -150,7 +232,8 @@
             <a
               href='/dashboard/kategori/Bootcamp'
               @click="setActive('/dashboard/kategori/Bootcamp')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/dashboard/kategori/Bootcamp') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/Bootcamp.png" class='w-6 h-6' alt="">
@@ -164,7 +247,8 @@
             <a
               href='/dashboard/kategori/Course'
               @click="setActive('/dashboard/kategori/Course')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/dashboard/kategori/Course') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/Course.png" class='w-6 h-6' alt="">
@@ -178,7 +262,8 @@
             <a
               href='/dashboard/kategori/Short Class'
               @click="setActive('/dashboard/kategori/Short Class')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/dashboard/kategori/Short Class') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/FreeClass.png" class='w-6 h-6' alt="">
@@ -192,7 +277,8 @@
             <a
               href='/in-house-training'
               @click="setActive('/in-house-training')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/in-house-training') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/InHouseTraining.png" class='w-6 h-6' alt="">
@@ -206,7 +292,8 @@
             <a
               href='/wip'
               @click="setActive('/wip')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/wip') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/WiratekInternShipProgram.png" class='w-6 h-6' alt="">
@@ -216,8 +303,9 @@
                 <p class='text-xs text-gray-300 mt-0.5'>Wiratek Internship Program</p>
               </div>
             </a>
+          </div>
 
-          </div>          <!-- Desktop Dropdown -->
+          <!-- Desktop Dropdown -->
           <div
             x-show='programOpen'
             @click.away='programOpen = false'
@@ -228,14 +316,14 @@
           >
             <div class='px-2 pt-2 pb-4 bg-white rounded-md shadow-lg'>
               <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <!-- Bootcamp -->
                 <a
                   href='/dashboard/kategori/Bootcamp'
                   @click="setActive('/dashboard/kategori/Bootcamp')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/dashboard/kategori/Bootcamp') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/Bootcamp.png" class='w-6 h-6' alt="">
+                    <img src="/public/image/Bootcamp.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>Bootcamp</p>
@@ -243,14 +331,14 @@
                   </div>
                 </a>
 
-                <!-- Course -->
                 <a
                   href='/dashboard/kategori/Course'
                   @click="setActive('/dashboard/kategori/Course')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/dashboard/kategori/Course') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/Course.png" class='w-6 h-6' alt="">
+                    <img src="/public/image/Course.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>Course</p>
@@ -258,15 +346,14 @@
                   </div>
                 </a>
 
-                <!-- Short Class -->
                 <a
                   href='/dashboard/kategori/Short Class'
                   @click="setActive('/dashboard/kategori/Short Class')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/dashboard/kategori/Short Class') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/FreeClass.png" class='w-6 h-6' alt="">
-
+                    <img src="/public/image/FreeClass.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>Short Class</p>
@@ -277,11 +364,11 @@
                 <a
                   href='/in-house-training'
                   @click="setActive('/in-house-training')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/in-house-training') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/InHouseTraining.png" class='w-6 h-6' alt="">
-
+                    <img src="/public/image/InHouseTraining.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>In House Training</p>
@@ -292,18 +379,17 @@
                 <a
                   href='/wip'
                   @click="setActive('/wip')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/wip') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/WiratekInternShipProgram.png" class='w-6 h-6' alt="">
-
+                    <img src="/public/image/WiratekInternShipProgram.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>WIP</p>
                     <p class='text-xs text-gray-600 mt-1 font-inter'>Wiratek Internship Program</p>
                   </div>
                 </a>
-
               </div>
             </div>
           </div>
@@ -311,8 +397,8 @@
 
         <a
           href='/dashboard/portofolio'
-          @click="setActive('/portofolio')"
-          :class="active === '/portofolio' 
+          @click="setActive('/dashboard/portofolio')"
+          :class="isActive('/dashboard/portofolio') 
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
@@ -320,27 +406,20 @@
 
         <a
           href='/dashboard/alumni'
-          @click="setActive('/alumni')"
-          :class="active === '/alumni' 
+          @click="setActive('/dashboard/alumni')"
+          :class="isActive('/dashboard/alumni') 
             ? 'bg-white text-gray-900' 
-            : 'bg-gray-900 text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
+            : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
         >Alumni</a>
-
 
         <!-- User Dropdown -->
         <div class='relative'>
           <button
             @click='userOpen = !userOpen'
-            :class="[
-              (active.includes('/users/profile') || 
-               active.includes('/kelass/kelas_saya') || 
-               active.includes('/logbook') ||
-               active.includes('/portfolios/myportfolio') ||
-               active.includes('/pembayarans/riwayat'))
+            :class="isUserActive()
               ? 'bg-white text-gray-900'
-              : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'
-            ]"
+              : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:w-auto md:ml-4'
           >
             <div class='flex items-center gap-3'>
@@ -348,23 +427,23 @@
               <div
                 class='w-7 h-7 rounded-full overflow-hidden border-2 border-gray-600 hover:border-gray-400 transition-colors'
               >
-                          {{#if user.profile}}
-              <img
-                src='{{user.profile}}'
-                alt='{{user.username}}'
-                class='w-full h-full object-cover'
-              />
-            {{else}}
-              <div
-                class='w-full h-full bg-gray-600 flex items-center justify-center'
-              >
-                <span class='text-white font-bold text-lg'>{{substring
-                    user.username
-                    0
-                    1
-                  }}</span>
-              </div>
-            {{/if}}
+                {{#if user.profile}}
+                  <img
+                    src='{{user.profile}}'
+                    alt='{{user.username}}'
+                    class='w-full h-full object-cover'
+                  />
+                {{else}}
+                  <div
+                    class='w-full h-full bg-gray-600 flex items-center justify-center'
+                  >
+                    <span class='text-white font-bold text-lg'>{{substring
+                        user.username
+                        0
+                        1
+                      }}</span>
+                  </div>
+                {{/if}}
               </div>
               <svg
                 fill='currentColor'
@@ -393,7 +472,8 @@
             <a
               href='/users/profile'
               @click="setActive('/users/profile')"
-              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/users/profile') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -411,7 +491,8 @@
             <a
               href='/kelass/kelas_saya/{{user.id}}'
               @click="setActive('/kelass/kelas_saya/{{user.id}}')"
-              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/kelass/kelas_saya/{{user.id}}') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -429,7 +510,8 @@
             <a
               href='/logbook'
               @click="setActive('/logbook')"
-              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/logbook') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -447,7 +529,8 @@
             <a
               href='/portfolios/myportfolio/{{user.id}}'
               @click="setActive('/portfolios/myportfolio/{{user.id}}')"
-              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/portfolios/myportfolio/{{user.id}}') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -465,7 +548,8 @@
             <a
               href='/pembayarans/riwayat/{{user.id}}'
               @click="setActive('/pembayarans/riwayat/{{user.id}}')"
-              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/pembayarans/riwayat/{{user.id}}') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors'
             >
               <svg
                 class='w-4 h-4'
@@ -512,7 +596,8 @@
               <a
                 href='/users/profile'
                 @click="setActive('/users/profile')"
-                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg'
+                :class="isActive('/users/profile') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg
                   class='w-4 h-4'
@@ -530,7 +615,8 @@
               <a
                 href='/kelass/kelas_saya/{{user.id}}'
                 @click="setActive('/kelass/kelas_saya/{{user.id}}')"
-                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg'
+                :class="isActive('/kelass/kelas_saya/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg
                   class='w-4 h-4'
@@ -548,7 +634,8 @@
               <a
                 href='/logbook'
                 @click="setActive('/logbook')"
-                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg'
+                :class="isActive('/logbook') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg
                   class='w-4 h-4'
@@ -566,7 +653,8 @@
               <a
                 href='/portfolios/myportfolio/{{user.id}}'
                 @click="setActive('/portfolios/myportfolio/{{user.id}}')"
-                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg'
+                :class="isActive('/portfolios/myportfolio/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg
                   class='w-4 h-4'
@@ -584,7 +672,8 @@
               <a
                 href='/pembayarans/riwayat/{{user.id}}'
                 @click="setActive('/pembayarans/riwayat/{{user.id}}')"
-                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 hover:bg-gray-200 rounded-lg'
+                :class="isActive('/pembayarans/riwayat/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg
                   class='w-4 h-4'
@@ -620,12 +709,12 @@
           </div>
         </div>
 
-      {{else}}
+        {{else}}
         <!-- Guest Navigation -->
         <a
           href='/dashboard'
           @click="setActive('/dashboard')"
-          :class="active === '/dashboard' 
+          :class="isActive('/dashboard')
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:mt-0'
@@ -633,8 +722,8 @@
 
         <a
           href='/dashboard/about'
-          @click="setActive('/about')"
-          :class="active === '/about' 
+          @click="setActive('/dashboard/about')"
+          :class="isActive('/dashboard/about')
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
@@ -644,13 +733,9 @@
           <button
             @click='programOpen = !programOpen'
             @click.away='programOpen = false'
-            :class="[
-        (active.includes('/dashboard/kategori/Bootcamp') || 
-         active.includes('/dashboard/kategori/Course') || 
-         active.includes('/dashboard/kategori/Short Class'))
-        ? 'bg-white text-gray-900'
-        : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'
-      ]"
+            :class="isProgramActive()
+              ? 'bg-white text-gray-900'
+              : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold text-left rounded-lg transition-colors md:w-auto'
           >
             <span>Program</span>
@@ -679,7 +764,8 @@
             <a
               href='/dashboard/kategori/Bootcamp'
               @click="setActive('/dashboard/kategori/Bootcamp')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/dashboard/kategori/Bootcamp') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/Bootcamp.png" class='w-6 h-6' alt="">
@@ -693,7 +779,8 @@
             <a
               href='/dashboard/kategori/Course'
               @click="setActive('/dashboard/kategori/Course')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/dashboard/kategori/Course') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/Course.png" class='w-6 h-6' alt="">
@@ -707,7 +794,8 @@
             <a
               href='/dashboard/kategori/Short Class'
               @click="setActive('/dashboard/kategori/Short Class')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/dashboard/kategori/Short Class') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/FreeClass.png" class='w-6 h-6' alt="">
@@ -721,7 +809,8 @@
             <a
               href='/in-house-training'
               @click="setActive('/in-house-training')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/in-house-training') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/InHouseTraining.png" class='w-6 h-6' alt="">
@@ -735,7 +824,8 @@
             <a
               href='/wip'
               @click="setActive('/wip')"
-              class='flex items-start gap-3 p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors'
+              :class="isActive('/wip') ? 'bg-gray-700' : 'bg-gray-800'"
+              class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
             >
               <div class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'>
                 <img src="/public/image/WiratekInternShipProgram.png" class='w-6 h-6' alt="">
@@ -745,7 +835,6 @@
                 <p class='text-xs text-gray-300 mt-0.5'>Wiratek Internship Program</p>
               </div>
             </a>
-
           </div>
 
           <!-- Desktop Dropdown -->
@@ -762,10 +851,11 @@
                 <a
                   href='/dashboard/kategori/Bootcamp'
                   @click="setActive('/dashboard/kategori/Bootcamp')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/dashboard/kategori/Bootcamp') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/Bootcamp.png" class='w-6 h-6' alt="">
+                    <img src="/public/image/Bootcamp.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>Bootcamp</p>
@@ -773,14 +863,14 @@
                   </div>
                 </a>
 
-                <!-- Course -->
                 <a
                   href='/dashboard/kategori/Course'
                   @click="setActive('/dashboard/kategori/Course')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/dashboard/kategori/Course') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/Course.png" class='w-6 h-6' alt="">
+                    <img src="/public/image/Course.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>Course</p>
@@ -788,15 +878,14 @@
                   </div>
                 </a>
 
-                <!-- Short Class -->
                 <a
                   href='/dashboard/kategori/Short Class'
                   @click="setActive('/dashboard/kategori/Short Class')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/dashboard/kategori/Short Class') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/FreeClass.png" class='w-6 h-6' alt="">
-
+                    <img src="/public/image/FreeClass.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>Short Class</p>
@@ -807,11 +896,11 @@
                 <a
                   href='/in-house-training'
                   @click="setActive('/in-house-training')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/in-house-training') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/InHouseTraining.png" class='w-6 h-6' alt="">
-
+                    <img src="/public/image/InHouseTraining.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>In House Training</p>
@@ -822,18 +911,17 @@
                 <a
                   href='/wip'
                   @click="setActive('/wip')"
-                  class='flex items-start rounded-lg bg-transparent p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/wip') ? 'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'>
-    <img src="/public/image/WiratekInternShipProgram.png" class='w-6 h-6' alt="">
-
+                    <img src="/public/image/WiratekInternShipProgram.png" class='w-6 h-6' alt="">
                   </div>
                   <div class='ml-3 flex-1'>
                     <p class='font-semibold text-gray-900 font-montserrat'>WIP</p>
                     <p class='text-xs text-gray-600 mt-1 font-inter'>Wiratek Internship Program</p>
                   </div>
                 </a>
-
               </div>
             </div>
           </div>
@@ -841,8 +929,8 @@
 
         <a
           href='/dashboard/portofolio'
-          @click="setActive('/portofolio')"
-          :class="active === '/portofolio' 
+          @click="setActive('/dashboard/portofolio')"
+          :class="isActive('/dashboard/portofolio')
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
@@ -850,8 +938,8 @@
 
         <a
           href='/dashboard/alumni'
-          @click="setActive('/alumni')"
-          :class="active === '/alumni' 
+          @click="setActive('/dashboard/alumni')"
+          :class="isActive('/dashboard/alumni')
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
@@ -860,13 +948,14 @@
         <a
           href='/login'
           @click="setActive('/login')"
-          :class="active === '/login' 
+          :class="isActive('/login') 
             ? 'bg-white text-gray-900 border-2 border-white' 
             : 'bg-transparent text-white border-2 border-white hover:bg-gray-100 hover:text-gray-900'"
           class='block px-4 py-2 text-sm font-semibold border-2 border-white hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors md:ml-4'
         >Login</a>
 
-      {{/if}}
+        {{/if}}
+      </div>
     </nav>
   </div>
 </div>
