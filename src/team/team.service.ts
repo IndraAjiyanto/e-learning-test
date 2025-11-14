@@ -19,13 +19,14 @@ export class TeamService {
   }
 
   async noPertemuan() {
-    const team_old = await this.teamRepository.findOne({
+    const team_old = await this.teamRepository.find({
       order: { team_ke: 'DESC' },
+      take: 1,
     });
-    if (!team_old) {
+    if (!team_old || team_old.length === 0) {
       return 0;
     }
-    const team_new = team_old.team_ke + 1;
+    const team_new = team_old[0].team_ke + 1;
     return team_new;
   }
   async findAll() {
@@ -100,3 +101,4 @@ export class TeamService {
     }
   }
 }
+

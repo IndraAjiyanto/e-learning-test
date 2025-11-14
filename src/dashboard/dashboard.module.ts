@@ -23,6 +23,7 @@ import { Misi } from 'src/entities/misi.entity';
 import { Experience } from 'src/entities/experience.entity';
 import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
+import { Paragraf } from 'src/entities/paragraf.entity';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { Background } from 'src/entities/background.entity';
       Experience,
       Award,
       Background,
+      Paragraf
     ]),
   ],
   controllers: [DashboardController],

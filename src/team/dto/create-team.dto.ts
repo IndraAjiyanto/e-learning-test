@@ -17,11 +17,9 @@ export class CreateTeamDto {
   linkedin: string;
 
   @IsString()
-  github: string;
-
-  @IsString()
   instagram: string;
 
   @IsString()
   deskripsi: string;
 }
+

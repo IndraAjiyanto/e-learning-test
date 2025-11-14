@@ -146,26 +146,26 @@ export class DashboardController {
     const social = await this.dashboardService.findSocial();
     const visi = await this.dashboardService.findVisiMisi();
     const commitment = await this.dashboardService.findCommitment();
-    const tentang = await this.dashboardService.findTentang();
     const value = await this.dashboardService.findValue();
     const teamLead = await this.dashboardService.findTeamLead();
     const misi = await this.dashboardService.findMisi();
     const experience = await this.dashboardService.findExperience();
     const award = await this.dashboardService.findAward();
     const background = await this.dashboardService.findBackground();
+    const paragraf = await this.dashboardService.findTentangParagraf();
     res.render('tentang', {
       user: req.user,
       team,
       social,
       visi,
       commitment,
-      tentang,
       value,
       teamLead,
       misi,
       experience,
       award,
       background,
+      paragraf
     });
   }
 
