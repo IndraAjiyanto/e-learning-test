@@ -1,52 +1,160 @@
 <div class='py-10'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+  <div
+    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+        // Form validation states
+        formData: {
+          judul: '{{alur_kelas.judul}}',
+          isi: '{{alur_kelas.isi}}'
+        },
+        formErrors: {
+          judul: '',
+          isi: ''
+        },
+        formValid: {
+          judul: true,
+          isi: true
+        },
+
+        validateField(field, value) {
+          this.formData[field] = value;
+          
+          switch(field) {
+            case 'judul':
+              if (!value.trim()) {
+                this.formErrors.judul = 'Title is required';
+                this.formValid.judul = false;
+              } else if (value.trim().length < 3) {
+                this.formErrors.judul = 'Title must be at least 3 characters';
+                this.formValid.judul = false;
+              } else {
+                this.formErrors.judul = '';
+                this.formValid.judul = true;
+              }
+              break;
+              
+            case 'isi':
+              if (!value.trim()) {
+                this.formErrors.isi = 'Description is required';
+                this.formValid.isi = false;
+              } else if (value.trim().length < 10) {
+                this.formErrors.isi = 'Description must be at least 10 characters';
+                this.formValid.isi = false;
+              } else {
+                this.formErrors.isi = '';
+                this.formValid.isi = true;
+              }
+              break;
+          }
+        },
+
+        canSubmit() {
+          return this.formValid.judul && this.formValid.isi;
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors).some(error => error !== '');
+        }
+      }"
+  >
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Flow</h2>
 
     <form
       action='/alur-kelas/{{alur_kelas.id}}/{{alur_kelas.kelas.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
+      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
-      <!-- Judul -->
-      <div>
-        <label
-          for='judul'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
-          Title
-        </label>
-        <input
-          type='text'
-          id='judul'
-          name='judul'
-          value='{{alur_kelas.judul}}'
-          required
-          placeholder='e.g. Introduction to Programming'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        />
-      </div>
+      <!-- Form Fields Grid -->
+      <div class='grid grid-cols-1 gap-6'>
 
-      <!-- Isi -->
-      <div>
-        <label for='isi' class='block text-sm font-semibold text-gray-700 mb-1'>
-          Description
-        </label>
-        <textarea
-          id='isi'
-          name='isi'
-          rows='4'
-          required
-          placeholder='Describe the flow in detail...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        >{{alur_kelas.isi}}</textarea>
+        <!-- Judul -->
+        <div class='space-y-2'>
+          <label
+            for='judul'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Title</label>
+          <input
+            type='text'
+            id='judul'
+            name='judul'
+            required
+            placeholder='e.g. Introduction to Programming'
+            :class="formErrors.judul ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            x-model='formData.judul'
+            @input='validateField("judul", $event.target.value)'
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.judul'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.judul'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.judul && !formErrors.judul'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid title</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Isi -->
+        <div class='space-y-2'>
+          <label
+            for='isi'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Description</label>
+          <textarea
+            id='isi'
+            name='isi'
+            rows='4'
+            required
+            placeholder='Describe the flow in detail...'
+            :class="formErrors.isi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            x-model='formData.isi'
+            @input='validateField("isi", $event.target.value)'
+          ></textarea>
+
+          <!-- Error Message -->
+          <template x-if='formErrors.isi'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.isi'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.isi && !formErrors.isi'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid description</p>
+            </div>
+          </template>
+        </div>
       </div>
 
       <!-- Buttons -->
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='!canSubmit()'
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Update
         </button>

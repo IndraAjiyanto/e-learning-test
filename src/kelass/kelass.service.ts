@@ -751,7 +751,13 @@ export class KelassService {
 
   async allKelas() {
     return await this.kelasRepository.find({
-      relations: ['user_kelas', 'user_kelas.user', 'kategori', 'mentoring', 'mentoring.user'],
+      relations: [
+        'user_kelas',
+        'user_kelas.user',
+        'kategori',
+        'mentoring',
+        'mentoring.user',
+      ],
     });
   }
 

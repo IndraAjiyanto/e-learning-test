@@ -1,24 +1,98 @@
-<div class='pt-28 py-20'     x-data="{
-    icon: '{{benefit_kelas.icon}}',
-    get computedClass() {
-      const raw = (this.icon || '').toString().trim();
-      if (!raw) return 'fa-solid fa-circle-question';
-      const v = raw;
-      const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
-      if (hasFaPrefix) {
-        if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
-        return v;
-      }
-      if (!v.includes(' ')) return 'fa-solid fa-' + v;
+<div
+  class='pt-28 py-20'
+  x-data="{
+  icon: '{{benefit_kelas.icon}}',
+  get computedClass() {
+    const raw = (this.icon || '').toString().trim();
+    if (!raw) return 'fa-solid fa-circle-question';
+    const v = raw;
+    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
+    if (hasFaPrefix) {
+      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
       return v;
     }
-  }">
+    if (!v.includes(' ')) return 'fa-solid fa-' + v;
+    return v;
+  },
+
+  // Form validation states
+  formData: {
+    benefit: '{{benefit_kelas.benefit}}',
+    isi: '{{benefit_kelas.isi}}',
+    icon: '{{benefit_kelas.icon}}'
+  },
+  formErrors: {
+    benefit: '',
+    isi: '',
+    icon: ''
+  },
+  formValid: {
+    benefit: false,
+    isi: false,
+    icon: false
+  },
+
+  validateField(field, value) {
+    this.formData[field] = value;
+    
+    switch(field) {
+      case 'benefit':
+        if (!value.trim()) {
+          this.formErrors.benefit = 'Benefit title is required';
+          this.formValid.benefit = false;
+        } else if (value.trim().length < 3) {
+          this.formErrors.benefit = 'Benefit title must be at least 3 characters';
+          this.formValid.benefit = false;
+        } else {
+          this.formErrors.benefit = '';
+          this.formValid.benefit = true;
+        }
+        break;
+        
+      case 'isi':
+        if (!value.trim()) {
+          this.formErrors.isi = 'Description is required';
+          this.formValid.isi = false;
+        } else if (value.trim().length < 10) {
+          this.formErrors.isi = 'Description must be at least 10 characters';
+          this.formValid.isi = false;
+        } else {
+          this.formErrors.isi = '';
+          this.formValid.isi = true;
+        }
+        break;
+        
+      case 'icon':
+        if (!value.trim()) {
+          this.formErrors.icon = 'Icon is required';
+          this.formValid.icon = false;
+        } else if (value.trim().length < 2) {
+          this.formErrors.icon = 'Icon must be at least 2 characters';
+          this.formValid.icon = false;
+        } else {
+          this.formErrors.icon = '';
+          this.formValid.icon = true;
+        }
+        break;
+    }
+  },
+
+  canSubmit() {
+    return this.formValid.benefit && this.formValid.isi && this.formValid.icon;
+  },
+
+  hasFormErrors() {
+    return Object.values(this.formErrors).some(error => error !== '');
+  }
+}"
+>
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Benefit Class</h2>
 
     <form
       action='/benefit-kelas/{{benefit_kelas.id}}/{{benefit_kelas.kelas.id}}?_method=PATCH'
       method='post'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
       class='space-y-6'
     >
 
@@ -31,13 +105,25 @@
           Benefit Title
         </label>
         <input
+          x-model='formData.benefit'
+          @input='validateField("benefit", $event.target.value)'
           type='text'
           id='benefit'
           name='benefit'
           value='{{benefit_kelas.benefit}}'
           placeholder='e.g. Lifetime Access, Certificate, Mentoring Support'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="formErrors.benefit ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.benefit ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         />
+        <div
+          x-show='formErrors.benefit'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.benefit'
+        ></div>
+        <div
+          x-show='formValid.benefit && !formErrors.benefit'
+          class='mt-1 text-sm text-green-600'
+        >✓ Title looks good</div>
       </div>
 
       <!-- Isi -->
@@ -46,12 +132,24 @@
           Description
         </label>
         <textarea
+          x-model='formData.isi'
+          @input='validateField("isi", $event.target.value)'
           id='isi'
           name='isi'
           rows='4'
           placeholder='Describe the benefit in detail...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="formErrors.isi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >{{benefit_kelas.isi}}</textarea>
+        <div
+          x-show='formErrors.isi'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.isi'
+        ></div>
+        <div
+          x-show='formValid.isi && !formErrors.isi'
+          class='mt-1 text-sm text-green-600'
+        >✓ Description looks good</div>
       </div>
 
       <!-- Icon Upload + Preview -->
@@ -62,12 +160,14 @@
         >Icon</label>
         <div class='flex items-center gap-4'>
           <input
-            x-model='icon'
+            x-model='formData.icon'
+            @input='validateField("icon", $event.target.value); icon = $event.target.value'
             type='text'
             id='icon'
             name='icon'
             placeholder='code or fa-code or fa-solid fa-code'
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            :class="formErrors.icon ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           />
 
           <div class='flex items-center gap-3'>
@@ -75,6 +175,15 @@
             <span class='text-sm text-gray-500' x-text='computedClass'></span>
           </div>
         </div>
+        <div
+          x-show='formErrors.icon'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.icon'
+        ></div>
+        <div
+          x-show='formValid.icon && !formErrors.icon'
+          class='mt-1 text-sm text-green-600'
+        >✓ Icon looks good</div>
         <p class='text-sm text-gray-500 mt-2'>Type an icon name like
           <code>code</code>
           or
@@ -86,7 +195,9 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
         >
           Update
         </button>

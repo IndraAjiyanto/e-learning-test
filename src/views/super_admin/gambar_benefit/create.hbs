@@ -2,6 +2,7 @@
   <div
     class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
     x-data="{ 
+    no: '',
     previewUrl: null,
     errorMessage: '',
     isValid: true,
@@ -10,6 +11,8 @@
     imageWidth: 0,
     imageHeight: 0,
     hasFile: false,
+    errors: {},
+    success: {},
     validateImage(file) {
       if (!file) {
         this.hasFile = false;
@@ -80,9 +83,18 @@
       this.hasFile = false;
       $refs.fileInput.value = null;
     },
+    validateNo() {
+      if (!this.no.trim()) {
+        this.errors.no = 'Number is required';
+        this.success.no = false;
+      } else {
+        delete this.errors.no;
+        this.success.no = true;
+      }
+    },
     canSubmit() {
-      // Harus ada file dan valid
-      return this.hasFile && this.isValid;
+      // Harus ada file dan valid, dan number harus dipilih
+      return this.hasFile && this.isValid && this.no.trim() && Object.keys(this.errors).length === 0;
     }
   }"
   >
@@ -104,10 +116,13 @@
 
         </label>
         <select
+          x-model='no'
+          @change='validateNo()'
           id='no'
           name='no'
           required
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.no ? 'border-red-500 focus:ring-red-500' : success.no ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >
           <option value=''>-- Select Number --</option>
           <option value='1'>1</option>
@@ -115,6 +130,11 @@
           <option value='3'>3</option>
           <option value='4'>4</option>
         </select>
+        <p
+          x-show='errors.no'
+          x-text='errors.no'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Upload Gambar -->
@@ -206,7 +226,9 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition flex items-center gap-2'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Save
         </button>

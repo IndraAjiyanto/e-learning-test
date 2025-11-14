@@ -165,7 +165,7 @@ export class DashboardController {
       experience,
       award,
       background,
-      paragraf
+      paragraf,
     });
   }
 

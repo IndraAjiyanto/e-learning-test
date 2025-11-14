@@ -26,7 +26,6 @@ export class TeamLead {
   @Column()
   instagram: string;
 
-
   @Column()
   linkedin: string;
 

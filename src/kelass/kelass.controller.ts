@@ -406,8 +406,7 @@ export class KelassController {
     try {
       await this.kelassService.removeUserKelas(userId, kelasId);
       req.flash('success', 'class successfuly delete');
-            res.redirect(`/kelass/addUser/${kelasId}`);
-
+      res.redirect(`/kelass/addUser/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'class unsuccess delete');
       res.redirect(`/kelass/addUser/${kelasId}`);

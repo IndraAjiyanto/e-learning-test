@@ -1,10 +1,68 @@
-<div class='py-10'>
+<div
+  class='py-10'
+  x-data="{
+  // Form validation states
+  formData: {
+    content: '{{experience.content}}',
+    isi: '{{experience.isi}}'
+  },
+  formErrors: {
+    content: '',
+    isi: ''
+  },
+  formValid: {
+    content: false,
+    isi: false
+  },
+
+  validateField(field, value) {
+    this.formData[field] = value;
+    
+    switch(field) {
+      case 'content':
+        if (!value.trim()) {
+          this.formErrors.content = 'Content is required';
+          this.formValid.content = false;
+        } else if (value.trim().length < 10) {
+          this.formErrors.content = 'Content must be at least 10 characters';
+          this.formValid.content = false;
+        } else {
+          this.formErrors.content = '';
+          this.formValid.content = true;
+        }
+        break;
+        
+      case 'isi':
+        if (!value.trim()) {
+          this.formErrors.isi = 'Description is required';
+          this.formValid.isi = false;
+        } else if (value.trim().length < 10) {
+          this.formErrors.isi = 'Description must be at least 10 characters';
+          this.formValid.isi = false;
+        } else {
+          this.formErrors.isi = '';
+          this.formValid.isi = true;
+        }
+        break;
+    }
+  },
+
+  canSubmit() {
+    return this.formValid.content && this.formValid.isi;
+  },
+
+  hasFormErrors() {
+    return Object.values(this.formErrors).some(error => error !== '');
+  }
+}"
+>
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Experience</h2>
 
     <form
       action='/experience/{{experience.id}}?_method=PATCH'
       method='post'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
       class='space-y-6'
     >
       <div>
@@ -13,13 +71,25 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Content</label>
         <textarea
+          x-model='formData.content'
+          @input='validateField("content", $event.target.value)'
           id='content'
           name='content'
           rows='4'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="formErrors.content ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.content ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           placeholder='Enter content...'
           required
         >{{experience.content}}</textarea>
+        <div
+          x-show='formErrors.content'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.content'
+        ></div>
+        <div
+          x-show='formValid.content && !formErrors.content'
+          class='mt-1 text-sm text-green-600'
+        >✓ Content looks good</div>
       </div>
 
       <div>
@@ -28,19 +98,33 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Isi</label>
         <textarea
+          x-model='formData.isi'
+          @input='validateField("isi", $event.target.value)'
           id='isi'
           name='isi'
           rows='6'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="formErrors.isi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           placeholder='Enter isi...'
           required
         >{{experience.isi}}</textarea>
+        <div
+          x-show='formErrors.isi'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.isi'
+        ></div>
+        <div
+          x-show='formValid.isi && !formErrors.isi'
+          class='mt-1 text-sm text-green-600'
+        >✓ Description looks good</div>
       </div>
 
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
         >Update</button>
         <a
           href='/experience'

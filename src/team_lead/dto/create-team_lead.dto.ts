@@ -19,4 +19,3 @@ export class CreateTeamLeadDto {
   @IsString()
   linkedin: string;
 }
-

@@ -1,4 +1,6 @@
-<div class='py-10' x-data="{
+<div
+  class='py-10'
+  x-data="{
   icon: '',
   get computedClass() {
     const raw = (this.icon || '').toString().trim();
@@ -11,14 +13,103 @@
     }
     if (!v.includes(' ')) return 'fa-solid fa-' + v;
     return v;
+  },
+
+  // Form validation states
+  formData: {
+    icon: '',
+    judul: '',
+    text: '',
+    no: ''
+  },
+  formErrors: {
+    icon: '',
+    judul: '',
+    text: '',
+    no: ''
+  },
+  formValid: {
+    icon: false,
+    judul: false,
+    text: false,
+    no: false
+  },
+
+  validateField(field, value) {
+    this.formData[field] = value;
+    
+    switch(field) {
+      case 'icon':
+        if (!value.trim()) {
+          this.formErrors.icon = 'Icon is required';
+          this.formValid.icon = false;
+        } else if (value.trim().length < 2) {
+          this.formErrors.icon = 'Icon must be at least 2 characters';
+          this.formValid.icon = false;
+        } else {
+          this.formErrors.icon = '';
+          this.formValid.icon = true;
+        }
+        break;
+        
+      case 'judul':
+        if (!value.trim()) {
+          this.formErrors.judul = 'Title is required';
+          this.formValid.judul = false;
+        } else if (value.trim().length < 3) {
+          this.formErrors.judul = 'Title must be at least 3 characters';
+          this.formValid.judul = false;
+        } else {
+          this.formErrors.judul = '';
+          this.formValid.judul = true;
+        }
+        break;
+        
+      case 'text':
+        if (!value.trim()) {
+          this.formErrors.text = 'Description is required';
+          this.formValid.text = false;
+        } else if (value.trim().length < 10) {
+          this.formErrors.text = 'Description must be at least 10 characters';
+          this.formValid.text = false;
+        } else {
+          this.formErrors.text = '';
+          this.formValid.text = true;
+        }
+        break;
+        
+      case 'no':
+        if (!value) {
+          this.formErrors.no = 'Number selection is required';
+          this.formValid.no = false;
+        } else {
+          this.formErrors.no = '';
+          this.formValid.no = true;
+        }
+        break;
+    }
+  },
+
+  canSubmit() {
+    return this.formValid.icon && this.formValid.judul && this.formValid.text && this.formValid.no;
+  },
+
+  hasFormErrors() {
+    return Object.values(this.formErrors).some(error => error !== '');
   }
-}">
+}"
+>
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Benefit</h2>
 
-    <form action='/benefit' method='post' class='space-y-6'>
+    <form
+      action='/super_admin/benefit'
+      method='POST'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
+      class='bg-white rounded-lg shadow-md p-6'
+    >
 
-          <div>
+      <div>
         <label
           for='icon'
           class='block text-sm font-semibold text-gray-700 mb-1'
@@ -27,12 +118,14 @@
         </label>
         <div class='flex items-center gap-4'>
           <input
-            x-model='icon'
+            x-model='formData.icon'
+            @input='validateField("icon", $event.target.value); icon = $event.target.value'
             type='text'
             id='icon'
             name='icon'
             placeholder='fa-code, fa-layer-group, etc.'
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            :class="formErrors.icon ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           />
 
           <!-- Live preview: binds computed class to the <i> element -->
@@ -41,6 +134,15 @@
             <span class='text-sm text-gray-500' x-text='computedClass'></span>
           </div>
         </div>
+        <div
+          x-show='formErrors.icon'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.icon'
+        ></div>
+        <div
+          x-show='formValid.icon && !formErrors.icon'
+          class='mt-1 text-sm text-green-600'
+        >✓ Icon looks good</div>
         <p class='text-sm text-gray-500 mt-2'>Type a Font Awesome class like
           <code>fa-code</code>
           or include full classes like
@@ -54,16 +156,28 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >
           Title
-          
+
         </label>
         <input
+          x-model='formData.judul'
+          @input='validateField("judul", $event.target.value)'
           type='text'
           id='judul'
           name='judul'
           required
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="formErrors.judul ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           placeholder='Enter benefit title'
         />
+        <div
+          x-show='formErrors.judul'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.judul'
+        ></div>
+        <div
+          x-show='formValid.judul && !formErrors.judul'
+          class='mt-1 text-sm text-green-600'
+        >✓ Title looks good</div>
       </div>
 
       <!-- Text -->
@@ -73,42 +187,68 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >
           Description
-          
+
         </label>
         <textarea
+          x-model='formData.text'
+          @input='validateField("text", $event.target.value)'
           id='text'
           name='text'
           rows='5'
           required
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 resize-none'
+          :class="formErrors.text ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.text ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 resize-none'
           placeholder='Enter benefit description'
         ></textarea>
+        <div
+          x-show='formErrors.text'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.text'
+        ></div>
+        <div
+          x-show='formValid.text && !formErrors.text'
+          class='mt-1 text-sm text-green-600'
+        >✓ Description looks good</div>
       </div>
 
       <!-- Number -->
       <div>
         <label for='no' class='block text-sm font-semibold text-gray-700 mb-1'>
           Number
-          
+
         </label>
         <select
+          x-model='formData.no'
+          @change='validateField("no", $event.target.value)'
           id='no'
           name='no'
           required
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="formErrors.no ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.no ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >
           <option value=''>-- Select Number --</option>
           <option value='1'>1</option>
           <option value='2'>2</option>
           <option value='3'>3</option>
         </select>
+        <div
+          x-show='formErrors.no'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.no'
+        ></div>
+        <div
+          x-show='formValid.no && !formErrors.no'
+          class='mt-1 text-sm text-green-600'
+        >✓ Number selected</div>
       </div>
 
       <!-- Action Buttons -->
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition flex items-center gap-2'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Create
         </button>

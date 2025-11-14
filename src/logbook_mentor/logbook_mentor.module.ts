@@ -9,7 +9,10 @@ import { Kelas } from 'src/entities/kelas.entity';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LogbookMentor, User, Pertemuan, Kelas]), CommonModule],
+  imports: [
+    TypeOrmModule.forFeature([LogbookMentor, User, Pertemuan, Kelas]),
+    CommonModule,
+  ],
   controllers: [LogbookMentorController],
   providers: [LogbookMentorService],
   exports: [LogbookMentorService],

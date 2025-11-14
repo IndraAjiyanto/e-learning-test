@@ -49,7 +49,7 @@ import { Paragraf } from 'src/entities/paragraf.entity';
       Experience,
       Award,
       Background,
-      Paragraf
+      Paragraf,
     ]),
   ],
   controllers: [DashboardController],

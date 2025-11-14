@@ -1,5 +1,11 @@
-<div class='py-10'  x-data="{
+<div
+  class='py-10'
+  x-data="{
+  judul: '',
+  deskripsi: '',
   icon: '',
+  errors: {},
+  success: {},
   get computedClass() {
     const raw = (this.icon || '').toString().trim();
     if (!raw) return 'fa-solid fa-circle-question';
@@ -11,12 +17,39 @@
     }
     if (!v.includes(' ')) return 'fa-solid fa-' + v;
     return v;
+  },
+  validateJudul() {
+    if (!this.judul.trim()) {
+      this.errors.judul = 'Title is required';
+      this.success.judul = false;
+    } else {
+      delete this.errors.judul;
+      this.success.judul = true;
+    }
+  },
+  validateDeskripsi() {
+    if (!this.deskripsi.trim()) {
+      this.errors.deskripsi = 'Description is required';
+      this.success.deskripsi = false;
+    } else {
+      delete this.errors.deskripsi;
+      this.success.deskripsi = true;
+    }
+  },
+  canSubmit() {
+    return this.judul.trim() && this.deskripsi.trim() && Object.keys(this.errors).length === 0;
   }
-}">
+}"
+>
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create Commitment</h2>
 
-    <form action='/commitment' method='post' class='space-y-6'>
+    <form
+      action='/commitment'
+      method='post'
+      class='space-y-6'
+      @submit.prevent='if (!canSubmit()) return false'
+    >
 
       <div>
         <label
@@ -26,11 +59,19 @@
           Title
         </label>
         <input
+          x-model='judul'
+          @input='validateJudul()'
           type='text'
           id='judul'
           name='judul'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.judul ? 'border-red-500 focus:ring-red-500' : success.judul ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         />
+        <p
+          x-show='errors.judul'
+          x-text='errors.judul'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <div>
@@ -41,11 +82,19 @@
           Description
         </label>
         <textarea
+          x-model='deskripsi'
+          @input='validateDeskripsi()'
           id='deskripsi'
           name='deskripsi'
           rows='4'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.deskripsi ? 'border-red-500 focus:ring-red-500' : success.deskripsi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         ></textarea>
+        <p
+          x-show='errors.deskripsi'
+          x-text='errors.deskripsi'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <div>
@@ -80,7 +129,9 @@
       <div class='flex space-x-4'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-gray-900'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-gray-900'
         >
           Create
         </button>

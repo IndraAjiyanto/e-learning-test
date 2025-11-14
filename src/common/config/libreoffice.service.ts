@@ -45,8 +45,10 @@ export class LibreOfficeService {
       '--headless',
       '--nologo',
       '--norestore',
-      '--convert-to', 'pdf',
-      '--outdir', outputDir,
+      '--convert-to',
+      'pdf',
+      '--outdir',
+      outputDir,
       inputPath,
     ];
 
@@ -87,7 +89,10 @@ export class LibreOfficeService {
   // =======================
   // Convert PPT → PNG per slide
   // =======================
-  async convertPptToPng(inputPath: string, outputDir: string): Promise<string[]> {
+  async convertPptToPng(
+    inputPath: string,
+    outputDir: string,
+  ): Promise<string[]> {
     await fs.mkdir(outputDir, { recursive: true });
 
     const pdfPath = await this.convertPptToPdf(inputPath, outputDir);
@@ -96,8 +101,12 @@ export class LibreOfficeService {
     await new Promise<void>((resolve, reject) => {
       const proc = spawn('pdftoppm', cmdArgs);
 
-      proc.stdout.on('data', (data) => console.log('[pdftoppm stdout]', data.toString()));
-      proc.stderr.on('data', (data) => console.error('[pdftoppm stderr]', data.toString()));
+      proc.stdout.on('data', (data) =>
+        console.log('[pdftoppm stdout]', data.toString()),
+      );
+      proc.stderr.on('data', (data) =>
+        console.error('[pdftoppm stderr]', data.toString()),
+      );
 
       proc.on('close', (code) => {
         if (code === 0) resolve();
@@ -113,7 +122,9 @@ export class LibreOfficeService {
     }
 
     const files = await fs.readdir(outputDir);
-    return files.filter((file) => file.endsWith('.png')).map((file) => join(outputDir, file));
+    return files
+      .filter((file) => file.endsWith('.png'))
+      .map((file) => join(outputDir, file));
   }
 
   // =======================
@@ -123,7 +134,9 @@ export class LibreOfficeService {
     try {
       await new Promise<void>((resolve, reject) => {
         const proc = spawn(this.libreOfficePath, ['--version']);
-        proc.on('close', (code) => (code === 0 ? resolve() : reject(new Error('Not found'))));
+        proc.on('close', (code) =>
+          code === 0 ? resolve() : reject(new Error('Not found')),
+        );
       });
       console.log('LibreOffice is installed.');
       return true;
@@ -163,7 +176,9 @@ export class LibreOfficeService {
           console.error(`Failed to upload slide ${index}:`, err);
           return null;
         } finally {
-          try { await fs.unlink(slidePath); } catch (_) {}
+          try {
+            await fs.unlink(slidePath);
+          } catch (_) {}
         }
       });
 
@@ -173,7 +188,9 @@ export class LibreOfficeService {
       try {
         await fs.unlink(inputPath);
         await fs.rm(outputDir, { recursive: true, force: true });
-      } catch (err) { console.error('Cleanup failed:', err); }
+      } catch (err) {
+        console.error('Cleanup failed:', err);
+      }
 
       return { pptUrl: pptUpload.secure_url, slideUrls };
     } catch (err) {

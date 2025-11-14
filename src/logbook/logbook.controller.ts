@@ -232,7 +232,7 @@ export class LogbookController {
       const logbook = await this.logbookService.findOne(logbookId);
       req.flash('error', error.message || 'logbook failed to update');
       if (req.user?.role === 'admin') {
-                res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
+        res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
       } else if (req.user?.role === 'user') {
         res.redirect(`/kelass/${logbook.pertemuan.minggu.kelas.id}`);
       }
