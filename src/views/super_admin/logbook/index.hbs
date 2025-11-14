@@ -13,13 +13,24 @@
     kelas: {{json kelas}},
     get filteredLogbook() {
       return this.logbook.filter(item => 
-        item.kegiatan.toLowerCase().includes(this.search.toLowerCase()) &&
+        item.kegiatan.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.rincian_kegiatan?.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.kendala?.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.dokumentasi_lain?.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.user?.nama?.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.user?.email?.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.user?.username?.toLowerCase().includes(this.search.toLowerCase()) ||
         (this.filterKelas === '' || item.pertemuan.minggu.kelas.nama_kelas === this.filterKelas)
       );
     },
     get filteredLogbookMentor() {
       return this.logbook_mentor.filter(item => 
-        item.kegiatan.toLowerCase().includes(this.search.toLowerCase()) &&
+        item.kegiatan.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.rincian_kegiatan?.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.kendala?.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.user?.nama?.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.user?.email?.toLowerCase().includes(this.search.toLowerCase()) ||
+        item.user?.username?.toLowerCase().includes(this.search.toLowerCase()) ||
         (this.filterKelas === '' || item.pertemuan.minggu.kelas.nama_kelas === this.filterKelas)
       );
     },
@@ -74,17 +85,37 @@
     },
     exportExcel() {
       const data = this.tab === 'user' ? this.filteredLogbook : this.filteredLogbookMentor;
+      const headers = this.tab === 'user' 
+        ? ['No', 'Name', 'Email', 'Username', 'Kelas', 'Minggu', 'Pertemuan', 'Kegiatan', 'Rincian Kegiatan', 'Proses', 'Kendala', 'Dokumentasi', 'Dokumentasi Lain', 'Tanggal Dibuat', 'Tanggal Update']
+        : ['No', 'Name', 'Email', 'Username', 'Kelas', 'Minggu', 'Pertemuan', 'Kegiatan', 'Rincian Kegiatan', 'Kendala', 'Dokumentasi', 'Tanggal Dibuat', 'Tanggal Update'];
+      
       const wsData = [
-        ['No', 'Kegiatan', 'Pertemuan', 'Minggu', 'Kelas', 'User', 'Tanggal'],
-        ...data.map((item, index) => [
-          index + 1,
-          item.kegiatan,
-          item.pertemuan?.pertemuan_ke || '',
-          item.pertemuan?.minggu?.minggu_ke || '',
-          item.pertemuan?.minggu?.kelas?.nama_kelas || '',
-          item.user?.username || '',
-          item.createdAt
-        ])
+        headers,
+        ...data.map((item, index) => {
+          const baseData = [
+            index + 1,
+            item.user?.nama || '',
+            item.user?.email || '',
+            item.user?.username || '',
+            item.pertemuan?.minggu?.kelas?.nama_kelas || '',
+            item.pertemuan?.minggu?.minggu_ke || '',
+            item.pertemuan?.pertemuan_ke || '',
+            item.kegiatan,
+            item.rincian_kegiatan,
+            item.kendala,
+            item.dokumentasi || '',
+            item.createdAt,
+            item.updatedAt
+          ];
+          
+          // Add proses and dokumentasi_lain for user logbook
+          if (this.tab === 'user') {
+            baseData.splice(9, 0, item.proses || ''); // Insert proses after Rincian Kegiatan
+            baseData.splice(11, 0, item.dokumentasi_lain || ''); // Insert dokumentasi_lain after Dokumentasi
+          }
+          
+          return baseData;
+        })
       ];
       const ws = XLSX.utils.aoa_to_sheet(wsData);
       const wb = XLSX.utils.book_new();
@@ -96,8 +127,8 @@
 >
   <!-- Header -->
   <div class='text-center mb-8'>
-    <h1 class='text-3xl font-bold text-gray-900 mb-2'>Log Book</h1>
-    <p class='text-gray-600'>Pilih log book yang ingin ditampilkan</p>
+    <h1 class='text-3xl font-bold text-gray-900 mb-2'>Logbook</h1>
+    <p class='text-gray-600'>Choose the logbook you want to display</p>
   </div>
 
   <!-- Tab Buttons -->
@@ -109,7 +140,7 @@
         : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
       class='px-5 py-2 rounded-lg font-medium transition'
     >
-      Log Book User
+      User Logbook
     </button>
     <button
       @click="tab = 'mentor'"
@@ -118,7 +149,7 @@
         : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
       class='px-5 py-2 rounded-lg font-medium transition'
     >
-      Log Book Mentor
+      Mentor Logbook
     </button>
   </div>
 
@@ -129,7 +160,7 @@
         type='text'
         x-model='search'
         @input='pageNumberUser=0; pageNumberMentor=0'
-        placeholder='Cari kegiatan...'
+        placeholder='Search activities, details, obstacles, documentation, name, email, username...'
         class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-64'
       />
       <button
@@ -156,7 +187,7 @@
       @change='pageNumberUser=0; pageNumberMentor=0'
       class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 w-48'
     >
-      <option value=''>Semua Kelas</option>
+      <option value=''>All Classes</option>
       <template x-for='kelas in uniqueKelas' :key='kelas'>
         <option :value='kelas' x-text='kelas'></option>
       </template>
@@ -171,54 +202,173 @@
 
   <!-- Log Book User Table -->
   <div x-show="tab === 'user'" x-transition>
-    <div class='overflow-x-auto shadow rounded-lg border border-gray-200'>
-      <table class='min-w-full divide-y divide-gray-200 bg-white text-sm'>
-        <thead class='bg-gray-50'>
-          <tr class='text-gray-700'>
-            <th class='px-4 py-3 text-left font-semibold'>No</th>
-            <th class='px-4 py-3 text-left font-semibold'>Kegiatan</th>
-            <th class='px-4 py-3 text-left font-semibold'>Pertemuan</th>
-            <th class='px-4 py-3 text-left font-semibold'>Minggu</th>
-            <th class='px-4 py-3 text-left font-semibold'>Kelas</th>
-            <th class='px-4 py-3 text-left font-semibold'>User</th>
-            <th class='px-4 py-3 text-left font-semibold'>Tanggal</th>
-            <th class='px-4 py-3 text-center font-semibold'>Aksi</th>
+    <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+      <table class='min-w-full divide-y divide-gray-200'>
+        <thead class='bg-gray-100'>
+          <tr>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >No</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Profile</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Name</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Email</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Username</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Kelas</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Minggu</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Pertemuan</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Activity</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Activity Details</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Process</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Obstacles</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Documentation</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Other Documentation</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Created Date</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Updated Date</th>
+            <th
+              class='px-6 py-3 text-center text-sm font-semibold text-gray-700'
+            >Action</th>
           </tr>
         </thead>
-        <tbody class='divide-y divide-gray-100'>
+        <tbody class='divide-y divide-gray-200'>
           <template x-for='(item, index) in paginatedLogbook' :key='item.id'>
-            <tr class='hover:bg-gray-50'>
+            <tr class='hover:bg-gray-50 transition'>
               <td
-                class='px-4 py-3 text-gray-900 font-medium'
+                class='px-6 py-4 text-sm text-gray-800'
                 x-text='(pageNumberUser * size + index + 1)'
               ></td>
+              <td class='px-6 py-4 text-sm text-gray-800'>
+
+                <img
+                  :src='item.user.profile'
+                  alt='{{item.user.username}}'
+                  class='w-12 h-12 rounded-full object-cover border'
+                  @error="$el.style.display='none'; $el.nextElementSibling.style.display='flex'"
+                />
+
+              </td>
               <td
-                class='px-4 py-3 text-gray-900 font-medium'
-                x-text='item.kegiatan'
+                class='px-6 py-4 text-sm text-gray-800'
+                x-text='item.user.name'
               ></td>
               <td
-                class='px-4 py-3 text-gray-700'
-                x-text='item.pertemuan.pertemuan_ke'
+                class='px-6 py-4 text-sm text-gray-800'
+                x-text='item.user.email'
               ></td>
               <td
-                class='px-4 py-3 text-gray-700'
-                x-text='item.pertemuan.minggu.minggu_ke'
+                class='px-6 py-4 text-sm text-gray-800'
+                x-text='item.user.username'
               ></td>
               <td
-                class='px-4 py-3 text-gray-700'
+                class='px-6 py-4 text-sm text-gray-700'
                 x-text='item.pertemuan.minggu.kelas.nama_kelas'
               ></td>
               <td
-                class='px-4 py-3 text-gray-700'
-                x-text='item.user.username'
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.pertemuan.minggu.minggu_ke'
               ></td>
-              <td class='px-4 py-3 text-gray-500' x-text='item.createdAt'></td>
-              <td class='px-4 py-3 text-center'>
+              <td
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.pertemuan.pertemuan_ke'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-900 font-medium'
+                x-text='item.kegiatan'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.rincian_kegiatan'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.proses || "-"'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.kendala'
+              ></td>
+              <td class='px-6 py-4 text-sm text-gray-700'>
+                <div class='text-xs text-gray-500 mb-1'>
+                </div>
+                <img
+                  :src='item.dokumentasi'
+                  alt='Dokumentasi'
+                  class='w-16 h-16 object-cover rounded border cursor-pointer'
+                  @click='openDetail = true; selectedLog = item'
+                  @error="$el.style.display='none'; $el.nextElementSibling.style.display='block'"
+                />
+                <span class='text-gray-400 hidden'>Gagal memuat gambar</span>
+
+              </td>
+              <td
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.dokumentasi_lain || "-"'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-500'
+                x-text='item.createdAt'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-500'
+                x-text='item.updatedAt'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-800 flex items-center justify-center'
+              >
                 <button
                   @click='openDetail = true; selectedLog = item'
-                  class='bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition'
+                  class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
+                  title='View Detail'
                 >
-                  Detail
+                  <!-- Eye Icon -->
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke-width='1.5'
+                    stroke='currentColor'
+                    class='w-5 h-5'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      d='M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z'
+                    />
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                    />
+                  </svg>
                 </button>
               </td>
             </tr>
@@ -257,62 +407,188 @@
     <p
       x-show='filteredLogbook.length === 0'
       class='text-center text-gray-500 italic mt-6'
-    >Belum ada data logbook user yang sesuai filter.</p>
+    >No user logbook data matches the filter.</p>
   </div>
 
   <!-- Log Book Mentor Table -->
   <div x-show="tab === 'mentor'" x-transition>
-    <div class='overflow-x-auto shadow rounded-lg border border-gray-200'>
-      <table class='min-w-full divide-y divide-gray-200 bg-white text-sm'>
-        <thead class='bg-gray-50'>
-          <tr class='text-gray-700'>
-            <th class='px-4 py-3 text-left font-semibold'>No</th>
-            <th class='px-4 py-3 text-left font-semibold'>Kegiatan</th>
-            <th class='px-4 py-3 text-left font-semibold'>Pertemuan</th>
-            <th class='px-4 py-3 text-left font-semibold'>Minggu</th>
-            <th class='px-4 py-3 text-left font-semibold'>Kelas</th>
-            <th class='px-4 py-3 text-left font-semibold'>User</th>
-            <th class='px-4 py-3 text-left font-semibold'>Tanggal</th>
-            <th class='px-4 py-3 text-center font-semibold'>Aksi</th>
+    <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+      <table class='min-w-full divide-y divide-gray-200'>
+        <thead class='bg-gray-100'>
+          <tr>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >No</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Profile</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Name</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Email</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Username</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Kelas</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Minggu</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Pertemuan</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Activity</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Activity Details</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Obstacles</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Documentation</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Created Date</th>
+            <th
+              class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+            >Updated Date</th>
+            <th
+              class='px-6 py-3 text-center text-sm font-semibold text-gray-700'
+            >Action</th>
           </tr>
         </thead>
-        <tbody class='divide-y divide-gray-100'>
+        <tbody class='divide-y divide-gray-200'>
           <template
             x-for='(item, index) in paginatedLogbookMentor'
             :key='item.id'
           >
-            <tr class='hover:bg-gray-50'>
+            <tr class='hover:bg-gray-50 transition'>
               <td
-                class='px-4 py-3 text-gray-900 font-medium'
+                class='px-6 py-4 text-sm text-gray-800'
                 x-text='(pageNumberMentor * size + index + 1)'
               ></td>
+              <td class='px-6 py-4 text-sm text-gray-800'>
+                {{#if item.user.profile}}
+                  <div class='text-xs text-gray-500 mb-1'>
+                    Profile URL:
+                    <span x-text='item.user.profile'></span>
+                  </div>
+                  <img
+                    :src='item.user.profile'
+                    alt='{{item.user.username}}'
+                    class='w-12 h-12 rounded-full object-cover border'
+                    @error="$el.style.display='none'; $el.nextElementSibling.style.display='flex'"
+                  />
+                  <div
+                    class='w-12 h-12 bg-gray-600 rounded-full border border-gray-300 items-center justify-center'
+                    style='display: none;'
+                  >
+                    <span class='text-white font-bold text-lg'>{{substring
+                        item.user.username
+                        0
+                        1
+                      }}</span>
+                  </div>
+                {{else}}
+                  <div
+                    class='w-12 h-12 bg-gray-600 rounded-full border border-gray-300 flex items-center justify-center'
+                  >
+                    <span class='text-white font-bold text-lg'>{{substring
+                        item.user.username
+                        0
+                        1
+                      }}</span>
+                  </div>
+                {{/if}}
+              </td>
               <td
-                class='px-4 py-3 text-gray-900 font-medium'
-                x-text='item.kegiatan'
+                class='px-6 py-4 text-sm text-gray-800'
+                x-text='item.user.nama'
               ></td>
               <td
-                class='px-4 py-3 text-gray-700'
-                x-text='item.pertemuan.pertemuan_ke'
+                class='px-6 py-4 text-sm text-gray-800'
+                x-text='item.user.email'
               ></td>
               <td
-                class='px-4 py-3 text-gray-700'
-                x-text='item.pertemuan.minggu.minggu_ke'
+                class='px-6 py-4 text-sm text-gray-800'
+                x-text='item.user.username'
               ></td>
               <td
-                class='px-4 py-3 text-gray-700'
+                class='px-6 py-4 text-sm text-gray-700'
                 x-text='item.pertemuan.minggu.kelas.nama_kelas'
               ></td>
               <td
-                class='px-4 py-3 text-gray-700'
-                x-text='item.user.username'
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.pertemuan.minggu.minggu_ke'
               ></td>
-              <td class='px-4 py-3 text-gray-500' x-text='item.createdAt'></td>
-              <td class='px-4 py-3 text-center'>
+              <td
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.pertemuan.pertemuan_ke'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-900 font-medium'
+                x-text='item.kegiatan'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.rincian_kegiatan'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-700'
+                x-text='item.kendala'
+              ></td>
+              <td class='px-6 py-4 text-sm text-gray-700'>
+                <img
+                  :src='item.dokumentasi'
+                  alt='Dokumentasi'
+                  class='w-16 h-16 object-cover rounded border cursor-pointer'
+                  @click='openDetail = true; selectedLog = item'
+                  @error="$el.style.display='none'; $el.nextElementSibling.style.display='block'"
+                />
+                <span class='text-gray-400 hidden'>Gagal memuat gambar</span>
+              </td>
+              <td
+                class='px-6 py-4 text-sm text-gray-500'
+                x-text='item.createdAt'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-500'
+                x-text='item.updatedAt'
+              ></td>
+              <td
+                class='px-6 py-4 text-sm text-gray-800 flex items-center justify-center'
+              >
                 <button
                   @click='openDetail = true; selectedLog = item'
-                  class='bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition'
+                  class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
+                  title='View Detail'
                 >
-                  Detail
+                  <!-- Eye Icon -->
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke-width='1.5'
+                    stroke='currentColor'
+                    class='w-5 h-5'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      d='M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z'
+                    />
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                    />
+                  </svg>
                 </button>
               </td>
             </tr>
@@ -351,7 +627,7 @@
     <p
       x-show='filteredLogbookMentor.length === 0'
       class='text-center text-gray-500 italic mt-6'
-    >Belum ada data logbook mentor yang sesuai filter.</p>
+    >No mentor logbook data matches the filter.</p>
   </div>
 
   <!-- Modal Detail -->
@@ -362,7 +638,7 @@
   >
     <div
       @click.away='openDetail = false'
-      class='bg-white rounded-xl p-6 max-w-lg w-full shadow-lg relative'
+      class='bg-white rounded-xl p-6 max-w-4xl w-full shadow-lg relative max-h-[90vh] overflow-y-auto'
     >
       <button
         @click='openDetail = false'
@@ -371,61 +647,112 @@
         ✕
       </button>
 
-      <h2 class='text-xl font-semibold mb-4 text-gray-900'>Detail Logbook</h2>
+      <h2 class='text-xl font-semibold mb-6 text-gray-900'>Logbook Details</h2>
 
-      <!-- Info Kelas & Pertemuan -->
-      <div
-        class='bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1'
-      >
-        <p><strong>Kelas:</strong>
-          <span
-            x-text="selectedLog?.pertemuan?.minggu?.kelas?.nama_kelas ?? '-'"
-          ></span></p>
-        <p><strong>Minggu:</strong>
-          <span
-            x-text="selectedLog?.pertemuan?.minggu?.minggu_ke ?? '-'"
-          ></span></p>
-        <p><strong>Pertemuan:</strong>
-          <span x-text="selectedLog?.pertemuan?.pertemuan_ke ?? '-'"></span></p>
-      </div>
+      <!-- Grid Layout -->
+      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <!-- Left Column -->
+        <div class='space-y-4'>
+          <!-- Info Kelas & Pertemuan -->
+          <div class='bg-gray-50 p-4 rounded-lg'>
+            <h3 class='font-semibold text-gray-900 mb-3'>Class & Meeting
+              Information</h3>
+            <div class='space-y-2 text-sm text-gray-700'>
+              <p><strong>Class:</strong>
+                <span
+                  x-text="selectedLog?.pertemuan?.minggu?.kelas?.nama_kelas ?? '-'"
+                  class='ml-2'
+                ></span></p>
+              <p><strong>Week:</strong>
+                <span
+                  x-text="selectedLog?.pertemuan?.minggu?.minggu_ke ?? '-'"
+                  class='ml-2'
+                ></span></p>
+              <p><strong>Meeting:</strong>
+                <span
+                  x-text="selectedLog?.pertemuan?.pertemuan_ke ?? '-'"
+                  class='ml-2'
+                ></span></p>
+            </div>
+          </div>
 
-      <!-- Info User -->
-      <div
-        class='bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700 space-y-1'
-      >
-        <p><strong>Nama User:</strong>
-          <span x-text="selectedLog?.user?.nama ?? '-'"></span></p>
-        <p><strong>Email:</strong>
-          <span x-text="selectedLog?.user?.email ?? '-'"></span></p>
-      </div>
-
-      <!-- Info Logbook -->
-      <div class='space-y-2 text-gray-700'>
-        <p><strong>Kegiatan:</strong>
-          <span x-text='selectedLog?.kegiatan'></span></p>
-        <p><strong>Rincian Kegiatan:</strong>
-          <span x-text='selectedLog?.rincian_kegiatan'></span></p>
-        <template x-if='selectedLog?.proses'>
-          <p><strong>Proses:</strong>
-            <span x-text='selectedLog?.proses'></span></p>
-        </template>
-        <p><strong>Kendala:</strong>
-          <span x-text='selectedLog?.kendala'></span></p>
-        <p><strong>Tanggal:</strong>
-          <span x-text='selectedLog?.createdAt'></span></p>
-      </div>
-
-      <!-- Dokumentasi -->
-      <template x-if='selectedLog?.dokumentasi'>
-        <div class='mt-4'>
-          <p class='font-semibold mb-2'>Dokumentasi:</p>
-          <img
-            :src='selectedLog?.dokumentasi'
-            alt='Dokumentasi'
-            class='rounded-lg border max-h-64 object-contain mx-auto'
-          />
+          <!-- Info User -->
+          <div class='bg-gray-50 p-4 rounded-lg'>
+            <h3 class='font-semibold text-gray-900 mb-3'>User Information</h3>
+            <div class='space-y-2 text-sm text-gray-700'>
+              <p><strong>Name:</strong>
+                <span
+                  x-text="selectedLog?.user?.nama ?? '-'"
+                  class='ml-2'
+                ></span></p>
+              <p><strong>Email:</strong>
+                <span
+                  x-text="selectedLog?.user?.email ?? '-'"
+                  class='ml-2'
+                ></span></p>
+              <p><strong>Username:</strong>
+                <span
+                  x-text="selectedLog?.user?.username ?? '-'"
+                  class='ml-2'
+                ></span></p>
+            </div>
+          </div>
         </div>
-      </template>
+
+        <!-- Right Column -->
+        <div class='space-y-4'>
+          <!-- Info Logbook -->
+          <div class='bg-gray-50 p-4 rounded-lg'>
+            <h3 class='font-semibold text-gray-900 mb-3'>Logbook Details</h3>
+            <div class='space-y-3 text-sm text-gray-700'>
+              <div>
+                <p class='font-medium text-gray-900'>Activity:</p>
+                <p x-text='selectedLog?.kegiatan' class='mt-1'></p>
+              </div>
+              <div>
+                <p class='font-medium text-gray-900'>Activity Details:</p>
+                <p x-text='selectedLog?.rincian_kegiatan' class='mt-1'></p>
+              </div>
+              <template x-if='selectedLog?.proses'>
+                <div>
+                  <p class='font-medium text-gray-900'>Process:</p>
+                  <p x-text='selectedLog?.proses' class='mt-1'></p>
+                </div>
+              </template>
+              <div>
+                <p class='font-medium text-gray-900'>Obstacles:</p>
+                <p x-text='selectedLog?.kendala' class='mt-1'></p>
+              </div>
+              <template x-if='selectedLog?.dokumentasi_lain'>
+                <div>
+                  <p class='font-medium text-gray-900'>Other Documentation:</p>
+                  <p x-text='selectedLog?.dokumentasi_lain' class='mt-1'></p>
+                </div>
+              </template>
+              <div>
+                <p class='font-medium text-gray-900'>Created Date:</p>
+                <p x-text='selectedLog?.createdAt' class='mt-1'></p>
+              </div>
+              <div>
+                <p class='font-medium text-gray-900'>Updated Date:</p>
+                <p x-text='selectedLog?.updatedAt' class='mt-1'></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dokumentasi -->
+          <template x-if='selectedLog?.dokumentasi'>
+            <div class='bg-gray-50 p-4 rounded-lg'>
+              <h3 class='font-semibold text-gray-900 mb-3'>Documentation</h3>
+              <img
+                :src='selectedLog?.dokumentasi'
+                alt='Documentation'
+                class='rounded-lg border max-h-48 object-contain w-full'
+              />
+            </div>
+          </template>
+        </div>
+      </div>
     </div>
   </div>
 </div>
