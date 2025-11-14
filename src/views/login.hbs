@@ -1,10 +1,17 @@
 <div
-  class='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 px-4 pt-28 py-20'
+  class='min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-secondary to-gray-800 px-4 pt-28 py-20'
 >
 
   <div class='w-full max-w-4xl flex items-center justify-center'>
     <div
-      class='w-full max-w-md mx-auto bg-transparent rounded-3xl p-8 shadow-2xl'
+       class="w-full max-w-lg mx-auto 
+            bg-white/10 
+            backdrop-blur-xl 
+            border border-white/20
+            shadow-2xl 
+            rounded-3xl 
+            p-8 
+            bg-gradient-to-br from-white/20 via-white/10 to-white/5"
     >
 
       <!-- Logo -->
@@ -157,7 +164,7 @@
           <div class='flex justify-end mt-2'>
             <a
               href='/users/forgot-password'
-              class='text-sm text-indigo-400 hover:text-indigo-300'
+              class='text-sm text-accent hover:text-accent'
             >Forgot password?</a>
           </div>
         </div>
@@ -165,7 +172,7 @@
         <!-- Submit Button -->
         <button
           type='submit'
-          class='w-full py-3 rounded-lg bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-600 hover:to-slate-800 text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'
+          class='w-full py-3 rounded-lg bg-primary hover:bg-secondary text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'
         >
           Login
         </button>
@@ -177,7 +184,7 @@
           Don’t have an account?
           <a
             href='/register'
-            class='text-indigo-400 hover:text-indigo-300 font-medium'
+            class='text-accent hover:text-accent font-medium'
           >Sign up now</a>
         </p>
       </div>

@@ -250,7 +250,7 @@ Empowering Future Digital Tech Talent’s
 
 <!-- Bootcamp Experience Section -->
 <div
-  class='bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 rounded-t-[8vw] py-20 px-6 lg:px-20'
+  class='bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-t-[8vw] py-20 px-6 lg:px-20'
 >
   <!-- Title -->
   <div class='text-center max-w-5xl mx-auto mb-10'>
@@ -831,7 +831,7 @@ Kesatria Academy has partnered with various organizations, institutions, and com
           this.currentPage = 1;
       }
   }"
-  class='bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 py-20 px-6 lg:px-20 relative overflow-visible'
+  class='bg-gradient-to-br from-primary via-secondary to-gray-900 py-20 px-6 lg:px-20 relative overflow-visible'
   x-init="$watch('tab', () => currentPage = 1); $watch('selectedMethod', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
   id='courses-section'
 >
@@ -1174,12 +1174,12 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
         <div class='card-body p-6'>
           <div class='flex gap-2 mb-3'>
             <span
-              class='badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full'
+              class='badge flex justify-center items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full'
             >
               {{kategori.nama_kategori}}
             </span>
             <span
-              class='badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
+              class='badge flex justify-center items-center bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
             >
               {{jenis_kelas.nama_jenis_kelas}}
             </span>
@@ -1239,14 +1239,14 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
 
           </div>
 
-<div class='card-actions'>
-  <a
-    href='/kelass/{{id}}'
-    class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
-  >
-    View Program
-  </a>
-</div>
+        <div class='card-actions'>
+          <a
+            href='/kelass/{{id}}'
+            class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
+          >
+            View Program
+          </a>
+        </div>
         </div>
       </div>
     {{/each}}

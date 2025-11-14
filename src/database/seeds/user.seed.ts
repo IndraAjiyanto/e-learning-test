@@ -9,7 +9,6 @@ import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
 import { Bulan } from 'src/entities/bulan.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
-import { UserKelas } from 'src/entities/user_kelas.entity';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
@@ -22,7 +21,6 @@ async function bootstrap() {
   const teknologiRepository = dataSource.getRepository(Teknologi);
   const bulanRepository = dataSource.getRepository(Bulan);
   const mentoringRepository = dataSource.getRepository(Mentoring);
-  const userKelasRepository = dataSource.getRepository(UserKelas);
 
   const hashedPassword = await bcrypt.hash('12345678', 10);
 
@@ -85,25 +83,6 @@ async function bootstrap() {
     {
       bulan: 3,
     },
-    {
-      bulan: 4,
-    },
-    {      bulan: 5,
-    },
-    {      bulan: 6,
-    },
-    {      bulan: 7,
-    },
-    {      bulan: 8,
-    },
-    {      bulan: 9,
-    },
-    {      bulan: 10,
-    },
-    {      bulan: 11,
-    },
-    {      bulan: 12,
-    },
   ]);
 
   await jenisKelasRepository.save([
@@ -133,14 +112,13 @@ async function bootstrap() {
       kuota: 10,
       harga: 1000000,
       promo: 5000000,
-      check_paid: false,
       grup: 'grup whatsapp',
       lokasi: 'kantor wiratek',
       link_lokasi: 'disini',
       metode: 'offline',
       proses: 'acc',
       kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
-      launch: true,
+      launch: false,
       teknologi: [nestJs, reactJs],
       materi: ['javascript', 'css'],
       target_pembelajaran: [
@@ -151,145 +129,12 @@ async function bootstrap() {
       kategori: { id: 1 },
       bulan: { id: 2 },
     },
-    {
-            nama_kelas: 'Back End Developer',
-      deskripsi: 'belajar menjadi back end developer',
-      gambar: 'logo.png',
-      kuota: 10,
-      harga: 1000000,
-      promo: 5000000,
-      check_paid: true,
-      grup: 'grup whatsapp',
-      lokasi: 'kantor wiratek',
-      link_lokasi: 'disini',
-      metode: 'offline',
-      proses: 'acc',
-      kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
-      launch: true,
-      teknologi: [nestJs, reactJs],
-      materi: ['javascript', 'css'],
-      target_pembelajaran: [
-        'paham alur nest js',
-        'mahir di bidang full stack developer',
-      ],
-      jenis_kelas: { id: 1 },
-      kategori: { id: 2 },
-      bulan: { id: 5 },
-    },
-    {
-            nama_kelas: 'Front End Developer',
-      deskripsi: 'belajar menjadi front end developer',
-      gambar: 'logo.png',
-      kuota: 10,
-      harga: 1000000,
-      promo: 5000000,
-      check_paid: true,
-      grup: 'grup whatsapp',
-      lokasi: 'kantor wiratek',
-      link_lokasi: 'disini',
-      metode: 'offline',
-      proses: 'acc',
-      kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
-      launch: true,
-      teknologi: [nestJs, reactJs],
-      materi: ['javascript', 'css'],
-      target_pembelajaran: [
-        'paham alur nest js',
-        'mahir di bidang full stack developer',
-      ],
-      jenis_kelas: { id: 1 },
-      kategori: { id: 3 },
-      bulan: { id: 5 },
-    },
-    {
-            nama_kelas: 'Dasar Dasar JavaScript',
-      deskripsi: 'belajar untuk menguasai java script',
-      gambar: 'logo.png',
-      kuota: 10,
-      harga: 1000000,
-      promo: 5000000,
-      check_paid: true,
-      grup: 'grup whatsapp',
-      lokasi: 'kantor wiratek',
-      link_lokasi: 'disini',
-      metode: 'offline',
-      proses: 'acc',
-      kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
-      launch: true,
-      teknologi: [nestJs, reactJs],
-      materi: ['javascript', 'css'],
-      target_pembelajaran: [
-        'paham alur nest js',
-        'mahir di bidang full stack developer',
-      ],
-      jenis_kelas: { id: 1 },
-      kategori: { id: 1 },
-      bulan: { id: 5 },
-    },
-    {
-            nama_kelas: 'InternShip wiratek',
-      deskripsi: 'lets study',
-      gambar: 'logo.png',
-      kuota: 10,
-      harga: 1000000,
-      promo: 5000000,
-      check_paid: true,
-      grup: 'grup whatsapp',
-      lokasi: 'kantor wiratek',
-      link_lokasi: 'disini',
-      metode: 'offline',
-      proses: 'acc',
-      kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
-      launch: true,
-      teknologi: [nestJs, reactJs],
-      materi: ['javascript', 'css'],
-      target_pembelajaran: [
-        'paham alur nest js',
-        'mahir di bidang full stack developer',
-      ],
-      jenis_kelas: { id: 1 },
-      kategori: { id: 4 },
-      bulan: { id: 5 },
-    },
-    {
-            nama_kelas: 'In house Training',
-      deskripsi: 'Lets study',
-      gambar: 'logo.png',
-      kuota: 10,
-      harga: 1000000,
-      promo: 5000000,
-      check_paid: true,
-      grup: 'grup whatsapp',
-      lokasi: 'kantor wiratek',
-      link_lokasi: 'disini',
-      metode: 'offline',
-      proses: 'acc',
-      kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
-      launch: true,
-      teknologi: [nestJs, reactJs],
-      materi: ['javascript', 'css'],
-      target_pembelajaran: [
-        'paham alur nest js',
-        'mahir di bidang full stack developer',
-      ],
-      jenis_kelas: { id: 1 },
-      kategori: { id: 5 },
-      bulan: { id: 5 },
-    }
   ]);
 
   await mentoringRepository.save([
     {
       user: { id: 2 },
       kelas: { id: 1 },
-    },
-  ]);
-
-  await userKelasRepository.save([
-    {
-      user: { id: 3 },
-      kelas: { id: 1 },
-      progres: false,
     },
   ]);
 
