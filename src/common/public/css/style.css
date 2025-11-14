@@ -4349,6 +4349,11 @@ details.collapse summary::-webkit-details-marker {
   height: auto;
 }
 
+.h-fit {
+  height: -moz-fit-content;
+  height: fit-content;
+}
+
 .h-full {
   height: 100%;
 }
@@ -6181,6 +6186,10 @@ details.collapse summary::-webkit-details-marker {
   --tw-gradient-to: #e11d48 var(--tw-gradient-to-position);
 }
 
+.to-secondary {
+  --tw-gradient-to: #003060 var(--tw-gradient-to-position);
+}
+
 .to-slate-100 {
   --tw-gradient-to: #f1f5f9 var(--tw-gradient-to-position);
 }
@@ -6685,11 +6694,6 @@ details.collapse summary::-webkit-details-marker {
   color: rgb(5 92 144 / var(--tw-text-opacity));
 }
 
-.text-accent {
-  --tw-text-opacity: 1;
-  color: rgb(104 187 227 / var(--tw-text-opacity));
-}
-
 .text-amber-500 {
   --tw-text-opacity: 1;
   color: rgb(245 158 11 / var(--tw-text-opacity));
@@ -6847,6 +6851,11 @@ details.collapse summary::-webkit-details-marker {
 .text-green-800 {
   --tw-text-opacity: 1;
   color: rgb(22 101 52 / var(--tw-text-opacity));
+}
+
+.text-indigo-300 {
+  --tw-text-opacity: 1;
+  color: rgb(165 180 252 / var(--tw-text-opacity));
 }
 
 .text-indigo-400 {
@@ -7844,11 +7853,6 @@ details.collapse summary::-webkit-details-marker {
 
 .hover\:to-white:hover {
   --tw-gradient-to: #fff var(--tw-gradient-to-position);
-}
-
-.hover\:text-accent:hover {
-  --tw-text-opacity: 1;
-  color: rgb(104 187 227 / var(--tw-text-opacity));
 }
 
 .hover\:text-blue-600:hover {
