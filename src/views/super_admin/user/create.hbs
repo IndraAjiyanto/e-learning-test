@@ -2,6 +2,10 @@
   <div
     class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
     x-data="{ 
+    username: '',
+    email: '',
+    password: '',
+    role: '',
     previewUrl: null,
     errorMessage: '',
     isValid: true,
@@ -10,6 +14,56 @@
     imageWidth: 0,
     imageHeight: 0,
     hasFile: false,
+    errors: { username: null, email: null, password: null, role: null },
+    success: { username: false, email: false, password: false, role: false },
+    validateUsername() {
+      if (!this.username.trim()) {
+        this.errors.username = 'Username is required';
+        this.success.username = false;
+      } else if (this.username.trim().length < 3) {
+        this.errors.username = 'Username must be at least 3 characters';
+        this.success.username = false;
+      } else {
+        this.errors.username = null;
+        this.success.username = true;
+      }
+    },
+    validateEmail() {
+      if (!this.email.trim()) {
+        this.errors.email = 'Email is required';
+        this.success.email = false;
+      } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(this.email)) {
+          this.errors.email = 'Please enter a valid email address';
+          this.success.email = false;
+        } else {
+          this.errors.email = null;
+          this.success.email = true;
+        }
+      }
+    },
+    validatePassword() {
+      if (!this.password) {
+        this.errors.password = 'Password is required';
+        this.success.password = false;
+      } else if (this.password.length < 6) {
+        this.errors.password = 'Password must be at least 6 characters';
+        this.success.password = false;
+      } else {
+        this.errors.password = null;
+        this.success.password = true;
+      }
+    },
+    validateRole() {
+      if (!this.role) {
+        this.errors.role = 'Please select a role';
+        this.success.role = false;
+      } else {
+        this.errors.role = null;
+        this.success.role = true;
+      }
+    },
     validateImage(file) {
       if (!file) {
         this.hasFile = false;
@@ -80,13 +134,12 @@
       this.hasFile = false;
       $refs.fileInput.value = null;
     },
-    canSubmit() {
-      // Jika ada file yang diupload, harus valid
+    get canSubmit() {
+      const formValid = this.success.username && this.success.email && this.success.password && this.success.role;
       if (this.hasFile) {
-        return this.isValid;
+        return formValid && this.isValid;
       }
-      // Jika tidak ada file, tetap bisa submit (opsional)
-      return true;
+      return formValid;
     }
   }"
   >
@@ -97,7 +150,7 @@
       method='post'
       class='space-y-6'
       enctype='multipart/form-data'
-      @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please fix image validation errors before submitting.'); }"
+      @submit.prevent='if(!canSubmit) return false'
     >
 
       <div class='space-y-3'>
@@ -177,11 +230,19 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Username</label>
         <input
+          x-model='username'
+          @input='validateUsername()'
           type='text'
           id='username'
           name='username'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.username ? 'border-red-500 focus:ring-red-500' : success.username ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         />
+        <p
+          x-show='errors.username'
+          x-text='errors.username'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <div>
@@ -190,11 +251,19 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Email</label>
         <input
+          x-model='email'
+          @input='validateEmail()'
           type='email'
           id='email'
           name='email'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.email ? 'border-red-500 focus:ring-red-500' : success.email ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         />
+        <p
+          x-show='errors.email'
+          x-text='errors.email'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <div>
@@ -203,11 +272,19 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Password</label>
         <input
+          x-model='password'
+          @input='validatePassword()'
           type='password'
           id='password'
           name='password'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.password ? 'border-red-500 focus:ring-red-500' : success.password ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         />
+        <p
+          x-show='errors.password'
+          x-text='errors.password'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <div>
@@ -216,9 +293,12 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Role</label>
         <select
+          x-model='role'
+          @change='validateRole()'
           name='role'
           id='role'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.role ? 'border-red-500 focus:ring-red-500' : success.role ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >
 
           <option value='' selected disabled>-- Select Role --</option>
@@ -226,13 +306,18 @@
           <option value='user'>User</option>
           <option value='super_admin'>Super Admin</option>
         </select>
+        <p
+          x-show='errors.role'
+          x-text='errors.role'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <div class='flex gap-3'>
         <button
           type='submit'
-          :disabled='hasFile && !isValid'
-          :class="hasFile && !isValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+          :disabled='!canSubmit'
+          :class="canSubmit ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Create

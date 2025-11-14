@@ -2,6 +2,8 @@
   <div
     class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
     x-data="{ 
+    judul: '',
+    text: '',
     previewUrl: null,
     errorMessage: '',
     isValid: true,
@@ -10,6 +12,32 @@
     imageWidth: 0,
     imageHeight: 0,
     hasFile: false,
+    errors: { judul: null, text: null },
+    success: { judul: false, text: false },
+    validateJudul() {
+      if (!this.judul.trim()) {
+        this.errors.judul = 'Title is required';
+        this.success.judul = false;
+      } else if (this.judul.trim().length < 3) {
+        this.errors.judul = 'Title must be at least 3 characters';
+        this.success.judul = false;
+      } else {
+        this.errors.judul = null;
+        this.success.judul = true;
+      }
+    },
+    validateText() {
+      if (!this.text.trim()) {
+        this.errors.text = 'Text content is required';
+        this.success.text = false;
+      } else if (this.text.trim().length < 10) {
+        this.errors.text = 'Text content must be at least 10 characters';
+        this.success.text = false;
+      } else {
+        this.errors.text = null;
+        this.success.text = true;
+      }
+    },
     validateImage(file) {
       if (!file) {
         this.hasFile = false;
@@ -77,8 +105,8 @@
       this.hasFile = false;
       $refs.fileInput.value = null;
     },
-    canSubmit() {
-      return this.hasFile && this.isValid;
+    get canSubmit() {
+      return this.success.judul && this.success.text && this.hasFile && this.isValid;
     }
   }"
   >
@@ -89,7 +117,7 @@
       method='post'
       enctype='multipart/form-data'
       class='space-y-6'
-      @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please upload a valid image before submitting.'); }"
+      @submit.prevent='if(!canSubmit) return false'
     >
 
       <!-- Judul -->
@@ -101,13 +129,21 @@
           Title
         </label>
         <input
+          x-model='judul'
+          @input='validateJudul()'
           type='text'
           id='judul'
           name='judul'
           required
           placeholder='Enter title'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.judul ? 'border-red-500 focus:ring-red-500' : success.judul ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         />
+        <p
+          x-show='errors.judul'
+          x-text='errors.judul'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Text -->
@@ -119,13 +155,21 @@
           Text
         </label>
         <textarea
+          x-model='text'
+          @input='validateText()'
           id='text'
           name='text'
           required
           rows='8'
           placeholder='Enter text content...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 resize-none'
+          :class="errors.text ? 'border-red-500 focus:ring-red-500' : success.text ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 resize-none'
         ></textarea>
+        <p
+          x-show='errors.text'
+          x-text='errors.text'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Upload Image -->
@@ -216,7 +260,9 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition flex items-center gap-2'
+          :disabled='!canSubmit'
+          :class="canSubmit ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Save
         </button>

@@ -1,7 +1,11 @@
 <div
   class='py-10'
   x-data="{
+  nama_kategori: '',
+  deskripsi: '',
   icon: '',
+  errors: {},
+  success: {},
   get computedClass() {
     const raw = (this.icon || '').toString().trim();
     if (!raw) return 'fa-solid fa-circle-question';
@@ -13,6 +17,27 @@
     }
     if (!v.includes(' ')) return 'fa-solid fa-' + v;
     return v;
+  },
+  validateNamaKategori() {
+    if (!this.nama_kategori.trim()) {
+      this.errors.nama_kategori = 'Category name is required';
+      this.success.nama_kategori = false;
+    } else {
+      delete this.errors.nama_kategori;
+      this.success.nama_kategori = true;
+    }
+  },
+  validateDeskripsi() {
+    if (!this.deskripsi.trim()) {
+      this.errors.deskripsi = 'Description is required';
+      this.success.deskripsi = false;
+    } else {
+      delete this.errors.deskripsi;
+      this.success.deskripsi = true;
+    }
+  },
+  canSubmit() {
+    return this.nama_kategori.trim() && this.deskripsi.trim() && Object.keys(this.errors).length === 0;
   }
 }"
 >
@@ -23,6 +48,7 @@
       action='/kategoris'
       method='post'
       class='space-y-6'
+      @submit.prevent='if (!canSubmit()) return false'
     >
 
       <!-- Nama Kategori -->
@@ -34,12 +60,20 @@
           Category Name
         </label>
         <input
+          x-model='nama_kategori'
+          @input='validateNamaKategori()'
           type='text'
           id='nama_kategori'
           name='nama_kategori'
           placeholder='e.g. Web Development, UI/UX Design'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.nama_kategori ? 'border-red-500 focus:ring-red-500' : success.nama_kategori ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         />
+        <p
+          x-show='errors.nama_kategori'
+          x-text='errors.nama_kategori'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Icon -->
@@ -81,19 +115,29 @@
           Description
         </label>
         <textarea
+          x-model='deskripsi'
+          @input='validateDeskripsi()'
           id='deskripsi'
           name='deskripsi'
           rows='4'
           placeholder='Write a short description about this category...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.deskripsi ? 'border-red-500 focus:ring-red-500' : success.deskripsi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         ></textarea>
+        <p
+          x-show='errors.deskripsi'
+          x-text='errors.deskripsi'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Buttons -->
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
         >
           Create
         </button>

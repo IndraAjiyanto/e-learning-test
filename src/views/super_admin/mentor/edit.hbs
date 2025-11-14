@@ -6,6 +6,64 @@
       method="POST" 
       enctype="multipart/form-data"
       class='space-y-8'
+      x-data="{
+        nama: '{{mentor.nama}}',
+        posisi: '{{mentor.posisi}}',
+        deskripsi: '{{mentor.deskripsi}}',
+        linkedin: '{{mentor.linkedin}}',
+        github: '{{mentor.github}}',
+        errors: {},
+        success: {},
+        validateNama() {
+          if (!this.nama.trim()) {
+            this.errors.nama = 'Mentor name is required';
+            this.success.nama = false;
+          } else {
+            delete this.errors.nama;
+            this.success.nama = true;
+          }
+        },
+        validatePosisi() {
+          if (!this.posisi.trim()) {
+            this.errors.posisi = 'Position is required';
+            this.success.posisi = false;
+          } else {
+            delete this.errors.posisi;
+            this.success.posisi = true;
+          }
+        },
+        validateDeskripsi() {
+          if (!this.deskripsi.trim()) {
+            this.errors.deskripsi = 'Description is required';
+            this.success.deskripsi = false;
+          } else {
+            delete this.errors.deskripsi;
+            this.success.deskripsi = true;
+          }
+        },
+        validateLinkedin() {
+          if (!this.linkedin.trim()) {
+            this.errors.linkedin = 'LinkedIn link is required';
+            this.success.linkedin = false;
+          } else {
+            delete this.errors.linkedin;
+            this.success.linkedin = true;
+          }
+        },
+        validateGithub() {
+          if (!this.github.trim()) {
+            this.errors.github = 'GitHub link is required';
+            this.success.github = false;
+          } else {
+            delete this.errors.github;
+            this.success.github = true;
+          }
+        },
+        canSubmit() {
+          return this.nama.trim() && this.posisi.trim() && this.deskripsi.trim() && this.linkedin.trim() && this.github.trim() && Object.keys(this.errors).length === 0;
+        }
+      }"
+      @submit.prevent='if (!canSubmit()) return false'
     >
       <!-- Method Spoofing (karena HTML form tidak support PUT) -->
       <input type="hidden" name="_method" value="PUT">
@@ -87,14 +145,18 @@
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Nama Mentor</label>
             <input
+              x-model='nama'
+              @input='validateNama()'
               type='text'
               id='nama'
               name='nama'
               value="{{mentor.nama}}"
               placeholder='Enter mentor name'
               required
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              :class="errors.nama ? 'border-red-500 focus:ring-red-500' : success.nama ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             />
+            <p x-show='errors.nama' x-text='errors.nama' class='mt-1 text-sm text-red-600'></p>
           </div>
 
           <!-- Posisi -->
@@ -104,14 +166,18 @@
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Posisi</label>
             <input
+              x-model='posisi'
+              @input='validatePosisi()'
               type='text'
               id='posisi'
               name='posisi'
               value="{{mentor.posisi}}"
               placeholder='Enter position (e.g., Web Developer, UI/UX Designer)'
               required
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              :class="errors.posisi ? 'border-red-500 focus:ring-red-500' : success.posisi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             />
+            <p x-show='errors.posisi' x-text='errors.posisi' class='mt-1 text-sm text-red-600'></p>
           </div>
 
           <div
@@ -222,12 +288,16 @@
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Deskripsi</label>
             <textarea
+              x-model='deskripsi'
+              @input='validateDeskripsi()'
               id='deskripsi'
               name='deskripsi'
               rows='6'
               placeholder='Write a short description about the mentor...'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              :class="errors.deskripsi ? 'border-red-500 focus:ring-red-500' : success.deskripsi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             >{{mentor.deskripsi}}</textarea>
+            <p x-show='errors.deskripsi' x-text='errors.deskripsi' class='mt-1 text-sm text-red-600'></p>
           </div>
 
           <div>
@@ -236,14 +306,18 @@
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Linkedin</label>
             <input
+              x-model='linkedin'
+              @input='validateLinkedin()'
               type='text'
               id='linkedin'
               name='linkedin'
               value="{{mentor.linkedin}}"
               placeholder='link linkedin'
               required
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              :class="errors.linkedin ? 'border-red-500 focus:ring-red-500' : success.linkedin ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             />
+            <p x-show='errors.linkedin' x-text='errors.linkedin' class='mt-1 text-sm text-red-600'></p>
           </div>
 
           <div>
@@ -252,14 +326,18 @@
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Github</label>
             <input
+              x-model='github'
+              @input='validateGithub()'
               type='text'
               id='github'
               name='github'
               value="{{mentor.github}}"
               placeholder='Link github'
               required
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              :class="errors.github ? 'border-red-500 focus:ring-red-500' : success.github ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             />
+            <p x-show='errors.github' x-text='errors.github' class='mt-1 text-sm text-red-600'></p>
           </div>
           <!-- TTD -->
           <!-- TTD (signature) - validation mirrors profile -->
@@ -350,7 +428,9 @@
         >Cancel</a>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
         >Save Changes</button>
       </div>
     </form>

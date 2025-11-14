@@ -1,60 +1,146 @@
-<div class="py-10">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit FAQ</h2>
+<div class='py-10'>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit FAQ</h2>
 
-    <form action="/pertanyaan-umum/{{pertanyaan_umum.id}}?_method=PATCH" method="post" class="space-y-6">
+    <form
+      action='/pertanyaan-umum/{{pertanyaan_umum.id}}?_method=PATCH'
+      method='post'
+      class='space-y-6'
+      x-data="{
+      pertanyaan: '{{pertanyaan_umum.pertanyaan}}',
+      jawaban: '{{pertanyaan_umum.jawaban}}',
+      for: '{{pertanyaan_umum.for}}',
+      errors: { pertanyaan: null, jawaban: null, for: null },
+      success: { pertanyaan: false, jawaban: false, for: false },
+      validatePertanyaan() {
+        if (!this.pertanyaan.trim()) {
+          this.errors.pertanyaan = 'Question is required';
+          this.success.pertanyaan = false;
+        } else if (this.pertanyaan.trim().length < 10) {
+          this.errors.pertanyaan = 'Question must be at least 10 characters';
+          this.success.pertanyaan = false;
+        } else {
+          this.errors.pertanyaan = null;
+          this.success.pertanyaan = true;
+        }
+      },
+      validateJawaban() {
+        if (!this.jawaban.trim()) {
+          this.errors.jawaban = 'Answer is required';
+          this.success.jawaban = false;
+        } else if (this.jawaban.trim().length < 20) {
+          this.errors.jawaban = 'Answer must be at least 20 characters';
+          this.success.jawaban = false;
+        } else {
+          this.errors.jawaban = null;
+          this.success.jawaban = true;
+        }
+      },
+      validateFor() {
+        if (!this.for) {
+          this.errors.for = 'Please select a category';
+          this.success.for = false;
+        } else {
+          this.errors.for = null;
+          this.success.for = true;
+        }
+      },
+      get canSubmit() {
+        return this.success.pertanyaan && this.success.jawaban && this.success.for;
+      }
+    }"
+      @submit.prevent='if (!canSubmit) return false'
+    >
 
       <!-- Question -->
       <div>
-        <label for="pertanyaan" class="block text-sm font-semibold text-gray-700 mb-1">
+        <label
+          for='pertanyaan'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
           Question
         </label>
-        <textarea 
-          id="pertanyaan" 
-          name="pertanyaan" 
-          rows="4"
-          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">{{pertanyaan_umum.pertanyaan}}</textarea>
+        <textarea
+          x-model='pertanyaan'
+          @input='validatePertanyaan()'
+          id='pertanyaan'
+          name='pertanyaan'
+          rows='4'
+          :class="errors.pertanyaan ? 'border-red-500 focus:ring-red-500' : success.pertanyaan ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+        >{{pertanyaan_umum.pertanyaan}}</textarea>
+        <p
+          x-show='errors.pertanyaan'
+          x-text='errors.pertanyaan'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Answer -->
       <div>
-        <label for="jawaban" class="block text-sm font-semibold text-gray-700 mb-1">
+        <label
+          for='jawaban'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
           Answer
         </label>
-        <textarea 
-          id="jawaban" 
-          name="jawaban" 
-          rows="4"
-          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">{{pertanyaan_umum.jawaban}}</textarea>
+        <textarea
+          x-model='jawaban'
+          @input='validateJawaban()'
+          id='jawaban'
+          name='jawaban'
+          rows='4'
+          :class="errors.jawaban ? 'border-red-500 focus:ring-red-500' : success.jawaban ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+        >{{pertanyaan_umum.jawaban}}</textarea>
+        <p
+          x-show='errors.jawaban'
+          x-text='errors.jawaban'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
-            <div>
+      <div>
         <label
-          for="for"
-          class="block text-sm font-semibold text-gray-700 mb-1"
+          for='for'
+          class='block text-sm font-semibold text-gray-700 mb-1'
         >For</label>
         <select
-          name="for"
-          id="for"
-          class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
+          x-model='for'
+          @change='validateFor()'
+          name='for'
+          id='for'
+          :class="errors.for ? 'border-red-500 focus:ring-red-500' : success.for ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >
-          <option value="" disabled>-- Select For --</option>
-          <option value="wip" {{#if (eq pertanyaan_umum.for "wip")}}selected{{/if}}>WIP</option>
-          <option value="general" {{#if (eq pertanyaan_umum.for "general")}}selected{{/if}}>General</option>
-          <option value="short_class" {{#if (eq pertanyaan_umum.for "short_class")}}selected{{/if}}>Admin</option>
-          <option value="bootcamp" {{#if (eq pertanyaan_umum.for "bootcamp")}}selected{{/if}}>Bootcamp</option>
-          <option value="course" {{#if (eq pertanyaan_umum.for "course")}}selected{{/if}}>Course</option>
+          <option value='' disabled>-- Select For --</option>
+          <option value='wip'>WIP</option>
+          <option value='general'>General</option>
+          <option value='short_class'>Admin</option>
+          <option value='bootcamp'>Bootcamp</option>
+          <option value='course'>Course</option>
         </select>
+        <p
+          x-show='errors.for'
+          x-text='errors.for'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Action buttons -->
-      <div class="flex gap-3">
-        <button type="submit" 
-          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='!canSubmit'
+          :class="canSubmit ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
+        >
           Update
         </button>
-        <a href="/pertanyaan-umum"
-          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+        <a
+          href='/pertanyaan-umum'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+        >
           Cancel
         </a>
       </div>
