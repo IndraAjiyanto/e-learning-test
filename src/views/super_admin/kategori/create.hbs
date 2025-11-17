@@ -1,45 +1,137 @@
 <div
   class='py-10'
   x-data="{
-  nama_kategori: '',
-  deskripsi: '',
-  icon: '',
-  errors: {},
-  success: {},
-  get computedClass() {
-    const raw = (this.icon || '').toString().trim();
-    if (!raw) return 'fa-solid fa-circle-question';
-    const v = raw;
-    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
-    if (hasFaPrefix) {
-      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
-      return v;
-    }
-    if (!v.includes(' ')) return 'fa-solid fa-' + v;
-    return v;
-  },
-  validateNamaKategori() {
-    if (!this.nama_kategori.trim()) {
-      this.errors.nama_kategori = 'Category name is required';
-      this.success.nama_kategori = false;
-    } else {
-      delete this.errors.nama_kategori;
-      this.success.nama_kategori = true;
-    }
-  },
-  validateDeskripsi() {
-    if (!this.deskripsi.trim()) {
-      this.errors.deskripsi = 'Description is required';
-      this.success.deskripsi = false;
-    } else {
-      delete this.errors.deskripsi;
-      this.success.deskripsi = true;
-    }
-  },
-  canSubmit() {
-    return this.nama_kategori.trim() && this.deskripsi.trim() && Object.keys(this.errors).length === 0;
-  }
-}"
+        previewUrl: null,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        fileSize: 0,
+        imageWidth: 0,
+        imageHeight: 0,
+        hasFile: false,
+
+        // Form validation states
+        formData: {
+          nama_kategori: '',
+          deskripsi: ''
+        },
+        formErrors: {
+          nama_kategori: '',
+          deskripsi: ''
+        },
+        formValid: {
+          nama_kategori: false,
+          deskripsi: false
+        },
+
+        validateImage(file) {
+          if (!file) {
+            this.hasFile = false;
+            return;
+          }
+
+          this.hasFile = true;
+          this.fileName = file.name;
+          this.fileSize = file.size;
+          this.errorMessage = '';
+          this.isValid = true;
+
+          // Validasi tipe file
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+
+          // Validasi ukuran file (5MB = 5242880 bytes)
+          const maxSize = 5 * 1024 * 1024; // 5MB
+          if (file.size > maxSize) {
+            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+
+          // Validasi dimensi gambar (sesuaikan dengan BE kategori, 1000x1000 - 2000x2000)
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+
+          img.onload = () => {
+            this.imageWidth = img.width;
+            this.imageHeight = img.height;
+
+            if (img.width < 1000 || img.width > 2000 || img.height < 1000 || img.height > 2000) {
+              this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 1000x1000 to 2000x2000 pixels`;
+              this.isValid = false;
+              this.previewUrl = null;
+              URL.revokeObjectURL(objectUrl);
+            } else {
+              this.previewUrl = objectUrl;
+              this.isValid = true;
+              this.errorMessage = '';
+            }
+          };
+
+          img.onerror = () => {
+            this.errorMessage = 'Failed to load image';
+            this.isValid = false;
+            this.previewUrl = null;
+            URL.revokeObjectURL(objectUrl);
+          };
+
+          img.src = objectUrl;
+        },
+
+        validateField(field, value) {
+          this.formData[field] = value;
+
+          switch(field) {
+            case 'nama_kategori':
+              if (!value.trim()) {
+                this.formErrors.nama_kategori = 'Category name is required';
+                this.formValid.nama_kategori = false;
+              } else {
+                this.formErrors.nama_kategori = '';
+                this.formValid.nama_kategori = true;
+              }
+              break;
+
+            case 'deskripsi':
+              if (!value.trim()) {
+                this.formErrors.deskripsi = 'Description is required';
+                this.formValid.deskripsi = false;
+              } else {
+                this.formErrors.deskripsi = '';
+                this.formValid.deskripsi = true;
+              }
+              break;
+          }
+        },
+
+        clearFile() {
+          this.previewUrl = null;
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.fileSize = 0;
+          this.imageWidth = 0;
+          this.imageHeight = 0;
+          this.hasFile = false;
+          this.$refs.fileInput.value = null;
+        },
+
+        canSubmit() {
+          const imageValid = !this.hasFile || this.isValid;
+          const formValid = this.formValid.nama_kategori && this.formValid.deskripsi;
+          return imageValid && formValid;
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors).some(error => error !== '');
+        }
+      }"
 >
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Category</h2>
@@ -47,107 +139,208 @@
     <form
       action='/kategoris'
       method='post'
+      enctype='multipart/form-data'
       class='space-y-6'
-      @submit.prevent='if (!canSubmit()) return false'
+      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
-      <!-- Nama Kategori -->
-      <div>
-        <label
-          for='nama_kategori'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
-          Category Name
-        </label>
-        <input
-          x-model='nama_kategori'
-          @input='validateNamaKategori()'
-          type='text'
-          id='nama_kategori'
-          name='nama_kategori'
-          placeholder='e.g. Web Development, UI/UX Design'
-          :class="errors.nama_kategori ? 'border-red-500 focus:ring-red-500' : success.nama_kategori ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
-        />
-        <p
-          x-show='errors.nama_kategori'
-          x-text='errors.nama_kategori'
-          class='mt-1 text-sm text-red-600'
-        ></p>
-      </div>
-
-      <!-- Icon -->
-      <div>
-        <label
-          for='icon'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
-          Icon
-        </label>
-        <div class='flex items-center gap-4'>
+      <!-- Form Fields Grid -->
+      <div class='grid grid-cols-1 gap-6'>
+        <!-- Nama Kategori -->
+        <div class='space-y-2'>
+          <label
+            for='nama_kategori'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Category Name</label>
           <input
-            x-model='icon'
             type='text'
-            id='icon'
-            name='icon'
-            placeholder='fa-code, fa-layer-group, etc.'
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            id='nama_kategori'
+            name='nama_kategori'
+            required
+            :class="formErrors.nama_kategori ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("nama_kategori", $event.target.value)'
           />
 
-          <!-- Live preview: binds computed class to the <i> element -->
-          <div class='flex items-center gap-3'>
-            <i :class='computedClass' class='text-2xl text-gray-700'></i>
-            <span class='text-sm text-gray-500' x-text='computedClass'></span>
-          </div>
+          <!-- Error Message -->
+          <template x-if='formErrors.nama_kategori'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p
+                class='text-xs text-red-700'
+                x-text='formErrors.nama_kategori'
+              ></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.nama_kategori && !formErrors.nama_kategori'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid category name</p>
+            </div>
+          </template>
         </div>
-        <p class='text-sm text-gray-500 mt-2'>Type a Font Awesome class like
-          <code>fa-code</code>
-          or include full classes like
-          <code>fas fa-code</code>.</p>
+
+        <div class='space-y-3'>
+
+          <label
+            for='icon'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >
+            Icon Image
+            <span class='text-xs text-gray-500 font-normal'>(1000x1000 -
+              2000x2000px, max 5MB, JPG/PNG)</span>
+          </label>
+
+          <input
+            type='file'
+            id='icon'
+            name='icon'
+            accept='image/jpeg,image/jpg,image/png'
+            x-ref='fileInput'
+            :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
+            @change='validateImage($event.target.files[0])'
+          />
+
+          <!-- Error Message -->
+          <template x-if='!isValid && errorMessage'>
+            <div
+              class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <div>
+                <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+                <p class='text-xs text-red-700' x-text='errorMessage'></p>
+              </div>
+            </div>
+          </template>
+
+          <!-- Success Message with File Info -->
+          <template x-if='hasFile && isValid'>
+            <div class='space-y-2'>
+              <div
+                class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <div class='flex items-center gap-2'>
+                  <i class='fas fa-check-circle text-green-500'></i>
+                  <div>
+                    <p
+                      class='text-sm font-semibold text-green-800'
+                      x-text='fileName'
+                    ></p>
+                    <p class='text-xs text-green-700'>
+                      <span x-text='(fileSize / 1024 / 1024).toFixed(2)'></span>
+                      MB •
+                      <span x-text='imageWidth'></span>x<span
+                        x-text='imageHeight'
+                      ></span>
+                      px
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type='button'
+                  @click='clearFile()'
+                  class='text-red-500 hover:text-red-700 transition-colors'
+                  title='Remove image'
+                >
+                  <i class='fas fa-times'></i>
+                </button>
+              </div>
+
+              <!-- Image Preview -->
+              <div class='relative w-32 h-32'>
+                <img
+                  :src='previewUrl'
+                  alt='Icon Preview'
+                  class='w-32 h-32 object-cover rounded-lg border-2 border-green-500 shadow-sm'
+                />
+                <button
+                  type='button'
+                  @click='clearFile()'
+                  class='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 transition-colors'
+                  title='Remove image'
+                >
+                  <i class='fas fa-times text-xs'></i>
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Deskripsi -->
+        <div class='space-y-2'>
+          <label
+            for='deskripsi'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Description</label>
+          <textarea
+            id='deskripsi'
+            name='deskripsi'
+            rows='4'
+            required
+            :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("deskripsi", $event.target.value)'
+          ></textarea>
+
+          <!-- Error Message -->
+          <template x-if='formErrors.deskripsi'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.deskripsi'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.deskripsi && !formErrors.deskripsi'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid description</p>
+            </div>
+          </template>
+        </div>
       </div>
 
-      <!-- Deskripsi -->
-      <div>
-        <label
-          for='deskripsi'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
-          Description
-        </label>
-        <textarea
-          x-model='deskripsi'
-          @input='validateDeskripsi()'
-          id='deskripsi'
-          name='deskripsi'
-          rows='4'
-          placeholder='Write a short description about this category...'
-          :class="errors.deskripsi ? 'border-red-500 focus:ring-red-500' : success.deskripsi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
-        ></textarea>
-        <p
-          x-show='errors.deskripsi'
-          x-text='errors.deskripsi'
-          class='mt-1 text-sm text-red-600'
-        ></p>
-      </div>
-
-      <!-- Buttons -->
       <div class='flex gap-3'>
         <button
           type='submit'
           :disabled='!canSubmit()'
-          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
-          class='text-white px-6 py-2 rounded-lg shadow transition'
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Create
         </button>
         <a
           href='/kategoris'
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
         >
           Cancel
         </a>
       </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
     </form>
   </div>
 </div>
