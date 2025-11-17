@@ -21,7 +21,7 @@ export class BenefitKelasService {
       where: { id: createBenefitKelaDto.kelasId },
     });
     if (!kelas) {
-      throw new NotFoundException('kelas not found');
+      throw new NotFoundException('Program not found');
     }
     const benefit_kelas = await this.benefitKelasRepository.create({
       ...createBenefitKelaDto,
@@ -55,7 +55,7 @@ export class BenefitKelasService {
       relations: ['kelas'],
     });
     if (!benefit_kelas) {
-      throw new NotFoundException('benefit kelas not found');
+      throw new NotFoundException('Benefit Program not found');
     }
     return benefit_kelas;
   }
@@ -66,7 +66,7 @@ export class BenefitKelasService {
   ) {
     const benefit_kelas = await this.findOne(benefitKelasId);
     if (!benefit_kelas) {
-      throw new NotFoundException('benefit kelas not found');
+      throw new NotFoundException('Benefit Program not found');
     }
 
     Object.assign(benefit_kelas, updateBenefitKelaDto);
@@ -76,7 +76,7 @@ export class BenefitKelasService {
   async remove(benefitKelasId: number) {
     const benefit_kelas = await this.findOne(benefitKelasId);
     if (!benefit_kelas) {
-      throw new NotFoundException();
+      throw new NotFoundException('Benefit Program not found');
     }
     return await this.benefitKelasRepository.remove(benefit_kelas);
   }
