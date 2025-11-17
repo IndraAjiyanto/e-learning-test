@@ -698,30 +698,16 @@
     </h2>
 
     <div class='max-w-4xl mx-auto space-y-6'>
+      {{#each faq}}
       <div
         class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
       >
         <h3
           class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300'
-        >How long is the bootcamp program?</h3>
-        <p class='text-gray-600 leading-relaxed text-lg'>Our bootcamp program typically runs for 4 months with intensive weekend classes. You'll learn through hands-on projects and mentorship from industry experts.</p>
+        >{{this.pertanyaan}}</h3>
+        <p class='text-gray-600 leading-relaxed text-lg'>{{this.jawaban}}</p>
       </div>
-      <div
-        class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
-      >
-        <h3
-          class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300'
-        >Do I need prior programming experience?</h3>
-        <p class='text-gray-600 leading-relaxed text-lg'>No prior experience is required! We welcome beginners and will guide you from the basics to advanced concepts step by step.</p>
-      </div>
-      <div
-        class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
-      >
-        <h3
-          class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300'
-        >What is the payment method?</h3>
-        <p class='text-gray-600 leading-relaxed text-lg'>We offer flexible payment options including full payment, installments, and early bird discounts. Contact us for more details.</p>
-      </div>
+      {{/each}}
     </div>
   </div>
 </section>

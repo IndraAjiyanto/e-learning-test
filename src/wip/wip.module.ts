@@ -6,9 +6,10 @@ import { Kelas } from 'src/entities/kelas.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { Alumni } from 'src/entities/alumni.entity';
+import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, JenisKelas, Kategori, Alumni])],
+  imports: [TypeOrmModule.forFeature([Kelas, JenisKelas, Kategori, Alumni, PertanyaanUmum])],
   controllers: [WipController],
   providers: [WipService],
 })

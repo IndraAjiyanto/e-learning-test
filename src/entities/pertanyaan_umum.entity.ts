@@ -8,7 +8,7 @@ import {
 
 export type For =
   | 'wip'
-  | 'internship'
+  | 'in-house-training'
   | 'general'
   | 'short_class'
   | 'bootcamp'
@@ -27,7 +27,7 @@ export class PertanyaanUmum {
 
   @Column({
     type: 'enum',
-    enum: ['wip', 'internship', 'general', 'short_class', 'bootcamp', 'course'],
+    enum: ['wip', 'in-house-training', 'general', 'short_class', 'bootcamp', 'course'],
     default: 'general',
   })
   for: For;

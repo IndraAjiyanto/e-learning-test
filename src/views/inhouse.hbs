@@ -775,20 +775,12 @@
     </h2>
 
     <div class='max-w-4xl mx-auto space-y-6'>
+      {{#each faq}}
       <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>How long is a typical training program?</h3>
-        <p class='text-gray-600 leading-relaxed text-lg font-inter'>Training duration varies based on your needs, typically ranging from 2-5 days for intensive workshops or 4-12 weeks for comprehensive programs.</p>
+        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>{{this.pertanyaan}}</h3>
+        <p class='text-gray-600 leading-relaxed text-lg font-inter'>{{this.jawaban}}</p>
       </div>
-      
-      <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>Can the training be customized for our industry?</h3>
-        <p class='text-gray-600 leading-relaxed text-lg font-inter'>Absolutely! We specialize in creating tailored programs that address your specific industry challenges and business objectives.</p>
-      </div>
-      
-      <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>Do you provide certificates?</h3>
-        <p class='text-gray-600 leading-relaxed text-lg font-inter'>Yes, participants receive industry-recognized certificates upon successful completion of the training program.</p>
-      </div>
+      {{/each}}
     </div>
   </div>
 </section>

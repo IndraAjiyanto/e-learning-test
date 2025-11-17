@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { Alumni } from 'src/entities/alumni.entity';
+import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 
 @Injectable()
 export class WipService {
@@ -15,10 +16,10 @@ export class WipService {
     private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(JenisKelas)
     private readonly jenisKelasRepository: Repository<JenisKelas>,
-    @InjectRepository(Kategori)
-    private readonly kategoriRepository: Repository<Kategori>,
     @InjectRepository(Alumni)
     private readonly alumniRepository: Repository<Alumni>,
+    @InjectRepository(PertanyaanUmum)
+    private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
   ) {}
 
   create(createWipDto: CreateWipDto) {
@@ -48,5 +49,9 @@ export class WipService {
       where: { kelas: { kategori: { nama_kategori: 'WIP' } } },
       relations: ['kelas'],
     });
+  }
+
+  async findFaq(){
+    return await this.pertanyaanUmumRepository.find({where: {for: 'wip'}});
   }
 }

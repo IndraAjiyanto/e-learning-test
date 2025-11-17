@@ -28,10 +28,10 @@ export class PertanyaanUmumController {
   ) {
     try {
       await this.pertanyaanUmumService.create(createPertanyaanUmumDto);
-      req.flash('success', 'question successfully created');
+      req.flash('success', 'FAQ successfully created');
       res.redirect('/pertanyaan-umum');
     } catch (error) {
-      req.flash('error', error.message || 'question failed to created');
+      req.flash('error', error.message || 'FAQ failed to created');
       res.redirect('/pertanyaan-umum');
     }
   }
@@ -80,10 +80,10 @@ export class PertanyaanUmumController {
         +pertanyaan_umumId,
         updatePertanyaanUmumDto,
       );
-      req.flash('success', 'question successfully updated');
+      req.flash('success', 'FAQ successfully updated');
       res.redirect('/pertanyaan-umum');
     } catch (error) {
-      req.flash('error', error.message || 'question failed to update');
+      req.flash('error', error.message || 'FAQ failed to update');
       res.redirect('/pertanyaan-umum');
     }
   }
@@ -97,10 +97,10 @@ export class PertanyaanUmumController {
   ) {
     try {
       await this.pertanyaanUmumService.remove(pertanyaan_umumId);
-      req.flash('success', 'question successfully delete');
+      req.flash('success', 'FAQ successfully deleted');
       res.redirect('/pertanyaan-umum');
     } catch (error) {
-      req.flash('error', error.message || 'question failed to delete');
+      req.flash('error', error.message || 'FAQ failed to delete');
       res.redirect('/pertanyaan-umum');
     }
   }
