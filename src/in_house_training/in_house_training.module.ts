@@ -8,7 +8,9 @@ import { Kategori } from 'src/entities/kategori.entity';
 import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, JenisKelas, Kategori, PertanyaanUmum])],
+  imports: [
+    TypeOrmModule.forFeature([Kelas, JenisKelas, Kategori, PertanyaanUmum]),
+  ],
   controllers: [InHouseTrainingController],
   providers: [InHouseTrainingService],
 })

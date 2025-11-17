@@ -9,7 +9,15 @@ import { Alumni } from 'src/entities/alumni.entity';
 import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kelas, JenisKelas, Kategori, Alumni, PertanyaanUmum])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Kelas,
+      JenisKelas,
+      Kategori,
+      Alumni,
+      PertanyaanUmum,
+    ]),
+  ],
   controllers: [WipController],
   providers: [WipService],
 })

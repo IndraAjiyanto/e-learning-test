@@ -3,7 +3,7 @@ import { CreateDashboardDto } from './dto/create-dashboard.dto';
 import { UpdateDashboardDto } from './dto/update-dashboard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portfolio } from 'src/entities/portfolio.entity';
@@ -112,7 +112,7 @@ export class DashboardService {
   }
 
   async findTentang() {
-    return await this.backgroundRepository.find();
+    return await this.tentangRepository.find();
   }
 
   async findTentangParagraf() {

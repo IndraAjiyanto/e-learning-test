@@ -14,8 +14,8 @@ export class InHouseTrainingService {
     private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(JenisKelas)
     private readonly jenisKelasRepository: Repository<JenisKelas>,
-        @InjectRepository(PertanyaanUmum)
-        private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
+    @InjectRepository(PertanyaanUmum)
+    private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
   ) {}
 
   async findAll() {
@@ -29,7 +29,9 @@ export class InHouseTrainingService {
     return await this.jenisKelasRepository.find();
   }
 
-    async findFaq(){
-    return await this.pertanyaanUmumRepository.find({where: {for: 'in-house-training'}});
+  async findFaq() {
+    return await this.pertanyaanUmumRepository.find({
+      where: { for: 'in-house-training' },
+    });
   }
 }

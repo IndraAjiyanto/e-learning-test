@@ -25,7 +25,7 @@ export class TentangService {
   async findOne(id: number) {
     const tentang = await this.tentangRepository.findOne({ where: { id } });
     if (!tentang) {
-      throw new NotFoundException('Tentang not found');
+      throw new NotFoundException('Header not found');
     }
     return tentang;
   }
@@ -33,7 +33,7 @@ export class TentangService {
   async update(id: number, updateTentangDto: UpdateTentangDto) {
     const tentang = await this.findOne(id);
     if (!tentang) {
-      throw new NotFoundException('Tentang not found');
+      throw new NotFoundException('Header not found');
     }
     Object.assign(tentang, updateTentangDto);
     return await this.tentangRepository.save(tentang);
@@ -42,7 +42,7 @@ export class TentangService {
   async remove(id: number) {
     const tentang = await this.findOne(id);
     if (!tentang) {
-      throw new NotFoundException('Tentang not found');
+      throw new NotFoundException('Header not found');
     }
     return await this.tentangRepository.remove(tentang);
   }
@@ -58,7 +58,6 @@ export class TentangService {
       await cloudinary.uploader.destroy(fullPublicId);
       return fullPublicId;
     } catch (error) {
-      console.error('Error deleting image from Cloudinary:', error);
       return null;
     }
   }

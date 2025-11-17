@@ -51,7 +51,7 @@ export class WipService {
     });
   }
 
-  async findFaq(){
-    return await this.pertanyaanUmumRepository.find({where: {for: 'wip'}});
+  async findFaq() {
+    return await this.pertanyaanUmumRepository.find({ where: { for: 'wip' } });
   }
 }
