@@ -1,183 +1,414 @@
 <div class='py-10'>
-  <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-3xl font-bold mb-8 text-gray-900 text-center'>Edit Data Mentor</h2>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+        // Image validation states
+        previewUrl: null,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        fileSize: 0,
+        imageWidth: 0,
+        imageHeight: 0,
+        hasFile: false,
+        oldPhoto: '{{#if mentor.profile}}{{mentor.profile}}{{else}}/images/default-avatar.png{{/if}}',
+        
+        // TTD validation states
+        ttdPreviewUrl: null,
+        ttdErrorMessage: '',
+        ttdIsValid: true,
+        ttdFileName: '',
+        ttdFileSize: 0,
+        ttdImageWidth: 0,
+        ttdImageHeight: 0,
+        ttdHasFile: false,
+        oldTTD: '{{#if mentor.ttd}}{{mentor.ttd}}{{else}}/images/default-signature.png{{/if}}',
+
+        // Form validation states
+        formData: {
+          nama: '{{mentor.nama}}',
+          posisi: '{{mentor.posisi}}',
+          deskripsi: '{{mentor.deskripsi}}',
+          linkedin: '{{mentor.linkedin}}',
+          github: '{{mentor.github}}'
+        },
+        formErrors: {
+          nama: '',
+          posisi: '',
+          deskripsi: '',
+          linkedin: '',
+          github: ''
+        },
+        formValid: {
+          nama: true,
+          posisi: true,
+          deskripsi: true,
+          linkedin: true,
+          github: true
+        },
+
+        validateField(field, value) {
+          this.formData[field] = value;
+          
+          switch(field) {
+            case 'nama':
+              if (!value.trim()) {
+                this.formErrors.nama = 'Mentor name is required';
+                this.formValid.nama = false;
+              } else {
+                this.formErrors.nama = '';
+                this.formValid.nama = true;
+              }
+              break;
+              
+            case 'posisi':
+              if (!value.trim()) {
+                this.formErrors.posisi = 'Position is required';
+                this.formValid.posisi = false;
+              } else {
+                this.formErrors.posisi = '';
+                this.formValid.posisi = true;
+              }
+              break;
+              
+            case 'deskripsi':
+              if (!value.trim()) {
+                this.formErrors.deskripsi = 'Description is required';
+                this.formValid.deskripsi = false;
+              } else {
+                this.formErrors.deskripsi = '';
+                this.formValid.deskripsi = true;
+              }
+              break;
+              
+            case 'linkedin':
+              if (!value.trim()) {
+                this.formErrors.linkedin = 'LinkedIn link is required';
+                this.formValid.linkedin = false;
+              } else {
+                this.formErrors.linkedin = '';
+                this.formValid.linkedin = true;
+              }
+              break;
+              
+            case 'github':
+              if (!value.trim()) {
+                this.formErrors.github = 'GitHub link is required';
+                this.formValid.github = false;
+              } else {
+                this.formErrors.github = '';
+                this.formValid.github = true;
+              }
+              break;
+          }
+        },
+
+        validateImage(file) {
+          if (!file) { this.hasFile = false; return; }
+          this.hasFile = true;
+          this.fileName = file.name;
+          this.fileSize = file.size;
+          this.errorMessage = '';
+          this.isValid = true;
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+          const maxSize = 5 * 1024 * 1024;
+          if (file.size > maxSize) {
+            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+          img.onload = () => {
+            this.imageWidth = img.width;
+            this.imageHeight = img.height;
+            if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+              this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`;
+              this.isValid = false;
+              this.previewUrl = null;
+              URL.revokeObjectURL(objectUrl);
+            } else {
+              this.previewUrl = objectUrl;
+              this.isValid = true;
+              this.errorMessage = '';
+            }
+          };
+          img.onerror = () => {
+            this.errorMessage = 'Failed to load image';
+            this.isValid = false;
+            this.previewUrl = null;
+            URL.revokeObjectURL(objectUrl);
+          };
+          img.src = objectUrl;
+        },
+        
+        validateTTD(file) {
+          if (!file) { this.ttdHasFile = false; return; }
+          this.ttdHasFile = true;
+          this.ttdFileName = file.name;
+          this.ttdFileSize = file.size;
+          this.ttdErrorMessage = '';
+          this.ttdIsValid = true;
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.ttdErrorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+            this.ttdIsValid = false;
+            this.ttdPreviewUrl = null;
+            return;
+          }
+          const maxSize = 5 * 1024 * 1024;
+          if (file.size > maxSize) {
+            this.ttdErrorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
+            this.ttdIsValid = false;
+            this.ttdPreviewUrl = null;
+            return;
+          }
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+          img.onload = () => {
+            this.ttdImageWidth = img.width;
+            this.ttdImageHeight = img.height;
+            if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+              this.ttdErrorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`;
+              this.ttdIsValid = false;
+              this.ttdPreviewUrl = null;
+              URL.revokeObjectURL(objectUrl);
+            } else {
+              this.ttdPreviewUrl = objectUrl;
+              this.ttdIsValid = true;
+              this.ttdErrorMessage = '';
+            }
+          };
+          img.onerror = () => {
+            this.ttdErrorMessage = 'Failed to load image';
+            this.ttdIsValid = false;
+            this.ttdPreviewUrl = null;
+            URL.revokeObjectURL(objectUrl);
+          };
+          img.src = objectUrl;
+        },
+
+        clearFile() {
+          this.previewUrl = null;
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.fileSize = 0;
+          this.imageWidth = 0;
+          this.imageHeight = 0;
+          this.hasFile = false;
+          this.$refs.profileFile.value = null;
+        },
+        
+        clearTTD() {
+          this.ttdPreviewUrl = null;
+          this.ttdErrorMessage = '';
+          this.ttdIsValid = true;
+          this.ttdFileName = '';
+          this.ttdFileSize = 0;
+          this.ttdImageWidth = 0;
+          this.ttdImageHeight = 0;
+          this.ttdHasFile = false;
+          this.$refs.ttdFile.value = null;
+        },
+
+        canSubmit() {
+          const imageValid = !this.hasFile || this.isValid;
+          const ttdValid = !this.ttdHasFile || this.ttdIsValid;
+          const formValid = this.formValid.nama && this.formValid.posisi && this.formValid.deskripsi && this.formValid.linkedin && this.formValid.github;
+          return imageValid && ttdValid && formValid;
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors).some(error => error !== '');
+        }
+      }"
+  >
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Data Mentor</h2>
     <form 
       action="/mentor/{{mentor.kelas.id}}/{{mentor.id}}?_method=PATCH" 
       method="POST" 
       enctype="multipart/form-data"
-      class='space-y-8'
-      x-data="{
-        nama: '{{mentor.nama}}',
-        posisi: '{{mentor.posisi}}',
-        deskripsi: '{{mentor.deskripsi}}',
-        linkedin: '{{mentor.linkedin}}',
-        github: '{{mentor.github}}',
-        errors: {},
-        success: {},
-        validateNama() {
-          if (!this.nama.trim()) {
-            this.errors.nama = 'Mentor name is required';
-            this.success.nama = false;
-          } else {
-            delete this.errors.nama;
-            this.success.nama = true;
-          }
-        },
-        validatePosisi() {
-          if (!this.posisi.trim()) {
-            this.errors.posisi = 'Position is required';
-            this.success.posisi = false;
-          } else {
-            delete this.errors.posisi;
-            this.success.posisi = true;
-          }
-        },
-        validateDeskripsi() {
-          if (!this.deskripsi.trim()) {
-            this.errors.deskripsi = 'Description is required';
-            this.success.deskripsi = false;
-          } else {
-            delete this.errors.deskripsi;
-            this.success.deskripsi = true;
-          }
-        },
-        validateLinkedin() {
-          if (!this.linkedin.trim()) {
-            this.errors.linkedin = 'LinkedIn link is required';
-            this.success.linkedin = false;
-          } else {
-            delete this.errors.linkedin;
-            this.success.linkedin = true;
-          }
-        },
-        validateGithub() {
-          if (!this.github.trim()) {
-            this.errors.github = 'GitHub link is required';
-            this.success.github = false;
-          } else {
-            delete this.errors.github;
-            this.success.github = true;
-          }
-        },
-        canSubmit() {
-          return this.nama.trim() && this.posisi.trim() && this.deskripsi.trim() && this.linkedin.trim() && this.github.trim() && Object.keys(this.errors).length === 0;
-        }
-      }"
-      @submit.prevent='if (!canSubmit()) return false'
+      class='space-y-6'
+      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
-      <!-- Method Spoofing (karena HTML form tidak support PUT) -->
+      <!-- Method Spoofing -->
       <input type="hidden" name="_method" value="PUT">
 
-      <div class='grid grid-cols-1 md:grid-cols-2 gap-8'>
-        <!-- LEFT COLUMN -->
-        <div class='space-y-6'>
-          <!-- Profile / Foto -->
+      <!-- Profile Photo Upload Section -->
+      <div class='space-y-3'>
+        <label
+          for='profile'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Photos Profile
+          <span class='text-xs text-gray-500 font-normal'>(300x300 - 2000x2000px,
+            max 5MB, JPG/PNG)</span>
+        </label>
+        <input
+          type='file'
+          id='profile'
+          name='profile'
+          accept='image/jpeg,image/jpg,image/png'
+          x-ref='profileFile'
+          :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
+          @change='validateImage($event.target.files[0])'
+        />
+
+        <!-- Error Message -->
+        <template x-if='!isValid && errorMessage'>
           <div
-            x-data="{
-                previewUrl: null,
-                oldPhoto: '{{#if mentor.profile}}{{mentor.profile}}{{else}}/images/default-avatar.png{{/if}}',
-                errorMessage: '',
-                isValid: true,
-                fileName: '',
-                fileSize: 0,
-                imageWidth: 0,
-                imageHeight: 0,
-                hasFile: false,
-                validateImage(file) {
-                  if (!file) { this.hasFile = false; return; }
-                  this.hasFile = true; this.fileName = file.name; this.fileSize = file.size; this.errorMessage = ''; this.isValid = true;
-                  const allowedTypes = ['image/jpeg','image/jpg','image/png'];
-                  if (!allowedTypes.includes(file.type)) { this.errorMessage = 'Only JPEG, JPG and PNG formats are allowed'; this.isValid = false; this.previewUrl = null; return; }
-                  const maxSize = 5 * 1024 * 1024;
-                  if (file.size > maxSize) { this.errorMessage = `File size too large (${(file.size/1024/1024).toFixed(2)}MB). Maximum 5MB`; this.isValid = false; this.previewUrl = null; return; }
-                  const img = new Image(); const objectUrl = URL.createObjectURL(file);
-                  img.onload = () => { this.imageWidth = img.width; this.imageHeight = img.height; if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) { this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000`; this.isValid = false; this.previewUrl = null; URL.revokeObjectURL(objectUrl); } else { this.previewUrl = objectUrl; this.isValid = true; this.errorMessage = ''; } };
-                  img.onerror = () => { this.errorMessage = 'Failed to load image'; this.isValid = false; this.previewUrl = null; URL.revokeObjectURL(objectUrl); };
-                  img.src = objectUrl;
-                },
-                clearFile() { this.previewUrl = null; this.errorMessage = ''; this.isValid = true; this.fileName = ''; this.fileSize = 0; this.imageWidth = 0; this.imageHeight = 0; this.hasFile = false; $refs.profileFile.value = null; }
-              }"
-            class='space-y-3'
+            class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
           >
-            <label
-              for='profile'
-              class='block text-sm font-semibold text-gray-700 mb-1'
-            >Profile Photo
-              <span class='text-xs text-gray-500 font-normal'>(300x300 -
-                2000x2000px, max 5MB, JPG/PNG)</span></label>
-            <input
-              type='file'
-              id='profile'
-              name='profile'
-              accept='image/jpeg,image/jpg,image/png'
-              x-ref='profileFile'
-              class='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-              @change='validateImage($event.target.files[0])'
-            />
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <div>
+              <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+              <p class='text-xs text-red-700' x-text='errorMessage'></p>
+            </div>
+          </div>
+        </template>
 
-            <template x-if="!isValid && errorMessage">
-              <div class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'>
-                <div class='text-red-600 font-semibold'>Invalid image</div>
-                <div class='text-sm text-red-700' x-text='errorMessage'></div>
-              </div>
-            </template>
-
-            <template x-if="previewUrl && isValid">
-              <div class='space-y-2'>
-                <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
-                  <div class='text-xs text-green-700'><span class='font-semibold'>Valid image:</span> <span x-text='`${imageWidth}x${imageHeight}px, ${(fileSize/1024/1024).toFixed(2)}MB`'></span></div>
+        <!-- Success Message with File Info -->
+        <template x-if='hasFile && isValid'>
+          <div class='space-y-2'>
+            <div
+              class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <div class='flex items-center gap-2'>
+                <i class='fas fa-check-circle text-green-500'></i>
+                <div class='text-xs text-green-700'>
+                  <span class='font-semibold'>Valid image:</span>
+                  <span
+                    x-text='`${imageWidth}x${imageHeight}px, ${(fileSize / 1024).toFixed(1)}KB`'
+                  ></span>
                 </div>
               </div>
-            </template>
+              <button
+                type='button'
+                class='text-red-500 hover:text-red-700 transition-colors'
+                @click='clearFile()'
+                title='Remove image'
+              >
+                <i class='fas fa-times-circle'></i>
+              </button>
+            </div>
 
-            <template x-if="!hasFile">
-              <div class='space-y-2'>
-                <div class='text-sm text-gray-600'>Current photo:</div>
-                <img :src='oldPhoto' alt='Current photo' class='w-32 h-32 object-cover rounded-lg border border-gray-300' />
-              </div>
-            </template>
+            <!-- Image Preview -->
+            <div class='relative w-32 h-32'>
+              <img
+                :src='previewUrl'
+                alt='Preview Photos'
+                class='w-32 h-32 object-cover rounded-lg border-2 border-green-500 shadow-sm'
+              />
+              <button
+                type='button'
+                class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600'
+                @click='clearFile()'
+              >
+                &times;
+              </button>
+            </div>
           </div>
+        </template>
 
+        <!-- Current Photo -->
+        <template x-if="!hasFile">
+          <div class='space-y-2'>
+            <div class='text-sm text-gray-600'>Current photo:</div>
+            <img :src='oldPhoto' alt='Current photo' class='w-32 h-32 object-cover rounded-lg border border-gray-300' />
+          </div>
+        </template>
+      </div>
+
+      <!-- Form Fields Grid -->
+      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <!-- LEFT COLUMN -->
+        <div class='space-y-6'>
           <!-- Nama -->
-          <div>
+          <div class='space-y-2'>
             <label
               for='nama'
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Nama Mentor</label>
             <input
-              x-model='nama'
-              @input='validateNama()'
+              x-model='formData.nama'
+              @input='validateField("nama", $event.target.value)'
               type='text'
               id='nama'
               name='nama'
               value="{{mentor.nama}}"
               placeholder='Enter mentor name'
               required
-              :class="errors.nama ? 'border-red-500 focus:ring-red-500' : success.nama ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+              :class="formErrors.nama ? 'border-red-500 focus:ring-red-500' : formValid.nama && !formErrors.nama ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             />
-            <p x-show='errors.nama' x-text='errors.nama' class='mt-1 text-sm text-red-600'></p>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.nama'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.nama'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.nama && !formErrors.nama'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid mentor name</p>
+              </div>
+            </template>
           </div>
 
           <!-- Posisi -->
-          <div>
+          <div class='space-y-2'>
             <label
               for='posisi'
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Posisi</label>
             <input
-              x-model='posisi'
-              @input='validatePosisi()'
+              x-model='formData.posisi'
+              @input='validateField("posisi", $event.target.value)'
               type='text'
               id='posisi'
               name='posisi'
               value="{{mentor.posisi}}"
               placeholder='Enter position (e.g., Web Developer, UI/UX Designer)'
               required
-              :class="errors.posisi ? 'border-red-500 focus:ring-red-500' : success.posisi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+              :class="formErrors.posisi ? 'border-red-500 focus:ring-red-500' : formValid.posisi && !formErrors.posisi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             />
-            <p x-show='errors.posisi' x-text='errors.posisi' class='mt-1 text-sm text-red-600'></p>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.posisi'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.posisi'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.posisi && !formErrors.posisi'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid position</p>
+              </div>
+            </template>
           </div>
 
           <div
@@ -282,135 +513,201 @@
         <!-- RIGHT COLUMN -->
         <div class='space-y-6'>
           <!-- Deskripsi -->
-          <div>
+          <div class='space-y-2'>
             <label
               for='deskripsi'
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Deskripsi</label>
             <textarea
-              x-model='deskripsi'
-              @input='validateDeskripsi()'
+              x-model='formData.deskripsi'
+              @input='validateField("deskripsi", $event.target.value)'
               id='deskripsi'
               name='deskripsi'
               rows='6'
               placeholder='Write a short description about the mentor...'
-              :class="errors.deskripsi ? 'border-red-500 focus:ring-red-500' : success.deskripsi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+              :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500' : formValid.deskripsi && !formErrors.deskripsi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             >{{mentor.deskripsi}}</textarea>
-            <p x-show='errors.deskripsi' x-text='errors.deskripsi' class='mt-1 text-sm text-red-600'></p>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.deskripsi'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.deskripsi'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.deskripsi && !formErrors.deskripsi'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid description</p>
+              </div>
+            </template>
           </div>
 
-          <div>
+          <!-- LinkedIn -->
+          <div class='space-y-2'>
             <label
               for='linkedin'
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Linkedin</label>
             <input
-              x-model='linkedin'
-              @input='validateLinkedin()'
+              x-model='formData.linkedin'
+              @input='validateField("linkedin", $event.target.value)'
               type='text'
               id='linkedin'
               name='linkedin'
               value="{{mentor.linkedin}}"
               placeholder='link linkedin'
               required
-              :class="errors.linkedin ? 'border-red-500 focus:ring-red-500' : success.linkedin ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+              :class="formErrors.linkedin ? 'border-red-500 focus:ring-red-500' : formValid.linkedin && !formErrors.linkedin ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             />
-            <p x-show='errors.linkedin' x-text='errors.linkedin' class='mt-1 text-sm text-red-600'></p>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.linkedin'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.linkedin'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.linkedin && !formErrors.linkedin'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid LinkedIn link</p>
+              </div>
+            </template>
           </div>
 
-          <div>
+          <!-- GitHub -->
+          <div class='space-y-2'>
             <label
               for='github'
               class='block text-sm font-semibold text-gray-700 mb-1'
             >Github</label>
             <input
-              x-model='github'
-              @input='validateGithub()'
+              x-model='formData.github'
+              @input='validateField("github", $event.target.value)'
               type='text'
               id='github'
               name='github'
               value="{{mentor.github}}"
               placeholder='Link github'
               required
-              :class="errors.github ? 'border-red-500 focus:ring-red-500' : success.github ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+              :class="formErrors.github ? 'border-red-500 focus:ring-red-500' : formValid.github && !formErrors.github ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             />
-            <p x-show='errors.github' x-text='errors.github' class='mt-1 text-sm text-red-600'></p>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.github'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.github'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.github && !formErrors.github'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid GitHub link</p>
+              </div>
+            </template>
           </div>
-          <!-- TTD -->
-          <!-- TTD (signature) - validation mirrors profile -->
-          <div
-            x-data="{
-                previewUrl: null,
-                oldTTD: '{{#if mentor.ttd}}{{mentor.ttd}}{{else}}/images/default-signature.png{{/if}}',
-                errorMessage: '',
-                isValid: true,
-                fileName: '',
-                fileSize: 0,
-                imageWidth: 0,
-                imageHeight: 0,
-                hasFile: false,
-                validateImage(file) {
-                  if (!file) { this.hasFile = false; return; }
-                  this.hasFile = true; this.fileName = file.name; this.fileSize = file.size; this.errorMessage = ''; this.isValid = true;
-                  const allowedTypes = ['image/jpeg','image/jpg','image/png'];
-                  if (!allowedTypes.includes(file.type)) { this.errorMessage = 'Only JPEG, JPG and PNG formats are allowed'; this.isValid = false; this.previewUrl = null; return; }
-                  const maxSize = 5 * 1024 * 1024;
-                  if (file.size > maxSize) { this.errorMessage = `File size too large (${(file.size/1024/1024).toFixed(2)}MB). Maximum 5MB`; this.isValid = false; this.previewUrl = null; return; }
-                  const img = new Image(); const objectUrl = URL.createObjectURL(file);
-                  img.onload = () => { this.imageWidth = img.width; this.imageHeight = img.height; if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) { this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000`; this.isValid = false; this.previewUrl = null; URL.revokeObjectURL(objectUrl); } else { this.previewUrl = objectUrl; this.isValid = true; this.errorMessage = ''; } };
-                  img.onerror = () => { this.errorMessage = 'Failed to load image'; this.isValid = false; this.previewUrl = null; URL.revokeObjectURL(objectUrl); };
-                  img.src = objectUrl;
-                },
-                clearFile() { this.previewUrl = null; this.errorMessage = ''; this.isValid = true; this.fileName = ''; this.fileSize = 0; this.imageWidth = 0; this.imageHeight = 0; this.hasFile = false; $refs.ttdFile.value = null; }
-              }"
-            class='space-y-3'
-          >
+
+          <!-- TTD (Signature) -->
+          <div class='space-y-3'>
             <label
               for='ttd'
               class='block text-sm font-semibold text-gray-700 mb-1'
             >TTD
-              <span class='text-xs text-gray-500'>(300x300 - 2000x2000px, max
-                5MB, JPG/PNG)</span></label>
+              <span class='text-xs text-gray-500 font-normal'>(300x300 - 2000x2000px, max
+                5MB, JPG/PNG)</span>
+            </label>
             <input
               type='file'
               id='ttd'
               name='ttd'
               accept='image/jpeg,image/jpg,image/png'
               x-ref='ttdFile'
-              class='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-              @change='validateImage($event.target.files[0])'
+              :class="!ttdIsValid && ttdErrorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
+              @change='validateTTD($event.target.files[0])'
             />
 
-            <template x-if='!isValid && errorMessage'>
+            <!-- Error Message -->
+            <template x-if='!ttdIsValid && ttdErrorMessage'>
               <div
                 class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
               >
-                <div class='text-red-600 font-semibold'>Invalid image</div>
-                <div class='text-sm text-red-700' x-text='errorMessage'></div>
-              </div>
-            </template>
-
-            <template x-if='previewUrl && isValid'>
-              <div class='space-y-2'>
-                <div class='relative w-32 h-32'>
-                  <img
-                    :src='previewUrl'
-                    alt='Preview'
-                    class='w-32 h-32 object-cover rounded-lg border border-gray-300'
-                  />
-                  <button
-                    type='button'
-                    class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center'
-                    @click='clearFile()'
-                  >&times;</button>
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <div>
+                  <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+                  <p class='text-xs text-red-700' x-text='ttdErrorMessage'></p>
                 </div>
               </div>
             </template>
 
-            <template x-if="!hasFile">
+            <!-- Success Message with File Info -->
+            <template x-if='ttdHasFile && ttdIsValid'>
+              <div class='space-y-2'>
+                <div
+                  class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
+                >
+                  <div class='flex items-center gap-2'>
+                    <i class='fas fa-check-circle text-green-500'></i>
+                    <div class='text-xs text-green-700'>
+                      <span class='font-semibold'>Valid image:</span>
+                      <span
+                        x-text='`${ttdImageWidth}x${ttdImageHeight}px, ${(ttdFileSize / 1024).toFixed(1)}KB`'
+                      ></span>
+                    </div>
+                  </div>
+                  <button
+                    type='button'
+                    class='text-red-500 hover:text-red-700 transition-colors'
+                    @click='clearTTD()'
+                    title='Remove image'
+                  >
+                    <i class='fas fa-times-circle'></i>
+                  </button>
+                </div>
+
+                <!-- Image Preview -->
+                <div class='relative w-32 h-32'>
+                  <img
+                    :src='ttdPreviewUrl'
+                    alt='Preview TTD'
+                    class='w-32 h-32 object-cover rounded-lg border-2 border-green-500 shadow-sm'
+                  />
+                  <button
+                    type='button'
+                    class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600'
+                    @click='clearTTD()'
+                  >
+                    &times;
+                  </button>
+                </div>
+              </div>
+            </template>
+
+            <!-- Current TTD -->
+            <template x-if="!ttdHasFile">
               <div class='space-y-2'>
                 <div class='text-sm text-gray-600'>Current signature:</div>
                 <img :src='oldTTD' alt='Current signature' class='w-32 h-32 object-cover rounded-lg border border-gray-300' />
@@ -421,18 +718,31 @@
       </div>
 
       <!-- Buttons -->
-      <div class='flex justify-end space-x-4'>
-        <a
-          href='/kelass/detail/kelas/admin/{{mentor.kelas.id}}'
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
-        >Cancel</a>
+      <div class='flex gap-3'>
         <button
           type='submit'
           :disabled='!canSubmit()'
-          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
-          class='text-white px-6 py-2 rounded-lg shadow transition'
-        >Save Changes</button>
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+        >Update</button>
+        <a
+          href='/kelass/detail/kelas/admin/{{mentor.kelas.id}}'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
+        >Cancel</a>
       </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors() || (hasFile && !isValid) || (ttdHasFile && !ttdIsValid)'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
     </form>
   </div>
 </div>

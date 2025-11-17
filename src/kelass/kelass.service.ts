@@ -302,7 +302,7 @@ export class KelassService {
 
   async findMentor(kelasId) {
     return await this.mentorRepository.find({
-      where: { kelas: { id: kelasId } },
+      where: { kelas: { id: kelasId } }, relations: ['teknologi']
     });
   }
 

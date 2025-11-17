@@ -337,12 +337,14 @@
           <tr>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Profile</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Posisi</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">teknologi</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">ttd</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Position</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">tech</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">linkedin</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">github</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -351,9 +353,11 @@
               x-show="filteredMentor.includes('{{id}}')">
             <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
             <td class="px-6 py-4 text-sm text-gray-800"><img src="{{profile}}" alt=""></td>
+            <td class="px-6 py-4 text-sm text-gray-800"><img src="{{ttd}}" alt=""></td>
             <td class="px-6 py-4 text-sm text-gray-800">{{nama}}</td>
             <td class="px-6 py-4 text-sm text-gray-800">{{posisi}}</td>
-            <td class="px-6 py-4 text-sm text-gray-800">{{teknologi}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800">{{deskripsi}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800"> <div class="flex flex-wrap gap-1"></div>{{#each teknologi}}<span class="w-2 h-2">{{{this.svg}}}</span>{{/each}}</div></td>
             <td class="px-6 py-4 text-sm text-gray-800">{{linkedin}}</td>
             <td class="px-6 py-4 text-sm text-gray-800">{{github}}</td>
             <td class="px-6 py-4 text-sm flex items-center gap-3">
@@ -463,10 +467,10 @@
         <thead class="bg-gray-100">
           <tr>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Alur Ke</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Judul</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Isi</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Flow</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tittle</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -586,8 +590,8 @@
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Icon</th>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Benefit</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Isi</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -707,9 +711,9 @@
         <thead class="bg-gray-100">
           <tr>
             <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Pertanyaan</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Jawaban</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Question</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Answer</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
