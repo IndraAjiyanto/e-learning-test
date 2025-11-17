@@ -59,11 +59,11 @@ export class KerjaSamaController {
     try {
       createKerjaSamaDto.gambar = req.body.uploadedImageUrls?.[0];
       await this.kerjaSamaService.create(createKerjaSamaDto);
-      req.flash('success', 'kerja sama successfully created');
+      req.flash('success', 'partnership successfully created');
       res.redirect('/kerja-sama');
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'kerja sama failed to create');
+      req.flash('error', error.message || 'partnership failed to create');
       res.redirect('/kerja-sama');
     }
   }
@@ -135,11 +135,11 @@ export class KerjaSamaController {
         updateKerjaSamaDto.gambar = req.body.uploadedImageUrls?.[0];
       }
       await this.kerjaSamaService.update(kerja_samaId, updateKerjaSamaDto);
-      req.flash('success', 'kerja_sama successfully updated');
+      req.flash('success', 'partnership successfully updated');
       res.redirect('/kerja-sama');
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'kerja_sama failed to update');
+      req.flash('error', error.message || 'partnership failed to update');
       res.redirect('/kerja-sama');
     }
   }
@@ -154,15 +154,15 @@ export class KerjaSamaController {
     try {
       const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
       if (!kerja_sama) {
-        req.flash('error', 'kerja_sama not found');
+        req.flash('error', 'partnership not found');
         res.redirect('/kerja-sama');
       }
       await this.kerjaSamaService.getPublicIdFromUrl(kerja_sama.gambar);
       await this.kerjaSamaService.remove(kerja_samaId);
-      req.flash('success', 'kerja_sama successfully remove');
+      req.flash('success', 'partnership successfully remove');
       res.redirect('/kerja-sama');
     } catch (error) {
-      req.flash('error', error.message || 'kerja_sama failed to remove');
+      req.flash('error', error.message || 'partnership failed to remove');
       res.redirect('/kerja-sama');
     }
   }

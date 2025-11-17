@@ -28,7 +28,7 @@ export class KerjaSamaService {
       where: { id: kerja_samaId },
     });
     if (!kerja_sama) {
-      throw new NotFoundException('kerja sama not found');
+      throw new NotFoundException('partnership not found');
     }
     return kerja_sama;
   }
@@ -72,7 +72,7 @@ export class KerjaSamaService {
   async update(kerja_samaId: number, updateKerjaSamaDto: UpdateKerjaSamaDto) {
     const kerja_sama = await this.findOne(kerja_samaId);
     if (!kerja_sama) {
-      throw new NotFoundException('kerja sama not found');
+      throw new NotFoundException('partnership not found');
     }
     Object.assign(kerja_sama, updateKerjaSamaDto);
     return await this.kerjaSamaRepository.save(kerja_sama);
@@ -81,7 +81,7 @@ export class KerjaSamaService {
   async remove(kerja_samaId: number) {
     const kerja_sama = await this.findOne(kerja_samaId);
     if (!kerja_sama) {
-      throw new NotFoundException();
+      throw new NotFoundException('partnership not found');
     }
     return await this.kerjaSamaRepository.remove(kerja_sama);
   }
