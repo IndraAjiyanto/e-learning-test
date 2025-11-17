@@ -66,8 +66,8 @@
       @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
-      <!-- Form Fields Grid -->
-      <div class='grid grid-cols-1 gap-6'>
+      <!-- Form Fields -->
+      <div class='space-y-6'>
 
         <!-- Judul -->
         <div class='space-y-2'>
@@ -81,7 +81,7 @@
             name='judul'
             required
             placeholder='e.g. Introduction to Programming'
-            :class="formErrors.judul ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.judul ? 'border-red-500 focus:ring-red-500' : formValid.judul ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             x-model='formData.judul'
             @input='validateField("judul", $event.target.value)'
@@ -120,7 +120,7 @@
             rows='4'
             required
             placeholder='Describe the flow in detail...'
-            :class="formErrors.isi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.isi ? 'border-red-500 focus:ring-red-500' : formValid.isi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             x-model='formData.isi'
             @input='validateField("isi", $event.target.value)'

@@ -20,7 +20,7 @@ export class AlurKelasService {
       where: { id: createAlurKelaDto.kelasId },
     });
     if (!kelas) {
-      throw new NotFoundException('kelas not found');
+      throw new NotFoundException('Program not found');
     }
 
     // Auto-generate alur_ke
@@ -72,7 +72,7 @@ export class AlurKelasService {
       relations: ['kelas'],
     });
     if (!alur_kelas) {
-      throw new NotFoundException('alur kelas not found');
+      throw new NotFoundException('Flow Program not found');
     }
     return alur_kelas;
   }
@@ -80,7 +80,7 @@ export class AlurKelasService {
   async update(alurKelasId: number, updateAlurKelaDto: UpdateAlurKelaDto) {
     const alur_kelas = await this.findOne(alurKelasId);
     if (!alur_kelas) {
-      throw new NotFoundException('alur kelas not found');
+      throw new NotFoundException('Flow Program not found');
     }
 
     Object.assign(alur_kelas, updateAlurKelaDto);
@@ -90,7 +90,7 @@ export class AlurKelasService {
   async remove(alurKelasId: number, kelasId) {
     const alur_kelas = await this.findOne(alurKelasId);
     if (!alur_kelas) {
-      throw new NotFoundException('alur kelas not found');
+      throw new NotFoundException('Flow Program not found');
     }
     await this.alurKelasRepository.remove(alur_kelas);
     const semua_alur_kelas = await this.alurKelasRepository.find({

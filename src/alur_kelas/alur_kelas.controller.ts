@@ -58,10 +58,10 @@ export class AlurKelasController {
       const kelasId = Number(req.body.kelas_id);
       createAlurKelaDto.kelasId = kelasId;
       await this.alurKelasService.create(createAlurKelaDto);
-      req.flash('success', 'alur kelas successfully created');
+      req.flash('success', 'Flow Program successfully created');
       res.redirect(`/alur-kelas`);
     } catch (error) {
-      req.flash('error', error.message || 'alur kelas failed to create');
+      req.flash('error', error.message || 'Flow Program failed to create');
       res.redirect(`/alur-kelas`);
     }
   }
@@ -117,10 +117,10 @@ export class AlurKelasController {
   ) {
     try {
       await this.alurKelasService.update(alurKelasId, updateAlurKelaDto);
-      req.flash('success', 'alur kelas successfully updated');
+      req.flash('success', 'Flow Program successfully updated');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', error.message || 'alur kelas failed to update');
+      req.flash('error', error.message || 'Flow Program failed to update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -135,10 +135,10 @@ export class AlurKelasController {
   ) {
     try {
       await this.alurKelasService.remove(alurKelasId, kelasId);
-      req.flash('success', 'alur kelas successfully delete');
+      req.flash('success', 'Flow Program successfully deleted');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', error.message || 'alur kelas failed to delete');
+      req.flash('error', error.message || 'Flow Program failed to delete');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
