@@ -32,10 +32,10 @@ export class JenisKelasController {
   ) {
     try {
       await this.jenisKelasService.create(createJenisKelaDto);
-      req.flash('success', 'Class type successfully created');
+      req.flash('success', 'Program type successfully created');
       res.redirect('/jenis-kelas');
     } catch (error) {
-      req.flash('success', 'Class type failed to created');
+      req.flash('error', 'Program type failed to created');
       res.render('jenis-kelas');
     }
   }
@@ -84,10 +84,10 @@ export class JenisKelasController {
         updateJenisKelaDto.icon = icon.path;
       }
       await this.jenisKelasService.update(jenis_kelasId, updateJenisKelaDto);
-      req.flash('success', 'Class type successfully update');
+      req.flash('success', 'Program type successfully update');
       res.redirect('/jenis-kelas');
     } catch (error) {
-      req.flash('error', error.message || 'Class type failed to updated');
+      req.flash('error', error.message || 'Program type failed to updated');
       res.redirect('/jenis-kelas');
     }
   }
@@ -107,10 +107,10 @@ export class JenisKelasController {
       }
       await this.jenisKelasService.getPublicIdFromUrl(jenis_kelas.icon);
       await this.jenisKelasService.remove(jenis_kelasId);
-      req.flash('success', 'Class type successfully delete');
+      req.flash('success', 'Program type successfully delete');
       res.redirect('/jenis-kelas');
     } catch (error) {
-      req.flash('error', error.message || 'Class type failed to deleted');
+      req.flash('error', error.message || 'Program type failed to deleted');
       res.redirect('/jenis-kelas');
     }
   }
