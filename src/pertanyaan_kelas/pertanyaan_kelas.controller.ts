@@ -58,10 +58,10 @@ export class PertanyaanKelasController {
     try {
       createPertanyaanKelaDto.kelasId = kelasId;
       await this.pertanyaanKelasService.create(createPertanyaanKelaDto);
-      req.flash('success', 'PertanyaanKelas created successfully');
+      req.flash('success', 'FAQ program created successfully');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', error.message || 'PertanyaanKelas failed to create');
+      req.flash('error', error.message || 'FAQ program  failed to create');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -93,10 +93,10 @@ export class PertanyaanKelasController {
   ) {
     try {
       await this.pertanyaanKelasService.update(+id, updatePertanyaanKelaDto);
-      req.flash('success', 'PertanyaanKelas updated successfully');
+      req.flash('success', 'FAQ program updated successfully');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', error.message || 'PertanyaanKelas failed to update');
+      req.flash('error', error.message || 'FAQ program failed to update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -111,10 +111,10 @@ export class PertanyaanKelasController {
   ) {
     try {
       await this.pertanyaanKelasService.remove(+id);
-      req.flash('success', 'PertanyaanKelas deleted successfully');
+      req.flash('success', 'FAQ program deleted successfully');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', error.message || 'PertanyaanKelas failed to delete');
+      req.flash('error', error.message || 'FAQ program failed to delete');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
