@@ -42,7 +42,7 @@ export class UsersService {
       const user = await this.userRepository.create(createUserDto);
       return await this.userRepository.save(user);
     } else {
-      throw new NotFoundException();
+      throw new NotFoundException('Email is already registered');
     }
   }
 
@@ -78,7 +78,7 @@ export class UsersService {
       relations: ['biodata'],
     });
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException('User not found');
     }
     return user;
   }
@@ -86,7 +86,7 @@ export class UsersService {
   async update(userId: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(userId);
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException('User not found');
     }
     Object.assign(user, updateUserDto);
     return await this.userRepository.save(user);
@@ -95,7 +95,7 @@ export class UsersService {
   async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException('User tidak ditemukan');
+      throw new NotFoundException('User not found');
     }
 
     const isMatch = await bcrypt.compare(
@@ -103,11 +103,11 @@ export class UsersService {
       user.password,
     );
     if (!isMatch) {
-      throw new BadRequestException('Password lama salah');
+      throw new BadRequestException('Old password is incorrect');
     }
 
     if (updatePaaswordDto.password_baru.length < 6) {
-      throw new BadRequestException('Password baru minimal 6 karakter');
+      throw new BadRequestException('New password must be at least 6 characters');
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -158,12 +158,9 @@ export class UsersService {
       const result = await cloudinary.uploader.destroy(publicId);
 
       if (result.result === 'not found') {
-        console.log('File not found in Cloudinary.');
       } else {
-        console.log('File deleted from Cloudinary:', result);
       }
     } catch (error) {
-      console.error('Error deleting file from Cloudinary:', error);
       throw error;
     }
   }
@@ -171,7 +168,7 @@ export class UsersService {
   async remove(id: number) {
     const user = await this.findOne(id);
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException('User not found');
     }
     return await this.userRepository.remove(user);
   }
@@ -215,9 +212,7 @@ export class UsersService {
         resetToken,
         user.username,
       );
-      console.log('✅ Password reset email sent to:', user.email);
     } catch (error) {
-      console.error('❌ Failed to send reset email:', error);
       // Rollback token if email fails
       user.resetPasswordToken = null as any;
       user.resetPasswordExpires = null as any;
@@ -261,7 +256,6 @@ export class UsersService {
 
     await this.userRepository.save(user);
 
-    console.log('✅ Password reset successful for user:', user.email);
 
     return {
       message:
