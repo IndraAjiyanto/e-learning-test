@@ -59,11 +59,10 @@ export class GambarBenefitController {
     try {
       createGambarBenefitDto.gambar = req.body.uploadedImageUrls?.[0];
       await this.gambarBenefitService.create(createGambarBenefitDto);
-      req.flash('success', 'Gambar Benefit successfully created');
+      req.flash('success', 'Image Benefit successfully created');
       res.redirect('/gambar-benefit');
     } catch (error) {
-      console.log(error);
-      req.flash('error', error.message || 'Gambar Benefit failed to create');
+      req.flash('error', error.message || 'Image Benefit failed to create');
       res.redirect('/gambar-benefit');
     }
   }
@@ -132,11 +131,11 @@ export class GambarBenefitController {
         updateGambarBenefitDto.gambar = req.body.uploadedImageUrls?.[0];
       }
       await this.gambarBenefitService.update(+id, updateGambarBenefitDto);
-      req.flash('success', 'Gambar Benefit successfully updated');
+      req.flash('success', 'Image Benefit successfully updated');
       res.redirect('/gambar-benefit');
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'Gambar Benefit failed to update');
+      req.flash('error', error.message || 'Image Benefit failed to update');
       res.redirect('/gambar-benefit');
     }
   }
@@ -151,15 +150,15 @@ export class GambarBenefitController {
     try {
       const gambar_benefit = await this.gambarBenefitService.findOne(+id);
       if (!gambar_benefit) {
-        req.flash('error', 'Gambar Benefit not found');
+        req.flash('error', 'Image Benefit not found');
         res.redirect('/gambar-benefit');
       }
       await this.gambarBenefitService.getPublicIdFromUrl(gambar_benefit.gambar);
       await this.gambarBenefitService.remove(+id);
-      req.flash('success', 'Gambar Benefit successfully removed');
+      req.flash('success', 'Image Benefit successfully removed');
       res.redirect('/gambar-benefit');
     } catch (error) {
-      req.flash('error', error.message || 'Gambar Benefit failed to remove');
+      req.flash('error', error.message || 'Image Benefit failed to remove');
       res.redirect('/gambar-benefit');
     }
   }
