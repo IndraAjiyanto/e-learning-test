@@ -1,7 +1,7 @@
 <div class='py-10' x-data="{
   icon: '{{benefit.icon}}',
   get computedClass() {
-    const raw = (this.icon || '').toString().trim();
+    const raw = (this.formData.icon || '').toString().trim();
     if (!raw) return 'fa-solid fa-circle-question';
     const v = raw;
     const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
@@ -103,7 +103,7 @@
       action='/benefit/{{benefit.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
-      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
     >
 
           <div class='space-y-2'>
@@ -118,9 +118,9 @@
             id='icon'
             name='icon'
             placeholder='code or fa-code or fa-solid fa-code'
-            :class="formErrors.icon ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.icon ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            @input='validateField("icon", $event.target.value)'
+                                    @input='validateField("icon", $event.target.value)'
           />
 
           <div class='flex items-center gap-3'>
@@ -170,7 +170,7 @@
           id='judul'
           name='judul'
           required
-          :class="formErrors.judul ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+          :class="formErrors.judul ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
           x-model='formData.judul'
           @input='validateField("judul", $event.target.value)'
@@ -212,7 +212,7 @@
           name='text'
           rows='5'
           required
-          :class="formErrors.text ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+          :class="formErrors.text ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.text ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
           x-model='formData.text'
           @input='validateField("text", $event.target.value)'
@@ -253,7 +253,7 @@
           id='no'
           name='no'
           required
-          :class="formErrors.no ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+          :class="formErrors.no ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.no ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
           x-model='formData.no'
           @change='validateField("no", $event.target.value)'
@@ -290,7 +290,7 @@
         <button
           type='submit'
           :disabled='!canSubmit()'
-          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Update
@@ -302,6 +302,19 @@
           Cancel
         </a>
       </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors()'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
     </form>
   </div>
 </div>
