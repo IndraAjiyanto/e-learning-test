@@ -45,8 +45,8 @@ export class ExperienceController {
   @Roles('super_admin')
   @Get()
   async index(@Res() res: Response, @Req() req: Request) {
-    const experiences = await this.experienceService.findAll();
-    res.render('super_admin/experience/index', { user: req.user, experiences });
+    const experience = await this.experienceService.findAll();
+    res.render('super_admin/experience/index', { user: req.user, experience });
   }
 
   @Roles('super_admin')
@@ -97,7 +97,7 @@ export class ExperienceController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  formCreate(@Res() res: Response, @Req() req: Request) {
+  async formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/experience/create', { user: req.user });
   }
 }
