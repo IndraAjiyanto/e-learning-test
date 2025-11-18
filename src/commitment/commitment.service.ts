@@ -28,7 +28,7 @@ export class CommitmentService {
       where: { id },
     });
     if (!commitment) {
-      throw new NotFoundException(`Commitment with ID ${id} not found`);
+      throw new NotFoundException(`Commitment not found`);
     }
     return commitment;
   }

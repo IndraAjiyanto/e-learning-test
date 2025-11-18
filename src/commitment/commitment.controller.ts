@@ -64,9 +64,9 @@ export class CommitmentController {
 
   @Get('formEdit/:id')
   @Render('super_admin/commitment/edit')
-  async formEdit(@Param('id') id: string, @Req() req: Request) {
+  async formEdit(@Param('id') id: number, @Req() req: Request) {
     try {
-      const commitment = await this.commitmentService.findOne(+id);
+      const commitment = await this.commitmentService.findOne(id);
       return {
         user: req.user,
         commitment,
@@ -80,13 +80,13 @@ export class CommitmentController {
 
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateCommitmentDto: UpdateCommitmentDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      await this.commitmentService.update(+id, updateCommitmentDto);
+      await this.commitmentService.update(id, updateCommitmentDto);
       req.flash('success', 'Commitment updated successfully');
       res.redirect('/commitment');
     } catch (error) {
@@ -97,12 +97,12 @@ export class CommitmentController {
 
   @Delete(':id')
   async remove(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      await this.commitmentService.remove(+id);
+      await this.commitmentService.remove(id);
       req.flash('success', 'Commitment deleted successfully');
       res.redirect('/commitment');
     } catch (error) {
