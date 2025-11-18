@@ -88,11 +88,11 @@ export class DashboardService {
   }
 
   async findCommitment() {
-    return await this.commitmentRepository.find();
+    return await this.commitmentRepository.find({order: {commitment_ke: 'ASC'}});
   }
 
   async findValue() {
-    return await this.valueRepository.find();
+    return await this.valueRepository.find({order: {value_ke: 'ASC'}});
   }
 
   async findTeamLead() {
@@ -104,11 +104,11 @@ export class DashboardService {
   }
 
   async findExperience() {
-    return await this.experienceRepository.find();
+    return await this.experienceRepository.find({order: {experience_ke: 'ASC'}});
   }
 
   async findAward() {
-    return await this.awardRepository.find();
+    return await this.awardRepository.find({order: {award_ke: 'ASC'}});
   }
 
   async findTentang() {
@@ -120,7 +120,7 @@ export class DashboardService {
   }
 
   async findBackground() {
-    return await this.backgroundRepository.find();
+    return await this.backgroundRepository.find({order: {background_ke: 'ASC'}});
   }
 
   async findKelas() {
