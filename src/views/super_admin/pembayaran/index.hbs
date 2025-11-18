@@ -181,7 +181,7 @@
                   View Payment Proof
                 </button>
 
-                {{#if (roles this.proses 'proces')}}
+                {{#if (eq this.proses 'proces')}}
                   <div class="flex gap-2">
                     <form action="/pembayarans/acc/{{this.id}}?_method=PATCH" method="post" class="flex-1">
                       <button type="button" onclick="confirmAction(this, 'Are you sure you want to accept this payment?')"
@@ -202,6 +202,26 @@
                       </button>
                     </form>
                   </div>
+                {{else if (eq this.proses 'acc')}}
+                  <form action="/pembayarans/rejected/{{this.id}}?_method=PATCH" method="post">
+                    <button type="button" onclick="confirmAction(this, 'Are you sure you want to reject this accepted payment?')"
+                      class="w-full py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold text-sm hover:from-red-600 hover:to-rose-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                      Reject
+                    </button>
+                  </form>
+                {{else if (eq this.proses 'rejected')}}
+                  <form action="/pembayarans/acc/{{this.id}}?_method=PATCH" method="post">
+                    <button type="button" onclick="confirmAction(this, 'Are you sure you want to accept this rejected payment?')"
+                      class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold text-sm hover:from-emerald-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Accept
+                    </button>
+                  </form>
                 {{/if}}
               </div>
             </div>
@@ -321,7 +341,7 @@
                   View Payment Proof
                 </button>
 
-                {{#if (roles this.proses 'proces')}}
+                {{#if (eq this.proses 'proces')}}
                   <div class="flex gap-2">
                     <form action="/pembayarans/acc/{{this.id}}?_method=PATCH" method="post" class="flex-1">
                       <button type="button" onclick="confirmAction(this, 'Are you sure you want to accept this installment payment?')"
@@ -342,6 +362,26 @@
                       </button>
                     </form>
                   </div>
+                {{else if (eq this.proses 'acc')}}
+                  <form action="/pembayarans/rejected/{{this.id}}?_method=PATCH" method="post">
+                    <button type="button" onclick="confirmAction(this, 'Are you sure you want to reject this accepted installment payment?')"
+                      class="w-full py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold text-sm hover:from-red-600 hover:to-rose-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                      Reject
+                    </button>
+                  </form>
+                {{else if (eq this.proses 'rejected')}}
+                  <form action="/pembayarans/acc/{{this.id}}?_method=PATCH" method="post">
+                    <button type="button" onclick="confirmAction(this, 'Are you sure you want to accept this rejected installment payment?')"
+                      class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold text-sm hover:from-emerald-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Accept
+                    </button>
+                  </form>
                 {{/if}}
               </div>
             </div>
@@ -455,7 +495,7 @@
                   View Registration Proof
                 </button>
 
-                {{#if (roles this.proses 'proces')}}
+                {{#if (eq this.proses 'proces')}}
                   <div class="flex gap-2">
                     <form action="/pendaftaran/acc/{{this.id}}?_method=PATCH" method="post" class="flex-1">
                       <button type="button"
@@ -478,6 +518,26 @@
                       </button>
                     </form>
                   </div>
+                {{else if (eq this.proses 'acc')}}
+                  <form action="/pendaftaran/rejected/{{this.id}}?_method=PATCH" method="post">
+                    <button type="button" onclick="confirmAction(this, 'Are you sure you want to reject this accepted registration?')"
+                      class="w-full py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold text-sm hover:from-red-600 hover:to-rose-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                      Reject
+                    </button>
+                  </form>
+                {{else if (eq this.proses 'rejected')}}
+                  <form action="/pendaftaran/acc/{{this.id}}?_method=PATCH" method="post">
+                    <button type="button" onclick="confirmAction(this, 'Are you sure you want to accept this rejected registration?')"
+                      class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold text-sm hover:from-emerald-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Accept
+                    </button>
+                  </form>
                 {{/if}}
               </div>
             </div>

@@ -91,7 +91,6 @@ export class PembayaransController {
     @Param('userId') userId: number,
     @Param('kelasId') kelasId: number,
     @Body() createPembayaranDto: CreatePembayaranDto,
-    @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -199,10 +198,15 @@ export class PembayaransController {
         updatePembayaranDto.kelasId = pembayaran['kelas']['id'];
         updatePembayaranDto.proses = 'acc';
         await this.pembayaransService.update(pembayaranId, updatePembayaranDto);
-        await this.pembayaransService.addUserToKelas(
+        try {
+                  await this.pembayaransService.addUserToKelas(
           pembayaran['user']['id'],
           pembayaran['kelas']['id'],
         );
+        } catch (error) {
+          
+        }
+
         req.flash('success', 'proces successfully change acc');
         res.redirect('/pembayarans');
       } else if (proses === 'rejected') {
@@ -211,6 +215,14 @@ export class PembayaransController {
         updatePembayaranDto.kelasId = pembayaran['kelas']['id'];
         updatePembayaranDto.proses = 'rejected';
         await this.pembayaransService.update(pembayaranId, updatePembayaranDto);
+        try {
+          await this.pembayaransService.removeUserKelas(
+          pembayaran['user']['id'],
+          pembayaran['kelas']['id'],
+        );
+        } catch (error) {
+          
+        }
         req.flash('success', 'proces successfully change rejected');
         res.redirect('/pembayarans');
       }
@@ -218,10 +230,5 @@ export class PembayaransController {
       req.flash('error', error.message || 'Payment proof submission failed');
       res.redirect('/pembayarans');
     }
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.pembayaransService.remove(+id);
   }
 }
