@@ -20,7 +20,7 @@ export class AlumniService {
       where: { id: createAlumnusDto.kelasId },
     });
     if (!kelas) {
-      throw new NotFoundException('Kelas not found');
+      throw new NotFoundException('Program not found');
     }
     const alumni = await this.alumniRepository.create({
       ...createAlumnusDto,
@@ -39,7 +39,7 @@ export class AlumniService {
 
   async findOne(alumniId: number) {
     const alumni = await this.alumniRepository.findOne({
-      where: { id: alumniId },
+      where: { id: alumniId },relations: ['kelas']
     });
     if (!alumni) {
       throw new NotFoundException('Alumni not found');
@@ -86,7 +86,7 @@ export class AlumniService {
   async update(alumniId: number, updateAlumnusDto: UpdateAlumnusDto) {
     const alumni = await this.findOne(alumniId);
     if (!alumni) {
-      throw new NotFoundException('Alumni tidak ditemukan');
+      throw new NotFoundException('Alumni not found');
     }
 
     Object.assign(alumni, updateAlumnusDto);
@@ -97,7 +97,7 @@ export class AlumniService {
   async remove(alumniId: number) {
     const alumni = await this.findOne(alumniId);
     if (!alumni) {
-      throw new NotFoundException();
+      throw new NotFoundException('Alumni not found');
     }
     return await this.alumniRepository.remove(alumni);
   }
