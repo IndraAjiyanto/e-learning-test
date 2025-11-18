@@ -288,7 +288,7 @@
             id='nama'
             name='nama'
             required
-            :class="formErrors.nama ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.nama ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.nama ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @input='validateField("nama", $event.target.value)'
           />
@@ -325,7 +325,7 @@
             id='posisi'
             name='posisi'
             required
-            :class="formErrors.posisi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.posisi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.posisi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @input='validateField("posisi", $event.target.value)'
           />
@@ -363,7 +363,7 @@
             name='linkedin'
             required
             placeholder='https://linkedin.com/in/username'
-            :class="formErrors.linkedin ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.linkedin ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.linkedin ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @input='validateField("linkedin", $event.target.value)'
           />
@@ -402,7 +402,7 @@
             id='instagram'
             name='instagram'
             placeholder='https://instagram.com/username'
-            :class="formErrors.instagram ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.instagram ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.instagram ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @input='validateField("instagram", $event.target.value)'
           />
@@ -446,7 +446,7 @@
           required
           rows='4'
           placeholder='Enter team member description...'
-          :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+          :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.deskripsi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
           @input='validateField("deskripsi", $event.target.value)'
         ></textarea>
