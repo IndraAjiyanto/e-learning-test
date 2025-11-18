@@ -135,6 +135,8 @@ async function bootstrap() {
   });
 
   hbs.registerPartials(join(__dirname, '..', 'src', 'views', 'partials'));
+  hbs.registerPartials(join(__dirname, '..', 'views', 'partials'));
+
   app.set('view options', { layout: 'layouts/main' });
   app.use(methodOverride('_method'));
   app.use(
@@ -216,6 +218,11 @@ async function bootstrap() {
     } catch (e) {
       return jsonStr; // Return as-is if not JSON
     }
+  });
+
+  // Helper untuk default value
+  hbs.registerHelper('default', function(value, defaultValue) {
+    return value || defaultValue;
   });
 
   await app.listen(process.env.PORT ?? 3000);

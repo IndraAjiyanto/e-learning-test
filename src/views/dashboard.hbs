@@ -75,25 +75,28 @@
     </div>
 
     <div
-      class='text-gray-900 text-center lg:text-left flex-1 max-w-xl mt-16 lg:mt-0'
+      class='text-gray-900 text-center h-fit lg:text-left flex-1 max-w-xl mt-16 lg:mt-0 grid-rows-[auto_1fr_auto_auto] gap-4'
     >
       <!-- Badge Above Title -->
       <div
-        class='inline-flex items-center gap-2 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 px-5 py-2 rounded-full mb-6 shadow-md'
+        class='inline-flex  items-center gap-2 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 px-5 py-2 rounded-full mb-6 shadow-md'
       >
         <i class='fas fa-award text-slate-600'></i>
         <span class='font-bold text-sm'>IT Training Platform</span>
       </div>
+      <!-- Badge Above Title -->
 
-      <h1
-        class='text-[3.2rem]  font-bold leading-tight font-montserrat mb-4'
-      >
-        <span
-          class='bg-gradient-to-r  from-slate-700 via-slate-800 to-slate-900 bg-clip-text text-transparent'
+      <h1 class='text-[3.2rem] font-bold leading-tight font-montserrat mb-4'>
+        <div 
+          class='bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 bg-clip-text text-transparent'
+          data-texttype
+          data-texts='["Kesatria Academy Empowering Future Digital Tech Talent"]'
         >
-          {{#if tentang.[0].judul}}{{tentang.[0].judul}}{{else}}Kesatria Academy
-Empowering Future Digital Tech Talent’s
-{{/if}}
+          {{#if tentang.[0].judul}}
+            {{tentang.[0].judul}}
+          {{else}}
+            Kesatria Academy Empowering Future Digital Tech Talent's
+          {{/if}}
         </span>
       </h1>
 
@@ -254,16 +257,24 @@ Empowering Future Digital Tech Talent’s
 >
   <!-- Title -->
   <div class='text-center max-w-5xl mx-auto mb-10'>
-    <h2
+    {{> highlightText 
+      before="Our"
+      highlight="Experience"
+      after=""
+      bg="#ffffff"
+      color="#10172a"
+    }}
+
+    {{!-- <h2
       class='text-4xl md:text-5xl font-bold text-white leading-tight font-montserrat'
     >
   Our Experience
-    </h2>
+    </h2> --}}
 
     <p
       class='py-6 text-lg text-white leading-relaxed max-w-2xl mx-auto font-inter'
     >
-We believe every professional deserves the chance to grow without giving up their main career. Through flexible programs and expert mentorship, Kesatria Academy helps you master essential IT skills and get to compete in the global tech industry.
+      We believe every professional deserves the chance to grow without giving up their main career. Through flexible programs and expert mentorship, Kesatria Academy helps you master essential IT skills and get to compete in the global tech industry.
     </p>
   </div>
 
@@ -449,10 +460,17 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
 <section class='bg-gradient-to-br from-white via-gray-50 to-white py-20 px-6 lg:px-20'>
   <div class='container mx-auto max-w-7xl'>
     <!-- Header -->
-    <div class='text-center mb-16'>
-      <h2 class='text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-montserrat'>
+    <div class='text-center mb-16 min-h-42'>
+    {{> highlightText 
+      before="Our Special"
+      highlight="Programs"
+      after=""
+      bg="#10172a"
+      color="#ffffff"
+    }}
+      {{!-- <h2 class='text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-montserrat'>
         Our Special Programs
-      </h2>
+      </h2> --}}
       <p class='text-lg text-gray-600 max-w-2xl mx-auto font-inter'>
 Specialized program options designed to meet different goals — from professional internships to corporate training solutions.
 
@@ -484,7 +502,7 @@ Specialized program options designed to meet different goals — from profession
               Wiratek Internship Program
             </h3>
             <p class='text-gray-600 text-lg leading-relaxed mb-6 font-inter'>
-A professional internship program offering real-world experience. Learn under the guidance of experienced mentors and earn a recognized competency certificate.
+              A professional internship program offering real-world experience. Learn under the guidance of experienced mentors and earn a recognized competency certificate.
             </p>
 
             <!-- Features List -->
@@ -603,7 +621,7 @@ A professional internship program offering real-world experience. Learn under th
       Stories from Alumni
     </h2>
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
-Every alumnus has their own unique journey — from the first step of learning, facing challenges, to finally building a successful career in tech. Hear how their experience with Kesatria Academy opened new opportunities and transformed their future.
+      Every alumnus has their own unique journey — from the first step of learning, facing challenges, to finally building a successful career in tech. Hear how their experience with Kesatria Academy opened new opportunities and transformed their future.
     </p>
   </div>
 

@@ -4413,6 +4413,11 @@ details.collapse summary::-webkit-details-marker {
   min-height: 100vh;
 }
 
+.min-h-fit {
+  min-height: -moz-fit-content;
+  min-height: fit-content;
+}
+
 .w-0 {
   width: 0px;
 }
@@ -4844,6 +4849,10 @@ details.collapse summary::-webkit-details-marker {
 
 .grid-cols-5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.grid-rows-\[auto_1fr_auto_auto\] {
+  grid-template-rows: auto 1fr auto auto;
 }
 
 .flex-row {
@@ -5763,6 +5772,12 @@ details.collapse summary::-webkit-details-marker {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+.from-\[\#4ecdc4\] {
+  --tw-gradient-from: #4ecdc4 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(78 205 196 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
 .from-amber-50 {
   --tw-gradient-from: #fffbeb var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(255 251 235 / 0) var(--tw-gradient-to-position);
@@ -6039,6 +6054,10 @@ details.collapse summary::-webkit-details-marker {
 
 .to-\[\#003060\] {
   --tw-gradient-to: #003060 var(--tw-gradient-to-position);
+}
+
+.to-\[\#556270\] {
+  --tw-gradient-to: #556270 var(--tw-gradient-to-position);
 }
 
 .to-blue-700 {
@@ -7262,6 +7281,39 @@ details.collapse summary::-webkit-details-marker {
 
 .ease-out {
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Optional: Custom styles untuk highlight */
+
+.highlighted-word {
+  padding: 0.1em 0.3em;
+  border-radius: 0.25em;
+  transition: all 0.3s ease;
+}
+
+.highlighted-word:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation untuk highlight */
+
+@keyframes highlight-pulse {
+  0% {
+    background-color: inherit;
+  }
+
+  50% {
+    background-color: var(--highlight-color, #fef3c7);
+  }
+
+  100% {
+    background-color: inherit;
+  }
+}
+
+.highlighted-word.animated {
+  animation: highlight-pulse 2s ease-in-out;
 }
 
 /* TailAdmin template utilities required by sidebar */
