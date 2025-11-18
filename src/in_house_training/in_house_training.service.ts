@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Repository } from 'typeorm';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
+import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 
 @Injectable()
 export class InHouseTrainingService {
@@ -13,6 +14,8 @@ export class InHouseTrainingService {
     private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(JenisKelas)
     private readonly jenisKelasRepository: Repository<JenisKelas>,
+    @InjectRepository(PertanyaanUmum)
+    private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
   ) {}
 
   async findAll() {
@@ -24,5 +27,11 @@ export class InHouseTrainingService {
 
   async findJenisKelas() {
     return await this.jenisKelasRepository.find();
+  }
+
+  async findFaq() {
+    return await this.pertanyaanUmumRepository.find({
+      where: { for: 'in-house-training' },
+    });
   }
 }

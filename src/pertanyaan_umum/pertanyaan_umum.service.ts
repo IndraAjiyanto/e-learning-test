@@ -35,7 +35,7 @@ export class PertanyaanUmumService {
   ) {
     const pertanyaan_umum = await this.findOne(pertanyaan_umumId);
     if (!pertanyaan_umum) {
-      throw new NotFoundException('pertanyaan umum tidak ada');
+      throw new NotFoundException('FAQ Not Found');
     }
     Object.assign(pertanyaan_umum, updatePertanyaanUmumDto);
     return await this.pertanyaanUmumRepository.save(pertanyaan_umum);
@@ -44,7 +44,7 @@ export class PertanyaanUmumService {
   async remove(pertanyaan_umumId: number) {
     const pertanyaan_umum = await this.findOne(pertanyaan_umumId);
     if (!pertanyaan_umum) {
-      throw new NotFoundException('pertanyaan umum tidak ada');
+      throw new NotFoundException('FAQ Not Found');
     }
     return await this.pertanyaanUmumRepository.remove(pertanyaan_umum);
   }

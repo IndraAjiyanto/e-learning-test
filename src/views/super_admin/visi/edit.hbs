@@ -1,5 +1,26 @@
-<div class=' py-10'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+<div class=' py-10' x-data="{
+  visi: '{{visi.visi}}',
+  errors: { visi: null },
+  success: { visi: false },
+  validateVisi() {
+    if (!this.visi.trim()) {
+      this.errors.visi = 'Visi is required';
+      this.success.visi = false;
+    } else if (this.visi.trim().length < 10) {
+      this.errors.visi = 'Visi must be at least 10 characters';
+      this.success.visi = false;
+    } else {
+      this.errors.visi = null;
+      this.success.visi = true;
+    }
+  },
+  get canSubmit() {
+    return this.success.visi;
+  },
+  init() {
+    this.validateVisi();
+  }
+}">
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Visi</h2>
 
     <form
@@ -14,18 +35,25 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Visi</label>
         <textarea
+          x-model='visi'
+          @input='validateVisi()'
           id='visi'
           name='visi'
           rows='4'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.visi ? 'border-red-500 focus:ring-red-500' : success.visi ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           placeholder='Tulis visi di sini...'
         >{{visi.visi}}</textarea>
+        <div x-show='errors.visi' class='text-red-500 text-sm mt-1' x-text='errors.visi'></div>
+        <div x-show='success.visi && !errors.visi' class='text-green-500 text-sm mt-1'>✓ Visi looks good</div>
       </div>
 
       <div class='flex gap-3'>
         <button
+          :disabled='!canSubmit'
+          :class="canSubmit ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          class='text-white px-6 py-2 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-gray-900'
         >
           Update
         </button>

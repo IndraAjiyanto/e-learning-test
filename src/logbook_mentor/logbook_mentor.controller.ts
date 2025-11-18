@@ -137,10 +137,11 @@ export class LogbookMentorController {
         updateLogbookMentorDto,
       );
       req.flash('success', 'logbook successfully updated');
-      res.redirect(`/logbook-mentor/${logbook_mentorId}`);
+      res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
     } catch (error) {
+      const logbook = await this.logbookMentorService.findOne(logbook_mentorId);
       req.flash('error', error.message || 'logbook failed to updated');
-      res.redirect(`/logbook-mentor/${logbook_mentorId}`);
+      res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
     }
   }
 

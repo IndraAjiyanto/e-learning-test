@@ -6,6 +6,74 @@
       action='/social/{{social.id}}?_method=PATCH'
       method='POST'
       class='space-y-6'
+      x-data="{
+        linkedin: '{{social.linkedin}}',
+        instragram: '{{social.instragram}}',
+        youtube: '{{social.youtube}}',
+        email: '{{social.email}}',
+        nomor: '{{social.nomor}}',
+        alamat: '{{social.alamat}}',
+        errors: { linkedin: null, instragram: null, youtube: null, email: null, nomor: null, alamat: null },
+        success: { linkedin: false, instragram: false, youtube: false, email: false, nomor: false, alamat: false },
+        validateUrl(field, value) {
+          if (!value.trim()) {
+            this.errors[field] = field.charAt(0).toUpperCase() + field.slice(1) + ' URL is required';
+            this.success[field] = false;
+          } else {
+            try {
+              new URL(value);
+              this.errors[field] = null;
+              this.success[field] = true;
+            } catch {
+              this.errors[field] = 'Please enter a valid URL';
+              this.success[field] = false;
+            }
+          }
+        },
+        validateEmail() {
+          if (!this.email.trim()) {
+            this.errors.email = 'Email is required';
+            this.success.email = false;
+          } else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(this.email)) {
+              this.errors.email = 'Please enter a valid email address';
+              this.success.email = false;
+            } else {
+              this.errors.email = null;
+              this.success.email = true;
+            }
+          }
+        },
+        validatePhone() {
+          if (!this.nomor.trim()) {
+            this.errors.nomor = 'Phone number is required';
+            this.success.nomor = false;
+          } else if (this.nomor.trim().length < 10) {
+            this.errors.nomor = 'Phone number must be at least 10 characters';
+            this.success.nomor = false;
+          } else {
+            this.errors.nomor = null;
+            this.success.nomor = true;
+          }
+        },
+        validateAddress() {
+          if (!this.alamat.trim()) {
+            this.errors.alamat = 'Address is required';
+            this.success.alamat = false;
+          } else if (this.alamat.trim().length < 10) {
+            this.errors.alamat = 'Address must be at least 10 characters';
+            this.success.alamat = false;
+          } else {
+            this.errors.alamat = null;
+            this.success.alamat = true;
+          }
+        },
+        get canSubmit() {
+          return this.success.linkedin && this.success.instragram && this.success.youtube && this.success.email && this.success.nomor && this.success.alamat;
+        }
+      }"
+      @submit.prevent='if (!canSubmit) return false'
     >
 
       <!-- LinkedIn -->
@@ -17,14 +85,22 @@
           <i class='fab fa-linkedin text-blue-600 mr-2'></i>LinkedIn URL
         </label>
         <input
+          x-model='linkedin'
+          @input='validateUrl("linkedin", $event.target.value)'
           type='url'
           id='linkedin'
           name='linkedin'
           value='{{social.linkedin}}'
           required
           placeholder='https://linkedin.com/company/...'
-          class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          :class="errors.linkedin ? 'border-red-500 focus:ring-red-500' : success.linkedin ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2'
         />
+        <p
+          x-show='errors.linkedin'
+          x-text='errors.linkedin'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Instagram -->
@@ -36,14 +112,22 @@
           <i class='fab fa-instagram text-pink-600 mr-2'></i>Instagram URL
         </label>
         <input
+          x-model='instragram'
+          @input='validateUrl("instragram", $event.target.value)'
           type='url'
           id='instragram'
           name='instragram'
           value='{{social.instragram}}'
           required
           placeholder='https://instagram.com/...'
-          class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          :class="errors.instragram ? 'border-red-500 focus:ring-red-500' : success.instragram ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2'
         />
+        <p
+          x-show='errors.instragram'
+          x-text='errors.instragram'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- YouTube -->
@@ -55,14 +139,22 @@
           <i class='fab fa-youtube text-red-600 mr-2'></i>YouTube URL
         </label>
         <input
+          x-model='youtube'
+          @input='validateUrl("youtube", $event.target.value)'
           type='url'
           id='youtube'
           name='youtube'
           value='{{social.youtube}}'
           required
           placeholder='https://youtube.com/@...'
-          class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          :class="errors.youtube ? 'border-red-500 focus:ring-red-500' : success.youtube ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2'
         />
+        <p
+          x-show='errors.youtube'
+          x-text='errors.youtube'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Email -->
@@ -74,14 +166,22 @@
           <i class='fas fa-envelope text-gray-600 mr-2'></i>Email
         </label>
         <input
+          x-model='email'
+          @input='validateEmail()'
           type='email'
           id='email'
           name='email'
           value='{{social.email}}'
           required
           placeholder='contact@example.com'
-          class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          :class="errors.email ? 'border-red-500 focus:ring-red-500' : success.email ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2'
         />
+        <p
+          x-show='errors.email'
+          x-text='errors.email'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Phone Number -->
@@ -93,14 +193,22 @@
           <i class='fas fa-phone text-green-600 mr-2'></i>Phone Number
         </label>
         <input
+          x-model='nomor'
+          @input='validatePhone()'
           type='text'
           id='nomor'
           name='nomor'
           value='{{social.nomor}}'
           required
           placeholder='+62 xxx xxxx xxxx'
-          class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          :class="errors.nomor ? 'border-red-500 focus:ring-red-500' : success.nomor ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2'
         />
+        <p
+          x-show='errors.nomor'
+          x-text='errors.nomor'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Address -->
@@ -112,20 +220,30 @@
           <i class='fas fa-map-marker-alt text-red-600 mr-2'></i>Address
         </label>
         <textarea
+          x-model='alamat'
+          @input='validateAddress()'
           id='alamat'
           name='alamat'
           required
           rows='3'
           placeholder='Full address...'
-          class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+          :class="errors.alamat ? 'border-red-500 focus:ring-red-500' : success.alamat ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2'
         >{{social.alamat}}</textarea>
+        <p
+          x-show='errors.alamat'
+          x-text='errors.alamat'
+          class='mt-1 text-sm text-red-600'
+        ></p>
       </div>
 
       <!-- Buttons -->
       <div class='flex space-x-4'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-gray-900'
+          :disabled='!canSubmit'
+          :class="canSubmit ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-gray-900'
         >
           Update
         </button>

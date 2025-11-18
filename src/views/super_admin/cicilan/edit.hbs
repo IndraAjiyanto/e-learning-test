@@ -1,9 +1,92 @@
 <div
   class='pt-28 py-20'
-  x-data='{ bulan: {{cicilan.bulan}}, hargaValues: {{json
-    cicilan.harga
-  }}, hargaDisplays: [], dpValue: "{{cicilan.dp}}", dpDisplay: "", formatNumber(event, index = null) { let angka = event.target.value.replace(/\D/g, ""); if (index !== null) { this.hargaValues[index] = angka; this.hargaDisplays[index] = new Intl.NumberFormat("id-ID").format(angka); } else { this.dpValue = angka; this.dpDisplay = new Intl.NumberFormat("id-ID").format(angka); } } }'
-  x-init="hargaDisplays = hargaValues.map(h => new Intl.NumberFormat('id-ID').format(h)); dpDisplay = new Intl.NumberFormat('id-ID').format(dpValue);"
+  x-data='{ 
+    bulan: {{cicilan.bulan}}, 
+    hargaValues: {{json cicilan.harga}}, 
+    hargaDisplays: [], 
+    dpValue: "{{cicilan.dp}}", 
+    dpDisplay: "",
+
+    // Form validation states
+    formData: {
+      bulan: "{{cicilan.bulan}}",
+      dp: "{{cicilan.dp}}",
+      harga: {{json cicilan.harga}}
+    },
+    formErrors: {
+      bulan: "",
+      dp: "",
+      harga: []
+    },
+    formValid: {
+      bulan: false,
+      dp: false,
+      harga: []
+    },
+
+    validateField(field, value, index = null) {
+      if (field === "harga") {
+        this.formData.harga[index] = value;
+        const numValue = parseInt(value);
+        if (!value || isNaN(numValue) || numValue <= 0) {
+          this.formErrors.harga[index] = "Valid payment amount required";
+          this.formValid.harga[index] = false;
+        } else {
+          this.formErrors.harga[index] = "";
+          this.formValid.harga[index] = true;
+        }
+      } else {
+        this.formData[field] = value;
+        
+        switch(field) {
+          case "bulan":
+            if (!value) {
+              this.formErrors.bulan = "Installment period is required";
+              this.formValid.bulan = false;
+            } else {
+              this.formErrors.bulan = "";
+              this.formValid.bulan = true;
+            }
+            break;
+            
+          case "dp":
+            const dpNumValue = parseInt(value);
+            if (!value || isNaN(dpNumValue) || dpNumValue <= 0) {
+              this.formErrors.dp = "Valid down payment amount required";
+              this.formValid.dp = false;
+            } else {
+              this.formErrors.dp = "";
+              this.formValid.dp = true;
+            }
+            break;
+        }
+      }
+    },
+
+    canSubmit() {
+      const bulanCount = parseInt(this.bulan);
+      const allHargaValid = Array.from({length: bulanCount}, (_, i) => this.formValid.harga[i] || false).every(valid => valid);
+      return this.formValid.bulan && this.formValid.dp && allHargaValid;
+    },
+
+    hasFormErrors() {
+      return Object.values(this.formErrors).some(error => error !== "" || (Array.isArray(error) && error.some(e => e !== "")));
+    },
+
+    formatNumber(event, index = null) { 
+      let angka = event.target.value.replace(/\D/g, ""); 
+      if (index !== null) { 
+        this.hargaValues[index] = angka; 
+        this.hargaDisplays[index] = new Intl.NumberFormat("id-ID").format(angka);
+        this.validateField("harga", angka, index);
+      } else { 
+        this.dpValue = angka; 
+        this.dpDisplay = new Intl.NumberFormat("id-ID").format(angka);
+        this.validateField("dp", angka);
+      } 
+    }
+  }'
+  x-init="hargaDisplays = hargaValues.map(h => new Intl.NumberFormat('id-ID').format(h)); dpDisplay = new Intl.NumberFormat('id-ID').format(dpValue); formValid.harga = Array(parseInt(bulan)).fill(true); formErrors.harga = Array(parseInt(bulan)).fill('')"
 >
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Cicilan</h2>
@@ -11,6 +94,7 @@
     <form
       action='/cicilan/{{cicilan.id}}?_method=PATCH'
       method='POST'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
       class='space-y-6'
     >
 
@@ -25,15 +109,25 @@
         <select
           id='bulan'
           name='bulan'
-          x-model='bulan'
-          @change="hargaDisplays = Array(parseInt(bulan)).fill(''); hargaValues = Array(parseInt(bulan)).fill('')"
+          x-model='formData.bulan'
+          @change='validateField("bulan", $event.target.value); bulan = $event.target.value; hargaDisplays = Array(parseInt(bulan)).fill(""); hargaValues = Array(parseInt(bulan)).fill(""); formValid.harga = Array(parseInt(bulan)).fill(false); formErrors.harga = Array(parseInt(bulan)).fill("")'
           required
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="formErrors.bulan ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.bulan ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >
           <option value='3'>3 Months</option>
           <option value='6'>6 Months</option>
           <option value='12'>12 Months</option>
         </select>
+        <div
+          x-show='formErrors.bulan'
+          class='mt-1 text-sm text-red-600'
+          x-text='formErrors.bulan'
+        ></div>
+        <div
+          x-show='formValid.bulan && !formErrors.bulan'
+          class='mt-1 text-sm text-green-600'
+        >✓ Period selected</div>
       </div>
 
       <!-- Input Harga Per Bulan -->
@@ -56,9 +150,19 @@
             @input='formatNumber($event)'
             placeholder='Enter down payment amount'
             required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            :class="formErrors.dp ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.dp ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           />
           <input type='hidden' name='dp' x-model='dpValue' />
+          <div
+            x-show='formErrors.dp'
+            class='mt-1 text-sm text-red-600'
+            x-text='formErrors.dp'
+          ></div>
+          <div
+            x-show='formValid.dp && !formErrors.dp'
+            class='mt-1 text-sm text-green-600'
+          >✓ Down payment looks good</div>
         </div>
         <div class='space-y-2'>
           <template x-for='(price, index) in parseInt(bulan)' :key='index'>
@@ -73,7 +177,8 @@
                 @input='formatNumber($event, index)'
                 placeholder='Enter amount'
                 required
-                class='flex-1 border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                :class="formErrors.harga[index] ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.harga[index] ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+                class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
               />
               <input
                 type='hidden'
@@ -81,6 +186,15 @@
                 x-model='hargaValues[index]'
               />
             </div>
+            <div
+              x-show='formErrors.harga[index]'
+              class='mt-1 text-sm text-red-600 ml-20'
+              x-text='formErrors.harga[index]'
+            ></div>
+            <div
+              x-show='formValid.harga[index] && !formErrors.harga[index]'
+              class='mt-1 text-sm text-green-600 ml-20'
+            >✓ Amount looks good</div>
           </template>
         </div>
       </div>
@@ -89,13 +203,14 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
         >
           Update
         </button>
         <a
-                    href='/kelass/detail/kelas/admin/{{cicilan.kelas.id}}'
-
+          href='/kelass/detail/kelas/admin/{{cicilan.kelas.id}}'
           class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
         >
           Cancel

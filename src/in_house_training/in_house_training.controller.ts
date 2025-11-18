@@ -24,6 +24,7 @@ export class InHouseTrainingController {
   async indAll(@Req() req: Request, @Res() res: Response) {
     const kelas = await this.inHouseTrainingService.findAll();
     const jenis_kelas = await this.inHouseTrainingService.findJenisKelas();
-    res.render('inhouse', { user: req.user, kelas, jenis_kelas });
+    const faq = await this.inHouseTrainingService.findFaq();
+    res.render('inhouse', { user: req.user, kelas, jenis_kelas, faq });
   }
 }

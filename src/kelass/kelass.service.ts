@@ -302,7 +302,7 @@ export class KelassService {
 
   async findMentor(kelasId) {
     return await this.mentorRepository.find({
-      where: { kelas: { id: kelasId } },
+      where: { kelas: { id: kelasId } }, relations: ['teknologi']
     });
   }
 
@@ -751,7 +751,13 @@ export class KelassService {
 
   async allKelas() {
     return await this.kelasRepository.find({
-      relations: ['user_kelas', 'user_kelas.user', 'kategori', 'mentoring', 'mentoring.user'],
+      relations: [
+        'user_kelas',
+        'user_kelas.user',
+        'kategori',
+        'mentoring',
+        'mentoring.user',
+      ],
     });
   }
 
@@ -781,27 +787,28 @@ export class KelassService {
   }
 
   async findOne(kelasId: number) {
-    const kelas = await this.kelasRepository.findOne({
-      where: { id: kelasId },
-      relations: [
-        'user_kelas',
-        'user_kelas.user',
-        'kategori',
-        'alur_kelas',
-        'benefit_kelas',
-        'jenis_kelas',
-        'mentor',
-        'mentor.teknologi',
-        'pertanyaan_kelas',
-        'teknologi',
-        'mentoring',
-        'mentoring.user',
-        'bulan',
-        'cicilan',
-      ],
-    });
+    const kelas = await this.kelasRepository
+      .createQueryBuilder('kelas')
+      .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
+      .leftJoinAndSelect('user_kelas.user', 'user')
+      .leftJoinAndSelect('kelas.kategori', 'kategori')
+      .leftJoinAndSelect('kelas.alur_kelas', 'alur_kelas')
+      .leftJoinAndSelect('kelas.benefit_kelas', 'benefit_kelas')
+      .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
+      .leftJoinAndSelect('kelas.mentor', 'mentor')
+      .leftJoinAndSelect('mentor.teknologi', 'mentor_teknologi')
+      .leftJoinAndSelect('kelas.pertanyaan_kelas', 'pertanyaan_kelas')
+      .leftJoinAndSelect('kelas.teknologi', 'teknologi')
+      .leftJoinAndSelect('kelas.mentoring', 'mentoring')
+      .leftJoinAndSelect('mentoring.user', 'mentoring_user')
+      .leftJoinAndSelect('kelas.bulan', 'bulan')
+      .leftJoinAndSelect('kelas.cicilan', 'cicilan')
+      .where('kelas.id = :kelasId', { kelasId })
+      .orderBy('alur_kelas.alur_ke', 'ASC')
+      .getOne();
+
     if (!kelas) {
-      throw new NotFoundException();
+      throw new NotFoundException('Program not found');
     }
     return kelas;
   }
@@ -823,7 +830,7 @@ export class KelassService {
   async update(id: number, updateKelassDto: UpdateKelassDto) {
     const kelas = await this.findOne(id);
     if (!kelas) {
-      throw new NotFoundException(`Kelas dengan ID ${id} tidak ditemukan`);
+      throw new NotFoundException(`Program not found`);
     }
 
     if (updateKelassDto.kategoriId) {

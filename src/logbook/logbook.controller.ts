@@ -166,7 +166,11 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     const logbook = await this.logbookService.findOne(logbookId);
-    res.render('user/logbook/edit', { user: req.user, logbook });
+    if (req.user!.role === 'admin') {
+      res.render('admin/logbook/edit', { user: req.user, logbook });
+    } else {
+      res.render('user/logbook/edit', { user: req.user, logbook });
+    }
   }
 
   @Roles('user', 'admin')
@@ -220,7 +224,7 @@ export class LogbookController {
       await this.logbookService.update(logbookId, updateLogbookDto);
       req.flash('success', 'logbook successfully updated');
       if (req.user?.role === 'admin') {
-        res.redirect('/logbook');
+        res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
       } else if (req.user?.role === 'user') {
         res.redirect(`/kelass/${logbook.pertemuan.minggu.kelas.id}`);
       }
@@ -228,7 +232,7 @@ export class LogbookController {
       const logbook = await this.logbookService.findOne(logbookId);
       req.flash('error', error.message || 'logbook failed to update');
       if (req.user?.role === 'admin') {
-        res.redirect('/logbook');
+        res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
       } else if (req.user?.role === 'user') {
         res.redirect(`/kelass/${logbook.pertemuan.minggu.kelas.id}`);
       }

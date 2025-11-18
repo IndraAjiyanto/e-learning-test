@@ -3,7 +3,7 @@ import { CreateDashboardDto } from './dto/create-dashboard.dto';
 import { UpdateDashboardDto } from './dto/update-dashboard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portfolio } from 'src/entities/portfolio.entity';
@@ -24,6 +24,7 @@ import { Misi } from 'src/entities/misi.entity';
 import { Experience } from 'src/entities/experience.entity';
 import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
+import { Paragraf } from 'src/entities/paragraf.entity';
 
 @Injectable()
 export class DashboardService {
@@ -70,6 +71,8 @@ export class DashboardService {
     private readonly awardRepository: Repository<Award>,
     @InjectRepository(Background)
     private readonly backgroundRepository: Repository<Background>,
+    @InjectRepository(Paragraf)
+    private readonly paragrafRepository: Repository<Paragraf>,
   ) {}
 
   async findAllKelas() {
@@ -108,12 +111,16 @@ export class DashboardService {
     return await this.awardRepository.find();
   }
 
-  async findBackground() {
-    return await this.backgroundRepository.find();
-  }
-
   async findTentang() {
     return await this.tentangRepository.find();
+  }
+
+  async findTentangParagraf() {
+    return await this.paragrafRepository.find();
+  }
+
+  async findBackground() {
+    return await this.backgroundRepository.find();
   }
 
   async findKelas() {

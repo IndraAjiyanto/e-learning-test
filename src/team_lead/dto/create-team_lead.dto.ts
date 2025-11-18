@@ -13,20 +13,8 @@ export class CreateTeamLeadDto {
   @IsString()
   deskripsi: string;
 
-  @IsEmail()
-  email: string;
-
   @IsString()
-  phone: string;
-
-  @IsString()
-  background: string;
-
-  @IsString()
-  awards: string;
-
-  @IsString()
-  experience: string;
+  instagram: string;
 
   @IsString()
   linkedin: string;

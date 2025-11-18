@@ -24,7 +24,7 @@ export class WipController {
     const kelas = await this.wipService.findAll();
     const jenis_kelas = await this.wipService.findJenisKelas();
     const alumni = await this.wipService.findAlumni();
-    console.log(kelas);
-    res.render('wip', { kelas, jenis_kelas, alumni, user: req.user });
+    const faq = await this.wipService.findFaq();
+    res.render('wip', { kelas, jenis_kelas, alumni, faq, user: req.user });
   }
 }

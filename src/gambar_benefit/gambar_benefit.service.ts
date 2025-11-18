@@ -31,7 +31,7 @@ export class GambarBenefitService {
       where: { id: gambarBenefitId },
     });
     if (!gambar_benefit) {
-      throw new NotFoundException('Gambar Benefit not found');
+      throw new NotFoundException('Image Benefit Not Found');
     }
     return gambar_benefit;
   }
@@ -78,7 +78,7 @@ export class GambarBenefitService {
   ) {
     const gambar_benefit = await this.findOne(gambarBenefitId);
     if (!gambar_benefit) {
-      throw new NotFoundException('Gambar Benefit not found');
+      throw new NotFoundException('Image Benefit Not Found');
     }
     Object.assign(gambar_benefit, updateGambarBenefitDto);
     return await this.gambarBenefitRepository.save(gambar_benefit);

@@ -143,7 +143,7 @@
                 </iframe>
               </div>
             </div>
-{{#if paragraf.[0]}}
+{{#if paragraf.length}}
             {{#each paragraf}}
               <p
                 class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'
@@ -201,7 +201,7 @@ Kesatria Academy percaya bahwa pendidikan teknologi tidak hanya berhenti pada pe
                 <p
                   class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                 >
-                  {{#if visi.[0]}}
+                  {{#if visi.length}}
                     {{visi.[0].visi}}
                   {{else}}
 To become a leading digital education institution that nurtures outstanding information technology talents job-ready and globally competitive to drive Indonesia’s digital transformation.
@@ -473,12 +473,6 @@ To become a leading digital education institution that nurtures outstanding info
                   >
                     <i class='fab fa-instagram text-slate-700 text-base'></i>
                   </a>
-                  <a
-                    href='{{#if teamLead.[0]}}{{teamLead.[0].github}}{{else}}https://github.com{{/if}}'
-                    class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
-                  >
-                    <i class='fab fa-github text-slate-700 text-base'></i>
-                  </a>
                 </div>
               </div>
             </div>
@@ -722,10 +716,10 @@ To become a leading digital education institution that nurtures outstanding info
                       <i class='fab fa-linkedin text-slate-600 text-sm'></i>
                     </a>
                     <a
-                      href='#' 
+                      href='{{instagram}}' 
                       class='w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors'
                     >
-                      <i class='fab fa-dribbble text-slate-600 text-sm'></i>
+                      <i class='fab fa-instagram text-slate-600 text-sm'></i>
                     </a>
                   </div>
                 </div>

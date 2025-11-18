@@ -23,13 +23,10 @@ export class TeamLead {
   @Column()
   deskripsi: string;
 
-  @Column({ nullable: true })
+  @Column()
   instagram: string;
 
-  @Column({ nullable: true })
-  github: string;
-
-  @Column({ nullable: true })
+  @Column()
   linkedin: string;
 
   @CreateDateColumn()

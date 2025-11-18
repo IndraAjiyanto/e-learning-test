@@ -59,11 +59,11 @@ export class TentangController {
     try {
       createTentangDto.gambar = req.body.uploadedImageUrls?.[0];
       await this.tentangService.create(createTentangDto);
-      req.flash('success', 'Tentang successfully created');
+      req.flash('success', 'Header successfully created');
       res.redirect('/tentang');
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'Tentang failed to create');
+      req.flash('error', error.message || 'Header failed to create');
       res.redirect('/tentang');
     }
   }
@@ -106,10 +106,7 @@ export class TentangController {
   @Roles('super_admin')
   @Patch(':id')
   @UseInterceptors(
-    FileInterceptor(
-      'gambar',
-      createMemoryConfig({ fileTypes: ['image'], maxSize: 5 }),
-    ),
+    FileInterceptor('gambar', multerConfigMemory),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -135,11 +132,10 @@ export class TentangController {
         updateTentangDto.gambar = req.body.uploadedImageUrls?.[0];
       }
       await this.tentangService.update(id, updateTentangDto);
-      req.flash('success', 'Tentang successfully updated');
+      req.flash('success', 'Header successfully updated');
       res.redirect('/tentang');
     } catch (error) {
-      console.log(error);
-      req.flash('error', error.message || 'Tentang failed to update');
+      req.flash('error', error.message || 'Header failed to update');
       res.redirect('/tentang');
     }
   }
@@ -155,11 +151,11 @@ export class TentangController {
       const tentang = await this.tentangService.findOne(id);
       await this.tentangService.getPublicIdFromUrl(tentang.gambar);
       await this.tentangService.remove(id);
-      req.flash('success', 'Tentang successfully deleted');
+      req.flash('success', 'Header successfully deleted');
       res.redirect('/tentang');
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'Tentang failed to delete');
+      req.flash('error', error.message || 'Header failed to delete');
       res.redirect('/tentang');
     }
   }

@@ -123,6 +123,6 @@ export class LogbookMentorService {
       throw new NotFoundException('logbook not found');
     }
     await this.getPublicIdFromUrl(logbook.dokumentasi);
-    await this.logBookMentorRepository.remove(logbook); 
+    await this.logBookMentorRepository.remove(logbook);
   }
 }

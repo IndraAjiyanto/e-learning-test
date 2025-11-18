@@ -24,7 +24,7 @@ export class MentorService {
       where: { id: createMentorDto.kelasId },
     });
     if (!kelas) {
-      throw new NotFoundException('kelas not found');
+      throw new NotFoundException('Program not found');
     }
     let teknologi: Teknologi[] = [];
     if (
@@ -61,7 +61,7 @@ export class MentorService {
   async update(mentorId: number, updateMentorDto: UpdateMentorDto) {
     const mentor = await this.findOne(mentorId);
     if (!mentor) {
-      throw new NotFoundException('kelas not found');
+      throw new NotFoundException('Program not found');
     }
     if (updateMentorDto.teknologiIds !== undefined) {
       if (updateMentorDto.teknologiIds.length > 0) {
@@ -82,7 +82,7 @@ export class MentorService {
   async remove(mentorId: number) {
     const mentor = await this.findOne(mentorId);
     if (!mentor) {
-      throw new NotFoundException('kelas not found');
+      throw new NotFoundException('Program not found');
     }
     return await this.mentorRepository.remove(mentor);
   }

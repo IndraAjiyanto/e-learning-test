@@ -11,6 +11,29 @@
         imageHeight: 0,
         hasFile: false,
 
+        // Form validation states
+        formData: {
+          nama: '',
+          posisi: '',
+          linkedin: '',
+          instagram: '',
+          deskripsi: ''
+        },
+        formErrors: {
+          nama: '',
+          posisi: '',
+          linkedin: '',
+          instagram: '',
+          deskripsi: ''
+        },
+        formValid: {
+          nama: false,
+          posisi: false,
+          linkedin: false,
+          instagram: true, // optional
+          deskripsi: false
+        },
+
         validateImage(file) {
           if (!file) {
             this.hasFile = false;
@@ -31,31 +54,24 @@
             return;
           }
 
-          const maxSize = 1 * 1024 * 1024; // 1MB
+          const maxSize = 5 * 1024 * 1024; // 5MB
           if (file.size > maxSize) {
-            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 1MB`;
+            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
             this.isValid = false;
             this.previewUrl = null;
             return;
           }
 
+          // Create preview without dimension validation (backend doesn't enforce dimensions)
           const img = new Image();
           const objectUrl = URL.createObjectURL(file);
 
           img.onload = () => {
             this.imageWidth = img.width;
             this.imageHeight = img.height;
-
-            if (img.width < 300 || img.width > 500 || img.height < 300 || img.height > 500) {
-              this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 500x500 pixels`;
-              this.isValid = false;
-              this.previewUrl = null;
-              URL.revokeObjectURL(objectUrl);
-            } else {
-              this.previewUrl = objectUrl;
-              this.isValid = true;
-              this.errorMessage = '';
-            }
+            this.previewUrl = objectUrl;
+            this.isValid = true;
+            this.errorMessage = '';
           };
 
           img.onerror = () => {
@@ -66,6 +82,83 @@
           };
 
           img.src = objectUrl;
+        },
+
+        validateField(field, value) {
+          this.formData[field] = value;
+          
+          switch(field) {
+            case 'nama':
+              if (!value.trim()) {
+                this.formErrors.nama = 'Name is required';
+                this.formValid.nama = false;
+              } else if (value.trim().length < 2) {
+                this.formErrors.nama = 'Name must be at least 2 characters';
+                this.formValid.nama = false;
+              } else {
+                this.formErrors.nama = '';
+                this.formValid.nama = true;
+              }
+              break;
+              
+            case 'posisi':
+              if (!value.trim()) {
+                this.formErrors.posisi = 'Position is required';
+                this.formValid.posisi = false;
+              } else if (value.trim().length < 2) {
+                this.formErrors.posisi = 'Position must be at least 2 characters';
+                this.formValid.posisi = false;
+              } else {
+                this.formErrors.posisi = '';
+                this.formValid.posisi = true;
+              }
+              break;
+              
+            case 'linkedin':
+              if (!value.trim()) {
+                this.formErrors.linkedin = 'LinkedIn URL is required';
+                this.formValid.linkedin = false;
+              } else {
+                const urlPattern = /^https?:\/\/(www\.)?linkedin\.com\/.+/;
+                if (!urlPattern.test(value)) {
+                  this.formErrors.linkedin = 'Please enter a valid LinkedIn URL';
+                  this.formValid.linkedin = false;
+                } else {
+                  this.formErrors.linkedin = '';
+                  this.formValid.linkedin = true;
+                }
+              }
+              break;
+              
+            case 'instagram':
+              if (value.trim()) {
+                const urlPattern = /^https?:\/\/(www\.)?instagram\.com\/.+/;
+                if (!urlPattern.test(value)) {
+                  this.formErrors.instagram = 'Please enter a valid Instagram URL';
+                  this.formValid.instagram = false;
+                } else {
+                  this.formErrors.instagram = '';
+                  this.formValid.instagram = true;
+                }
+              } else {
+                this.formErrors.instagram = '';
+                this.formValid.instagram = true; // optional field
+              }
+              break;
+              
+            case 'deskripsi':
+              if (!value.trim()) {
+                this.formErrors.deskripsi = 'Description is required';
+                this.formValid.deskripsi = false;
+              } else if (value.trim().length < 10) {
+                this.formErrors.deskripsi = 'Description must be at least 10 characters';
+                this.formValid.deskripsi = false;
+              } else {
+                this.formErrors.deskripsi = '';
+                this.formValid.deskripsi = true;
+              }
+              break;
+          }
         },
 
         clearFile() {
@@ -81,10 +174,15 @@
         },
 
         canSubmit() {
-          if (this.hasFile) {
-            return this.isValid;
-          }
-          return true;
+          const imageValid = !this.hasFile || this.isValid;
+          const formValid = this.formValid.nama && this.formValid.posisi && 
+                           this.formValid.linkedin && this.formValid.instagram && 
+                           this.formValid.deskripsi;
+          return imageValid && formValid;
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors).some(error => error !== '');
         }
       }"
   >
@@ -95,7 +193,7 @@
       method='post'
       class='space-y-6'
       enctype='multipart/form-data'
-      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix image validation errors before submitting.'); }"
+      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
       <!-- Upload Section -->
       <div class='space-y-3'>
@@ -104,6 +202,8 @@
           class='block text-sm font-semibold text-gray-700 mb-1'
         >
           Profile Photo
+          <span class='text-xs text-gray-500 font-normal'>(max 5MB, JPEG/PNG
+            only)</span>
         </label>
         <input
           type='file'
@@ -111,9 +211,50 @@
           name='profile'
           accept='image/*'
           x-ref='fileInput'
-          class='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
           @change='validateImage($event.target.files[0])'
         />
+
+        <!-- Error Message -->
+        <template x-if='!isValid && errorMessage'>
+          <div
+            class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <div>
+              <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+              <p class='text-xs text-red-700' x-text='errorMessage'></p>
+            </div>
+          </div>
+        </template>
+
+        <!-- Success Message with File Info -->
+        <template x-if='hasFile && isValid'>
+          <div class='space-y-2'>
+            <div
+              class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <div class='flex items-center gap-2'>
+                <i class='fas fa-check-circle text-green-500'></i>
+                <div class='text-xs text-green-700'>
+                  <span class='font-semibold'>Valid image:</span>
+                  <span
+                    x-text='`${fileName} (${(fileSize / 1024 / 1024).toFixed(2)}MB)`'
+                  ></span>
+                </div>
+              </div>
+              <button
+                type='button'
+                class='text-red-500 hover:text-red-700 transition-colors'
+                @click='clearFile()'
+                title='Remove image'
+              >
+                <i class='fas fa-times-circle'></i>
+              </button>
+            </div>
+          </div>
+        </template>
 
         <!-- Preview -->
         <template x-if='previewUrl'>
@@ -134,84 +275,167 @@
         </template>
       </div>
 
-      <!-- Name -->
-      <div>
-        <label
-          for='nama'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Name</label>
-        <input
-          type='text'
-          id='nama'
-          name='nama'
-          required
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        />
+      <!-- Form Fields Grid -->
+      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <!-- Name -->
+        <div class='space-y-2'>
+          <label
+            for='nama'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Name</label>
+          <input
+            type='text'
+            id='nama'
+            name='nama'
+            required
+            :class="formErrors.nama ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("nama", $event.target.value)'
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.nama'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.nama'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.nama && !formErrors.nama'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid name</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Position -->
+        <div class='space-y-2'>
+          <label
+            for='posisi'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Position</label>
+          <input
+            type='text'
+            id='posisi'
+            name='posisi'
+            required
+            :class="formErrors.posisi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("posisi", $event.target.value)'
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.posisi'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.posisi'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.posisi && !formErrors.posisi'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid position</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- LinkedIn -->
+        <div class='space-y-2'>
+          <label
+            for='linkedin'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >LinkedIn URL</label>
+          <input
+            type='url'
+            id='linkedin'
+            name='linkedin'
+            required
+            placeholder='https://linkedin.com/in/username'
+            :class="formErrors.linkedin ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("linkedin", $event.target.value)'
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.linkedin'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.linkedin'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.linkedin && !formErrors.linkedin'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid LinkedIn URL</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Instagram -->
+        <div class='space-y-2'>
+          <label
+            for='instagram'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Instagram URL
+            <span class='text-xs text-gray-500 font-normal'>(optional)</span>
+          </label>
+          <input
+            type='url'
+            id='instagram'
+            name='instagram'
+            placeholder='https://instagram.com/username'
+            :class="formErrors.instagram ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("instagram", $event.target.value)'
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.instagram'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.instagram'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template
+            x-if='formValid.instagram && !formErrors.instagram && $el.value'
+          >
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid Instagram URL</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Empty column for spacing -->
+        <div></div>
       </div>
 
-      <!-- Position -->
-      <div>
-        <label
-          for='posisi'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Position</label>
-        <input
-          type='text'
-          id='posisi'
-          name='posisi'
-          required
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        />
-      </div>
-
-      <!-- LinkedIn -->
-      <div>
-        <label
-          for='linkedin'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >LinkedIn URL</label>
-        <input
-          type='url'
-          id='linkedin'
-          name='linkedin'
-          required
-          placeholder='https://linkedin.com/in/username'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        />
-      </div>
-
-      <!-- GitHub -->
-      <div>
-        <label
-          for='github'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >GitHub URL</label>
-        <input
-          type='url'
-          id='github'
-          name='github'
-          placeholder='https://github.com/username'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        />
-      </div>
-
-      <!-- Instagram -->
-      <div>
-        <label
-          for='instagram'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Instagram URL</label>
-        <input
-          type='url'
-          id='instagram'
-          name='instagram'
-          placeholder='https://instagram.com/username'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        />
-      </div>
-
-      <!-- Description -->
-      <div>
+      <!-- Description (Full Width) -->
+      <div class='space-y-2'>
         <label
           for='deskripsi'
           class='block text-sm font-semibold text-gray-700 mb-1'
@@ -222,25 +446,62 @@
           required
           rows='4'
           placeholder='Enter team member description...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+          @input='validateField("deskripsi", $event.target.value)'
         ></textarea>
+
+        <!-- Error Message -->
+        <template x-if='formErrors.deskripsi'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='formErrors.deskripsi'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='formValid.deskripsi && !formErrors.deskripsi'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Valid description</p>
+          </div>
+        </template>
       </div>
 
       <!-- Buttons -->
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='!canSubmit()'
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Create
         </button>
         <a
           href='/team'
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
         >
           Cancel
         </a>
       </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
     </form>
   </div>
 </div>

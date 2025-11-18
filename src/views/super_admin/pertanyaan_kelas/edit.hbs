@@ -1,11 +1,80 @@
 <div class='py-10'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+  <div
+    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+        pertanyaan: '{{pertanyaanKelas.pertanyaan}}',
+        jawaban: '{{pertanyaanKelas.jawaban}}',
+        errors: { pertanyaan: null, jawaban: null },
+        success: { pertanyaan: false, jawaban: false },
+        validatePertanyaan() {
+          if (!this.pertanyaan.trim()) {
+            this.errors.pertanyaan = 'Question is required';
+            this.success.pertanyaan = false;
+          } else if (this.pertanyaan.trim().length < 10) {
+            this.errors.pertanyaan = 'Question must be at least 10 characters';
+            this.success.pertanyaan = false;
+          } else {
+            this.errors.pertanyaan = null;
+            this.success.pertanyaan = true;
+          }
+        },
+        validateJawaban() {
+          if (!this.jawaban.trim()) {
+            this.errors.jawaban = 'Answer is required';
+            this.success.jawaban = false;
+          } else if (this.jawaban.trim().length < 20) {
+            this.errors.jawaban = 'Answer must be at least 20 characters';
+            this.success.jawaban = false;
+          } else {
+            this.errors.jawaban = null;
+            this.success.jawaban = true;
+          }
+        },
+        get canSubmit() {
+          return this.success.pertanyaan && this.success.jawaban;
+        }
+      }"
+  >
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit FAQ</h2>
 
     <form
       action='/pertanyaan-kelas/{{pertanyaanKelas.id}}/{{pertanyaanKelas.kelas.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
+      x-data="{
+        pertanyaan: '{{pertanyaanKelas.pertanyaan}}',
+        jawaban: '{{pertanyaanKelas.jawaban}}',
+        errors: { pertanyaan: null, jawaban: null },
+        success: { pertanyaan: false, jawaban: false },
+        validatePertanyaan() {
+          if (!this.pertanyaan.trim()) {
+            this.errors.pertanyaan = 'Question is required';
+            this.success.pertanyaan = false;
+          } else if (this.pertanyaan.trim().length < 10) {
+            this.errors.pertanyaan = 'Question must be at least 10 characters';
+            this.success.pertanyaan = false;
+          } else {
+            this.errors.pertanyaan = null;
+            this.success.pertanyaan = true;
+          }
+        },
+        validateJawaban() {
+          if (!this.jawaban.trim()) {
+            this.errors.jawaban = 'Answer is required';
+            this.success.jawaban = false;
+          } else if (this.jawaban.trim().length < 20) {
+            this.errors.jawaban = 'Answer must be at least 20 characters';
+            this.success.jawaban = false;
+          } else {
+            this.errors.jawaban = null;
+            this.success.jawaban = true;
+          }
+        },
+        get canSubmit() {
+          return this.success.pertanyaan && this.success.jawaban;
+        }
+      }"
+      @submit.prevent="if (canSubmit) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
       <!-- Pertanyaan -->
@@ -17,13 +86,41 @@
           Question
         </label>
         <textarea
+          x-model='pertanyaan'
+          @input='validatePertanyaan()'
           id='pertanyaan'
           name='pertanyaan'
           rows='3'
           required
           placeholder='Enter the question...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.pertanyaan ? 'border-red-500 focus:ring-red-500' : success.pertanyaan ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >{{pertanyaanKelas.pertanyaan}}</textarea>
+        <p
+          x-show='errors.pertanyaan'
+          x-text='errors.pertanyaan'
+          class='mt-1 text-sm text-red-600'
+        ></p>
+
+        <!-- Error Message -->
+        <template x-if='errors.pertanyaan'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='errors.pertanyaan'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='success.pertanyaan && !errors.pertanyaan'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Valid question</p>
+          </div>
+        </template>
       </div>
 
       <!-- Jawaban -->
@@ -35,20 +132,50 @@
           Answer
         </label>
         <textarea
+          x-model='jawaban'
+          @input='validateJawaban()'
           id='jawaban'
           name='jawaban'
           rows='5'
           required
           placeholder='Enter the answer...'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          :class="errors.jawaban ? 'border-red-500 focus:ring-red-500' : success.jawaban ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >{{pertanyaanKelas.jawaban}}</textarea>
+        <p
+          x-show='errors.jawaban'
+          x-text='errors.jawaban'
+          class='mt-1 text-sm text-red-600'
+        ></p>
+
+        <!-- Error Message -->
+        <template x-if='errors.jawaban'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='errors.jawaban'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='success.jawaban && !errors.jawaban'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Valid answer</p>
+          </div>
+        </template>
       </div>
 
       <!-- Buttons -->
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='!canSubmit'
+          :class="canSubmit ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
         >
           Update
         </button>

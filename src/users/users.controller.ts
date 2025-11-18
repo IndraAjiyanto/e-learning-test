@@ -99,7 +99,6 @@ export class UsersController {
       );
       res.redirect('/login');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to reset password');
       res.redirect(`/users/reset-password?token=${resetPasswordDto.token}`);
     }
@@ -118,10 +117,10 @@ export class UsersController {
   )
   @ValidateImage({
     minWidth: 300,
-    maxWidth: 500,
+    maxWidth: 2000,
     minHeight: 300,
-    maxHeight: 500,
-    maxSize: 1 * 1024 * 1024, // 3MB max
+    maxHeight: 2000,
+    maxSize: 5 * 1024 * 1024, // 3MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/profile',
     skipTransformation: true, // profile images are already validated, no need transformation
@@ -228,10 +227,10 @@ export class UsersController {
   )
   @ValidateImage({
     minWidth: 300,
-    maxWidth: 500,
+    maxWidth: 2000,
     minHeight: 300,
-    maxHeight: 500,
-    maxSize: 1 * 1024 * 1024, // 1MB max
+    maxHeight: 2000,
+    maxSize: 5 * 1024 * 1024, // 1MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/profile',
     skipTransformation: true, // profile images are already validated, no need transformation
@@ -293,9 +292,9 @@ export class UsersController {
   )
   @ValidateImage({
     minWidth: 300,
-    maxWidth: 500,
+    maxWidth: 2000,
     minHeight: 300,
-    maxHeight: 500,
+    maxHeight: 2000,
     maxSize: 5 * 1024 * 1024, // 5MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/profile',
@@ -309,19 +308,11 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
-      console.log('=== UPDATE PROFILE START ===');
-      console.log('userId param:', userId, 'type:', typeof userId);
-      console.log('req.user.id:', req.user?.id, 'type:', typeof req.user?.id);
-      console.log('Profile file received:', profile ? 'YES' : 'NO');
-      console.log('File size:', profile?.size);
-      console.log('Uploaded URLs:', req.body.uploadedImageUrls);
 
       const user = await this.usersService.findOne(userId);
       if (profile) {
-        console.log('Processing profile update...');
         // Hanya hapus foto lama jika user sudah punya foto profile sebelumnya
         if (user.profile) {
-          console.log('Deleting old profile:', user.profile);
           await this.usersService.getPublicIdFromUrl(user.profile);
         }
         updateProfileDto.profile = req.body.uploadedImageUrls?.[0];

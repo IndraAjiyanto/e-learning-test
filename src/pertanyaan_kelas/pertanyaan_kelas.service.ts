@@ -21,7 +21,7 @@ export class PertanyaanKelasService {
     });
 
     if (!kelas) {
-      throw new NotFoundException('Kelas not found');
+      throw new NotFoundException('Program not found');
     }
 
     const pertanyaanKelas = this.pertanyaanKelasRepository.create({
@@ -53,7 +53,7 @@ export class PertanyaanKelasService {
     });
 
     if (!pertanyaanKelas) {
-      throw new NotFoundException('PertanyaanKelas not found');
+      throw new NotFoundException('FAQ program not found');
     }
 
     return pertanyaanKelas;
@@ -68,7 +68,7 @@ export class PertanyaanKelasService {
       });
 
       if (!kelas) {
-        throw new NotFoundException('Kelas not found');
+        throw new NotFoundException('Program not found');
       }
 
       pertanyaanKelas.kelas = kelas;

@@ -1,47 +1,169 @@
 <div class='py-10'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <div
+    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+        // Form validation states
+        formData: {
+          content: '',
+          isi: ''
+        },
+        formErrors: {
+          content: '',
+          isi: ''
+        },
+        formValid: {
+          content: false,
+          isi: false
+        },
+
+        validateField(field, value) {
+          this.formData[field] = value;
+          
+          switch(field) {
+            case 'content':
+              if (!value.trim()) {
+                this.formErrors.content = 'Content is required';
+                this.formValid.content = false;
+              } else if (value.trim().length < 10) {
+                this.formErrors.content = 'Content must be at least 10 characters';
+                this.formValid.content = false;
+              } else {
+                this.formErrors.content = '';
+                this.formValid.content = true;
+              }
+              break;
+              
+            case 'isi':
+              if (!value.trim()) {
+                this.formErrors.isi = 'Isi is required';
+                this.formValid.isi = false;
+              } else if (value.trim().length < 20) {
+                this.formErrors.isi = 'Isi must be at least 20 characters';
+                this.formValid.isi = false;
+              } else {
+                this.formErrors.isi = '';
+                this.formValid.isi = true;
+              }
+              break;
+          }
+        },
+
+        canSubmit() {
+          return this.formValid.content && this.formValid.isi;
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors).some(error => error !== '');
+        }
+      }"
+  >
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create Award</h2>
 
-    <form action='/award' method='post' class='space-y-6'>
-      <div>
-        <label
-          for='content'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Content</label>
-        <textarea
-          id='content'
-          name='content'
-          rows='4'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          placeholder='Enter content...'
-          required
-        ></textarea>
+    <form
+      action='/award'
+      method='post'
+      class='space-y-6'
+      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+    >
+
+      <!-- Form Fields Grid -->
+      <div class='grid grid-cols-1 gap-6'>
+
+        <!-- Content -->
+        <div class='space-y-2'>
+          <label
+            for='content'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Content</label>
+          <textarea
+            id='content'
+            name='content'
+            rows='4'
+            required
+            placeholder='Enter content...'
+            :class="formErrors.content ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            x-model='formData.content'
+            @input='validateField("content", $event.target.value)'
+          ></textarea>
+
+          <!-- Error Message -->
+          <template x-if='formErrors.content'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.content'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.content && !formErrors.content'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid content</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Isi -->
+        <div class='space-y-2'>
+          <label
+            for='isi'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Isi</label>
+          <textarea
+            id='isi'
+            name='isi'
+            rows='6'
+            required
+            placeholder='Enter isi...'
+            :class="formErrors.isi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            x-model='formData.isi'
+            @input='validateField("isi", $event.target.value)'
+          ></textarea>
+
+          <!-- Error Message -->
+          <template x-if='formErrors.isi'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.isi'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.isi && !formErrors.isi'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid isi</p>
+            </div>
+          </template>
+        </div>
       </div>
 
-      <div>
-        <label
-          for='isi'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Isi</label>
-        <textarea
-          id='isi'
-          name='isi'
-          rows='6'
-          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          placeholder='Enter isi...'
-          required
-        ></textarea>
-      </div>
-
+      <!-- Buttons -->
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
-        >Create</button>
+          :disabled='!canSubmit()'
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
+        >
+          Create
+        </button>
         <a
           href='/award'
           class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
-        >Cancel</a>
+        >
+          Cancel
+        </a>
       </div>
     </form>
   </div>

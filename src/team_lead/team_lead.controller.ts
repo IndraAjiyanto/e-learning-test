@@ -43,11 +43,7 @@ export class TeamLeadController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 300,
-    maxWidth: 500,
-    minHeight: 300,
-    maxHeight: 500,
-    maxSize: 1 * 1024 * 1024, // 1MB max
+    maxSize: 5 * 1024 * 1024, // 1MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/profile',
   })
@@ -96,17 +92,12 @@ export class TeamLeadController {
   @Roles('super_admin')
   @Patch(':id')
   @UseInterceptors(
-    FileInterceptor(
-      'profile',
-      createMemoryConfig({ fileTypes: ['image'], maxSize: 5 }),
-    ),
+    FileInterceptor('profile', multerConfigMemory),
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 300,
-    maxWidth: 500,
-    minHeight: 300,
-    maxHeight: 500,
+    maxSize: 5 * 1024 * 1024, // 1MB max
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'nestjs/images/profile',
   })
   async update(

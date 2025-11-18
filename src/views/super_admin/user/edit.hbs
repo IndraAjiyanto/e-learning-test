@@ -1,84 +1,410 @@
 <div class="py-10">
-  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg" x-data="{ selectedRole: '{{users.role}}' }">
+  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg"
+    x-data="{
+        previewUrl: null,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        fileSize: 0,
+        imageWidth: 0,
+        imageHeight: 0,
+        hasFile: false,
+        oldPhoto: '{{#if users.profile}}{{users.profile}}{{else}}/images/default-avatar.png{{/if}}',
+
+        // Form validation states
+        formData: {
+          username: '{{users.username}}',
+          email: '{{users.email}}',
+          role: '{{users.role}}'
+        },
+        formErrors: {
+          username: '',
+          email: '',
+          role: ''
+        },
+        formValid: {
+          username: true,
+          email: true,
+          role: true
+        },
+
+        validateImage(file) {
+          if (!file) {
+            this.hasFile = false;
+            return;
+          }
+
+          this.hasFile = true;
+          this.fileName = file.name;
+          this.fileSize = file.size;
+          this.errorMessage = '';
+          this.isValid = true;
+
+          // Validasi tipe file
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+
+          // Validasi ukuran file (5MB = 5242880 bytes)
+          const maxSize = 5 * 1024 * 1024; // 5MB
+          if (file.size > maxSize) {
+            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+
+          // Validasi dimensi gambar
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+
+          img.onload = () => {
+            this.imageWidth = img.width;
+            this.imageHeight = img.height;
+
+            if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
+              this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`;
+              this.isValid = false;
+              this.previewUrl = null;
+              URL.revokeObjectURL(objectUrl);
+            } else {
+              this.previewUrl = objectUrl;
+              this.isValid = true;
+              this.errorMessage = '';
+            }
+          };
+
+          img.onerror = () => {
+            this.errorMessage = 'Failed to load image';
+            this.isValid = false;
+            this.previewUrl = null;
+            URL.revokeObjectURL(objectUrl);
+          };
+
+          img.src = objectUrl;
+        },
+
+        validateField(field, value) {
+          this.formData[field] = value;
+
+          switch(field) {
+            case 'username':
+              if (!value.trim()) {
+                this.formErrors.username = 'Username is required';
+                this.formValid.username = false;
+              } else if (value.trim().length < 3) {
+                this.formErrors.username = 'Username must be at least 3 characters';
+                this.formValid.username = false;
+              } else {
+                this.formErrors.username = '';
+                this.formValid.username = true;
+              }
+              break;
+
+            case 'email':
+              if (!value.trim()) {
+                this.formErrors.email = 'Email is required';
+                this.formValid.email = false;
+              } else {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                  this.formErrors.email = 'Please enter a valid email address';
+                  this.formValid.email = false;
+                } else {
+                  this.formErrors.email = '';
+                  this.formValid.email = true;
+                }
+              }
+              break;
+
+            case 'role':
+              if (!value) {
+                this.formErrors.role = 'Please select a role';
+                this.formValid.role = false;
+              } else {
+                this.formErrors.role = '';
+                this.formValid.role = true;
+              }
+              break;
+          }
+        },
+
+        clearFile() {
+          this.previewUrl = null;
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.fileSize = 0;
+          this.imageWidth = 0;
+          this.imageHeight = 0;
+          this.hasFile = false;
+          this.$refs.fileInput.value = null;
+        },
+
+        canSubmit() {
+          const imageValid = !this.hasFile || this.isValid;
+          const formValid = this.formValid.username && this.formValid.email && this.formValid.role;
+          return imageValid && formValid;
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors).some(error => error !== '');
+        }
+      }"
+  >
     <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit User</h2>
 
-    <form action="/users/super_admin/{{users.id}}?_method=PATCH" method="post" class="space-y-6" enctype="multipart/form-data">
-
-<div 
-  x-data="{ 
-    previewUrl: null, 
-    oldPhoto: '{{#if users.profile}}{{users.profile}}{{else}}/images/default-avatar.png{{/if}}' 
-  }" 
-  class="space-y-3"
->
-  <label for="profile" class="block text-sm font-semibold text-gray-700 mb-1">
-    Photos Profile
-  </label>
-
-  <!-- Input file -->
-  <input 
-    type="file" 
-    id="profile" 
-    name="profile" 
-    accept="image/*" 
-    x-ref="fileInput"
-    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
-    @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
-  >
-
-  <!-- Tampilkan foto lama atau preview baru -->
-  <div class="relative w-32 h-32">
-    <img 
-      :src="previewUrl ? previewUrl : oldPhoto" 
-      alt="Preview Photo" 
-      class="w-32 h-32 object-cover rounded-lg border border-gray-300"
+    <form action="/users/super_admin/{{users.id}}?_method=PATCH" method="POST" enctype="multipart/form-data" class="space-y-6"
+      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
-    <!-- Tombol hapus foto baru -->
-    <template x-if="previewUrl">
-      <button 
-        type="button" 
-        class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600"
-        @click="previewUrl = null; $refs.fileInput.value = null;">
-        &times;
-      </button>
-    </template>
-  </div>
-</div>
+      <!-- Upload Section -->
+      <div class='space-y-3'>
+        <label
+          for='profile'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Photos Profile
+          <span class='text-xs text-gray-500 font-normal'>(300x300 - 2000x2000px,
+            max 5MB, JPG/PNG)</span>
+        </label>
+        <input
+          type='file'
+          id='profile'
+          name='profile'
+          accept='image/jpeg,image/jpg,image/png'
+          x-ref='fileInput'
+          :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
+          @change='validateImage($event.target.files[0])'
+        />
 
-      <div>
-        <label for="username" class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
-        <input type="text" id="username" name="username" value="{{users.username}}" 
-          class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+        <!-- Error Message -->
+        <template x-if='!isValid && errorMessage'>
+          <div
+            class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <div>
+              <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+              <p class='text-xs text-red-700' x-text='errorMessage'></p>
+            </div>
+          </div>
+        </template>
+
+        <!-- Success Message with File Info -->
+        <template x-if='hasFile && isValid'>
+          <div class='space-y-2'>
+            <div
+              class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <div class='flex items-center gap-2'>
+                <i class='fas fa-check-circle text-green-500'></i>
+                <div class='text-xs text-green-700'>
+                  <span class='font-semibold'>Valid image:</span>
+                  <span
+                    x-text='`${imageWidth}x${imageHeight}px, ${(fileSize / 1024).toFixed(1)}KB`'
+                  ></span>
+                </div>
+              </div>
+              <button
+                type='button'
+                class='text-red-500 hover:text-red-700 transition-colors'
+                @click='clearFile()'
+                title='Remove image'
+              >
+                <i class='fas fa-times-circle'></i>
+              </button>
+            </div>
+
+            <!-- Image Preview -->
+            <div class='relative w-32 h-32'>
+              <img
+                :src='previewUrl'
+                alt='Preview Photo'
+                class='w-32 h-32 object-cover rounded-lg border-2 border-green-500 shadow-sm'
+              />
+              <button
+                type='button'
+                class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600'
+                @click='clearFile()'
+              >
+                &times;
+              </button>
+            </div>
+          </div>
+        </template>
+
+        <!-- Preview Old Photo -->
+        <template x-if='!hasFile'>
+          <div class='relative w-32 h-32'>
+            <img
+              :src='oldPhoto'
+              alt='Current Photo'
+              class='w-32 h-32 object-cover rounded-lg border border-gray-300'
+            />
+          </div>
+        </template>
       </div>
 
-      <div>
-        <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-        <input type="email" id="email" name="email" value="{{users.email}}" 
-          class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
+      <!-- Form Fields Grid -->
+      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <!-- Username -->
+        <div class='space-y-2'>
+          <label
+            for='username'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Username</label>
+          <input
+            type='text'
+            id='username'
+            name='username'
+            required
+            :class="formErrors.username ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("username", $event.target.value)'
+            x-init="$el.value = formData.username"
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.username'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.username'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.username && !formErrors.username'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid username</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Email -->
+        <div class='space-y-2'>
+          <label
+            for='email'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Email</label>
+          <input
+            type='email'
+            id='email'
+            name='email'
+            required
+            :class="formErrors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("email", $event.target.value)'
+            x-init="$el.value = formData.email"
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.email'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.email'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.email && !formErrors.email'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid email</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Role -->
+        <div class='space-y-2'>
+          <label
+            for='role'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Role</label>
+          <select
+            id='role'
+            name='role'
+            required
+            :class="formErrors.role ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @change='validateField("role", $event.target.value)'
+            x-init="$el.value = formData.role"
+          >
+            <option value='' selected disabled>-- Select Role --</option>
+            <option value='admin'>Admin</option>
+            <option value='user'>User</option>
+            <option value='super_admin'>Super Admin</option>
+          </select>
+
+          <!-- Error Message -->
+          <template x-if='formErrors.role'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.role'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.role && !formErrors.role'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid role</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Empty column for spacing -->
+        <div></div>
       </div>
 
-      <div>
-        <label for="role" class="block text-sm font-semibold text-gray-700 mb-1">Role</label>
-        <select id="role" name="role" x-model="selectedRole"
-          class="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900">
-          <option value="admin" {{#if (roles users.role "admin")}}selected{{/if}}>Admin</option>
-          <option value="user" {{#if (roles users.role "user")}}selected{{/if}}>User</option>
-          <option value="super_admin" {{#if (roles users.role "super_admin")}}selected{{/if}}>Super Admin</option>
-        </select>
-      </div>
-
-      <div class="flex space-x-4">
-        <button type="submit"
-          class="bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-gray-900">
+      <!-- Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='!canSubmit()'
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+        >
           Update
         </button>
-        <a href="/users"
-          class="bg-white border border-gray-300 text-gray-900 px-6 py-2 rounded-lg shadow hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-gray-900">
+        <a
+          href='/users'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
+        >
           Cancel
         </a>
       </div>
 
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
     </form>
   </div>
 </div>

@@ -27,7 +27,7 @@ export class JenisKelasService {
       where: { id: jenis_kelasId },
     });
     if (!jenis_kelas) {
-      throw new NotFoundException('jenis kelas not found');
+      throw new NotFoundException('Program type not found');
     }
     return jenis_kelas;
   }
@@ -35,7 +35,7 @@ export class JenisKelasService {
   async update(jenis_kelasId: number, updateJenisKelaDto: UpdateJenisKelaDto) {
     const jenis_kelas = await this.findOne(jenis_kelasId);
     if (!jenis_kelas) {
-      throw new NotFoundException('jenis kelas not found');
+      throw new NotFoundException('Program type not found');
     }
     Object.assign(jenis_kelas, updateJenisKelaDto);
     return await this.jenisKelasRepository.save(jenis_kelas);
@@ -44,7 +44,7 @@ export class JenisKelasService {
   async remove(jenis_kelasId: number) {
     const jenis_kelas = await this.findOne(jenis_kelasId);
     if (!jenis_kelas) {
-      throw new NotFoundException();
+      throw new NotFoundException('Program type not found');
     }
     return await this.jenisKelasRepository.remove(jenis_kelas);
   }
