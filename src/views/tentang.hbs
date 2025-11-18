@@ -939,7 +939,7 @@ To become a leading digital education institution that nurtures outstanding info
                       class='text-xs sm:text-sm text-slate-600 font-inter'
                     >
                       {{#if social}}
-                        {{social.email}}
+                        {{social.[0].email}}
                       {{else}}
                         info@kesatriaacademy.com
                       {{/if}}
@@ -961,7 +961,7 @@ To become a leading digital education institution that nurtures outstanding info
                     >Phone</h4>
                     <p class='text-xs sm:text-sm text-slate-600 font-inter'>
                       {{#if social}}
-                        {{social.nomor}}
+                        {{social.[0].nomor}}
                       {{else}}
                         +62 21 1234 5678
                       {{/if}}
@@ -985,7 +985,7 @@ To become a leading digital education institution that nurtures outstanding info
                     >Address</h4>
                     <p class='text-xs sm:text-sm text-slate-600 font-inter'>
                       {{#if social}}
-                        {{social.alamat}}
+                        {{social.[0].alamat}}
                       {{else}}
                         Jakarta, Indonesia
                       {{/if}}
@@ -1000,7 +1000,7 @@ To become a leading digital education institution that nurtures outstanding info
                 >Follow Us on Social Media</h4>
                 <div class='flex justify-center space-x-4 sm:space-x-6'>
                   <a
-                    href='{{#if social}}{{social.instagram}}{{else}}https://instagram.com/kesatriaacademy{{/if}}' target="_blank"
+                    href='{{#if social}}{{social.[0].instragram}}{{else}}https://instagram.com/kesatriaacademy{{/if}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
@@ -1008,7 +1008,7 @@ To become a leading digital education institution that nurtures outstanding info
                     ></i>
                   </a>
                   <a
-                    href='{{#if social}}{{social.linkedin}}{{else}}https://linkedin.com/company/kesatriaacademy{{/if}}' target="_blank"
+                    href='{{#if social}}{{social.[0].linkedin}}{{else}}https://linkedin.com/company/kesatriaacademy{{/if}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
@@ -1016,7 +1016,7 @@ To become a leading digital education institution that nurtures outstanding info
                     ></i>
                   </a>
                   <a
-                    href='{{#if social}}{{social.youtube}}{{else}}https://youtube.com/@kesatriaacademy{{/if}}' target="_blank"
+                    href='{{#if social}}{{social.[0].youtube}}{{else}}https://youtube.com/@kesatriaacademy{{/if}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
