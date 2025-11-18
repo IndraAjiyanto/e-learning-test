@@ -14,23 +14,46 @@ export class MisiService {
 
   async create(createMisiDto: CreateMisiDto): Promise<Misi> {
     const misi = this.misiRepository.create(createMisiDto);
-    return this.misiRepository.save(misi);
+    return await this.misiRepository.save(misi);
   }
 
   async findAll(): Promise<Misi[]> {
-    return this.misiRepository.find();
+    return await this.misiRepository.find();
+  }
+
+  async noPertemuan() {
+    const misi_old = await this.misiRepository.find({
+      order: { misi_ke: 'DESC' },
+      take: 1,
+    });
+    if (!misi_old || misi_old.length === 0) {
+      return 0;
+    }
+    const misi_new = misi_old[0].misi_ke + 1;
+    return misi_new;
   }
 
   async findOne(id: number): Promise<Misi | null> {
-    return this.misiRepository.findOneBy({ id });
+    return await this.misiRepository.findOneBy({ id });
   }
 
   async update(id: number, updateMisiDto: UpdateMisiDto): Promise<Misi | null> {
     await this.misiRepository.update(id, updateMisiDto);
-    return this.findOne(id);
+    return await this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
-    await this.misiRepository.delete(id);
+    const misi = await this.findOne(id);
+    if (!misi) {
+      throw new Error('Misi not found');
+    }
+    await this.misiRepository.remove(misi);
+    const allMisi = await this.misiRepository.find();
+    for (const item of allMisi) {
+      if (item.misi_ke > misi.misi_ke) {
+        item.misi_ke -= 1;
+        await this.misiRepository.save(item);
+      }
+    }
   }
 }

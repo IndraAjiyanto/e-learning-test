@@ -100,7 +100,7 @@ export class DashboardService {
   }
 
   async findMisi() {
-    return await this.misiRepository.find();
+    return await this.misiRepository.find({order: {misi_ke: 'ASC'}});
   }
 
   async findExperience() {
@@ -116,7 +116,7 @@ export class DashboardService {
   }
 
   async findTentangParagraf() {
-    return await this.paragrafRepository.find();
+    return await this.paragrafRepository.find({order: {p_ke: 'ASC'}});
   }
 
   async findBackground() {
@@ -191,7 +191,7 @@ export class DashboardService {
 
   async findTeam() {
     return await this.teamRepository.find({
-      order: { id: 'ASC' },
+      order: { team_ke: 'ASC' },
     });
   }
 
@@ -235,23 +235,5 @@ export class DashboardService {
     return await this.gambarBenefitRepository.findOne({ where: { no: 4 } });
   }
 
-  create(createDashboardDto: CreateDashboardDto) {
-    return 'This action adds a new dashboard';
-  }
 
-  findAll() {
-    return `This action returns all dashboard`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} dashboard`;
-  }
-
-  update(id: number, updateDashboardDto: UpdateDashboardDto) {
-    return `This action updates a #${id} dashboard`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} dashboard`;
-  }
 }
