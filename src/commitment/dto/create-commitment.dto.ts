@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
 export class CreateCommitmentDto {
   @IsNotEmpty()
@@ -12,4 +12,7 @@ export class CreateCommitmentDto {
   @IsNotEmpty()
   @IsString()
   icon: string;
+
+  @IsNumber()
+  commitment_ke: number;
 }

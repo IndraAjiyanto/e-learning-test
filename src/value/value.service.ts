@@ -17,6 +17,18 @@ export class ValueService {
     return await this.valueRepository.save(value);
   }
 
+  async noValue() {
+    const value_old = await this.valueRepository.find({
+      order: { value_ke: 'DESC' },
+      take: 1,
+    });
+    if (!value_old || value_old.length === 0) {
+      return 0;
+    }
+    const value_new = value_old[0].value_ke + 1;
+    return value_new;
+  }
+
   async findAll() {
     return await this.valueRepository.find();
   }
@@ -40,9 +52,13 @@ export class ValueService {
 
   async remove(id: number) {
     const value = await this.findOne(id);
-    if (!value) {
-      throw new NotFoundException('Value not found');
-    }
     await this.valueRepository.remove(value);
+    const allValue = await this.valueRepository.find();
+    for (const item of allValue) {
+      if (item.value_ke > value.value_ke) {
+        item.value_ke -= 1;
+        await this.valueRepository.save(item);
+      }
+    }
   }
 }

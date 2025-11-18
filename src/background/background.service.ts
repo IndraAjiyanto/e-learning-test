@@ -13,16 +13,28 @@ export class BackgroundService {
   ) {}
 
   async create(createBackgroundDto: CreateBackgroundDto): Promise<Background> {
-    const background = this.backgroundRepository.create(createBackgroundDto);
-    return this.backgroundRepository.save(background);
+    const background = await this.backgroundRepository.create(createBackgroundDto);
+    return await this.backgroundRepository.save(background);
+  }
+
+  async noBackground() {
+    const background_old = await this.backgroundRepository.find({
+      order: { background_ke: 'DESC' },
+      take: 1,
+    });
+    if (!background_old || background_old.length === 0) {
+      return 0;
+    }
+    const background_new = background_old[0].background_ke + 1;
+    return background_new;
   }
 
   async findAll(): Promise<Background[]> {
-    return this.backgroundRepository.find();
+    return await this.backgroundRepository.find();
   }
 
   async findOne(id: number): Promise<Background | null> {
-    return this.backgroundRepository.findOneBy({ id });
+    return await this.backgroundRepository.findOneBy({ id });
   }
 
   async update(
@@ -34,6 +46,17 @@ export class BackgroundService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.backgroundRepository.delete(id);
+    const background = await this.findOne(id);
+    if (!background) {
+      throw new Error('Background not found');
+    }
+    await this.backgroundRepository.remove(background);
+    const allBackground = await this.backgroundRepository.find();
+    for (const item of allBackground) {
+      if (item.background_ke > background.background_ke) {
+        item.background_ke -= 1;
+        await this.backgroundRepository.save(item);
+      }
+    }
   }
 }

@@ -20,6 +20,9 @@ export class Value {
   @Column()
   icon: string;
 
+  @Column()
+  value_ke: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

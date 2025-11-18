@@ -17,6 +17,9 @@ export class Award {
   @Column()
   isi: string;
 
+  @Column()
+  award_ke: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

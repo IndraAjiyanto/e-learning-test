@@ -33,6 +33,7 @@ export class ValueController {
     @Req() req: Request,
   ) {
     try {
+      createValueDto.value_ke = await this.valueService.noValue();
       await this.valueService.create(createValueDto);
       req.flash('success', 'Value created successfully');
       res.redirect('/value');

@@ -13,16 +13,28 @@ export class ExperienceService {
   ) {}
 
   async create(createExperienceDto: CreateExperienceDto): Promise<Experience> {
-    const experience = this.experienceRepository.create(createExperienceDto);
-    return this.experienceRepository.save(experience);
+    const experience = await this.experienceRepository.create(createExperienceDto);
+    return await this.experienceRepository.save(experience);
+  }
+
+  async noExperience() {
+    const experience_old = await this.experienceRepository.find({
+      order: { experience_ke: 'DESC' },
+      take: 1,
+    });
+    if (!experience_old || experience_old.length === 0) {
+      return 0;
+    }
+    const experience_new = experience_old[0].experience_ke + 1;
+    return experience_new;
   }
 
   async findAll(): Promise<Experience[]> {
-    return this.experienceRepository.find();
+    return await this.experienceRepository.find();
   }
 
   async findOne(id: number): Promise<Experience | null> {
-    return this.experienceRepository.findOneBy({ id });
+    return await this.experienceRepository.findOneBy({ id });
   }
 
   async update(
@@ -34,6 +46,17 @@ export class ExperienceService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.experienceRepository.delete(id);
+    const experience = await this.findOne(id);
+    if (!experience) {
+      throw new Error('Experience not found');
+    }
+    await this.experienceRepository.remove(experience);
+    const allExperience = await this.experienceRepository.find();
+    for (const item of allExperience) {
+      if (item.experience_ke > experience.experience_ke) {
+        item.experience_ke -= 1;
+        await this.experienceRepository.save(item);
+      }
+    }
   }
 }

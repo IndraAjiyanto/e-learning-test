@@ -17,6 +17,18 @@ export class CommitmentService {
     return await this.commitmentRepository.save(commitment);
   }
 
+  async noCommitment() {
+    const commitment_old = await this.commitmentRepository.find({
+      order: { commitment_ke: 'DESC' },
+      take: 1,
+    });
+    if (!commitment_old || commitment_old.length === 0) {
+      return 0;
+    }
+    const commitment_new = commitment_old[0].commitment_ke + 1;
+    return commitment_new;
+  }
+
   async findAll(): Promise<Commitment[]> {
     return await this.commitmentRepository.find({
       order: { createdAt: 'DESC' },
@@ -45,5 +57,12 @@ export class CommitmentService {
   async remove(id: number): Promise<void> {
     const commitment = await this.findOne(id);
     await this.commitmentRepository.remove(commitment);
+    const allCommitment = await this.commitmentRepository.find();
+    for (const item of allCommitment) {
+      if (item.commitment_ke > commitment.commitment_ke) {
+        item.commitment_ke -= 1;
+        await this.commitmentRepository.save(item);
+      }
+    }
   }
 }

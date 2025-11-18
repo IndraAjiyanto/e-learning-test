@@ -17,6 +17,9 @@ export class Background {
   @Column()
   isi: string;
 
+  @Column()
+  background_ke: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

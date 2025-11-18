@@ -17,22 +17,31 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response, Request } from 'express';
 
+
+@UseGuards(AuthenticatedGuard)
 @Controller('experience')
 export class ExperienceController {
   constructor(private readonly experienceService: ExperienceService) {}
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Post()
   async create(
     @Body() createExperienceDto: CreateExperienceDto,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
-    await this.experienceService.create(createExperienceDto);
-    res.redirect('/experience');
+    try {
+      createExperienceDto.experience_ke =
+        await this.experienceService.noExperience();
+      await this.experienceService.create(createExperienceDto);
+      req.flash('success', 'experience successfully created');
+      res.redirect('/experience');
+    } catch (error) {
+      req.flash('error', 'experience failed to create');
+      res.redirect('/experience');
+    }
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Get()
   async index(@Res() res: Response, @Req() req: Request) {
@@ -40,39 +49,52 @@ export class ExperienceController {
     res.render('super_admin/experience/index', { user: req.user, experiences });
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
-  @Get(':id/edit')
-  async edit(
-    @Param('id') id: string,
+  @Get('formEdit/:id')
+  async formEdit(
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const experience = await this.experienceService.findOne(+id);
+    const experience = await this.experienceService.findOne(id);
     res.render('super_admin/experience/edit', { user: req.user, experience });
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateExperienceDto: UpdateExperienceDto,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
-    await this.experienceService.update(+id, updateExperienceDto);
-    res.redirect('/experience');
+    try {
+      await this.experienceService.update(id, updateExperienceDto);
+      req.flash('success', 'experience successfully updated');
+      res.redirect('/experience');
+    } catch (error) {
+      req.flash('error', 'experience failed to update');
+      res.redirect('/experience');
+    }
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Delete(':id')
-  async remove(@Param('id') id: string, @Res() res: Response) {
-    await this.experienceService.remove(+id);
-    res.redirect('/experience');
+  async remove(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.experienceService.remove(id);
+      req.flash('success', 'experience successfully deleted');
+      res.redirect('/experience');
+    } catch (error) {
+      req.flash('error', 'experience failed to delete');
+      res.redirect('/experience');
+    }
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Get('formCreate')
   formCreate(@Res() res: Response, @Req() req: Request) {

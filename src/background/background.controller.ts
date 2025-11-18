@@ -17,59 +17,81 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response, Request } from 'express';
 
+  @UseGuards(AuthenticatedGuard)
 @Controller('background')
 export class BackgroundController {
   constructor(private readonly backgroundService: BackgroundService) {}
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Post()
   async create(
     @Body() createBackgroundDto: CreateBackgroundDto,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
-    await this.backgroundService.create(createBackgroundDto);
-    res.redirect('/background');
+    try {
+      createBackgroundDto.background_ke =
+        await this.backgroundService.noBackground();
+      await this.backgroundService.create(createBackgroundDto);
+      req.flash('success', 'background successfully created');
+      res.redirect('/background');
+    } catch (error) {
+      req.flash('error', 'background failed to create');
+      res.redirect('/background');
+    }
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Get()
   async index(@Res() res: Response, @Req() req: Request) {
-    const backgrounds = await this.backgroundService.findAll();
-    res.render('super_admin/background/index', { user: req.user, backgrounds });
+    const background = await this.backgroundService.findAll();
+    res.render('super_admin/background/index', { user: req.user, background });
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
-  @Get(':id/edit')
-  async edit(
-    @Param('id') id: string,
+  @Get('formEdit/:id')
+  async formEdit(
+    @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const background = await this.backgroundService.findOne(+id);
+    const background = await this.backgroundService.findOne(id);
     res.render('super_admin/background/edit', { user: req.user, background });
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateBackgroundDto: UpdateBackgroundDto,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
-    await this.backgroundService.update(+id, updateBackgroundDto);
-    res.redirect('/background');
+    try {
+      await this.backgroundService.update(id, updateBackgroundDto);
+      req.flash('success', 'background successfully updated');
+      res.redirect('/background');
+    } catch (error) {
+      req.flash('error', 'background failed to update');
+      res.redirect('/background');
+    }
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Delete(':id')
-  async remove(@Param('id') id: string, @Res() res: Response) {
-    await this.backgroundService.remove(+id);
-    res.redirect('/background');
+  async remove(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.backgroundService.remove(id);
+      req.flash('success', 'background successfully deleted');
+      res.redirect('/background');
+    } catch (error) {
+      req.flash('error', 'background failed to delete');
+      res.redirect('/background');
+    }
   }
 
   @UseGuards(AuthenticatedGuard)

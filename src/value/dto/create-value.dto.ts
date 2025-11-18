@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsNumber } from 'class-validator';
 
 export class CreateValueDto {
   @IsString()
@@ -9,4 +9,7 @@ export class CreateValueDto {
 
   @IsString()
   icon: string;
+
+  @IsNumber()
+  value_ke: number;
 }
