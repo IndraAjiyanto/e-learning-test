@@ -95,7 +95,7 @@ export class AwardController {
 
   @Roles('super_admin')
   @Get('formCreate')
-  formCreate(@Res() res: Response, @Req() req: Request) {
+  async formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/award/create', { user: req.user });
   }
 }

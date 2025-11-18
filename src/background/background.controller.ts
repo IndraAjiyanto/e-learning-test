@@ -94,10 +94,9 @@ export class BackgroundController {
     }
   }
 
-  @UseGuards(AuthenticatedGuard)
   @Roles('super_admin')
   @Get('formCreate')
-  formCreate(@Res() res: Response, @Req() req: Request) {
+  async formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/background/create', { user: req.user });
   }
 }
