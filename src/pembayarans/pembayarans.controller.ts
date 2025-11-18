@@ -18,10 +18,6 @@ import { UpdatePembayaranDto } from './dto/update-pembayaran.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  multerConfigPayment,
-  multerConfigMemory,
-} from 'src/common/config/multer.config';
 import { Request, Response } from 'express';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -47,7 +43,6 @@ export class PembayaransController {
     @Param('userId') userId: number,
     @Param('kelasId') kelasId: number,
     @Body() createPembayaranDto: CreatePembayaranDto,
-    @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -64,18 +59,18 @@ export class PembayaransController {
         );
         req.flash(
           'info',
-          'anda sudah mengirimkan bukti pembayaran, silahkan tunggu info selanjutnya dari admin',
+          'You have already submitted the payment proof, please wait for further information from the admin.',
         );
         res.redirect(`/pembayarans/riwayat/${userId}`);
       } else {
         req.flash(
           'success',
-          'bukti pembayaran berhasil di kirim, silahkan tunggu admin',
+          'Payment proof has been successfully submitted, please wait for the admin',
         );
         res.redirect(`/pembayarans/riwayat/${userId}`);
       }
     } catch (error) {
-      req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
+      req.flash('error', error.message || 'Payment proof submission failed');
       res.redirect(`/pembayarans/riwayat/${userId}`);
     }
   }
@@ -114,18 +109,18 @@ export class PembayaransController {
         );
         req.flash(
           'info',
-          'anda sudah mengirimkan bukti pembayaran, silahkan tunggu info selanjutnya dari admin',
+          'You have already submitted the payment proof, please wait for further information from the admin.',
         );
         res.redirect(`/pembayarans/riwayat/${userId}`);
       } else {
         req.flash(
           'success',
-          'bukti pembayaran berhasil di kirim, silahkan tunggu admin',
+          'Payment proof has been successfully submitted, please wait for the admin',
         );
         res.redirect(`/pembayarans/riwayat/${userId}`);
       }
     } catch (error) {
-      req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
+      req.flash('error', error.message || 'Payment proof submission failed');
       res.redirect(`/pembayarans/riwayat/${userId}`);
     }
   }
@@ -169,6 +164,7 @@ export class PembayaransController {
       user: req.user,
       pembayaran,
       pendaftaran,
+      cicilan
     });
   }
 
@@ -219,7 +215,7 @@ export class PembayaransController {
         res.redirect('/pembayarans');
       }
     } catch (error) {
-      req.flash('error', error.message || 'proses pembayaran gagal diubah');
+      req.flash('error', error.message || 'Payment proof submission failed');
       res.redirect('/pembayarans');
     }
   }
