@@ -31,11 +31,11 @@ export class TeknologiController {
   ) {
     try {
       await this.teknologiService.create(createTeknologiDto);
-      req.flash('success', 'Teknologi successfully created');
+      req.flash('success', 'Tech successfully created');
       res.redirect('/teknologi');
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'Teknologi failed to create');
+      req.flash('error', error.message || 'Tech failed to create');
       res.redirect('/teknologi');
     }
   }
@@ -74,10 +74,10 @@ export class TeknologiController {
   ) {
     try {
       await this.teknologiService.update(id, updateTeknologiDto);
-      req.flash('success', 'Teknologi successfully updated');
+      req.flash('success', 'Tech successfully updated');
       res.redirect('/teknologi');
     } catch (error) {
-      req.flash('error', error.message || 'Teknologi failed to update');
+      req.flash('error', error.message || 'Tech failed to update');
       res.redirect('/teknologi');
     }
   }
@@ -92,14 +92,14 @@ export class TeknologiController {
     try {
       const teknologi = await this.teknologiService.findOne(id);
       if (!teknologi) {
-        req.flash('error', 'Teknologi not found');
+        req.flash('error', 'Tech not found');
         res.redirect('/teknologi');
       }
       await this.teknologiService.remove(id);
-      req.flash('success', 'Teknologi successfully deleted');
+      req.flash('success', 'Tech   successfully deleted');
       res.redirect('/teknologi');
     } catch (error) {
-      req.flash('error', error.message || 'Failed to delete teknologi');
+      req.flash('error', error.message || 'Failed to delete tech');
       res.redirect('/teknologi');
     }
   }
