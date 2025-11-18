@@ -72,7 +72,6 @@ export class PendaftaranController {
         res.redirect(`/pembayarans/riwayat/${userId}`);
       }
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
       res.redirect(`/pembayarans/riwayat/${userId}`);
     }
