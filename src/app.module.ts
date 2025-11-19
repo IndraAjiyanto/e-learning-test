@@ -53,7 +53,6 @@ import { CommitmentModule } from './commitment/commitment.module';
 import { PendaftaranModule } from './pendaftaran/pendaftaran.module';
 import { WipModule } from './wip/wip.module';
 import { InHouseTrainingModule } from './in_house_training/in_house_training.module';
-import { BulanModule } from './bulan/bulan.module';
 import { ParagrafModule } from './paragraf/paragraf.module';
 import { ContactModule } from './contact/contact.module';
 import { AwardModule } from './award/award.module';
@@ -117,7 +116,6 @@ import { MisiModule } from './misi/misi.module';
     PendaftaranModule,
     WipModule,
     InHouseTrainingModule,
-    BulanModule,
     ParagrafModule,
     ContactModule,
     AwardModule,

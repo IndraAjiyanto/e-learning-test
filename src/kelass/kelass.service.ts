@@ -27,7 +27,6 @@ import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
-import { Bulan } from 'src/entities/bulan.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
 
 @Injectable()
@@ -71,8 +70,6 @@ export class KelassService {
     private readonly teknologiRepository: Repository<Teknologi>,
     @InjectRepository(Mentoring)
     private readonly mentoringRepository: Repository<Mentoring>,
-    @InjectRepository(Bulan)
-    private readonly bulanRepository: Repository<Bulan>,
     @InjectRepository(Pendaftaran)
     private readonly pendaftaranRepository: Repository<Pendaftaran>,
   ) {}
@@ -91,13 +88,6 @@ export class KelassService {
       throw new NotFoundException('jenis_kelas ini tidak ada');
     }
 
-    const bulan = await this.bulanRepository.findOne({
-      where: { id: createKelassDto.bulanId },
-    });
-    if (!bulan) {
-      throw new NotFoundException('bulan ini tidak ada');
-    }
-
     // Get teknologi entities if teknologiIds provided
     let teknologi: Teknologi[] = [];
     if (
@@ -114,7 +104,6 @@ export class KelassService {
       kategori: kategori,
       jenis_kelas: jenis_kelas,
       teknologi: teknologi,
-      bulan: bulan,
     });
     return await this.kelasRepository.save(kelas);
   }
@@ -306,10 +295,6 @@ export class KelassService {
     });
   }
 
-  async findBulan() {
-    return await this.bulanRepository.find();
-  }
-
   async findKelasByMentoring(userId: number) {
     return await this.kelasRepository.find({
       where: { mentoring: { user: { id: userId } } },
@@ -328,7 +313,7 @@ export class KelassService {
     const minggu = await this.findOne(mingguId);
     if (!minggu) {
       throw new NotFoundException(
-        `minggu dengan ID ${mingguId} tidak ditemukan`,
+        `Week not found`,
       );
     }
 
@@ -349,7 +334,7 @@ export class KelassService {
   async findMinggu(kelasId: number, userId: number) {
     const kelas = await this.findOne(kelasId);
     if (!kelas) {
-      throw new NotFoundException(`Kelas dengan ID ${kelasId} tidak ditemukan`);
+      throw new NotFoundException(`Program not found`);
     }
 
     return await this.mingguRepository
@@ -690,7 +675,7 @@ export class KelassService {
   async findMingguClass(kelasId: number) {
     const kelas = await this.findOne(kelasId);
     if (!kelas) {
-      throw new NotFoundException(`User with ID ${kelasId} not found`);
+      throw new NotFoundException(`User not found`);
     }
     return await this.mingguRepository.find({
       where: {
@@ -801,7 +786,6 @@ export class KelassService {
       .leftJoinAndSelect('kelas.teknologi', 'teknologi')
       .leftJoinAndSelect('kelas.mentoring', 'mentoring')
       .leftJoinAndSelect('mentoring.user', 'mentoring_user')
-      .leftJoinAndSelect('kelas.bulan', 'bulan')
       .leftJoinAndSelect('kelas.cicilan', 'cicilan')
       .where('kelas.id = :kelasId', { kelasId })
       .orderBy('alur_kelas.alur_ke', 'ASC')
@@ -840,26 +824,13 @@ export class KelassService {
 
       if (!kategori) {
         throw new NotFoundException(
-          `Kategori dengan ID ${updateKelassDto.kategoriId} tidak ditemukan`,
+          `Category not found`,
         );
       }
 
       kelas.kategori = kategori;
     }
 
-    if (updateKelassDto.bulanId) {
-      const bulan = await this.bulanRepository.findOne({
-        where: { id: updateKelassDto.bulanId },
-      });
-
-      if (!bulan) {
-        throw new NotFoundException(
-          `Bulan dengan ID ${updateKelassDto.bulanId} tidak ditemukan`,
-        );
-      }
-
-      kelas.bulan = bulan;
-    }
 
     if (updateKelassDto.jenis_kelasId) {
       const jenis_kelas = await this.jenisKelasRepository.findOne({
@@ -868,7 +839,7 @@ export class KelassService {
 
       if (!jenis_kelas) {
         throw new NotFoundException(
-          `Jenis kelas dengan ID ${updateKelassDto.jenis_kelasId} tidak ditemukan`,
+          `Program type not found`,
         );
       }
 
@@ -896,7 +867,7 @@ export class KelassService {
   async remove(id: number) {
     const kelas = await this.findOne(id);
     if (!kelas) {
-      throw new NotFoundException();
+      throw new NotFoundException('Program not found');
     }
     return await this.kelasRepository.remove(kelas);
   }
@@ -906,7 +877,7 @@ export class KelassService {
       where: { user: { id: userId }, kelas: { id: kelasId } },
     });
     if (!user_kelas) {
-      throw new NotFoundException('user kelas not found');
+      throw new NotFoundException('User not found');
     }
     return await this.userKelasRepository.remove(user_kelas);
   }

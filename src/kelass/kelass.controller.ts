@@ -17,13 +17,9 @@ import { KelassService } from './kelass.service';
 import { CreateKelassDto } from './dto/create-kelass.dto';
 import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { Request, Response } from 'express';
-import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  multerConfigImage,
-  multerConfigMemory,
-} from 'src/common/config/multer.config';
+import { multerConfigMemory } from 'src/common/config/multer.config';
 import { UsersService } from 'src/users/users.service';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
@@ -63,6 +59,14 @@ export class KelassController {
     try {
       createKelassDto.gambar = req.body.uploadedImageUrls?.[0];
 
+      if(createKelassDto.bulan){
+        createKelassDto.hari = 0
+      }
+
+      if(createKelassDto.hari){
+        createKelassDto.bulan = 0
+      }
+
       if (createKelassDto.paid_check === 'true') {
         createKelassDto.form = '';
         createKelassDto.check_paid = true;
@@ -94,6 +98,7 @@ export class KelassController {
       req.flash('success', 'class successfully created');
       res.redirect('/kelass');
     } catch (error) {
+      console.log(error);
       req.flash('error', error.message || 'class failed created');
       res.redirect('/kelass');
     }
@@ -137,14 +142,12 @@ export class KelassController {
     const kategori = await this.kelassService.findKategori();
     const jenis_kelas = await this.kelassService.findJenisKelas();
     const teknologi = await this.kelassService.findTeknologi();
-    const bulan = await this.kelassService.findBulan();
     const mentoring = await this.kelassService.findMentoring();
     return res.render('admin/kelas/create', {
       user: req.user,
       kategori,
       jenis_kelas,
       teknologi,
-      bulan,
       mentoring,
     });
   }
@@ -179,7 +182,6 @@ export class KelassController {
     const kategori = await this.kelassService.findKategori();
     const jenis_kelas = await this.kelassService.findJenisKelas();
     const teknologi = await this.kelassService.findTeknologi();
-    const bulan = await this.kelassService.findBulan();
     const mentoring = await this.kelassService.findMentoring();
 
     return res.render('admin/kelas/edit', {
@@ -188,7 +190,6 @@ export class KelassController {
       kategori,
       jenis_kelas,
       teknologi,
-      bulan,
       mentoring,
     });
   }
@@ -311,6 +312,12 @@ export class KelassController {
   ) {
     try {
       const kelas = await this.kelassService.findOne(kelasId);
+      if(updateKelassDto.hari){
+        updateKelassDto.bulan = 0
+      }
+      if(updateKelassDto.bulan){
+        updateKelassDto.hari = 0
+      }
       if (gambar) {
         // delete previous image in cloud (if exists)
         await this.usersService.getPublicIdFromUrl(kelas.gambar);
@@ -348,6 +355,7 @@ export class KelassController {
 
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
+      console.log(error)
       req.flash('error', error.message || 'failed update kelas');
       res.redirect('/kelass');
     }

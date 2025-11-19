@@ -188,6 +188,99 @@
 
             </div>
 
+            <!-- Schedule Information -->
+            <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+
+              <!-- Month Card -->
+              {{#unless (eq kelas.kategori.nama_kategori 'Short Class')}}
+                <div
+                  class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
+                >
+                  <div class='flex items-start gap-4'>
+                    <div
+                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
+                    >
+                      <i class='fas fa-calendar-alt text-white text-xl'></i>
+                    </div>
+                    <div class='flex-1'>
+                      <p
+                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                      >Month</p>
+                      <h4
+                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                      >{{kelas.bulan.bulan}} Months</h4>
+                    </div>
+                  </div>
+                </div>
+              {{/unless}}
+
+              <!-- Day Card -->
+              {{#if (eq kelas.kategori.nama_kategori 'Short Class')}}
+                <div
+                  class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
+                >
+                  <div class='flex items-start gap-4'>
+                    <div
+                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
+                    >
+                      <i class='fas fa-clock text-white text-xl'></i>
+                    </div>
+                    <div class='flex-1'>
+                      <p
+                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                      >Day</p>
+                      <h4
+                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                      >{{kelas.hari}} Days</h4>
+                    </div>
+                  </div>
+                </div>
+              {{/if}}
+
+              <!-- Start Date Card -->
+              <div
+                class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
+              >
+                <div class='flex items-start gap-4'>
+                  <div
+                    class='w-12 h-12 rounded-xl bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
+                  >
+                    <i class='fas fa-play-circle text-white text-xl'></i>
+                  </div>
+                  <div class='flex-1'>
+                    <p
+                      class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                    >Start Date</p>
+                    <h4
+                      class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                    >{{#if kelas.tanggal_mulai}}{{formatTanggal kelas.tanggal_mulai}}{{else}}Not set{{/if}}</h4>
+                  </div>
+                </div>
+              </div>
+
+              <!-- End Date Card -->
+              <div
+                class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
+              >
+                <div class='flex items-start gap-4'>
+                  <div
+                    class='w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
+                  >
+                    <i class='fas fa-stop-circle text-white text-xl'></i>
+                  </div>
+                  <div class='flex-1'>
+                    <p
+                      class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                    >End Date</p>
+                    <h4
+                      class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                    >{{#if kelas.tanggal_selesai}}{{formatTanggal kelas.tanggal_selesai}}{{else}}Not set{{/if}}</h4>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
             <!-- Material Includes -->
             <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
               <h4

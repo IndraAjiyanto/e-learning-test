@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsBoolean,
+  IsDateString,
   IsEnum,
   IsInt,
   IsOptional,
@@ -32,7 +33,18 @@ export class CreateKelassDto {
   mentoringId: number;
 
   @IsInt()
-  bulanId: number;
+  @IsOptional()
+  bulan: number;
+
+  @IsInt()
+  @IsOptional()
+  hari: number;
+
+    @IsDateString()
+    tanggal_mulai: Date;
+
+    @IsDateString()
+    tanggal_selesai: Date;
 
   @IsInt()
   @IsOptional()
