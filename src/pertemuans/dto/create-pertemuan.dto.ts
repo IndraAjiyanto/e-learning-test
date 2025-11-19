@@ -4,8 +4,6 @@ import {
   IsDateString,
   IsInt,
   IsBooleanString,
-  IsOptional,
-  IsEnum,
 } from 'class-validator';
 
 export class CreatePertemuanDto {

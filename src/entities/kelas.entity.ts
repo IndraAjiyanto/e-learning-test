@@ -25,7 +25,6 @@ import { Cicilan } from './cicilan.entity';
 import { Teknologi } from './teknologi.entity';
 import { AlurKelas } from './alur_kelas.entity';
 import { BenefitKelas } from './benefit_kelas.entity';
-import { Bulan } from './bulan.entity';
 import { Mentoring } from './mentoring.entity';
 
 export type Metode = 'online' | 'offline';
@@ -102,6 +101,18 @@ export class Kelas {
   @Column({ default: false })
   check_paid: boolean;
 
+  @Column({ nullable: true })
+  bulan: number;
+
+  @Column({ nullable: true })
+  hari: number;
+
+  @Column()
+  tanggal_mulai: Date;
+  
+  @Column()
+  tanggal_selesai: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -148,12 +159,6 @@ export class Kelas {
     onDelete: 'CASCADE',
   })
   kategori: Kategori;
-
-  @ManyToOne(() => Bulan, (bulan) => bulan.kelas, {
-    onDelete: 'CASCADE',
-    nullable: true,
-  })
-  bulan: Bulan;
 
   @ManyToOne(() => JenisKelas, (jenis_kelas) => jenis_kelas.kelas, {
     onDelete: 'CASCADE',

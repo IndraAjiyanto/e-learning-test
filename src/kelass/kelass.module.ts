@@ -25,7 +25,6 @@ import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
-import { Bulan } from 'src/entities/bulan.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
 
 @Module({
@@ -51,7 +50,6 @@ import { Pendaftaran } from 'src/entities/pendaftaran.entity';
       Pembayaran,
       ProgresQuiz,
       Mentoring,
-      Bulan,
       Pendaftaran,
     ]),
     PertanyaansModule,

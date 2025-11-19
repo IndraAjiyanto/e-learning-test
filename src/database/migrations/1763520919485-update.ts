@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Update1763450808766 implements MigrationInterface {
-    name = 'Update1763450808766'
+export class Update1763520919485 implements MigrationInterface {
+    name = 'Update1763520919485'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "materi" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "file" character varying NOT NULL, "slides" jsonb, "jenis_file" "public"."materi_jenis_file_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "pertemuanId" integer, CONSTRAINT "PK_8635051686af32e69dca1bc2347" PRIMARY KEY ("id"))`);
@@ -14,16 +14,14 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "pembayaran" ("id" SERIAL NOT NULL, "file" character varying, "no" character varying, "proses" "public"."pembayaran_proses_enum" NOT NULL DEFAULT 'rejected', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "kelasId" integer, "cicilanId" integer, CONSTRAINT "REL_ba748cc92803680791eaab0f31" UNIQUE ("cicilanId"), CONSTRAINT "PK_95db0e6865638afc787f5eff480" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "sertifikat" ("id" SERIAL NOT NULL, "sertif" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, "userId" integer, CONSTRAINT "PK_89325f6ae1935ad1e97a2e0455a" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "jenis_kelas" ("id" SERIAL NOT NULL, "nama_jenis_kelas" character varying NOT NULL, "icon" character varying NOT NULL, "deskripsi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_117021c99481c4dee1de217b90c" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "user_kelas" ("id" SERIAL NOT NULL, "progres" boolean NOT NULL DEFAULT false, "userId" integer, "kelasId" integer, CONSTRAINT "PK_f94a218e7cd6b6755003f913d2c" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "pertanyaan_kelas" ("id" SERIAL NOT NULL, "pertanyaan" character varying NOT NULL, "jawaban" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_26aeeff57906871c4a092b67c29" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "teknologi" ("id" SERIAL NOT NULL, "nama" character varying NOT NULL, "svg" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_27c90f2f1ca8221754eb60cc439" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "mentor" ("id" SERIAL NOT NULL, "nama" character varying NOT NULL, "posisi" character varying NOT NULL, "linkedin" character varying NOT NULL, "github" character varying NOT NULL, "profile" character varying NOT NULL, "deskripsi" character varying NOT NULL, "ttd" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_9fcebd0a40237e9b6defcbd9d74" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "alumni" ("id" SERIAL NOT NULL, "profile" character varying NOT NULL, "nama" character varying NOT NULL, "pesan" character varying NOT NULL, "alumni" character varying NOT NULL, "posisi_sekarang" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_6947d90e8215d18adec98799895" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "alur_kelas" ("id" SERIAL NOT NULL, "alur_ke" integer NOT NULL, "judul" character varying NOT NULL, "isi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_286d4f6a5ad27c6fc1f15aa4abe" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "benefit_kelas" ("id" SERIAL NOT NULL, "benefit" character varying NOT NULL, "isi" character varying NOT NULL, "icon" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kelasId" integer, CONSTRAINT "PK_a58a617620bc9d4c20e38e47abc" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "bulan" ("id" SERIAL NOT NULL, "bulan" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_a40e5c5cb129468399c546ca989" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "mentoring" ("id" SERIAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "kelasId" integer, CONSTRAINT "PK_7c4e8636242b5454992c004899b" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "kelas" ("id" SERIAL NOT NULL, "nama_kelas" character varying NOT NULL, "deskripsi" character varying NOT NULL, "grup" character varying NOT NULL, "gambar" character varying NOT NULL, "harga" integer, "promo" integer, "link_lokasi" character varying, "lokasi" character varying NOT NULL, "metode" "public"."kelas_metode_enum" NOT NULL, "kriteria" jsonb NOT NULL, "launch" boolean NOT NULL DEFAULT false, "proses" "public"."kelas_proses_enum" NOT NULL DEFAULT 'rejected', "materi" jsonb NOT NULL, "target_pembelajaran" jsonb NOT NULL, "kuota" integer, "form" character varying, "check_paid" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kategoriId" integer, "bulanId" integer, "jenis_kelasId" integer, CONSTRAINT "PK_55bb4fb74bbbd202d55118b0417" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "kelas" ("id" SERIAL NOT NULL, "nama_kelas" character varying NOT NULL, "deskripsi" character varying NOT NULL, "grup" character varying NOT NULL, "gambar" character varying NOT NULL, "harga" integer, "promo" integer, "link_lokasi" character varying, "lokasi" character varying NOT NULL, "metode" "public"."kelas_metode_enum" NOT NULL, "kriteria" jsonb NOT NULL, "launch" boolean NOT NULL DEFAULT false, "proses" "public"."kelas_proses_enum" NOT NULL DEFAULT 'rejected', "materi" jsonb NOT NULL, "target_pembelajaran" jsonb NOT NULL, "kuota" integer, "form" character varying, "check_paid" boolean NOT NULL DEFAULT false, "bulan" integer, "hari" integer, "tanggal_mulai" TIMESTAMP NOT NULL, "tanggal_selesai" TIMESTAMP NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kategoriId" integer, "jenis_kelasId" integer, CONSTRAINT "PK_55bb4fb74bbbd202d55118b0417" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "jawaban_user" ("id" SERIAL NOT NULL, "pertanyaanId" integer, "jawabanId" integer, "userId" integer, CONSTRAINT "PK_d735cb2682804d9f3d80d6b1f52" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "jawaban" ("id" SERIAL NOT NULL, "jawaban" character varying NOT NULL, "jawaban_benar" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "pertanyaanId" integer, CONSTRAINT "PK_c53d70a5bd3fa2c973b66f624e9" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "pertanyaan" ("id" SERIAL NOT NULL, "pertanyaan_soal" character varying NOT NULL, "gambar" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "quizId" integer, CONSTRAINT "PK_e06d4388c49799a7acd5c485e55" PRIMARY KEY ("id"))`);
@@ -40,28 +38,29 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "biodata" ("id" SERIAL NOT NULL, "nama_lengkap" character varying NOT NULL, "no" character varying NOT NULL, "jenis_kelamin" character varying NOT NULL, "kota" character varying NOT NULL, "pendidikan" character varying NOT NULL, "program_studi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer NOT NULL, CONSTRAINT "REL_477a671c8b8c738777b03a2c60" UNIQUE ("userId"), CONSTRAINT "PK_5e0c867deda29cac97995e52bcc" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "biodata_mentor" ("id" SERIAL NOT NULL, "role" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, CONSTRAINT "REL_c0c27aa65c8c2919f26b8dca81" UNIQUE ("userId"), CONSTRAINT "PK_96f4303e31f8afb777e8df4c4f1" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user" ("id" SERIAL NOT NULL, "username" character varying NOT NULL, "email" character varying NOT NULL, "password" character varying NOT NULL, "profile" character varying, "role" "public"."user_role_enum" NOT NULL DEFAULT 'user', "resetPasswordToken" character varying, "resetPasswordExpires" TIMESTAMP, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "visi" ("id" SERIAL NOT NULL, "visi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_081db4bcf67224b44279c2905a2" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "tentang" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "text" character varying NOT NULL, "gambar" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_1c52d49c55f3195679f8733a79a" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "user_kelas" ("id" SERIAL NOT NULL, "progres" boolean NOT NULL DEFAULT false, "userId" integer, "kelasId" integer, CONSTRAINT "PK_f94a218e7cd6b6755003f913d2c" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "value" ("id" SERIAL NOT NULL, "title" character varying NOT NULL, "description" character varying NOT NULL, "icon" character varying NOT NULL, "value_ke" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_0af87b1623a34dd5357bfdb38a4" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "visi" ("id" SERIAL NOT NULL, "visi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_081db4bcf67224b44279c2905a2" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "team_leads" ("id" SERIAL NOT NULL, "profile" character varying NOT NULL, "nama" character varying NOT NULL, "posisi" character varying NOT NULL, "deskripsi" character varying NOT NULL, "instagram" character varying NOT NULL, "linkedin" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_fd18dad91eb7dcd6707fdb4fe9f" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "social" ("id" SERIAL NOT NULL, "linkedin" character varying NOT NULL, "instragram" character varying NOT NULL, "youtube" character varying NOT NULL, "email" character varying NOT NULL, "alamat" character varying NOT NULL, "nomor" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_645aa1cff2b9f7b0e3e73d66b4d" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "team" ("id" SERIAL NOT NULL, "profile" character varying NOT NULL, "nama" character varying NOT NULL, "team_ke" integer NOT NULL, "posisi" character varying NOT NULL, "linkedin" character varying NOT NULL, "instagram" character varying NOT NULL, "deskripsi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_f57d8293406df4af348402e4b74" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "social" ("id" SERIAL NOT NULL, "linkedin" character varying NOT NULL, "instragram" character varying NOT NULL, "youtube" character varying NOT NULL, "email" character varying NOT NULL, "alamat" character varying NOT NULL, "nomor" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_645aa1cff2b9f7b0e3e73d66b4d" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "tentang" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "text" character varying NOT NULL, "gambar" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_1c52d49c55f3195679f8733a79a" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "story" ("id" SERIAL NOT NULL, "paragraph" character varying NOT NULL, "link" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_28fce6873d61e2cace70a0f3361" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "pertanyaan_umum" ("id" SERIAL NOT NULL, "pertanyaan" character varying NOT NULL, "jawaban" character varying NOT NULL, "for" "public"."pertanyaan_umum_for_enum" NOT NULL DEFAULT 'general', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_5a8d3b8bb81ea68e6dc76c5b30d" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "pendaftaran" ("id" SERIAL NOT NULL, "file" character varying, "proses" "public"."pendaftaran_proses_enum" NOT NULL DEFAULT 'rejected', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" integer, "kelasId" integer, CONSTRAINT "PK_91d9ce9610fdc917540ada54d65" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "paragraf" ("id" SERIAL NOT NULL, "paragraf" character varying NOT NULL, "p_ke" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_0e7724a4270e2cf870f8a4b2638" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "misi" ("id" SERIAL NOT NULL, "misi_ke" integer NOT NULL, "content" character varying NOT NULL, "isi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_90039f7fe282fe249069d1c1c6a" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "kerja_sama" ("id" SERIAL NOT NULL, "gambar" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_b91d40b096deeb72507fbd8debf" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "blog" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "isi" character varying NOT NULL, "gambar" jsonb NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "kategoriBlogId" integer, CONSTRAINT "PK_85c6532ad065a448e9de7638571" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "kategori_blog" ("id" SERIAL NOT NULL, "nama" character varying NOT NULL, "icon" character varying NOT NULL, "deskripsi" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_19b027e0e966bae1142d53588d5" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "kerja_sama" ("id" SERIAL NOT NULL, "gambar" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_b91d40b096deeb72507fbd8debf" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "info" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "text" character varying NOT NULL, "icon" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_687dc5e25f4f1ee093a45b68bb7" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "gambar_benefit" ("id" SERIAL NOT NULL, "gambar" character varying NOT NULL, "no" "public"."gambar_benefit_no_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_3531a1f5c126974440b4141989e" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "header" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "text" character varying NOT NULL, "gambar" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_007a885cf40484eb750d0355339" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "gambar_benefit" ("id" SERIAL NOT NULL, "gambar" character varying NOT NULL, "no" "public"."gambar_benefit_no_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_3531a1f5c126974440b4141989e" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "commitment" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "deskripsi" character varying NOT NULL, "icon" character varying NOT NULL, "commitment_ke" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_7a0899978d100f72269b3045d7e" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "experience" ("id" SERIAL NOT NULL, "content" character varying NOT NULL, "isi" character varying NOT NULL, "experience_ke" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_5e8d5a534100e1b17ee2efa429a" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "benefit" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "text" character varying NOT NULL, "icon" character varying NOT NULL, "no" "public"."benefit_no_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_c024dccb30e6f4702adffe884d1" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "background" ("id" SERIAL NOT NULL, "content" character varying NOT NULL, "isi" character varying NOT NULL, "background_ke" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_7271b4d2e4bd0f68b3fdb5c090a" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "award" ("id" SERIAL NOT NULL, "content" character varying NOT NULL, "isi" character varying NOT NULL, "award_ke" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_e887e4e69663925ebb60d3a7775" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "background" ("id" SERIAL NOT NULL, "content" character varying NOT NULL, "isi" character varying NOT NULL, "background_ke" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_7271b4d2e4bd0f68b3fdb5c090a" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "mentor_teknologi" ("mentorId" integer NOT NULL, "teknologiId" integer NOT NULL, CONSTRAINT "PK_7715f72ee717c943260a6b6b29f" PRIMARY KEY ("mentorId", "teknologiId"))`);
         await queryRunner.query(`CREATE INDEX "IDX_479f4942a07f02e2ccdea14e9b" ON "mentor_teknologi" ("mentorId") `);
         await queryRunner.query(`CREATE INDEX "IDX_86903a2ddb934091b9f4b21fa4" ON "mentor_teknologi" ("teknologiId") `);
@@ -81,8 +80,6 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "pembayaran" ADD CONSTRAINT "FK_ba748cc92803680791eaab0f31d" FOREIGN KEY ("cicilanId") REFERENCES "cicilan"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "sertifikat" ADD CONSTRAINT "FK_4a6ffdc5c6616ca525f60898f5f" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "sertifikat" ADD CONSTRAINT "FK_87bc2a5d85fed3f1a2e07d86942" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "user_kelas" ADD CONSTRAINT "FK_d23d4f7772d181abfb4ff25ac76" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "user_kelas" ADD CONSTRAINT "FK_31705317a82c5c6057d36f6bca8" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "pertanyaan_kelas" ADD CONSTRAINT "FK_2141a01e67ebab8aed7eb4b5f02" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "mentor" ADD CONSTRAINT "FK_20cbfca83ecf51eadd3f4ff0032" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "alumni" ADD CONSTRAINT "FK_3dcca2bc9a925f0206e18a7baa9" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
@@ -91,7 +88,6 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "mentoring" ADD CONSTRAINT "FK_e3937b0a9f65cf4cf87ce1c7119" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "mentoring" ADD CONSTRAINT "FK_08301855b186e5e01c43d4f07af" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "kelas" ADD CONSTRAINT "FK_3126d08fc69f21ced5b9a4e8223" FOREIGN KEY ("kategoriId") REFERENCES "kategori"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "kelas" ADD CONSTRAINT "FK_9e56d453945eace6caf537d72cc" FOREIGN KEY ("bulanId") REFERENCES "bulan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "kelas" ADD CONSTRAINT "FK_cdce265cc9c2575fd5124dfdbfa" FOREIGN KEY ("jenis_kelasId") REFERENCES "jenis_kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "jawaban_user" ADD CONSTRAINT "FK_932636e0ba18fc9dedac59aed20" FOREIGN KEY ("pertanyaanId") REFERENCES "pertanyaan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "jawaban_user" ADD CONSTRAINT "FK_b50fdf127cd4e230c5acb71a905" FOREIGN KEY ("jawabanId") REFERENCES "jawaban"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
@@ -117,6 +113,8 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "absen" ADD CONSTRAINT "FK_557708c43c7ff517d34cd577482" FOREIGN KEY ("pertemuanId") REFERENCES "pertemuan"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "biodata" ADD CONSTRAINT "FK_477a671c8b8c738777b03a2c607" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "biodata_mentor" ADD CONSTRAINT "FK_c0c27aa65c8c2919f26b8dca818" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "user_kelas" ADD CONSTRAINT "FK_d23d4f7772d181abfb4ff25ac76" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "user_kelas" ADD CONSTRAINT "FK_31705317a82c5c6057d36f6bca8" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "pendaftaran" ADD CONSTRAINT "FK_41b2fb089361275d6e5b29118c3" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "pendaftaran" ADD CONSTRAINT "FK_422065c0547c29d258d2aafe069" FOREIGN KEY ("kelasId") REFERENCES "kelas"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "blog" ADD CONSTRAINT "FK_c15649552f3e4b16e3f90ec8c98" FOREIGN KEY ("kategoriBlogId") REFERENCES "kategori_blog"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
@@ -134,6 +132,8 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "blog" DROP CONSTRAINT "FK_c15649552f3e4b16e3f90ec8c98"`);
         await queryRunner.query(`ALTER TABLE "pendaftaran" DROP CONSTRAINT "FK_422065c0547c29d258d2aafe069"`);
         await queryRunner.query(`ALTER TABLE "pendaftaran" DROP CONSTRAINT "FK_41b2fb089361275d6e5b29118c3"`);
+        await queryRunner.query(`ALTER TABLE "user_kelas" DROP CONSTRAINT "FK_31705317a82c5c6057d36f6bca8"`);
+        await queryRunner.query(`ALTER TABLE "user_kelas" DROP CONSTRAINT "FK_d23d4f7772d181abfb4ff25ac76"`);
         await queryRunner.query(`ALTER TABLE "biodata_mentor" DROP CONSTRAINT "FK_c0c27aa65c8c2919f26b8dca818"`);
         await queryRunner.query(`ALTER TABLE "biodata" DROP CONSTRAINT "FK_477a671c8b8c738777b03a2c607"`);
         await queryRunner.query(`ALTER TABLE "absen" DROP CONSTRAINT "FK_557708c43c7ff517d34cd577482"`);
@@ -159,7 +159,6 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "jawaban_user" DROP CONSTRAINT "FK_b50fdf127cd4e230c5acb71a905"`);
         await queryRunner.query(`ALTER TABLE "jawaban_user" DROP CONSTRAINT "FK_932636e0ba18fc9dedac59aed20"`);
         await queryRunner.query(`ALTER TABLE "kelas" DROP CONSTRAINT "FK_cdce265cc9c2575fd5124dfdbfa"`);
-        await queryRunner.query(`ALTER TABLE "kelas" DROP CONSTRAINT "FK_9e56d453945eace6caf537d72cc"`);
         await queryRunner.query(`ALTER TABLE "kelas" DROP CONSTRAINT "FK_3126d08fc69f21ced5b9a4e8223"`);
         await queryRunner.query(`ALTER TABLE "mentoring" DROP CONSTRAINT "FK_08301855b186e5e01c43d4f07af"`);
         await queryRunner.query(`ALTER TABLE "mentoring" DROP CONSTRAINT "FK_e3937b0a9f65cf4cf87ce1c7119"`);
@@ -168,8 +167,6 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "alumni" DROP CONSTRAINT "FK_3dcca2bc9a925f0206e18a7baa9"`);
         await queryRunner.query(`ALTER TABLE "mentor" DROP CONSTRAINT "FK_20cbfca83ecf51eadd3f4ff0032"`);
         await queryRunner.query(`ALTER TABLE "pertanyaan_kelas" DROP CONSTRAINT "FK_2141a01e67ebab8aed7eb4b5f02"`);
-        await queryRunner.query(`ALTER TABLE "user_kelas" DROP CONSTRAINT "FK_31705317a82c5c6057d36f6bca8"`);
-        await queryRunner.query(`ALTER TABLE "user_kelas" DROP CONSTRAINT "FK_d23d4f7772d181abfb4ff25ac76"`);
         await queryRunner.query(`ALTER TABLE "sertifikat" DROP CONSTRAINT "FK_87bc2a5d85fed3f1a2e07d86942"`);
         await queryRunner.query(`ALTER TABLE "sertifikat" DROP CONSTRAINT "FK_4a6ffdc5c6616ca525f60898f5f"`);
         await queryRunner.query(`ALTER TABLE "pembayaran" DROP CONSTRAINT "FK_ba748cc92803680791eaab0f31d"`);
@@ -189,28 +186,29 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`DROP INDEX "public"."IDX_86903a2ddb934091b9f4b21fa4"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_479f4942a07f02e2ccdea14e9b"`);
         await queryRunner.query(`DROP TABLE "mentor_teknologi"`);
-        await queryRunner.query(`DROP TABLE "award"`);
         await queryRunner.query(`DROP TABLE "background"`);
+        await queryRunner.query(`DROP TABLE "award"`);
         await queryRunner.query(`DROP TABLE "benefit"`);
         await queryRunner.query(`DROP TABLE "experience"`);
         await queryRunner.query(`DROP TABLE "commitment"`);
-        await queryRunner.query(`DROP TABLE "header"`);
         await queryRunner.query(`DROP TABLE "gambar_benefit"`);
+        await queryRunner.query(`DROP TABLE "header"`);
         await queryRunner.query(`DROP TABLE "info"`);
+        await queryRunner.query(`DROP TABLE "kerja_sama"`);
         await queryRunner.query(`DROP TABLE "kategori_blog"`);
         await queryRunner.query(`DROP TABLE "blog"`);
-        await queryRunner.query(`DROP TABLE "kerja_sama"`);
         await queryRunner.query(`DROP TABLE "misi"`);
         await queryRunner.query(`DROP TABLE "paragraf"`);
         await queryRunner.query(`DROP TABLE "pendaftaran"`);
         await queryRunner.query(`DROP TABLE "pertanyaan_umum"`);
         await queryRunner.query(`DROP TABLE "story"`);
-        await queryRunner.query(`DROP TABLE "team"`);
-        await queryRunner.query(`DROP TABLE "social"`);
-        await queryRunner.query(`DROP TABLE "team_leads"`);
-        await queryRunner.query(`DROP TABLE "value"`);
         await queryRunner.query(`DROP TABLE "tentang"`);
+        await queryRunner.query(`DROP TABLE "social"`);
+        await queryRunner.query(`DROP TABLE "team"`);
+        await queryRunner.query(`DROP TABLE "team_leads"`);
         await queryRunner.query(`DROP TABLE "visi"`);
+        await queryRunner.query(`DROP TABLE "value"`);
+        await queryRunner.query(`DROP TABLE "user_kelas"`);
         await queryRunner.query(`DROP TABLE "user"`);
         await queryRunner.query(`DROP TABLE "biodata_mentor"`);
         await queryRunner.query(`DROP TABLE "biodata"`);
@@ -229,14 +227,12 @@ export class Update1763450808766 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "jawaban_user"`);
         await queryRunner.query(`DROP TABLE "kelas"`);
         await queryRunner.query(`DROP TABLE "mentoring"`);
-        await queryRunner.query(`DROP TABLE "bulan"`);
         await queryRunner.query(`DROP TABLE "benefit_kelas"`);
         await queryRunner.query(`DROP TABLE "alur_kelas"`);
         await queryRunner.query(`DROP TABLE "alumni"`);
         await queryRunner.query(`DROP TABLE "mentor"`);
         await queryRunner.query(`DROP TABLE "teknologi"`);
         await queryRunner.query(`DROP TABLE "pertanyaan_kelas"`);
-        await queryRunner.query(`DROP TABLE "user_kelas"`);
         await queryRunner.query(`DROP TABLE "jenis_kelas"`);
         await queryRunner.query(`DROP TABLE "sertifikat"`);
         await queryRunner.query(`DROP TABLE "pembayaran"`);

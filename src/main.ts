@@ -50,6 +50,9 @@ async function bootstrap() {
   });
 
   hbs.registerHelper('formatTanggal', function (tanggal: string) {
+    if (!tanggal) {
+      return 'Not set';
+    }
     return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale: id });
   });
 
@@ -68,6 +71,9 @@ async function bootstrap() {
   });
 
   hbs.registerHelper('formatRupiah', function (angka: number) {
+    if (angka == null || angka === undefined) {
+      return 'Not set';
+    }
     return angka.toLocaleString('id-ID', {
       style: 'currency',
       currency: 'IDR',

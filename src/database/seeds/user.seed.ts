@@ -4,10 +4,9 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
 import { AppModule } from 'src/app.module';
 import { Kategori } from 'src/entities/kategori.entity';
-import { Kelas } from 'src/entities/kelas.entity';
+import { Kelas, Metode, Proses } from 'src/entities/kelas.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
-import { Bulan } from 'src/entities/bulan.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
 
 async function bootstrap() {
@@ -19,7 +18,6 @@ async function bootstrap() {
   const kelassRepository = dataSource.getRepository(Kelas);
   const jenisKelasRepository = dataSource.getRepository(JenisKelas);
   const teknologiRepository = dataSource.getRepository(Teknologi);
-  const bulanRepository = dataSource.getRepository(Bulan);
   const mentoringRepository = dataSource.getRepository(Mentoring);
 
   const hashedPassword = await bcrypt.hash('12345678', 10);
@@ -73,18 +71,6 @@ async function bootstrap() {
     },
   ]);
 
-  await bulanRepository.save([
-    {
-      bulan: 1,
-    },
-    {
-      bulan: 2,
-    },
-    {
-      bulan: 3,
-    },
-  ]);
-
   await jenisKelasRepository.save([
     {
       nama_jenis_kelas: 'Web Development',
@@ -115,10 +101,11 @@ async function bootstrap() {
       grup: 'grup whatsapp',
       lokasi: 'kantor wiratek',
       link_lokasi: 'disini',
-      metode: 'offline',
-      proses: 'acc',
+      metode: 'offline' as Metode,
+      proses: 'acc' as Proses,
       kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
       launch: false,
+      check_paid: true,
       teknologi: [nestJs, reactJs],
       materi: ['javascript', 'css'],
       target_pembelajaran: [
@@ -127,7 +114,9 @@ async function bootstrap() {
       ],
       jenis_kelas: { id: 1 },
       kategori: { id: 1 },
-      bulan: { id: 2 },
+      hari: 1,
+      tanggal_mulai: new Date('2025-01-01'),
+      tanggal_selesai: new Date('2025-01-31'),
     },
   ]);
 

@@ -91,10 +91,18 @@
               Basic Information
             </h3>
             <div class="space-y-1 text-xs">
+              <p><span class="font-medium text-gray-600">Program Name:</span> <span class="text-gray-800">{{kelas.nama_kelas}}</span></p>
               <p><span class="font-medium text-gray-600">Category:</span> <span class="text-gray-800">{{kelas.kategori.nama_kategori}}</span></p>
               <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{kelas.jenis_kelas.nama_jenis_kelas}}</span></p>
               <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (roles kelas.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
               <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{kelas.lokasi}}</span></p>
+              {{#if (eq kelas.kategori.nama_kategori "Short Class")}}
+              <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.hari}} day</span></p>
+              {{else}}
+              <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.bulan}} month</span></p>
+              {{/if}}
+              <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if kelas.tanggal_mulai}}{{formatTanggal kelas.tanggal_mulai}}{{else}}Not set{{/if}}</span></p>
+              <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if kelas.tanggal_selesai}}{{formatTanggal kelas.tanggal_selesai}}{{else}}Not set{{/if}}</span></p>
             </div>
           </div>
 

@@ -2,20 +2,16 @@
         <div class="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg" x-data='{ 
             coverValid: true,
             coverHasFile: false,
+            categorySelected: {{json kelas.kategori}} || null,
             updateCoverValidation(isValid, hasFile) {
                 this.coverValid = isValid;
                 this.coverHasFile = hasFile;
             },
-            canSubmit() {
-                if (this.coverHasFile) {
-                    return this.coverValid;
-                }
-                return true;
-            }
+
         }'>
             <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Edit Class</h2>
 
-            <form method="POST" action="/kelass/{{kelas.id}}?_method=PATCH" class="grid grid-cols-1 lg:grid-cols-2 gap-8" enctype="multipart/form-data" @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please fix the cover image validation errors before submitting.'); }">
+            <form method="POST" action="/kelass/{{kelas.id}}?_method=PATCH" class="grid grid-cols-1 lg:grid-cols-2 gap-8" enctype="multipart/form-data">
                 
                 <!-- LEFT COLUMN -->
                 <div class="space-y-6">
@@ -110,6 +106,7 @@
                         }
                     }"
                       @cover-validation.window='updateCoverValidation($event.detail.isValid, $event.detail.hasFile)'
+                      @category-selected.window='categorySelected = $event.detail.category'
                       class='space-y-3'
                     >
                         <label for="gambar" class="block text-sm font-semibold text-gray-700 mb-1">Cover Class <span class="text-xs text-gray-500 font-normal">(1900x1000 - 1920x1080px, max 10MB, JPG/PNG)</span></label>
@@ -172,14 +169,14 @@
                     <!-- Class Name -->
                     <div>
                         <label for="nama_kelas" class="block text-sm font-semibold text-gray-700 mb-1">Class Name</label>
-                        <input type="text" id="nama_kelas" name="nama_kelas" value="{{kelas.nama_kelas}}" required
+                        <input type="text" id="nama_kelas" name="nama_kelas" value="{{kelas.nama_kelas}}" 
                             class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
                     </div>
 
                     <!-- Group -->
                     <div>
                         <label for="grup" class="block text-sm font-semibold text-gray-700 mb-1">Group</label>
-                        <input type="text" id="grup" name="grup" value="{{kelas.grup}}" required
+                        <input type="text" id="grup" name="grup" value="{{kelas.grup}}" 
                             class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
                     </div>
 
@@ -356,6 +353,7 @@
                           this.selectedCategory = category;
                           this.search = category.nama_kategori;
                           this.showDropdown = false;
+                          $dispatch('category-selected', { category });
                         }
                       }"
                       @click.away='showDropdown = false'
@@ -446,58 +444,72 @@
 
                     <!-- Month -->
                     <div
-                      x-data="{
-                        search: '{{kelas.bulan.bulan}}',
-                        selectedMonth: {{json kelas.bulan}},
-                        showDropdown: false,
-                        availableMonths: {{json bulan}},
-                        get filteredMonths() {
-                          if (!this.availableMonths) return [];
-                          return this.availableMonths.filter(b => {
-                            if (!b.bulan) return false;
-                            const bulanStr = String(b.bulan).toLowerCase();
-                            const searchStr = this.search.toLowerCase();
-                            return bulanStr.includes(searchStr);
-                          });
-                        },
-                        selectMonth(monthItem) {
-                          this.selectedMonth = monthItem;
-                          this.search = String(monthItem.bulan);
-                          this.showDropdown = false;
+                      x-show="!categorySelected || categorySelected.nama_kategori !== 'Short Class'"
+                    >
+                      <label for='bulan' class='block text-sm font-semibold text-gray-700 mb-1'>Month</label>
+                      <div x-data="{
+                        display: '',
+                        value: '',
+                        formatBulan(event) {
+                          let angka = event.target.value.replace(/\D/g, '');
+                          this.value = angka;
+                          this.display = angka;
                         }
                       }"
-                      @click.away='showDropdown = false'
-                    >
-                      <label for='bulanId' class='block text-sm font-semibold text-gray-700 mb-1'>Month</label>
-                      
-                      <div class='relative'>
-                        <input
-                          type='text'
-                          x-model='search'
-                          @focus='showDropdown = true'
-                          @input='showDropdown = true'
-                          placeholder='Search and select month...'
-                          class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                        />
-                        <i class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
-                        
-                        <div
-                          x-show='showDropdown && filteredMonths.length > 0'
-                          class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
-                        >
-                          <template x-for='monthItem in filteredMonths' :key='monthItem.id'>
-                            <button
-                              type='button'
-                              @click='selectMonth(monthItem)'
-                              class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
-                            >
-                              <span class='text-sm font-medium text-gray-700' x-text='monthItem.bulan'></span>
-                            </button>
-                          </template>
-                        </div>
-                        
-                        <input type='hidden' name='bulanId' x-model='selectedMonth ? selectedMonth.id : ""' />
+                      x-init="
+                        value = '{{kelas.bulan}}';
+                        display = value;
+                      ">
+                        <input type='text'
+                               id='bulan'
+                               x-model="display"
+                               @input="formatBulan($event)"
+                               placeholder='Enter month (1-12)'
+                               class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'>
+                        <input type="hidden" name="bulan" x-model="value">
                       </div>
+                    </div>
+
+                    <!-- Day -->
+                    <div
+                      x-show="categorySelected && categorySelected.nama_kategori === 'Short Class'"
+                    >
+                      <label for='hari' class='block text-sm font-semibold text-gray-700 mb-1'>Day</label>
+                      <div x-data="{
+                        display: '',
+                        value: '',
+                        formatHari(event) {
+                          let angka = event.target.value.replace(/\D/g, '');
+                          this.value = angka;
+                          this.display = angka;
+                        }
+                      }"
+                      x-init="
+                        value = '{{kelas.hari}}';
+                        display = value;
+                      ">
+                        <input type='text'
+                               id='hari'
+                               x-model="display"
+                               @input="formatHari($event)"
+                               placeholder='Enter day (1-31)'
+                               class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'>
+                        <input type="hidden" name="hari" x-model="value">
+                      </div>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div>
+                      <label for='tanggal_mulai' class='block text-sm font-semibold text-gray-700 mb-1'>Start Date</label>
+                      <input type='date' id='tanggal_mulai' name='tanggal_mulai' value='{{formDate kelas.tanggal_mulai}}'
+                        class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700' />
+                    </div>
+
+                    <!-- End Date -->
+                    <div>
+                      <label for='tanggal_selesai' class='block text-sm font-semibold text-gray-700 mb-1'>End Date</label>
+                      <input type='date' id='tanggal_selesai' name='tanggal_selesai' value='{{formDate kelas.tanggal_selesai}}'
+                        class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700' />
                     </div>
 
 {{#if (roles user.role "super_admin")}}
