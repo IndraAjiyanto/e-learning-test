@@ -98,7 +98,6 @@ export class KelassController {
       req.flash('success', 'class successfully created');
       res.redirect('/kelass');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'class failed created');
       res.redirect('/kelass');
     }
