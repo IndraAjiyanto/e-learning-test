@@ -136,6 +136,7 @@ async function bootstrap() {
 
   hbs.registerPartials(join(__dirname, '..', 'src', 'views', 'partials'));
   hbs.registerPartials(join(__dirname, '..', 'views', 'partials'));
+  
 
   app.set('view options', { layout: 'layouts/main' });
   app.use(methodOverride('_method'));

@@ -22,6 +22,26 @@ class ScrollAnimator {
         in: (el) => this.scaleUpIn(el),
         out: (el) => this.scaleUpOut(el),
       },
+      'fade-down': {
+        in: (el) => this.fadeDownIn(el),
+        out: (el) => this.fadeDownOut(el),
+      },
+      'rotate-in': {
+        in: (el) => this.rotateIn(el),
+        out: (el) => this.rotateOut(el),
+      },
+      'flip-x': {
+        in: (el) => this.flipXIn(el),
+        out: (el) => this.flipXOut(el),
+      },
+      'flip-y': {
+        in: (el) => this.flipYIn(el),
+        out: (el) => this.flipYOut(el),
+      },
+      'zoom-in': {
+        in: (el) => this.zoomIn(el),
+        out: (el) => this.zoomOut(el),
+      },
     };
     this.init();
   }
@@ -108,6 +128,51 @@ class ScrollAnimator {
     element.classList.remove('animated-in');
   }
 
+  fadeDownIn(el) {
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  }
+  fadeDownOut(el) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-50px)';
+  }
+
+  rotateIn(el) {
+    el.style.opacity = '1';
+    el.style.transform = 'rotate(0deg)';
+  }
+  rotateOut(el) {
+    el.style.opacity = '0';
+    el.style.transform = 'rotate(-15deg)';
+  }
+
+  flipXIn(el) {
+    el.style.opacity = '1';
+    el.style.transform = 'rotateX(0deg)';
+  }
+  flipXOut(el) {
+    el.style.opacity = '0';
+    el.style.transform = 'rotateX(90deg)';
+  }
+
+  flipYIn(el) {
+    el.style.opacity = '1';
+    el.style.transform = 'rotateY(0deg)';
+  }
+  flipYOut(el) {
+    el.style.opacity = '0';
+    el.style.transform = 'rotateY(90deg)';
+  }
+
+  zoomIn(el) {
+    el.style.opacity = '1';
+    el.style.transform = 'scale(1)';
+  }
+  zoomOut(el) {
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.5)';
+  }
+
   observeElement(element) {
     const animationType = element.dataset.animate || 'fade-up';
     const delay = element.dataset.delay || 0;
@@ -142,6 +207,26 @@ class ScrollAnimator {
       'scale-up': () => {
         element.style.opacity = '0';
         element.style.transform = 'scale(0.8)';
+      },
+      'fade-down': () => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(-50px)';
+      },
+      'rotate-in': () => {
+        element.style.opacity = '0';
+        element.style.transform = 'rotate(-15deg)';
+      },
+      'flip-x': () => {
+        element.style.opacity = '0';
+        element.style.transform = 'rotateX(90deg)';
+      },
+      'flip-y': () => {
+        element.style.opacity = '0';
+        element.style.transform = 'rotateY(90deg)';
+      },
+      'zoom-in': () => {
+        element.style.opacity = '0';
+        element.style.transform = 'scale(0.5)';
       },
     };
 
