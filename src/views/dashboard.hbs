@@ -1,4 +1,5 @@
 <div
+  data-animate="fade-up" data-delay="100"
   class='hero px-4 py-16 bg-gradient-to-br from-white via-slate-50 to-slate-100 min-h-screen relative overflow-hidden'
 >
 
@@ -253,6 +254,7 @@
 
 <!-- Bootcamp Experience Section -->
 <div
+  data-animate="fade-up" data-delay="100"
   class='bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-t-[8vw] py-20 px-6 lg:px-20'
 >
   <!-- Title -->
@@ -261,9 +263,11 @@
       before="Our"
       highlight="Experience"
       after=""
-      bg="#ffffff"
-      color="#10172a"
+      bg="bg-white"
+      textColor="text-white"
+      color="text-gray-900"
     }}
+
 
     {{!-- <h2
       class='text-4xl md:text-5xl font-bold text-white leading-tight font-montserrat'
@@ -280,11 +284,13 @@
 
   <!-- Grid Card -->
   <div
+    data-stagger-container
     class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center max-w-6xl mx-auto'
   >
 
     <!-- Card 1 -->
     <div
+      data-stagger-item
       class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'
     >
       <div class='flex justify-center mb-6'>
@@ -304,6 +310,7 @@ Join our free class to explore your interests and discover your true potential i
 
     <!-- Card 2 -->
     <div
+      data-stagger-item
       class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'
     >
       <div class='flex justify-center mb-6'>
@@ -323,6 +330,7 @@ Join our free class to explore your interests and discover your true potential i
 
     <!-- Card 3 -->
     <div
+      data-stagger-item
       class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'
     >
       <div class='flex justify-center mb-6'>
@@ -360,6 +368,8 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
 
       {{! Fallback (static) when no data is passed) }}
       <div
+        data-animate="slide-right"
+        data-delay="100"
         class='relative group rounded-2xl p-6 bg-white shadow-xl ring-2 ring-emerald-400/60 hover:ring-emerald-500 transition-all duration-300'
       >
         <div
@@ -394,6 +404,8 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
       </div>
 
       <div
+        data-animate="slide-right"
+        data-delay="100"
         class='flex items-start gap-5 group rounded-2xl p-4 bg-white/70 hover:bg-white transition-colors duration-300 ring-1 ring-slate-200 hover:ring-slate-300'
       >
         <div
@@ -412,6 +424,8 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
       </div>
 
       <div
+        data-animate="slide-right"
+        data-delay="100"
         class='flex items-start gap-5 group rounded-2xl p-4 bg-white/70 hover:bg-white transition-colors duration-300 ring-1 ring-slate-200 hover:ring-slate-300'
       >
         <div
@@ -433,21 +447,29 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
 
     <div class='grid grid-cols-2 gap-6'>
       <img
+        data-animate="scale-up"
+        data-delay="100"
         src='{{#if gambar_benefit_1.gambar}}{{gambar_benefit_1.gambar}}{{else}}https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800{{/if}}'
         class='rounded-2xl shadow-2xl col-span-2 h-64 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Teamwork'
       />
       <img
+        data-animate="scale-up"
+        data-delay="100"
         src='{{#if gambar_benefit_2.gambar}}{{gambar_benefit_2.gambar}}{{else}}https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800{{/if}}'
         class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Laptop Work'
       />
       <img
+        data-animate="scale-up"
+        data-delay="100"
         src='{{#if gambar_benefit_3.gambar}}{{gambar_benefit_3.gambar}}{{else}}https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800{{/if}}'
         class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Meeting'
       />
       <img
+        data-animate="scale-up"
+        data-delay="100"
         src='{{#if gambar_benefit_4.gambar}}{{gambar_benefit_4.gambar}}{{else}}https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800{{/if}}'
         class='rounded-2xl shadow-2xl col-span-2 h-60 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Coding'
@@ -461,18 +483,19 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
   <div class='container mx-auto max-w-7xl'>
     <!-- Header -->
     <div class='text-center mb-16 min-h-42'>
-    {{> highlightText 
-      before="Our Special"
-      highlight="Programs"
-      after=""
-      bg="#10172a"
-      color="#ffffff"
-    }}
+        {{> highlightText 
+          before="Our Special"
+          highlight="Program"
+          after=""
+          textColor="text-gray-900"
+          bg="bg-primary"
+          color="text-white"
+        }}
       {{!-- <h2 class='text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-montserrat'>
         Our Special Programs
       </h2> --}}
-      <p class='text-lg text-gray-600 max-w-2xl mx-auto font-inter'>
-Specialized program options designed to meet different goals — from professional internships to corporate training solutions.
+      <p class='text-lg text-gray-600 max-w-2xl mx-auto font-inter mt-3'>
+      Specialized program options designed to meet different goals — from professional internships to corporate training solutions.
 
       </p>
     </div>
@@ -481,7 +504,7 @@ Specialized program options designed to meet different goals — from profession
     <div class='grid md:grid-cols-2 gap-8 max-w-6xl mx-auto'>
       
       <!-- WIP Card -->
-      <a href='/wip' class='group block'>
+      <a href='/wip' class='group block' data-animate="slide-right" data-delay="100">
         <div class='relative bg-white rounded-3xl p-8 border-2 border-gray-300 hover:border-gray-500 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden'>
           <!-- Background Pattern -->
           <div class='absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-gray-100/50 to-gray-200/50 rounded-full blur-3xl -z-0'></div>
@@ -539,7 +562,7 @@ Specialized program options designed to meet different goals — from profession
       </a>
 
       <!-- In-House Training Card -->
-      <a href='/in-house-training' class='group block'>
+      <a href='/in-house-training' class='group block'  data-animate="slide-left" data-delay="100">
         <div class='relative bg-white rounded-3xl p-8 border-2 border-gray-300 hover:border-gray-500 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden'>
           <!-- Background Pattern -->
           <div class='absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-gray-100/50 to-gray-200/50 rounded-full blur-3xl -z-0'></div>
@@ -617,8 +640,14 @@ Specialized program options designed to meet different goals — from profession
 >
   <!-- Title -->
   <div class='text-center mb-16'>
-    <h2 class='text-4xl md:text-5xl font-bold text-gray-900 font-montserrat'>
-      Stories from Alumni
+      {{> highlightText 
+        before="Stories from"
+        highlight="Alumni"
+        after=""
+        textColor="text-gray-900"
+        bg="bg-primary"
+        color="text-white"
+      }}
     </h2>
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
       Every alumnus has their own unique journey — from the first step of learning, facing challenges, to finally building a successful career in tech. Hear how their experience with Kesatria Academy opened new opportunities and transformed their future.
@@ -719,9 +748,14 @@ Specialized program options designed to meet different goals — from profession
   class='bg-gradient-to-br from-slate-50 via-white to-slate-100 py-20 px-6 lg:px-20'
 >
   <div class='text-center mb-16'>
-    <h2 class='text-4xl md:text-5xl font-bold text-gray-900'>
-      Our Partnered
-    </h2>
+    {{> highlightText 
+          before="Our"
+          highlight="Partnered"
+          after=""
+          textColor="text-gray-900"
+          bg="bg-primary"
+          color="text-white"
+        }}
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
 Kesatria Academy has partnered with various organizations, institutions, and companies to strengthen an industry-driven learning ecosystem. Through these collaborations, we provide training programs that are relevant to real-world job demands and create broader career opportunities for our participants.
     </p>
@@ -856,12 +890,15 @@ Kesatria Academy has partnered with various organizations, institutions, and com
 
   <!-- Header Section -->
   <div class='text-center mb-16 relative'>
-    <h1
-      class='text-4xl md:text-5xl font-extrabold font-montserrat text-white mb-4 relative z-10'
-    >
-      Kesatria Academy Program
-    </h1>
-    <p class='text-lg text-slate-300 max-w-2xl mx-auto relative z-10'>
+       {{> highlightText 
+          before="Kesatria Academy"
+          highlight="Program"
+          after=""
+          bg="bg-white"
+          textColor="text-white"
+          color="text-gray-900"
+        }}
+    <p class='text-lg mt-4 text-slate-300 max-w-2xl mx-auto relative z-10'>
 Elevate your competence to the highest level. The Kesatria Academy Program is designed to forge outstanding individuals ready to face global challenges. Gain access to cutting-edge curriculum and mentorship from leading experts to reach your maximum career potential.
     </p>
   </div>
@@ -1172,6 +1209,8 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
   >
     {{#each kelas}}
       <div
+        data-animate="scale-up"
+        data-delay="100"
         class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
         data-kategori='{{kategori.nama_kategori}}'
         data-category='{{jenis_kelas.nama_jenis_kelas}}'
@@ -1191,12 +1230,12 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
         <div class='card-body p-6'>
           <div class='flex gap-2 mb-3'>
             <span
-              class='badge flex justify-center items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full'
+              class='badge flex justify-center h-fit items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full'
             >
               {{kategori.nama_kategori}}
             </span>
             <span
-              class='badge flex justify-center items-center bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
+              class='badge flex justify-center h-fit items-center bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
             >
               {{jenis_kelas.nama_jenis_kelas}}
             </span>
@@ -1327,11 +1366,16 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
 <!-- FAQ Section -->
 <section class='py-20 bg-gradient-to-br from-slate-50 via-white to-slate-100'>
   <div class='container mx-auto px-6 max-w-6xl'>
-    <h2 class='text-4xl md:text-5xl font-bold text-center mb-16 text-gray-900'>
-      Frequently Asked Questions
-    </h2>
 
     <div class='max-w-4xl mx-auto space-y-6'>
+        {{> highlightText 
+          before="Frequented Asked"
+          highlight="Question"
+          after=""
+          textColor="text-gray-900"
+          bg="bg-primary"
+          color="text-white"
+        }}
       {{#if pertanyaan_umum}}
       {{#each pertanyaan_umum}}
         <div
@@ -1346,6 +1390,8 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
       {{else}}
       <!-- Fallback - No FAQ Data -->
       <div
+        data-animate="slide-right"
+        data-delay="100"
         class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
       >
         <h3
@@ -1354,6 +1400,8 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
         <p class='text-gray-600 leading-relaxed text-lg'>Our bootcamp program typically runs for 4 months with intensive weekend classes. You'll learn through hands-on projects and mentorship from industry experts.</p>
       </div>
       <div
+        data-animate="slide-left"
+        data-delay="100"
         class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
       >
         <h3
@@ -1362,6 +1410,8 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
         <p class='text-gray-600 leading-relaxed text-lg'>No prior experience is required! We welcome beginners and will guide you from the basics to advanced concepts step by step.</p>
       </div>
       <div
+        data-animate="slide-right"
+        data-delay="100"
         class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'
       >
         <h3

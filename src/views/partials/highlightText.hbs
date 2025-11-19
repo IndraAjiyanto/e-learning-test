@@ -1,16 +1,18 @@
-<h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat">
-
-  {{!-- Teks sebelum highlight --}}
+<div class="w-full flex justify-center items-center">
+  <h2 
+  class="text-4xl md:text-5xl font-bold leading-tight font-montserrat {{textColor}}"
+>
+  {{!-- Text before highlight --}}
   {{before}}
 
-  {{!-- Highlight dinamis --}}
+  {{!-- Dynamic highlight using Tailwind classes --}}
   <span 
-    style="background-color: {{bg}}; color: {{color}};"
+    class="py-1 px-2 rounded-md {{bg}} {{color}}"
   >
     {{highlight}}
   </span>
 
-  {{!-- Teks setelah highlight --}}
+  {{!-- Text after highlight --}}
   {{after}}
-
 </h2>
+</div>

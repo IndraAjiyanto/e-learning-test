@@ -9,14 +9,15 @@
   <script src="/public/js/texttype.js"></script>
   <script defer src="/public/assets/cursor.js"></script>
   <link href="/public/css/style.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/public/css/scroll-animations.css">
 
   <!-- Script global -->
-    <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
+    {{!-- <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
     <script>
       new cursoreffects.fairyDustCursor({ colors: ["#003060", "#004B8D", "#00A8E8"] });
-    </script>
+    </script> --}}
 
 </head>
 <body class="bg-slate-50 text-base-content">
@@ -41,45 +42,66 @@
 
   {{> sweetalert}}
 
-    <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
+    <script>
+      // public/js/main.js
+      document.addEventListener('DOMContentLoaded', function() {
+      // Initialize scroll animations
+      const scrollAnimator = new ScrollAnimator();
+      scrollAnimator.initAll();
+      
+      // Initialize stagger animations for specific containers
+      const staggerContainers = document.querySelectorAll('[data-stagger-container]');
+      staggerContainers.forEach(container => {
+        scrollAnimator.initStagger(container);
+      });
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Buat cursor custom
-    const cursor = new cursoreffects.followingDotCursor({
-      color: ["#68bbe3"],
-      size: 10
-    });
+      // Add to global scope for potential manual usage
+      window.scrollAnimator = scrollAnimator;
+      })
+    </script>
 
-    // Simpan global
-    window.myCursor = cursor;
+    {{!-- <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script> --}}
 
-    // Fungsi ubah ukuran
-    function setCursorSize(size) {
-      if (!window.myCursor) return;
-      window.myCursor.options.size = size;
+
+    {{!-- <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Buat cursor custom
+        const cursor = new cursoreffects.followingDotCursor({
+          color: ["#68bbe3"],
+          size: 10
+        });
+
+        // Simpan global
+        window.myCursor = cursor;
+
+        // Fungsi ubah ukuran
+        function setCursorSize(size) {
+          if (!window.myCursor) return;
+          window.myCursor.options.size = size;
+        }
+
+        // Elemen interaktif (button, a, dan elemen custom)
+        const interactiveElements = document.querySelectorAll("button, a, .cursor-small");
+
+        interactiveElements.forEach(el => {
+          el.addEventListener("mouseenter", () => setCursorSize(4));
+          el.addEventListener("mouseleave", () => setCursorSize(10));
+        });
+      });
+    </script>
+
+    <style>
+      canvas.cursor-effects-canvas {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      pointer-events: none !important;
+      z-index: 999999 !important;
     }
-
-    // Elemen interaktif (button, a, dan elemen custom)
-    const interactiveElements = document.querySelectorAll("button, a, .cursor-small");
-
-    interactiveElements.forEach(el => {
-      el.addEventListener("mouseenter", () => setCursorSize(4));
-      el.addEventListener("mouseleave", () => setCursorSize(10));
-    });
-  });
-</script>
-
-<style>
-  canvas.cursor-effects-canvas {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  pointer-events: none !important;
-  z-index: 999999 !important;
-}
-</style>
-<script src="/public/js/texttype.js"></script>
+    </style> --}}
+    <script src="/public/js/scroll-animator.js"></script>
+    <script src="/public/js/main.js"></script>
+    <script src="/public/js/texttype.js"></script>
 
 </body>
 </html>
