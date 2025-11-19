@@ -1,6 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { AppModule } from './app.module';
 import methodOverride from 'method-override';
 import hbs from 'hbs';
@@ -26,7 +26,6 @@ async function bootstrap() {
     prefix: '/uploads/',
   });
   app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
-  app.setViewEngine('hbs');
   hbs.registerHelper('addOne', function (index: number) {
     return index + 1;
   });
@@ -140,8 +139,8 @@ async function bootstrap() {
     return d.toLocaleDateString('en-US', options);
   });
 
-  hbs.registerPartials(join(__dirname, '..', 'src', 'views', 'partials'));
-  hbs.registerPartials(join(__dirname, '..', 'views', 'partials'));
+  hbs.registerPartials(resolve(process.cwd(), 'src', 'views', 'partials'));
+  app.setViewEngine('hbs');
 
   app.set('view options', { layout: 'layouts/main' });
   app.use(methodOverride('_method'));
@@ -227,7 +226,7 @@ async function bootstrap() {
   });
 
   // Helper untuk default value
-  hbs.registerHelper('default', function(value, defaultValue) {
+  hbs.registerHelper('default', function (value, defaultValue) {
     return value || defaultValue;
   });
 

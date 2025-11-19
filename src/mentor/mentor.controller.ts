@@ -27,7 +27,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 export class MentorController {
   constructor(private readonly mentorService: MentorService) {}
 
-  @Roles('super_admin')
+  @Roles('super_admin', 'admin')
   @Post(':kelasId')
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -78,7 +78,7 @@ export class MentorController {
     }
   }
 
-  @Roles('super_admin')
+  @Roles('super_admin', 'admin')
   @Get('formCreate/:kelasId')
   async formCreate(
     @Param('kelasId') kelasId: number,
@@ -93,7 +93,7 @@ export class MentorController {
     });
   }
 
-  @Roles('super_admin')
+  @Roles('super_admin', 'admin')
   @Get(':mentorId')
   async findOne(
     @Param('mentorId') mentorId: number,
@@ -109,7 +109,7 @@ export class MentorController {
     });
   }
 
-  @Roles('super_admin')
+  @Roles('super_admin', 'admin')
   @Get('formEdit/:mentorId')
   async formEdit(
     @Param('mentorId') mentorId: number,
@@ -125,7 +125,7 @@ export class MentorController {
     });
   }
 
-  @Roles('super_admin')
+  @Roles('super_admin', 'admin')
   @Patch(':kelasId/:mentorId')
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -182,7 +182,7 @@ export class MentorController {
     }
   }
 
-  @Roles('super_admin')
+  @Roles('super_admin', 'admin')
   @Delete(':mentorId/:kelasId')
   async remove(
     @Param('mentorId') mentorId: number,
