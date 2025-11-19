@@ -187,6 +187,24 @@
         Week
       </button>
 
+      <button @click="tab = 'user'" 
+              :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        User
+      </button>
+
+      <button @click="tab = 'log_book_user'" 
+              :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        Log Book User
+      </button>
+
+      <button @click="tab = 'log_book_mentor'" 
+              :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        Log Book Mentor
+      </button>
+
 
 
       {{else if (roles user.role "super_admin")}}
@@ -216,6 +234,24 @@
         Installment
       </button>
       {{/if}}
+
+      <button @click="tab = 'user'" 
+              :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        User
+      </button>
+
+      <button @click="tab = 'log_book_user'" 
+              :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        Log Book User
+      </button>
+
+      <button @click="tab = 'log_book_mentor'" 
+              :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        Log Book Mentor
+      </button>
 
 
       {{/if}}
@@ -255,6 +291,21 @@
     <!-- ===================== TAB INSTALLMENT (CICILAN) ===================== -->
 <div x-show="tab === 'installment'">
   {{> kelas/installment_tab}}
+</div>
+
+    <!-- ===================== TAB USER ===================== -->
+<div x-show="tab === 'user'">
+  {{> kelas/user_tab}}
+</div>
+
+    <!-- ===================== TAB LOG BOOK USER ===================== -->
+<div x-show="tab === 'log_book_user'">
+  {{> kelas/log_book_user_tab}}
+</div>
+
+    <!-- ===================== TAB LOG BOOK MENTOR ===================== -->
+<div x-show="tab === 'log_book_mentor'">
+  {{> kelas/log_book_mentor_tab}}
 </div>
 
 

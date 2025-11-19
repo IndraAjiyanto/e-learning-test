@@ -201,15 +201,15 @@ export class KelassController {
     @Req() req: Request,
   ) {
     const kelas = await this.kelassService.findOne(kelasId);
-    const minggu = await this.kelassService.findMingguClass(kelasId);
-    const mentor = await this.kelassService.findMentor(kelasId);
+    const logbookMentor = await this.kelassService.findLogbookMentor(kelasId);
+    const logbookUser = await this.kelassService.findLogBookUser(kelasId);
     const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
     res.render('admin/kelas/detail', {
       user: req.user,
       kelas,
-      minggu,
       mingguTerakhir,
-      mentor,
+      logbookMentor,
+      logbookUser,
     });
   }
 
@@ -232,7 +232,6 @@ export class KelassController {
     @Req() req: Request,
   ) {
     const kelas = await this.kelassService.findOne(kelasId);
-    const daftar = await this.kelassService.sumStudent(kelas.id);
     const check_user = await this.kelassService.checkUserInKelas(
       kelas.id,
       req.user!.id,

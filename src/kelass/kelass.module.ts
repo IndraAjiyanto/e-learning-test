@@ -26,6 +26,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
+import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 
 @Module({
   imports: [
@@ -51,6 +52,8 @@ import { Pendaftaran } from 'src/entities/pendaftaran.entity';
       ProgresQuiz,
       Mentoring,
       Pendaftaran,
+      Logbook,
+      LogbookMentor
     ]),
     PertanyaansModule,
     JawabanUsersModule,

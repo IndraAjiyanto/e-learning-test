@@ -18,7 +18,6 @@ import { Nilai } from 'src/entities/nilai.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { Absen } from 'src/entities/absen.entity';
-import { Tugas } from 'src/entities/tugas.entity';
 import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
 import { Pembayaran } from 'src/entities/pembayaran.entity';
 import { UserKelas } from 'src/entities/user_kelas.entity';
@@ -28,6 +27,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
+import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 
 @Injectable()
 export class KelassService {
@@ -50,10 +50,6 @@ export class KelassService {
     private readonly nilaiRepository: Repository<Nilai>,
     @InjectRepository(Quiz)
     private readonly quizRepository: Repository<Quiz>,
-    @InjectRepository(Absen)
-    private readonly absenRepository: Repository<Absen>,
-    @InjectRepository(JawabanTugas)
-    private readonly jawabanTugasRepository: Repository<JawabanTugas>,
     @InjectRepository(ProgresPertemuan)
     private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
     @InjectRepository(Pembayaran)
@@ -66,6 +62,8 @@ export class KelassService {
     private readonly progresQuizRepository: Repository<ProgresQuiz>,
     @InjectRepository(Logbook)
     private readonly logbookRepository: Repository<Logbook>,
+    @InjectRepository(LogbookMentor)
+    private readonly logbookMentorRepository: Repository<LogbookMentor>,
     @InjectRepository(Teknologi)
     private readonly teknologiRepository: Repository<Teknologi>,
     @InjectRepository(Mentoring)
@@ -704,6 +702,17 @@ export class KelassService {
     } else {
       return false;
     }
+  }
+
+  async findLogbookMentor(kelasId: number) {
+    return await this.logbookMentorRepository.find({  
+      where: { pertemuan: { minggu: {kelas: { id: kelasId } } } }, relations: ['user']}
+    );
+  }
+
+  async findLogBookUser(kelasId: number) {
+    return await this.logbookRepository.find({
+      where: { pertemuan: { minggu: {kelas: { id: kelasId } } }}, relations: ['user']});
   }
 
   async findUser() {
