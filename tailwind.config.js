@@ -4,7 +4,7 @@ module.exports = {
     './src/**/*.{html,ts,tsx,js,jsx}',
     './src/views/**/*.{html,hbs,ejs,pug}',
   ],
-  theme: {d
+  theme: {
     extend: {
       colors: {
         primary: '#10172a',
