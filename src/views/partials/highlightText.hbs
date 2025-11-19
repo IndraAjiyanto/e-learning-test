@@ -1,18 +1,18 @@
 <div class="w-full flex justify-center items-center">
-  <h2 
-  class="text-4xl md:text-5xl font-bold leading-tight font-montserrat {{textColor}}"
->
-  {{!-- Text before highlight --}}
-  {{before}}
+  <h2 class="relative text-4xl md:text-5xl font-bold leading-tight font-montserrat {{textColor}}">
+    
+    {{before}}
 
-  {{!-- Dynamic highlight using Tailwind classes --}}
-  <span 
-    class="py-1 px-2 rounded-md {{bg}} {{color}}"
-  >
-    {{highlight}}
-  </span>
+    <span class="relative z-10 px-0">
+      {{highlight}}
 
-  {{!-- Text after highlight --}}
-  {{after}}
-</h2>
+      <!-- half background -->
+      <span 
+        class="absolute left-0 right-0 bottom-0 {{bg}} h-1/2 w-full -z-10"
+      ></span>
+
+    </span>
+
+    {{after}}
+  </h2>
 </div>
