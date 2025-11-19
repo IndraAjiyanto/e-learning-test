@@ -44,11 +44,11 @@ export class BulanController {
   ) {
     try {
       await this.bulanService.create(createBulanDto);
-      req.flash('success', 'Bulan successfully created');
+      req.flash('success', 'Month successfully created');
       res.redirect('/bulan');
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'Bulan failed to create');
+      req.flash('error', error.message || 'Month failed to create');
       res.redirect('/bulan');
     }
   }
@@ -74,11 +74,11 @@ export class BulanController {
   ) {
     try {
       await this.bulanService.update(id, updateBulanDto);
-      req.flash('success', 'Bulan successfully updated');
+      req.flash('success', 'Month successfully updated');
       res.redirect('/bulan');
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'Bulan failed to update');
+      req.flash('error', error.message || 'Month failed to update');
       res.redirect('/bulan');
     }
   }
@@ -92,11 +92,11 @@ export class BulanController {
   ) {
     try {
       await this.bulanService.remove(id);
-      req.flash('success', 'Bulan successfully removed');
+      req.flash('success', 'Month successfully removed');
       res.redirect('/bulan');
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'Bulan failed to remove');
+      req.flash('error', error.message || 'Month failed to remove');
       res.redirect('/bulan');
     }
   }

@@ -17,6 +17,9 @@ export class Experience {
   @Column()
   isi: string;
 
+  @Column()
+  experience_ke: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

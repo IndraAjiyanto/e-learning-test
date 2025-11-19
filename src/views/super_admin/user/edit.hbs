@@ -264,7 +264,7 @@
             id='username'
             name='username'
             required
-            :class="formErrors.username ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.username ? 'border-red-500 focus:ring-red-500' : formValid.username ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @input='validateField("username", $event.target.value)'
             x-init="$el.value = formData.username"
@@ -302,7 +302,7 @@
             id='email'
             name='email'
             required
-            :class="formErrors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.email ? 'border-red-500 focus:ring-red-500' : formValid.email ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @input='validateField("email", $event.target.value)'
             x-init="$el.value = formData.email"
@@ -339,7 +339,7 @@
             id='role'
             name='role'
             required
-            :class="formErrors.role ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.role ? 'border-red-500 focus:ring-red-500' : formValid.role ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @change='validateField("role", $event.target.value)'
             x-init="$el.value = formData.role"

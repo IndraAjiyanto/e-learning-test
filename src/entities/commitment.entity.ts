@@ -20,6 +20,9 @@ export class Commitment {
   @Column()
   icon: string;
 
+  @Column()
+  commitment_ke: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

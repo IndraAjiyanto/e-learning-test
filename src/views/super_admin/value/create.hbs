@@ -1,49 +1,8 @@
 <div
   class='py-10'
   x-data="{
-  title: '',
-  description: '',
-  icon: '',
-  errors: { title: null, description: null, icon: null },
-  success: { title: false, description: false, icon: false },
-  validateTitle() {
-    if (!this.title.trim()) {
-      this.errors.title = 'Title is required';
-      this.success.title = false;
-    } else if (this.title.trim().length < 3) {
-      this.errors.title = 'Title must be at least 3 characters';
-      this.success.title = false;
-    } else {
-      this.errors.title = null;
-      this.success.title = true;
-    }
-  },
-  validateDescription() {
-    if (!this.description.trim()) {
-      this.errors.description = 'Description is required';
-      this.success.description = false;
-    } else if (this.description.trim().length < 10) {
-      this.errors.description = 'Description must be at least 10 characters';
-      this.success.description = false;
-    } else {
-      this.errors.description = null;
-      this.success.description = true;
-    }
-  },
-  validateIcon() {
-    if (!this.icon.trim()) {
-      this.errors.icon = 'Icon is required';
-      this.success.icon = false;
-    } else if (this.icon.trim().length < 2) {
-      this.errors.icon = 'Icon must be at least 2 characters';
-      this.success.icon = false;
-    } else {
-      this.errors.icon = null;
-      this.success.icon = true;
-    }
-  },
   get computedClass() {
-    const raw = (this.icon || '').toString().trim();
+    const raw = (this.formData.icon || '').toString().trim();
     if (!raw) return 'fa-solid fa-circle-question';
     const v = raw;
     const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
@@ -54,17 +13,89 @@
     if (!v.includes(' ')) return 'fa-solid fa-' + v;
     return v;
   },
-  get canSubmit() {
-    return this.success.title && this.success.description && this.success.icon;
+
+  // Form validation states
+  formData: {
+    icon: '',
+    title: '',
+    description: ''
+  },
+  formErrors: {
+    icon: '',
+    title: '',
+    description: ''
+  },
+  formValid: {
+    icon: false,
+    title: false,
+    description: false
+  },
+
+  validateField(field, value) {
+    this.formData[field] = value;
+    
+    switch(field) {
+      case 'icon':
+        if (!value.trim()) {
+          this.formErrors.icon = 'Icon is required';
+          this.formValid.icon = false;
+        } else if (value.trim().length < 2) {
+          this.formErrors.icon = 'Icon must be at least 2 characters';
+          this.formValid.icon = false;
+        } else {
+          this.formErrors.icon = '';
+          this.formValid.icon = true;
+        }
+        break;
+        
+      case 'title':
+        if (!value.trim()) {
+          this.formErrors.title = 'Title is required';
+          this.formValid.title = false;
+        } else if (value.trim().length < 3) {
+          this.formErrors.title = 'Title must be at least 3 characters';
+          this.formValid.title = false;
+        } else {
+          this.formErrors.title = '';
+          this.formValid.title = true;
+        }
+        break;
+        
+      case 'description':
+        if (!value.trim()) {
+          this.formErrors.description = 'Description is required';
+          this.formValid.description = false;
+        } else if (value.trim().length < 10) {
+          this.formErrors.description = 'Description must be at least 10 characters';
+          this.formValid.description = false;
+        } else {
+          this.formErrors.description = '';
+          this.formValid.description = true;
+        }
+        break;
+    }
+  },
+
+  canSubmit() {
+    return this.formValid.icon && this.formValid.title && this.formValid.description;
+  },
+
+  hasFormErrors() {
+    return Object.values(this.formErrors).some(error => error !== '');
   }
 }"
 >
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create Value</h2>
 
-    <form action='/value' method='post' class='space-y-6'>
+    <form
+      action='/value'
+      method='POST'
+      class='space-y-6'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
+    >
 
-      <div>
+      <div class='space-y-2'>
         <label
           for='title'
           class='block text-sm font-semibold text-gray-700 mb-1'
@@ -72,26 +103,39 @@
           Title
         </label>
         <input
-          x-model='title'
-          @input='validateTitle()'
+          x-model='formData.title'
+          @input='validateField("title", $event.target.value)'
           type='text'
           id='title'
           name='title'
-          :class="errors.title ? 'border-red-500 focus:ring-red-500' : success.title ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+          required
+          :class="formErrors.title ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+          placeholder='Enter value title'
         />
-        <div
-          x-show='errors.title'
-          class='text-red-500 text-sm mt-1'
-          x-text='errors.title'
-        ></div>
-        <div
-          x-show='success.title && !errors.title'
-          class='text-green-500 text-sm mt-1'
-        >✓ Title looks good</div>
+
+        <!-- Error Message -->
+        <template x-if='formErrors.title'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='formErrors.title'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='formValid.title && !formErrors.title'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Title looks good</p>
+          </div>
+        </template>
       </div>
 
-      <div>
+      <div class='space-y-2'>
         <label
           for='description'
           class='block text-sm font-semibold text-gray-700 mb-1'
@@ -99,26 +143,39 @@
           Description
         </label>
         <textarea
-          x-model='description'
-          @input='validateDescription()'
+          x-model='formData.description'
+          @input='validateField("description", $event.target.value)'
           id='description'
           name='description'
-          rows='4'
-          :class="errors.description ? 'border-red-500 focus:ring-red-500' : success.description ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+          rows='5'
+          required
+          :class="formErrors.description ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.description ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+          placeholder='Enter value description'
         ></textarea>
-        <div
-          x-show='errors.description'
-          class='text-red-500 text-sm mt-1'
-          x-text='errors.description'
-        ></div>
-        <div
-          x-show='success.description && !errors.description'
-          class='text-green-500 text-sm mt-1'
-        >✓ Description looks good</div>
+
+        <!-- Error Message -->
+        <template x-if='formErrors.description'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='formErrors.description'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='formValid.description && !formErrors.description'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Description looks good</p>
+          </div>
+        </template>
       </div>
 
-      <div>
+      <div class='space-y-2'>
         <label
           for='icon'
           class='block text-sm font-semibold text-gray-700 mb-1'
@@ -127,14 +184,14 @@
         </label>
         <div class='flex items-center gap-4'>
           <input
-            x-model='icon'
-            @input='validateIcon()'
+            x-model='formData.icon'
+            @input='validateField("icon", $event.target.value)'
             type='text'
             id='icon'
             name='icon'
             placeholder='fa-code, fa-layer-group, etc.'
-            :class="errors.icon ? 'border-red-500 focus:ring-red-500' : success.icon ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+            :class="formErrors.icon ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
           />
 
           <!-- Live preview: binds computed class to the <i> element -->
@@ -143,37 +200,62 @@
             <span class='text-sm text-gray-500' x-text='computedClass'></span>
           </div>
         </div>
-        <div
-          x-show='errors.icon'
-          class='text-red-500 text-sm mt-1'
-          x-text='errors.icon'
-        ></div>
-        <div
-          x-show='success.icon && !errors.icon'
-          class='text-green-500 text-sm mt-1'
-        >✓ Icon looks good</div>
+
+        <!-- Error Message -->
+        <template x-if='formErrors.icon'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='formErrors.icon'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='formValid.icon && !formErrors.icon'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Icon looks good</p>
+          </div>
+        </template>
+
         <p class='text-sm text-gray-500 mt-2'>Type a Font Awesome class like
           <code>fa-code</code>
           or include full classes like
           <code>fas fa-code</code>.</p>
       </div>
 
-      <div class='flex space-x-4'>
+      <div class='flex gap-3'>
         <button
-          :disabled='!canSubmit'
-          :class="canSubmit ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
           type='submit'
-          class='text-white px-6 py-2 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-gray-900'
+          :disabled='!canSubmit()'
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Create
         </button>
         <a
           href='/value'
-          class='bg-white border border-gray-300 text-gray-900 px-6 py-2 rounded-lg shadow hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-gray-900'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
         >
           Cancel
         </a>
       </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors()'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
 
     </form>
   </div>

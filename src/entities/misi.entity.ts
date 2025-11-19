@@ -12,6 +12,9 @@ export class Misi {
   id: number;
 
   @Column()
+  misi_ke: number
+
+  @Column()
   content: string;
 
   @Column()

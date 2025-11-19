@@ -30,7 +30,7 @@ export class TeamService {
     return team_new;
   }
   async findAll() {
-    return await this.teamRepository.find();
+    return await this.teamRepository.find({order: {team_ke: 'ASC'}});
   }
 
   async findOne(teamId: number) {

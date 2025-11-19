@@ -66,11 +66,11 @@ export class CicilanController {
       createCicilanDto.bulan = Number(createCicilanDto.bulan) as 3 | 6 | 12;
 
       await this.cicilanService.create(createCicilanDto);
-      req.flash('success', 'Cicilan created successfully');
+      req.flash('success', 'Installment created successfully');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       console.log(error);
-      req.flash('error', error.message || 'Failed to create cicilan');
+      req.flash('error', error.message || 'Failed to create installment');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -99,11 +99,11 @@ export class CicilanController {
       }
 
       const cicilan = await this.cicilanService.update(id, updateCicilanDto);
-      req.flash('success', 'Cicilan updated successfully');
+      req.flash('success', 'Installment updated successfully');
       res.redirect(`/kelass/detail/kelas/admin/${cicilan.kelas.id}`);
     } catch (error) {
       const cicilan = await this.cicilanService.findOne(id);
-      req.flash('error', error.message || 'Failed to update cicilan');
+      req.flash('error', error.message || 'Failed to update installment');
       res.redirect(`/kelass/detail/kelas/admin/${cicilan.kelas.id}`);
     }
   }
@@ -119,12 +119,12 @@ export class CicilanController {
       const cicilan = await this.cicilanService.findOne(id);
       const kelasId = cicilan.kelas.id;
       await this.cicilanService.remove(id);
-      req.flash('success', 'Cicilan deleted successfully');
+      req.flash('success', 'Installment deleted successfully');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       const cicilan = await this.cicilanService.findOne(id);
       const kelasId = cicilan.kelas.id;
-      req.flash('error', error.message || 'Failed to delete cicilan');
+      req.flash('error', error.message || 'Failed to delete installment');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }

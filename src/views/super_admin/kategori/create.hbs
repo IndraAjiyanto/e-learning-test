@@ -157,7 +157,7 @@
             id='nama_kategori'
             name='nama_kategori'
             required
-            :class="formErrors.nama_kategori ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.nama_kategori ? 'border-red-500 focus:ring-red-500' : formValid.nama_kategori ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @input='validateField("nama_kategori", $event.target.value)'
           />
@@ -203,7 +203,7 @@
             name='icon'
             accept='image/jpeg,image/jpg,image/png'
             x-ref='fileInput'
-            :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
             @change='validateImage($event.target.files[0])'
           />
@@ -285,7 +285,7 @@
             name='deskripsi'
             rows='4'
             required
-            :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500' : formValid.deskripsi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @input='validateField("deskripsi", $event.target.value)'
           ></textarea>

@@ -132,7 +132,7 @@ export class PendaftaranService {
     });
 
     if (!user) {
-      throw new NotFoundException('User tidak ada');
+      throw new NotFoundException('User not found');
     }
 
     const kelas = await this.kelasRepository.findOne({
@@ -140,14 +140,14 @@ export class PendaftaranService {
       relations: ['user_kelas', 'user_kelas.user'],
     });
     if (!kelas) {
-      throw new NotFoundException('Kelas tidak ada');
+      throw new NotFoundException('Program not found');
     }
 
     const sudahGabung = await this.userKelasRepository.findOne({
       where: { user: { id: userId }, kelas: { id: kelasId } },
     });
     if (sudahGabung) {
-      throw new BadRequestException('User sudah tergabung dalam kelas');
+      throw new BadRequestException('User already joined the program');
     }
 
     const user_kelas = await this.userKelasRepository.create({
@@ -157,6 +157,32 @@ export class PendaftaranService {
     });
 
     return await this.userKelasRepository.save(user_kelas);
+  }
+
+   async removeUserKelas(userId: number, kelasId: number): Promise<UserKelas> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const kelas = await this.kelasRepository.findOne({
+      where: { id: kelasId },
+    });
+    if (!kelas) {
+      throw new NotFoundException('Program not found');
+    }
+
+    const userKelas = await this.userKelasRepository.findOne({
+      where: { user: { id: userId }, kelas: { id: kelasId } },
+    });
+    if (!userKelas) {
+      throw new BadRequestException('User is not enrolled in this program');
+    }
+
+    return await this.userKelasRepository.remove(userKelas);
   }
 
   async update(
@@ -169,9 +195,5 @@ export class PendaftaranService {
     }
     Object.assign(pendaftaran, updatePendaftaranDto);
     return await this.pendaftaranRepository.save(pendaftaran);
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} pendaftaran`;
   }
 }

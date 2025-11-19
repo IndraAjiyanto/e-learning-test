@@ -222,7 +222,7 @@
               name='profile'
               accept='image/*'
               x-ref='fileInput'
-              :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : isValid && hasFile ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
               @change='validateImage($event.target.files[0])'
             />
@@ -297,7 +297,7 @@
               id='nama'
               name='nama'
               required
-              :class="formErrors.nama ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.nama ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.nama ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               @input='validateField("nama", $event.target.value)'
             />
@@ -335,7 +335,7 @@
               required
               rows='4'
               placeholder='Enter alumni message...'
-              :class="formErrors.pesan ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.pesan ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.pesan ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               @input='validateField("pesan", $event.target.value)'
             ></textarea>
@@ -376,7 +376,7 @@
               id='alumni'
               name='alumni'
               required
-              :class="formErrors.alumni ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.alumni ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.alumni ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               @input='validateField("alumni", $event.target.value)'
             />
@@ -413,7 +413,7 @@
               id='posisi_sekarang'
               name='posisi_sekarang'
               required
-              :class="formErrors.posisi_sekarang ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.posisi_sekarang ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.posisi_sekarang ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               @input='validateField("posisi_sekarang", $event.target.value)'
             />
@@ -454,7 +454,7 @@
               id='kelasId'
               name='kelasId'
               required
-              :class="formErrors.kelasId ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.kelasId ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.kelasId ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               @change='validateField("kelasId", $event.target.value)'
             >

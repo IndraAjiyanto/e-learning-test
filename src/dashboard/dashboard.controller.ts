@@ -168,9 +168,4 @@ export class DashboardController {
       paragraf,
     });
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.dashboardService.findOne(+id);
-  }
 }

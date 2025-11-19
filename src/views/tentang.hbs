@@ -416,9 +416,7 @@ To become a leading digital education institution that nurtures outstanding info
                 <div
                   class='w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-gradient-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center ring-4 ring-slate-300'
                 >
-                  <i
-                    class='fas fa-user text-white text-2xl sm:text-3xl lg:text-4xl'
-                  ></i>
+                  <img src="{{#if teamLead.[0]}}{{teamLead.[0].profile}}{{else}}https://via.placeholder.com/128x128?text=No+Image{{/if}}" alt="Profile Picture" class="w-full h-full rounded-full object-cover">
                 </div>
               </div>
               <div class='flex-1 text-center md:text-left'>
@@ -856,7 +854,7 @@ To become a leading digital education institution that nurtures outstanding info
                 </div>
                 <h3
                   class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-                >{{tittle}}</h3>
+                >{{title}}</h3>
                 <p
                   class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                 >
@@ -940,7 +938,7 @@ To become a leading digital education institution that nurtures outstanding info
                       class='text-xs sm:text-sm text-slate-600 font-inter'
                     >
                       {{#if social}}
-                        {{social.email}}
+                        {{social.[0].email}}
                       {{else}}
                         info@kesatriaacademy.com
                       {{/if}}
@@ -962,7 +960,7 @@ To become a leading digital education institution that nurtures outstanding info
                     >Phone</h4>
                     <p class='text-xs sm:text-sm text-slate-600 font-inter'>
                       {{#if social}}
-                        {{social.nomor}}
+                        {{social.[0].nomor}}
                       {{else}}
                         +62 21 1234 5678
                       {{/if}}
@@ -986,7 +984,7 @@ To become a leading digital education institution that nurtures outstanding info
                     >Address</h4>
                     <p class='text-xs sm:text-sm text-slate-600 font-inter'>
                       {{#if social}}
-                        {{social.alamat}}
+                        {{social.[0].alamat}}
                       {{else}}
                         Jakarta, Indonesia
                       {{/if}}
@@ -1001,7 +999,7 @@ To become a leading digital education institution that nurtures outstanding info
                 >Follow Us on Social Media</h4>
                 <div class='flex justify-center space-x-4 sm:space-x-6'>
                   <a
-                    href='{{#if social}}{{social.instagram}}{{else}}https://instagram.com/kesatriaacademy{{/if}}' target="_blank"
+                    href='{{#if social}}{{social.[0].instagram}}{{else}}https://instagram.com/kesatriaacademy{{/if}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
@@ -1009,7 +1007,7 @@ To become a leading digital education institution that nurtures outstanding info
                     ></i>
                   </a>
                   <a
-                    href='{{#if social}}{{social.linkedin}}{{else}}https://linkedin.com/company/kesatriaacademy{{/if}}' target="_blank"
+                    href='{{#if social}}{{social.[0].linkedin}}{{else}}https://linkedin.com/company/kesatriaacademy{{/if}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i
@@ -1017,7 +1015,7 @@ To become a leading digital education institution that nurtures outstanding info
                     ></i>
                   </a>
                   <a
-                    href='{{#if social}}{{social.youtube}}{{else}}https://youtube.com/@kesatriaacademy{{/if}}' target="_blank"
+                    href='{{#if social}}{{social.[0].youtube}}{{else}}https://youtube.com/@kesatriaacademy{{/if}}' target="_blank"
                     class='w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors'
                   >
                     <i

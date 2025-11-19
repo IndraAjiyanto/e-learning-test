@@ -13,16 +13,28 @@ export class AwardService {
   ) {}
 
   async create(createAwardDto: CreateAwardDto): Promise<Award> {
-    const award = this.awardRepository.create(createAwardDto);
-    return this.awardRepository.save(award);
+    const award = await this.awardRepository.create(createAwardDto);
+    return await this.awardRepository.save(award);
+  }
+
+  async noAward() {
+    const award_old = await this.awardRepository.find({
+      order: { award_ke: 'DESC' },
+      take: 1,
+    });
+    if (!award_old || award_old.length === 0) {
+      return 0;
+    }
+    const award_new = award_old[0].award_ke + 1;
+    return award_new;
   }
 
   async findAll(): Promise<Award[]> {
-    return this.awardRepository.find();
+    return await this.awardRepository.find();
   }
 
   async findOne(id: number): Promise<Award | null> {
-    return this.awardRepository.findOneBy({ id });
+    return await this.awardRepository.findOneBy({ id });
   }
 
   async update(
@@ -34,6 +46,17 @@ export class AwardService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.awardRepository.delete(id);
+    const award = await this.findOne(id);
+    if (!award) {
+      throw new Error('Award not found');
+    }
+    await this.awardRepository.remove(award);
+    const allAward = await this.awardRepository.find();
+    for (const item of allAward) {
+      if (item.award_ke > award.award_ke) {
+        item.award_ke -= 1;
+        await this.awardRepository.save(item);
+      }
+    }
   }
 }

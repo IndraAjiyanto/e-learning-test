@@ -28,7 +28,7 @@ export class TeknologiService {
       where: { id },
     });
     if (!teknologi) {
-      throw new NotFoundException('Teknologi not found');
+      throw new NotFoundException('Tech not found');
     }
     return teknologi;
   }
@@ -36,7 +36,7 @@ export class TeknologiService {
   async update(id: number, updateTeknologiDto: UpdateTeknologiDto) {
     const teknologi = await this.findOne(id);
     if (!teknologi) {
-      throw new NotFoundException('Teknologi tidak ditemukan');
+      throw new NotFoundException('Tech not found');
     }
 
     Object.assign(teknologi, updateTeknologiDto);
@@ -46,7 +46,7 @@ export class TeknologiService {
   async remove(id: number) {
     const teknologi = await this.findOne(id);
     if (!teknologi) {
-      throw new NotFoundException();
+      throw new NotFoundException('Tech not found');
     }
     return await this.teknologiRepository.remove(teknologi);
   }

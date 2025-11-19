@@ -51,7 +51,6 @@ export class TeamController {
     @Body() createTeamDto: CreateTeamDto,
     @Res() res: Response,
     @Req() req: Request,
-    @UploadedFile() profile: Express.Multer.File,
   ) {
     try {
       createTeamDto.profile = req.body.uploadedImageUrls?.[0];

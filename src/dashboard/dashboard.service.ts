@@ -88,11 +88,11 @@ export class DashboardService {
   }
 
   async findCommitment() {
-    return await this.commitmentRepository.find();
+    return await this.commitmentRepository.find({order: {commitment_ke: 'ASC'}});
   }
 
   async findValue() {
-    return await this.valueRepository.find();
+    return await this.valueRepository.find({order: {value_ke: 'ASC'}});
   }
 
   async findTeamLead() {
@@ -100,15 +100,15 @@ export class DashboardService {
   }
 
   async findMisi() {
-    return await this.misiRepository.find();
+    return await this.misiRepository.find({order: {misi_ke: 'ASC'}});
   }
 
   async findExperience() {
-    return await this.experienceRepository.find();
+    return await this.experienceRepository.find({order: {experience_ke: 'ASC'}});
   }
 
   async findAward() {
-    return await this.awardRepository.find();
+    return await this.awardRepository.find({order: {award_ke: 'ASC'}});
   }
 
   async findTentang() {
@@ -116,11 +116,11 @@ export class DashboardService {
   }
 
   async findTentangParagraf() {
-    return await this.paragrafRepository.find();
+    return await this.paragrafRepository.find({order: {p_ke: 'ASC'}});
   }
 
   async findBackground() {
-    return await this.backgroundRepository.find();
+    return await this.backgroundRepository.find({order: {background_ke: 'ASC'}});
   }
 
   async findKelas() {
@@ -191,7 +191,7 @@ export class DashboardService {
 
   async findTeam() {
     return await this.teamRepository.find({
-      order: { id: 'ASC' },
+      order: { team_ke: 'ASC' },
     });
   }
 
@@ -235,23 +235,5 @@ export class DashboardService {
     return await this.gambarBenefitRepository.findOne({ where: { no: 4 } });
   }
 
-  create(createDashboardDto: CreateDashboardDto) {
-    return 'This action adds a new dashboard';
-  }
 
-  findAll() {
-    return `This action returns all dashboard`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} dashboard`;
-  }
-
-  update(id: number, updateDashboardDto: UpdateDashboardDto) {
-    return `This action updates a #${id} dashboard`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} dashboard`;
-  }
 }

@@ -23,7 +23,7 @@ export class CicilanService {
 
     if (!kelas) {
       throw new NotFoundException(
-        `Kelas with ID ${createCicilanDto.kelasId} not found`,
+        `Program not found`,
       );
     }
 
@@ -49,7 +49,7 @@ export class CicilanService {
     });
 
     if (!cicilan) {
-      throw new NotFoundException(`Cicilan with ID ${id} not found`);
+      throw new NotFoundException(`Installment not found`);
     }
 
     return cicilan;
@@ -73,7 +73,7 @@ export class CicilanService {
 
       if (!kelas) {
         throw new NotFoundException(
-          `Kelas with ID ${updateCicilanDto.kelasId} not found`,
+          `Program not found`,
         );
       }
 

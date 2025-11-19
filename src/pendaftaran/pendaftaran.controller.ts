@@ -61,18 +61,17 @@ export class PendaftaranController {
         );
         req.flash(
           'info',
-          'anda sudah mengirimkan bukti pembayaran, silahkan tunggu info selanjutnya dari admin',
+          'you have already submitted the registration proof, please wait for further information from the admin',
         );
         res.redirect(`/pembayarans/riwayat/${userId}`);
       } else {
         req.flash(
           'success',
-          'bukti pembayaran berhasil di kirim, silahkan tunggu admin',
+          'registration proof successfully sent, please wait for the admin',
         );
         res.redirect(`/pembayarans/riwayat/${userId}`);
       }
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
       res.redirect(`/pembayarans/riwayat/${userId}`);
     }
@@ -112,10 +111,15 @@ export class PendaftaranController {
           pendaftaranId,
           updatePendaftaranDto,
         );
-        await this.pendaftaranService.addUserToKelas(
+        try {
+              await this.pendaftaranService.addUserToKelas(
           pendaftaran['user']['id'],
           pendaftaran['kelas']['id'],
         );
+        } catch (error) {
+          
+        }
+    
         req.flash('success', 'proces successfully change acc');
         res.redirect('/pembayarans');
       } else if (proses === 'rejected') {
@@ -127,6 +131,14 @@ export class PendaftaranController {
           pendaftaranId,
           updatePendaftaranDto,
         );
+          try {
+            await this.pendaftaranService.removeUserKelas(
+              pendaftaran['user']['id'],
+              pendaftaran['kelas']['id'],
+            );
+          } catch (error) {
+            
+          }
         req.flash('success', 'proces successfully change rejected');
         res.redirect('/pembayarans');
       }
@@ -135,10 +147,5 @@ export class PendaftaranController {
       req.flash('error', error.message || 'proses pembayaran gagal diubah');
       res.redirect('/pembayarans');
     }
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pendaftaranService.remove(+id);
   }
 }
