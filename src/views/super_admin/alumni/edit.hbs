@@ -155,7 +155,7 @@
               
             case 'kelasId':
               if (!value) {
-                this.formErrors.kelasId = 'Class selection is required';
+                this.formErrors.kelasId = 'Program selection is required';
                 this.formValid.kelasId = false;
               } else {
                 this.formErrors.kelasId = '';
@@ -420,7 +420,7 @@
             <label
               for='kelasId'
               class='block text-sm font-semibold text-gray-700 mb-1'
-            >Class</label>
+            >Program</label>
             <select
               id='kelasId'
               name='kelasId'
@@ -430,7 +430,7 @@
               x-model='formData.kelasId'
               @change='validateField("kelasId", $event.target.value)'
             >
-              <option value='' disabled>-- Select Class --</option>
+              <option value='' disabled>-- Select Program --</option>
               {{#each kelas}}
               <option value='{{id}}' {{#if (eq ../alumni.kelas.id id)}}selected{{/if}}>
                 {{nama_kelas}}

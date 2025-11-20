@@ -1,5 +1,5 @@
 <div
-  class='max-w-6xl mx-auto px-6 py-10'
+  class='w-full mx-auto px-6 py-10'
   x-data='alumniTable({ alumni: {{json alumni}} })'
 >
   <div
@@ -72,7 +72,7 @@
           >Current Position</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Class</th>
+          >Program</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Action</th>
@@ -206,6 +206,9 @@
       alumni,
       amount: 0,
 
+      // ======================
+      // FILTERING & PAGINATION
+      // ======================
       get filteredAlumni() {
         let filtered = this.alumni.filter(a =>
           (
@@ -232,11 +235,15 @@
       },
 
       nextPage() {
-        if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+        if (this.pageNumber < this.pageCount() - 1) {
+          this.pageNumber++;
+        }
       },
 
       prevPage() {
-        if (this.pageNumber > 0) this.pageNumber--;
+        if (this.pageNumber > 0) {
+          this.pageNumber--;
+        }
       },
 
       viewPage(index) {

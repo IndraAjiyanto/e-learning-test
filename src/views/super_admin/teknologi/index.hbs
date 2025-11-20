@@ -1,5 +1,5 @@
 <div
-  class='max-w-5xl mx-auto px-6 py-10'
+  class='w-full mx-auto px-6 py-10'
   x-data='teknologiTable({ teknologi: {{json teknologi}} })'
 >
   <div
@@ -173,16 +173,58 @@
     >Next</button>
   </div>
 </div>
-
 <script>
-  function teknologiTable({ teknologi }) { return { searchInput: "", search: "",
-  pageNumber: 0, size: 5, teknologi, amount: 0, get filteredTeknologi() { let
-  filtered = this.teknologi.filter(t =>
-  t.nama.toLowerCase().includes(this.search.toLowerCase()) ); this.amount =
-  filtered.length; const start = this.pageNumber * this.size; const end = start
-  + this.size; return filtered.slice(start, end).map(t => t.id.toString()); },
-  pages() { return Array.from({ length: this.pageCount() }); }, pageCount() {
-  return Math.ceil(this.amount / this.size); }, nextPage() { if (this.pageNumber
-  < this.pageCount()-1) this.pageNumber++; }, prevPage() { if (this.pageNumber >
-  0) this.pageNumber--; }, viewPage(index) { this.pageNumber = index; }, } }
+  function teknologiTable({ teknologi }) {
+    return {
+      searchInput: "",
+      search: "",
+      pageNumber: 0,
+      size: 5,
+      teknologi,
+      amount: 0,
+
+      // ============================
+      // FILTERED DATA
+      // ============================
+      get filteredTeknologi() {
+        let filtered = this.teknologi.filter(t =>
+          t.nama.toLowerCase().includes(this.search.toLowerCase())
+        );
+
+        this.amount = filtered.length;
+
+        const start = this.pageNumber * this.size;
+        const end = start + this.size;
+
+        return filtered.slice(start, end).map(t => t.id.toString());
+      },
+
+      // ============================
+      // PAGINATION
+      // ============================
+      pages() {
+        return Array.from({ length: this.pageCount() });
+      },
+
+      pageCount() {
+        return Math.ceil(this.amount / this.size);
+      },
+
+      nextPage() {
+        if (this.pageNumber < this.pageCount() - 1) {
+          this.pageNumber++;
+        }
+      },
+
+      prevPage() {
+        if (this.pageNumber > 0) {
+          this.pageNumber--;
+        }
+      },
+
+      viewPage(index) {
+        this.pageNumber = index;
+      },
+    };
+  }
 </script>

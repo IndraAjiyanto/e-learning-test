@@ -1,5 +1,5 @@
-<div class="px-6 py-10">
-<div class="max-w-5xl mx-auto" x-data="{ search: '' }">
+<div class="px-6 py-10 w-full mx-auto">
+<div class="mx-auto" x-data="{ search: '' }">
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
     <div class="mb-4">
@@ -83,7 +83,7 @@
 </div>
 
 
-<div class="max-w-5xl mx-auto" x-data="{ tab: 'absen', search: '' }">
+<div class=" w-full mx-auto" x-data="{ tab: 'absen', search: '' }">
 
     <div class="flex space-x-4 mb-6">
     <button @click="tab = 'absen'" 
@@ -123,7 +123,9 @@
 
   <div x-show="tab === 'absen'">
     {{> pertemuan/absen_tab}}
-  </div>  <div x-show="tab === 'materi'">
+  </div>  
+
+  <div x-show="tab === 'materi'">
     {{> pertemuan/materi_tab}}
   </div>
 
@@ -145,6 +147,3 @@
   src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
 ></script>
 
-<style>
-[x-cloak] { display: none !important; }
-</style>
