@@ -29,7 +29,7 @@ import { Proses } from 'src/entities/logbook.entity';
 export class LogbookController {
   constructor(private readonly logbookService: LogbookService) {}
 
-  @Roles('user')
+  @Roles('user','admin')
   @Post(':pertemuanId')
   @UseInterceptors(
     FileInterceptor('dokumentasi', { storage: memoryStorage() }),
@@ -53,8 +53,8 @@ export class LogbookController {
       }
 
       createLogbookDto.dokumentasi = req.body.uploadedImageUrls[0];
-      createLogbookDto.userId = req.user!.id;
       if (req.user?.role === 'user') {
+      createLogbookDto.userId = req.user!.id;
         createLogbookDto.proses = 'proces';
       } else if (req.user?.role === 'admin') {
         createLogbookDto.proses = 'acc';
@@ -64,7 +64,7 @@ export class LogbookController {
       const pertemuan = await this.logbookService.findPertemuan(pertemuanId);
       req.flash('success', 'Log book added successfully');
       if (req.user?.role === 'admin') {
-        res.redirect('/logbook');
+        res.redirect(`/pertemuans/${pertemuanId}`);
       } else if (req.user?.role === 'user') {
         res.redirect(`/kelass/${pertemuan.minggu.kelas.id}`);
       }
@@ -73,65 +73,15 @@ export class LogbookController {
       const errorMessage = error.message || 'Failed to add log book';
       req.flash('error', errorMessage);
       if (req.user?.role === 'admin') {
-        res.redirect('/logbook');
+                res.redirect(`/pertemuans/${pertemuanId}`);
       } else if (req.user?.role === 'user') {
         res.redirect(`/kelass/${pertemuan.minggu.kelas.id}`);
       }
     }
   }
 
-  @Roles('admin')
-  @Post('create/:pertemuanId')
-  @UseInterceptors(
-    FileInterceptor('dokumentasi', { storage: memoryStorage() }),
-    ValidateImageInterceptor,
-  )
-  @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 5MB
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/logbook/user',
-  })
-  async createLogBook(
-    @Body() createLogbookDto: CreateLogbookDto,
-    @Res() res: Response,
-    @Req() req: Request,
-    @Param('pertemuanId') pertemuanId: number,
-  ) {
-    try {
-      // Pastikan file berhasil diupload
-      if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
-        throw new Error('Image upload failed. Please try again.');
-      }
-
-      createLogbookDto.dokumentasi = req.body.uploadedImageUrls[0];
-      createLogbookDto.userId = createLogbookDto.userId;
-      createLogbookDto.pertemuanId = pertemuanId;
-      await this.logbookService.create(createLogbookDto);
-      req.flash('success', 'Log book added successfully');
-      res.redirect(`/pertemuans/${pertemuanId}`);
-    } catch (error) {
-      const errorMessage = error.message || 'Failed to add log book';
-      req.flash('error', errorMessage);
-      res.redirect(`/pertemuans/${pertemuanId}`);
-    }
-  }
-
-  @Roles('super_admin')
-  @Get('all')
-  async findAll(@Req() req: Request, @Res() res: Response) {
-    const logbook = await this.logbookService.findAll();
-    const logbook_mentor = await this.logbookService.findLogBookMentor();
-    const kelas = await this.logbookService.findAllKelas();
-    res.render('super_admin/logbook/index', {
-      user: req.user,
-      logbook,
-      logbook_mentor,
-      kelas,
-    });
-  }
-
   @Roles('user')
-  @Get(':kelasId')
+  @Get('user/:kelasId')
   async findLogBook(@Req() req: Request, @Res() res: Response, @Param('kelasId') kelasId: number) {
       const logbook = await this.logbookService.findLogBook(req.user!.id, kelasId);
       res.render('user/logbook/index', { user: req.user, logbook });
