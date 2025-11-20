@@ -130,17 +130,11 @@ export class LogbookController {
     });
   }
 
-  @Roles('user', 'admin')
-  @Get()
-  async findLogBook(@Req() req: Request, @Res() res: Response) {
-    if (req.user!.role === 'admin') {
-      const kelas = await this.logbookService.findAllKelas();
-      res.render('admin/logbook/index', { user: req.user, kelas });
-    } else if (req.user!.role === 'user') {
-      const kelas = await this.logbookService.findKelasByUser(req.user!.id);
-      const logbook = await this.logbookService.findLogBookByUser(req.user!.id);
-      res.render('user/logbook/index', { user: req.user, kelas, logbook });
-    }
+  @Roles('user')
+  @Get(':kelasId')
+  async findLogBook(@Req() req: Request, @Res() res: Response, @Param('kelasId') kelasId: number) {
+      const logbook = await this.logbookService.findLogBook(req.user!.id, kelasId);
+      res.render('user/logbook/index', { user: req.user, logbook });
   }
 
   @Roles('user')

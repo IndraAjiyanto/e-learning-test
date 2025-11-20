@@ -58,9 +58,9 @@ export class LogbookService {
     });
   }
 
-  async findLogBookByUser(userId: number) {
+  async findLogBook(userId: number, kelasId: number) {
     return await this.logBookRepository.find({
-      where: { user: { id: userId } },
+      where: { user: { id: userId }, pertemuan: { minggu: { kelas: { id: kelasId } } } },
       relations: [
         'user',
         'pertemuan',

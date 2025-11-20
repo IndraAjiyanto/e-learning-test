@@ -289,7 +289,8 @@ export class KelassService {
 
   async findMentor(kelasId) {
     return await this.mentorRepository.find({
-      where: { kelas: { id: kelasId } }, relations: ['teknologi']
+      where: { kelas: { id: kelasId } },
+      relations: ['teknologi'],
     });
   }
 
@@ -310,9 +311,7 @@ export class KelassService {
   async findPertemuanAndPertanyaan(mingguId: number, userId: number) {
     const minggu = await this.findOne(mingguId);
     if (!minggu) {
-      throw new NotFoundException(
-        `Week not found`,
-      );
+      throw new NotFoundException(`Week not found`);
     }
 
     return await this.pertemuanRepository.find({
@@ -705,14 +704,17 @@ export class KelassService {
   }
 
   async findLogbookMentor(kelasId: number) {
-    return await this.logbookMentorRepository.find({  
-      where: { pertemuan: { minggu: {kelas: { id: kelasId } } } }, relations: ['user']}
-    );
+    return await this.logbookMentorRepository.find({
+      where: { pertemuan: { minggu: { kelas: { id: kelasId } } } },
+      relations: ['user', 'pertemuan', 'pertemuan.minggu','pertemuan.minggu.kelas', 'pertemuan.minggu.kelas.mentor', 'pertemuan.minggu.kelas.mentoring','pertemuan.minggu.kelas.jenis_kelas', 'pertemuan.minggu.kelas.kategori'],
+    });
   }
 
   async findLogBookUser(kelasId: number) {
     return await this.logbookRepository.find({
-      where: { pertemuan: { minggu: {kelas: { id: kelasId } } }}, relations: ['user']});
+      where: { pertemuan: { minggu: { kelas: { id: kelasId } } } },
+      relations: ['user', 'pertemuan', 'pertemuan.minggu','pertemuan.minggu.kelas', 'pertemuan.minggu.kelas.mentor', 'pertemuan.minggu.kelas.jenis_kelas', 'pertemuan.minggu.kelas.kategori'],
+    });
   }
 
   async findUser() {
@@ -764,7 +766,6 @@ export class KelassService {
         'kategori',
         'jenis_kelas',
         'teknologi',
-        'bulan',
         'mentoring',
       ],
     });
@@ -796,8 +797,10 @@ export class KelassService {
       .leftJoinAndSelect('kelas.mentoring', 'mentoring')
       .leftJoinAndSelect('mentoring.user', 'mentoring_user')
       .leftJoinAndSelect('kelas.cicilan', 'cicilan')
+      .leftJoinAndSelect('kelas.minggu', 'minggu')
       .where('kelas.id = :kelasId', { kelasId })
       .orderBy('alur_kelas.alur_ke', 'ASC')
+      .addOrderBy('minggu.minggu_ke', 'ASC')
       .getOne();
 
     if (!kelas) {
@@ -832,14 +835,11 @@ export class KelassService {
       });
 
       if (!kategori) {
-        throw new NotFoundException(
-          `Category not found`,
-        );
+        throw new NotFoundException(`Category not found`);
       }
 
       kelas.kategori = kategori;
     }
-
 
     if (updateKelassDto.jenis_kelasId) {
       const jenis_kelas = await this.jenisKelasRepository.findOne({
@@ -847,9 +847,7 @@ export class KelassService {
       });
 
       if (!jenis_kelas) {
-        throw new NotFoundException(
-          `Program type not found`,
-        );
+        throw new NotFoundException(`Program type not found`);
       }
 
       kelas.jenis_kelas = jenis_kelas;

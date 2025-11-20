@@ -2,6 +2,30 @@
   <div class='container mx-auto px-4 pb-16'>
     <!-- Header -->
     <div class='text-center mb-12'>
+      <!-- Back Button -->
+      <div class='mb-6'>
+        <a
+          href='/kelass/{{logbook.minggu.kelas.id}}'
+          class='inline-flex items-center text-gray-600 text-base font-medium hover:underline'
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            class='h-5 w-5 mr-1'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M15 19l-7-7 7-7'
+            />
+          </svg>
+          Back to Class
+        </a>
+      </div>
+
       <h1
         class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'
       >Logbook</h1>
@@ -31,18 +55,6 @@
 
           <!-- Filters Row -->
           <div class='flex flex-wrap gap-3'>
-            <!-- Kelas Filter -->
-            <select
-              x-model='filterKelas'
-              @change='currentPage = 1'
-              class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
-            >
-              <option value=''>All Classes</option>
-              <template x-for='kelas in kelasList' :key='kelas.id'>
-                <option :value='kelas.id' x-text='kelas.nama_kelas'></option>
-              </template>
-            </select>
-
             <!-- Reset Button -->
             <button
               @click='resetFilters()'
@@ -79,11 +91,6 @@
             <i class='fas fa-filter'></i>
             <span>Active filters:</span>
           </div>
-          <span
-            x-show='filterKelas'
-            class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium'
-            x-text='getKelasName()'
-          ></span>
           <span
             x-show='search'
             class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium flex items-center gap-1'
@@ -350,11 +357,8 @@
     return {
       allLogbooksRaw: {{{json logbook}}},
       allLogbooks: [],
-      kelasList: {{{json kelas}}},
-      
       searchInput: '',
       search: '',
-      filterKelas: '',
       currentPage: 1,
       itemsPerPage: 10,
       searchTimeout: null,
@@ -370,14 +374,9 @@
       get filteredLogbooks() {
         let filtered = this.allLogbooksRaw;
 
-        if (this.filterKelas) {
-          filtered = filtered.filter(
-            log => log.pertemuan?.minggu?.kelas?.id == this.filterKelas
-          );
-        }
-
         if (this.search) {
           const s = this.search.toLowerCase();
+
           filtered = filtered.filter(log =>
             (log.kegiatan || '').toLowerCase().includes(s) ||
             (log.rincian_kegiatan || '').toLowerCase().includes(s) ||
@@ -401,21 +400,16 @@
       resetFilters() {
         this.searchInput = '';
         this.search = '';
-        this.filterKelas = '';
         this.currentPage = 1;
       },
 
       hasActiveFilters() {
-        return this.filterKelas || this.search;
-      },
-
-      getKelasName() {
-        const kelas = this.kelasList.find(k => k.id == this.filterKelas);
-        return kelas ? kelas.nama_kelas : '';
+        return this.search;
       },
 
       formatDate(date) {
         if (!date) return '-';
+
         return new Date(date).toLocaleDateString('id-ID', {
           year: 'numeric',
           month: 'short',
