@@ -84,7 +84,7 @@ export class LogbookController {
   @Get('user/:kelasId')
   async findLogBook(@Req() req: Request, @Res() res: Response, @Param('kelasId') kelasId: number) {
       const logbook = await this.logbookService.findLogBook(req.user!.id, kelasId);
-      res.render('user/logbook/index', { user: req.user, logbook });
+      res.render('user/logbook/index', { user: req.user, logbook, kelasId });
   }
 
   @Roles('user')
