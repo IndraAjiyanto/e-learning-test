@@ -132,7 +132,7 @@ export class DashboardService {
 
   async findKelasByKategori(kategoriName: string) {
     return await this.kelasRepository.find({
-      where: { kategori: { nama_kategori: kategoriName }, launch: true },
+      where: { kategori: { nama_kategori_uniq: kategoriName }, launch: true },
       order: { id: 'DESC' },
       relations: ['kategori', 'jenis_kelas', 'user_kelas'],
     });

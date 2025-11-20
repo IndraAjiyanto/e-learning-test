@@ -18,6 +18,9 @@ export class Kategori {
   @Column()
   nama_kategori: string;
 
+  @Column({nullable: true})
+  nama_kategori_uniq: string
+
   @Column()
   icon: string;
 

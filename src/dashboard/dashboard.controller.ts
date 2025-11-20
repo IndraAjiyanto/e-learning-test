@@ -87,17 +87,21 @@ export class DashboardController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
     const jenis_kelas = await this.dashboardService.findJenisKelas();
     if (kategoriName === 'Bootcamp') {
+    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('kelas/bootcamp', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'Course') {
+    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('kelas/course', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'Short Class') {
+    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('kelas/short_class', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'in_house_training') {
+    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('inhouse', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'wip') {
+    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('wip', { kelas, user: req.user, jenis_kelas });
     }
   }
