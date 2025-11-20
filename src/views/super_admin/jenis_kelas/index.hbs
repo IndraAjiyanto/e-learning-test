@@ -1,5 +1,5 @@
 <div
-  class='max-w-5xl mx-auto px-6 py-10 '
+  class='w-full mx-auto px-6 py-10 '
   x-data='jenisKelasTable({ jenisKelas: {{json jenis_kelas}} })'
 >
   <div
@@ -54,7 +54,7 @@
           >No</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Class type</th>
+          >Program type</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Description</th>
@@ -154,23 +154,89 @@
 </div>
 
 <script>
-  function jenisKelasTable({ jenisKelas }) { return { searchInput: '', search:
-  '', pageNumber: 0, size: 5, jenisKelas, amount: 0, get filteredJenisKelas() {
-  const filtered = this.jenisKelas.filter((j) =>
-  (`${j.nama_jenis_kelas}`).toLowerCase().includes(this.search.toLowerCase()) );
-  this.amount = filtered.length; const start = this.pageNumber * this.size;
-  const end = start + this.size; // return numeric ids so comparison with
-  {{id}}
-  (number) works return filtered.slice(start, end).map((j) => j.id); }, pages()
-  { return Array.from({ length: this.pageCount() }); }, pageCount() { return
-  Math.ceil(this.amount / this.size); }, nextPage() { if (this.pageNumber <
-  this.pageCount() - 1) this.pageNumber++; }, prevPage() { if (this.pageNumber >
-  0) this.pageNumber--; }, viewPage(index) { this.pageNumber = index; }, // map
-  icon input to Font Awesome 6 class (prefer fa-solid) mapIcon(icon) { const raw
-  = (icon || '').toString().trim(); if (!raw) return 'fa-solid
-  fa-circle-question'; const v = raw; const hasFaPrefix =
-  /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v)
-  || v.split(/\s+/).some((s) => /^fa-/i.test(s)); if (hasFaPrefix) { if
-  (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v; return v; } if
-  (!v.includes(' ')) return 'fa-solid fa-' + v; return v; }, }; }
+  function jenisKelasTable({ jenisKelas }) {
+    return {
+      searchInput: '',
+      search: '',
+      pageNumber: 0,
+      size: 5,
+      jenisKelas,
+      amount: 0,
+
+      // ============================
+      // FILTER DATA
+      // ============================
+      get filteredJenisKelas() {
+        const filtered = this.jenisKelas.filter(j =>
+          `${j.nama_jenis_kelas}`
+            .toLowerCase()
+            .includes(this.search.toLowerCase())
+        );
+
+        this.amount = filtered.length;
+
+        const start = this.pageNumber * this.size;
+        const end = start + this.size;
+
+        // return numeric IDs agar cocok dibandingkan dengan {{id}} (number)
+        return filtered.slice(start, end).map(j => j.id);
+      },
+
+      // ============================
+      // PAGINATION
+      // ============================
+      pages() {
+        return Array.from({ length: this.pageCount() });
+      },
+
+      pageCount() {
+        return Math.ceil(this.amount / this.size);
+      },
+
+      nextPage() {
+        if (this.pageNumber < this.pageCount() - 1) {
+          this.pageNumber++;
+        }
+      },
+
+      prevPage() {
+        if (this.pageNumber > 0) {
+          this.pageNumber--;
+        }
+      },
+
+      viewPage(index) {
+        this.pageNumber = index;
+      },
+
+      // ============================
+      // ICON HANDLER (Font Awesome 6)
+      // ============================
+      mapIcon(icon) {
+        const raw = (icon || '').toString().trim();
+        if (!raw) return 'fa-solid fa-circle-question';
+
+        const v = raw;
+
+        const hasFaPrefix =
+          /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) ||
+          v.split(/\s+/).some(s => /^fa-/i.test(s));
+
+        if (hasFaPrefix) {
+          // Jika hanya "fa-xxx" tanpa prefix lain
+          if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) {
+            return 'fa-solid ' + v;
+          }
+          return v;
+        }
+
+        // Jika input hanya 1 kata → otomatis diubah jadi fa-solid fa-{icon}
+        if (!v.includes(' ')) {
+          return 'fa-solid fa-' + v;
+        }
+
+        return v;
+      },
+    };
+  }
 </script>

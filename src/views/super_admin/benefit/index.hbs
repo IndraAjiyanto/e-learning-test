@@ -1,5 +1,5 @@
 <div
-  class='max-w-5xl mx-auto px-6 py-10'
+  class='w-full mx-auto px-6 py-10'
   x-data='benefitTable({ benefits: {{json benefit}} })'
 >
   <div
@@ -192,14 +192,61 @@
 </div>
 
 <script>
-  function benefitTable({ benefits }) { return { searchInput: '', search: '',
-  pageNumber: 0, size: 5, benefits, amount: 0, get filteredBenefits() { let
-  filtered = this.benefits.filter(b => (`${b.judul} ${b.text}
-  ${b.no}`).toLowerCase() .includes(this.search.toLowerCase()) ); this.amount =
-  filtered.length; const start = this.pageNumber * this.size; const end = start
-  + this.size; return filtered.slice(start, end).map(b => b.id.toString()); },
-  pages() { return Array.from({ length: this.pageCount() }); }, pageCount() {
-  return Math.ceil(this.amount / this.size); }, nextPage() { if (this.pageNumber
-  < this.pageCount()-1) this.pageNumber++; }, prevPage() { if (this.pageNumber >
-  0) this.pageNumber--; }, viewPage(index) { this.pageNumber = index; }, } }
+  function benefitTable({ benefits }) {
+    return {
+      searchInput: '',
+      search: '',
+      pageNumber: 0,
+      size: 5,
+      benefits,
+      amount: 0,
+
+      // ============================
+      // FILTERED DATA
+      // ============================
+      get filteredBenefits() {
+        let filtered = this.benefits.filter(b =>
+          (
+            `${b.judul} ${b.text} ${b.no}`
+          )
+            .toLowerCase()
+            .includes(this.search.toLowerCase())
+        );
+
+        this.amount = filtered.length;
+
+        const start = this.pageNumber * this.size;
+        const end = start + this.size;
+
+        return filtered.slice(start, end).map(b => b.id.toString());
+      },
+
+      // ============================
+      // PAGINATION
+      // ============================
+      pages() {
+        return Array.from({ length: this.pageCount() });
+      },
+
+      pageCount() {
+        return Math.ceil(this.amount / this.size);
+      },
+
+      nextPage() {
+        if (this.pageNumber < this.pageCount() - 1) {
+          this.pageNumber++;
+        }
+      },
+
+      prevPage() {
+        if (this.pageNumber > 0) {
+          this.pageNumber--;
+        }
+      },
+
+      viewPage(index) {
+        this.pageNumber = index;
+      },
+    };
+  }
 </script>

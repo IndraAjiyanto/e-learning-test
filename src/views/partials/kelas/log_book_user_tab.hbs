@@ -90,10 +90,10 @@
           >Week No</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Class Name</th>
+          >Program Name</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Class Type</th>
+          >Program Type</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Category</th>
@@ -280,8 +280,8 @@
             "Created At": new Date(l.createdAt).toLocaleDateString(),
             "Meeting No": l.pertemuan.pertemuan_ke,
             "Week No": l.pertemuan.minggu.minggu_ke,
-            "Class Name": l.pertemuan.minggu.kelas.nama_kelas,
-            "Class Type": l.pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas,
+            "Program Name": l.pertemuan.minggu.kelas.nama_kelas,
+            "Program Type": l.pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas,
             Category: l.pertemuan.minggu.kelas.kategori.nama_kategori,
             Mentor: l.pertemuan.minggu.kelas.mentor[0]?.nama || "",
             Activity: l.kegiatan,
@@ -301,8 +301,8 @@
             { wch: 15 },  // Email
             { wch: 10 },  // Created At
             { wch: 8 },   // Meeting No
-            { wch: 25 },  // Class Name
-            { wch: 15 },  // Class Type
+            { wch: 25 },  // Program Name
+            { wch: 15 },  // Program Type
             { wch: 15 },  // Category
             { wch: 20 },  // Mentor
             { wch: 30 },  // Activity

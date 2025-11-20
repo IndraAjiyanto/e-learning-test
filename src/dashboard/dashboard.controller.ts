@@ -6,15 +6,17 @@ import { Request, Response } from 'express';
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
-  @Get('')
+  @Get()
   async getProtected(@Req() req: Request, @Res() res: Response) {
     const kelas = await this.dashboardService.findAllKelas();
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
-        res.render('super_admin/kelas/index', { user: req.user });
+        const kelas = await this.dashboardService.findAllKelas()
+        res.render('super_admin/kelas/index', { user: req.user, kelas });
       } else if (req.user.role === 'admin') {
-        res.render('admin/kelas/index', { user: req.user });
+        const kelas = await this.dashboardService.findKelasByMentoring(req.user!.id);
+        res.render('admin/kelas/index', { user: req.user, kelas });
       } else if (req.user.role === 'user') {
         const pertanyaan_umum = await this.dashboardService.findFAQ();
         const gambar_benefit_1 = await this.dashboardService.findGambar1();
