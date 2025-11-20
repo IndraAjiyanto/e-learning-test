@@ -95,6 +95,20 @@ export class DashboardService {
     return await this.valueRepository.find({order: {value_ke: 'ASC'}});
   }
 
+    async findKelasByMentoring(userId: number) {
+    return await this.kelasRepository.find({
+      where: { mentoring: { user: { id: userId } } },
+      relations: [
+        'user_kelas',
+        'user_kelas.user',
+        'kategori',
+        'jenis_kelas',
+        'mentoring',
+        'mentoring.user',
+      ],
+    });
+  }
+
   async findTeamLead() {
     return await this.teamLeadRepository.find();
   }

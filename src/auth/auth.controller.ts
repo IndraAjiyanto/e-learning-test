@@ -40,11 +40,6 @@ export class AuthController {
     }
   }
 
-  @Get('coba')
-  async coba(@Res() res: Response) {
-    res.render('user/dashboardlain');
-  }
-
   @Get('register')
   async regis(@Res() res: Response) {
     res.render('regis');
@@ -88,7 +83,6 @@ export class AuthController {
         res.redirect('/dashboard');
       });
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Email atau password salah');
       return res.redirect('/login');
     }

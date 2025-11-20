@@ -86,10 +86,10 @@
           >Week No</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Class Name</th>
+          >Program Name</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Class Type</th>
+          >Program Type</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Category</th>
@@ -202,7 +202,7 @@
 
         let filtered = this.logbookMentor.filter(l =>
           (
-            `${l.pertemuan.minggu.kelas.mentor.[0].nama}
+            `${l.pertemuan.minggu.kelas.mentor[0].nama}
              ${l.pertemuan.pertemuan_ke}
              ${l.pertemuan.minggu.minggu_ke}
              ${l.pertemuan.minggu.kelas.nama_kelas}
@@ -212,9 +212,7 @@
              ${l.rincian_kegiatan}
              ${l.dokumentasi}
              ${l.kendala}`
-          )
-            .toLowerCase()
-            .includes(s)
+          ).toLowerCase().includes(s)
         );
 
         this.amount = filtered.length;
@@ -256,39 +254,38 @@
         try {
           const dataToExport = this.filteredData.map((l, index) => ({
             No: index + 1,
-            Mentor: l.pertemuan.minggu.kelas.mentor.[0].nama,
+            Mentor: l.pertemuan.minggu.kelas.mentor[0].nama,
             "Created At": new Date(l.createdAt).toLocaleDateString(),
             "Meeting No": l.pertemuan.pertemuan_ke,
             "Week No": l.pertemuan.minggu.minggu_ke,
-            "Class Name": l.pertemuan.minggu.kelas.nama_kelas,
-            "Class Type": l.pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas,
+            "Program Name": l.pertemuan.minggu.kelas.nama_kelas,
+            "Program Type": l.pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas,
             Category: l.pertemuan.minggu.kelas.kategori.nama_kategori,
             Activity: l.kegiatan,
             "Activity Details": l.rincian_kegiatan,
             Documentation: l.dokumentasi,
-            Issues: l.kendala
+            Issues: l.kendala,
           }));
 
           const wb = XLSX.utils.book_new();
           const ws = XLSX.utils.json_to_sheet(dataToExport);
 
           ws["!cols"] = [
-            { wch: 5 },   // No
-            { wch: 20 },  // Mentor
-            { wch: 15 },  // Created At
-            { wch: 10 },  // Meeting No
-            { wch: 8 },   // Week No
-            { wch: 25 },  // Class Name
-            { wch: 15 },  // Class Type
-            { wch: 15 },  // Category
-            { wch: 30 },  // Activity
-            { wch: 50 },  // Activity Details
-            { wch: 60 },  // Documentation
-            { wch: 40 }   // Issues
+            { wch: 5 },  // No
+            { wch: 20 }, // Mentor
+            { wch: 15 }, // Created At
+            { wch: 10 }, // Meeting No
+            { wch: 8 },  // Week No
+            { wch: 25 }, // Program Name
+            { wch: 15 }, // Program Type
+            { wch: 15 }, // Category
+            { wch: 30 }, // Activity
+            { wch: 50 }, // Activity Details
+            { wch: 60 }, // Documentation
+            { wch: 40 }  // Issues
           ];
 
           XLSX.utils.book_append_sheet(wb, ws, "Log Book Mentor");
-
           XLSX.writeFile(
             wb,
             `Log_Book_Mentor_${new Date().toISOString().slice(0, 10)}.xlsx`
@@ -297,8 +294,9 @@
           alert("Failed to export data to Excel");
           console.error(err);
         }
-      }
+      },
     };
   }
-  console.log(logbookMentor)
+
+  console.log(logbookMentor);
 </script>
