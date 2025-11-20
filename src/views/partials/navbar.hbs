@@ -151,7 +151,7 @@
     <!-- Navbar -->
     <nav
       x-show="open || isDesktop"
-      class="fixed inset-0 z-40 md:relative md:inset-auto md:flex md:items-center"
+      class="fixed w-full inset-0 z-40 md:relative md:inset-auto md:flex md:items-center"
     >
       <!-- Mobile menu backdrop -->
       <div
@@ -420,7 +420,7 @@
             :class="isUserActive()
               ? 'bg-white text-gray-900'
               : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-            class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:w-auto md:ml-4'
+            class='flex items-center border border-white justify-between w-full px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:w-auto md:ml-4'
           >
             <div class='flex items-center gap-3'>
               <span>{{user.username}}</span>
@@ -445,6 +445,7 @@
                   </div>
                 {{/if}}
               </div>
+            </div>
               <svg
                 fill='currentColor'
                 viewBox='0 0 20 20'
@@ -457,7 +458,6 @@
                   clip-rule='evenodd'
                 ></path>
               </svg>
-            </div>
           </button>
 
           <!-- Mobile User Dropdown -->

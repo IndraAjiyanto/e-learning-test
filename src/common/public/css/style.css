@@ -5420,11 +5420,6 @@ details.collapse summary::-webkit-details-marker {
   border-left-color: rgb(30 41 59 / var(--tw-border-opacity));
 }
 
-.bg-accent {
-  --tw-bg-opacity: 1;
-  background-color: rgb(104 187 227 / var(--tw-bg-opacity));
-}
-
 .bg-amber-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 243 199 / var(--tw-bg-opacity));
@@ -5674,6 +5669,11 @@ details.collapse summary::-webkit-details-marker {
 
 .bg-slate-900\/80 {
   background-color: rgb(15 23 42 / 0.8);
+}
+
+.bg-teal-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(20 184 166 / var(--tw-bg-opacity));
 }
 
 .bg-transparent {
@@ -7276,6 +7276,11 @@ details.collapse summary::-webkit-details-marker {
 
 .ease-out {
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+html,
+body {
+  overflow-x: hidden;
 }
 
 /* Optional: Custom styles untuk highlight */
