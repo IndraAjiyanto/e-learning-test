@@ -259,21 +259,21 @@
 >
   <!-- Title -->
   <div class='text-center max-w-5xl mx-auto mb-10'>
-    {{> highlightText 
+    {{!-- {{!-- {{> highlightText 
       before="Our"
       highlight="Experience"
       after=""
       bg="bg-white"
       textColor="text-white"
       color="text-gray-900"
-    }}
+    }}  --}}
 
 
-    {{!-- <h2
+    <h2
       class='text-4xl md:text-5xl font-bold text-white leading-tight font-montserrat'
     >
   Our Experience
-    </h2> --}}
+    </h2>
 
     <p
       class='py-6 text-lg text-white leading-relaxed max-w-2xl mx-auto font-inter'
@@ -483,17 +483,17 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
   <div class='container mx-auto max-w-7xl'>
     <!-- Header -->
     <div class='text-center mb-16 min-h-42'>
-        {{> highlightText 
+        {{!-- {{!-- {{> highlightText 
           before="Our Special"
           highlight="Program"
           after=""
           textColor="text-gray-900"
           bg="bg-primary"
           color="text-white"
-        }}
-      {{!-- <h2 class='text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-montserrat'>
+        }}  --}}
+      <h2 class='text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-montserrat'>
         Our Special Programs
-      </h2> --}}
+      </h2>
       <p class='text-lg text-gray-600 max-w-2xl mx-auto font-inter mt-3'>
       Specialized program options designed to meet different goals — from professional internships to corporate training solutions.
 
@@ -640,15 +640,17 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
 >
   <!-- Title -->
   <div class='text-center mb-16'>
-      {{> highlightText 
+      {{!-- {{!-- {{> highlightText 
         before="Stories from"
         highlight="Alumni"
         after=""
         textColor="text-gray-900"
         bg="bg-primary"
         color="text-white"
-      }}
-    </h2>
+      }}  --}}
+
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">Stories from Alumni</h2>
+
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
       Every alumnus has their own unique journey — from the first step of learning, facing challenges, to finally building a successful career in tech. Hear how their experience with Kesatria Academy opened new opportunities and transformed their future.
     </p>
@@ -748,14 +750,15 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
   class='bg-gradient-to-br from-slate-50 via-white to-slate-100 py-20 px-6 lg:px-20'
 >
   <div class='text-center mb-16'>
-    {{> highlightText 
+    {{!-- {{!-- {{> highlightText 
           before="Our"
           highlight="Partners"
           after=""
           textColor="text-gray-900"
           bg="bg-primary"
-          color="text-white"
-        }}
+          color="text-white"}}  --}}
+
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">Our Partners</h2>
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
 Kesatria Academy has partnered with various organizations, institutions, and companies to strengthen an industry-driven learning ecosystem. Through these collaborations, we provide training programs that are relevant to real-world job demands and create broader career opportunities for our participants.
     </p>
@@ -890,14 +893,16 @@ Kesatria Academy has partnered with various organizations, institutions, and com
 
   <!-- Header Section -->
   <div class='text-center mb-16 relative'>
-       {{> highlightText 
+       {{!-- {{!-- {{> highlightText 
           before="Kesatria Academy"
           highlight="Program"
           after=""
           bg="bg-white"
           textColor="text-white"
           color="text-gray-900"
-        }}
+        }}  --}}
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">Kesatria Academy Program</h2>
+
     <p class='text-lg mt-4 text-slate-300 max-w-2xl mx-auto relative z-10'>
 Elevate your competence to the highest level. The Kesatria Academy Program is designed to forge outstanding individuals ready to face global challenges. Gain access to cutting-edge curriculum and mentorship from leading experts to reach your maximum career potential.
     </p>
@@ -1368,14 +1373,16 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
   <div class='container mx-auto px-6 max-w-6xl'>
 
     <div class='max-w-4xl mx-auto space-y-6'>
-        {{> highlightText 
+        {{!-- {{!-- {{> highlightText 
           before="Frequented Asked"
           highlight="Question"
           after=""
           textColor="text-gray-900"
           bg="bg-primary"
           color="text-white"
-        }}
+        }}  --}}
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">Frequently Asked Questions</h2>
+
       {{#if pertanyaan_umum}}
       {{#each pertanyaan_umum}}
         <div
