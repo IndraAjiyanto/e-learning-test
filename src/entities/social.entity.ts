@@ -29,6 +29,9 @@ export class Social {
   @Column()
   nomor: string;
 
+  @Column('text')
+  link_alamat: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

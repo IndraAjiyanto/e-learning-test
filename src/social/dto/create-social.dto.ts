@@ -17,5 +17,8 @@ export class CreateSocialDto {
   alamat: string;
 
   @IsString()
+  link_alamat: string
+
+  @IsString()
   nomor: string;
 }
