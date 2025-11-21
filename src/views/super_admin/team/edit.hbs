@@ -433,7 +433,6 @@
               id='instagram'
               name='instagram'
               placeholder='https://instagram.com/username'
-              :class="formErrors.instagram ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.instagram ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               @input='validateField("instagram", $event.target.value)'
               x-init="$el.value = formData.instagram"
@@ -458,23 +457,10 @@
             name='deskripsi'
             rows='4'
             placeholder='Enter team member description...'
-            :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.deskripsi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             @input='validateField("deskripsi", $event.target.value)'
             x-init="$el.value = formData.deskripsi"
           ></textarea>
-          <template x-if='formErrors.deskripsi'>
-            <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
-              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p class='text-xs text-red-700' x-text='formErrors.deskripsi'></p>
-            </div>
-          </template>
-          <template x-if='formValid.deskripsi && !formErrors.deskripsi'>
-            <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
-              <i class='fas fa-check-circle text-green-500'></i>
-              <p class='text-xs text-green-700'>Valid description</p>
-            </div>
-          </template>
         </div>
 
         <!-- Buttons -->
