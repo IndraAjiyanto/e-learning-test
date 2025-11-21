@@ -85,6 +85,8 @@
     </div>
   {{/if}}
 
+
+{{#if minggu.pertemuan}}
   <!-- Add Session -->      {{#each minggu.pertemuan}}
         {{#if akhir}}
 
@@ -107,5 +109,23 @@
   </a>
         {{/if}}
       {{/each}}
+      {{else}}
+                <a
+    href='/pertemuans/formCreate/{{minggu.id}}'
+    class='flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition'
+  >
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      class='h-12 w-12 text-gray-400 mb-3'
+      fill='none'
+      viewBox='0 0 24 24'
+      stroke='currentColor'
+      stroke-width='2'
+    >
+      <path stroke-linecap='round' stroke-linejoin='round' d='M12 4v16m8-8H4' />
+    </svg>
+    <span class='text-gray-700 font-medium'>Add Session</span>
+  </a>
+      {{/if}}
 
 </div>
