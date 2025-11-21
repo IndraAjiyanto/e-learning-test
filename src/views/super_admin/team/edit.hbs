@@ -195,12 +195,14 @@
               break;
               
             case 'deskripsi':
-              if (!value.trim()) {
-                this.formErrors.deskripsi = 'Description is required';
-                this.formValid.deskripsi = false;
-              } else if (value.trim().length < 10) {
-                this.formErrors.deskripsi = 'Description must be at least 10 characters';
-                this.formValid.deskripsi = false;
+              if (value.trim()) {
+                if (value.trim().length < 10) {
+                  this.formErrors.deskripsi = 'Description must be at least 10 characters';
+                  this.formValid.deskripsi = false;
+                } else {
+                  this.formErrors.deskripsi = '';
+                  this.formValid.deskripsi = true;
+                }
               } else {
                 this.formErrors.deskripsi = '';
                 this.formValid.deskripsi = true;
@@ -447,11 +449,13 @@
 
         <!-- Description -->
         <div class='space-y-2'>
-          <label for='deskripsi' class='block text-sm font-semibold text-gray-700 mb-1'>Description</label>
+          <label for='deskripsi' class='block text-sm font-semibold text-gray-700 mb-1'>
+            Description
+            <span class='text-xs text-gray-500 font-normal'>(optional)</span>
+          </label>
           <textarea
             id='deskripsi'
             name='deskripsi'
-            required
             rows='4'
             placeholder='Enter team member description...'
             :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.deskripsi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"

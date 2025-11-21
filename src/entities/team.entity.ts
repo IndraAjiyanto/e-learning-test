@@ -29,7 +29,7 @@ export class Team {
   @Column()
   instagram: string;
 
-  @Column()
+  @Column({nullable: true})
   deskripsi: string;
 
   @CreateDateColumn()
