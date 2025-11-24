@@ -19,10 +19,11 @@ export class PertanyaanUmum {
   @Column()
   jawaban: string;
 
-    @ManyToOne(() => Kategori, (kategori) => kategori.kelas, {
-      onDelete: 'CASCADE',
-    })
-    kategori: Kategori;
+  @ManyToOne(() => Kategori, (kategori) => kategori.pertanyaan_umum, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  kategori?: Kategori;
 
   @CreateDateColumn()
   createdAt: Date;
