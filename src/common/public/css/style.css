@@ -4803,20 +4803,6 @@ details.collapse summary::-webkit-details-marker {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-@keyframes slide {
-  0% {
-    transform: translateX(100%);
-  }
-
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.animate-slide {
-  animation: slide 20s linear infinite;
-}
-
 @keyframes spin {
   to {
     transform: rotate(360deg);

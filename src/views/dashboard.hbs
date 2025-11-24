@@ -251,19 +251,6 @@
   .animation-delay-4000 {
     animation-delay: 4s;
   }
-
-  @keyframes slide {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-
-  .animate-slide {
-    animation: slide 30s linear infinite;
-  }
 </style>
 
 <!-- Bootcamp Experience Section -->
@@ -1326,29 +1313,18 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
 </section>
 
 <!-- Hiring Partners Section -->
-<section
-  class='bg-white py-20 px-6 lg:px-20'
->
+<section class='bg-white py-20 px-6 lg:px-20'>
   <div class='text-center mb-16'>
-    {{!-- {{!-- {{> highlightText 
-          before="Our"
-          highlight="Partners"
-          after=""
-          textColor="text-gray-900"
-          bg="bg-primary"
-          color="text-white"}}  --}}
-
-       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">Our Partners</h2>
+    <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">Our Partners</h2>
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
-Kesatria Academy has partnered with various organizations, institutions, and companies to strengthen an industry-driven learning ecosystem. Through these collaborations, we provide training programs that are relevant to real-world job demands and create broader career opportunities for our participants.
+      Kesatria Academy has partnered with various organizations, institutions, and companies to strengthen an industry-driven learning ecosystem. Through these collaborations, we provide training programs that are relevant to real-world job demands and create broader career opportunities for our participants.
     </p>
   </div>
 
-  <div
-    class='overflow-hidden whitespace-nowrap bg-white rounded-2xl shadow-lg py-8'
-  >
+  <div class='overflow-hidden whitespace-nowrap bg-white rounded-2xl shadow-lg py-8'>
     {{#if kerja_sama}}
-    <div class='animate-slide flex items-center'>
+    <div class='inline-flex animate-scroll-seamless'>
+      <!-- Set Pertama -->
       {{#each kerja_sama}}
       <img
         src='{{gambar}}'
@@ -1356,6 +1332,15 @@ Kesatria Academy has partnered with various organizations, institutions, and com
         class='h-24 w-auto inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300'
       />
       {{/each}}
+      <!-- Set Kedua (duplicate untuk seamless) -->
+      {{#each kerja_sama}}
+      <img
+        src='{{gambar}}'
+        alt='Partner Logo'
+        class='h-24 w-auto inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300'
+      />
+      {{/each}}
+      <!-- Set Ketiga (duplicate lagi untuk lebih smooth) -->
       {{#each kerja_sama}}
       <img
         src='{{gambar}}'
@@ -1391,6 +1376,22 @@ Kesatria Academy has partnered with various organizations, institutions, and com
     {{/if}}
   </div>
 </section>
+
+<style>
+@keyframes scroll-seamless {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+.animate-scroll-seamless {
+  animation: scroll-seamless 3s linear infinite;
+  will-change: transform;
+}
+</style>
 
 <!-- FAQ Section -->
 <section class='py-20 bg-gradient-to-br from-slate-50 via-white to-slate-100'>
