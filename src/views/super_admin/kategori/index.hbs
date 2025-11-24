@@ -67,6 +67,9 @@
           >Description</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Type</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Action</th>
         </tr>
       </thead>
@@ -77,13 +80,18 @@
             x-show="filteredKategori.includes('{{id}}')"
           >
             <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'><img src="{{icon}}" alt="{{nama_kategori}}" class="w-12 h-12 object-cover rounded-full bg-gray-200"></td>
+            <td class='px-6 py-4 text-sm text-gray-800'><img
+                src='{{icon}}'
+                alt='{{nama_kategori}}'
+                class='w-12 h-12 object-cover rounded-full bg-gray-200'
+              /></td>
             <td
               class='px-6 py-4 text-sm text-gray-800 font-semibold'
             >{{nama_kategori}}</td>
             <td
               class='px-6 py-4 text-sm text-gray-600 max-w-xs truncate'
             >{{deskripsi}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{type}}</td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
               <!-- Edit -->
               <a
@@ -177,54 +185,15 @@
 </div>
 
 <script>
-  function kategoriTable({ kategori }) {
-    return {
-      // State
-      searchInput: "",
-      search: "",
-      pageNumber: 0,
-      size: 5,
-      kategori,
-      amount: 0,
-
-      // Computed: Filter + Pagination
-      get filteredKategori() {
-        let filtered = this.kategori.filter(k =>
-          k.nama_kategori.toLowerCase().includes(this.search.toLowerCase())
-        );
-
-        this.amount = filtered.length;
-
-        const start = this.pageNumber * this.size;
-        const end = start + this.size;
-
-        return filtered.slice(start, end).map(k => k.id.toString());
-      },
-
-      // Pagination helpers
-      pages() {
-        return Array.from({ length: this.pageCount() });
-      },
-
-      pageCount() {
-        return Math.ceil(this.amount / this.size);
-      },
-
-      nextPage() {
-        if (this.pageNumber < this.pageCount() - 1) {
-          this.pageNumber++;
-        }
-      },
-
-      prevPage() {
-        if (this.pageNumber > 0) {
-          this.pageNumber--;
-        }
-      },
-
-      viewPage(index) {
-        this.pageNumber = index;
-      }
-    };
-  }
+  function kategoriTable({ kategori }) { return { // State searchInput: "",
+  search: "", pageNumber: 0, size: 5, kategori, amount: 0, // Computed: Filter +
+  Pagination get filteredKategori() { let filtered = this.kategori.filter(k =>
+  k.nama_kategori.toLowerCase().includes(this.search.toLowerCase()) );
+  this.amount = filtered.length; const start = this.pageNumber * this.size;
+  const end = start + this.size; return filtered.slice(start, end).map(k =>
+  k.id.toString()); }, // Pagination helpers pages() { return Array.from({
+  length: this.pageCount() }); }, pageCount() { return Math.ceil(this.amount /
+  this.size); }, nextPage() { if (this.pageNumber < this.pageCount() - 1) {
+  this.pageNumber++; } }, prevPage() { if (this.pageNumber > 0) {
+  this.pageNumber--; } }, viewPage(index) { this.pageNumber = index; } }; }
 </script>

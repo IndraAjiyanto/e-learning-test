@@ -7,8 +7,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
-import { BenefitKelas } from './benefit_kelas.entity';
-import { AlurKelas } from './alur_kelas.entity';
+import { PertanyaanUmum } from './pertanyaan_umum.entity';
+
+export type Type = 'Special Program' | 'Program';
 
 @Entity()
 export class Kategori {
@@ -27,6 +28,9 @@ export class Kategori {
   @Column()
   deskripsi: string;
 
+  @Column({ type: 'enum', enum: ['Special Program', 'Program'], nullable: true })
+  type: Type;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -35,4 +39,7 @@ export class Kategori {
 
   @OneToMany(() => Kelas, (kelas) => kelas.kategori)
   kelas: Kelas[];
+
+  @OneToMany(() => PertanyaanUmum, (pertanyaan_umum) => pertanyaan_umum.kategori)
+  pertanyaan_umum: PertanyaanUmum[];
 }

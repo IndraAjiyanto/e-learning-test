@@ -49,30 +49,35 @@ async function bootstrap() {
       nama_kategori_uniq: 'Short Class',
       icon: 'short.png',
       deskripsi: 'class free',
+      type: 'Program',
     },
     {
       nama_kategori: 'Course',
       nama_kategori_uniq: 'Course',
       icon: 'course.png',
       deskripsi: 'class advance',
+      type: 'Program',
     },
     {
       nama_kategori: 'Bootcamp',
       nama_kategori_uniq: 'Bootcamp',
       icon: 'bootcamp.png',
       deskripsi: 'class intermediet',
+      type: 'Special Program',
     },
     {
       nama_kategori: 'WIP',
       nama_kategori_uniq: 'WIP',
       icon: 'wip.png',
       deskripsi: 'Wiratek InternShip Program',
+      type: 'Special Program',
     },
     {
       nama_kategori: 'In House Training Program',
       nama_kategori_uniq: 'In House Training Program',
       icon: 'inhouse.png',
       deskripsi: 'Inhouse Training Program',
+      type: 'Special Program',
     },
   ]);
 

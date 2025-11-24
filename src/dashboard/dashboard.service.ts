@@ -88,14 +88,16 @@ export class DashboardService {
   }
 
   async findCommitment() {
-    return await this.commitmentRepository.find({order: {commitment_ke: 'ASC'}});
+    return await this.commitmentRepository.find({
+      order: { commitment_ke: 'ASC' },
+    });
   }
 
   async findValue() {
-    return await this.valueRepository.find({order: {value_ke: 'ASC'}});
+    return await this.valueRepository.find({ order: { value_ke: 'ASC' } });
   }
 
-    async findKelasByMentoring(userId: number) {
+  async findKelasByMentoring(userId: number) {
     return await this.kelasRepository.find({
       where: { mentoring: { user: { id: userId } } },
       relations: [
@@ -114,15 +116,17 @@ export class DashboardService {
   }
 
   async findMisi() {
-    return await this.misiRepository.find({order: {misi_ke: 'ASC'}});
+    return await this.misiRepository.find({ order: { misi_ke: 'ASC' } });
   }
 
   async findExperience() {
-    return await this.experienceRepository.find({order: {experience_ke: 'ASC'}});
+    return await this.experienceRepository.find({
+      order: { experience_ke: 'ASC' },
+    });
   }
 
   async findAward() {
-    return await this.awardRepository.find({order: {award_ke: 'ASC'}});
+    return await this.awardRepository.find({ order: { award_ke: 'ASC' } });
   }
 
   async findTentang() {
@@ -130,11 +134,13 @@ export class DashboardService {
   }
 
   async findTentangParagraf() {
-    return await this.paragrafRepository.find({order: {p_ke: 'ASC'}});
+    return await this.paragrafRepository.find({ order: { p_ke: 'ASC' } });
   }
 
   async findBackground() {
-    return await this.backgroundRepository.find({order: {background_ke: 'ASC'}});
+    return await this.backgroundRepository.find({
+      order: { background_ke: 'ASC' },
+    });
   }
 
   async findKelas() {
@@ -187,7 +193,9 @@ export class DashboardService {
   }
 
   async findFAQ() {
-    return await this.pertanyaanUmumRepository.find();
+    return await this.pertanyaanUmumRepository.find({
+      relations: ['kategori'],
+    });
   }
 
   async findAlumni() {
@@ -248,6 +256,4 @@ export class DashboardService {
   async findGambar4() {
     return await this.gambarBenefitRepository.findOne({ where: { no: 4 } });
   }
-
-
 }

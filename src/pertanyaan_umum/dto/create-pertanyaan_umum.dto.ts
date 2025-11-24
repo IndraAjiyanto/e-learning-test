@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsNumber } from 'class-validator';
 
 export class CreatePertanyaanUmumDto {
   @IsString()
@@ -6,4 +6,7 @@ export class CreatePertanyaanUmumDto {
 
   @IsString()
   jawaban: string;
+
+  @IsNumber()
+  kategoriId: number;
 }

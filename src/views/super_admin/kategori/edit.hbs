@@ -14,15 +14,21 @@
         // Form validation states
         formData: {
           nama_kategori: '{{kategori.nama_kategori}}',
-          deskripsi: '{{kategori.deskripsi}}'
+          nama_kategori_uniq: '{{kategori.nama_kategori_uniq}}',
+          deskripsi: '{{kategori.deskripsi}}',
+          type: '{{kategori.type}}'
         },
         formErrors: {
           nama_kategori: '',
-          deskripsi: ''
+          nama_kategori_uniq: '',
+          deskripsi: '',
+          type: ''
         },
         formValid: {
           nama_kategori: true,
-          deskripsi: true
+          nama_kategori_uniq: true,
+          deskripsi: true,
+          type: true
         },
 
         validateImage(file) {
@@ -98,7 +104,11 @@
                 this.formValid.nama_kategori = true;
               }
               break;
-
+            case 'nama_kategori_uniq':
+              // Optional field, always valid
+              this.formErrors.nama_kategori_uniq = '';
+              this.formValid.nama_kategori_uniq = true;
+              break;
             case 'deskripsi':
               if (!value.trim()) {
                 this.formErrors.deskripsi = 'Description is required';
@@ -106,6 +116,15 @@
               } else {
                 this.formErrors.deskripsi = '';
                 this.formValid.deskripsi = true;
+              }
+              break;
+            case 'type':
+              if (!value) {
+                this.formErrors.type = 'Type is required';
+                this.formValid.type = false;
+              } else {
+                this.formErrors.type = '';
+                this.formValid.type = true;
               }
               break;
           }
@@ -125,7 +144,7 @@
 
         canSubmit() {
           const imageValid = !this.hasFile || this.isValid;
-          const formValid = this.formValid.nama_kategori && this.formValid.deskripsi;
+          const formValid = this.formValid.nama_kategori && this.formValid.deskripsi && this.formValid.type;
           return imageValid && formValid;
         },
 
@@ -184,6 +203,80 @@
             >
               <i class='fas fa-check-circle text-green-500'></i>
               <p class='text-xs text-green-700'>Valid category name</p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Nama Kategori Uniq -->
+        <div class='space-y-2'>
+          <label
+            for='nama_kategori_uniq'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Unique Category Name
+            <span
+              class='text-xs text-gray-500 font-normal'
+            >(optional)</span></label>
+          <input
+            type='text'
+            id='nama_kategori_uniq'
+            name='nama_kategori_uniq'
+            :class="formErrors.nama_kategori_uniq ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("nama_kategori_uniq", $event.target.value)'
+            x-init='$el.value = formData.nama_kategori_uniq'
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.nama_kategori_uniq'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p
+                class='text-xs text-red-700'
+                x-text='formErrors.nama_kategori_uniq'
+              ></p>
+            </div>
+          </template>
+        </div>
+
+        <!-- Type -->
+        <div class='space-y-2'>
+          <label
+            for='type'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Type</label>
+          <select
+            id='type'
+            name='type'
+            required
+            :class="formErrors.type ? 'border-red-500 focus:ring-red-500' : formValid.type ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @change='validateField("type", $event.target.value)'
+            x-init='$el.value = formData.type'
+          >
+            <option value=''>Select Type</option>
+            <option value='Special Program'>Special Program</option>
+            <option value='Program'>Program</option>
+          </select>
+
+          <!-- Error Message -->
+          <template x-if='formErrors.type'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.type'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.type && !formErrors.type'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid type</p>
             </div>
           </template>
         </div>

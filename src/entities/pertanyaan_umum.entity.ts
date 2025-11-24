@@ -2,17 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-export type For =
-  | 'wip'
-  | 'in-house-training'
-  | 'general'
-  | 'short_class'
-  | 'bootcamp'
-  | 'course';
+import { Kategori } from './kategori.entity';
 
 @Entity()
 export class PertanyaanUmum {
@@ -25,19 +19,10 @@ export class PertanyaanUmum {
   @Column()
   jawaban: string;
 
-  @Column({
-    type: 'enum',
-    enum: [
-      'wip',
-      'in-house-training',
-      'general',
-      'short_class',
-      'bootcamp',
-      'course',
-    ],
-    default: 'general',
-  })
-  for: For;
+    @ManyToOne(() => Kategori, (kategori) => kategori.kelas, {
+      onDelete: 'CASCADE',
+    })
+    kategori: Kategori;
 
   @CreateDateColumn()
   createdAt: Date;

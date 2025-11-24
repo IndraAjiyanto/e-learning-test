@@ -31,7 +31,7 @@ export class InHouseTrainingService {
 
   async findFaq() {
     return await this.pertanyaanUmumRepository.find({
-      where: { for: 'in-house-training' },
+      where: { kategori: { nama_kategori: 'In House Training Program' } },
     });
   }
 }

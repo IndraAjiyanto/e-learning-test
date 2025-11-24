@@ -49,7 +49,11 @@ export class PertanyaanUmumController {
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Req() req: Request, @Res() res: Response) {
-    res.render('super_admin/pertanyaan_umum/create', { user: req.user });
+    const kategori = await this.pertanyaanUmumService.getKategori();
+    res.render('super_admin/pertanyaan_umum/create', {
+      user: req.user,
+      kategori,
+    });
   }
 
   @Roles('super_admin')
@@ -61,9 +65,11 @@ export class PertanyaanUmumController {
   ) {
     const pertanyaan_umum =
       await this.pertanyaanUmumService.findOne(pertanyaan_umumId);
+    const kategori = await this.pertanyaanUmumService.getKategori();
     res.render('super_admin/pertanyaan_umum/edit', {
       user: req.user,
       pertanyaan_umum,
+      kategori,
     });
   }
 
