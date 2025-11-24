@@ -4033,6 +4033,11 @@ details.collapse summary::-webkit-details-marker {
   margin-bottom: 2rem;
 }
 
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .-ml-5 {
   margin-left: -1.25rem;
 }
@@ -4071,6 +4076,10 @@ details.collapse summary::-webkit-details-marker {
 
 .mb-4 {
   margin-bottom: 1rem;
+}
+
+.mb-5 {
+  margin-bottom: 1.25rem;
 }
 
 .mb-6 {
@@ -4375,6 +4384,10 @@ details.collapse summary::-webkit-details-marker {
   height: 100vh;
 }
 
+.max-h-0 {
+  max-height: 0px;
+}
+
 .max-h-40 {
   max-height: 10rem;
 }
@@ -4425,6 +4438,10 @@ details.collapse summary::-webkit-details-marker {
 
 .max-h-full {
   max-height: 100%;
+}
+
+.max-h-screen {
+  max-height: 100vh;
 }
 
 .min-h-screen {
@@ -4562,6 +4579,10 @@ details.collapse summary::-webkit-details-marker {
 .min-w-max {
   min-width: -moz-max-content;
   min-width: max-content;
+}
+
+.min-w-\[48px\] {
+  min-width: 48px;
 }
 
 .max-w-2xl {
@@ -4760,6 +4781,12 @@ details.collapse summary::-webkit-details-marker {
 .scale-95 {
   --tw-scale-x: .95;
   --tw-scale-y: .95;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.scale-110 {
+  --tw-scale-x: 1.1;
+  --tw-scale-y: 1.1;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -6319,6 +6346,10 @@ details.collapse summary::-webkit-details-marker {
   padding: 2rem;
 }
 
+.p-2\.5 {
+  padding: 0.625rem;
+}
+
 .px-1 {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
@@ -7500,6 +7531,11 @@ details.collapse summary::-webkit-details-marker {
   border-color: rgb(255 255 255 / 0.3);
 }
 
+.hover\:border-slate-700:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(51 65 85 / var(--tw-border-opacity));
+}
+
 .hover\:border-b-slate-800:hover {
   --tw-border-opacity: 1;
   border-bottom-color: rgb(30 41 59 / var(--tw-border-opacity));
@@ -7639,6 +7675,11 @@ details.collapse summary::-webkit-details-marker {
   background-color: rgb(226 232 240 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-slate-300:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(203 213 225 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-slate-400:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(148 163 184 / var(--tw-bg-opacity));
@@ -7675,6 +7716,11 @@ details.collapse summary::-webkit-details-marker {
 
 .hover\:bg-white\/20:hover {
   background-color: rgb(255 255 255 / 0.2);
+}
+
+.hover\:bg-slate-500:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(100 116 139 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-gradient-to-r:hover {
@@ -8205,6 +8251,14 @@ details.collapse summary::-webkit-details-marker {
   opacity: 0.5;
 }
 
+.disabled\:opacity-30:disabled {
+  opacity: 0.3;
+}
+
+.disabled\:opacity-20:disabled {
+  opacity: 0.2;
+}
+
 .group:hover .group-hover\:-translate-y-1 {
   --tw-translate-y: -0.25rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -8249,6 +8303,11 @@ details.collapse summary::-webkit-details-marker {
 .group:hover .group-hover\:bg-gray-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+}
+
+.group:hover .group-hover\:bg-slate-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(226 232 240 / var(--tw-bg-opacity));
 }
 
 .group:hover .group-hover\:bg-slate-600 {
