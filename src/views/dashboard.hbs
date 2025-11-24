@@ -1331,6 +1331,13 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
         class='h-24 w-auto inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300 flex-shrink-0'
       />
       {{/each}}
+      {{#each kerja_sama}}
+      <img
+        src='{{gambar}}'
+        alt='Partner Logo'
+        class='h-24 w-auto inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300 flex-shrink-0'
+      />
+      {{/each}}
     </div>
     {{else}}
     <div class='flex items-center justify-center gap-8 px-8'>
@@ -1362,15 +1369,15 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
 <style>
 @keyframes scroll-seamless {
   0% {
-    transform: translateX(600%);
+    transform: translateX(500%);
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-200%);
   }
 }
 
 .animate-scroll-seamless {
-  animation: scroll-seamless 10s linear infinite;
+  animation: scroll-seamless 20s linear infinite;
   will-change: transform;
 }
 </style>
