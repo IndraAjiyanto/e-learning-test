@@ -1323,7 +1323,7 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
 
   <div class='overflow-hidden whitespace-nowrap bg-white rounded-2xl shadow-lg py-8 relative'>
     {{#if kerja_sama}}
-    <div class='inline-flex animate-scroll-seamless'>
+    <div class=' inline-flex animate-scroll-seamless'>
       {{#each kerja_sama}}
       <img
         src='{{gambar}}'
@@ -1362,7 +1362,7 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
 <style>
 @keyframes scroll-seamless {
   0% {
-    transform: translateX(0);
+    transform: translateX(100%);
   }
   100% {
     transform: translateX(-100%);
@@ -1370,7 +1370,7 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
 }
 
 .animate-scroll-seamless {
-  animation: scroll-seamless 20s linear infinite;
+  animation: scroll-seamless 30s linear infinite;
   will-change: transform;
 }
 </style>
