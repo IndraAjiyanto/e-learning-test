@@ -199,7 +199,7 @@ export class DashboardService {
 
   async findKerjaSama() {
     return await this.kerjaSamaRepository.find({
-      order: { id: 'DESC' },
+      order: { id: 'ASC' },
     });
   }
 
