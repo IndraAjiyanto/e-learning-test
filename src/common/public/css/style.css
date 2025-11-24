@@ -3991,10 +3991,6 @@ details.collapse summary::-webkit-details-marker {
   grid-column: span 2 / span 2;
 }
 
-.float-right {
-  float: right;
-}
-
 .clear-both {
   clear: both;
 }
@@ -4811,20 +4807,6 @@ details.collapse summary::-webkit-details-marker {
 
 .animate-spin {
   animation: spin 1s linear infinite;
-}
-
-@keyframes slide {
-  0% {
-    transform: translateX(100%);
-  }
-
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.animate-slide {
-  animation: slide 20s linear infinite;
 }
 
 .cursor-not-allowed {
@@ -8378,6 +8360,10 @@ details.collapse summary::-webkit-details-marker {
     margin-right: 0px;
   }
 
+  .sm\:mb-10 {
+    margin-bottom: 2.5rem;
+  }
+
   .sm\:mb-2 {
     margin-bottom: 0.5rem;
   }
@@ -8549,10 +8535,6 @@ details.collapse summary::-webkit-details-marker {
   .sm\:py-3 {
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
-  }
-
-  .sm\:pl-4 {
-    padding-left: 1rem;
   }
 
   .sm\:text-left {
@@ -8917,6 +8899,10 @@ details.collapse summary::-webkit-details-marker {
 
   .lg\:col-span-8 {
     grid-column: span 8 / span 8;
+  }
+
+  .lg\:mb-12 {
+    margin-bottom: 3rem;
   }
 
   .lg\:ml-64 {
