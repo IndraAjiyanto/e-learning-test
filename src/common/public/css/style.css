@@ -4013,6 +4013,11 @@ details.collapse summary::-webkit-details-marker {
   margin-right: 0.25rem;
 }
 
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .mx-4 {
   margin-left: 1rem;
   margin-right: 1rem;
@@ -4031,11 +4036,6 @@ details.collapse summary::-webkit-details-marker {
 .my-8 {
   margin-top: 2rem;
   margin-bottom: 2rem;
-}
-
-.mx-2 {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
 }
 
 .-ml-5 {
@@ -4581,10 +4581,6 @@ details.collapse summary::-webkit-details-marker {
   min-width: max-content;
 }
 
-.min-w-\[48px\] {
-  min-width: 48px;
-}
-
 .max-w-2xl {
   max-width: 42rem;
 }
@@ -4781,12 +4777,6 @@ details.collapse summary::-webkit-details-marker {
 .scale-95 {
   --tw-scale-x: .95;
   --tw-scale-y: .95;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.scale-110 {
-  --tw-scale-x: 1.1;
-  --tw-scale-y: 1.1;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -6326,6 +6316,10 @@ details.collapse summary::-webkit-details-marker {
   padding: 0.5rem;
 }
 
+.p-2\.5 {
+  padding: 0.625rem;
+}
+
 .p-3 {
   padding: 0.75rem;
 }
@@ -6344,10 +6338,6 @@ details.collapse summary::-webkit-details-marker {
 
 .p-8 {
   padding: 2rem;
-}
-
-.p-2\.5 {
-  padding: 0.625rem;
 }
 
 .px-1 {
@@ -7531,11 +7521,6 @@ details.collapse summary::-webkit-details-marker {
   border-color: rgb(255 255 255 / 0.3);
 }
 
-.hover\:border-slate-700:hover {
-  --tw-border-opacity: 1;
-  border-color: rgb(51 65 85 / var(--tw-border-opacity));
-}
-
 .hover\:border-b-slate-800:hover {
   --tw-border-opacity: 1;
   border-bottom-color: rgb(30 41 59 / var(--tw-border-opacity));
@@ -7675,11 +7660,6 @@ details.collapse summary::-webkit-details-marker {
   background-color: rgb(226 232 240 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-slate-300:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(203 213 225 / var(--tw-bg-opacity));
-}
-
 .hover\:bg-slate-400:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(148 163 184 / var(--tw-bg-opacity));
@@ -7716,11 +7696,6 @@ details.collapse summary::-webkit-details-marker {
 
 .hover\:bg-white\/20:hover {
   background-color: rgb(255 255 255 / 0.2);
-}
-
-.hover\:bg-slate-500:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(100 116 139 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-gradient-to-r:hover {
@@ -8243,20 +8218,16 @@ details.collapse summary::-webkit-details-marker {
   cursor: not-allowed;
 }
 
+.disabled\:opacity-20:disabled {
+  opacity: 0.2;
+}
+
 .disabled\:opacity-40:disabled {
   opacity: 0.4;
 }
 
 .disabled\:opacity-50:disabled {
   opacity: 0.5;
-}
-
-.disabled\:opacity-30:disabled {
-  opacity: 0.3;
-}
-
-.disabled\:opacity-20:disabled {
-  opacity: 0.2;
 }
 
 .group:hover .group-hover\:-translate-y-1 {
