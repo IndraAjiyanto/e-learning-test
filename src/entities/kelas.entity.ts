@@ -27,7 +27,7 @@ import { AlurKelas } from './alur_kelas.entity';
 import { BenefitKelas } from './benefit_kelas.entity';
 import { Mentoring } from './mentoring.entity';
 
-export type Metode = 'Online' | 'Offline';
+export type Metode = 'online' | 'offline';
 export type Proses = 'acc' | 'proces' | 'rejected';
 
 @Entity()
