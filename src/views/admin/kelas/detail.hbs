@@ -261,6 +261,12 @@
               class="px-4 py-2 rounded-lg shadow transition">
         Mentor
       </button>
+
+      <button @click="tab = 'payment'" 
+              :class="tab === 'payment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        Payment
+      </button>
     </div>
 
     <!-- ===================== TAB WEEK ===================== -->
@@ -306,6 +312,11 @@
     <!-- ===================== TAB LOG BOOK MENTOR ===================== -->
 <div x-show="tab === 'log_book_mentor'">
   {{> kelas/log_book_mentor_tab}}
+</div>
+
+    <!-- ===================== TAB PAYMENT ===================== -->
+<div x-show="tab === 'payment'">
+  {{> kelas/payment_tab}}
 </div>
 
 

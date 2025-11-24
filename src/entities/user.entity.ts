@@ -30,6 +30,7 @@ import { UserKelas } from './user_kelas.entity';
 import { LogbookMentor } from './logbook_mentor.entity';
 import { ProgresQuiz } from './progres_quiz.entity';
 import { Mentoring } from './mentoring.entity';
+import { Pendaftaran } from './pendaftaran.entity';
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
 
@@ -165,6 +166,12 @@ export class User {
     onDelete: 'CASCADE',
   })
   mentoring: Mentoring[];
+
+  @OneToMany(() => Pendaftaran, (pendaftaran) => pendaftaran.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  pendaftaran: Pendaftaran[];
 
   @OneToOne(() => Biodata, (biodata) => biodata.user, {
     cascade: true,

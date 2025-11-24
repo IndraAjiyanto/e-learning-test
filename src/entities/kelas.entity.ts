@@ -26,6 +26,7 @@ import { Teknologi } from './teknologi.entity';
 import { AlurKelas } from './alur_kelas.entity';
 import { BenefitKelas } from './benefit_kelas.entity';
 import { Mentoring } from './mentoring.entity';
+import { Pendaftaran } from './pendaftaran.entity';
 
 export type Metode = 'online' | 'offline';
 export type Proses = 'acc' | 'proces' | 'rejected';
@@ -109,7 +110,7 @@ export class Kelas {
 
   @Column()
   tanggal_mulai: Date;
-  
+
   @Column()
   tanggal_selesai: Date;
 
@@ -192,4 +193,10 @@ export class Kelas {
 
   @OneToMany(() => BenefitKelas, (benefit_kelas) => benefit_kelas.kelas)
   benefit_kelas: BenefitKelas[];
+
+  @OneToMany(() => Pendaftaran, (pendaftaran) => pendaftaran.kelas, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  pendaftaran: Pendaftaran[];
 }

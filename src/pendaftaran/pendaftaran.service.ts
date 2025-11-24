@@ -119,10 +119,14 @@ export class PendaftaranService {
   }
 
   async findOne(id: number) {
-    return await this.pendaftaranRepository.findOne({
+    const pendaftaran = await this.pendaftaranRepository.findOne({
       where: { id },
       relations: ['user', 'kelas'],
     });
+    if(!pendaftaran){
+      throw new NotFoundException('registration not found')
+    }
+    return pendaftaran;
   }
 
   async addUserToKelas(userId: number, kelasId: number) {

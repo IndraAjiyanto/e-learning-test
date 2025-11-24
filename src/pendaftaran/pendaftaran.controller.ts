@@ -121,7 +121,7 @@ export class PendaftaranController {
         }
     
         req.flash('success', 'proces successfully change acc');
-        res.redirect('/pembayarans');
+        res.redirect(`/kelass/detail/kelas/admin/${pendaftaran['kelas']['id']}`);
       } else if (proses === 'rejected') {
         updatePendaftaranDto.file = pendaftaran['file'];
         updatePendaftaranDto.userId = pendaftaran['user']['id'];
@@ -140,12 +140,12 @@ export class PendaftaranController {
             
           }
         req.flash('success', 'proces successfully change rejected');
-        res.redirect('/pembayarans');
+        res.redirect(`/kelass/detail/kelas/admin/${[pendaftaran]['kelas']['id']}`);
       }
     } catch (error) {
-      console.log(error);
+      const pendaftaran = await this.pendaftaranService.findOne(pendaftaranId);
       req.flash('error', error.message || 'proses pembayaran gagal diubah');
-      res.redirect('/pembayarans');
+      res.redirect(`/kelass/detail/kelas/admin/${pendaftaran['kelas']['id']}`);
     }
   }
 }

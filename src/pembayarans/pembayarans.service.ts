@@ -233,7 +233,7 @@ export class PembayaransService {
       relations: ['user', 'kelas'],
     });
     if (!pembayaran) {
-      return;
+      throw new NotFoundException('Payment not found');
     } else {
       return pembayaran;
     }

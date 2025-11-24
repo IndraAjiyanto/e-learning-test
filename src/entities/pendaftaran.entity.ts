@@ -32,9 +32,9 @@ export class Pendaftaran {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.pembayaran, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.pendaftaran, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => Kelas, (kelas) => kelas.pembayaran, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Kelas, (kelas) => kelas.pendaftaran, { onDelete: 'CASCADE' })
   kelas: Kelas;
 }

@@ -208,7 +208,7 @@ export class PembayaransController {
         }
 
         req.flash('success', 'proces successfully change acc');
-        res.redirect('/pembayarans');
+        res.redirect(`/kelass/detail/kelas/admin/${pembayaran['kelas']['id']}`);
       } else if (proses === 'rejected') {
         updatePembayaranDto.file = pembayaran['file'];
         updatePembayaranDto.userId = pembayaran['user']['id'];
@@ -224,11 +224,13 @@ export class PembayaransController {
           
         }
         req.flash('success', 'proces successfully change rejected');
-        res.redirect('/pembayarans');
+                res.redirect(`/kelass/detail/kelas/admin/${pembayaran['kelas']['id']}`);
+
       }
     } catch (error) {
+      const pembayaran = await this.pembayaransService.findOne(pembayaranId);
       req.flash('error', error.message || 'Payment proof submission failed');
-      res.redirect('/pembayarans');
-    }
+        res.redirect(`/kelass/detail/kelas/admin/${pembayaran['kelas']['id']}`);
+      }
   }
 }
