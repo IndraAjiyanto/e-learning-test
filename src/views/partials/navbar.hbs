@@ -669,124 +669,30 @@
             >
               <div class='px-2 pt-2 pb-4 bg-white rounded-md shadow-lg'>
                 <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <a
-                    href='/dashboard/kategori/Bootcamp'
-                    @click="setActive('/dashboard/kategori/Bootcamp')"
-                    :class="isActive('/dashboard/kategori/Bootcamp') ? 'bg-gray-100' : 'bg-transparent'"
-                    class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
-                  >
-                    <div
-                      class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'
+                  <template x-for='kat in kategori' :key='kat.id'>
+                    <a
+                      :href="'/dashboard/kategori/' + kat.nama_kategori"
+                      @click="setActive('/dashboard/kategori/' + kat.nama_kategori)"
+                      :class="isActive('/dashboard/kategori/' + kat.nama_kategori) ? 'bg-gray-100' : 'bg-transparent'"
+                      class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                     >
-                      <img
-                        src='/public/image/Bootcamp.png'
-                        class='w-6 h-6'
-                        alt=''
-                      />
-                    </div>
-                    <div class='ml-3 flex-1'>
-                      <p
-                        class='font-semibold text-gray-900 font-montserrat'
-                      >Bootcamp</p>
-                      <p class='text-xs text-gray-600 mt-1 font-inter'>Intensive
-                        3-6 month training for career preparation</p>
-                    </div>
-                  </a>
-
-                  <a
-                    href='/dashboard/kategori/Course'
-                    @click="setActive('/dashboard/kategori/Course')"
-                    :class="isActive('/dashboard/kategori/Course') ? 'bg-gray-100' : 'bg-transparent'"
-                    class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
-                  >
-                    <div
-                      class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'
-                    >
-                      <img
-                        src='/public/image/Course.png'
-                        class='w-6 h-6'
-                        alt=''
-                      />
-                    </div>
-                    <div class='ml-3 flex-1'>
-                      <p
-                        class='font-semibold text-gray-900 font-montserrat'
-                      >Course</p>
-                      <p class='text-xs text-gray-600 mt-1 font-inter'>Online
-                        course with complete and structured materials</p>
-                    </div>
-                  </a>
-
-                  <a
-                    href='/dashboard/kategori/Short Class'
-                    @click="setActive('/dashboard/kategori/Short Class')"
-                    :class="isActive('/dashboard/kategori/Short Class') ? 'bg-gray-100' : 'bg-transparent'"
-                    class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
-                  >
-                    <div
-                      class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'
-                    >
-                      <img
-                        src='/public/image/FreeClass.png'
-                        class='w-6 h-6'
-                        alt=''
-                      />
-                    </div>
-                    <div class='ml-3 flex-1'>
-                      <p
-                        class='font-semibold text-gray-900 font-montserrat'
-                      >Short Class</p>
-                      <p class='text-xs text-gray-600 mt-1 font-inter'>Short
-                        class for specific and practical skills</p>
-                    </div>
-                  </a>
-
-                  <a
-                    href='/in-house-training'
-                    @click="setActive('/in-house-training')"
-                    :class="isActive('/in-house-training') ? 'bg-gray-100' : 'bg-transparent'"
-                    class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
-                  >
-                    <div
-                      class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'
-                    >
-                      <img
-                        src='/public/image/InHouseTraining.png'
-                        class='w-6 h-6'
-                        alt=''
-                      />
-                    </div>
-                    <div class='ml-3 flex-1'>
-                      <p class='font-semibold text-gray-900 font-montserrat'>In
-                        House Training</p>
-                      <p class='text-xs text-gray-600 mt-1 font-inter'>Short
-                        class for specific and practical skills</p>
-                    </div>
-                  </a>
-
-                  <a
-                    href='/wip'
-                    @click="setActive('/wip')"
-                    :class="isActive('/wip') ? 'bg-gray-100' : 'bg-transparent'"
-                    class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
-                  >
-                    <div
-                      class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'
-                    >
-                      <img
-                        src='/public/image/WiratekInternShipProgram.png'
-                        class='w-6 h-6'
-                        alt=''
-                      />
-                    </div>
-                    <div class='ml-3 flex-1'>
-                      <p
-                        class='font-semibold text-gray-900 font-montserrat'
-                      >WIP</p>
-                      <p class='text-xs text-gray-600 mt-1 font-inter'>Wiratek
-                        Internship Program</p>
-                    </div>
-                  </a>
+                      <div
+                        class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'
+                      >
+                        <img :src='kat.icon' class='w-6 h-6' alt='' />
+                      </div>
+                      <div class='ml-3 flex-1'>
+                        <p
+                          class='font-semibold text-gray-900 font-montserrat'
+                          x-text='kat.nama_kategori'
+                        ></p>
+                        <p
+                          class='text-xs text-gray-600 mt-1 font-inter'
+                          x-text='kat.deskripsi'
+                        ></p>
+                      </div>
+                    </a>
+                  </template>
                 </div>
               </div>
             </div>
