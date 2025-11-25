@@ -20,6 +20,7 @@ export class DashboardController {
         );
         res.render('admin/kelas/index', { user: req.user, kelas });
       } else if (req.user.role === 'user') {
+        const special_program = await this.dashboardService.findSpecialProgram();
         const pertanyaan_umum = await this.dashboardService.findFAQ();
         const gambar_benefit_1 = await this.dashboardService.findGambar1();
         const gambar_benefit_2 = await this.dashboardService.findGambar2();
@@ -34,6 +35,7 @@ export class DashboardController {
         const benefit_3 = await this.dashboardService.findBenefit3();
         const tentang = await this.dashboardService.findTentang();
         res.render('dashboard', {
+          special_program,
           user: req.user,
           kelas,
           pertanyaan_umum,
@@ -52,6 +54,7 @@ export class DashboardController {
         });
       }
     } else {
+        const special_program = await this.dashboardService.findSpecialProgram();
       const pertanyaan_umum = await this.dashboardService.findFAQ();
       const gambar_benefit_1 = await this.dashboardService.findGambar1();
       const gambar_benefit_2 = await this.dashboardService.findGambar2();
@@ -66,6 +69,7 @@ export class DashboardController {
       const benefit_3 = await this.dashboardService.findBenefit3();
       const tentang = await this.dashboardService.findTentang();
       res.render('dashboard', {
+        special_program,
         user: req.user,
         kelas,
         pertanyaan_umum,
@@ -82,36 +86,6 @@ export class DashboardController {
         benefit_3,
         tentang,
       });
-    }
-  }
-
-  @Get('kategori/:kategoriName')
-  async program(
-    @Param('kategoriName') kategoriName: string,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    const jenis_kelas = await this.dashboardService.findJenisKelas();
-    if (kategoriName === 'Bootcamp') {
-      const kelas =
-        await this.dashboardService.findKelasByKategori(kategoriName);
-      res.render('kelas/bootcamp', { kelas, user: req.user, jenis_kelas });
-    } else if (kategoriName === 'Course') {
-      const kelas =
-        await this.dashboardService.findKelasByKategori(kategoriName);
-      res.render('kelas/course', { kelas, user: req.user, jenis_kelas });
-    } else if (kategoriName === 'Short Class') {
-      const kelas =
-        await this.dashboardService.findKelasByKategori(kategoriName);
-      res.render('kelas/short_class', { kelas, user: req.user, jenis_kelas });
-    } else if (kategoriName === 'in_house_training') {
-      const kelas =
-        await this.dashboardService.findKelasByKategori(kategoriName);
-      res.render('inhouse', { kelas, user: req.user, jenis_kelas });
-    } else if (kategoriName === 'wip') {
-      const kelas =
-        await this.dashboardService.findKelasByKategori(kategoriName);
-      res.render('wip', { kelas, user: req.user, jenis_kelas });
     }
   }
 

@@ -77,6 +77,23 @@ export class KategorisController {
     res.render('super_admin/kategori/index', { user: req.user, kategori });
   }
 
+    @Get('program/:kategoriName')
+  async program(
+    @Param('kategoriName') kategoriName: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const kategori = await this.kategorisService.findOneKategori(kategoriName);
+    const jenis_kelas = await this.kategorisService.findJenisKelas();
+    if(kategori?.type === 'Special Program'){
+      const kelas = await this.kategorisService.findKelasByKategori(kategori.id)
+      res.render('special_program',{kategori, jenis_kelas, user: req.user, kelas})
+    }else if(kategori?.type === 'Program'){
+      const kelas = await this.kategorisService.findKelasByKategori(kategori.id)
+      res.render('program',{kategori, jenis_kelas, user: req.user, kelas})
+    }
+  }
+
   @Roles('super_admin')
   @Get(':kategoriId')
   async findOne(

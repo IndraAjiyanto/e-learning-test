@@ -7,9 +7,10 @@ import { AlurKelas } from 'src/entities/alur_kelas.entity';
 import { CommonModule } from 'src/common/common.module';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { Kelas } from 'src/entities/kelas.entity';
+import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kategori, AlurKelas, BenefitCategory, Kelas]), CommonModule],
+  imports: [TypeOrmModule.forFeature([Kategori, AlurKelas, BenefitCategory, Kelas, JenisKelas]), CommonModule],
   controllers: [KategorisController],
   providers: [KategorisService],
   exports: [KategorisService],

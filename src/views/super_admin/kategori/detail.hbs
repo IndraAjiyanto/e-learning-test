@@ -183,6 +183,34 @@
       >
         Classes
       </button>
+      <button
+        @click="tab = 'alumni'"
+        :class="tab === 'alumni' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+        class='px-4 py-2 rounded-lg shadow transition'
+      >
+        Alumni
+      </button>
+      <button
+        @click="tab = 'faq'"
+        :class="tab === 'faq' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+        class='px-4 py-2 rounded-lg shadow transition'
+      >
+          FAQ
+      </button>
+      <button
+        @click="tab = 'benefit'"
+        :class="tab === 'benefit' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+        class='px-4 py-2 rounded-lg shadow transition'
+      >
+        Benefit
+      </button>
+      <button
+        @click="tab = 'flow'"
+        :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+        class='px-4 py-2 rounded-lg shadow transition'
+      >
+        Flow
+      </button>
     </div>
 
     <!-- Tab Content -->

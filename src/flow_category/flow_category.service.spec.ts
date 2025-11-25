@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IntenshifService } from './intenshif.service';
+import { FlowCategoryService } from './flow_category.service';
 
-describe('IntenshifService', () => {
-  let service: IntenshifService;
+describe('FlowCategoryService', () => {
+  let service: FlowCategoryService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [IntenshifService],
+      providers: [FlowCategoryService],
     }).compile();
 
-    service = module.get<IntenshifService>(IntenshifService);
+    service = module.get<FlowCategoryService>(FlowCategoryService);
   });
 
   it('should be defined', () => {

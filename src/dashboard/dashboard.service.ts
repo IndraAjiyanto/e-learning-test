@@ -151,14 +151,6 @@ export class DashboardService {
     });
   }
 
-  async findKelasByKategori(kategoriName: string) {
-    return await this.kelasRepository.find({
-      where: { kategori: { nama_kategori_uniq: kategoriName }, launch: true },
-      order: { id: 'DESC' },
-      relations: ['kategori', 'jenis_kelas', 'user_kelas'],
-    });
-  }
-
   async findBlog() {
     return await this.blogRepository.find({
       order: { id: 'DESC' },
@@ -220,6 +212,14 @@ export class DashboardService {
 
   async findSocial() {
     return await this.socialRepository.find();
+  }
+
+  async findSpecialProgram(){
+    return await this.kategoriRepository.find({where: {type: 'Special Program'}})
+  }
+
+  async findOneKategori(kategoriName: string){
+    return await this.kategoriRepository.findOne({where: {nama_kategori: kategoriName}, relations: ['kelas','alumni','pertanyaan_umum']})
   }
 
   async findKategori() {

@@ -7,6 +7,7 @@ import { Kategori } from 'src/entities/kategori.entity';
 import { Repository } from 'typeorm';
 import { AlurKelas } from 'src/entities/alur_kelas.entity';
 import { Kelas } from 'src/entities/kelas.entity';
+import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 
 @Injectable()
 export class KategorisService {
@@ -15,6 +16,8 @@ export class KategorisService {
     private readonly kategoriRepository: Repository<Kategori>,
     @InjectRepository(Kelas)
     private readonly kelasRepository: Repository<Kelas>,
+    @InjectRepository(JenisKelas)
+    private readonly jenisKelasRepository: Repository<JenisKelas>,
   ) {}
 
   async create(createKategorisDto: CreateKategorisDto) {
@@ -22,9 +25,18 @@ export class KategorisService {
     return await this.kategoriRepository.save(kategori);
   }
 
-  async findAll() {
-    return await this.kategoriRepository.find();
+  async findOneKategori(kategoriName: string){
+    return await this.kategoriRepository.findOne({where: {nama_kategori: kategoriName}, relations: ['kelas','kelas.alumni','pertanyaan_umum','']})
   }
+
+  async findJenisKelas(){
+    return await this.jenisKelasRepository.find()
+  }
+
+  async findAll(){
+    return await this.kategoriRepository.find()
+  }
+
 
   async findOne(kategoriId: number) {
     const kategori = await this.kategoriRepository.findOne({
@@ -39,7 +51,7 @@ export class KategorisService {
   async findKelasByKategori(kategoriId: number) {
     return await this.kelasRepository.find({
       where: { kategori: { id: kategoriId } },
-      relations: ['kategori', 'jenis_kelas', 'user_kelas'],
+      relations: ['kategori', 'jenis_kelas', 'user_kelas', 'user_kelas.user'],
     });
   }
 

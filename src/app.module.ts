@@ -46,12 +46,10 @@ import { CicilanModule } from './cicilan/cicilan.module';
 import { GambarBenefitModule } from './gambar_benefit/gambar_benefit.module';
 import { TentangModule } from './tentang/tentang.module';
 import { TeknologiModule } from './teknologi/teknologi.module';
-import { IntenshifModule } from './intenshif/intenshif.module';
 import { TeamLeadModule } from './team_lead/team_lead.module';
 import { ValueModule } from './value/value.module';
 import { CommitmentModule } from './commitment/commitment.module';
 import { PendaftaranModule } from './pendaftaran/pendaftaran.module';
-import { CategoryModule } from './category/category.module';
 import { InHouseTrainingModule } from './in_house_training/in_house_training.module';
 import { ParagrafModule } from './paragraf/paragraf.module';
 import { ContactModule } from './contact/contact.module';
@@ -59,6 +57,8 @@ import { AwardModule } from './award/award.module';
 import { ExperienceModule } from './experience/experience.module';
 import { BackgroundModule } from './background/background.module';
 import { MisiModule } from './misi/misi.module';
+import { BenefitCategoryModule } from './benefit_category/benefit_category.module';
+import { FlowCategoryModule } from './flow_category/flow_category.module';
 
 @Module({
   imports: [
@@ -109,12 +109,10 @@ import { MisiModule } from './misi/misi.module';
     GambarBenefitModule,
     TentangModule,
     TeknologiModule,
-    IntenshifModule,
     TeamLeadModule,
     ValueModule,
     CommitmentModule,
     PendaftaranModule,
-    CategoryModule,
     InHouseTrainingModule,
     ParagrafModule,
     ContactModule,
@@ -122,6 +120,8 @@ import { MisiModule } from './misi/misi.module';
     ExperienceModule,
     BackgroundModule,
     MisiModule,
+    BenefitCategoryModule,
+    FlowCategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

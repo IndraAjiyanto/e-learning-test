@@ -77,19 +77,18 @@
       <!-- Logo/Icon -->
       <div class='mb-8 flex justify-center'>
         <div class='w-24 h-24 bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300'>
-          <img src='/public/image/InHouseTraining.png' alt='In-House Training' class='w-16 h-16'>
+          <img src='{{kategori.icon}}' alt='In-House Training' class='w-16 h-16'>
         </div>
       </div>
 
       <h1 class='text-5xl md:text-6xl font-bold text-white mb-6 font-montserrat leading-tight'>
-        In-House Training
+        {{kategori.nama_kategori}}
       </h1>
       <p class='text-xl md:text-2xl text-gray-200 mb-4 font-inter'>
-        Customized Corporate Training Solutions
+        {{kategori.text}}
       </p>
       <p class='text-base text-gray-300 max-w-3xl mx-auto font-inter leading-relaxed'>
-        Empower your team with tailored training programs designed specifically for your organization's needs. 
-        Boost productivity, enhance skills, and drive innovation with our expert-led training sessions.
+        {{kategori.deskripsi}}
       </p>
     </div>
   </div>
@@ -106,50 +105,23 @@
 <section class='py-20 bg-white'>
   <div class='container mx-auto px-4'>
     <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Why Choose Our Training</h2>
-      <p class='text-gray-600 text-lg font-inter'>Benefits for your organization</p>
+      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Why Choose Our {{kategori.nama_kategori}}</h2>
+      <p class='text-gray-600 text-lg font-inter'>Benefits join {{kategori.nama_kategori}}</p>
     </div>
 
     <div class='grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center max-w-7xl mx-auto'>
+{{#each kategori.benefit_category}}
       <div class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'>
         <div class='flex justify-center mb-6'>
           <div class='w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-2xl group-hover:from-slate-600 group-hover:to-slate-800 group-hover:text-white transition-all duration-300'>
-            <i class='fas fa-cogs'></i>
+            <i class='{{computeIcon this.icon}}'></i>
           </div>
         </div>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 font-montserrat'>Customized</h3>
-        <p class='text-gray-600 text-lg leading-relaxed font-inter'>Tailored content to match your business needs</p>
+        <h3 class='text-xl font-bold text-gray-900 mb-4 font-montserrat'>{{this.tittle}}</h3>
+        <p class='text-gray-600 text-lg leading-relaxed font-inter'>{{this.description}}</p>
       </div>
+      {{/each}}
 
-      <div class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'>
-        <div class='flex justify-center mb-6'>
-          <div class='w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-2xl group-hover:from-slate-600 group-hover:to-slate-800 group-hover:text-white transition-all duration-300'>
-            <i class='fas fa-user-tie'></i>
-          </div>
-        </div>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 font-montserrat'>Expert Trainers</h3>
-        <p class='text-gray-600 text-lg leading-relaxed font-inter'>Industry professionals with real experience</p>
-      </div>
-
-      <div class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'>
-        <div class='flex justify-center mb-6'>
-          <div class='w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-2xl group-hover:from-slate-600 group-hover:to-slate-800 group-hover:text-white transition-all duration-300'>
-            <i class='fas fa-map-marked-alt'></i>
-          </div>
-        </div>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 font-montserrat'>Flexible Location</h3>
-        <p class='text-gray-600 text-lg leading-relaxed font-inter'>On-site or online, your choice</p>
-      </div>
-
-      <div class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'>
-        <div class='flex justify-center mb-6'>
-          <div class='w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-2xl group-hover:from-slate-600 group-hover:to-slate-800 group-hover:text-white transition-all duration-300'>
-            <i class='fas fa-chart-line'></i>
-          </div>
-        </div>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 font-montserrat'>Measurable Results</h3>
-        <p class='text-gray-600 text-lg leading-relaxed font-inter'>Track progress and ROI effectively</p>
-      </div>
     </div>
   </div>
 </section>
@@ -164,37 +136,16 @@
 
     <div class='max-w-6xl mx-auto'>
       <div class='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
+{{#each kategori.jenis_kelas}}
         <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all'>
           <div class='w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='fas fa-code text-white text-xl'></i>
+            <i class='{{this.icon}} text-white text-xl'></i>
           </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Software Development</h3>
-          <p class='text-gray-600 text-sm font-inter'>Modern development practices and frameworks</p>
+          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>{{this.nama_jenis_kelas}}</h3>
+          <p class='text-gray-600 text-sm font-inter'>{{this.deskripsi}}</p>
         </div>
-        
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all'>
-          <div class='w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='fas fa-cloud text-white text-xl'></i>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Cloud Computing</h3>
-          <p class='text-gray-600 text-sm font-inter'>AWS, Azure, and cloud architecture</p>
-        </div>
-        
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all'>
-          <div class='w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='fas fa-project-diagram text-white text-xl'></i>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Agile & Scrum</h3>
-          <p class='text-gray-600 text-sm font-inter'>Project management methodologies</p>
-        </div>
-        
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all'>
-          <div class='w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='fas fa-shield-alt text-white text-xl'></i>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Cyber Security</h3>
-          <p class='text-gray-600 text-sm font-inter'>Security best practices and compliance</p>
-        </div>
+        {{/each}}
+
       </div>
     </div>
   </div>

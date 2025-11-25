@@ -1,0 +1,28 @@
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Kategori } from "./kategori.entity";
+
+@Entity()
+export class FlowCategory{
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column()
+    number: number
+
+    @Column()
+    tittle: string
+
+    @Column()
+    description: string
+
+      @CreateDateColumn()
+      createdAt: Date;
+    
+      @UpdateDateColumn()
+      updatedAt: Date;
+
+              @ManyToOne(() => Kategori, (kategori) => kategori.flow_category, {
+                onDelete: 'CASCADE',
+              })
+              kategori: Kategori;
+}

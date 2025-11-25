@@ -1072,7 +1072,7 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
       
       <!-- WIP Card -->
       {{#each special_program}}
-      <a href='/{{id}}' class='group block' data-animate="slide-right" data-delay="100">
+      <a href='kategoris/program/{{nama_kategori}}' class='group block' data-animate="slide-right" data-delay="100">
         <div class='relative bg-white rounded-3xl p-8 border-2 border-gray-300 hover:border-gray-500 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden'>
           <!-- Background Pattern -->
           <div class='absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-gray-100/50 to-gray-200/50 rounded-full blur-3xl -z-0'></div>
@@ -1081,10 +1081,10 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
             <!-- Icon -->
             <div class='mb-6 flex items-center justify-between'>
               <div class='w-20 h-20 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300'>
-                <img src='{{icon}}' alt='WIP' class='w-12 h-12'>
+                <img src='{{icon}}' alt='{{nama_kategori}}' class='w-12 h-12'>
               </div>
               <span class='bg-gray-800 text-white px-4 py-2 rounded-full text-sm font-bold'>
-                {{nama_kategori}}
+                {{text}}
               </span>
             </div>
 

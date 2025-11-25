@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
+import { Kategori } from './kategori.entity';
 
 @Entity()
 export class JenisKelas {
@@ -24,6 +26,9 @@ export class JenisKelas {
 
   @OneToMany(() => Kelas, (kelas) => kelas.jenis_kelas)
   kelas: Kelas[];
+
+  @ManyToMany(() => Kategori, (kategori) => kategori.jenis_kelas)
+  kategoris: Kategori[];
 
   @CreateDateColumn()
   createdAt: Date;

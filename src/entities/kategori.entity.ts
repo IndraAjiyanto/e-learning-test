@@ -2,13 +2,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
+import { JenisKelas } from './jenis_kelas.entity';
 import { PertanyaanUmum } from './pertanyaan_umum.entity';
 import { BenefitCategory } from './benefit_category.entity';
+import { FlowCategory } from './flow_category.entity';
 
 export type Type = 'Special Program' | 'Program';
 
@@ -20,8 +24,8 @@ export class Kategori {
   @Column()
   nama_kategori: string;
 
-  @Column({nullable: true})
-  nama_kategori_uniq: string
+  @Column({ nullable: true })
+  text: string;
 
   @Column()
   icon: string;
@@ -29,10 +33,20 @@ export class Kategori {
   @Column()
   deskripsi: string;
 
-  @Column({nullable: true, type: 'jsonb'})
+  @Column({ nullable: true })
+  contact: number;
+
+  @Column({ nullable: true })
+  for: string;
+
+  @Column({ nullable: true, type: 'jsonb' })
   info: string[];
 
-  @Column({ type: 'enum', enum: ['Special Program', 'Program'], nullable: true })
+  @Column({
+    type: 'enum',
+    enum: ['Special Program', 'Program'],
+    nullable: true,
+  })
   type: Type;
 
   @CreateDateColumn()
@@ -44,10 +58,22 @@ export class Kategori {
   @OneToMany(() => Kelas, (kelas) => kelas.kategori)
   kelas: Kelas[];
 
-  @OneToMany(() => PertanyaanUmum, (pertanyaan_umum) => pertanyaan_umum.kategori)
+  @OneToMany(
+    () => PertanyaanUmum,
+    (pertanyaan_umum) => pertanyaan_umum.kategori,
+  )
   pertanyaan_umum: PertanyaanUmum[];
 
-  @OneToMany(() => BenefitCategory, (benefit_category) => benefit_category.kategori)
+  @OneToMany(
+    () => BenefitCategory,
+    (benefit_category) => benefit_category.kategori,
+  )
   benefit_category: BenefitCategory[];
 
+  @OneToMany(() => FlowCategory, (flow_category) => flow_category.kategori)
+  flow_category: FlowCategory[];
+
+  @ManyToMany(() => JenisKelas, (jenisKelas) => jenisKelas.kategoris)
+  @JoinTable()
+  jenis_kelas: JenisKelas[];
 }
