@@ -12,10 +12,12 @@ export class DashboardController {
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
-        const kelas = await this.dashboardService.findAllKelas()
+        const kelas = await this.dashboardService.findAllKelas();
         res.render('admin/kelas/index', { user: req.user, kelas });
       } else if (req.user.role === 'admin') {
-        const kelas = await this.dashboardService.findKelasByMentoring(req.user!.id);
+        const kelas = await this.dashboardService.findKelasByMentoring(
+          req.user!.id,
+        );
         res.render('admin/kelas/index', { user: req.user, kelas });
       } else if (req.user.role === 'user') {
         const pertanyaan_umum = await this.dashboardService.findFAQ();
@@ -91,19 +93,24 @@ export class DashboardController {
   ) {
     const jenis_kelas = await this.dashboardService.findJenisKelas();
     if (kategoriName === 'Bootcamp') {
-    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
+      const kelas =
+        await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('kelas/bootcamp', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'Course') {
-    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
+      const kelas =
+        await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('kelas/course', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'Short Class') {
-    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
+      const kelas =
+        await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('kelas/short_class', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'in_house_training') {
-    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
+      const kelas =
+        await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('inhouse', { kelas, user: req.user, jenis_kelas });
     } else if (kategoriName === 'wip') {
-    const kelas = await this.dashboardService.findKelasByKategori(kategoriName);
+      const kelas =
+        await this.dashboardService.findKelasByKategori(kategoriName);
       res.render('wip', { kelas, user: req.user, jenis_kelas });
     }
   }
@@ -173,5 +180,11 @@ export class DashboardController {
       background,
       paragraf,
     });
+  }
+
+  @Get('api/kategori')
+  async getKategori(@Res() res: Response) {
+    const kategori = await this.dashboardService.findKategori();
+    res.json(kategori);
   }
 }

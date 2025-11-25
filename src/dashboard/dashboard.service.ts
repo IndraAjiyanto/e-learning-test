@@ -79,7 +79,7 @@ export class DashboardService {
     return await this.kelasRepository.find({
       where: { launch: true },
       order: { id: 'DESC' },
-      relations: ['kategori', 'jenis_kelas', 'user_kelas'],
+      relations: ['kategori', 'jenis_kelas', 'user_kelas','mentor'],
     });
   }
 
@@ -107,6 +107,7 @@ export class DashboardService {
         'jenis_kelas',
         'mentoring',
         'mentoring.user',
+        'mentor'
       ],
     });
   }
