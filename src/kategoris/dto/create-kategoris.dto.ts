@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsArray } from 'class-validator';
 
 export class CreateKategorisDto {
   @IsString()
@@ -13,6 +13,11 @@ export class CreateKategorisDto {
 
   @IsString()
   deskripsi: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  info?: string[];
 
   @IsEnum(['Special Program', 'Program'])
   type: 'Special Program' | 'Program';

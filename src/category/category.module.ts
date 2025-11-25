@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { WipService } from './wip.service';
-import { WipController } from './wip.controller';
+import { CategoryService } from './category.service';
+import { CategoryController } from './category.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
+import { BenefitCategory } from 'src/entities/benefit_category.entity';
 
 @Module({
   imports: [
@@ -16,9 +17,10 @@ import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
       Kategori,
       Alumni,
       PertanyaanUmum,
+      BenefitCategory,
     ]),
   ],
-  controllers: [WipController],
-  providers: [WipService],
+  controllers: [CategoryController],
+  providers: [CategoryService],
 })
-export class WipModule {}
+export class CategoryModule {}

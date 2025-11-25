@@ -1,5 +1,5 @@
 <div
-  class='py-10'
+  class='py-10 w-full mx-auto'
   x-data="{
         previewUrl: null,
         errorMessage: '',
@@ -15,18 +15,21 @@
           nama_kategori: '',
           nama_kategori_uniq: '',
           deskripsi: '',
+          info: [''],
           type: ''
         },
         formErrors: {
           nama_kategori: '',
           nama_kategori_uniq: '',
           deskripsi: '',
+          info: '',
           type: ''
         },
         formValid: {
           nama_kategori: false,
-          nama_kategori_uniq: true,
+          nama_kategori_uniq: false,
           deskripsi: false,
+          info: false,
           type: false
         },
 
@@ -90,6 +93,17 @@
           img.src = objectUrl;
         },
 
+        validateInfo(infos) {
+          const hasValidInfo = infos && infos.some(info => info.trim());
+          if (!hasValidInfo) {
+            this.formErrors.info = 'At least one info item is required';
+            this.formValid.info = false;
+          } else {
+            this.formErrors.info = '';
+            this.formValid.info = true;
+          }
+        },
+
         validateField(field, value) {
           this.formData[field] = value;
 
@@ -104,9 +118,14 @@
               }
               break;
             case 'nama_kategori_uniq':
-              // Optional field, always valid
-              this.formErrors.nama_kategori_uniq = '';
-              this.formValid.nama_kategori_uniq = true;
+              // Required field
+              if (!value.trim()) {
+                this.formErrors.nama_kategori_uniq = 'Unique category name is required';
+                this.formValid.nama_kategori_uniq = false;
+              } else {
+                this.formErrors.nama_kategori_uniq = '';
+                this.formValid.nama_kategori_uniq = true;
+              }
               break;
             case 'deskripsi':
               if (!value.trim()) {
@@ -142,8 +161,8 @@
         },
 
         canSubmit() {
-          const imageValid = !this.hasFile || this.isValid;
-          const formValid = this.formValid.nama_kategori && this.formValid.deskripsi && this.formValid.type;
+          const imageValid = this.hasFile && this.isValid;
+          const formValid = this.formValid.nama_kategori && this.formValid.nama_kategori_uniq && this.formValid.deskripsi && this.formValid.info && this.formValid.type;
           return imageValid && formValid;
         },
 
@@ -164,242 +183,320 @@
     >
 
       <!-- Form Fields Grid -->
-      <div class='grid grid-cols-1 gap-6'>
-        <!-- Nama Kategori -->
-        <div class='space-y-2'>
-          <label
-            for='nama_kategori'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Category Name</label>
-          <input
-            type='text'
-            id='nama_kategori'
-            name='nama_kategori'
-            required
-            :class="formErrors.nama_kategori ? 'border-red-500 focus:ring-red-500' : formValid.nama_kategori ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            @input='validateField("nama_kategori", $event.target.value)'
-          />
+      <div class='grid grid-cols-2 gap-6'>
+        <!-- Left Column -->
+        <div class='space-y-6'>
+          <!-- Nama Kategori -->
+          <div class='space-y-2'>
+            <label
+              for='nama_kategori'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Category Name</label>
+            <input
+              type='text'
+              id='nama_kategori'
+              name='nama_kategori'
+              required
+              :class="formErrors.nama_kategori ? 'border-red-500 focus:ring-red-500' : formValid.nama_kategori ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              @input='validateField("nama_kategori", $event.target.value)'
+            />
 
-          <!-- Error Message -->
-          <template x-if='formErrors.nama_kategori'>
-            <div
-              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-            >
-              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p
-                class='text-xs text-red-700'
-                x-text='formErrors.nama_kategori'
-              ></p>
-            </div>
-          </template>
-
-          <!-- Success Message -->
-          <template x-if='formValid.nama_kategori && !formErrors.nama_kategori'>
-            <div
-              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-            >
-              <i class='fas fa-check-circle text-green-500'></i>
-              <p class='text-xs text-green-700'>Valid category name</p>
-            </div>
-          </template>
-        </div>
-
-        <!-- Nama Kategori Uniq -->
-        <div class='space-y-2'>
-          <label
-            for='nama_kategori_uniq'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Unique Category Name
-            <span
-              class='text-xs text-gray-500 font-normal'
-            >(optional)</span></label>
-          <input
-            type='text'
-            id='nama_kategori_uniq'
-            name='nama_kategori_uniq'
-            :class="formErrors.nama_kategori_uniq ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
-            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            @input='validateField("nama_kategori_uniq", $event.target.value)'
-          />
-
-          <!-- Error Message -->
-          <template x-if='formErrors.nama_kategori_uniq'>
-            <div
-              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-            >
-              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p
-                class='text-xs text-red-700'
-                x-text='formErrors.nama_kategori_uniq'
-              ></p>
-            </div>
-          </template>
-        </div>
-
-        <!-- Type -->
-        <div class='space-y-2'>
-          <label
-            for='type'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Type</label>
-          <select
-            id='type'
-            name='type'
-            required
-            :class="formErrors.type ? 'border-red-500 focus:ring-red-500' : formValid.type ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            @change='validateField("type", $event.target.value)'
-          >
-            <option value=''>Select Type</option>
-            <option value='Special Program'>Special Program</option>
-            <option value='Program'>Program</option>
-          </select>
-
-          <!-- Error Message -->
-          <template x-if='formErrors.type'>
-            <div
-              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-            >
-              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p class='text-xs text-red-700' x-text='formErrors.type'></p>
-            </div>
-          </template>
-
-          <!-- Success Message -->
-          <template x-if='formValid.type && !formErrors.type'>
-            <div
-              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-            >
-              <i class='fas fa-check-circle text-green-500'></i>
-              <p class='text-xs text-green-700'>Valid type</p>
-            </div>
-          </template>
-        </div>
-
-        <div class='space-y-3'>
-
-          <label
-            for='icon'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >
-            Icon Image
-            <span class='text-xs text-gray-500 font-normal'>(1000x1000 -
-              2000x2000px, max 5MB, JPG/PNG)</span>
-          </label>
-
-          <input
-            type='file'
-            id='icon'
-            name='icon'
-            accept='image/jpeg,image/jpg,image/png'
-            x-ref='fileInput'
-            :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-            class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
-            @change='validateImage($event.target.files[0])'
-          />
-
-          <!-- Error Message -->
-          <template x-if='!isValid && errorMessage'>
-            <div
-              class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-            >
-              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <div>
-                <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
-                <p class='text-xs text-red-700' x-text='errorMessage'></p>
-              </div>
-            </div>
-          </template>
-
-          <!-- Success Message with File Info -->
-          <template x-if='hasFile && isValid'>
-            <div class='space-y-2'>
+            <!-- Error Message -->
+            <template x-if='formErrors.nama_kategori'>
               <div
-                class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
-                <div class='flex items-center gap-2'>
-                  <i class='fas fa-check-circle text-green-500'></i>
-                  <div>
-                    <p
-                      class='text-sm font-semibold text-green-800'
-                      x-text='fileName'
-                    ></p>
-                    <p class='text-xs text-green-700'>
-                      <span x-text='(fileSize / 1024 / 1024).toFixed(2)'></span>
-                      MB •
-                      <span x-text='imageWidth'></span>x<span
-                        x-text='imageHeight'
-                      ></span>
-                      px
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type='button'
-                  @click='clearFile()'
-                  class='text-red-500 hover:text-red-700 transition-colors'
-                  title='Remove image'
-                >
-                  <i class='fas fa-times'></i>
-                </button>
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.nama_kategori'
+                ></p>
               </div>
+            </template>
 
-              <!-- Image Preview -->
-              <div class='relative w-32 h-32'>
-                <img
-                  :src='previewUrl'
-                  alt='Icon Preview'
-                  class='w-32 h-32 object-cover rounded-lg border-2 border-green-500 shadow-sm'
+            <!-- Success Message -->
+            <template
+              x-if='formValid.nama_kategori && !formErrors.nama_kategori'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid category name</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- Nama Kategori Uniq -->
+          <div class='space-y-2'>
+            <label
+              for='nama_kategori_uniq'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Unique Category Name</label>
+            <input
+              type='text'
+              id='nama_kategori_uniq'
+              name='nama_kategori_uniq'
+              required
+              :class="formErrors.nama_kategori_uniq ? 'border-red-500 focus:ring-red-500' : formValid.nama_kategori_uniq ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              @input='validateField("nama_kategori_uniq", $event.target.value)'
+            />
+
+            <!-- Error Message -->
+            <template x-if='formErrors.nama_kategori_uniq'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.nama_kategori_uniq'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template
+              x-if='formValid.nama_kategori_uniq && !formErrors.nama_kategori_uniq'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid unique category name</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- Info -->
+          <div x-data="{ infos: [''] }">
+            <label
+              class='block text-sm font-semibold text-gray-700 mb-2'
+            >Info</label>
+            <template x-for='(info, index) in infos' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='infos[index]'
+                  name='info[]'
+                  placeholder='Enter info item'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                  @input='validateInfo(infos)'
                 />
                 <button
                   type='button'
-                  @click='clearFile()'
-                  class='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 transition-colors'
-                  title='Remove image'
+                  @click='infos.splice(index,1); validateInfo(infos)'
+                  x-show='infos.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
                 >
-                  <i class='fas fa-times text-xs'></i>
+                  ✕
                 </button>
               </div>
-            </div>
-          </template>
+            </template>
+            <button
+              type='button'
+              @click="infos.push(''); validateInfo(infos)"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Info
+            </button>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.info'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg mt-2'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.info'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.info && !formErrors.info'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg mt-2'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid info</p>
+              </div>
+            </template>
+          </div>
         </div>
 
-        <!-- Deskripsi -->
-        <div class='space-y-2'>
-          <label
-            for='deskripsi'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Description</label>
-          <textarea
-            id='deskripsi'
-            name='deskripsi'
-            rows='4'
-            required
-            :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500' : formValid.deskripsi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            @input='validateField("deskripsi", $event.target.value)'
-          ></textarea>
-
-          <!-- Error Message -->
-          <template x-if='formErrors.deskripsi'>
-            <div
-              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+        <!-- Right Column -->
+        <div class='space-y-6'>
+          <!-- Type -->
+          <div class='space-y-2'>
+            <label
+              for='type'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Type</label>
+            <select
+              id='type'
+              name='type'
+              required
+              :class="formErrors.type ? 'border-red-500 focus:ring-red-500' : formValid.type ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              @change='validateField("type", $event.target.value)'
             >
-              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p class='text-xs text-red-700' x-text='formErrors.deskripsi'></p>
-            </div>
-          </template>
+              <option value=''>Select Type</option>
+              <option value='Special Program'>Special Program</option>
+              <option value='Program'>Program</option>
+            </select>
 
-          <!-- Success Message -->
-          <template x-if='formValid.deskripsi && !formErrors.deskripsi'>
-            <div
-              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            <!-- Error Message -->
+            <template x-if='formErrors.type'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.type'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.type && !formErrors.type'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid type</p>
+              </div>
+            </template>
+          </div>
+
+          <div class='space-y-3'>
+
+            <label
+              for='icon'
+              class='block text-sm font-semibold text-gray-700 mb-1'
             >
-              <i class='fas fa-check-circle text-green-500'></i>
-              <p class='text-xs text-green-700'>Valid description</p>
-            </div>
-          </template>
+              Icon Image
+              <span class='text-xs text-gray-500 font-normal'>(1000x1000 -
+                2000x2000px, max 5MB, JPG/PNG)</span>
+            </label>
+
+            <input
+              type='file'
+              id='icon'
+              name='icon'
+              required
+              accept='image/jpeg,image/jpg,image/png'
+              x-ref='fileInput'
+              :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
+              @change='validateImage($event.target.files[0])'
+            />
+
+            <!-- Error Message -->
+            <template x-if='!isValid && errorMessage'>
+              <div
+                class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <div>
+                  <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+                  <p class='text-xs text-red-700' x-text='errorMessage'></p>
+                </div>
+              </div>
+            </template>
+
+            <!-- Success Message with File Infos -->
+            <template x-if='hasFile && isValid'>
+              <div class='space-y-2'>
+                <div
+                  class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
+                >
+                  <div class='flex items-center gap-2'>
+                    <i class='fas fa-check-circle text-green-500'></i>
+                    <div>
+                      <p
+                        class='text-sm font-semibold text-green-800'
+                        x-text='fileName'
+                      ></p>
+                      <p class='text-xs text-green-700'>
+                        <span
+                          x-text='(fileSize / 1024 / 1024).toFixed(2)'
+                        ></span>
+                        MB •
+                        <span x-text='imageWidth'></span>x<span
+                          x-text='imageHeight'
+                        ></span>
+                        px
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type='button'
+                    @click='clearFile()'
+                    class='text-red-500 hover:text-red-700 transition-colors'
+                    title='Remove image'
+                  >
+                    <i class='fas fa-times'></i>
+                  </button>
+                </div>
+
+                <!-- Image Preview -->
+                <div class='relative w-32 h-32'>
+                  <img
+                    :src='previewUrl'
+                    alt='Icon Preview'
+                    class='w-32 h-32 object-cover rounded-lg border-2 border-green-500 shadow-sm'
+                  />
+                  <button
+                    type='button'
+                    @click='clearFile()'
+                    class='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 transition-colors'
+                    title='Remove image'
+                  >
+                    <i class='fas fa-times text-xs'></i>
+                  </button>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <!-- Deskripsi -->
+          <div class='space-y-2'>
+            <label
+              for='deskripsi'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Description</label>
+            <textarea
+              id='deskripsi'
+              name='deskripsi'
+              rows='4'
+              required
+              :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500' : formValid.deskripsi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              @input='validateField("deskripsi", $event.target.value)'
+            ></textarea>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.deskripsi'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.deskripsi'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.deskripsi && !formErrors.deskripsi'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid description</p>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
 

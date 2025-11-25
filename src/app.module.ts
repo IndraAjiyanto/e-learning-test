@@ -51,7 +51,7 @@ import { TeamLeadModule } from './team_lead/team_lead.module';
 import { ValueModule } from './value/value.module';
 import { CommitmentModule } from './commitment/commitment.module';
 import { PendaftaranModule } from './pendaftaran/pendaftaran.module';
-import { WipModule } from './wip/wip.module';
+import { CategoryModule } from './category/category.module';
 import { InHouseTrainingModule } from './in_house_training/in_house_training.module';
 import { ParagrafModule } from './paragraf/paragraf.module';
 import { ContactModule } from './contact/contact.module';
@@ -114,7 +114,7 @@ import { MisiModule } from './misi/misi.module';
     ValueModule,
     CommitmentModule,
     PendaftaranModule,
-    WipModule,
+    CategoryModule,
     InHouseTrainingModule,
     ParagrafModule,
     ContactModule,

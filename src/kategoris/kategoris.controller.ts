@@ -35,19 +35,19 @@ export class KategorisController {
 
   @Roles('super_admin')
   @Post()
-    @UseInterceptors(
-      FileInterceptor('icon', multerConfigMemory),
-      ValidateImageInterceptor,
-    )
-    @ValidateImage({
-      minWidth: 1000,
-      maxWidth: 2000,
-      minHeight: 1000,
-      maxHeight: 2000,
-      folder: 'nestjs/images/kategori',
-      maxSize: 5 * 1024 * 1024,
-      allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    })
+  @UseInterceptors(
+    FileInterceptor('icon', multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 1000,
+    maxWidth: 2000,
+    minHeight: 1000,
+    maxHeight: 2000,
+    folder: 'nestjs/images/kategori',
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+  })
   async create(
     @Body() createKategorisDto: CreateKategorisDto,
     @Res() res: Response,
@@ -85,7 +85,12 @@ export class KategorisController {
     @Req() req: Request,
   ) {
     const kategori = await this.kategorisService.findOne(kategoriId);
-    res.render('super_admin/kategori/detail', { user: req.user, kategori });
+    const kelas = await this.kategorisService.findKelasByKategori(kategoriId);
+    res.render('super_admin/kategori/detail', {
+      user: req.user,
+      kategori,
+      kelas,
+    });
   }
 
   @Roles('super_admin')
@@ -101,19 +106,19 @@ export class KategorisController {
 
   @Roles('super_admin')
   @Patch(':kategoriId')
-      @UseInterceptors(
-      FileInterceptor('icon', multerConfigMemory),
-      ValidateImageInterceptor,
-    )
-    @ValidateImage({
-      minWidth: 1000,
-      maxWidth: 2000,
-      minHeight: 1000,
-      maxHeight: 2000,
-      folder: 'nestjs/images/kategori',
-      maxSize: 5 * 1024 * 1024,
-      allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    })
+  @UseInterceptors(
+    FileInterceptor('icon', multerConfigMemory),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 1000,
+    maxWidth: 2000,
+    minHeight: 1000,
+    maxHeight: 2000,
+    folder: 'nestjs/images/kategori',
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+  })
   async update(
     @Param('kategoriId') kategoriId: number,
     @Body() updateKategorisDto: UpdateKategorisDto,
@@ -122,16 +127,17 @@ export class KategorisController {
   ) {
     try {
       const kategori = await this.kategorisService.findOne(kategoriId);
-      if(req.body.uploadedImageUrls){
+      if (req.body.uploadedImageUrls) {
         await this.kategorisService.getPublicIdFromUrl(kategori.icon);
         updateKategorisDto.icon = req.body.uploadedImageUrls?.[0];
       }
       await this.kategorisService.update(kategoriId, updateKategorisDto);
       req.flash('success', 'kategori successfully updated');
-      res.redirect('/kategoris');
+      res.redirect('/kategoris/' + kategoriId);
     } catch (error) {
       req.flash('error', error.message || 'kategori failed to update');
-      res.redirect('/kategoris');
+            res.redirect('/kategoris/' + kategoriId);
+
     }
   }
 
@@ -147,10 +153,12 @@ export class KategorisController {
       await this.kategorisService.getPublicIdFromUrl(kategori.icon);
       await this.kategorisService.remove(kategoriId);
       req.flash('success', 'kategori successfully deleted');
-      res.redirect('/kategoris');
+            res.redirect('/kategoris');
+
     } catch (error) {
       req.flash('success', 'kategori failed to delete');
-      res.redirect('/kategoris');
+            res.redirect('/kategoris');
+
     }
   }
 }

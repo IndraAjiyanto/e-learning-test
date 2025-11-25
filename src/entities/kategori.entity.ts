@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
 import { PertanyaanUmum } from './pertanyaan_umum.entity';
+import { BenefitCategory } from './benefit_category.entity';
 
 export type Type = 'Special Program' | 'Program';
 
@@ -28,6 +29,9 @@ export class Kategori {
   @Column()
   deskripsi: string;
 
+  @Column({nullable: true, type: 'jsonb'})
+  info: string[];
+
   @Column({ type: 'enum', enum: ['Special Program', 'Program'], nullable: true })
   type: Type;
 
@@ -42,4 +46,8 @@ export class Kategori {
 
   @OneToMany(() => PertanyaanUmum, (pertanyaan_umum) => pertanyaan_umum.kategori)
   pertanyaan_umum: PertanyaanUmum[];
+
+  @OneToMany(() => BenefitCategory, (benefit_category) => benefit_category.kategori)
+  benefit_category: BenefitCategory[];
+
 }
