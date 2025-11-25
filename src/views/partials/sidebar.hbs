@@ -100,7 +100,7 @@
     <!-- Navigation Links -->
     <nav class='flex-1 px-4 py-6 space-y-2'>
 
-      {{#if (roles user.role 'admin')}}
+      {{#if (eq user.role 'admin')}}
 
         <!-- Class Menu for Admin -->
         <a
@@ -127,7 +127,7 @@
           <span class='font-semibold'>Program</span>
         </a>
 
-      {{else if (roles user.role 'super_admin')}}
+      {{else if (eq user.role 'super_admin')}}
 
         <div x-data='{ dashboardOpen: false }' class='space-y-1'>
           <button

@@ -80,9 +80,8 @@ async function bootstrap() {
     });
   });
 
-  hbs.registerHelper('roles', (a, b) => a === b);
 
-  hbs.registerHelper('role', function (userRole, ...roles) {
+  hbs.registerHelper('roles', function (userRole, ...roles) {
     // Remove the last argument which is the options object
     const allowedRoles = roles.slice(0, -1);
     return allowedRoles.includes(userRole);

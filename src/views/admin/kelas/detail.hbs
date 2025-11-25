@@ -94,7 +94,7 @@
               <p><span class="font-medium text-gray-600">Program Name:</span> <span class="text-gray-800">{{kelas.nama_kelas}}</span></p>
               <p><span class="font-medium text-gray-600">Category:</span> <span class="text-gray-800">{{kelas.kategori.nama_kategori}}</span></p>
               <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{kelas.jenis_kelas.nama_jenis_kelas}}</span></p>
-              <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (roles kelas.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
+              <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (eq kelas.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
               <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{kelas.lokasi}}</span></p>
               {{#if (eq kelas.kategori.nama_kategori "Short Class")}}
               <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.hari}} day</span></p>
@@ -176,11 +176,11 @@
       </div>
 
   <!-- ===================== TAB SECTION ===================== -->
-  <div class=" mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl" x-data="{ tab: '{{#if (roles user.role "super_admin")}}benefit{{else}}week{{/if}}', search: '' }">
+  <div class=" mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl" x-data="{ tab: '{{#if (eq user.role "super_admin")}}benefit{{else}}week{{/if}}', search: '' }">
 
     <!-- Tab Navigation -->
     <div class="flex space-x-4 mb-6">
-      {{#if (roles user.role "admin")}}
+      {{#if (eq user.role "admin")}}
       <button @click="tab = 'week'" 
               :class="tab === 'week' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
               class="px-4 py-2 rounded-lg shadow transition">
@@ -207,7 +207,7 @@
 
 
 
-      {{else if (roles user.role "super_admin")}}
+      {{else if (eq user.role "super_admin")}}
 
       <button @click="tab = 'benefit'" 
               :class="tab === 'benefit' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 

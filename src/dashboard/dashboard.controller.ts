@@ -53,6 +53,7 @@ export class DashboardController {
       }
     } else {
       const pertanyaan_umum = await this.dashboardService.findFAQ();
+      console.log( pertanyaan_umum);
       const gambar_benefit_1 = await this.dashboardService.findGambar1();
       const gambar_benefit_2 = await this.dashboardService.findGambar2();
       const gambar_benefit_3 = await this.dashboardService.findGambar3();
