@@ -15,13 +15,6 @@
   <link rel="stylesheet" href="/public/css/cropper.min.css">
 <script src="/public/js/cropper.min.js"></script>
 
-
-  <!-- Script global -->
-    {{!-- <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
-    <script>
-      new cursoreffects.fairyDustCursor({ colors: ["#003060", "#004B8D", "#00A8E8"] });
-    </script> --}}
-
 </head>
 <body class="bg-slate-50 text-base-content">
   
@@ -63,45 +56,7 @@
       })
     </script>
 
-    {{!-- <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script> --}}
 
-
-    {{!-- <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // Buat cursor custom
-        const cursor = new cursoreffects.followingDotCursor({
-          color: ["#68bbe3"],
-          size: 10
-        });
-
-        // Simpan global
-        window.myCursor = cursor;
-
-        // Fungsi ubah ukuran
-        function setCursorSize(size) {
-          if (!window.myCursor) return;
-          window.myCursor.options.size = size;
-        }
-
-        // Elemen interaktif (button, a, dan elemen custom)
-        const interactiveElements = document.querySelectorAll("button, a, .cursor-small");
-
-        interactiveElements.forEach(el => {
-          el.addEventListener("mouseenter", () => setCursorSize(4));
-          el.addEventListener("mouseleave", () => setCursorSize(10));
-        });
-      });
-    </script>
-
-    <style>
-      canvas.cursor-effects-canvas {
-      position: fixed !important;
-      top: 0;
-      left: 0;
-      pointer-events: none !important;
-      z-index: 999999 !important;
-    }
-    </style> --}}
     <script src="/public/js/scroll-animator.js"></script>
     <script src="/public/js/main.js"></script>
     <script src="/public/js/texttype.js"></script>
