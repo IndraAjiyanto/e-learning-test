@@ -58,6 +58,7 @@ export class KategorisController {
       req.flash('success', 'kategori successfully created');
       res.redirect('/kategoris');
     } catch (error) {
+      console.log(error);
       req.flash('error', error.message || 'kategori failed to create');
       res.redirect('/kategoris');
     }
@@ -111,6 +112,7 @@ export class KategorisController {
     @Req() req: Request,
   ) {
     const kategori = await this.kategorisService.findOne(kategoriId);
+    console.log(kategori.jenis_kelas);
     res.render('super_admin/kategori/detail', {
       user: req.user,
       kategori,

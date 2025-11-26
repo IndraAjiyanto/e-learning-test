@@ -91,48 +91,22 @@
     </div>
 
     <!-- Image and Description Row -->
-    <div class='flex flex-col lg:flex-row gap-4 mb-4'>
+    <div class='space-y-4 mb-4'>
 
       <!-- Gambar Kategori -->
-      <div class='flex-shrink-0'>
+      <div class='flex justify-center'>
         <img
           src='{{kategori.icon}}'
           alt='Icon {{kategori.nama_kategori}}'
-          class='w-48 h-32 lg:w-56 lg:h-40 object-cover rounded-lg shadow-md'
+          class='w-64 h-48 object-cover rounded-lg shadow-md'
         />
       </div>
 
       <!-- Description Section -->
-      <div class='flex-1 bg-white rounded-lg p-3 border border-gray-200'>
-        <h3 class='text-sm font-semibold text-gray-800 mb-2 flex items-center'>
+      <div class='bg-gray-50 rounded-lg p-4'>
+        <h3 class='text-base font-semibold text-gray-800 mb-3 flex items-center'>
           <svg
-            class='w-4 h-4 mr-2 text-gray-600'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M4 6h16M4 10h16M4 14h16M4 18h16'
-            ></path>
-          </svg>
-          Description
-        </h3>
-        <p
-          class='text-gray-700 leading-relaxed text-sm'
-        >{{kategori.deskripsi}}</p>
-      </div>
-    </div>
-
-    <!-- Info Cards Below -->
-    <div class='grid grid-cols-1 md:grid-cols-2 gap-3'>
-      <!-- Basic Information -->
-      <div class='bg-gray-50 rounded-lg p-3'>
-        <h3 class='text-sm font-semibold text-gray-800 mb-2 flex items-center'>
-          <svg
-            class='w-4 h-4 mr-2 text-blue-600'
+            class='w-5 h-5 mr-2 text-blue-600'
             fill='none'
             stroke='currentColor'
             viewBox='0 0 24 24'
@@ -146,24 +120,63 @@
           </svg>
           Basic Information
         </h3>
-        <div class='space-y-1 text-xs'>
-          <p><span class='font-medium text-gray-600'>Category Name:</span>
-            <span class='text-gray-800'>{{kategori.nama_kategori}}</span></p>
-          {{#if kategori.nama_kategori_uniq}}
-            <p><span class='font-medium text-gray-600'>Unique Name:</span>
-              <span
-                class='text-gray-800'
-              >{{kategori.nama_kategori_uniq}}</span></p>
-          {{/if}}
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-3 text-sm'>
+          <div>
+            <span class='font-medium text-gray-600'>Category Name:</span>
+            <span class='text-gray-800 ml-2'>{{kategori.nama_kategori}}</span>
+          </div>
           {{#if kategori.info}}
-            <p><span class='font-medium text-gray-600'>Info:</span>
-              <span class='text-gray-800'>{{kategori.info}}</span></p>
+            <div>
+              <span class='font-medium text-gray-600'>Info:</span>
+              <span class='text-gray-800 ml-2'>{{kategori.info}}</span>
+            </div>
           {{/if}}
-          <p><span class='font-medium text-gray-600'>Type:</span>
-            <span class='text-gray-800'>{{kategori.type}}</span></p>
+          <div>
+            <span class='font-medium text-gray-600'>Type:</span>
+            <span class='text-gray-800 ml-2'>{{kategori.type}}</span>
+          </div>
+          {{#if kategori.text}}
+            <div>
+              <span class='font-medium text-gray-600'>Text:</span>
+              <span class='text-gray-800 ml-2'>{{kategori.text}}</span>
+            </div>
+          {{/if}}
+          {{#if kategori.contact}}
+            <div>
+              <span class='font-medium text-gray-600'>Contact:</span>
+              <span class='text-gray-800 ml-2'>{{kategori.contact}}</span>
+            </div>
+          {{/if}}
+          {{#if kategori.for}}
+            <div>
+              <span class='font-medium text-gray-600'>For:</span>
+              <span class='text-gray-800 ml-2'>{{kategori.for}}</span>
+            </div>
+          {{/if}}
+          {{#if kategori.jenis_kelas}}
+            <div class='md:col-span-2'>
+              <span class='font-medium text-gray-600'>Type Program:</span>
+              <p class='text-gray-800 mt-1'>
+                {{#each kategori.jenis_kelas}}
+                  <i class="{{computeIcon this.icon}}"></i> {{this.nama_jenis_kelas}}
+                {{/each}}
+              </p>
+            </div>
+          {{/if}}
+          {{#if kategori.deskripsi}}
+            <div class='md:col-span-2'>
+              <span class='font-medium text-gray-600'>Description:</span>
+              <p class='text-gray-800 mt-1'>{{kategori.deskripsi}}</p>
+            </div>
+          {{/if}}
+
         </div>
       </div>
     </div>
+
+    <!-- Info Cards Below -->
+      <!-- Basic Information -->
+
   </div>
 
   <!-- ===================== TAB SECTION ===================== -->

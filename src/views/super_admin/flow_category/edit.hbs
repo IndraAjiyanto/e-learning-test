@@ -17,6 +17,11 @@
     title: false,
     description: false
   },
+  formTouched: {
+    number: false,
+    title: false,
+    description: false
+  },
 
   init() {
     // Validate initial values
@@ -27,6 +32,7 @@
 
   validateField(field, value) {
     this.formData[field] = value;
+    this.formTouched[field] = true;
     
     switch(field) {
       case 'number':
@@ -120,7 +126,9 @@
         </template>
 
         <!-- Success Message -->
-        <template x-if='formValid.number && !formErrors.number'>
+        <template
+          x-if='formTouched.number && formValid.number && !formErrors.number'
+        >
           <div
             class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
           >
@@ -160,7 +168,9 @@
         </template>
 
         <!-- Success Message -->
-        <template x-if='formValid.title && !formErrors.title'>
+        <template
+          x-if='formTouched.title && formValid.title && !formErrors.title'
+        >
           <div
             class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
           >
@@ -200,7 +210,9 @@
         </template>
 
         <!-- Success Message -->
-        <template x-if='formValid.description && !formErrors.description'>
+        <template
+          x-if='formTouched.description && formValid.description && !formErrors.description'
+        >
           <div
             class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
           >
