@@ -2,28 +2,35 @@
   // Alpine.js Component Data (Dipisah dari HTML)
   function categoryFormData() {
     return {
-      /* ============================
+
+      /* ========================================
        * STATE
-       ============================ */
+      ========================================= */
       previewUrl: '{{kategori.icon}}' || null,
       errorMessage: '',
       isValid: true,
-
       fileName: '{{kategori.icon}}' ? 'Current Icon' : '',
       fileSize: 0,
       imageWidth: 0,
       imageHeight: 0,
-
       hasFile: '{{kategori.icon}}' ? true : false,
       hasOldIcon: '{{kategori.icon}}' ? true : false,
       oldIcon: '{{kategori.icon}}' || '',
 
       formData: {
         nama_kategori: '{{kategori.nama_kategori}}',
-        nama_kategori_uniq: '{{kategori.nama_kategori_uniq}}',
         deskripsi: '{{kategori.deskripsi}}',
+        text: '{{kategori.text}}',
+        contact: '{{kategori.contact}}',
+        for: '{{kategori.for}}',
+        jenis_kelas: [],
         type: '{{kategori.type}}'
       },
+
+      selectedJenisKelas: {{{json kategori.jenis_kelas}}},
+      searchJenisKelas: '',
+      showJenisKelasDropdown: false,
+      availableJenisKelas: {{{json jenisKelas}}},
 
       infos:
         {{#if kategori.info}}
@@ -34,25 +41,51 @@
 
       formErrors: {
         nama_kategori: '',
-        nama_kategori_uniq: '',
         deskripsi: '',
+        text: '',
+        contact: '',
+        for: '',
+        jenis_kelas: '',
         info: '',
         type: ''
       },
 
       formValid: {
         nama_kategori: true,
-        nama_kategori_uniq: '{{kategori.nama_kategori_uniq}}' ? true : false,
         deskripsi: true,
+        text: false,
+        contact: false,
+        for: false,
+        jenis_kelas: {{{json kategori.jenis_kelas}}}.length > 0,
         info:
           {{{json kategori.info}}} &&
-          {{{json kategori.info}}}.some(info => info.trim()) ? true : false,
+          {{{json kategori.info}}}.some(info => info.trim())
+            ? true
+            : false,
         type: true
       },
 
-      /* ============================
+      formTouched: {
+        nama_kategori: true,
+        deskripsi: true,
+        text: false,
+        contact: false,
+        for: false,
+        jenis_kelas: {{{json kategori.jenis_kelas}}}.length > 0,
+        info: true,
+        type: true
+      },
+
+      /* ========================================
+       * INITIALIZATION
+      ========================================= */
+      init() {
+        this.formData.jenis_kelas = this.selectedJenisKelas.map(jk => jk.id);
+      },
+
+      /* ========================================
        * IMAGE VALIDATION
-       ============================ */
+      ========================================= */
       validateImage(file) {
         if (!file) {
           this.hasFile = false;
@@ -94,16 +127,16 @@
           this.imageHeight = img.height;
 
           if (
-            img.width < 1000 || img.width > 2000 ||
-            img.height < 1000 || img.height > 2000
+            img.width < 1000 ||
+            img.width > 2000 ||
+            img.height < 1000 ||
+            img.height > 2000
           ) {
             this.errorMessage =
               `Image dimensions ${img.width}x${img.height}px. ` +
               `Required: 1000x1000 to 2000x2000 pixels`;
-
             this.isValid = false;
             this.previewUrl = null;
-
             URL.revokeObjectURL(objectUrl);
           } else {
             this.previewUrl = objectUrl;
@@ -116,17 +149,17 @@
           this.errorMessage = 'Failed to load image';
           this.isValid = false;
           this.previewUrl = null;
-
           URL.revokeObjectURL(objectUrl);
         };
 
         img.src = objectUrl;
       },
 
-      /* ============================
-       * FIELD VALIDATION
-       ============================ */
+      /* ========================================
+       * INFO VALIDATION
+      ========================================= */
       validateInfo(infos) {
+        this.formTouched.info = true;
         const hasValidInfo = infos && infos.some(info => info.trim());
 
         if (!hasValidInfo) {
@@ -138,8 +171,12 @@
         }
       },
 
+      /* ========================================
+       * FIELD VALIDATION
+      ========================================= */
       validateField(field, value) {
         this.formData[field] = value;
+        this.formTouched[field] = true;
 
         switch (field) {
           case 'nama_kategori':
@@ -154,7 +191,8 @@
 
           case 'nama_kategori_uniq':
             if (!value || !value.trim()) {
-              this.formErrors.nama_kategori_uniq = 'Unique category name is required';
+              this.formErrors.nama_kategori_uniq =
+                'Unique category name is required';
               this.formValid.nama_kategori_uniq = false;
             } else {
               this.formErrors.nama_kategori_uniq = '';
@@ -181,22 +219,80 @@
               this.formValid.type = true;
             }
             break;
+
+          case 'text':
+            this.formErrors.text = '';
+            this.formValid.text = value.trim().length > 0;
+            break;
+
+          case 'contact':
+            if (value && isNaN(Number(value))) {
+              this.formErrors.contact = 'Contact must be a valid number';
+              this.formValid.contact = false;
+            } else {
+              this.formErrors.contact = '';
+              this.formValid.contact = value.toString().trim().length > 0;
+            }
+            break;
+
+          case 'for':
+            this.formErrors.for = '';
+            this.formValid.for = value.trim().length > 0;
+            break;
+
+          case 'jenis_kelas':
+            this.formErrors.jenis_kelas = '';
+            this.formValid.jenis_kelas =
+              Array.isArray(value) && value.length > 0;
+            break;
         }
       },
 
-      /* ============================
+      /* ========================================
+       * MULTISELECT: JENIS KELAS
+      ========================================= */
+      selectJenisKelas(jk) {
+        if (!this.selectedJenisKelas.some(selected => selected.id === jk.id)) {
+          this.selectedJenisKelas.push(jk);
+          this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
+          this.validateField('jenis_kelas', this.formData.jenis_kelas);
+        }
+
+        this.searchJenisKelas = '';
+        this.showJenisKelasDropdown = false;
+      },
+
+      removeJenisKelas(jkId) {
+        this.selectedJenisKelas = this.selectedJenisKelas.filter(
+          s => s.id !== jkId
+        );
+
+        this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
+        this.validateField('jenis_kelas', this.formData.jenis_kelas);
+      },
+
+      get filteredJenisKelas() {
+        return this.availableJenisKelas.filter(
+          jk =>
+            jk.nama_jenis_kelas
+              .toLowerCase()
+              .includes(this.searchJenisKelas.toLowerCase()) &&
+            !this.selectedJenisKelas.some(selected => selected.id === jk.id)
+        );
+      },
+
+      /* ========================================
        * CLEAR FILE
-       ============================ */
+      ========================================= */
       clearFile() {
         this.previewUrl = this.hasOldIcon ? this.oldIcon : null;
         this.errorMessage = '';
         this.isValid = true;
-
         this.fileName = this.hasOldIcon ? 'Current Icon' : '';
+
         this.fileSize = 0;
         this.imageWidth = 0;
         this.imageHeight = 0;
-
         this.hasFile = this.hasOldIcon;
 
         if (this.$refs.fileInput) {
@@ -204,9 +300,9 @@
         }
       },
 
-      /* ============================
-       * FORM STATE HELPERS
-       ============================ */
+      /* ========================================
+       * FORM HELPERS
+      ========================================= */
       canSubmit() {
         const imageValid =
           (this.hasOldIcon && !this.hasFile) ||
@@ -214,7 +310,6 @@
 
         const formValid =
           this.formValid.nama_kategori &&
-          this.formValid.nama_kategori_uniq &&
           this.formValid.deskripsi &&
           this.formValid.info &&
           this.formValid.type;
@@ -225,6 +320,7 @@
       hasFormErrors() {
         return Object.values(this.formErrors).some(error => error !== '');
       }
+
     };
   }
 </script>
@@ -289,45 +385,223 @@
             </template>
           </div>
 
-          <!-- Nama Kategori Uniq -->
+          <!-- Text -->
           <div class='space-y-2'>
             <label
-              for='nama_kategori_uniq'
+              for='text'
               class='block text-sm font-semibold text-gray-700 mb-1'
-            >
-              Unique Category Name
-            </label>
-            <input
-              type='text'
-              id='nama_kategori_uniq'
-              name='nama_kategori_uniq'
-              required
-              :class="formErrors.nama_kategori_uniq ? 'border-red-500 focus:ring-red-500' : formValid.nama_kategori_uniq && formData.nama_kategori_uniq ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            >Text</label>
+            <textarea
+              id='text'
+              name='text'
+              rows='3'
+              :class="formErrors.text ? 'border-red-500 focus:ring-red-500' : formValid.text ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-              @input='validateField("nama_kategori_uniq", $event.target.value)'
-              x-model='formData.nama_kategori_uniq'
+              @input='validateField("text", $event.target.value)'
+              x-model='formData.text'
+              placeholder='Enter additional text (optional)'
+            ></textarea>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.text'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.text'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template
+              x-if='formTouched.text && formValid.text && !formErrors.text'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Text looks good</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- Contact -->
+          <div class='space-y-2'>
+            <label
+              for='contact'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Contact</label>
+            <input
+              type='number'
+              id='contact'
+              name='contact'
+              :class="formErrors.contact ? 'border-red-500 focus:ring-red-500' : formValid.contact ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              @input='validateField("contact", $event.target.value)'
+              x-model='formData.contact'
+              placeholder='Enter contact number (optional)'
             />
 
-            <template x-if='formErrors.nama_kategori_uniq'>
+            <!-- Error Message -->
+            <template x-if='formErrors.contact'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.contact'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template
+              x-if='formTouched.contact && formValid.contact && !formErrors.contact'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Contact looks good</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- For -->
+          <div class='space-y-2'>
+            <label
+              for='for'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >For</label>
+            <input
+              type='text'
+              id='for'
+              name='for'
+              :class="formErrors.for ? 'border-red-500 focus:ring-red-500' : formValid.for ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              @input='validateField("for", $event.target.value)'
+              x-model='formData.for'
+              placeholder='Enter for field (optional)'
+            />
+
+            <!-- Error Message -->
+            <template x-if='formErrors.for'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.for'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template
+              x-if='formTouched.for && formValid.for && !formErrors.for'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>For looks good</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- Jenis Kelas -->
+          <div class='space-y-2'>
+            <label class='block text-sm font-semibold text-gray-700 mb-1'>Class
+              Types</label>
+
+            <!-- Selected Jenis Kelas -->
+            <div
+              class='flex flex-wrap gap-2 mb-2'
+              x-show='selectedJenisKelas.length > 0'
+            >
+              <template x-for='jk in selectedJenisKelas' :key='jk.id'>
+                <div
+                  class='inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm'
+                >
+                  <span x-text='jk.nama_jenis_kelas'></span>
+                  <button
+                    type='button'
+                    @click='removeJenisKelas(jk.id)'
+                    class='text-gray-500 hover:text-red-500 transition'
+                  >
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke-width='1.5'
+                      stroke='currentColor'
+                      class='w-4 h-4'
+                    >
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        d='M6 18L18 6M6 6l12 12'
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </template>
+            </div>
+
+            <!-- Search Input -->
+            <div class='relative'>
+              <input
+                type='text'
+                x-model='searchJenisKelas'
+                @input='showJenisKelasDropdown = true'
+                @focus='showJenisKelasDropdown = true'
+                placeholder='Search class types...'
+                class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <i
+                class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+              ></i>
+
+              <!-- Dropdown -->
+              <div
+                x-show='showJenisKelasDropdown && filteredJenisKelas.length > 0'
+                class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+              >
+                <template x-for='jk in filteredJenisKelas' :key='jk.id'>
+                  <div
+                    @click='selectJenisKelas(jk)'
+                    class='px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700'
+                    x-text='jk.nama_jenis_kelas'
+                  ></div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Hidden inputs for selected jenis_kelas IDs -->
+            <template x-for='id in formData.jenis_kelas' :key='id'>
+              <input type='hidden' name='jenis_kelas[]' :value='id' />
+            </template>
+
+            <p class='text-xs text-gray-500 mt-2'>Click to select class types</p>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.jenis_kelas'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.nama_kategori_uniq'
+                  x-text='formErrors.jenis_kelas'
                 ></p>
               </div>
             </template>
 
+            <!-- Success Message -->
             <template
-              x-if='formValid.nama_kategori_uniq && !formErrors.nama_kategori_uniq && formData.nama_kategori_uniq'
+              x-if='formTouched.jenis_kelas && formValid.jenis_kelas && !formErrors.jenis_kelas'
             >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
               >
                 <i class='fas fa-check-circle text-green-500'></i>
-                <p class='text-xs text-green-700'>Valid unique category name</p>
+                <p class='text-xs text-green-700'>Class types look good</p>
               </div>
             </template>
           </div>
@@ -376,7 +650,9 @@
             </template>
 
             <!-- Success Message -->
-            <template x-if='formValid.info && !formErrors.info'>
+            <template
+              x-if='formTouched.info && formValid.info && !formErrors.info'
+            >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg mt-2'
               >

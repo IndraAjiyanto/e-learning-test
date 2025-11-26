@@ -1,18 +1,37 @@
-import { IsString, IsOptional, IsEnum, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsArray,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateKategorisDto {
   @IsString()
   nama_kategori: string;
-
-  @IsOptional()
-  @IsString()
-  nama_kategori_uniq?: string;
 
   @IsString()
   icon: string;
 
   @IsString()
   deskripsi: string;
+
+  @IsOptional()
+  @IsString()
+  text?: string;
+
+  @IsOptional()
+  @IsNumber()
+  contact?: number;
+
+  @IsOptional()
+  @IsString()
+  for?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  jenis_kelas?: number[];
 
   @IsOptional()
   @IsArray()

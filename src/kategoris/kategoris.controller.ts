@@ -26,7 +26,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemory } from 'src/common/config/multer.config';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
-@UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('kategoris')
@@ -67,7 +66,8 @@ export class KategorisController {
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    res.render('super_admin/kategori/create', { user: req.user });
+    const jenisKelas = await this.kategorisService.findJenisKelas();
+    res.render('super_admin/kategori/create', { user: req.user, jenisKelas });
   }
 
   @Roles('super_admin')
@@ -77,7 +77,7 @@ export class KategorisController {
     res.render('super_admin/kategori/index', { user: req.user, kategori });
   }
 
-    @Get('program/:kategoriName')
+  @Get('program/:kategoriName')
   async program(
     @Param('kategoriName') kategoriName: string,
     @Req() req: Request,
@@ -85,12 +85,21 @@ export class KategorisController {
   ) {
     const kategori = await this.kategorisService.findOneKategori(kategoriName);
     const jenis_kelas = await this.kategorisService.findJenisKelas();
-    if(kategori?.type === 'Special Program'){
-      const kelas = await this.kategorisService.findKelasByKategori(kategori.id)
-      res.render('special_program',{kategori, jenis_kelas, user: req.user, kelas})
-    }else if(kategori?.type === 'Program'){
-      const kelas = await this.kategorisService.findKelasByKategori(kategori.id)
-      res.render('program',{kategori, jenis_kelas, user: req.user, kelas})
+    if (kategori?.type === 'Special Program') {
+      const kelas = await this.kategorisService.findKelasByKategori(
+        kategori.id,
+      );
+      res.render('special_program', {
+        kategori,
+        jenis_kelas,
+        user: req.user,
+        kelas,
+      });
+    } else if (kategori?.type === 'Program') {
+      const kelas = await this.kategorisService.findKelasByKategori(
+        kategori.id,
+      );
+      res.render('program', { kategori, jenis_kelas, user: req.user, kelas });
     }
   }
 
@@ -102,11 +111,9 @@ export class KategorisController {
     @Req() req: Request,
   ) {
     const kategori = await this.kategorisService.findOne(kategoriId);
-    const kelas = await this.kategorisService.findKelasByKategori(kategoriId);
     res.render('super_admin/kategori/detail', {
       user: req.user,
       kategori,
-      kelas,
     });
   }
 
@@ -118,7 +125,12 @@ export class KategorisController {
     @Req() req: Request,
   ) {
     const kategori = await this.kategorisService.findOne(kategoriId);
-    res.render('super_admin/kategori/edit', { user: req.user, kategori });
+    const jenisKelas = await this.kategorisService.findJenisKelas();
+    res.render('super_admin/kategori/edit', {
+      user: req.user,
+      kategori,
+      jenisKelas,
+    });
   }
 
   @Roles('super_admin')
@@ -153,8 +165,7 @@ export class KategorisController {
       res.redirect('/kategoris/' + kategoriId);
     } catch (error) {
       req.flash('error', error.message || 'kategori failed to update');
-            res.redirect('/kategoris/' + kategoriId);
-
+      res.redirect('/kategoris/' + kategoriId);
     }
   }
 
@@ -170,12 +181,10 @@ export class KategorisController {
       await this.kategorisService.getPublicIdFromUrl(kategori.icon);
       await this.kategorisService.remove(kategoriId);
       req.flash('success', 'kategori successfully deleted');
-            res.redirect('/kategoris');
-
+      res.redirect('/kategoris');
     } catch (error) {
       req.flash('success', 'kategori failed to delete');
-            res.redirect('/kategoris');
-
+      res.redirect('/kategoris');
     }
   }
 }

@@ -8,6 +8,10 @@ import { Repository } from 'typeorm';
 import { AlurKelas } from 'src/entities/alur_kelas.entity';
 import { Kelas } from 'src/entities/kelas.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
+import { Alumni } from 'src/entities/alumni.entity';
+import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
+import { BenefitCategory } from 'src/entities/benefit_category.entity';
+import { FlowCategory } from 'src/entities/flow_category.entity';
 
 @Injectable()
 export class KategorisService {
@@ -18,29 +22,65 @@ export class KategorisService {
     private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(JenisKelas)
     private readonly jenisKelasRepository: Repository<JenisKelas>,
+    @InjectRepository(Alumni)
+    private readonly alumniRepository: Repository<Alumni>,
+    @InjectRepository(PertanyaanUmum)
+    private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
+    @InjectRepository(BenefitCategory)
+    private readonly benefitCategoryRepository: Repository<BenefitCategory>,
+    @InjectRepository(FlowCategory)
+    private readonly flowCategoryRepository: Repository<FlowCategory>,
   ) {}
 
   async create(createKategorisDto: CreateKategorisDto) {
-    const kategori = await this.kategoriRepository.create(createKategorisDto);
+    const { jenis_kelas: jenisKelasIds, ...kategoriData } = createKategorisDto;
+    const kategori = await this.kategoriRepository.create(kategoriData);
+
+    if (jenisKelasIds && jenisKelasIds.length > 0) {
+      const jenisKelas =
+        await this.jenisKelasRepository.findByIds(jenisKelasIds);
+      kategori.jenis_kelas = jenisKelas;
+    }
+
     return await this.kategoriRepository.save(kategori);
   }
 
-  async findOneKategori(kategoriName: string){
-    return await this.kategoriRepository.findOne({where: {nama_kategori: kategoriName}, relations: ['kelas','kelas.alumni','pertanyaan_umum','']})
+  async findOneKategori(kategoriName: string) {
+    return await this.kategoriRepository.findOne({
+      where: { nama_kategori: kategoriName },
+      relations: [
+        'kelas',
+        'kelas.jenis_kelas',
+        'kelas.kategori',
+        'kelas.alumni',
+        'pertanyaan_umum',
+        'benefit_category',
+        'flow_category',
+        'jenis_kelas',
+      ],
+    });
   }
 
-  async findJenisKelas(){
-    return await this.jenisKelasRepository.find()
+  async findJenisKelas() {
+    return await this.jenisKelasRepository.find();
   }
 
-  async findAll(){
-    return await this.kategoriRepository.find()
+  async findAll() {
+    return await this.kategoriRepository.find();
   }
-
 
   async findOne(kategoriId: number) {
     const kategori = await this.kategoriRepository.findOne({
       where: { id: kategoriId },
+      relations: [
+        'kelas',
+        'kelas.alumni',
+        'kelas.jenis_kelas',
+        'benefit_category',
+        'flow_category',
+        'pertanyaan_umum',
+        'jenis_kelas',
+      ],
     });
     if (!kategori) {
       throw new NotFoundException('Category not found');
@@ -55,12 +95,53 @@ export class KategorisService {
     });
   }
 
+  async findAlumniByKategori(kategoriId: number) {
+    return await this.alumniRepository.find({
+      where: { kelas: { kategori: { id: kategoriId } } },
+      relations: ['kelas'],
+    });
+  }
+
+  async findFaqByKategori(kategoriId: number) {
+    return await this.pertanyaanUmumRepository.find({
+      where: { kategori: { id: kategoriId } },
+      relations: ['kategori'],
+    });
+  }
+
+  async findBenefitByKategori(kategoriId: number) {
+    return await this.benefitCategoryRepository.find({
+      where: { kategori: { id: kategoriId } },
+      relations: ['kategori'],
+    });
+  }
+
+  async findFlowByKategori(kategoriId: number) {
+    return await this.flowCategoryRepository.find({
+      where: { kategori: { id: kategoriId } },
+      relations: ['kategori'],
+    });
+  }
+
   async update(kategoriId: number, updateKategorisDto: UpdateKategorisDto) {
     const kategori = await this.findOne(kategoriId);
     if (!kategori) {
       throw new NotFoundException('Category not found');
     }
-    Object.assign(kategori, updateKategorisDto);
+
+    const { jenis_kelas: jenisKelasIds, ...updateData } = updateKategorisDto;
+    Object.assign(kategori, updateData);
+
+    if (jenisKelasIds !== undefined) {
+      if (jenisKelasIds.length > 0) {
+        const jenisKelas =
+          await this.jenisKelasRepository.findByIds(jenisKelasIds);
+        kategori.jenis_kelas = jenisKelas;
+      } else {
+        kategori.jenis_kelas = [];
+      }
+    }
+
     return await this.kategoriRepository.save(kategori);
   }
 

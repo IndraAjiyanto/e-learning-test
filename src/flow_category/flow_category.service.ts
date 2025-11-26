@@ -1,26 +1,68 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { FlowCategory } from '../entities/flow_category.entity';
 import { CreateFlowCategoryDto } from './dto/create-flow_category.dto';
 import { UpdateFlowCategoryDto } from './dto/update-flow_category.dto';
+import { Kategori } from '../entities/kategori.entity';
 
 @Injectable()
 export class FlowCategoryService {
-  create(createFlowCategoryDto: CreateFlowCategoryDto) {
-    return 'This action adds a new flowCategory';
+  constructor(
+    @InjectRepository(FlowCategory)
+    private flowCategoryRepository: Repository<FlowCategory>,
+    @InjectRepository(Kategori)
+    private kategoriRepository: Repository<Kategori>,
+  ) {}
+
+  async create(createFlowCategoryDto: CreateFlowCategoryDto) {
+    const kategori = await this.kategoriRepository.findOne({
+      where: { id: createFlowCategoryDto.kategoriId },
+    });
+    if (!kategori) {
+      throw new NotFoundException('Kategori not found');
+    }
+    const flowCategory = this.flowCategoryRepository.create({
+      ...createFlowCategoryDto,
+      kategori,
+    });
+    return this.flowCategoryRepository.save(flowCategory);
   }
 
-  findAll() {
-    return `This action returns all flowCategory`;
+  async findAll() {
+    return this.flowCategoryRepository.find({
+      relations: ['kategori'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} flowCategory`;
+  async findOne(id: number) {
+    const flowCategory = await this.flowCategoryRepository.findOne({
+      where: { id },
+      relations: ['kategori'],
+    });
+    if (!flowCategory) {
+      throw new NotFoundException('FlowCategory not found');
+    }
+    return flowCategory;
   }
 
-  update(id: number, updateFlowCategoryDto: UpdateFlowCategoryDto) {
-    return `This action updates a #${id} flowCategory`;
+  async update(id: number, updateFlowCategoryDto: UpdateFlowCategoryDto) {
+    const flowCategory = await this.findOne(id);
+    if (updateFlowCategoryDto.kategoriId) {
+      const kategori = await this.kategoriRepository.findOne({
+        where: { id: updateFlowCategoryDto.kategoriId },
+      });
+      if (!kategori) {
+        throw new NotFoundException('Kategori not found');
+      }
+      flowCategory.kategori = kategori;
+    }
+    Object.assign(flowCategory, updateFlowCategoryDto);
+    return this.flowCategoryRepository.save(flowCategory);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} flowCategory`;
+  async remove(id: number) {
+    const flowCategory = await this.findOne(id);
+    return this.flowCategoryRepository.remove(flowCategory);
   }
 }

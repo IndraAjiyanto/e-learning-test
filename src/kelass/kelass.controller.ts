@@ -204,7 +204,6 @@ export class KelassController {
     const logbookMentor = await this.kelassService.findLogbookMentor(kelasId);
     const logbookUser = await this.kelassService.findLogBookUser(kelasId);
     const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
-    console.log(kelas.pendaftaran)
     res.render('admin/kelas/detail', {
       user: req.user,
       kelas,

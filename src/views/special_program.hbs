@@ -117,7 +117,7 @@
             <i class='{{computeIcon this.icon}}'></i>
           </div>
         </div>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 font-montserrat'>{{this.tittle}}</h3>
+        <h3 class='text-xl font-bold text-gray-900 mb-4 font-montserrat'>{{this.title}}</h3>
         <p class='text-gray-600 text-lg leading-relaxed font-inter'>{{this.description}}</p>
       </div>
       {{/each}}
@@ -139,7 +139,7 @@
 {{#each kategori.jenis_kelas}}
         <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all'>
           <div class='w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='{{this.icon}} text-white text-xl'></i>
+            <i class='{{computeIcon this.icon}} text-white text-xl'></i>
           </div>
           <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>{{this.nama_jenis_kelas}}</h3>
           <p class='text-gray-600 text-sm font-inter'>{{this.deskripsi}}</p>
@@ -155,92 +155,144 @@
 <section class='py-20 bg-gray-50'>
   <div class='container mx-auto px-4'>
     <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Our Training Process</h2>
-      <p class='text-gray-600 text-lg font-inter'>4 simple steps to transform your team</p>
+      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Our Program Process</h2>
+      <p class='text-gray-600 text-lg font-inter'>{{kategori.flow_category.length}} steps to join this program</p>
     </div>
 
     <div class='max-w-5xl mx-auto'>
       <div class='grid md:grid-cols-4 gap-8'>
+        {{#each kategori.flow_category}}
         <div class='text-center'>
           <div class='w-20 h-20 bg-white border-2 border-slate-800 rounded-full flex items-center justify-center mx-auto mb-4'>
-            <span class='text-2xl font-bold text-slate-800'>1</span>
+            <span class='text-2xl font-bold text-slate-800'>{{this.number}}</span>
           </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Consultation</h3>
-          <p class='text-gray-600 font-inter'>Discuss your team's needs and goals</p>
+          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>{{this.title}}</h3>
+          <p class='text-gray-600 font-inter'>{{this.description}}</p>
         </div>
-        
-        <div class='text-center'>
-          <div class='w-20 h-20 bg-white border-2 border-slate-800 rounded-full flex items-center justify-center mx-auto mb-4'>
-            <span class='text-2xl font-bold text-slate-800'>2</span>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Customization</h3>
-          <p class='text-gray-600 font-inter'>We design curriculum for your organization</p>
-        </div>
-        
-        <div class='text-center'>
-          <div class='w-20 h-20 bg-white border-2 border-slate-800 rounded-full flex items-center justify-center mx-auto mb-4'>
-            <span class='text-2xl font-bold text-slate-800'>3</span>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Training</h3>
-          <p class='text-gray-600 font-inter'>Expert trainers deliver the program</p>
-        </div>
-        
-        <div class='text-center'>
-          <div class='w-20 h-20 bg-white border-2 border-slate-800 rounded-full flex items-center justify-center mx-auto mb-4'>
-            <span class='text-2xl font-bold text-slate-800'>4</span>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>Evaluation</h3>
-          <p class='text-gray-600 font-inter'>Measure progress and provide certification</p>
-        </div>
+        {{/each}}
       </div>
     </div>
   </div>
 </section>
 
 <!-- Testimonials Section -->
-<section class='py-20 bg-white'>
-  <div class='container mx-auto px-4'>
-    <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>What Companies Say</h2>
-      <p class='text-gray-600 text-lg font-inter'>Real feedback from our training partners</p>
+<section
+  class='bg-gradient-to-br from-primary via-secondary to-gray-900 py-20 px-6 lg:px-20'
+  x-data='{
+        active: 0, 
+        slides: [0,1,2],
+        init() {
+            // Auto slide setiap 5 detik
+            setInterval(() => {
+                this.active = (this.active + 1) % this.slides.length;
+            }, 5000);
+        }
+    }'
+>
+  <!-- Title -->
+  <div class='text-center mb-4'>
+      {{!-- {{!-- {{> highlightText 
+        before="Stories from"
+        highlight="Alumni"
+        after=""
+        textColor="text-gray-900"
+        bg="bg-primary"
+        color="text-white"
+      }}  --}}
+
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">Stories from Alumni</h2>
+
+    <p class='text-lg text-white py-6 max-w-2xl mx-auto'>
+      Every alumnus has their own unique journey — from the first step of learning, facing challenges, to finally building a successful career in tech. Hear how their experience with Kesatria Academy opened new opportunities and transformed their future.
+    </p>
+  </div>
+
+  <!-- Carousel -->
+  <div class='relative w-full max-w-5xl mx-auto overflow-hidden'>
+
+    {{#if alumni}}
+    <!-- Slide Wrapper -->
+    <div
+      class='flex transition-transform duration-500'
+      :style='`transform: translateX(-${active * 100}%);`'
+    >
+
+      <!-- Slide (Dynamic from data) -->
+      {{#each alumni}}
+        <div class='w-full flex-shrink-0 flex justify-center px-4'>
+          <div
+            class='bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-10 max-w-3xl'
+          >
+            <span class='text-6xl text-white/50 font-bold'>❝</span>
+            <p class='text-white text-xl leading-relaxed mb-8 italic'>
+              {{pesan}}
+            </p>
+            <div class='flex items-center gap-6'>
+              <img
+                src='{{profile}}'
+                alt='Alumni'
+                class='w-16 h-16 rounded-full border-4 border-white/20'
+              />
+              <div>
+                <p class='font-bold text-white text-lg'>{{nama}}</p>
+                <p class='text-slate-300'>{{posisi_sekarang}}</p>
+                <p class='text-slate-400 text-sm'>{{kelas.nama_kelas}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
     </div>
 
-    <div class='max-w-6xl mx-auto'>
-      <div class='grid md:grid-cols-3 gap-8'>
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200'>
-          <div class='flex items-center mb-4'>
-            <div class='w-12 h-12 bg-gray-300 rounded-full mr-4'></div>
-            <div>
-              <h4 class='font-bold text-gray-900 font-montserrat'>Sarah Johnson</h4>
-              <p class='text-gray-600 text-sm font-inter'>CTO, TechCorp</p>
-            </div>
+    <!-- Navigation Buttons -->
+    <button
+      class='absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:text-white shadow-lg transition-all duration-300'
+      @click='active = (active - 1 + slides.length) % slides.length'
+    >
+      <i class='fas fa-chevron-left'></i>
+    </button>
+    <button
+      class='absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:text-white shadow-lg transition-all duration-300'
+      @click='active = (active + 1) % slides.length'
+    >
+      <i class='fas fa-chevron-right'></i>
+    </button>
+
+    <!-- Dot Indicators -->
+    <div class='flex justify-center mt-8 gap-3'>
+      <template x-for='(s, i) in slides' :key='i'>
+        <button
+          class='w-4 h-4 rounded-full transition-all duration-300'
+          :class="active === i ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'"
+          @click='active = i'
+        ></button>
+      </template>
+    </div>
+    {{else}}
+    <!-- Fallback - No Alumni Data -->
+    <div class='text-center py-12'>
+      <div
+        class='bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-10 max-w-3xl mx-auto'
+      >
+        <span class='text-6xl text-white/50 font-bold'>❝</span>
+        <p class='text-white text-xl leading-relaxed mb-8 italic'>
+          This bootcamp transformed my career completely! The mentors were amazing, and the curriculum was very comprehensive. Now I work at a leading tech company with a great salary.
+        </p>
+        <div class='flex items-center gap-6 justify-center'>
+          <img
+            src='https://ui-avatars.com/api/?name=John+Doe&background=64748b&color=fff&size=128'
+            alt='Alumni'
+            class='w-16 h-16 rounded-full border-4 border-white/20'
+          />
+          <div class='text-left'>
+            <p class='font-bold text-white text-lg'>John Doe</p>
+            <p class='text-slate-300'>Senior Software Engineer</p>
+            <p class='text-slate-400 text-sm'>Full Stack Development Bootcamp</p>
           </div>
-          <p class='text-gray-600 font-inter italic'>"The customized training program significantly improved our team's technical skills. The trainers were knowledgeable and engaging."</p>
-        </div>
-        
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200'>
-          <div class='flex items-center mb-4'>
-            <div class='w-12 h-12 bg-gray-300 rounded-full mr-4'></div>
-            <div>
-              <h4 class='font-bold text-gray-900 font-montserrat'>Michael Chen</h4>
-              <p class='text-gray-600 text-sm font-inter'>HR Director, StartupHub</p>
-            </div>
-          </div>
-          <p class='text-gray-600 font-inter italic'>"Flexible scheduling and tailored content made this training perfect for our remote team. Highly recommended!"</p>
-        </div>
-        
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200'>
-          <div class='flex items-center mb-4'>
-            <div class='w-12 h-12 bg-gray-300 rounded-full mr-4'></div>
-            <div>
-              <h4 class='font-bold text-gray-900 font-montserrat'>Lisa Anderson</h4>
-              <p class='text-gray-600 text-sm font-inter'>VP Engineering, DataFlow</p>
-            </div>
-          </div>
-          <p class='text-gray-600 font-inter italic'>"The ROI from this training was immediate. Our team's productivity increased by 40% within three months."</p>
         </div>
       </div>
     </div>
+    {{/if}}
   </div>
 </section>
 
@@ -452,7 +504,7 @@
 
     <!-- Programs Grid -->
     <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto' x-ref='kelasList'>
-    {{#each kelas}}
+    {{#each kategori.kelas}}
       <div
         class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
         data-kategori='{{kategori.nama_kategori}}'
@@ -625,7 +677,7 @@
               <i class='fas fa-arrow-right ml-2'></i>
             </a>
             <a
-              href='/dashboard/about'
+              href='{{kategori.contact}}' target="_blank"
               class='inline-block bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-secondary border-2 border-transparent hover:border-white/30 hover:shadow-2xl transform hover:-translate-y-1 transition-all'
             >
               Contact Us
@@ -726,7 +778,7 @@
     </h2>
 
     <div class='max-w-4xl mx-auto space-y-6'>
-      {{#each faq}}
+      {{#each kategori.pertanyaan_umum}}
       <div class='group bg-white p-8 rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 transform hover:-translate-y-1'>
         <h3 class='text-xl font-bold text-gray-900 mb-4 group-hover:text-slate-700 transition-colors duration-300 font-montserrat'>{{this.pertanyaan}}</h3>
         <p class='text-gray-600 leading-relaxed text-lg font-inter'>{{this.jawaban}}</p>

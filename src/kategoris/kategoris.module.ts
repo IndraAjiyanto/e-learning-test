@@ -8,9 +8,12 @@ import { CommonModule } from 'src/common/common.module';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { Kelas } from 'src/entities/kelas.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
+import { Alumni } from 'src/entities/alumni.entity';
+import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
+import { FlowCategory } from 'src/entities/flow_category.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kategori, AlurKelas, BenefitCategory, Kelas, JenisKelas]), CommonModule],
+  imports: [TypeOrmModule.forFeature([Kategori, AlurKelas, BenefitCategory, Kelas, JenisKelas, Alumni, PertanyaanUmum, FlowCategory]), CommonModule],
   controllers: [KategorisController],
   providers: [KategorisService],
   exports: [KategorisService],
