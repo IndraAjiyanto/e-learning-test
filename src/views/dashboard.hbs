@@ -1331,9 +1331,9 @@ Elevate your competence to the highest level. The Kesatria Academy Program is de
           currentPage: 1,
           itemsPerPage: 5,
           faqs: [
-            {{#if pertanyaan_umum}}
-              {{#each pertanyaan_umum}}
-                { question: `{{pertanyaan}}`, answer: `{{jawaban}}` },
+            {{#if faq}}
+              {{#each faq}}
+                { question: `{{question}}`, answer: `{{answer}}` },
               {{/each}}
             {{else}}
               { question: 'How long is the bootcamp program?', answer: 'Our bootcamp program typically runs for 4 months with intensive weekend classes. You\'ll learn through hands-on projects and mentorship from industry experts.' },

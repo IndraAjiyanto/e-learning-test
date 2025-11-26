@@ -1,48 +1,52 @@
 <div class='py-10'>
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create FAQ</h2>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit FAQ</h2>
 
     <form
-      action='/pertanyaan-umum/{{kategoriId}}'
+      action='/faq/{{faq.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
       x-data="{
-      pertanyaan: '',
-      jawaban: '',
-      errors: { pertanyaan: null, jawaban: null },
-      success: { pertanyaan: false, jawaban: false },
-      validatePertanyaan() {
-        if (!this.pertanyaan.trim()) {
-          this.errors.pertanyaan = 'Question is required';
-          this.success.pertanyaan = false;
-        } else if (this.pertanyaan.trim().length < 10) {
-          this.errors.pertanyaan = 'Question must be at least 10 characters';
-          this.success.pertanyaan = false;
+      question: '{{faq.question}}',
+      answer: '{{faq.answer}}',
+      errors: { question: null, answer: null },
+      success: { question: false, answer: false },
+      validateQuestion() {
+        if (!this.question.trim()) {
+          this.errors.question = 'Question is required';
+          this.success.question = false;
+        } else if (this.question.trim().length < 10) {
+          this.errors.question = 'Question must be at least 10 characters';
+          this.success.question = false;
         } else {
-          this.errors.pertanyaan = null;
-          this.success.pertanyaan = true;
+          this.errors.question = null;
+          this.success.question = true;
         }
       },
-      validateJawaban() {
-        if (!this.jawaban.trim()) {
-          this.errors.jawaban = 'Answer is required';
-          this.success.jawaban = false;
-        } else if (this.jawaban.trim().length < 20) {
-          this.errors.jawaban = 'Answer must be at least 20 characters';
-          this.success.jawaban = false;
+      validateAnswer() {
+        if (!this.answer.trim()) {
+          this.errors.answer = 'Answer is required';
+          this.success.answer = false;
+        } else if (this.answer.trim().length < 20) {
+          this.errors.answer = 'Answer must be at least 20 characters';
+          this.success.answer = false;
         } else {
-          this.errors.jawaban = null;
-          this.success.jawaban = true;
+          this.errors.answer = null;
+          this.success.answer = true;
         }
       },
       get canSubmit() {
-        return this.success.pertanyaan && this.success.jawaban;
+        return this.success.question && this.success.answer;
       },
       handleSubmit() {
         if (!this.canSubmit) {
           return false;
         }
         return true;
+      },
+      init() {
+        this.validateQuestion();
+        this.validateAnswer();
       }
     }"
       @submit='handleSubmit()'
@@ -53,34 +57,33 @@
         <!-- Question -->
         <div class='space-y-2'>
           <label
-            for='pertanyaan'
+            for='question'
             class='block text-sm font-semibold text-gray-700 mb-1'
           >
             Question
           </label>
           <textarea
-            x-model='pertanyaan'
-            @input='validatePertanyaan()'
-            id='pertanyaan'
-            name='pertanyaan'
+            x-model='question'
+            @input='validateQuestion()'
+            id='question'
+            name='question'
             rows='4'
-            :class="errors.pertanyaan ? 'border-red-500 focus:ring-red-500' : success.pertanyaan ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="errors.question ? 'border-red-500 focus:ring-red-500' : success.question ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            placeholder='Write your question here...'
-          ></textarea>
+          >{{faq.question}}</textarea>
 
           <!-- Error Message -->
-          <template x-if='errors.pertanyaan'>
+          <template x-if='errors.question'>
             <div
               class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
             >
               <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p class='text-xs text-red-700' x-text='errors.pertanyaan'></p>
+              <p class='text-xs text-red-700' x-text='errors.question'></p>
             </div>
           </template>
 
           <!-- Success Message -->
-          <template x-if='success.pertanyaan && !errors.pertanyaan'>
+          <template x-if='success.question && !errors.question'>
             <div
               class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
             >
@@ -93,34 +96,33 @@
         <!-- Answer -->
         <div class='space-y-2'>
           <label
-            for='jawaban'
+            for='answer'
             class='block text-sm font-semibold text-gray-700 mb-1'
           >
             Answer
           </label>
           <textarea
-            x-model='jawaban'
-            @input='validateJawaban()'
-            id='jawaban'
-            name='jawaban'
+            x-model='answer'
+            @input='validateAnswer()'
+            id='answer'
+            name='answer'
             rows='4'
-            :class="errors.jawaban ? 'border-red-500 focus:ring-red-500' : success.jawaban ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="errors.answer ? 'border-red-500 focus:ring-red-500' : success.answer ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            placeholder='Write your answer here...'
-          ></textarea>
+          >{{faq.answer}}</textarea>
 
           <!-- Error Message -->
-          <template x-if='errors.jawaban'>
+          <template x-if='errors.answer'>
             <div
               class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
             >
               <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p class='text-xs text-red-700' x-text='errors.jawaban'></p>
+              <p class='text-xs text-red-700' x-text='errors.answer'></p>
             </div>
           </template>
 
           <!-- Success Message -->
-          <template x-if='success.jawaban && !errors.jawaban'>
+          <template x-if='success.answer && !errors.answer'>
             <div
               class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
             >
@@ -137,10 +139,10 @@
           type='submit'
           class='text-white px-6 py-2 rounded-lg shadow transition bg-gray-900 hover:bg-gray-600'
         >
-          Create
+          Update
         </button>
         <a
-          href='/pertanyaan-umum'
+          href='/faq'
           class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
         >
           Cancel

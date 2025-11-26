@@ -25,6 +25,7 @@ import { Experience } from 'src/entities/experience.entity';
 import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
 import { Paragraf } from 'src/entities/paragraf.entity';
+import { Faq } from 'src/entities/faq.entity';
 
 @Injectable()
 export class DashboardService {
@@ -73,6 +74,8 @@ export class DashboardService {
     private readonly backgroundRepository: Repository<Background>,
     @InjectRepository(Paragraf)
     private readonly paragrafRepository: Repository<Paragraf>,
+    @InjectRepository(Faq)
+    private readonly faqRepository: Repository<Faq>,
   ) {}
 
   async findAllKelas() {
@@ -186,9 +189,7 @@ export class DashboardService {
   }
 
   async findFAQ() {
-    return await this.pertanyaanUmumRepository.find({
-      relations: ['kategori'],
-    });
+    return await this.faqRepository.find();
   }
 
   async findAlumni() {

@@ -1,6 +1,6 @@
 <div
   class='w-full mx-auto px-6 py-10'
-  x-data='pertanyaanTable({ data: {{json pertanyaan_umum}} })'
+  x-data='faqTable({ data: {{json faq}} })'
 >
 
   <div
@@ -41,7 +41,7 @@
       </div>
 
       <a
-        href='/pertanyaan-umum/formCreate'
+        href='/faq/formCreate'
         class='bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition'
       >
         Create FAQ
@@ -64,28 +64,22 @@
           >Answer</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >For</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Action</th>
         </tr>
       </thead>
       <tbody class='divide-y divide-gray-200'>
-        {{#each pertanyaan_umum}}
+        {{#each faq}}
           <tr
             class='hover:bg-gray-50 transition'
             x-show="filteredData.includes('{{id}}')"
           >
             <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{pertanyaan}}</td>
-            <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{kategori.nama_kategori}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{jawaban}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{question}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{answer}}</td>
 
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
               <!-- Edit Button -->
-              <form action='/pertanyaan-umum/formEdit/{{id}}' method='get'>
+              <form action='/faq/formEdit/{{id}}' method='get'>
                 <button
                   type='submit'
                   class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
@@ -118,10 +112,7 @@
               </form>
 
               <!-- Delete Button -->
-              <form
-                action='/pertanyaan-umum/{{id}}?_method=DELETE'
-                method='post'
-              >
+              <form action='/faq/{{id}}?_method=DELETE' method='post'>
                 <button
                   type='button'
                   onclick='confirmDelete(this)'
@@ -183,8 +174,11 @@
 </div>
 
 <script>
-  function pertanyaanTable({ data }) {
+  function faqTable({ data }) {
     return {
+      /* ================================
+       * STATE
+       ================================ */
       searchInput: "",
       search: "",
       pageNumber: 0,
@@ -192,9 +186,12 @@
       data,
       amount: 0,
 
+      /* ================================
+       * COMPUTED: Filter + Pagination
+       ================================ */
       get filteredData() {
-        let filtered = this.data.filter(item =>
-          (`${item.pertanyaan} ${item.jawaban}`)
+        let filtered = this.data.filter((item) =>
+          `${item.question} ${item.answer}`
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );
@@ -204,9 +201,7 @@
         const start = this.pageNumber * this.size;
         const end = start + this.size;
 
-        return filtered
-          .slice(start, end)
-          .map(item => item.id.toString());
+        return filtered.slice(start, end).map((item) => item.id.toString());
       },
 
       pages() {
@@ -217,6 +212,9 @@
         return Math.ceil(this.amount / this.size);
       },
 
+      /* ================================
+       * PAGINATION ACTIONS
+       ================================ */
       nextPage() {
         if (this.pageNumber < this.pageCount() - 1) {
           this.pageNumber++;
@@ -232,6 +230,6 @@
       viewPage(index) {
         this.pageNumber = index;
       },
-    }
+    };
   }
 </script>

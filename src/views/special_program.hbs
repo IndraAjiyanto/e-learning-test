@@ -4,7 +4,7 @@
       selectedType: 'all',
       selectedMethod: 'all',
       searchQuery: '',
-      courseCategories: ['all', {{#each jenis_kelas}}'{{this.nama_jenis_kelas}}',{{/each}}],
+      courseCategories: ['all', {{#each kategori.jenis_kelas}}'{{this.nama_jenis_kelas}}',{{/each}}],
       currentPage: 1,
       itemsPerPage: 6,
       typeDropdownOpen: false,
@@ -12,7 +12,7 @@
       
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
-        {{#each jenis_kelas}}
+        {{#each kategori.jenis_kelas}}
         { value: '{{this.nama_jenis_kelas}}', icon: '{{computeIcon this.icon}}', title: '{{this.nama_jenis_kelas}}', desc: '{{this.deskripsi}}' },
         {{/each}}
       ],

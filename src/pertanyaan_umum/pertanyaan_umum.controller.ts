@@ -20,39 +20,35 @@ export class PertanyaanUmumController {
   constructor(private readonly pertanyaanUmumService: PertanyaanUmumService) {}
 
   @Roles('super_admin')
-  @Post()
+  @Post(':kategoriId')
   async create(
+    @Param('kategoriId') kategoriId: number,
     @Body() createPertanyaanUmumDto: CreatePertanyaanUmumDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
+      createPertanyaanUmumDto.kategoriId = kategoriId;
       await this.pertanyaanUmumService.create(createPertanyaanUmumDto);
       req.flash('success', 'FAQ successfully created');
-      res.redirect('/pertanyaan-umum');
+      res.redirect('/kategoris/'+kategoriId);
     } catch (error) {
       req.flash('error', error.message || 'FAQ failed to created');
-      res.redirect('/pertanyaan-umum');
+      res.redirect('/kategoris/'+kategoriId);
     }
   }
 
-  @Roles('super_admin')
-  @Get()
-  async findAll(@Req() req: Request, @Res() res: Response) {
-    const pertanyaan_umum = await this.pertanyaanUmumService.findAll();
-    res.render('super_admin/pertanyaan_umum/index', {
-      user: req.user,
-      pertanyaan_umum,
-    });
-  }
 
   @Roles('super_admin')
-  @Get('formCreate')
-  async formCreate(@Req() req: Request, @Res() res: Response) {
-    const kategori = await this.pertanyaanUmumService.getKategori();
+  @Get('formCreate/:kategoriId')
+  async formCreate(
+    @Param('kategoriId') kategoriId: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     res.render('super_admin/pertanyaan_umum/create', {
       user: req.user,
-      kategori,
+      kategoriId,
     });
   }
 
@@ -65,49 +61,49 @@ export class PertanyaanUmumController {
   ) {
     const pertanyaan_umum =
       await this.pertanyaanUmumService.findOne(pertanyaan_umumId);
-    const kategori = await this.pertanyaanUmumService.getKategori();
     res.render('super_admin/pertanyaan_umum/edit', {
       user: req.user,
       pertanyaan_umum,
-      kategori,
     });
   }
 
   @Roles('super_admin')
-  @Patch(':pertanyaan_umumId')
+  @Patch(':pertanyaan_umumId/:kategoriId')
   async update(
     @Param('pertanyaan_umumId') pertanyaan_umumId: number,
+    @Param('kategoriId') kategoriId: number,
     @Body() updatePertanyaanUmumDto: UpdatePertanyaanUmumDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
       await this.pertanyaanUmumService.update(
-        +pertanyaan_umumId,
+        pertanyaan_umumId,
         updatePertanyaanUmumDto,
       );
       req.flash('success', 'FAQ successfully updated');
-      res.redirect('/pertanyaan-umum');
+      res.redirect('/kategoris/'+kategoriId);
     } catch (error) {
       req.flash('error', error.message || 'FAQ failed to update');
-      res.redirect('/pertanyaan-umum');
+      res.redirect('/kategoris/'+kategoriId);
     }
   }
 
   @Roles('super_admin')
-  @Delete(':pertanyaan_umumId')
+  @Delete(':pertanyaan_umumId/:kategoriId')
   async remove(
     @Param('pertanyaan_umumId') pertanyaan_umumId: number,
+    @Param('kategoriId') kategoriId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
       await this.pertanyaanUmumService.remove(pertanyaan_umumId);
       req.flash('success', 'FAQ successfully deleted');
-      res.redirect('/pertanyaan-umum');
+      res.redirect('/kategoris/'+kategoriId);
     } catch (error) {
       req.flash('error', error.message || 'FAQ failed to delete');
-      res.redirect('/pertanyaan-umum');
+      res.redirect('/kategoris/'+kategoriId);
     }
   }
 }

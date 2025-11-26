@@ -24,6 +24,7 @@ import { Experience } from 'src/entities/experience.entity';
 import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
 import { Paragraf } from 'src/entities/paragraf.entity';
+import { Faq } from 'src/entities/faq.entity';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { Paragraf } from 'src/entities/paragraf.entity';
       Award,
       Background,
       Paragraf,
+      Faq
     ]),
   ],
   controllers: [DashboardController],

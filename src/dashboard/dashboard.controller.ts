@@ -21,7 +21,7 @@ export class DashboardController {
         res.render('admin/kelas/index', { user: req.user, kelas });
       } else if (req.user.role === 'user') {
         const special_program = await this.dashboardService.findSpecialProgram();
-        const pertanyaan_umum = await this.dashboardService.findFAQ();
+        const faq = await this.dashboardService.findFAQ();
         const gambar_benefit_1 = await this.dashboardService.findGambar1();
         const gambar_benefit_2 = await this.dashboardService.findGambar2();
         const gambar_benefit_3 = await this.dashboardService.findGambar3();
@@ -38,7 +38,7 @@ export class DashboardController {
           special_program,
           user: req.user,
           kelas,
-          pertanyaan_umum,
+          faq,
           gambar_benefit_1,
           gambar_benefit_2,
           gambar_benefit_3,
@@ -55,7 +55,7 @@ export class DashboardController {
       }
     } else {
         const special_program = await this.dashboardService.findSpecialProgram();
-      const pertanyaan_umum = await this.dashboardService.findFAQ();
+      const faq = await this.dashboardService.findFAQ();
       const gambar_benefit_1 = await this.dashboardService.findGambar1();
       const gambar_benefit_2 = await this.dashboardService.findGambar2();
       const gambar_benefit_3 = await this.dashboardService.findGambar3();
@@ -72,7 +72,7 @@ export class DashboardController {
         special_program,
         user: req.user,
         kelas,
-        pertanyaan_umum,
+        faq,
         gambar_benefit_1,
         gambar_benefit_2,
         gambar_benefit_3,
