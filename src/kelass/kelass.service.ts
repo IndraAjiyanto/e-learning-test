@@ -706,14 +706,31 @@ export class KelassService {
   async findLogbookMentor(kelasId: number) {
     return await this.logbookMentorRepository.find({
       where: { pertemuan: { minggu: { kelas: { id: kelasId } } } },
-      relations: ['user', 'pertemuan', 'pertemuan.minggu','pertemuan.minggu.kelas', 'pertemuan.minggu.kelas.mentor', 'pertemuan.minggu.kelas.mentoring','pertemuan.minggu.kelas.jenis_kelas', 'pertemuan.minggu.kelas.kategori'],
+      relations: [
+        'user',
+        'pertemuan',
+        'pertemuan.minggu',
+        'pertemuan.minggu.kelas',
+        'pertemuan.minggu.kelas.mentor',
+        'pertemuan.minggu.kelas.mentoring',
+        'pertemuan.minggu.kelas.jenis_kelas',
+        'pertemuan.minggu.kelas.kategori',
+      ],
     });
   }
 
   async findLogBookUser(kelasId: number) {
     return await this.logbookRepository.find({
       where: { pertemuan: { minggu: { kelas: { id: kelasId } } } },
-      relations: ['user', 'pertemuan', 'pertemuan.minggu','pertemuan.minggu.kelas', 'pertemuan.minggu.kelas.mentor', 'pertemuan.minggu.kelas.jenis_kelas', 'pertemuan.minggu.kelas.kategori'],
+      relations: [
+        'user',
+        'pertemuan',
+        'pertemuan.minggu',
+        'pertemuan.minggu.kelas',
+        'pertemuan.minggu.kelas.mentor',
+        'pertemuan.minggu.kelas.jenis_kelas',
+        'pertemuan.minggu.kelas.kategori',
+      ],
     });
   }
 
@@ -787,6 +804,8 @@ export class KelassService {
       .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
       .leftJoinAndSelect('user_kelas.user', 'user')
       .leftJoinAndSelect('kelas.kategori', 'kategori')
+      .leftJoinAndSelect('kelas.alumni', 'alumni')
+      .leftJoinAndSelect('alumni.kelas', 'alumni_kelas')
       .leftJoinAndSelect('kelas.pembayaran', 'pembayaran')
       .leftJoinAndSelect('pembayaran.user', 'pembayaran_user')
       .leftJoinAndSelect('kelas.alur_kelas', 'alur_kelas')

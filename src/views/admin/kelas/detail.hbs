@@ -235,6 +235,12 @@
       </button>
       {{/if}}
 
+      <button @click="tab = 'alumni'" 
+              :class="tab === 'alumni' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        Alumni
+      </button>
+
       <button @click="tab = 'user'" 
               :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
               class="px-4 py-2 rounded-lg shadow transition">
@@ -297,6 +303,11 @@
     <!-- ===================== TAB INSTALLMENT (CICILAN) ===================== -->
 <div x-show="tab === 'installment'">
   {{> kelas/installment_tab}}
+</div>
+
+    <!-- ===================== TAB ALUMNI ===================== -->
+<div x-show="tab === 'alumni'">
+  {{> kelas/alumni_tab}}
 </div>
 
     <!-- ===================== TAB USER ===================== -->

@@ -16,22 +16,19 @@
           nama: '',
           pesan: '',
           alumni: '',
-          posisi_sekarang: '',
-          kelasId: ''
+          posisi_sekarang: ''
         },
         formErrors: {
           nama: '',
           pesan: '',
           alumni: '',
-          posisi_sekarang: '',
-          kelasId: ''
+          posisi_sekarang: ''
         },
         formValid: {
           nama: false,
           pesan: false,
           alumni: false,
-          posisi_sekarang: false,
-          kelasId: false
+          posisi_sekarang: false
         },
 
         validateImage(file) {
@@ -151,16 +148,6 @@
                 this.formValid.posisi_sekarang = true;
               }
               break;
-              
-            case 'kelasId':
-              if (!value) {
-                this.formErrors.kelasId = 'Program selection is required';
-                this.formValid.kelasId = false;
-              } else {
-                this.formErrors.kelasId = '';
-                this.formValid.kelasId = true;
-              }
-              break;
           }
         },
 
@@ -179,8 +166,7 @@
         canSubmit() {
           const imageValid = !this.hasFile || this.isValid;
           const formValid = this.formValid.nama && this.formValid.pesan && 
-                           this.formValid.alumni && this.formValid.posisi_sekarang && 
-                           this.formValid.kelasId;
+                           this.formValid.alumni && this.formValid.posisi_sekarang;
           return imageValid && formValid;
         },
 
@@ -192,7 +178,7 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create Alumni</h2>
 
     <form
-      action='/alumni'
+      action='/alumni/{{kelasId}}'
       method='post'
       class='space-y-6'
       enctype='multipart/form-data'
@@ -443,47 +429,6 @@
               </div>
             </template>
           </div>
-
-          <!-- Class (relation) -->
-          <div class='space-y-2'>
-            <label
-              for='kelasId'
-              class='block text-sm font-semibold text-gray-700 mb-1'
-            >Program</label>
-            <select
-              id='kelasId'
-              name='kelasId'
-              required
-              :class="formErrors.kelasId ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.kelasId ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-              @change='validateField("kelasId", $event.target.value)'
-            >
-              <option value='' disabled selected>-- Select Program --</option>
-              {{#each kelas}}
-                <option value='{{id}}'>{{nama_kelas}}</option>
-              {{/each}}
-            </select>
-
-            <!-- Error Message -->
-            <template x-if='formErrors.kelasId'>
-              <div
-                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-              >
-                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p class='text-xs text-red-700' x-text='formErrors.kelasId'></p>
-              </div>
-            </template>
-
-            <!-- Success Message -->
-            <template x-if='formValid.kelasId && !formErrors.kelasId'>
-              <div
-                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-              >
-                <i class='fas fa-check-circle text-green-500'></i>
-                <p class='text-xs text-green-700'>Valid class selected</p>
-              </div>
-            </template>
-          </div>
         </div>
       </div>
 
@@ -498,7 +443,7 @@
           Create
         </button>
         <a
-          href='/alumni'
+          href='/kelass/detail/kelas/admin/{{kelasId}}'
           class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
         >
           Cancel
