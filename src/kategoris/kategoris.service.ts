@@ -5,7 +5,6 @@ import cloudinary from 'src/common/config/multer.config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kategori } from 'src/entities/kategori.entity';
 import { Repository } from 'typeorm';
-import { AlurKelas } from 'src/entities/alur_kelas.entity';
 import { Kelas } from 'src/entities/kelas.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Alumni } from 'src/entities/alumni.entity';
@@ -46,11 +45,12 @@ export class KategorisService {
   }
 
   async findOneKategori(kategoriName: string) {
-    return await this.kategoriRepository.findOne({
+    const kategori = await this.kategoriRepository.findOne({
       where: { nama_kategori: kategoriName },
       relations: [
         'kelas',
         'kelas.jenis_kelas',
+        'kelas.user_kelas',
         'kelas.kategori',
         'kelas.alumni',
         'pertanyaan_umum',
@@ -59,6 +59,10 @@ export class KategorisService {
         'jenis_kelas',
       ],
     });
+    if(!kategori) {
+      throw new NotFoundException('Category not found');
+    }
+    return kategori;
   }
 
   async findJenisKelas() {
@@ -74,6 +78,7 @@ export class KategorisService {
       where: { id: kategoriId },
       relations: [
         'kelas',
+        'kelas.user_kelas',
         'kelas.alumni',
         'kelas.jenis_kelas',
         'benefit_category',

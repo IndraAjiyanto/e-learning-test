@@ -85,22 +85,17 @@ export class KategorisController {
     @Res() res: Response,
   ) {
     const kategori = await this.kategorisService.findOneKategori(kategoriName);
-    const jenis_kelas = await this.kategorisService.findJenisKelas();
+    const alumni = await this.kategorisService.findAlumniByKategori(kategori.id);
+    const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
     if (kategori?.type === 'Special Program') {
-      const kelas = await this.kategorisService.findKelasByKategori(
-        kategori.id,
-      );
       res.render('special_program', {
         kategori,
-        jenis_kelas,
         user: req.user,
         kelas,
+        alumni
       });
     } else if (kategori?.type === 'Program') {
-      const kelas = await this.kategorisService.findKelasByKategori(
-        kategori.id,
-      );
-      res.render('program', { kategori, jenis_kelas, user: req.user, kelas });
+      res.render('program', { kategori, user: req.user, kelas, alumni });
     }
   }
 
@@ -112,10 +107,11 @@ export class KategorisController {
     @Req() req: Request,
   ) {
     const kategori = await this.kategorisService.findOne(kategoriId);
-    console.log(kategori.jenis_kelas);
+    const alumni = await this.kategorisService.findAlumniByKategori(kategoriId);
     res.render('super_admin/kategori/detail', {
       user: req.user,
       kategori,
+      alumni,
     });
   }
 
