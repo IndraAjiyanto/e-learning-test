@@ -13,6 +13,7 @@ import { JenisKelas } from './jenis_kelas.entity';
 import { PertanyaanUmum } from './pertanyaan_umum.entity';
 import { BenefitCategory } from './benefit_category.entity';
 import { FlowCategory } from './flow_category.entity';
+import { Superiority } from './superiority.entity';
 
 export type Type = 'Special Program' | 'Program';
 
@@ -72,6 +73,9 @@ export class Kategori {
 
   @OneToMany(() => FlowCategory, (flow_category) => flow_category.kategori)
   flow_category: FlowCategory[];
+
+    @OneToMany(() => Superiority, (superiority) => superiority.kategori)
+    superiority: Superiority[];
 
   @ManyToMany(() => JenisKelas, (jenisKelas) => jenisKelas.kategoris)
   @JoinTable()

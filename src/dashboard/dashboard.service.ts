@@ -179,7 +179,6 @@ export class DashboardService {
       relations: [
         'kelas',
         'kelas.kategori',
-        'kelas.bulan',
         'kelas.teknologi',
         'kelas.jenis_kelas',
         'user',

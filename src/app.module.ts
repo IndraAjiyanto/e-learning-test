@@ -60,6 +60,7 @@ import { MisiModule } from './misi/misi.module';
 import { BenefitCategoryModule } from './benefit_category/benefit_category.module';
 import { FlowCategoryModule } from './flow_category/flow_category.module';
 import { FaqModule } from './faq/faq.module';
+import { SuperiorityModule } from './superiority/superiority.module';
 
 @Module({
   imports: [
@@ -124,6 +125,7 @@ import { FaqModule } from './faq/faq.module';
     BenefitCategoryModule,
     FlowCategoryModule,
     FaqModule,
+    SuperiorityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

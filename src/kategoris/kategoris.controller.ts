@@ -58,7 +58,6 @@ export class KategorisController {
       req.flash('success', 'kategori successfully created');
       res.redirect('/kategoris');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'kategori failed to create');
       res.redirect('/kategoris');
     }

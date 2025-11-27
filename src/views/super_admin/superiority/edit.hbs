@@ -1,0 +1,187 @@
+<div
+  class='py-10 w-full mx-auto px-6'
+  x-data="{
+  // Form validation states
+  formData: {
+    title: '{{superiority.title}}',
+    description: '{{superiority.description}}'
+  },
+  formErrors: {
+    title: '',
+    description: ''
+  },
+  formValid: {
+    title: false,
+    description: false
+  },
+
+  init() {
+    // Validate initial values
+    this.validateField('title', this.formData.title);
+    this.validateField('description', this.formData.description);
+  },
+
+  validateField(field, value) {
+    this.formData[field] = value;
+    
+    switch(field) {
+      case 'title':
+        if (!value.trim()) {
+          this.formErrors.title = 'Title is required';
+          this.formValid.title = false;
+        } else if (value.trim().length < 3) {
+          this.formErrors.title = 'Title must be at least 3 characters';
+          this.formValid.title = false;
+        } else {
+          this.formErrors.title = '';
+          this.formValid.title = true;
+        }
+        break;
+        
+      case 'description':
+        if (!value.trim()) {
+          this.formErrors.description = 'Description is required';
+          this.formValid.description = false;
+        } else if (value.trim().length < 10) {
+          this.formErrors.description = 'Description must be at least 10 characters';
+          this.formValid.description = false;
+        } else {
+          this.formErrors.description = '';
+          this.formValid.description = true;
+        }
+        break;
+    }
+  },
+
+  canSubmit() {
+    return this.formValid.title && this.formValid.description;
+  },
+
+  hasFormErrors() {
+    return Object.values(this.formErrors).some(error => error !== '');
+  }
+}"
+>
+  <div class='max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8'>
+    <h1 class='text-2xl font-bold text-gray-800 mb-6'>Edit Superiority</h1>
+
+    <form
+      action='/superiority/formEdit/{{superiority.id}}/{{superiority.kategori.id}}?_method=PATCH'
+      method='post'
+      class='space-y-6'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
+    >
+
+      <div class='space-y-2'>
+        <label
+          for='title'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Title
+        </label>
+        <input
+          x-model='formData.title'
+          @input='validateField("title", $event.target.value)'
+          type='text'
+          id='title'
+          name='title'
+          required
+          :class="formErrors.title ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+          placeholder='Enter superiority title'
+        />
+
+        <!-- Error Message -->
+        <template x-if='formErrors.title'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='formErrors.title'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='formValid.title && !formErrors.title'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Title looks good</p>
+          </div>
+        </template>
+      </div>
+
+      <div class='space-y-2'>
+        <label
+          for='description'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Description
+        </label>
+        <textarea
+          x-model='formData.description'
+          @input='validateField("description", $event.target.value)'
+          id='description'
+          name='description'
+          rows='5'
+          required
+          :class="formErrors.description ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.description ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+          placeholder='Enter superiority description'
+        ></textarea>
+
+        <!-- Error Message -->
+        <template x-if='formErrors.description'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='formErrors.description'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='formValid.description && !formErrors.description'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Description looks good</p>
+          </div>
+        </template>
+      </div>
+
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='!canSubmit()'
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+        >
+          Update
+        </button>
+        <a
+          href='/kategoris/{{superiority.kategori.id}}'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
+        >
+          Cancel
+        </a>
+      </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors()'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
+
+    </form>
+  </div>
+</div>

@@ -57,6 +57,7 @@ export class KategorisService {
         'benefit_category',
         'flow_category',
         'jenis_kelas',
+        'superiority',
       ],
     });
     if(!kategori) {
@@ -85,6 +86,7 @@ export class KategorisService {
         'flow_category',
         'pertanyaan_umum',
         'jenis_kelas',
+        'superiority',
       ],
     });
     if (!kategori) {

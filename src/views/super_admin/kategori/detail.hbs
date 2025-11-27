@@ -216,6 +216,13 @@
         Benefit
       </button>
       <button
+        @click="tab = 'superiority'"
+        :class="tab === 'superiority' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+        class='px-4 py-2 rounded-lg shadow transition'
+      >
+        Superiority
+      </button>
+      <button
         @click="tab = 'flow'"
         :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
@@ -232,6 +239,8 @@
     {{> kategori/faq_tab }}
 
     {{> kategori/benefit_tab }}
+
+    {{> kategori/superiority_tab }}
 
     {{> kategori/flow_tab }}
 </div>

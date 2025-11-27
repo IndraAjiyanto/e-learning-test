@@ -14,7 +14,7 @@
     name="gambar" 
     accept="image/*" 
     x-ref="fileInput"
-    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
+    class="w-full border file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 rou border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
     @change="previewUrl = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
   >
 
