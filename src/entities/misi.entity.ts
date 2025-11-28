@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Translation } from './translation.entity';
 
 @Entity()
 export class Misi {
@@ -19,6 +21,9 @@ export class Misi {
 
   @Column()
   isi: string;
+
+  @OneToOne(() => Translation, (translation) => translation.misi)
+  translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

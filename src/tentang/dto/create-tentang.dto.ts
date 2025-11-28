@@ -11,7 +11,7 @@ export class CreateTentangDto {
 
   @IsNotEmpty()
   @IsString()
-  judul_jp: string;
+  judul_ja: string;
 
   @IsNotEmpty()
   @IsString()
@@ -23,7 +23,7 @@ export class CreateTentangDto {
 
   @IsNotEmpty()
   @IsString()
-  text_jp: string;
+  text_ja: string;
 
   @IsOptional()
   @IsString()

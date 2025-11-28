@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Kategori } from "./kategori.entity";
+import { Translation } from "./translation.entity";
 
 @Entity()
 export class BenefitCategory {
@@ -25,4 +26,7 @@ export class BenefitCategory {
           onDelete: 'CASCADE',
         })
         kategori: Kategori;
+
+            @OneToOne(() => Translation, (translation) => translation.benefit_category)
+            translation: Translation;
 }

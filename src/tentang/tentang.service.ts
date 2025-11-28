@@ -45,18 +45,18 @@ export class TentangService {
     });
     await this.translationRepository.save(translation_en);
 
-    const tentang_jp = await this.tentangRepository.create({
-      judul: createTentangDto.judul_jp,
-      text: createTentangDto.text_jp,
+    const tentang_ja = await this.tentangRepository.create({
+      judul: createTentangDto.judul_ja,
+      text: createTentangDto.text_ja,
       gambar: createTentangDto.gambar,
     });
-    const tentangJp  = await this.tentangRepository.save(tentang_jp); 
-    const translation_jp = await this.translationRepository.create({
+    const tentangJa  = await this.tentangRepository.save(tentang_ja); 
+    const translation_ja = await this.translationRepository.create({
       key: 'tentang',
-      locale: 'jp',
-      tentang: tentangJp,
+      locale: 'ja',
+      tentang: tentangJa,
     });
-    await this.translationRepository.save(translation_jp);
+    await this.translationRepository.save(translation_ja);
   }
 
   async findAll() {

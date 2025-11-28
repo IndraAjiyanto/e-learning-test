@@ -62,7 +62,6 @@ export class TentangController {
       req.flash('success', 'Header successfully created');
       res.redirect('/tentang');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Header failed to create');
       res.redirect('/tentang');
     }

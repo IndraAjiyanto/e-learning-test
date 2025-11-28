@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
+import { Translation } from './translation.entity';
 
 @Entity()
 export class Alumni {
@@ -30,6 +32,9 @@ export class Alumni {
 
   @ManyToOne(() => Kelas, (kelas) => kelas.alumni, { onDelete: 'CASCADE' })
   kelas: Kelas;
+
+        @OneToOne(() => Translation, (translation) => translation.alumni)
+        translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

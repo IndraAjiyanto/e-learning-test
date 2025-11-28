@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Translation } from './translation.entity';
 
 @Entity()
 export class Background {
@@ -19,6 +21,9 @@ export class Background {
 
   @Column()
   background_ke: number;
+
+      @OneToOne(() => Translation, (translation) => translation.background)
+      translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

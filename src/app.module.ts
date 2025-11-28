@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -61,11 +61,24 @@ import { BenefitCategoryModule } from './benefit_category/benefit_category.modul
 import { FlowCategoryModule } from './flow_category/flow_category.module';
 import { FaqModule } from './faq/faq.module';
 import { SuperiorityModule } from './superiority/superiority.module';
+import { AcceptLanguageResolver, CookieResolver, I18nMiddleware, I18nModule } from 'nestjs-i18n';
+import path from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+        I18nModule.forRoot({
+      fallbackLanguage: 'id',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      resolvers: [
+        { use: CookieResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+      ],
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
     // ServeStaticModule.forRoot({
@@ -130,4 +143,8 @@ import { SuperiorityModule } from './superiority/superiority.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+    configure(consumer: MiddlewareConsumer) {
+    consumer.apply(I18nMiddleware).forRoutes('*'); // WAJIB
+  }
+}

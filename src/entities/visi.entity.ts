@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Translation } from './translation.entity';
 
 @Entity('visi')
 export class Visi {
@@ -13,6 +15,9 @@ export class Visi {
 
   @Column()
   visi: string;
+
+  @OneToOne(() => Translation, (translation) => translation.visi)
+  translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

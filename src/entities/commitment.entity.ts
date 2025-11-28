@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Translation } from './translation.entity';
 
 @Entity()
 export class Commitment {
@@ -22,6 +24,9 @@ export class Commitment {
 
   @Column()
   commitment_ke: number;
+
+  @OneToOne(() => Translation, (translation) => translation.commitment)
+  translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

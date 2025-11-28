@@ -4,11 +4,13 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Kategori } from './kategori.entity';
 import { Kelas } from './kelas.entity';
+import { Translation } from './translation.entity';
 
 @Entity()
 export class BenefitKelas {
@@ -23,6 +25,9 @@ export class BenefitKelas {
 
   @Column()
   icon: string;
+
+    @OneToOne(() => Translation, (translation) => translation.benefit_kelas)
+    translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

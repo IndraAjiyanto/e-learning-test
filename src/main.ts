@@ -13,6 +13,7 @@ import flash from 'connect-flash';
 import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.filter';
 import { NotFoundExceptionFilter } from './common/filters/not-found-exception.filter';
 import cookieParser from 'cookie-parser';
+import { NextFunction, Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -35,6 +36,17 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const i18n = req.i18n;
+    res.locals.t = (key: string) => i18n?.t(key);
+    next();
+  });
+
+  app.use((req, res, next) => {
+  console.log("REQ I18N: ", req.i18n);
+  next();
+});
+
 
   hbs.registerHelper(
     'isNowBetween',
@@ -186,55 +198,11 @@ async function bootstrap() {
   });
   hbs.registerHelper('json', (context) => JSON.stringify(context));
 
-  // i18n Translation Helpers
   hbs.registerHelper('t', function (key: string, options) {
-    const translations = options.data.root.translations || {};
-
-    // Handle nested keys like 'tentang.judul'
-    const keys = key.split('.');
-    let value = translations;
-
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
-      } else {
-        return key; // Return key if translation not found
-      }
-    }
-
-    return value || key;
+    const t = options.data.root.t;
+    return t ? t(key) : key;
   });
 
-  // Alternative helper for translation (same as 't')
-  hbs.registerHelper('__', function (key: string, options) {
-    const translations = options.data.root.translations || {};
-
-    const keys = key.split('.');
-    let value = translations;
-
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
-      } else {
-        return key;
-      }
-    }
-
-    return value || key;
-  });
-
-  // Helper to check current locale
-  hbs.registerHelper('isLocale', function (locale: string, options) {
-    const currentLocale = options.data.root.currentLocale || 'id';
-    return currentLocale === locale;
-  });
-
-  // Helper to generate localized URLs
-  hbs.registerHelper('localizeUrl', function (path: string, options) {
-    const currentLocale = options.data.root.currentLocale || 'id';
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    return `/${currentLocale}${cleanPath}`;
-  });
 
   // Helper untuk convert newline ke <br> tag
   hbs.registerHelper('nl2br', function (text) {

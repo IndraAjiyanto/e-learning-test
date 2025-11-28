@@ -10,7 +10,7 @@ export class TranslationController {
 
   @Post()
   async setLang(@Body('lang') lang: string, @Res() res: Response, @Req() req: Request) {
-    const allowed = ['id', 'en', 'jp'];
+    const allowed = ['id', 'en', 'ja'];
     const selected = allowed.includes(lang) ? lang : 'id';
 
     res.cookie('lang', selected, {

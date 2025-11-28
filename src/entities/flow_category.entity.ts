@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Kategori } from './kategori.entity';
+import { Translation } from './translation.entity';
 
 @Entity()
 export class FlowCategory {
@@ -32,4 +34,7 @@ export class FlowCategory {
     onDelete: 'CASCADE',
   })
   kategori: Kategori;
+
+  @OneToOne(() => Translation, (translation) => translation.flow_category)
+  translation: Translation;
 }

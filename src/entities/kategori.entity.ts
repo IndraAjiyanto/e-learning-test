@@ -5,6 +5,7 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -14,6 +15,7 @@ import { PertanyaanUmum } from './pertanyaan_umum.entity';
 import { BenefitCategory } from './benefit_category.entity';
 import { FlowCategory } from './flow_category.entity';
 import { Superiority } from './superiority.entity';
+import { Translation } from './translation.entity';
 
 export type Type = 'Special Program' | 'Program';
 
@@ -80,4 +82,7 @@ export class Kategori {
   @ManyToMany(() => JenisKelas, (jenisKelas) => jenisKelas.kategoris)
   @JoinTable()
   jenis_kelas: JenisKelas[];
+
+  @OneToOne(() => Translation, (translation) => translation.kategori)
+  translation: Translation;
 }

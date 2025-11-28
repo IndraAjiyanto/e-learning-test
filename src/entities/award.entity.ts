@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Translation } from './translation.entity';
 
 @Entity()
 export class Award {
@@ -19,6 +21,9 @@ export class Award {
 
   @Column()
   award_ke: number;
+
+      @OneToOne(() => Translation, (translation) => translation.award)
+      translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;
