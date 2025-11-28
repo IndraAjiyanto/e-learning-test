@@ -9,6 +9,7 @@ export class DashboardController {
   @Get()
   async getProtected(@Req() req: Request, @Res() res: Response) {
     const kelas = await this.dashboardService.findAllKelas();
+    const lang = req.cookies['lang'] || 'id';
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
@@ -33,7 +34,7 @@ export class DashboardController {
         const benefit_1 = await this.dashboardService.findBenefit1();
         const benefit_2 = await this.dashboardService.findBenefit2();
         const benefit_3 = await this.dashboardService.findBenefit3();
-        const tentang = await this.dashboardService.findTentang();
+        const tentang = await this.dashboardService.findTentang(lang);
         res.render('dashboard', {
           special_program,
           user: req.user,
@@ -67,7 +68,7 @@ export class DashboardController {
       const benefit_1 = await this.dashboardService.findBenefit1();
       const benefit_2 = await this.dashboardService.findBenefit2();
       const benefit_3 = await this.dashboardService.findBenefit3();
-      const tentang = await this.dashboardService.findTentang();
+      const tentang = await this.dashboardService.findTentang(lang);
       res.render('dashboard', {
         special_program,
         user: req.user,

@@ -133,8 +133,8 @@ export class DashboardService {
     return await this.awardRepository.find({ order: { award_ke: 'ASC' } });
   }
 
-  async findTentang() {
-    return await this.tentangRepository.find();
+  async findTentang(lang: string) {
+    return await this.tentangRepository.find({where: {translation: {locale: lang}}, relations: ['translation']});
   }
 
   async findTentangParagraf() {

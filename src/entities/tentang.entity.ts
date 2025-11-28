@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Translation } from './translation.entity';
 
 @Entity()
 export class Tentang {
@@ -19,6 +21,9 @@ export class Tentang {
 
   @Column()
   gambar: string;
+
+      @OneToOne(() => Translation, (translation) => translation.tentang)
+      translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

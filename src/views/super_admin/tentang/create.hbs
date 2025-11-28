@@ -1,141 +1,7 @@
 <div class='py-10'>
   <div
     class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
-    x-data="{
-        previewUrl: null,
-        errorMessage: '',
-        isValid: true,
-        fileName: '',
-        fileSize: 0,
-        imageWidth: 0,
-        imageHeight: 0,
-        hasFile: false,
-
-        // Form validation states
-        formData: {
-          judul: '',
-          text: ''
-        },
-        formErrors: {
-          judul: '',
-          text: ''
-        },
-        formValid: {
-          judul: false,
-          text: false
-        },
-
-        validateImage(file) {
-          if (!file) {
-            this.hasFile = false;
-            return;
-          }
-
-          this.hasFile = true;
-          this.fileName = file.name;
-          this.fileSize = file.size;
-          this.errorMessage = '';
-          this.isValid = true;
-
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
-            this.isValid = false;
-            this.previewUrl = null;
-            return;
-          }
-
-          const maxSize = 5 * 1024 * 1024;
-          if (file.size > maxSize) {
-            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
-            this.isValid = false;
-            this.previewUrl = null;
-            return;
-          }
-
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(file);
-          
-          img.onload = () => {
-            this.imageWidth = img.width;
-            this.imageHeight = img.height;
-            
-            if (img.width < 700 || img.width > 4000 || img.height < 700 || img.height > 4000) {
-              this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: Width 700-4000px, Height 700-4000px`;
-              this.isValid = false;
-              this.previewUrl = null;
-              URL.revokeObjectURL(objectUrl);
-            } else {
-              this.previewUrl = objectUrl;
-              this.isValid = true;
-              this.errorMessage = '';
-            }
-          };
-          
-          img.onerror = () => {
-            this.errorMessage = 'Failed to load image';
-            this.isValid = false;
-            this.previewUrl = null;
-            URL.revokeObjectURL(objectUrl);
-          };
-          
-          img.src = objectUrl;
-        },
-
-        validateField(field, value) {
-          this.formData[field] = value;
-          
-          switch(field) {
-            case 'judul':
-              if (!value.trim()) {
-                this.formErrors.judul = 'Title is required';
-                this.formValid.judul = false;
-              } else if (value.trim().length < 3) {
-                this.formErrors.judul = 'Title must be at least 3 characters';
-                this.formValid.judul = false;
-              } else {
-                this.formErrors.judul = '';
-                this.formValid.judul = true;
-              }
-              break;
-              
-            case 'text':
-              if (!value.trim()) {
-                this.formErrors.text = 'Text content is required';
-                this.formValid.text = false;
-              } else if (value.trim().length < 10) {
-                this.formErrors.text = 'Text content must be at least 10 characters';
-                this.formValid.text = false;
-              } else {
-                this.formErrors.text = '';
-                this.formValid.text = true;
-              }
-              break;
-          }
-        },
-
-        clearFile() {
-          this.previewUrl = null;
-          this.errorMessage = '';
-          this.isValid = true;
-          this.fileName = '';
-          this.fileSize = 0;
-          this.imageWidth = 0;
-          this.imageHeight = 0;
-          this.hasFile = false;
-          this.$refs.fileInput.value = null;
-        },
-
-        canSubmit() {
-          const imageValid = !this.hasFile || this.isValid;
-          const formValid = this.formValid.judul && this.formValid.text;
-          return imageValid && formValid;
-        },
-
-        hasFormErrors() {
-          return Object.values(this.formErrors).some(error => error !== '');
-        }
-      }"
+   
   >
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Header</h2>
 
@@ -144,7 +10,6 @@
       method='post'
       enctype='multipart/form-data'
       class='space-y-6'
-      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
       <!-- Upload Image -->
@@ -238,11 +103,27 @@
             Title
           </label>
           <input
-            x-model='formData.judul'
-            @input='validateField("judul", $event.target.value)'
             type='text'
-            id='judul'
-            name='judul'
+            id='judul_id'
+            name='judul_id'
+            required
+            placeholder='Enter title'
+            :class="formErrors.judul ? 'border-red-500 focus:ring-red-500' : (formValid.judul ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+          />
+          <input
+            type='text'
+            id='judul_en'
+            name='judul_en'
+            required
+            placeholder='Enter title'
+            :class="formErrors.judul ? 'border-red-500 focus:ring-red-500' : (formValid.judul ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+          />
+          <input
+            type='text'
+            id='judul_jp'
+            name='judul_jp'
             required
             placeholder='Enter title'
             :class="formErrors.judul ? 'border-red-500 focus:ring-red-500' : (formValid.judul ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
@@ -283,10 +164,26 @@
           Text
         </label>
         <textarea
-          x-model='formData.text'
-          @input='validateField("text", $event.target.value)'
-          id='text'
-          name='text'
+          id='text_id'
+          name='text_id'
+          required
+          rows='8'
+          placeholder='Enter text content...'
+          :class="formErrors.text ? 'border-red-500 focus:ring-red-500' : (formValid.text ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+        ></textarea>
+        <textarea
+          id='text_en'
+          name='text_en'
+          required
+          rows='8'
+          placeholder='Enter text content...'
+          :class="formErrors.text ? 'border-red-500 focus:ring-red-500' : (formValid.text ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+        ></textarea>
+        <textarea
+          id='text_jp'
+          name='text_jp'
           required
           rows='8'
           placeholder='Enter text content...'
@@ -319,8 +216,6 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          :disabled='!canSubmit()'
-          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Create

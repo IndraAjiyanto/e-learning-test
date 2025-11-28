@@ -12,6 +12,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import flash from 'connect-flash';
 import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.filter';
 import { NotFoundExceptionFilter } from './common/filters/not-found-exception.filter';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -32,6 +33,9 @@ async function bootstrap() {
   hbs.registerHelper('formDate', function (date) {
     return new Date(date).toISOString().split('T')[0];
   });
+
+  app.use(cookieParser());
+
   hbs.registerHelper(
     'isNowBetween',
     function (tanggal: string, waktu_awal: string, waktu_akhir: string) {
@@ -79,7 +83,6 @@ async function bootstrap() {
       minimumFractionDigits: 0,
     });
   });
-
 
   hbs.registerHelper('roles', function (userRole, ...roles) {
     // Remove the last argument which is the options object
@@ -182,6 +185,56 @@ async function bootstrap() {
     return args.slice(0, -1);
   });
   hbs.registerHelper('json', (context) => JSON.stringify(context));
+
+  // i18n Translation Helpers
+  hbs.registerHelper('t', function (key: string, options) {
+    const translations = options.data.root.translations || {};
+
+    // Handle nested keys like 'tentang.judul'
+    const keys = key.split('.');
+    let value = translations;
+
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        return key; // Return key if translation not found
+      }
+    }
+
+    return value || key;
+  });
+
+  // Alternative helper for translation (same as 't')
+  hbs.registerHelper('__', function (key: string, options) {
+    const translations = options.data.root.translations || {};
+
+    const keys = key.split('.');
+    let value = translations;
+
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        return key;
+      }
+    }
+
+    return value || key;
+  });
+
+  // Helper to check current locale
+  hbs.registerHelper('isLocale', function (locale: string, options) {
+    const currentLocale = options.data.root.currentLocale || 'id';
+    return currentLocale === locale;
+  });
+
+  // Helper to generate localized URLs
+  hbs.registerHelper('localizeUrl', function (path: string, options) {
+    const currentLocale = options.data.root.currentLocale || 'id';
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    return `/${currentLocale}${cleanPath}`;
+  });
 
   // Helper untuk convert newline ke <br> tag
   hbs.registerHelper('nl2br', function (text) {

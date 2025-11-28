@@ -25,6 +25,7 @@ export class AuthController {
     }
     res.render('login');
   }
+    
 
   @Get('daftar/:id')
   async daftarKelas(

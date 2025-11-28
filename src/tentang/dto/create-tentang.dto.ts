@@ -3,11 +3,27 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateTentangDto {
   @IsNotEmpty()
   @IsString()
-  judul: string;
+  judul_id: string;
 
   @IsNotEmpty()
   @IsString()
-  text: string;
+  judul_en: string;
+
+  @IsNotEmpty()
+  @IsString()
+  judul_jp: string;
+
+  @IsNotEmpty()
+  @IsString()
+  text_id: string;
+
+  @IsNotEmpty()
+  @IsString()
+  text_en: string;
+
+  @IsNotEmpty()
+  @IsString()
+  text_jp: string;
 
   @IsOptional()
   @IsString()

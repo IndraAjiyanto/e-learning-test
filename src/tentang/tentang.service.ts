@@ -5,17 +5,58 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Tentang } from 'src/entities/tentang.entity';
 import { Repository } from 'typeorm';
 import { v2 as cloudinary } from 'cloudinary';
+import { Translation } from 'src/entities/translation.entity';
 
 @Injectable()
 export class TentangService {
   constructor(
     @InjectRepository(Tentang)
     private tentangRepository: Repository<Tentang>,
+    @InjectRepository(Translation)
+    private translationRepository: Repository<Translation>,
   ) {}
 
   async create(createTentangDto: CreateTentangDto) {
-    const tentang = await this.tentangRepository.create(createTentangDto);
-    return await this.tentangRepository.save(tentang);
+    const tentang_id = await this.tentangRepository.create({
+      judul: createTentangDto.judul_id,
+      text: createTentangDto.text_id,
+      gambar: createTentangDto.gambar,
+    });
+    const tentangId  = await this.tentangRepository.save(tentang_id);
+
+    const translation_id = await this.translationRepository.create({
+      key: 'tentang',
+      locale: 'id',
+      tentang: tentangId,
+    });
+    await this.translationRepository.save(translation_id);
+
+    const tentang_en = await this.tentangRepository.create({
+      judul: createTentangDto.judul_en,
+      text: createTentangDto.text_en,
+      gambar: createTentangDto.gambar,
+    });
+    const tentangEn  = await this.tentangRepository.save(tentang_en);
+
+    const translation_en = await this.translationRepository.create({
+      key: 'tentang',
+      locale: 'en',
+      tentang: tentangEn,
+    });
+    await this.translationRepository.save(translation_en);
+
+    const tentang_jp = await this.tentangRepository.create({
+      judul: createTentangDto.judul_jp,
+      text: createTentangDto.text_jp,
+      gambar: createTentangDto.gambar,
+    });
+    const tentangJp  = await this.tentangRepository.save(tentang_jp); 
+    const translation_jp = await this.translationRepository.create({
+      key: 'tentang',
+      locale: 'jp',
+      tentang: tentangJp,
+    });
+    await this.translationRepository.save(translation_jp);
   }
 
   async findAll() {

@@ -1,6 +1,5 @@
 import Alpine from 'alpinejs';
 import persist from '@alpinejs/persist';
-import Cropper from 'cropperjs';
 
 window.Alpine = Alpine;
 Alpine.plugin(persist);
