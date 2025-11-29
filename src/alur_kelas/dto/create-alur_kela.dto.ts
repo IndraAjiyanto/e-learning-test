@@ -1,15 +1,15 @@
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateAlurKelaDto {
   @IsInt()
   @IsOptional()
   alur_ke?: number;
 
-  @IsString()
-  judul: string;
+  @IsArray()
+  judul: string[];
 
-  @IsString()
-  isi: string;
+  @IsArray()
+  isi: string[];
 
   @IsInt()
   kelasId: number;

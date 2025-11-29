@@ -111,14 +111,6 @@ export class Translation {
       @JoinColumn()
         award: Award;
 
-                @OneToOne(() => AlurKelas, (alur_kelas) => alur_kelas.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          alur_kelas: AlurKelas;
-
                 @OneToOne(() => Visi, (visi) => visi.translation,{
           cascade: true,
           nullable: true,

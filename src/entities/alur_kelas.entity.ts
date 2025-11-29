@@ -20,11 +20,11 @@ export class AlurKelas {
   @Column()
   alur_ke: number;
 
-  @Column()
-  judul: string;
+  @Column('jsonb', { nullable: true  })
+  judul: string[];
 
-  @Column()
-  isi: string;
+  @Column('jsonb', { nullable: true  })
+  isi: string[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -34,7 +34,4 @@ export class AlurKelas {
 
   @ManyToOne(() => Kelas, (kelas) => kelas.alur_kelas, { onDelete: 'CASCADE' })
   kelas: Kelas;
-
-      @OneToOne(() => Translation, (translation) => translation.alur_kelas)
-      translation: Translation;
 }
