@@ -219,8 +219,8 @@
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-building text-slate-600 mt-1'></i>
                       <div>
-                        <strong>{{content}}</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'>{{isi}}</p>
+                        <strong>{{getByLang content ../lang}}</strong>
+                        <p class='text-xs sm:text-sm text-slate-600'>{{getByLang isi ../lang}}</p>
                       </div>
                     </li>
                     {{else}}

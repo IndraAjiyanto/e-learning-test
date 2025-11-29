@@ -135,14 +135,6 @@ export class Translation {
         @JoinColumn()
           flow_category: FlowCategory;
 
-                @OneToOne(() => Experience, (experience) => experience.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          experience: Experience;
-
       @CreateDateColumn()
       createdAt: Date;
     

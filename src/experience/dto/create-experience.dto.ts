@@ -1,11 +1,11 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 export class CreateExperienceDto {
-  @IsString()
-  content: string;
+  @IsArray()
+  content: string[];
 
-  @IsString()
-  isi: string;
+  @IsArray()
+  isi: string[];
 
   @IsNumber()
   experience_ke: number;
