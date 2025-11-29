@@ -143,16 +143,6 @@ export class Translation {
         @JoinColumn()
           experience: Experience;
 
-                @OneToOne(() => Commitment, (commitment) => commitment.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          commitment: Commitment;
-
-        
-
       @CreateDateColumn()
       createdAt: Date;
     

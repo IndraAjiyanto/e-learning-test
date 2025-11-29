@@ -17,22 +17,26 @@
   // Form validation states
   formData: {
     icon: '',
-    judul: '',
-    deskripsi: ''
+    judul: { id: '', en: '', ja: '' },
+    deskripsi: { id: '', en: '', ja: '' }
   },
   formErrors: {
     icon: '',
-    judul: '',
-    deskripsi: ''
+    judul: { id: '', en: '', ja: '' },
+    deskripsi: { id: '', en: '', ja: '' }
   },
   formValid: {
     icon: false,
-    judul: false,
-    deskripsi: false
+    judul: { id: false, en: false, ja: false },
+    deskripsi: { id: false, en: false, ja: false }
   },
 
-  validateField(field, value) {
-    this.formData[field] = value;
+  validateField(field, lang, value) {
+    if (lang) {
+      this.formData[field][lang] = value;
+    } else {
+      this.formData[field] = value;
+    }
     
     switch(field) {
       case 'icon':
@@ -50,38 +54,40 @@
         
       case 'judul':
         if (!value.trim()) {
-          this.formErrors.judul = 'Title is required';
-          this.formValid.judul = false;
+          this.formErrors.judul[lang] = 'Title is required';
+          this.formValid.judul[lang] = false;
         } else if (value.trim().length < 3) {
-          this.formErrors.judul = 'Title must be at least 3 characters';
-          this.formValid.judul = false;
+          this.formErrors.judul[lang] = 'Title must be at least 3 characters';
+          this.formValid.judul[lang] = false;
         } else {
-          this.formErrors.judul = '';
-          this.formValid.judul = true;
+          this.formErrors.judul[lang] = '';
+          this.formValid.judul[lang] = true;
         }
         break;
         
       case 'deskripsi':
         if (!value.trim()) {
-          this.formErrors.deskripsi = 'Description is required';
-          this.formValid.deskripsi = false;
+          this.formErrors.deskripsi[lang] = 'Description is required';
+          this.formValid.deskripsi[lang] = false;
         } else if (value.trim().length < 10) {
-          this.formErrors.deskripsi = 'Description must be at least 10 characters';
-          this.formValid.deskripsi = false;
+          this.formErrors.deskripsi[lang] = 'Description must be at least 10 characters';
+          this.formValid.deskripsi[lang] = false;
         } else {
-          this.formErrors.deskripsi = '';
-          this.formValid.deskripsi = true;
+          this.formErrors.deskripsi[lang] = '';
+          this.formValid.deskripsi[lang] = true;
         }
         break;
     }
   },
 
   canSubmit() {
-    return this.formValid.icon && this.formValid.judul && this.formValid.deskripsi;
+    return this.formValid.icon && this.formValid.judul.id && this.formValid.judul.en && this.formValid.judul.ja &&
+           this.formValid.deskripsi.id && this.formValid.deskripsi.en && this.formValid.deskripsi.ja;
   },
 
   hasFormErrors() {
-    return Object.values(this.formErrors).some(error => error !== '');
+    return (this.formErrors.icon || this.formErrors.judul.id || this.formErrors.judul.en || this.formErrors.judul.ja ||
+            this.formErrors.deskripsi.id || this.formErrors.deskripsi.en || this.formErrors.deskripsi.ja) !== '';
   }
 }"
 >
@@ -96,83 +102,251 @@
     >
 
       <div class='space-y-2'>
-        <label
-          for='judul'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
           Title
         </label>
-        <input
-          x-model='formData.judul'
-          @input='validateField("judul", $event.target.value)'
-          type='text'
-          id='judul'
-          name='judul'
-          required
-          :class="formErrors.judul ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-          placeholder='Enter commitment title'
-        />
-
-        <!-- Error Message -->
-        <template x-if='formErrors.judul'>
-          <div
-            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-          >
-            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-            <p class='text-xs text-red-700' x-text='formErrors.judul'></p>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- Indonesian -->
+          <div class='space-y-1'>
+            <label
+              for='judul_id'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >ID</label>
+            <input
+              x-model='formData.judul.id'
+              @input='validateField("judul", "id", $event.target.value)'
+              type='text'
+              id='judul_id'
+              name='judul[id]'
+              placeholder='Judul commitment dalam bahasa Indonesia'
+              :class="formErrors.judul.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            />
+            <template x-if='formErrors.judul.id'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.judul.id'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.judul.id && !formErrors.judul.id'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
 
-        <!-- Success Message -->
-        <template x-if='formValid.judul && !formErrors.judul'>
-          <div
-            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-          >
-            <i class='fas fa-check-circle text-green-500'></i>
-            <p class='text-xs text-green-700'>Title looks good</p>
+          <!-- English -->
+          <div class='space-y-1'>
+            <label
+              for='judul_en'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >EN</label>
+            <input
+              x-model='formData.judul.en'
+              @input='validateField("judul", "en", $event.target.value)'
+              type='text'
+              id='judul_en'
+              name='judul[en]'
+              placeholder='Commitment title in English'
+              :class="formErrors.judul.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            />
+            <template x-if='formErrors.judul.en'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.judul.en'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.judul.en && !formErrors.judul.en'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
+
+          <!-- Japanese -->
+          <div class='space-y-1'>
+            <label
+              for='judul_ja'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >JA</label>
+            <input
+              x-model='formData.judul.ja'
+              @input='validateField("judul", "ja", $event.target.value)'
+              type='text'
+              id='judul_ja'
+              name='judul[ja]'
+              placeholder='コミットメントのタイトル（日本語）'
+              :class="formErrors.judul.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            />
+            <template x-if='formErrors.judul.ja'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.judul.ja'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.judul.ja && !formErrors.judul.ja'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
       </div>
 
       <div class='space-y-2'>
-        <label
-          for='deskripsi'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
           Description
         </label>
-        <textarea
-          x-model='formData.deskripsi'
-          @input='validateField("deskripsi", $event.target.value)'
-          id='deskripsi'
-          name='deskripsi'
-          rows='5'
-          required
-          :class="formErrors.deskripsi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.deskripsi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-          placeholder='Enter commitment description'
-        ></textarea>
-
-        <!-- Error Message -->
-        <template x-if='formErrors.deskripsi'>
-          <div
-            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-          >
-            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-            <p class='text-xs text-red-700' x-text='formErrors.deskripsi'></p>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- Indonesian -->
+          <div class='space-y-1'>
+            <label
+              for='deskripsi_id'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >ID</label>
+            <textarea
+              x-model='formData.deskripsi.id'
+              @input='validateField("deskripsi", "id", $event.target.value)'
+              id='deskripsi_id'
+              name='deskripsi[id]'
+              rows='4'
+              placeholder='Deskripsi commitment dalam bahasa Indonesia'
+              :class="formErrors.deskripsi.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.deskripsi.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+            ></textarea>
+            <template x-if='formErrors.deskripsi.id'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.deskripsi.id'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.deskripsi.id && !formErrors.deskripsi.id'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
 
-        <!-- Success Message -->
-        <template x-if='formValid.deskripsi && !formErrors.deskripsi'>
-          <div
-            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-          >
-            <i class='fas fa-check-circle text-green-500'></i>
-            <p class='text-xs text-green-700'>Description looks good</p>
+          <!-- English -->
+          <div class='space-y-1'>
+            <label
+              for='deskripsi_en'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >EN</label>
+            <textarea
+              x-model='formData.deskripsi.en'
+              @input='validateField("deskripsi", "en", $event.target.value)'
+              id='deskripsi_en'
+              name='deskripsi[en]'
+              rows='4'
+              placeholder='Commitment description in English'
+              :class="formErrors.deskripsi.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.deskripsi.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+            ></textarea>
+            <template x-if='formErrors.deskripsi.en'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.deskripsi.en'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.deskripsi.en && !formErrors.deskripsi.en'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
+
+          <!-- Japanese -->
+          <div class='space-y-1'>
+            <label
+              for='deskripsi_ja'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >JA</label>
+            <textarea
+              x-model='formData.deskripsi.ja'
+              @input='validateField("deskripsi", "ja", $event.target.value)'
+              id='deskripsi_ja'
+              name='deskripsi[ja]'
+              rows='4'
+              placeholder='コミットメントの説明（日本語）'
+              :class="formErrors.deskripsi.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.deskripsi.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+            ></textarea>
+            <template x-if='formErrors.deskripsi.ja'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.deskripsi.ja'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.deskripsi.ja && !formErrors.deskripsi.ja'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
       </div>
 
       <div class='space-y-2'>
@@ -185,7 +359,7 @@
         <div class='flex items-center gap-4'>
           <input
             x-model='formData.icon'
-            @input='validateField("icon", $event.target.value)'
+            @input='validateField("icon", null, $event.target.value)'
             type='text'
             id='icon'
             name='icon'

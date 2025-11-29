@@ -79,8 +79,16 @@
             <td class='px-6 py-4 text-sm text-gray-800'>
               <i class='fas {{icon}} text-gray-700 text-xl'></i>
             </td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{judul}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{deskripsi}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              {{#each judul}}
+                <div class="line-clamp-3">{{this}}</div>
+              {{/each}}
+              </td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              {{#each deskripsi}}
+                <div class="line-clamp-3">{{this}}</div>
+              {{/each}}
+            </td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
               <!-- Edit Button -->
               <form action='/commitment/formEdit/{{id}}' method='get'>

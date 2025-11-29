@@ -1,13 +1,13 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsArray } from 'class-validator';
 
 export class CreateCommitmentDto {
   @IsNotEmpty()
-  @IsString()
-  judul: string;
+  @IsArray()
+  judul: string[];
 
   @IsNotEmpty()
-  @IsString()
-  deskripsi: string;
+  @IsArray()
+  deskripsi: string[];
 
   @IsNotEmpty()
   @IsString()
