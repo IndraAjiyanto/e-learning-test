@@ -103,7 +103,7 @@
                   :class="selectedJenisKelasId == jenis.id ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
                   class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
                 >
-                  <span class='text-sm' x-text='jenis.nama_jenis_kelas'></span>
+                  <span class='text-sm' x-text='getByLang(jenis.nama_jenis_kelas, lang)'></span>
                 </button>
               </template>
             </div>
@@ -262,7 +262,7 @@
                 <div class='flex flex-wrap gap-2'>
                   <span
                     class='badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
-                    x-text="getJenisKelasName(item) || 'No Type'"
+                    x-text="getByLang(getJenisKelasName(item), lang) || 'No Type'"
                   >
                   </span>
                   <span
@@ -406,10 +406,16 @@
       itemsPerPage: 6,
       totalPages: 1,
       loading: false,
+      lang: '{{lang}}',
 
       init() {
         console.log('Total Portfolio:', this.allPortfolio.length);
         this.filterAndPaginate();
+      },
+
+      getByLang(obj, lang) {
+        if (!obj || typeof obj !== 'object') return '';
+        return obj[lang] || obj.id || obj.en || '';
       },
 
       filterAndPaginate() {

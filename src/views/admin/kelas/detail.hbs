@@ -93,7 +93,7 @@
             <div class="space-y-1 text-xs">
               <p><span class="font-medium text-gray-600">Program Name:</span> <span class="text-gray-800">{{kelas.nama_kelas}}</span></p>
               <p><span class="font-medium text-gray-600">Category:</span> <span class="text-gray-800">{{kelas.kategori.nama_kategori}}</span></p>
-              <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{kelas.jenis_kelas.nama_jenis_kelas}}</span></p>
+              <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">({{#each kelas.jenis_kelas.nama_jenis_kelas}}{{this}}{{/each}})</span></p>
               <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (eq kelas.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
               <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{kelas.lokasi}}</span></p>
               {{#if (eq kelas.kategori.nama_kategori "Short Class")}}

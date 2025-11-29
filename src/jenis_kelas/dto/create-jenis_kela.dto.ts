@@ -1,12 +1,12 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 export class CreateJenisKelaDto {
-  @IsString()
-  nama_jenis_kelas: string;
+  @IsArray()
+  nama_jenis_kelas: string[];
 
   @IsString()
   icon: string;
 
-  @IsString()
-  deskripsi: string;
+  @IsArray()
+  deskripsi: string[];
 }

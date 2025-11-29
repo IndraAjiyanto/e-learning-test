@@ -393,18 +393,18 @@
                     <!-- Class Type -->
                     <div
                       x-data="{
-                        search: '{{kelas.jenis_kelas.nama_jenis_kelas}}',
+                        search: '{{kelas.jenis_kelas.nama_jenis_kelas.id}}',
                         selectedJenisKelas: {{json kelas.jenis_kelas}},
                         showDropdown: false,
                         availableJenisKelas: {{json jenis_kelas}},
                         get filteredJenisKelas() {
                           return this.availableJenisKelas.filter(j => 
-                            j.nama_jenis_kelas.toLowerCase().includes(this.search.toLowerCase())
+                            j.nama_jenis_kelas.id.toLowerCase().includes(this.search.toLowerCase())
                           );
                         },
                         selectJenisKelas(jenisKelas) {
                           this.selectedJenisKelas = jenisKelas;
-                          this.search = jenisKelas.nama_jenis_kelas;
+                          this.search = jenisKelas.nama_jenis_kelas.id;
                           this.showDropdown = false;
                         }
                       }"
@@ -433,7 +433,7 @@
                               @click='selectJenisKelas(jenisKelas)'
                               class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
                             >
-                              <span class='text-sm font-medium text-gray-700' x-text='jenisKelas.nama_jenis_kelas'></span>
+                              <span class='text-sm font-medium text-gray-700' x-text='jenisKelas.nama_jenis_kelas.id'></span>
                             </button>
                           </template>
                         </div>

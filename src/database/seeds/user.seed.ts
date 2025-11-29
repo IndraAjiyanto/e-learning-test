@@ -81,13 +81,13 @@ async function bootstrap() {
     },
   ]);
 
-  await jenisKelasRepository.save([
-    {
-      nama_jenis_kelas: 'Web Development',
-      icon: 'web_development.png',
-      deskripsi: 'development',
-    },
-  ]);
+await jenisKelasRepository.save([
+  {
+    nama_jenis_kelas: ['Web Development', 'Web Development', 'ウェブ開発'],
+    icon: 'web_development.png',
+    deskripsi: ['development', 'development', 'development'], 
+  },
+]);
 
   // Create teknologi first
   const nestJs = await teknologiRepository.save({

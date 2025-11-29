@@ -87,13 +87,6 @@ export class Translation {
         @JoinColumn()
           superiority: Superiority;
 
-                @OneToOne(() => Info, (info) => info.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          info: Info;
 
                 @OneToOne(() => PertanyaanKelas, (pertanyaan_kelas) => pertanyaan_kelas.translation,{
           cascade: true,
@@ -118,14 +111,6 @@ export class Translation {
         })
         @JoinColumn()
           kategori: Kategori;
-
-                @OneToOne(() => JenisKelas, (jenis_kelas) => jenis_kelas.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          jenis_kelas: JenisKelas;
 
       @CreateDateColumn()
       createdAt: Date;

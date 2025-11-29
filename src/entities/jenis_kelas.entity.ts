@@ -17,23 +17,20 @@ export class JenisKelas {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  nama_jenis_kelas: string;
+  @Column('jsonb',{nullable: true} )
+  nama_jenis_kelas: string[];
 
   @Column()
   icon: string;
 
-  @Column()
-  deskripsi: string;
+  @Column('jsonb',{nullable: true} )
+  deskripsi: string[];
 
   @OneToMany(() => Kelas, (kelas) => kelas.jenis_kelas)
   kelas: Kelas[];
 
   @ManyToMany(() => Kategori, (kategori) => kategori.jenis_kelas)
   kategoris: Kategori[];
-
-  @OneToOne(() => Translation, (translation) => translation.jenis_kelas)
-  translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;
