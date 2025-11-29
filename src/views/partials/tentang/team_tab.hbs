@@ -116,8 +116,8 @@
                     {{#each background}}
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-check text-slate-600 mt-1'></i>
-                      <span><strong>{{content}}</strong>
-                        - {{isi}}</span>
+                      <span><strong>{{getByLang content ../lang}}</strong>
+                        - {{getByLang isi ../lang}}</span>
                     </li>
                     {{else}}
                     <li class='flex items-start space-x-2'>

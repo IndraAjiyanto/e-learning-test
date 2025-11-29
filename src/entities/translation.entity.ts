@@ -94,13 +94,6 @@ export class Translation {
       @JoinColumn()
         benefit_kelas: BenefitKelas;
 
-                @OneToOne(() => Background, (background) => background.translation,{
-        cascade: true,
-        nullable: true,
-        onDelete: 'CASCADE',
-      })
-      @JoinColumn()
-        background: Background;
 
                 @OneToOne(() => Visi, (visi) => visi.translation,{
           cascade: true,

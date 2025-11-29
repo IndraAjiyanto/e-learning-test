@@ -13,17 +13,14 @@ export class Background {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  content: string;
+  @Column('jsonb')
+  content: string[];
 
-  @Column()
-  isi: string;
+  @Column('jsonb')
+  isi: string[];
 
   @Column()
   background_ke: number;
-
-      @OneToOne(() => Translation, (translation) => translation.background)
-      translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;
