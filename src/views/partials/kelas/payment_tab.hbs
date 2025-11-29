@@ -79,9 +79,9 @@
   <!-- Pembayaran Content -->
   <div x-show="mainTab === 'pembayaran'" x-transition>
     <div class="p-8 ">
-      {{#if kelas.pembayaran.length}}
+      {{#if pembayaran.length}}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {{#each kelas.pembayaran}}
+          {{#each pembayaran}}
             <div 
               x-show="statusTab === 'all' 
                 || (statusTab === 'acc' && '{{this.proses}}' === 'acc') 
@@ -231,9 +231,9 @@
 
   <div x-show="mainTab === 'installment'" x-transition>
     <div class="p-8 ">
-      {{#if kelas.cicilan.length}}
+      {{#if cicilan.length}}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {{#each kelas.cicilan}}
+          {{#each cicilan}}
             <div 
               x-show="statusTab === 'all' 
                 || (statusTab === 'acc' && '{{this.proses}}' === 'acc') 
@@ -384,9 +384,9 @@
   <!-- Pendaftaran Content -->
   <div x-show="mainTab === 'pendaftaran'" x-transition>
     <div class="p-8 ">
-      {{#if kelas.pendaftaran.length}}
+      {{#if pendaftaran.length}}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {{#each kelas.pendaftaran}}
+          {{#each pendaftaran}}
             <div 
               x-show="statusTab === 'all' 
                 || (statusTab === 'acc' && '{{this.proses}}' === 'acc') 

@@ -28,6 +28,7 @@ import { Teknologi } from 'src/entities/teknologi.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
+import { Cicilan } from 'src/entities/cicilan.entity';
 
 @Injectable()
 export class KelassService {
@@ -70,6 +71,8 @@ export class KelassService {
     private readonly mentoringRepository: Repository<Mentoring>,
     @InjectRepository(Pendaftaran)
     private readonly pendaftaranRepository: Repository<Pendaftaran>,
+    @InjectRepository(Cicilan)
+    private readonly cicilanRepository: Repository<Cicilan>,
   ) {}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -798,34 +801,85 @@ export class KelassService {
     return await this.teknologiRepository.find();
   }
 
+  async findOneKelasAdmin(kelasId: number) {
+    return await this.kelasRepository.findOne({
+      where: { id: kelasId },
+      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'mentoring', 'mentoring.user' ],
+    });
+  }
+
+  async findOneKelasUser(kelasId: number) {
+    return await this.kelasRepository.findOne({
+      where: { id: kelasId, launch: true },
+      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi' ],
+    });
+  }
+
+
+
+  async findMingguKelas(kelasId: number){
+    return await this.mingguRepository.find({
+      where: { kelas: { id: kelasId } },
+      order: { minggu_ke: 'ASC' },
+      relations: ['pertemuan'],
+    });
+  }
+  
+
+  async findMentorKelas(kelasId: number) {
+    return await this.mentorRepository.find({
+      where: { kelas: { id: kelasId } },
+      relations: ['teknologi'],
+    });
+  }
+
+  async findUserKelas(kelasId: number) {
+    return await this.userKelasRepository.find({
+      where: { kelas: { id: kelasId } },
+      relations: ['user', 'kelas'],
+    });
+  }
+
+  async findPembayaranKelas(kelasId: number) {
+    return await this.pembayaranRepository.find({
+      where: { kelas: { id: kelasId } },
+      relations: ['user', 'kelas','cicilan','cicilan.kelas'],
+    });
+  }
+
+
+  async findPendaftaranKelas(kelasId: number) {
+    return await this.pendaftaranRepository.find({
+      where: { kelas: { id: kelasId } },
+      relations: ['user', 'kelas'],
+    });
+  }
+
+
+
+  async findCicilanKelas(kelasId: number) {
+    const cicilan = await this.pembayaranRepository.findOne({
+      where: { kelas: { id: kelasId } },
+      relations: ['cicilan', 'user'],
+    });
+    return cicilan
+  }
+
   async findOne(kelasId: number) {
     const kelas = await this.kelasRepository
       .createQueryBuilder('kelas')
-      .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
-      .leftJoinAndSelect('user_kelas.user', 'user')
       .leftJoinAndSelect('kelas.kategori', 'kategori')
       .leftJoinAndSelect('kelas.alumni', 'alumni')
-      .leftJoinAndSelect('alumni.kelas', 'alumni_kelas')
-      .leftJoinAndSelect('kelas.pembayaran', 'pembayaran')
-      .leftJoinAndSelect('pembayaran.user', 'pembayaran_user')
       .leftJoinAndSelect('kelas.alur_kelas', 'alur_kelas')
       .leftJoinAndSelect('kelas.benefit_kelas', 'benefit_kelas')
       .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
-      .leftJoinAndSelect('kelas.pendaftaran', 'pendaftaran')
-      .leftJoinAndSelect('pendaftaran.user', 'pendaftaran_user')
-      .leftJoinAndSelect('kelas.mentor', 'mentor')
-      .leftJoinAndSelect('mentor.teknologi', 'mentor_teknologi')
       .leftJoinAndSelect('kelas.pertanyaan_kelas', 'pertanyaan_kelas')
       .leftJoinAndSelect('kelas.teknologi', 'teknologi')
+      .leftJoinAndSelect('kelas.cicilan', 'cicilan')
       .leftJoinAndSelect('kelas.mentoring', 'mentoring')
       .leftJoinAndSelect('mentoring.user', 'mentoring_user')
-      .leftJoinAndSelect('kelas.cicilan', 'cicilan')
-      .leftJoinAndSelect('cicilan.pembayaran', 'cicilan_pembayaran')
-      .leftJoinAndSelect('cicilan_pembayaran.user', 'cicilan_user')
-      .leftJoinAndSelect('kelas.minggu', 'minggu')
       .where('kelas.id = :kelasId', { kelasId })
       .orderBy('alur_kelas.alur_ke', 'ASC')
-      .addOrderBy('minggu.minggu_ke', 'ASC')
       .getOne();
 
     if (!kelas) {

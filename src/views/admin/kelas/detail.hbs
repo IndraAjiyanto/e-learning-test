@@ -116,15 +116,15 @@
             </h3>
             <div class="space-y-1 text-xs">
               <p><span class="font-medium text-gray-600">Capacity:</span> <span class="text-gray-800">{{kelas.kuota}} students</span></p>
-              <p><span class="font-medium text-gray-600">Enrolled:</span> <span class="text-gray-800">{{kelas.user_kelas.length}} students</span></p>
+              <p><span class="font-medium text-gray-600">Enrolled:</span> <span class="text-gray-800">{{user_kelas.length}} students</span></p>
               <div class="mt-2">
                 <div class="flex justify-between text-xs text-gray-600 mb-1">
                   <span>Progress</span>
-                  <span>{{kelas.user_kelas.length}}/{{kelas.kuota}}</span>
+                  <span>{{user_kelas.length}}/{{kelas.kuota}}</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
                   <div class="bg-green-500 h-2 rounded-full transition-all duration-300"
-                       style="width: {{#if kelas.kuota}}{{multiply (divide kelas.user_kelas.length kelas.kuota) 100}}%{{else}}0%{{/if}}"></div>
+                       style="width: {{#if kelas.kuota}}{{multiply (divide user_kelas.length kelas.kuota) 100}}%{{else}}0%{{/if}}"></div>
                 </div>
               </div>
             </div>
@@ -233,7 +233,15 @@
               class="px-4 py-2 rounded-lg shadow transition">
         Installment
       </button>
+
       {{/if}}
+
+      
+            <button @click="tab = 'payment'" 
+              :class="tab === 'payment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+              class="px-4 py-2 rounded-lg shadow transition">
+        Payment
+      </button>
 
       <button @click="tab = 'alumni'" 
               :class="tab === 'alumni' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
@@ -268,11 +276,7 @@
         Mentor
       </button>
 
-      <button @click="tab = 'payment'" 
-              :class="tab === 'payment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Payment
-      </button>
+
     </div>
 
     <!-- ===================== TAB WEEK ===================== -->

@@ -199,17 +199,42 @@ export class KelassController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kelas = await this.kelassService.findOne(kelasId);
     const logbookMentor = await this.kelassService.findLogbookMentor(kelasId);
     const logbookUser = await this.kelassService.findLogBookUser(kelasId);
+    const mentor = await this.kelassService.findMentorKelas(kelasId);
+    if(req.user!.role === 'admin'){
+    const kelas = await this.kelassService.findOneKelasAdmin(kelasId);
+    const minggu = await this.kelassService.findMingguKelas(kelasId);
     const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
+    const user_kelas = await this.kelassService.findUserKelas(kelasId);
     res.render('admin/kelas/detail', {
+      minggu,
+      user_kelas,
       user: req.user,
       kelas,
+      mentor,
       mingguTerakhir,
       logbookMentor,
       logbookUser,
     });
+  }  else if(req.user!.role === 'super_admin'){
+    const kelas = await this.kelassService.findOne(kelasId);
+    const user_kelas = await this.kelassService.findUserKelas(kelasId);
+    const cicilan = await this.kelassService.findCicilanKelas(kelasId);
+    const pendaftaran = await this.kelassService.findPendaftaranKelas(kelasId);
+    const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
+        res.render('admin/kelas/detail', {
+      user: req.user,
+      pendaftaran,
+      pembayaran,
+      cicilan,
+      kelas,
+      user_kelas,
+      mentor,
+      logbookMentor,
+      logbookUser,
+    });
+  }
   }
 
   @Roles('user')
