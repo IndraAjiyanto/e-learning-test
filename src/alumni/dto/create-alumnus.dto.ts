@@ -1,20 +1,20 @@
-import { IsInt, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsInt, IsNumber, IsString } from 'class-validator';
 
 export class CreateAlumnusDto {
   @IsString()
   profile: string;
 
-  @IsString()
-  nama: string;
+  @IsArray()
+  nama: string[];
 
-  @IsString()
-  pesan: string;
+  @IsArray()
+  pesan: string[];
 
-  @IsString()
-  alumni: string;
+  @IsArray()
+  alumni: string[];
 
-  @IsString()
-  posisi_sekarang: string;
+  @IsArray()
+  posisi_sekarang: string[];
 
   @IsInt()
   kelasId: number;

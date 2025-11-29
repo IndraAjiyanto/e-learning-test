@@ -48,7 +48,6 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Message</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Alumni Status</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Current Position</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Program</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
       </thead>
@@ -60,11 +59,27 @@
           <td class="px-6 py-4 text-sm text-gray-800">
             <img src="{{foto}}" alt="{{nama}}" class="w-10 h-10 rounded-full object-cover">
           </td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{nama}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{truncate pesan 50}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{alumni}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{posisi_sekarang}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{kelas.nama_kelas}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">
+            {{#each nama}}
+            <div class="line-clamp-3">{{this}}</div> 
+            {{/each}}
+
+            </td>
+          <td class="px-6 py-4 text-sm text-gray-800">
+            {{#each pesan}}
+            <div class="line-clamp-3">{{this}}</div> 
+            {{/each}}
+            </td>
+          <td class="px-6 py-4 text-sm text-gray-800">
+            {{#each alumni}}
+            <div class="line-clamp-3">{{this}}</div> 
+            {{/each}}
+            </td>
+          <td class="px-6 py-4 text-sm text-gray-800">
+            {{#each posisi_sekarang}}
+            <div class="line-clamp-3">{{this}}</div> 
+            {{/each}}
+            </td>
           <td class="px-6 py-4 text-sm flex items-center gap-3">
             <!-- Edit -->
             <a href="/alumni/formEdit/{{id}}"

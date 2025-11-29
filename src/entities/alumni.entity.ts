@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
-import { Translation } from './translation.entity';
 
 @Entity()
 export class Alumni {
@@ -18,23 +17,20 @@ export class Alumni {
   @Column()
   profile: string;
 
-  @Column()
-  nama: string;
+  @Column('jsonb', {nullable: true})
+  nama: string[];
 
-  @Column()
-  pesan: string;
+  @Column('jsonb', {nullable: true})
+  pesan: string[];
 
-  @Column()
-  alumni: string;
+  @Column('jsonb', {nullable: true})
+  alumni: string[];
 
-  @Column()
-  posisi_sekarang: string;
+  @Column('jsonb', {nullable: true})
+  posisi_sekarang: string[];
 
   @ManyToOne(() => Kelas, (kelas) => kelas.alumni, { onDelete: 'CASCADE' })
   kelas: Kelas;
-
-        @OneToOne(() => Translation, (translation) => translation.alumni)
-        translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;
