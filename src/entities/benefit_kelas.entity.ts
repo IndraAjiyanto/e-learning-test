@@ -17,17 +17,14 @@ export class BenefitKelas {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  benefit: string;
+  @Column('jsonb',{nullable: true})
+  benefit: string[];
 
-  @Column()
-  isi: string;
+  @Column('jsonb',{nullable: true})
+  isi: string[];
 
   @Column()
   icon: string;
-
-    @OneToOne(() => Translation, (translation) => translation.benefit_kelas)
-    translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

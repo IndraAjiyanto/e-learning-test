@@ -1,14 +1,14 @@
-import { IsInt, IsString } from 'class-validator';
+import { IsArray, IsInt, IsString } from 'class-validator';
 
 export class CreateBenefitKelaDto {
-  @IsString()
-  benefit: string;
+  @IsArray()
+  benefit: string[];
 
   @IsString()
   icon: string;
 
-  @IsString()
-  isi: string;
+  @IsArray()
+  isi: string[];
 
   @IsInt()
   kelasId: number;

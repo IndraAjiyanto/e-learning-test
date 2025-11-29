@@ -4,18 +4,26 @@
     x-data="{
         // Form validation states
         formData: {
-          benefit: '{{benefit_kelas.benefit}}',
-          isi: '{{benefit_kelas.isi}}',
-          icon: '{{benefit_kelas.icon}}'
+          benefit: {
+            id: `{{benefit_kelas.benefit.id}}`,
+            en: `{{benefit_kelas.benefit.en}}`,
+            ja: `{{benefit_kelas.benefit.ja}}`
+          },
+          isi: {
+            id: `{{benefit_kelas.isi.id}}`,
+            en: `{{benefit_kelas.isi.en}}`,
+            ja: `{{benefit_kelas.isi.ja}}`
+          },
+          icon: `{{benefit_kelas.icon}}`
         },
         formErrors: {
-          benefit: '',
-          isi: '',
+          benefit: { id: '', en: '', ja: '' },
+          isi: { id: '', en: '', ja: '' },
           icon: ''
         },
         formValid: {
-          benefit: true,
-          isi: true,
+          benefit: { id: true, en: true, ja: true },
+          isi: { id: true, en: true, ja: true },
           icon: true
         },
 
@@ -32,33 +40,37 @@
           return v;
         },
 
-        validateField(field, value) {
-          this.formData[field] = value;
+        validateField(field, lang, value) {
+          if (lang) {
+            this.formData[field][lang] = value;
+          } else {
+            this.formData[field] = value;
+          }
           
           switch(field) {
             case 'benefit':
               if (!value.trim()) {
-                this.formErrors.benefit = 'Benefit title is required';
-                this.formValid.benefit = false;
+                this.formErrors.benefit[lang] = 'Benefit title is required';
+                this.formValid.benefit[lang] = false;
               } else if (value.trim().length < 3) {
-                this.formErrors.benefit = 'Benefit title must be at least 3 characters';
-                this.formValid.benefit = false;
+                this.formErrors.benefit[lang] = 'Benefit title must be at least 3 characters';
+                this.formValid.benefit[lang] = false;
               } else {
-                this.formErrors.benefit = '';
-                this.formValid.benefit = true;
+                this.formErrors.benefit[lang] = '';
+                this.formValid.benefit[lang] = true;
               }
               break;
               
             case 'isi':
               if (!value.trim()) {
-                this.formErrors.isi = 'Description is required';
-                this.formValid.isi = false;
+                this.formErrors.isi[lang] = 'Description is required';
+                this.formValid.isi[lang] = false;
               } else if (value.trim().length < 10) {
-                this.formErrors.isi = 'Description must be at least 10 characters';
-                this.formValid.isi = false;
+                this.formErrors.isi[lang] = 'Description must be at least 10 characters';
+                this.formValid.isi[lang] = false;
               } else {
-                this.formErrors.isi = '';
-                this.formValid.isi = true;
+                this.formErrors.isi[lang] = '';
+                this.formValid.isi[lang] = true;
               }
               break;
               
@@ -78,11 +90,15 @@
         },
 
         canSubmit() {
-          return this.formValid.benefit && this.formValid.isi && this.formValid.icon;
+          return this.formValid.benefit.id && this.formValid.benefit.en && this.formValid.benefit.ja &&
+                 this.formValid.isi.id && this.formValid.isi.en && this.formValid.isi.ja &&
+                 this.formValid.icon;
         },
 
         hasFormErrors() {
-          return Object.values(this.formErrors).some(error => error !== '');
+          return (this.formErrors.benefit.id || this.formErrors.benefit.en || this.formErrors.benefit.ja ||
+                  this.formErrors.isi.id || this.formErrors.isi.en || this.formErrors.isi.ja ||
+                  this.formErrors.icon) !== '';
         }
       }"
   >
@@ -110,7 +126,7 @@
             placeholder='code or fa-code or fa-solid fa-code'
             :class="formErrors.icon ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            @input='validateField("icon", $event.target.value)'
+            @input='validateField("icon", null, $event.target.value)'
             x-init='$el.value = formData.icon'
           />
 
@@ -149,83 +165,249 @@
 
       <!-- Benefit Title -->
       <div class='space-y-2'>
-        <label
-          for='benefit'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
           Benefit Title
         </label>
-        <input
-          type='text'
-          id='benefit'
-          name='benefit'
-          required
-          :class="formErrors.benefit ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.benefit ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-          x-model='formData.benefit'
-          @input='validateField("benefit", $event.target.value)'
-          x-init='$el.value = formData.benefit'
-          placeholder='e.g. Lifetime Access, Certificate, Mentoring Support'
-        />
-
-        <!-- Error Message -->
-        <template x-if='formErrors.benefit'>
-          <div
-            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-          >
-            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-            <p class='text-xs text-red-700' x-text='formErrors.benefit'></p>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- Indonesian -->
+          <div class='space-y-1'>
+            <label
+              for='benefit_id'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >ID</label>
+            <input
+              x-model='formData.benefit.id'
+              @input='validateField("benefit", "id", $event.target.value)'
+              type='text'
+              id='benefit_id'
+              name='benefit[id]'
+              placeholder='Judul benefit dalam bahasa Indonesia'
+              :class="formErrors.benefit.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.benefit.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              x-init='$el.value = formData.benefit.id'
+            />
+            <template x-if='formErrors.benefit.id'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.benefit.id'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.benefit.id && !formErrors.benefit.id'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
 
-        <!-- Success Message -->
-        <template x-if='formValid.benefit && !formErrors.benefit'>
-          <div
-            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-          >
-            <i class='fas fa-check-circle text-green-500'></i>
-            <p class='text-xs text-green-700'>Valid title</p>
+          <!-- English -->
+          <div class='space-y-1'>
+            <label
+              for='benefit_en'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >EN</label>
+            <input
+              x-model='formData.benefit.en'
+              @input='validateField("benefit", "en", $event.target.value)'
+              type='text'
+              id='benefit_en'
+              name='benefit[en]'
+              placeholder='Benefit title in English'
+              :class="formErrors.benefit.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.benefit.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              x-init='$el.value = formData.benefit.en'
+            />
+            <template x-if='formErrors.benefit.en'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.benefit.en'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.benefit.en && !formErrors.benefit.en'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
+
+          <!-- Japanese -->
+          <div class='space-y-1'>
+            <label
+              for='benefit_ja'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >JA</label>
+            <input
+              x-model='formData.benefit.ja'
+              @input='validateField("benefit", "ja", $event.target.value)'
+              type='text'
+              id='benefit_ja'
+              name='benefit[ja]'
+              placeholder='ベネフィットのタイトル（日本語）'
+              :class="formErrors.benefit.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.benefit.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              x-init='$el.value = formData.benefit.ja'
+            />
+            <template x-if='formErrors.benefit.ja'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.benefit.ja'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.benefit.ja && !formErrors.benefit.ja'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
       </div>
 
-      <!-- Description (Full Width) -->
+      <!-- Description -->
       <div class='space-y-2'>
-        <label for='isi' class='block text-sm font-semibold text-gray-700 mb-1'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
           Description
         </label>
-        <textarea
-          id='isi'
-          name='isi'
-          rows='5'
-          required
-          :class="formErrors.isi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-          x-model='formData.isi'
-          @input='validateField("isi", $event.target.value)'
-          x-init='$el.value = formData.isi'
-          placeholder='Describe the benefit in detail...'
-        ></textarea>
-
-        <!-- Error Message -->
-        <template x-if='formErrors.isi'>
-          <div
-            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-          >
-            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-            <p class='text-xs text-red-700' x-text='formErrors.isi'></p>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- Indonesian -->
+          <div class='space-y-1'>
+            <label
+              for='isi_id'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >ID</label>
+            <textarea
+              x-model='formData.isi.id'
+              @input='validateField("isi", "id", $event.target.value)'
+              id='isi_id'
+              name='isi[id]'
+              rows='4'
+              placeholder='Deskripsi benefit dalam bahasa Indonesia'
+              :class="formErrors.isi.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              x-init='$el.value = formData.isi.id'
+            ></textarea>
+            <template x-if='formErrors.isi.id'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p class='text-xs text-red-700' x-text='formErrors.isi.id'></p>
+              </div>
+            </template>
+            <template x-if='formValid.isi.id && !formErrors.isi.id'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
 
-        <!-- Success Message -->
-        <template x-if='formValid.isi && !formErrors.isi'>
-          <div
-            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-          >
-            <i class='fas fa-check-circle text-green-500'></i>
-            <p class='text-xs text-green-700'>Valid description</p>
+          <!-- English -->
+          <div class='space-y-1'>
+            <label
+              for='isi_en'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >EN</label>
+            <textarea
+              x-model='formData.isi.en'
+              @input='validateField("isi", "en", $event.target.value)'
+              id='isi_en'
+              name='isi[en]'
+              rows='4'
+              placeholder='Benefit description in English'
+              :class="formErrors.isi.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              x-init='$el.value = formData.isi.en'
+            ></textarea>
+            <template x-if='formErrors.isi.en'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p class='text-xs text-red-700' x-text='formErrors.isi.en'></p>
+              </div>
+            </template>
+            <template x-if='formValid.isi.en && !formErrors.isi.en'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
+
+          <!-- Japanese -->
+          <div class='space-y-1'>
+            <label
+              for='isi_ja'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >JA</label>
+            <textarea
+              x-model='formData.isi.ja'
+              @input='validateField("isi", "ja", $event.target.value)'
+              id='isi_ja'
+              name='isi[ja]'
+              rows='4'
+              placeholder='ベネフィットの説明（日本語）'
+              :class="formErrors.isi.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              x-init='$el.value = formData.isi.ja'
+            ></textarea>
+            <template x-if='formErrors.isi.ja'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p class='text-xs text-red-700' x-text='formErrors.isi.ja'></p>
+              </div>
+            </template>
+            <template x-if='formValid.isi.ja && !formErrors.isi.ja'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
       </div>
 
       <!-- Action Buttons -->
