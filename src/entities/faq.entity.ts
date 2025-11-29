@@ -6,13 +6,11 @@ export class Faq {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    question: string;
-    @Column()
-    answer: string;
+    @Column('jsonb')
+    question: string[];
 
-    @OneToOne(() => Translation, (translation) => translation.faq)
-    translation: Translation;
+    @Column('jsonb')
+    answer: string[];
 
     @CreateDateColumn()
     createdAt: Date;

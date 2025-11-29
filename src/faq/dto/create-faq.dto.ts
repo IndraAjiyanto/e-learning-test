@@ -1,9 +1,9 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 export class CreateFaqDto {
-  @IsString()
-  question: string;
+  @IsArray()
+  question: string[];
 
-  @IsString()
-  answer: string;
+  @IsArray()
+  answer: string[];
 }

@@ -1,133 +1,290 @@
 <div class='py-10'>
-  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+  <div
+    class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+        // Form validation states
+        formData: {
+          question: { id: '', en: '', ja: '' },
+          answer: { id: '', en: '', ja: '' }
+        },
+        formErrors: {
+          question: { id: '', en: '', ja: '' },
+          answer: { id: '', en: '', ja: '' }
+        },
+        formValid: {
+          question: { id: false, en: false, ja: false },
+          answer: { id: false, en: false, ja: false }
+        },
+
+        validateField(field, lang, value) {
+          this.formData[field][lang] = value;
+          
+          switch(field) {
+            case 'question':
+              if (!value.trim()) {
+                this.formErrors.question[lang] = 'Question is required';
+                this.formValid.question[lang] = false;
+              } else if (value.trim().length < 10) {
+                this.formErrors.question[lang] = 'Question must be at least 10 characters';
+                this.formValid.question[lang] = false;
+              } else {
+                this.formErrors.question[lang] = '';
+                this.formValid.question[lang] = true;
+              }
+              break;
+              
+            case 'answer':
+              if (!value.trim()) {
+                this.formErrors.answer[lang] = 'Answer is required';
+                this.formValid.answer[lang] = false;
+              } else if (value.trim().length < 20) {
+                this.formErrors.answer[lang] = 'Answer must be at least 20 characters';
+                this.formValid.answer[lang] = false;
+              } else {
+                this.formErrors.answer[lang] = '';
+                this.formValid.answer[lang] = true;
+              }
+              break;
+          }
+        },
+
+        canSubmit() {
+          const questionValid = Object.values(this.formValid.question).every(v => v);
+          const answerValid = Object.values(this.formValid.answer).every(v => v);
+          return questionValid && answerValid;
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors.question).some(e => e !== '') || Object.values(this.formErrors.answer).some(e => e !== '');
+        }
+      }"
+  >
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create FAQ</h2>
 
     <form
       action='/faq'
       method='post'
       class='space-y-6'
-      x-data="{
-      question: '',
-      answer: '',
-      errors: { question: null, answer: null },
-      success: { question: false, answer: false },
-      validateQuestion() {
-        if (!this.question.trim()) {
-          this.errors.question = 'Question is required';
-          this.success.question = false;
-        } else if (this.question.trim().length < 10) {
-          this.errors.question = 'Question must be at least 10 characters';
-          this.success.question = false;
-        } else {
-          this.errors.question = null;
-          this.success.question = true;
-        }
-      },
-      validateAnswer() {
-        if (!this.answer.trim()) {
-          this.errors.answer = 'Answer is required';
-          this.success.answer = false;
-        } else if (this.answer.trim().length < 20) {
-          this.errors.answer = 'Answer must be at least 20 characters';
-          this.success.answer = false;
-        } else {
-          this.errors.answer = null;
-          this.success.answer = true;
-        }
-      },
-      get canSubmit() {
-        return this.success.question && this.success.answer;
-      },
-      handleSubmit() {
-        if (!this.canSubmit) {
-          return false;
-        }
-        return true;
-      }
-    }"
-      @submit='handleSubmit()'
+      @submit.prevent="if (canSubmit()) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
-      <!-- Form Fields Grid -->
-      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        <!-- Question -->
-        <div class='space-y-2'>
-          <label
-            for='question'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >
-            Question
-          </label>
-          <textarea
-            x-model='question'
-            @input='validateQuestion()'
-            id='question'
-            name='question'
-            rows='4'
-            :class="errors.question ? 'border-red-500 focus:ring-red-500' : success.question ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            placeholder='Write your question here...'
-          ></textarea>
+      <!-- Question per Bahasa -->
+      <div class='space-y-4'>
+        <label
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Question</label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <textarea
+              x-model='formData.question.id'
+              @input='validateField("question", "id", $event.target.value)'
+              name='question[id]'
+              required
+              rows='4'
+              :class="formErrors.question.id ? 'border-red-500 focus:ring-red-500' : (formValid.question.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Pertanyaan (ID)...'
+            ></textarea>
+            <template x-if='formErrors.question.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.question.id'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.question.id && !formErrors.question.id'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
 
-          <!-- Error Message -->
-          <template x-if='errors.question'>
-            <div
-              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-            >
-              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p class='text-xs text-red-700' x-text='errors.question'></p>
-            </div>
-          </template>
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <textarea
+              x-model='formData.question.en'
+              @input='validateField("question", "en", $event.target.value)'
+              name='question[en]'
+              required
+              rows='4'
+              :class="formErrors.question.en ? 'border-red-500 focus:ring-red-500' : (formValid.question.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Question (EN)...'
+            ></textarea>
+            <template x-if='formErrors.question.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.question.en'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.question.en && !formErrors.question.en'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
 
-          <!-- Success Message -->
-          <template x-if='success.question && !errors.question'>
-            <div
-              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-            >
-              <i class='fas fa-check-circle text-green-500'></i>
-              <p class='text-xs text-green-700'>Valid question</p>
-            </div>
-          </template>
+          <!-- JA -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <textarea
+              x-model='formData.question.ja'
+              @input='validateField("question", "ja", $event.target.value)'
+              name='question[ja]'
+              required
+              rows='4'
+              :class="formErrors.question.ja ? 'border-red-500 focus:ring-red-500' : (formValid.question.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='質問 (JA)...'
+            ></textarea>
+            <template x-if='formErrors.question.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.question.ja'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.question.ja && !formErrors.question.ja'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
         </div>
+      </div>
 
-        <!-- Answer -->
-        <div class='space-y-2'>
-          <label
-            for='answer'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >
-            Answer
-          </label>
-          <textarea
-            x-model='answer'
-            @input='validateAnswer()'
-            id='answer'
-            name='answer'
-            rows='4'
-            :class="errors.answer ? 'border-red-500 focus:ring-red-500' : success.answer ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            placeholder='Write your answer here...'
-          ></textarea>
+      <!-- Answer per Bahasa -->
+      <div class='space-y-4'>
+        <label
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Answer</label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <textarea
+              x-model='formData.answer.id'
+              @input='validateField("answer", "id", $event.target.value)'
+              name='answer[id]'
+              required
+              rows='6'
+              :class="formErrors.answer.id ? 'border-red-500 focus:ring-red-500' : (formValid.answer.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Jawaban (ID)...'
+            ></textarea>
+            <template x-if='formErrors.answer.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.answer.id'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.answer.id && !formErrors.answer.id'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
 
-          <!-- Error Message -->
-          <template x-if='errors.answer'>
-            <div
-              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-            >
-              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p class='text-xs text-red-700' x-text='errors.answer'></p>
-            </div>
-          </template>
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <textarea
+              x-model='formData.answer.en'
+              @input='validateField("answer", "en", $event.target.value)'
+              name='answer[en]'
+              required
+              rows='6'
+              :class="formErrors.answer.en ? 'border-red-500 focus:ring-red-500' : (formValid.answer.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Answer (EN)...'
+            ></textarea>
+            <template x-if='formErrors.answer.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.answer.en'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.answer.en && !formErrors.answer.en'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
 
-          <!-- Success Message -->
-          <template x-if='success.answer && !errors.answer'>
-            <div
-              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-            >
-              <i class='fas fa-check-circle text-green-500'></i>
-              <p class='text-xs text-green-700'>Valid answer</p>
-            </div>
-          </template>
+          <!-- JA -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <textarea
+              x-model='formData.answer.ja'
+              @input='validateField("answer", "ja", $event.target.value)'
+              name='answer[ja]'
+              required
+              rows='6'
+              :class="formErrors.answer.ja ? 'border-red-500 focus:ring-red-500' : (formValid.answer.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='回答 (JA)...'
+            ></textarea>
+            <template x-if='formErrors.answer.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.answer.ja'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.answer.ja && !formErrors.answer.ja'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
 
@@ -135,17 +292,32 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='text-white px-6 py-2 rounded-lg shadow transition bg-gray-900 hover:bg-gray-600'
+          :disabled='!canSubmit()'
+          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-700' : 'bg-gray-400 cursor-not-allowed'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           Create
         </button>
         <a
           href='/faq'
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
         >
           Cancel
         </a>
       </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors()'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
     </form>
   </div>
 </div>

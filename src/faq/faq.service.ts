@@ -13,7 +13,7 @@ export class FaqService {
   ) {}
 
   async create(createFaqDto: CreateFaqDto) {
-    const faq = this.faqRepository.create(createFaqDto);
+    const faq = this.faqRepository.create({...createFaqDto});
     return await this.faqRepository.save(faq);
   }
 
