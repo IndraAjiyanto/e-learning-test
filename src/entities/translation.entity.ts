@@ -102,15 +102,6 @@ export class Translation {
       @JoinColumn()
         background: Background;
 
-
-              @OneToOne(() => Award, (award) => award.translation,{
-        cascade: true,
-        nullable: true,
-        onDelete: 'CASCADE',
-      })
-      @JoinColumn()
-        award: Award;
-
                 @OneToOne(() => Visi, (visi) => visi.translation,{
           cascade: true,
           nullable: true,

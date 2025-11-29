@@ -13,17 +13,14 @@ export class Award {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  content: string;
+  @Column('jsonb')
+  content: string[];
 
-  @Column()
-  isi: string;
+  @Column('jsonb')
+  isi: string[];
 
   @Column()
   award_ke: number;
-
-      @OneToOne(() => Translation, (translation) => translation.award)
-      translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

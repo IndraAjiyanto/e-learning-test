@@ -1,11 +1,11 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsArray, IsNumber, IsString } from "class-validator";
 
 export class CreateAwardDto {
-  @IsString()
-  content: string;
+  @IsArray()
+  content: string[];
 
-  @IsString()
-  isi: string;
+  @IsArray()
+  isi: string[];
 
   @IsNumber()
   award_ke: number;
