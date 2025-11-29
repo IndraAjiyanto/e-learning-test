@@ -1,18 +1,16 @@
 import {
-  IsBoolean,
+  IsArray,
   IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
+
 } from 'class-validator';
 import { No } from 'src/entities/benefit.entity';
 
 export class CreateBenefitDto {
-  @IsString()
-  judul: string;
+  @IsArray()
+  judul: string[];
 
-  @IsString()
-  text: string;
+  @IsArray()
+  text: string[];
 
   @IsEnum([1, 2, 3])
   no: No;

@@ -393,10 +393,10 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
           </div>
           <div>
             <h3 class='text-2xl font-extrabold text-gray-900 mb-2'>
-              {{#if benefit_1.judul}}{{benefit_1.judul}}{{else}}Job/Internship Placement{{/if}}
+              {{#if benefit_1.judul}}{{getByLang benefit_1.judul lang}}{{else}}Job/Internship Placement{{/if}}
             </h3>
             <p class='text-gray-700 text-lg leading-relaxed'>
-              {{#if benefit_1.text}}{{benefit_1.text}}{{else}}Get the opportunity for job or internship placement through our hiring partner network after completing the bootcamp. We’ll help you start your career with strong industry connections.{{/if}}
+              {{#if benefit_1.text}}{{getByLang benefit_1.text lang}}{{else}}Get the opportunity for job or internship placement through our hiring partner network after completing the bootcamp. We’ll help you start your career with strong industry connections.{{/if}}
             </p>
             <span class='sr-only'>This is the most desired benefit by most
               learners.</span>
@@ -416,10 +416,10 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{#if benefit_2.judul}}{{benefit_2.judul}}{{else}}Capstone Project{{/if}}
+            {{#if benefit_2.judul}}{{getByLang benefit_2.judul lang}}{{else}}Capstone Project{{/if}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
-            {{#if benefit_2.text}}{{benefit_2.text}}{{else}}Apply everything you’ve learned through a real-world capstone project that reflects real industry challenges — a strong proof of your technical and problem-solving skills.{{/if}}
+            {{#if benefit_2.text}}{{getByLang benefit_2.text lang}}{{else}}Apply everything you’ve learned through a real-world capstone project that reflects real industry challenges — a strong proof of your technical and problem-solving skills.{{/if}}
           </p>
         </div>
       </div>
@@ -436,10 +436,10 @@ Imagine joining a 3-month intensive journey where you learn directly from indust
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{#if benefit_3.judul}}{{benefit_3.judul}}{{else}}Portfolio Building{{/if}}
+            {{#if benefit_3.judul}}{{getByLang benefit_3.judul lang}}{{else}}Portfolio Building{{/if}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
-            {{#if benefit_3.text}}{{benefit_3.text}}{{else}}Build a powerful portfolio showcasing your best work and projects throughout the bootcamp — your professional identity and key to standing out in the job market.{{/if}}
+            {{#if benefit_3.text}}{{getByLang benefit_3.text lang}}{{else}}Build a powerful portfolio showcasing your best work and projects throughout the bootcamp — your professional identity and key to standing out in the job market.{{/if}}
           </p>
         </div>
       </div>

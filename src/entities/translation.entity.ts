@@ -6,13 +6,6 @@ import { Team } from "./team.entity";
 import { Story } from "./story.entity";
 import { TeamLead } from "./team_lead.entity";
 import { PertanyaanUmum } from "./pertanyaan_umum.entity";
-import { Faq } from "./faq.entity";
-import { Benefit } from "./benefit.entity";
-import { BenefitCategory } from "./benefit_category.entity";
-import { BenefitKelas } from "./benefit_kelas.entity";
-import { Background } from "./background.entity";
-import { Award } from "./award.entity";
-import { AlurKelas } from "./alur_kelas.entity";
 import { Visi } from "./visi.entity";
 import { Value } from "./value.entity";
 import { Superiority } from "./superiority.entity";
@@ -68,14 +61,6 @@ export class Translation {
       @JoinColumn()
         pertanyaan_umum: PertanyaanUmum;
         
-
-                @OneToOne(() => Benefit, (benefit) => benefit.translation,{
-        cascade: true,
-        nullable: true,
-        onDelete: 'CASCADE',
-      })
-      @JoinColumn()
-        benefit: Benefit;
 
 
                 @OneToOne(() => Visi, (visi) => visi.translation,{

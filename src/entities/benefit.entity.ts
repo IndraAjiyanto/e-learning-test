@@ -15,20 +15,17 @@ export class Benefit {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  judul: string;
+  @Column('jsonb', { nullable: true })
+  judul: string[];
 
-  @Column()
-  text: string;
+  @Column('jsonb', { nullable: true })
+  text: string[];
 
   @Column()
   icon: string;
 
   @Column({ type: 'enum', enum: [1, 2, 3] })
   no: No;
-
-  @OneToOne(() => Translation, (translation) => translation.benefit)
-  translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;
