@@ -19,16 +19,17 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('login')
-  async getLogin(@Res() res: Response, @Req() req: any, @I18n() i18n: I18nContext) {
-    const hello = await i18n.t('test.hello');
-    console.log(hello);
+  async getLogin(
+    @Res() res: Response,
+    @Req() req: any,
+    @I18n() i18n: I18nContext,
+  ) {
     if (req.user) {
       const previous = req.headers.referer || '/dashboard';
       return res.redirect(previous);
     }
     res.render('login');
   }
-    
 
   @Get('daftar/:id')
   async daftarKelas(

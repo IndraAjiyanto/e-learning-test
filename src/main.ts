@@ -14,6 +14,7 @@ import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.f
 import { NotFoundExceptionFilter } from './common/filters/not-found-exception.filter';
 import cookieParser from 'cookie-parser';
 import { NextFunction, Request, Response } from 'express';
+import { I18nContext } from 'nestjs-i18n';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -36,17 +37,6 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    const i18n = req.i18n;
-    res.locals.t = (key: string) => i18n?.t(key);
-    next();
-  });
-
-  app.use((req, res, next) => {
-  console.log("REQ I18N: ", req.i18n);
-  next();
-});
-
 
   hbs.registerHelper(
     'isNowBetween',
@@ -177,6 +167,16 @@ async function bootstrap() {
 
   app.use(passport.initialize());
   app.use(passport.session());
+
+  // Middleware untuk i18n - hanya set fallback function
+  // Translation akan di-pass dari controller via render context
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const lang = req.cookies?.lang || 'id';
+    console.log('Selected language:', lang);
+    res.locals.currentLang = lang;
+    res.locals.lang = lang; // Tersedia di semua template HBS sebagai 'lang'
+    next();
+  });
   app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
 
   hbs.registerHelper('hasRole', function (user, role, options) {
@@ -198,11 +198,17 @@ async function bootstrap() {
   });
   hbs.registerHelper('json', (context) => JSON.stringify(context));
 
-  hbs.registerHelper('t', function (key: string, options) {
-    const t = options.data.root.t;
-    return t ? t(key) : key;
+  hbs.registerHelper('t', function (key: string) {
+    try {
+      const i18n = I18nContext.current();
+      if (i18n) {
+        return i18n.t(key);
+      }
+    } catch (e) {
+      // Fallback if context not available
+    }
+    return key;
   });
-
 
   // Helper untuk convert newline ke <br> tag
   hbs.registerHelper('nl2br', function (text) {
@@ -248,6 +254,12 @@ async function bootstrap() {
   // Helper untuk default value
   hbs.registerHelper('default', function (value, defaultValue) {
     return value || defaultValue;
+  });
+
+  // Helper untuk akses dynamic property dari object (untuk JSONB dengan key lang)
+  hbs.registerHelper('getByLang', function (obj, lang) {
+    if (!obj || typeof obj !== 'object') return '';
+    return obj[lang] || obj['id'] || ''; // Fallback ke 'id' jika lang tidak ada
   });
 
   await app.listen(process.env.PORT ?? 3000);

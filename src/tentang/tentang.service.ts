@@ -17,46 +17,10 @@ export class TentangService {
   ) {}
 
   async create(createTentangDto: CreateTentangDto) {
-    const tentang_id = await this.tentangRepository.create({
-      judul: createTentangDto.judul_id,
-      text: createTentangDto.text_id,
-      gambar: createTentangDto.gambar,
+    const tentang = await this.tentangRepository.create({...createTentangDto
     });
-    const tentangId  = await this.tentangRepository.save(tentang_id);
+    return await this.tentangRepository.save(tentang)
 
-    const translation_id = await this.translationRepository.create({
-      key: 'tentang',
-      locale: 'id',
-      tentang: tentangId,
-    });
-    await this.translationRepository.save(translation_id);
-
-    const tentang_en = await this.tentangRepository.create({
-      judul: createTentangDto.judul_en,
-      text: createTentangDto.text_en,
-      gambar: createTentangDto.gambar,
-    });
-    const tentangEn  = await this.tentangRepository.save(tentang_en);
-
-    const translation_en = await this.translationRepository.create({
-      key: 'tentang',
-      locale: 'en',
-      tentang: tentangEn,
-    });
-    await this.translationRepository.save(translation_en);
-
-    const tentang_ja = await this.tentangRepository.create({
-      judul: createTentangDto.judul_ja,
-      text: createTentangDto.text_ja,
-      gambar: createTentangDto.gambar,
-    });
-    const tentangJa  = await this.tentangRepository.save(tentang_ja); 
-    const translation_ja = await this.translationRepository.create({
-      key: 'tentang',
-      locale: 'ja',
-      tentang: tentangJa,
-    });
-    await this.translationRepository.save(translation_ja);
   }
 
   async findAll() {

@@ -9,7 +9,6 @@ export class DashboardController {
   @Get()
   async getProtected(@Req() req: Request, @Res() res: Response) {
     const kelas = await this.dashboardService.findAllKelas();
-    const lang = req.cookies['lang'] || 'id';
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
@@ -21,7 +20,8 @@ export class DashboardController {
         );
         res.render('admin/kelas/index', { user: req.user, kelas });
       } else if (req.user.role === 'user') {
-        const special_program = await this.dashboardService.findSpecialProgram();
+        const special_program =
+          await this.dashboardService.findSpecialProgram();
         const faq = await this.dashboardService.findFAQ();
         const gambar_benefit_1 = await this.dashboardService.findGambar1();
         const gambar_benefit_2 = await this.dashboardService.findGambar2();
@@ -34,7 +34,7 @@ export class DashboardController {
         const benefit_1 = await this.dashboardService.findBenefit1();
         const benefit_2 = await this.dashboardService.findBenefit2();
         const benefit_3 = await this.dashboardService.findBenefit3();
-        const tentang = await this.dashboardService.findTentang(lang);
+        const tentang = await this.dashboardService.findTentang();
         res.render('dashboard', {
           special_program,
           user: req.user,
@@ -55,7 +55,7 @@ export class DashboardController {
         });
       }
     } else {
-        const special_program = await this.dashboardService.findSpecialProgram();
+      const special_program = await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
       const gambar_benefit_1 = await this.dashboardService.findGambar1();
       const gambar_benefit_2 = await this.dashboardService.findGambar2();
@@ -68,7 +68,7 @@ export class DashboardController {
       const benefit_1 = await this.dashboardService.findBenefit1();
       const benefit_2 = await this.dashboardService.findBenefit2();
       const benefit_3 = await this.dashboardService.findBenefit3();
-      const tentang = await this.dashboardService.findTentang(lang);
+      const tentang = await this.dashboardService.findTentang();
       res.render('dashboard', {
         special_program,
         user: req.user,

@@ -60,12 +60,16 @@
 
             <!-- Judul -->
             <td class='px-6 py-4 text-sm text-gray-800 max-w-xs'>
-              <div class='font-semibold line-clamp-2'>{{judul}}</div>
+              {{#each judul}}
+              <div class='font-semibold line-clamp-2'>{{this}}</div>
+              {{/each}}
             </td>
 
             <!-- Text -->
             <td class='px-6 py-4 text-sm text-gray-600 max-w-md'>
-              <div class='line-clamp-3'>{{text}}</div>
+              {{#each text}}
+              <div class='line-clamp-3'>{{this}}</div>
+              {{/each}}
             </td>
 
             <!-- Action -->

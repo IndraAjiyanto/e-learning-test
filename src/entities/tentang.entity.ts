@@ -13,17 +13,14 @@ export class Tentang {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  judul: string;
+  @Column('jsonb', { nullable: true })
+  judul: string[];
 
-  @Column()
-  text: string;
+  @Column('jsonb', { nullable: true })
+  text: string[];
 
   @Column()
   gambar: string;
-
-      @OneToOne(() => Translation, (translation) => translation.tentang)
-      translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;
