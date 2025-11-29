@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Kategori } from './kategori.entity';
-import { Translation } from './translation.entity';
 
 @Entity()
 export class FlowCategory {
@@ -18,11 +17,11 @@ export class FlowCategory {
   @Column()
   number: number;
 
-  @Column()
-  title: string;
+  @Column('jsonb', { nullable: true })
+  title: string[];
 
-  @Column()
-  description: string;
+  @Column('jsonb', { nullable: true })
+  description: string[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -34,7 +33,4 @@ export class FlowCategory {
     onDelete: 'CASCADE',
   })
   kategori: Kategori;
-
-  @OneToOne(() => Translation, (translation) => translation.flow_category)
-  translation: Translation;
 }

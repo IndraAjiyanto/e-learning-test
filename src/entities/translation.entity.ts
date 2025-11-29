@@ -127,14 +127,6 @@ export class Translation {
         @JoinColumn()
           jenis_kelas: JenisKelas;
 
-                @OneToOne(() => FlowCategory, (flow_category) => flow_category.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          flow_category: FlowCategory;
-
       @CreateDateColumn()
       createdAt: Date;
     
