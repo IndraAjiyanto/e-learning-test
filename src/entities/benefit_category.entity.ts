@@ -10,11 +10,11 @@ export class BenefitCategory {
     @Column()
     icon: string;
 
-    @Column()
-    title: string;
+    @Column('jsonb',{nullable: true})
+    title: string[];
 
-    @Column()
-    description: string;
+    @Column('jsonb',{nullable: true})
+    description: string[];
 
       @CreateDateColumn()
       createdAt: Date;
@@ -27,6 +27,5 @@ export class BenefitCategory {
         })
         kategori: Kategori;
 
-            @OneToOne(() => Translation, (translation) => translation.benefit_category)
-            translation: Translation;
+ 
 }

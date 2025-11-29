@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBenefitCategoryDto {
   @IsNotEmpty()
@@ -6,12 +6,12 @@ export class CreateBenefitCategoryDto {
   icon: string;
 
   @IsNotEmpty()
-  @IsString()
-  title: string;
+  @IsArray()
+  title: string[];
 
   @IsNotEmpty()
-  @IsString()
-  description: string;
+  @IsArray()
+  description: string[];
 
   @IsNotEmpty()
   kategoriId: number;

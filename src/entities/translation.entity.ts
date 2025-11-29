@@ -77,15 +77,6 @@ export class Translation {
       @JoinColumn()
         benefit: Benefit;
 
-
-                @OneToOne(() => BenefitCategory, (benefit_category) => benefit_category.translation,{
-        cascade: true,
-        nullable: true,
-        onDelete: 'CASCADE',
-      })
-      @JoinColumn()
-        benefit_category: BenefitCategory;
-
                 @OneToOne(() => BenefitKelas, (benefit_kelas) => benefit_kelas.translation,{
         cascade: true,
         nullable: true,

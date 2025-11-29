@@ -13,10 +13,10 @@ export class Background {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb')
+  @Column('jsonb',{nullable: true})
   content: string[];
 
-  @Column('jsonb')
+  @Column('jsonb',{nullable: true})
   isi: string[];
 
   @Column()
