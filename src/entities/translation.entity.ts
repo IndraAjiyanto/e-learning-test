@@ -1,9 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Team } from "./team.entity";
 import { TeamLead } from "./team_lead.entity";
-import { Visi } from "./visi.entity";
-import { Value } from "./value.entity";
-import { Superiority } from "./superiority.entity";
 import { Kategori } from "./kategori.entity";
 
 @Entity()
@@ -32,14 +29,6 @@ export class Translation {
       })
       @JoinColumn()
         team_lead: TeamLead;
-
-                @OneToOne(() => Value, (value) => value.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          value: Value;
 
                 @OneToOne(() => Kategori, (kategori) => kategori.translation,{
           cascade: true,

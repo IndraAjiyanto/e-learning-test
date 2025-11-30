@@ -1,11 +1,11 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, IsArray } from 'class-validator';
 
 export class CreateValueDto {
-  @IsString()
-  title: string;
+  @IsArray()
+  title: string[];
 
-  @IsString()
-  description: string;
+  @IsArray()
+  description: string[];
 
   @IsString()
   icon: string;

@@ -13,20 +13,17 @@ export class Value {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  title: string;
+  @Column('jsonb', { nullable: true })
+  title: string[];
 
-  @Column()
-  description: string;
+  @Column('jsonb', { nullable: true })
+  description: string[];
 
   @Column()
   icon: string;
 
   @Column()
   value_ke: number;
-
-  @OneToOne(() => Translation, (translation) => translation.value)
-  translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;
