@@ -1,6 +1,6 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 export class CreateVisiDto {
-  @IsString()
-  visi: string;
+  @IsArray()
+  visi: string[];
 }

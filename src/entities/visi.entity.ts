@@ -13,11 +13,8 @@ export class Visi {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  visi: string;
-
-  @OneToOne(() => Translation, (translation) => translation.visi)
-  translation: Translation;
+  @Column('jsonb')
+  visi: string[];
 
   @CreateDateColumn()
   createdAt: Date;

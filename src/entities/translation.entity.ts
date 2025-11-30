@@ -33,14 +33,6 @@ export class Translation {
       @JoinColumn()
         team_lead: TeamLead;
 
-                @OneToOne(() => Visi, (visi) => visi.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          visi: Visi;
-
                 @OneToOne(() => Value, (value) => value.translation,{
           cascade: true,
           nullable: true,

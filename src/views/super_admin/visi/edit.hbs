@@ -3,40 +3,47 @@
   x-data="{
   // Form validation states
   formData: {
-    visi: '{{visi.visi}}'
+    visi: { id: '{{visi.visi.id}}', en: '{{visi.visi.en}}', ja: '{{visi.visi.ja}}' }
   },
   formErrors: {
-    visi: ''
+    visi: { id: '', en: '', ja: '' }
   },
   formValid: {
-    visi: true
+    visi: { id: false, en: false, ja: false }
   },
 
-  validateField(field, value) {
-    this.formData[field] = value;
+  init() {
+    // Validate initial values
+    this.validateField('visi', 'id', this.formData.visi.id);
+    this.validateField('visi', 'en', this.formData.visi.en);
+    this.validateField('visi', 'ja', this.formData.visi.ja);
+  },
+
+  validateField(field, lang, value) {
+    this.formData[field][lang] = value;
     
     switch(field) {
       case 'visi':
         if (!value.trim()) {
-          this.formErrors.visi = 'Visi is required';
-          this.formValid.visi = false;
+          this.formErrors.visi[lang] = 'Visi is required';
+          this.formValid.visi[lang] = false;
         } else if (value.trim().length < 10) {
-          this.formErrors.visi = 'Visi must be at least 10 characters';
-          this.formValid.visi = false;
+          this.formErrors.visi[lang] = 'Visi must be at least 10 characters';
+          this.formValid.visi[lang] = false;
         } else {
-          this.formErrors.visi = '';
-          this.formValid.visi = true;
+          this.formErrors.visi[lang] = '';
+          this.formValid.visi[lang] = true;
         }
         break;
     }
   },
 
   canSubmit() {
-    return this.formValid.visi;
+    return Object.values(this.formValid.visi).every(v => v);
   },
 
   hasFormErrors() {
-    return Object.values(this.formErrors).some(error => error !== '');
+    return Object.values(this.formErrors.visi).some(e => e !== '');
   }
 }"
 >
@@ -50,42 +57,124 @@
       @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
     >
 
-      <div class='space-y-2'>
+      <!-- Visi per Bahasa -->
+      <div class='space-y-4'>
         <label
-          for='visi'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Visi</label>
-        <textarea
-          x-model='formData.visi'
-          @input='validateField("visi", $event.target.value)'
-          id='visi'
-          name='visi'
-          rows='5'
-          required
-          :class="formErrors.visi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.visi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-          placeholder='Tulis visi di sini...'
-        ></textarea>
+        <div class='grid grid-cols-1 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <textarea
+              x-model='formData.visi.id'
+              @input='validateField("visi", "id", $event.target.value)'
+              id='visi_id'
+              name='visi[id]'
+              rows='5'
+              required
+              :class="formErrors.visi.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.visi.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Tulis visi dalam bahasa Indonesia...'
+            ></textarea>
 
-        <!-- Error Message -->
-        <template x-if='formErrors.visi'>
-          <div
-            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-          >
-            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-            <p class='text-xs text-red-700' x-text='formErrors.visi'></p>
-          </div>
-        </template>
+            <!-- Error Message -->
+            <template x-if='formErrors.visi.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.visi.id'></p>
+              </div>
+            </template>
 
-        <!-- Success Message -->
-        <template x-if='formValid.visi && !formErrors.visi'>
-          <div
-            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-          >
-            <i class='fas fa-check-circle text-green-500'></i>
-            <p class='text-xs text-green-700'>Visi looks good</p>
+            <!-- Success Message -->
+            <template x-if='formValid.visi.id && !formErrors.visi.id'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Visi valid</p>
+              </div>
+            </template>
           </div>
-        </template>
+
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label
+              class='block text-xs font-medium text-gray-600'
+            >EN</label>
+            <textarea
+              x-model='formData.visi.en'
+              @input='validateField("visi", "en", $event.target.value)'
+              id='visi_en'
+              name='visi[en]'
+              rows='5'
+              required
+              :class="formErrors.visi.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.visi.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Write vision in English...'
+            ></textarea>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.visi.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.visi.en'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.visi.en && !formErrors.visi.en'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Vision looks good</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- JA -->
+          <div class='space-y-2'>
+            <label
+              class='block text-xs font-medium text-gray-600'
+            >JA</label>
+            <textarea
+              x-model='formData.visi.ja'
+              @input='validateField("visi", "ja", $event.target.value)'
+              id='visi_ja'
+              name='visi[ja]'
+              rows='5'
+              required
+              :class="formErrors.visi.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.visi.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='ビジョンを日本語で書いてください...'
+            ></textarea>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.visi.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.visi.ja'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.visi.ja && !formErrors.visi.ja'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>ビジョンが有効です</p>
+              </div>
+            </template>
+          </div>
+        </div>
       </div>
 
       <div class='flex gap-3'>
