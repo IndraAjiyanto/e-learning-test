@@ -6,10 +6,10 @@ export class Faq {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column('jsonb')
+    @Column('jsonb', { nullable: true })
     question: string[];
 
-    @Column('jsonb')
+    @Column('jsonb', { nullable: true })
     answer: string[];
 
     @CreateDateColumn()

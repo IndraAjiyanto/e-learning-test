@@ -13,7 +13,7 @@ export class Visi {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb')
+  @Column('jsonb',{nullable:true})
   visi: string[];
 
   @CreateDateColumn()
