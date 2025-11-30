@@ -13,20 +13,20 @@ export class CreateKategorisDto {
   @IsString()
   icon: string;
 
-  @IsString()
-  deskripsi: string;
+  @IsArray()
+  deskripsi: string[];
 
   @IsOptional()
-  @IsString()
-  text?: string;
+  @IsArray()
+  text?: string[];
 
   @IsOptional()
   @IsNumber()
   contact?: number;
 
   @IsOptional()
-  @IsString()
-  for?: string;
+  @IsArray()
+  for?: string[];
 
   @IsOptional()
   @IsArray()
@@ -35,7 +35,6 @@ export class CreateKategorisDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
   info?: string[];
 
   @IsEnum(['Special Program', 'Program'])

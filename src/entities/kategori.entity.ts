@@ -27,20 +27,20 @@ export class Kategori {
   @Column()
   nama_kategori: string;
 
-  @Column({ nullable: true })
-  text: string;
+  @Column('jsonb', { nullable: true })
+  text: string[];
 
   @Column()
   icon: string;
 
-  @Column()
-  deskripsi: string;
+  @Column('jsonb', { nullable: true })
+  deskripsi: string[];
 
   @Column({ nullable: true })
   contact: number;
 
-  @Column({ nullable: true })
-  for: string;
+  @Column('jsonb', { nullable: true })
+  for: string[];
 
   @Column({ nullable: true, type: 'jsonb' })
   info: string[];

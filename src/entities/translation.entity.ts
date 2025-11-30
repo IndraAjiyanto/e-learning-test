@@ -14,13 +14,6 @@ export class Translation {
     @Column()
     locale: string;
 
-        @OneToOne(() => Team, (team) => team.translation,{
-        cascade: true,
-        nullable: true,
-        onDelete: 'CASCADE',
-      })
-      @JoinColumn()
-        team: Team;
         
         @OneToOne(() => TeamLead, (team_lead) => team_lead.translation,{
         cascade: true,

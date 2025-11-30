@@ -48,46 +48,58 @@ async function bootstrap() {
       nama_kategori: 'Short Class',
       nama_kategori_uniq: 'Short Class',
       icon: 'short.png',
-      deskripsi: 'class free',
+      deskripsi: ['class free', 'class free', 'class free'],
       type: 'Program',
     },
     {
       nama_kategori: 'Course',
       nama_kategori_uniq: 'Course',
       icon: 'course.png',
-      deskripsi: 'class advance',
+      deskripsi: ['class advance', 'class advance', 'class advance'],
       type: 'Program',
     },
     {
       nama_kategori: 'Bootcamp',
       nama_kategori_uniq: 'Bootcamp',
       icon: 'bootcamp.png',
-      deskripsi: 'class intermediet',
+      deskripsi: [
+        'class intermediet',
+        'class intermediet',
+        'class intermediet',
+      ],
       type: 'Special Program',
     },
     {
       nama_kategori: 'WIP',
       nama_kategori_uniq: 'WIP',
       icon: 'wip.png',
-      deskripsi: 'Wiratek InternShip Program',
+      deskripsi: [
+        'Wiratek InternShip Program',
+        'Wiratek InternShip Program',
+        'Wiratek InternShip Program',
+      ],
       type: 'Special Program',
     },
     {
       nama_kategori: 'In House Training Program',
       nama_kategori_uniq: 'In House Training Program',
       icon: 'inhouse.png',
-      deskripsi: 'Inhouse Training Program',
+      deskripsi: [
+        'Inhouse Training Program',
+        'Inhouse Training Program',
+        'Inhouse Training Program',
+      ],
       type: 'Special Program',
     },
   ]);
 
-await jenisKelasRepository.save([
-  {
-    nama_jenis_kelas: 'Web Development',
-    icon: 'web_development.png',
-    deskripsi: ['development', 'development', 'development'], 
-  },
-]);
+  await jenisKelasRepository.save([
+    {
+      nama_jenis_kelas: 'Web Development',
+      icon: 'web_development.png',
+      deskripsi: ['development', 'development', 'development'],
+    },
+  ]);
 
   // Create teknologi first
   const nestJs = await teknologiRepository.save({
