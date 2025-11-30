@@ -89,9 +89,7 @@
 
       <!-- Pertanyaan per Bahasa -->
       <div class='space-y-4'>
-        <label
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
           Question
         </label>
         <div class='grid grid-cols-1 gap-4'>
@@ -169,9 +167,9 @@
             </template>
           </div>
 
-          <!-- JA -->
+          <!-- JP -->
           <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
               x-model='formData.pertanyaan.ja'
               @input='validateField("pertanyaan", $event.target.value, "ja")'
@@ -210,9 +208,7 @@
 
       <!-- Jawaban per Bahasa -->
       <div class='space-y-4'>
-        <label
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
           Answer
         </label>
         <div class='grid grid-cols-1 gap-4'>
@@ -290,9 +286,9 @@
             </template>
           </div>
 
-          <!-- JA -->
+          <!-- JP -->
           <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
               x-model='formData.jawaban.ja'
               @input='validateField("jawaban", $event.target.value, "ja")'

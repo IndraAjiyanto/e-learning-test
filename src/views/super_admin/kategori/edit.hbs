@@ -1,11 +1,10 @@
 <script>
-  // Alpine.js Component Data (Dipisah dari HTML)
   function categoryFormData() {
     return {
 
       /* ========================================
        * STATE
-      ========================================= */
+       ========================================= */
       previewUrl: '{{kategori.icon}}' || null,
       errorMessage: '',
       isValid: true,
@@ -24,7 +23,7 @@
         contact: '{{kategori.contact}}',
         for: '{{kategori.for}}',
         jenis_kelas: [],
-        type: '{{kategori.type}}'
+        type: '{{kategori.type}}',
       },
 
       selectedJenisKelas: {{{json kategori.jenis_kelas}}},
@@ -47,7 +46,7 @@
         for: '',
         jenis_kelas: '',
         info: '',
-        type: ''
+        type: '',
       },
 
       formValid: {
@@ -57,12 +56,8 @@
         contact: false,
         for: false,
         jenis_kelas: {{{json kategori.jenis_kelas}}}.length > 0,
-        info:
-          {{{json kategori.info}}} &&
-          {{{json kategori.info}}}.some(info => info.trim())
-            ? true
-            : false,
-        type: true
+        info: {{{json kategori.info}}} && {{{json kategori.info}}}.some(info => info.trim()) ? true : false,
+        type: true,
       },
 
       formTouched: {
@@ -73,19 +68,21 @@
         for: false,
         jenis_kelas: {{{json kategori.jenis_kelas}}}.length > 0,
         info: true,
-        type: true
+        type: true,
       },
+
 
       /* ========================================
        * INITIALIZATION
-      ========================================= */
+       ========================================= */
       init() {
         this.formData.jenis_kelas = this.selectedJenisKelas.map(jk => jk.id);
       },
 
+
       /* ========================================
        * IMAGE VALIDATION
-      ========================================= */
+       ========================================= */
       validateImage(file) {
         if (!file) {
           this.hasFile = false;
@@ -99,8 +96,6 @@
         this.isValid = true;
 
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-
-        // File type validation
         if (!allowedTypes.includes(file.type)) {
           this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
           this.isValid = false;
@@ -108,7 +103,7 @@
           return;
         }
 
-        // File size validation
+        // Max size 5MB
         const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
           const sizeMB = (file.size / 1024 / 1024).toFixed(2);
@@ -118,7 +113,7 @@
           return;
         }
 
-        // Image dimension validation
+        // Dimension validation
         const img = new Image();
         const objectUrl = URL.createObjectURL(file);
 
@@ -127,10 +122,8 @@
           this.imageHeight = img.height;
 
           if (
-            img.width < 1000 ||
-            img.width > 2000 ||
-            img.height < 1000 ||
-            img.height > 2000
+            img.width < 1000 || img.width > 2000 ||
+            img.height < 1000 || img.height > 2000
           ) {
             this.errorMessage =
               `Image dimensions ${img.width}x${img.height}px. ` +
@@ -155,11 +148,13 @@
         img.src = objectUrl;
       },
 
+
       /* ========================================
        * INFO VALIDATION
-      ========================================= */
+       ========================================= */
       validateInfo(infos) {
         this.formTouched.info = true;
+
         const hasValidInfo = infos && infos.some(info => info.trim());
 
         if (!hasValidInfo) {
@@ -171,9 +166,10 @@
         }
       },
 
+
       /* ========================================
        * FIELD VALIDATION
-      ========================================= */
+       ========================================= */
       validateField(field, value) {
         this.formData[field] = value;
         this.formTouched[field] = true;
@@ -191,8 +187,7 @@
 
           case 'nama_kategori_uniq':
             if (!value || !value.trim()) {
-              this.formErrors.nama_kategori_uniq =
-                'Unique category name is required';
+              this.formErrors.nama_kategori_uniq = 'Unique category name is required';
               this.formValid.nama_kategori_uniq = false;
             } else {
               this.formErrors.nama_kategori_uniq = '';
@@ -211,13 +206,8 @@
             break;
 
           case 'type':
-            if (!value) {
-              this.formErrors.type = 'Type is required';
-              this.formValid.type = false;
-            } else {
-              this.formErrors.type = '';
-              this.formValid.type = true;
-            }
+            this.formValid.type = !!value;
+            this.formErrors.type = value ? '' : 'Type is required';
             break;
 
           case 'text':
@@ -242,17 +232,17 @@
 
           case 'jenis_kelas':
             this.formErrors.jenis_kelas = '';
-            this.formValid.jenis_kelas =
-              Array.isArray(value) && value.length > 0;
+            this.formValid.jenis_kelas = Array.isArray(value) && value.length > 0;
             break;
         }
       },
 
+
       /* ========================================
        * MULTISELECT: JENIS KELAS
-      ========================================= */
+       ========================================= */
       selectJenisKelas(jk) {
-        if (!this.selectedJenisKelas.some(selected => selected.id === jk.id)) {
+        if (!this.selectedJenisKelas.some(s => s.id === jk.id)) {
           this.selectedJenisKelas.push(jk);
           this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
           this.validateField('jenis_kelas', this.formData.jenis_kelas);
@@ -262,34 +252,28 @@
         this.showJenisKelasDropdown = false;
       },
 
-      removeJenisKelas(jkId) {
-        this.selectedJenisKelas = this.selectedJenisKelas.filter(
-          s => s.id !== jkId
-        );
-
+      removeJenisKelas(id) {
+        this.selectedJenisKelas = this.selectedJenisKelas.filter(s => s.id !== id);
         this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
         this.validateField('jenis_kelas', this.formData.jenis_kelas);
       },
 
       get filteredJenisKelas() {
-        return this.availableJenisKelas.filter(
-          jk =>
-            jk.nama_jenis_kelas.id
-              .toLowerCase()
-              .includes(this.searchJenisKelas.toLowerCase()) &&
-            !this.selectedJenisKelas.some(selected => selected.id === jk.id)
+        return this.availableJenisKelas.filter(jk =>
+          jk.nama_jenis_kelas.toLowerCase().includes(this.searchJenisKelas.toLowerCase()) &&
+          !this.selectedJenisKelas.some(s => s.id === jk.id)
         );
       },
 
+
       /* ========================================
        * CLEAR FILE
-      ========================================= */
+       ========================================= */
       clearFile() {
         this.previewUrl = this.hasOldIcon ? this.oldIcon : null;
         this.errorMessage = '';
         this.isValid = true;
         this.fileName = this.hasOldIcon ? 'Current Icon' : '';
-
         this.fileSize = 0;
         this.imageWidth = 0;
         this.imageHeight = 0;
@@ -300,9 +284,10 @@
         }
       },
 
+
       /* ========================================
        * FORM HELPERS
-      ========================================= */
+       ========================================= */
       canSubmit() {
         const imageValid =
           (this.hasOldIcon && !this.hasFile) ||
@@ -318,8 +303,8 @@
       },
 
       hasFormErrors() {
-        return Object.values(this.formErrors).some(error => error !== '');
-      }
+        return Object.values(this.formErrors).some(e => e !== '');
+      },
 
     };
   }
@@ -519,7 +504,7 @@
                 <div
                   class='inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm'
                 >
-                  <span x-text='jk.nama_jenis_kelas.id'></span>
+                  <span x-text='jk.nama_jenis_kelas'></span>
                   <button
                     type='button'
                     @click='removeJenisKelas(jk.id)'
@@ -567,7 +552,7 @@
                   <div
                     @click='selectJenisKelas(jk)'
                     class='px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700'
-                    x-text='jk.nama_jenis_kelas.id'
+                    x-text='jk.nama_jenis_kelas'
                   ></div>
                 </template>
               </div>

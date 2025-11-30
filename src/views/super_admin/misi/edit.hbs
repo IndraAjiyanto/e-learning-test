@@ -83,9 +83,7 @@
 
       <!-- Content per Bahasa -->
       <div class='space-y-4'>
-        <label
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
           Content
         </label>
         <div class='grid grid-cols-1 gap-4'>
@@ -163,9 +161,9 @@
             </template>
           </div>
 
-          <!-- JA -->
+          <!-- JP -->
           <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
               x-model='formData.content.ja'
               @input='validateField("content", $event.target.value, "ja")'
@@ -227,10 +225,7 @@
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p
-                  class='text-xs text-red-700'
-                  x-text='formErrors.isi.id'
-                ></p>
+                <p class='text-xs text-red-700' x-text='formErrors.isi.id'></p>
               </div>
             </template>
             <template
@@ -264,10 +259,7 @@
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p
-                  class='text-xs text-red-700'
-                  x-text='formErrors.isi.en'
-                ></p>
+                <p class='text-xs text-red-700' x-text='formErrors.isi.en'></p>
               </div>
             </template>
             <template
@@ -282,9 +274,9 @@
             </template>
           </div>
 
-          <!-- JA -->
+          <!-- JP -->
           <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
               x-model='formData.isi.ja'
               @input='validateField("isi", $event.target.value, "ja")'
@@ -301,10 +293,7 @@
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p
-                  class='text-xs text-red-700'
-                  x-text='formErrors.isi.ja'
-                ></p>
+                <p class='text-xs text-red-700' x-text='formErrors.isi.ja'></p>
               </div>
             </template>
             <template

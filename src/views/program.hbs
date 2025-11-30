@@ -12,7 +12,7 @@
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
         {{#each kategori.jenis_kelas}}
-        { value: `{{getByLang this.nama_jenis_kelas ../lang}}`, icon: '{{this.icon}}', title: `{{getByLang this.nama_jenis_kelas ../lang}}`, desc: `{{getByLang this.deskripsi ../lang}}` },
+        { value: `{{this.nama_jenis_kelas }}`, icon: '{{this.icon}}', title: `{{ this.nama_jenis_kelas }}`, desc: `{{getByLang this.deskripsi ../lang}}` },
         {{/each}}
       ],
       
@@ -315,7 +315,7 @@
       <div
         class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
         data-kategori='{{kategori.nama_kategori}}'
-        data-category='{{getByLang jenis_kelas.nama_jenis_kelas ../lang}}'
+        data-category='{{jenis_kelas.nama_jenis_kelas }}'
         data-nama='{{nama_kelas}}'
         data-deskripsi='{{deskripsi}}'
         data-location='{{metode}}'
@@ -339,7 +339,7 @@
             <span
               class='badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
             >
-              {{getByLang jenis_kelas.nama_jenis_kelas ../lang}}
+              {{jenis_kelas.nama_jenis_kelas}}
             </span>
 
           </div>

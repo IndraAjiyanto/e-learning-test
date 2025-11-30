@@ -1,8 +1,8 @@
 import { IsArray, IsString } from 'class-validator';
 
 export class CreateJenisKelaDto {
-  @IsArray()
-  nama_jenis_kelas: string[];
+  @IsString()
+  nama_jenis_kelas: string;
 
   @IsString()
   icon: string;

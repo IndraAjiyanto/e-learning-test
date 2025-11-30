@@ -1,12 +1,13 @@
 <div
-  class='w-full mx-auto px-6 py-10 '
+  class='w-full mx-auto px-6 py-10'
   x-data='jenisKelasTable({ jenisKelas: {{json jenis_kelas}} })'
 >
   <div
     class='mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4'
   >
-    <h2 class='text-3xl font-bold text-gray-900 text-center md:text-left'>Program
-      Type</h2>
+    <h2
+      class='text-3xl font-bold text-gray-900 text-center md:text-left'
+    >Program Type</h2>
     <div class='flex items-center gap-3'>
       <div class='relative w-full md:w-64'>
         <input
@@ -73,24 +74,18 @@
         {{#each jenis_kelas}}
           <tr class='hover:bg-gray-50 transition'>
             <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
-            <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >
-            {{#each nama_jenis_kelas}}
-              <div class="line-clamp-3">{{this}}</div>
-            {{/each}}
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              {{nama_jenis_kelas}}
             </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               {{#each deskripsi}}
-                <div class="line-clamp-3">{{this}}</div>
+                <div class='line-clamp-3'>{{this}}</div>
               {{/each}}
-              </td>
+            </td>
             <td class='px-6 py-4 text-sm text-gray-800'>{{icon}}</td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               <div class='flex items-center gap-3'>
-                <i
-                  class='{{computeIcon icon}}'
-                ></i>
+                <i class='{{computeIcon icon}}'></i>
               </div>
             </td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
@@ -164,8 +159,8 @@
 <script>
   function jenisKelasTable({ jenisKelas }) {
     return {
-      searchInput: '',
-      search: '',
+      searchInput: "",
+      search: "",
       pageNumber: 0,
       size: 5,
       jenisKelas,
@@ -175,7 +170,7 @@
       // FILTER DATA
       // ============================
       get filteredJenisKelas() {
-        const filtered = this.jenisKelas.filter(j =>
+        const filtered = this.jenisKelas.filter((j) =>
           `${j.nama_jenis_kelas}`
             .toLowerCase()
             .includes(this.search.toLowerCase())
@@ -186,8 +181,8 @@
         const start = this.pageNumber * this.size;
         const end = start + this.size;
 
-        // return numeric IDs agar cocok dibandingkan dengan {{id}} (number)
-        return filtered.slice(start, end).map(j => j.id);
+        // return nomor ID saja (numeric)
+        return filtered.slice(start, end).map((j) => j.id);
       },
 
       // ============================
@@ -221,26 +216,26 @@
       // ICON HANDLER (Font Awesome 6)
       // ============================
       mapIcon(icon) {
-        const raw = (icon || '').toString().trim();
-        if (!raw) return 'fa-solid fa-circle-question';
+        const raw = (icon || "").toString().trim();
+        if (!raw) return "fa-solid fa-circle-question";
 
         const v = raw;
-
         const hasFaPrefix =
-          /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) ||
-          v.split(/\s+/).some(s => /^fa-/i.test(s));
+          /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(
+            v
+          ) || v.split(/\s+/).some((s) => /^fa-/i.test(s));
 
         if (hasFaPrefix) {
-          // Jika hanya "fa-xxx" tanpa prefix lain
+          // jika hanya "fa-xxx" tanpa prefix lain
           if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) {
-            return 'fa-solid ' + v;
+            return "fa-solid " + v;
           }
           return v;
         }
 
-        // Jika input hanya 1 kata → otomatis diubah jadi fa-solid fa-{icon}
-        if (!v.includes(' ')) {
-          return 'fa-solid fa-' + v;
+        // jika input satu kata → otomatis "fa-solid fa-{icon}"
+        if (!v.includes(" ")) {
+          return "fa-solid fa-" + v;
         }
 
         return v;

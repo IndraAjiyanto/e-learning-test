@@ -3,22 +3,22 @@
   x-data="{
   // Form validation states
   formData: {
-    nama_jenis_kelas: { id: '', en: '', ja: '' },
+    nama_jenis_kelas: '',
     deskripsi: { id: '', en: '', ja: '' },
     icon: ''
   },
   formErrors: {
-    nama_jenis_kelas: { id: '', en: '', ja: '' },
+    nama_jenis_kelas: '',
     deskripsi: { id: '', en: '', ja: '' },
     icon: ''
   },
   formValid: {
-    nama_jenis_kelas: { id: false, en: false, ja: false },
+    nama_jenis_kelas: false,
     deskripsi: { id: false, en: false, ja: false },
     icon: true
   },
   formTouched: {
-    nama_jenis_kelas: { id: false, en: false, ja: false },
+    nama_jenis_kelas: false,
     deskripsi: { id: false, en: false, ja: false },
     icon: false
   },
@@ -48,14 +48,14 @@
     switch(field) {
       case 'nama_jenis_kelas':
         if (!value.trim()) {
-          this.formErrors.nama_jenis_kelas[lang] = 'Class type name is required';
-          this.formValid.nama_jenis_kelas[lang] = false;
+          this.formErrors.nama_jenis_kelas = 'Class type name is required';
+          this.formValid.nama_jenis_kelas = false;
         } else if (value.trim().length < 2) {
-          this.formErrors.nama_jenis_kelas[lang] = 'Class type name must be at least 2 characters';
-          this.formValid.nama_jenis_kelas[lang] = false;
+          this.formErrors.nama_jenis_kelas = 'Class type name must be at least 2 characters';
+          this.formValid.nama_jenis_kelas = false;
         } else {
-          this.formErrors.nama_jenis_kelas[lang] = '';
-          this.formValid.nama_jenis_kelas[lang] = true;
+          this.formErrors.nama_jenis_kelas = '';
+          this.formValid.nama_jenis_kelas = true;
         }
         break;
         
@@ -81,13 +81,12 @@
   },
 
   canSubmit() {
-    const namaValid = Object.values(this.formValid.nama_jenis_kelas).every(v => v);
     const deskripsiValid = Object.values(this.formValid.deskripsi).every(v => v);
-    return namaValid && deskripsiValid && this.formValid.icon;
+    return this.formValid.nama_jenis_kelas && deskripsiValid && this.formValid.icon;
   },
 
   hasFormErrors() {
-    return Object.values(this.formErrors.nama_jenis_kelas).some(e => e !== '') ||
+    return this.formErrors.nama_jenis_kelas !== '' ||
            Object.values(this.formErrors.deskripsi).some(e => e !== '') ||
            this.formErrors.icon !== '';
   }
@@ -104,122 +103,51 @@
       @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
     >
 
-      <!-- Class Type Name per Bahasa -->
-      <div class='space-y-4'>
-        <label class='block text-sm font-semibold text-gray-700 mb-1'>Class Type
-          Name</label>
-        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
-          <!-- ID -->
-          <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>ID</label>
-            <input
-              x-model='formData.nama_jenis_kelas.id'
-              @input='validateField("nama_jenis_kelas", $event.target.value, "id")'
-              type='text'
-              name='nama_jenis_kelas[id]'
-              required
-              maxlength='255'
-              :class="formErrors.nama_jenis_kelas.id ? 'border-red-500 focus:ring-red-500' : (formValid.nama_jenis_kelas.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-              placeholder='Nama Jenis Kelas (ID)'
-            />
-            <template x-if='formErrors.nama_jenis_kelas.id'>
-              <div
-                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-              >
-                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p
-                  class='text-xs text-red-700'
-                  x-text='formErrors.nama_jenis_kelas.id'
-                ></p>
-              </div>
-            </template>
-            <template
-              x-if='formTouched.nama_jenis_kelas.id && formValid.nama_jenis_kelas.id && !formErrors.nama_jenis_kelas.id'
-            >
-              <div
-                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-              >
-                <i class='fas fa-check-circle text-green-500'></i>
-                <p class='text-xs text-green-700'>Valid</p>
-              </div>
-            </template>
-          </div>
+      <!-- Class Type Name -->
+      <div class='space-y-2'>
+        <label
+          for='nama_jenis_kelas'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Class Type Name
+        </label>
+        <input
+          x-model='formData.nama_jenis_kelas'
+          @input='validateField("nama_jenis_kelas", $event.target.value)'
+          type='text'
+          id='nama_jenis_kelas'
+          name='nama_jenis_kelas'
+          required
+          maxlength='255'
+          :class="formErrors.nama_jenis_kelas ? 'border-red-500 focus:ring-red-500' : (formValid.nama_jenis_kelas ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+          placeholder='Enter class type name'
+        />
 
-          <!-- EN -->
-          <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>EN</label>
-            <input
-              x-model='formData.nama_jenis_kelas.en'
-              @input='validateField("nama_jenis_kelas", $event.target.value, "en")'
-              type='text'
-              name='nama_jenis_kelas[en]'
-              required
-              maxlength='255'
-              :class="formErrors.nama_jenis_kelas.en ? 'border-red-500 focus:ring-red-500' : (formValid.nama_jenis_kelas.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-              placeholder='Class Type Name (EN)'
-            />
-            <template x-if='formErrors.nama_jenis_kelas.en'>
-              <div
-                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-              >
-                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p
-                  class='text-xs text-red-700'
-                  x-text='formErrors.nama_jenis_kelas.en'
-                ></p>
-              </div>
-            </template>
-            <template
-              x-if='formTouched.nama_jenis_kelas.en && formValid.nama_jenis_kelas.en && !formErrors.nama_jenis_kelas.en'
-            >
-              <div
-                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-              >
-                <i class='fas fa-check-circle text-green-500'></i>
-                <p class='text-xs text-green-700'>Valid</p>
-              </div>
-            </template>
+        <!-- Error Message -->
+        <template x-if='formErrors.nama_jenis_kelas'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p
+              class='text-xs text-red-700'
+              x-text='formErrors.nama_jenis_kelas'
+            ></p>
           </div>
+        </template>
 
-          <!-- JA -->
-          <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>JA</label>
-            <input
-              x-model='formData.nama_jenis_kelas.ja'
-              @input='validateField("nama_jenis_kelas", $event.target.value, "ja")'
-              type='text'
-              name='nama_jenis_kelas[ja]'
-              required
-              maxlength='255'
-              :class="formErrors.nama_jenis_kelas.ja ? 'border-red-500 focus:ring-red-500' : (formValid.nama_jenis_kelas.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-              placeholder='クラス種別名 (JA)'
-            />
-            <template x-if='formErrors.nama_jenis_kelas.ja'>
-              <div
-                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-              >
-                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p
-                  class='text-xs text-red-700'
-                  x-text='formErrors.nama_jenis_kelas.ja'
-                ></p>
-              </div>
-            </template>
-            <template
-              x-if='formTouched.nama_jenis_kelas.ja && formValid.nama_jenis_kelas.ja && !formErrors.nama_jenis_kelas.ja'
-            >
-              <div
-                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-              >
-                <i class='fas fa-check-circle text-green-500'></i>
-                <p class='text-xs text-green-700'>Valid</p>
-              </div>
-            </template>
+        <!-- Success Message -->
+        <template
+          x-if='formTouched.nama_jenis_kelas && formValid.nama_jenis_kelas && !formErrors.nama_jenis_kelas'
+        >
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Valid</p>
           </div>
-        </div>
+        </template>
       </div>
 
       <!-- Icon -->
@@ -353,9 +281,9 @@
             </template>
           </div>
 
-          <!-- JA -->
+          <!-- JP -->
           <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
               x-model='formData.deskripsi.ja'
               @input='validateField("deskripsi", $event.target.value, "ja")'

@@ -236,7 +236,9 @@
 
       <!-- Judul per Bahasa -->
       <div class='space-y-4'>
-        <label class='block text-sm font-semibold text-gray-700 mb-1'>Title</label>
+        <label
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Title</label>
         <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
           <!-- ID -->
           <div class='space-y-2'>
@@ -254,13 +256,20 @@
               x-init='$el.value = formData.judul.id'
             />
             <template x-if='formErrors.judul.id'>
-              <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p class='text-xs text-red-700' x-text='formErrors.judul.id'></p>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.judul.id'
+                ></p>
               </div>
             </template>
             <template x-if='formValid.judul.id && !formErrors.judul.id'>
-              <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid</p>
               </div>
@@ -283,22 +292,29 @@
               x-init='$el.value = formData.judul.en'
             />
             <template x-if='formErrors.judul.en'>
-              <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p class='text-xs text-red-700' x-text='formErrors.judul.en'></p>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.judul.en'
+                ></p>
               </div>
             </template>
             <template x-if='formValid.judul.en && !formErrors.judul.en'>
-              <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid</p>
               </div>
             </template>
           </div>
 
-          <!-- JA -->
+          <!-- JP -->
           <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
             <input
               x-model='formData.judul.ja'
               @input='validateField("judul", "ja", $event.target.value)'
@@ -312,13 +328,20 @@
               x-init='$el.value = formData.judul.ja'
             />
             <template x-if='formErrors.judul.ja'>
-              <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p class='text-xs text-red-700' x-text='formErrors.judul.ja'></p>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.judul.ja'
+                ></p>
               </div>
             </template>
             <template x-if='formValid.judul.ja && !formErrors.judul.ja'>
-              <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid</p>
               </div>
@@ -329,7 +352,9 @@
 
       <!-- Text per Bahasa -->
       <div class='space-y-4'>
-        <label class='block text-sm font-semibold text-gray-700 mb-1'>Text</label>
+        <label
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Text</label>
         <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
           <!-- ID -->
           <div class='space-y-2'>
@@ -346,13 +371,17 @@
               x-init='$el.value = formData.text.id'
             ></textarea>
             <template x-if='formErrors.text.id'>
-              <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p class='text-xs text-red-700' x-text='formErrors.text.id'></p>
               </div>
             </template>
             <template x-if='formValid.text.id && !formErrors.text.id'>
-              <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid</p>
               </div>
@@ -374,22 +403,26 @@
               x-init='$el.value = formData.text.en'
             ></textarea>
             <template x-if='formErrors.text.en'>
-              <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p class='text-xs text-red-700' x-text='formErrors.text.en'></p>
               </div>
             </template>
             <template x-if='formValid.text.en && !formErrors.text.en'>
-              <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid</p>
               </div>
             </template>
           </div>
 
-          <!-- JA -->
+          <!-- JP -->
           <div class='space-y-2'>
-            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
               x-model='formData.text.ja'
               @input='validateField("text", "ja", $event.target.value)'
@@ -402,13 +435,17 @@
               x-init='$el.value = formData.text.ja'
             ></textarea>
             <template x-if='formErrors.text.ja'>
-              <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p class='text-xs text-red-700' x-text='formErrors.text.ja'></p>
               </div>
             </template>
             <template x-if='formValid.text.ja && !formErrors.text.ja'>
-              <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid</p>
               </div>

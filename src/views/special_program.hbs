@@ -12,7 +12,7 @@
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
         {{#each kategori.jenis_kelas}}
-        { value: '{{getByLang this.nama_jenis_kelas ../lang}}', icon: '{{computeIcon this.icon}}', title: '{{getByLang this.nama_jenis_kelas ../lang}}', desc: '{{getByLang this.deskripsi ../lang}}' },
+        { value: '{{this.nama_jenis_kelas }}', icon: '{{computeIcon this.icon}}', title: '{{ this.nama_jenis_kelas }}', desc: '{{getByLang this.deskripsi ../lang}}' },
         {{/each}}
       ],
       
@@ -140,7 +140,7 @@
           <div class='w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4'>
             <i class='{{computeIcon this.icon}} text-white text-xl'></i>
           </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>{{getByLang this.nama_jenis_kelas ../lang}}</h3>
+          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>{{this.nama_jenis_kelas}}</h3>
           <p class='text-gray-600 text-sm font-inter'>{{getByLang this.deskripsi ../lang}}</p>
         </div>
         {{/each}}
@@ -507,7 +507,7 @@
       <div
         class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
         data-kategori='{{kategori.nama_kategori}}'
-        data-category='{{getByLang jenis_kelas.nama_jenis_kelas ../lang}}'
+        data-category='{{ jenis_kelas.nama_jenis_kelas }}'
         data-nama='{{nama_kelas}}'
         data-deskripsi='{{deskripsi}}'
         data-location='{{metode}}'
@@ -533,7 +533,7 @@
             <span
               class='badge h-fit bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
             >
-              {{getByLang jenis_kelas.nama_jenis_kelas ../lang}}
+              {{ jenis_kelas.nama_jenis_kelas }}
             </span>
 
           </div>

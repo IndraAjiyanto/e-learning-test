@@ -83,7 +83,7 @@ async function bootstrap() {
 
 await jenisKelasRepository.save([
   {
-    nama_jenis_kelas: ['Web Development', 'Web Development', 'ウェブ開発'],
+    nama_jenis_kelas: 'Web Development',
     icon: 'web_development.png',
     deskripsi: ['development', 'development', 'development'], 
   },

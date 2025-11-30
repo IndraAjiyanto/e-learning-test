@@ -17,8 +17,8 @@ export class JenisKelas {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb',{nullable: true} )
-  nama_jenis_kelas: string[];
+  @Column({nullable: true})
+  nama_jenis_kelas: string;
 
   @Column()
   icon: string;

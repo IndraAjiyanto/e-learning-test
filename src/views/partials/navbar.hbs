@@ -740,7 +740,7 @@
                 :class="currentLang === 'id' ? 'fi fi-id' : currentLang === 'en' ? 'fi fi-gb' : 'fi fi-jp'"
                 class='text-lg'
               ></span>
-              <span x-text='currentLang'></span>
+              <span x-text='currentLang === "id" ? "ID" : currentLang === "en" ? "EN" : "JP"'></span>
               <svg
                 fill='currentColor'
                 viewBox='0 0 20 20'
@@ -805,7 +805,7 @@
                   class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
                 >
                   <span class='fi fi-jp'></span>
-                  <span class='text-sm font-medium'>JA</span>
+                  <span class='text-sm font-medium'>JP</span>
                 </button>
               </form>
             </div>
