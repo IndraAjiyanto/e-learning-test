@@ -7,14 +7,11 @@ export class Superiority {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    title: string;
+    @Column('jsonb', { nullable: true })
+    title: string[];
 
-    @Column()
-    description: string;
-
-    @OneToOne(() => Translation, (translation) => translation.superiority)
-    translation: Translation;
+    @Column('jsonb', { nullable: true })
+    description: string[];
 
 
   @CreateDateColumn()

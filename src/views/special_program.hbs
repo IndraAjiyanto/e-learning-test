@@ -710,8 +710,8 @@
               <div>
                 <h3
                   class='font-bold text-lg text-gray-900 mb-2 font-montserrat'
-                >{{this.title}}</h3>
-                <p class='text-gray-600 font-inter'>{{this.description}}</p>
+                >{{getByLang this.title ../lang}}</h3>
+                <p class='text-gray-600 font-inter'>{{getByLang this.description ../lang}}</p>
               </div>
             </div>
             {{/each}}
