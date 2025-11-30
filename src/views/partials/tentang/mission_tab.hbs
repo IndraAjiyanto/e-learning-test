@@ -57,7 +57,7 @@
           class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
         >Our Mission</h3>
         <ul class='space-y-3 sm:space-y-4'>
-          {{#if misi.[0]}}
+          {{#if misi.length}}
             {{#each misi}}
               <li class='flex items-start space-x-3'>
                 <i
@@ -66,8 +66,8 @@
                 <p
                   class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                 >
-                  <strong>{{content}}:</strong>
-                  {{isi}}
+                  <strong>{{getByLang content ../lang}}:</strong>
+                  {{getByLang isi ../lang}}
                 </p>
               </li>
             {{/each}}

@@ -96,14 +96,6 @@ export class Translation {
         @JoinColumn()
           pertanyaan_kelas: PertanyaanKelas;
 
-                @OneToOne(() => Misi, (misi) => misi.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          misi: Misi;
-
                 @OneToOne(() => Kategori, (kategori) => kategori.translation,{
           cascade: true,
           nullable: true,

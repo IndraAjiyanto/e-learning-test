@@ -1,12 +1,12 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsArray, IsNumber, IsString } from "class-validator";
 
 export class CreateMisiDto {
-  @IsString()
-  content: string;
+  @IsArray()
+  content: string[];
 
   @IsNumber()
   misi_ke: number
 
-  @IsString()
-  isi: string;
+  @IsArray()
+  isi: string[];
 }

@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Translation } from './translation.entity';
 
 @Entity()
 export class Misi {
@@ -16,14 +15,11 @@ export class Misi {
   @Column()
   misi_ke: number
 
-  @Column()
-  content: string;
+  @Column('jsonb',{nullable: true})
+  content: string[];
 
-  @Column()
-  isi: string;
-
-  @OneToOne(() => Translation, (translation) => translation.misi)
-  translation: Translation;
+  @Column('jsonb',{nullable: true})
+  isi: string[];
 
   @CreateDateColumn()
   createdAt: Date;
