@@ -9,14 +9,7 @@ import { PertanyaanUmum } from "./pertanyaan_umum.entity";
 import { Visi } from "./visi.entity";
 import { Value } from "./value.entity";
 import { Superiority } from "./superiority.entity";
-import { Info } from "./info.entity";
-import { PertanyaanKelas } from "./pertanyaan_kelas.entity";
-import { Misi } from "./misi.entity";
 import { Kategori } from "./kategori.entity";
-import { JenisKelas } from "./jenis_kelas.entity";
-import { FlowCategory } from "./flow_category.entity";
-import { Experience } from "./experience.entity";
-import { Commitment } from "./commitment.entity";
 
 @Entity()
 export class Translation {
@@ -86,15 +79,6 @@ export class Translation {
         })
         @JoinColumn()
           superiority: Superiority;
-
-
-                @OneToOne(() => PertanyaanKelas, (pertanyaan_kelas) => pertanyaan_kelas.translation,{
-          cascade: true,
-          nullable: true,
-          onDelete: 'CASCADE',
-        })
-        @JoinColumn()
-          pertanyaan_kelas: PertanyaanKelas;
 
                 @OneToOne(() => Kategori, (kategori) => kategori.translation,{
           cascade: true,

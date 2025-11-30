@@ -1,13 +1,13 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreatePertanyaanKelaDto {
-  @IsString()
+  @IsArray()
   @IsNotEmpty()
-  pertanyaan: string;
+  pertanyaan: string[];
 
-  @IsString()
+  @IsArray()
   @IsNotEmpty()
-  jawaban: string;
+  jawaban: string[];
 
   @IsNumber()
   @IsNotEmpty()

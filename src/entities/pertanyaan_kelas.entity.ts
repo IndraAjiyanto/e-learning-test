@@ -16,20 +16,17 @@ export class PertanyaanKelas {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  pertanyaan: string;
+  @Column('jsonb',{nullable: true})
+  pertanyaan: string[];
 
-  @Column()
-  jawaban: string;
+  @Column('jsonb',{nullable: true})
+  jawaban: string[];
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @OneToOne(() => Translation, (translation) => translation.pertanyaan_kelas)
-  translation: Translation;
 
   @ManyToOne(() => Kelas, (kelas) => kelas.pertanyaan_kelas, {
     onDelete: 'CASCADE',

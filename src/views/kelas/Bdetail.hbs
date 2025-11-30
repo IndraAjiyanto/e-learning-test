@@ -418,9 +418,8 @@
                     class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
                     @click='openFaq = openFaq === 1 ? null : 1'
                   >
-                    <span class='font-montserrat font-semibold text-gray-800'>Do
-                      I
-                      {{this.pertanyaan}}</span>
+                    <span class='font-montserrat font-semibold text-gray-800'>
+                      {{getByLang this.pertanyaan ../lang}}</span>
                     <i
                       class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
                       :class="{'rotate-180': openFaq === 1}"
@@ -431,7 +430,7 @@
                     x-show='openFaq === 1'
                     x-transition
                   >
-                    {{this.jawaban}}
+                    {{getByLang this.jawaban ../lang}}
                   </div>
                 </div>
               {{/each}}
