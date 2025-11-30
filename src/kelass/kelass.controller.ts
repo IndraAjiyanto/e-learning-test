@@ -255,7 +255,7 @@ export class KelassController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kelas = await this.kelassService.findOne(kelasId);
+    const kelas = await this.kelassService.findOneKelasUser(kelasId);
     const check_user = await this.kelassService.checkUserInKelas(
       kelas.id,
       req.user!.id,
@@ -270,7 +270,7 @@ export class KelassController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kelas = await this.kelassService.findOne(id);
+    const kelas = await this.kelassService.findOneKelasUser(id);
     let isUserInKelas = false;
     if (!kelas) {
       req.flash('info', 'not found class');
@@ -334,12 +334,6 @@ export class KelassController {
   ) {
     try {
       const kelas = await this.kelassService.findOne(kelasId);
-      if(updateKelassDto.hari){
-        updateKelassDto.bulan = 0
-      }
-      if(updateKelassDto.bulan){
-        updateKelassDto.hari = 0
-      }
       if (gambar) {
         // delete previous image in cloud (if exists)
         await this.usersService.getPublicIdFromUrl(kelas.gambar);

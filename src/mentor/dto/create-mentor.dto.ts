@@ -4,8 +4,8 @@ export class CreateMentorDto {
   @IsString()
   nama: string;
 
-  @IsString()
-  posisi: string;
+  @IsArray()
+  posisi: string[];
 
   @IsString()
   profile: string;
@@ -13,7 +13,7 @@ export class CreateMentorDto {
   @IsString()
   ttd: string;
 
-  @IsString()
+  @IsArray()
   teknologi: string[];
 
   @IsString()
@@ -27,8 +27,8 @@ export class CreateMentorDto {
   @IsString()
   github: string;
 
-  @IsString()
-  deskripsi: string;
+  @IsArray()
+  deskripsi: string[];
 
   @IsInt()
   kelasId: number;

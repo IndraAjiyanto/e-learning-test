@@ -19,8 +19,8 @@ export class Mentor {
   @Column()
   nama: string;
 
-  @Column()
-  posisi: string;
+  @Column('jsonb', { nullable: true })
+  posisi: string[];
 
   @Column()
   linkedin: string;
@@ -42,8 +42,8 @@ export class Mentor {
   @Column()
   profile: string;
 
-  @Column()
-  deskripsi: string;
+  @Column('jsonb', { nullable: true })
+  deskripsi: string[];
 
   @Column()
   ttd: string;

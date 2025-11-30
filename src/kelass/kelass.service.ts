@@ -801,17 +801,21 @@ export class KelassService {
     return await this.teknologiRepository.find();
   }
 
+  async findOneKelasUser(kelasId: number) {
+    const kelas = await this.kelasRepository.findOne({
+      where: { id: kelasId, launch: true },
+      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'alur_kelas', 'benefit_kelas', 'cicilan', 'pertanyaan_kelas' ],
+    });
+    if(!kelas){
+      throw new NotFoundException('Program not found');
+    }
+    return kelas;
+  }
+
   async findOneKelasAdmin(kelasId: number) {
     return await this.kelasRepository.findOne({
       where: { id: kelasId },
       relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'mentoring', 'mentoring.user' ],
-    });
-  }
-
-  async findOneKelasUser(kelasId: number) {
-    return await this.kelasRepository.findOne({
-      where: { id: kelasId, launch: true },
-      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi' ],
     });
   }
 

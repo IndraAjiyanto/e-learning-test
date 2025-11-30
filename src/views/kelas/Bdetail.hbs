@@ -208,7 +208,7 @@
                       >Month</p>
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{kelas.bulan.bulan}} Months</h4>
+                      >{{kelas.bulan}} Months</h4>
                     </div>
                   </div>
                 </div>
@@ -508,7 +508,7 @@
                       <h4
                         class='font-montserrat font-bold text-gray-800 text-lg'
                       >{{nama}}</h4>
-                      <p class='font-inter text-gray-600 mb-2'>{{posisi}}</p>
+                      <p class='font-inter text-gray-600 mb-2'>{{getByLang posisi ../lang}}</p>
                       <div
                         class='flex justify-center sm:justify-start gap-2 mb-3 flex-wrap'
                       >
@@ -520,7 +520,7 @@
 
                       </div>
                       <p class='text-gray-700 text-sm'>
-                        {{deskripsi}}
+                        {{getByLang deskripsi ../lang}}
                       </p>
                     </div>
                   </div>
