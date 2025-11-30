@@ -30,7 +30,7 @@ export class Team {
   @Column({nullable: true})
   instagram: string;
 
-  @Column({nullable: true})
+  @Column('jsonb',{nullable: true})
   deskripsi: string[];
 
   @CreateDateColumn()

@@ -35,7 +35,18 @@ export class CreateKategorisDto {
 
   @IsOptional()
   @IsArray()
-  info?: string[];
+  @IsString({ each: true })
+  info_id?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  info_en?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  info_ja?: string[];
 
   @IsEnum(['Special Program', 'Program'])
   type: 'Special Program' | 'Program';

@@ -138,7 +138,7 @@ import path from 'path';
     BenefitCategoryModule,
     FlowCategoryModule,
     FaqModule,
-    SuperiorityModule,
+    SuperiorityModule
   ],
   controllers: [AppController],
   providers: [AppService],

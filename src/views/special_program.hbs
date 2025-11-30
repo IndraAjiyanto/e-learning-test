@@ -84,10 +84,10 @@
         {{kategori.nama_kategori}}
       </h1>
       <p class='text-xl md:text-2xl text-gray-200 mb-4 font-inter'>
-        {{kategori.text}}
+        {{getByLang kategori.text lang}}
       </p>
       <p class='text-base text-gray-300 max-w-3xl mx-auto font-inter leading-relaxed'>
-        {{kategori.deskripsi}}
+        {{getByLang kategori.deskripsi lang}}
       </p>
     </div>
   </div>

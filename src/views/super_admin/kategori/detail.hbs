@@ -128,7 +128,9 @@
           {{#if kategori.info}}
             <div>
               <span class='font-medium text-gray-600'>Info:</span>
-              <span class='text-gray-800 ml-2'>{{kategori.info}}</span>
+              <span class='text-gray-800 ml-2'>{{kategori.info.id}}</span>
+              <span class='text-gray-800 ml-2'>{{kategori.info.en}}</span>
+              <span class='text-gray-800 ml-2'>{{kategori.info.ja}}</span>
             </div>
           {{/if}}
           <div>
@@ -138,7 +140,9 @@
           {{#if kategori.text}}
             <div>
               <span class='font-medium text-gray-600'>Text:</span>
-              <span class='text-gray-800 ml-2'>{{kategori.text}}</span>
+              <span class='text-gray-800 ml-2'>{{kategori.text.id}}</span>
+              <span class='text-gray-800 ml-2'>{{kategori.text.en}}</span>
+              <span class='text-gray-800 ml-2'>{{kategori.text.ja}}</span>
             </div>
           {{/if}}
           {{#if kategori.contact}}
@@ -150,7 +154,9 @@
           {{#if kategori.for}}
             <div>
               <span class='font-medium text-gray-600'>For:</span>
-              <span class='text-gray-800 ml-2'>{{kategori.for}}</span>
+              <span class='text-gray-800 ml-2'>{{kategori.for.id}}</span>
+              <span class='text-gray-800 ml-2'>{{kategori.for.en}}</span>
+              <span class='text-gray-800 ml-2'>{{kategori.for.ja}}</span>
             </div>
           {{/if}}
           {{#if kategori.jenis_kelas}}
@@ -166,7 +172,9 @@
           {{#if kategori.deskripsi}}
             <div class='md:col-span-2'>
               <span class='font-medium text-gray-600'>Description:</span>
-              <p class='text-gray-800 mt-1'>{{kategori.deskripsi}}</p>
+              <p class='text-gray-800 mt-1'>{{kategori.deskripsi.id}}</p>
+              <p class='text-gray-800 mt-1'>{{kategori.deskripsi.en}}</p>
+              <p class='text-gray-800 mt-1'>{{kategori.deskripsi.ja}}</p>
             </div>
           {{/if}}
 

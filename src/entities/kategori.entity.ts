@@ -43,7 +43,13 @@ export class Kategori {
   for: string[];
 
   @Column({ nullable: true, type: 'jsonb' })
-  info: string[];
+  info_id: string[];
+
+  @Column({ nullable: true, type: 'jsonb' })
+  info_en: string[];
+  
+  @Column({ nullable: true, type: 'jsonb' })
+  info_ja: string[];
 
   @Column({
     type: 'enum',
