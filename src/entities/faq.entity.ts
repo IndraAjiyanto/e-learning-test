@@ -1,5 +1,4 @@
 import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Translation } from "./translation.entity";
 
 @Entity()
 export class Faq {

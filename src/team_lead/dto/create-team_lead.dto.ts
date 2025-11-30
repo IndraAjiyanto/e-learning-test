@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsString } from 'class-validator';
 
 export class CreateTeamLeadDto {
   @IsString()
@@ -10,8 +10,8 @@ export class CreateTeamLeadDto {
   @IsString()
   posisi: string;
 
-  @IsString()
-  deskripsi: string;
+  @IsArray()
+  deskripsi: string[];
 
   @IsString()
   instagram: string;

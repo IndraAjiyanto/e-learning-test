@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Translation } from './translation.entity';
 
 @Entity('team_leads')
 export class TeamLead {
@@ -22,17 +21,14 @@ export class TeamLead {
   @Column()
   posisi: string;
 
-  @Column()
-  deskripsi: string;
+  @Column('jsonb',{nullable: true})
+  deskripsi: string[];
 
   @Column()
   instagram: string;
 
   @Column()
   linkedin: string;
-
-  @OneToOne(() => Translation, (translation) => translation.team_lead)
-  translation: Translation;
 
   @CreateDateColumn()
   createdAt: Date;

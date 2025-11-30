@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Translation } from './translation.entity';
 
 @Entity()
 export class Award {

@@ -5,15 +5,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Tentang } from 'src/entities/tentang.entity';
 import { Repository } from 'typeorm';
 import { v2 as cloudinary } from 'cloudinary';
-import { Translation } from 'src/entities/translation.entity';
 
 @Injectable()
 export class TentangService {
   constructor(
     @InjectRepository(Tentang)
     private tentangRepository: Repository<Tentang>,
-    @InjectRepository(Translation)
-    private translationRepository: Repository<Translation>,
   ) {}
 
   async create(createTentangDto: CreateTentangDto) {

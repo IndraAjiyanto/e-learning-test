@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
 import { Kategori } from './kategori.entity';
-import { Translation } from './translation.entity';
 
 @Entity()
 export class JenisKelas {

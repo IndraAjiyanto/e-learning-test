@@ -26,7 +26,6 @@ import { Background } from 'src/entities/background.entity';
 import { Paragraf } from 'src/entities/paragraf.entity';
 import { Faq } from 'src/entities/faq.entity';
 import { TranslationModule } from 'src/translation/translation.module';
-import { Translation } from 'src/entities/translation.entity';
 
 @Module({
   imports: [
@@ -54,7 +53,6 @@ import { Translation } from 'src/entities/translation.entity';
       Background,
       Paragraf,
       Faq,
-      Translation,
     ]),
     TranslationModule, // Import TranslationModule
   ],

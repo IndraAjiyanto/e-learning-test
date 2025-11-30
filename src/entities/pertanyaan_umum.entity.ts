@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Kategori } from './kategori.entity';
-import { Translation } from './translation.entity';
 
 @Entity()
 export class PertanyaanUmum {

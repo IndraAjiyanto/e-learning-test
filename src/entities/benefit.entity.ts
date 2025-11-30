@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Translation } from './translation.entity';
 
 export type No = 1 | 2 | 3;
 
