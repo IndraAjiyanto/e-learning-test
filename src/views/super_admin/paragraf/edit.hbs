@@ -3,40 +3,54 @@
   x-data="{
     // Form validation states
     formData: {
-      paragraf: '{{paragraf.paragraf}}'
+      paragraf: {
+        id: `{{paragraf.paragraf.id}}`,
+        en: `{{paragraf.paragraf.en}}`,
+        ja: `{{paragraf.paragraf.ja}}`
+      }
     },
     formErrors: {
-      paragraf: ''
+      paragraf: { id: '', en: '', ja: '' }
     },
     formValid: {
-      paragraf: true
+      paragraf: { id: true, en: true, ja: true }
+    },
+    formTouched: {
+      paragraf: { id: false, en: false, ja: false }
     },
 
-    validateField(field, value) {
-      this.formData[field] = value;
+    validateField(field, value, lang = null) {
+      if (lang) {
+        this.formData[field][lang] = value;
+        this.formTouched[field][lang] = true;
+      } else {
+        this.formData[field] = value;
+        this.formTouched[field] = true;
+      }
       
       switch(field) {
         case 'paragraf':
           if (!value.trim()) {
-            this.formErrors.paragraf = 'Paragraf content is required';
-            this.formValid.paragraf = false;
+            this.formErrors.paragraf[lang] = 'Paragraf content is required';
+            this.formValid.paragraf[lang] = false;
           } else if (value.trim().length < 10) {
-            this.formErrors.paragraf = 'Paragraf content must be at least 10 characters';
-            this.formValid.paragraf = false;
+            this.formErrors.paragraf[lang] = 'Paragraf content must be at least 10 characters';
+            this.formValid.paragraf[lang] = false;
           } else {
-            this.formErrors.paragraf = '';
-            this.formValid.paragraf = true;
+            this.formErrors.paragraf[lang] = '';
+            this.formValid.paragraf[lang] = true;
           }
           break;
       }
     },
 
     canSubmit() {
-      return this.formValid.paragraf;
+      const paragrafValid = Object.values(this.formValid.paragraf).every(v => v);
+      return paragrafValid;
     },
 
     hasFormErrors() {
-      return Object.values(this.formErrors).some(error => error !== '');
+      return Object.values(this.formErrors.paragraf).some(e => e !== '');
     }
   }"
 >
@@ -50,45 +64,125 @@
       @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
     >
 
-      <!-- Paragraf Content -->
-      <div class='space-y-2'>
+      <!-- Paragraf Content per Bahasa -->
+      <div class='space-y-4'>
         <label
-          for='paragraf'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >
           Paragraf
         </label>
-        <textarea
-          x-model='formData.paragraf'
-          @input='validateField("paragraf", $event.target.value)'
-          id='paragraf'
-          name='paragraf'
-          rows='5'
-          required
-          :class="formErrors.paragraf ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.paragraf ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
-          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-          placeholder='Enter paragraf content'
-        ></textarea>
-
-        <!-- Error Message -->
-        <template x-if='formErrors.paragraf'>
-          <div
-            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-          >
-            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-            <p class='text-xs text-red-700' x-text='formErrors.paragraf'></p>
+        <div class='grid grid-cols-1 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <textarea
+              x-model='formData.paragraf.id'
+              @input='validateField("paragraf", $event.target.value, "id")'
+              name='paragraf[id]'
+              rows='5'
+              required
+              maxlength='2000'
+              :class="formErrors.paragraf.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : (formValid.paragraf.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Konten paragraf (ID)'
+            ></textarea>
+            <template x-if='formErrors.paragraf.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.paragraf.id'
+                ></p>
+              </div>
+            </template>
+            <template
+              x-if='formTouched.paragraf.id && formValid.paragraf.id && !formErrors.paragraf.id'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
 
-        <!-- Success Message -->
-        <template x-if='formValid.paragraf && !formErrors.paragraf'>
-          <div
-            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-          >
-            <i class='fas fa-check-circle text-green-500'></i>
-            <p class='text-xs text-green-700'>Valid paragraf</p>
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <textarea
+              x-model='formData.paragraf.en'
+              @input='validateField("paragraf", $event.target.value, "en")'
+              name='paragraf[en]'
+              rows='5'
+              required
+              maxlength='2000'
+              :class="formErrors.paragraf.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : (formValid.paragraf.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Paragraph content (EN)'
+            ></textarea>
+            <template x-if='formErrors.paragraf.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.paragraf.en'
+                ></p>
+              </div>
+            </template>
+            <template
+              x-if='formTouched.paragraf.en && formValid.paragraf.en && !formErrors.paragraf.en'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
           </div>
-        </template>
+
+          <!-- JA -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <textarea
+              x-model='formData.paragraf.ja'
+              @input='validateField("paragraf", $event.target.value, "ja")'
+              name='paragraf[ja]'
+              rows='5'
+              required
+              maxlength='2000'
+              :class="formErrors.paragraf.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : (formValid.paragraf.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='段落コンテンツ (JA)'
+            ></textarea>
+            <template x-if='formErrors.paragraf.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.paragraf.ja'
+                ></p>
+              </div>
+            </template>
+            <template
+              x-if='formTouched.paragraf.ja && formValid.paragraf.ja && !formErrors.paragraf.ja'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
       </div>
 
       <!-- Buttons -->

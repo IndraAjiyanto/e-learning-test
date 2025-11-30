@@ -11,8 +11,8 @@ export class Paragraf {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  paragraf: string;
+  @Column('jsonb', { nullable: true })
+  paragraf: string[];
 
   @Column()
   p_ke: number;

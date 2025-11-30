@@ -35,7 +35,6 @@ export class ParagrafController {
       req.flash('success', 'paragraph succesfuly create');
       res.redirect('/paragraf');
     } catch (error) {
-      console.error(error);
       req.flash('error', error.message || 'Failed to create paragraph');
       res.redirect('/paragraf');
     }
