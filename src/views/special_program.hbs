@@ -764,7 +764,7 @@
           faqs: [
             {{#if kategori.pertanyaan_umum}}
               {{#each kategori.pertanyaan_umum}}
-                { question: `{{pertanyaan}}`, answer: `{{jawaban}}` },
+                { question: `{{getByLang pertanyaan ../lang}}`, answer: `{{getByLang jawaban ../lang}}` },
               {{/each}}
             {{else}}
               { question: 'How long is the bootcamp program?', answer: 'Our bootcamp program typically runs for 4 months with intensive weekend classes. You\'ll learn through hands-on projects and mentorship from industry experts.' },

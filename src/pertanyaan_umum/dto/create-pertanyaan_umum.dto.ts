@@ -1,11 +1,11 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, IsArray } from 'class-validator';
 
 export class CreatePertanyaanUmumDto {
-  @IsString()
-  pertanyaan: string;
+  @IsArray()
+  pertanyaan: string[];
 
-  @IsString()
-  jawaban: string;
+  @IsArray()
+  jawaban: string[];
 
   @IsNumber()
   kategoriId: number;

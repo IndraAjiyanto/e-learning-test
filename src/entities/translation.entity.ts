@@ -1,7 +1,4 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Header } from "./header.entity";
-import { Tentang } from "./tentang.entity";
-import { Alumni } from "./alumni.entity";
 import { Team } from "./team.entity";
 import { Story } from "./story.entity";
 import { TeamLead } from "./team_lead.entity";
@@ -45,16 +42,6 @@ export class Translation {
       })
       @JoinColumn()
         team_lead: TeamLead;
-        
-        @OneToOne(() => PertanyaanUmum, (pertanyaan_umum) => pertanyaan_umum.translation,{
-        cascade: true,
-        nullable: true,
-        onDelete: 'CASCADE',
-      })
-      @JoinColumn()
-        pertanyaan_umum: PertanyaanUmum;
-        
-
 
                 @OneToOne(() => Visi, (visi) => visi.translation,{
           cascade: true,
