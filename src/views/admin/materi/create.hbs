@@ -1,4 +1,4 @@
-{{#if (roles jenis_file 'pdf')}}
+{{#if (eq jenis_file 'pdf')}}
   <div class='py-10'>
     <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
       <h2 class='text-2xl font-bold mb-6 text-gray-900'>Add PDF Material</h2>
@@ -170,7 +170,7 @@
     </div>
   </div>
 
-{{else if (roles jenis_file 'ppt')}}
+{{else if (eq jenis_file 'ppt')}}
   <div class='py-10'>
     <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
       <h2 class='text-2xl font-bold mb-6 text-gray-900'>Add PPT Material</h2>
@@ -355,7 +355,7 @@
     </div>
   </div>
 
-{{else if (roles jenis_file 'video')}}
+{{else if (eq jenis_file 'video')}}
   <div class='py-10'>
     <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
       <h2 class='text-2xl font-bold mb-6 text-gray-900'>Add Video Material</h2>
@@ -379,13 +379,15 @@
             return;
           }
           
-          // Validasi URL YouTube
-          const youtubePattern = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
-          if (!youtubePattern.test(value)) {
-            this.errorMessage = 'Please enter a valid YouTube URL';
-            this.isValid = false;
-            return;
-          }
+          // Validasi URL
+const urlPattern = /^(https?:\/\/)[\w.-]+\.[a-z]{2,}/i;
+
+if (!urlPattern.test(value)) {
+  this.errorMessage = 'Please enter a valid URL';
+  this.isValid = false;
+  return;
+}
+
           
           this.isValid = true;
         },
@@ -428,7 +430,7 @@
             :class="hasInput && !isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full bg-white border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 transition-colors'
             @input='validateLink($event.target.value)'
-            placeholder='https://www.youtube.com/watch?v=...'
+            placeholder='https://www.example.com'
           />
 
           <!-- Error Message -->
@@ -482,7 +484,7 @@
             <i class='fas fa-exclamation-triangle text-red-500'></i>
             <p class='text-sm text-red-800'>
               <span class='font-semibold'>Cannot submit:</span>
-              Please enter a valid YouTube URL.
+              Please enter a valid URL.
             </p>
           </div>
         </template>
