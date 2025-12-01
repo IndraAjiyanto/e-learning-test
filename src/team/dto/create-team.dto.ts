@@ -7,8 +7,8 @@ export class CreateTeamDto {
   @IsString()
   nama: string;
 
-  @IsString()
-  posisi: string;
+  @IsArray()
+  posisi: string[];
 
   @IsNumber()
   team_ke: number;

@@ -78,7 +78,11 @@
           </td>
 
           <td class="px-6 py-4 text-sm text-gray-800">{{nama}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{posisi}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">
+            {{#each posisi}}
+              <div class="line-clamp-3">{{this}}</div>
+            {{/each}}
+          </td>
           <td class="px-6 py-4 text-sm text-gray-800">
             {{#each deskripsi}}
               <div class="line-clamp-3">{{this}}</div>

@@ -14,7 +14,11 @@
         // Form validation states
         formData: {
           nama: '{{teamLead.nama}}',
-          posisi: '{{teamLead.posisi}}',
+          posisi: `{
+          id: `{{teamLead.posisi.id}}`,
+          en: `{{teamLead.posisi.en}}`,
+          ja: `{{teamLead.posisi.ja}}`
+          }`,
           linkedin: '{{teamLead.linkedin}}',
           instagram: '{{teamLead.instagram}}',
           deskripsi: {
@@ -25,14 +29,14 @@
         },
         formErrors: {
           nama: '',
-          posisi: '',
+          posisi: { id: '', en: '', ja: '' },
           linkedin: '',
           instagram: '',
           deskripsi: { id: '', en: '', ja: '' }
         },
         formValid: {
           nama: true,
-          posisi: true,
+          posisi: { id: true, en: true, ja: true },
           linkedin: true,
           instagram: true,
           deskripsi: { id: true, en: false, ja: false }
@@ -111,14 +115,14 @@
               
             case 'posisi':
               if (!value.trim()) {
-                this.formErrors.posisi = 'Position is required';
-                this.formValid.posisi = false;
+                this.formErrors.posisi[lang] = 'Position is required';
+                this.formValid.posisi[lang] = false;
               } else if (value.trim().length < 2) {
-                this.formErrors.posisi = 'Position must be at least 2 characters';
-                this.formValid.posisi = false;
+                this.formErrors.posisi[lang] = 'Position must be at least 2 characters';
+                this.formValid.posisi[lang] = false;
               } else {
-                this.formErrors.posisi = '';
-                this.formValid.posisi = true;
+                this.formErrors.posisi[lang] = '';
+                this.formValid.posisi[lang] = true;
               }
               break;
               
@@ -327,34 +331,38 @@
         </div>
 
         <!-- Position -->
+             <div class='space-y-4'>
+        <label
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Position</label>
+        <div class='space-y-4'>
         <div class='space-y-2'>
           <label
-            for='posisi'
             class='block text-sm font-semibold text-gray-700 mb-1'
-          >Position</label>
+          >ID</label>
           <input
+            x-model="formData.posisi.id"
             type='text'
-            id='posisi'
-            name='posisi'
+            name='posisi[id]'
             required
-            :class="formErrors.posisi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.posisi.id ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            @input='validateField("posisi", $event.target.value)'
-            x-init="$el.value = formData.posisi"
+            @input='validateField("posisi", $event.target.value , "id")'
+            x-init="$el.value = formData.posisi.id"
           />
 
           <!-- Error Message -->
-          <template x-if='formErrors.posisi'>
+          <template x-if='formErrors.posisi.id'>
             <div
               class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
             >
               <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p class='text-xs text-red-700' x-text='formErrors.posisi'></p>
+              <p class='text-xs text-red-700' x-text='formErrors.posisi.id'></p>
             </div>
           </template>
 
           <!-- Success Message -->
-          <template x-if='formValid.posisi && !formErrors.posisi'>
+          <template x-if='formValid.posisi.id && !formErrors.posisi.id'>
             <div
               class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
             >
@@ -363,6 +371,78 @@
             </div>
           </template>
         </div>
+        <div class='space-y-2'>
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >EN</label>
+          <input
+            x-model="formData.posisi.en"
+            type='text'
+            name='posisi[en]'
+            required
+            :class="formErrors.posisi.en ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("posisi", $event.target.value , "en")'
+            x-init="$el.value = formData.posisi.en"
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.posisi.en'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.posisi.en'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.posisi.en && !formErrors.posisi.en'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid position</p>
+            </div>
+          </template>
+        </div>
+        <div class='space-y-2'>
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >JP</label>
+          <input
+            x-model="formData.posisi.ja"
+            type='text'
+            name='posisi[ja]'
+            required
+            :class="formErrors.posisi.ja ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+            @input='validateField("posisi", $event.target.value , "ja")'
+            x-init="$el.value = formData.posisi.ja"
+          />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.posisi.ja'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p class='text-xs text-red-700' x-text='formErrors.posisi.ja'></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.posisi.ja && !formErrors.posisi.ja'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid position</p>
+            </div>
+          </template>
+        </div>
+      </div>
+      </div>
 
         <!-- LinkedIn -->
         <div class='space-y-2'>

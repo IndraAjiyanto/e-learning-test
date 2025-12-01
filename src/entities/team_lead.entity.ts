@@ -18,8 +18,8 @@ export class TeamLead {
   @Column()
   nama: string;
 
-  @Column()
-  posisi: string;
+  @Column({nullable: true})
+  posisi: string[];
 
   @Column('jsonb',{nullable: true})
   deskripsi: string[];

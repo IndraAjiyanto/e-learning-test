@@ -21,8 +21,8 @@ export class Team {
   @Column()
   team_ke: number;
 
-  @Column()
-  posisi: string;
+  @Column('jsonb',{nullable: true})
+  posisi: string[];
 
   @Column()
   linkedin: string;
