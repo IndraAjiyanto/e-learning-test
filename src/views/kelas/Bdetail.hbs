@@ -30,12 +30,27 @@
         >
           Course Info
         </button>
+                <button
+          @click="activeTab = 'bootcamp'"
+          :class="activeTab === 'bootcamp' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class='pb-3 transition-colors whitespace-nowrap'
+        >
+          Bootcamp Flow
+        </button>
         <button
           @click="activeTab = 'benefit'"
           :class="activeTab === 'benefit' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >
           Benefits
+        </button>
+
+                <button
+          @click="activeTab = 'mentor'"
+          :class="activeTab === 'mentor' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class='pb-3 transition-colors whitespace-nowrap'
+        >
+          Mentors
         </button>
         <button
           @click="activeTab = 'faq'"
@@ -44,20 +59,8 @@
         >
           FAQ
         </button>
-        <button
-          @click="activeTab = 'bootcamp'"
-          :class="activeTab === 'bootcamp' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
-        >
-          Bootcamp Flow
-        </button>
-        <button
-          @click="activeTab = 'mentor'"
-          :class="activeTab === 'mentor' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
-        >
-          Mentors
-        </button>
+
+
       </div>
 
       <!-- Tab Content -->
