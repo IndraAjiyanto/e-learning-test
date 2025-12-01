@@ -290,14 +290,34 @@
                 Material Includes
               </h4>
               <ul class='space-y-3'>
-                {{#each kelas.materi}}
+                {{#if (eq lang 'id')}}
+                {{#each kelas.materi_id}}
                   <li class='flex items-start gap-3 font-inter text-gray-700'>
                     <i
                       class='fas fa-check-circle text-gray-500 mt-1 flex-shrink-0'
                     ></i>
-                    <span>{{getByLang this ../lang}}</span>
+                    <span>{{this}}</span>
+                  </li>
+                  {{/each}}
+                {{else if (eq lang 'en')}}
+                {{#each kelas.materi_en}}
+                  <li class='flex items-start gap-3 font-inter text-gray-700'>
+                    <i
+                      class='fas fa-check-circle text-gray-500 mt-1 flex-shrink-0'
+                    ></i>
+                    <span>{{this}}</span>
                   </li>
                 {{/each}}
+                {{else if (eq lang 'ja')}}
+                {{#each kelas.materi_ja}}
+                  <li class='flex items-start gap-3 font-inter text-gray-700'>
+                    <i
+                      class='fas fa-check-circle text-gray-500 mt-1 flex-shrink-0'
+                    ></i>
+                    <span>{{this}}</span>
+                  </li>
+                {{/each}}
+                {{/if}}
               </ul>
             </div>
 
@@ -312,12 +332,28 @@
                 What You'll Learn
               </h4>
               <ul class='space-y-3'>
-                {{#each kelas.target_pembelajaran}}
+                {{#if (eq lang 'id')}}
+                {{#each kelas.target_pembelajaran_id}}
                   <li class='flex items-start gap-3 font-inter text-gray-700'>
                     <i class='fas fa-star text-gray-400 mt-1 flex-shrink-0'></i>
-                    <span>{{getByLang this ../lang}}</span>
+                    <span>{{this}}</span>
+                  </li>
+                  {{/each}}
+                {{else if (eq lang 'en')}}
+                {{#each kelas.target_pembelajaran_en}}
+                  <li class='flex items-start gap-3 font-inter text-gray-700'>
+                    <i class='fas fa-star text-gray-400 mt-1 flex-shrink-0'></i>
+                    <span>{{this}}</span>
                   </li>
                 {{/each}}
+                {{else if (eq lang 'ja')}}
+                {{#each kelas.target_pembelajaran_ja}}
+                  <li class='flex items-start gap-3 font-inter text-gray-700'>
+                    <i class='fas fa-star text-gray-400 mt-1 flex-shrink-0'></i>
+                    <span>{{this}}</span>
+                  </li>
+                {{/each}}
+                {{/if}}
               </ul>
             </div>
 
@@ -333,7 +369,7 @@
               </h4>
               <ul class='space-y-3'>
                 {{#if (eq lang 'id')}}
-                {{#each kelas.kriteria.id}}
+                {{#each kelas.kriteria_id}}
                   <li class='flex items-start gap-3 font-inter text-gray-700'>
                     <i
                       class='fas fa-check-square text-gray-400 mt-1 flex-shrink-0'
@@ -342,7 +378,7 @@
                   </li>
                 {{/each}}
                 {{else if (eq lang 'en')}}
-                {{#each kelas.kriteria.en}}
+                {{#each kelas.kriteria_en}}
                   <li class='flex items-start gap-3 font-inter text-gray-700'>
                     <i
                       class='fas fa-check-square text-gray-400 mt-1 flex-shrink-0'
@@ -350,8 +386,8 @@
                     <span>{{this}}</span>
                   </li>
                 {{/each}}
-                {{else if (eq lang 'jp')}}
-                {{#each kelas.kriteria.jp}}
+                {{else if (eq lang 'ja')}}
+                {{#each kelas.kriteria_ja}}
                   <li class='flex items-start gap-3 font-inter text-gray-700'>
                     <i
                       class='fas fa-check-square text-gray-400 mt-1 flex-shrink-0'

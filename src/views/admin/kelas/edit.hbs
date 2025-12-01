@@ -199,7 +199,7 @@
                       
                       <!-- ID Description -->
                       <div>
-                        <label for="deskripsi_id" class="block text-xs text-gray-600 mb-1">Bahasa Indonesia</label>
+                        <label for="deskripsi_id" class="block text-xs text-gray-600 my-2">Bahasa Indonesia</label>
                         <textarea
                           id="deskripsi_id"
                           x-model="formData.deskripsi.id"
@@ -213,7 +213,7 @@
                       
                       <!-- EN Description -->
                       <div>
-                        <label for="deskripsi_en" class="block text-xs text-gray-600 mb-1">English</label>
+                        <label for="deskripsi_en" class="block text-xs text-gray-600 my-2">English</label>
                         <textarea
                           id="deskripsi_en"
                           x-model="formData.deskripsi.en"
@@ -227,7 +227,7 @@
                       
                       <!-- JP Description -->
                       <div>
-                        <label for="deskripsi_ja" class="block text-xs text-gray-600 mb-1">日本語</label>
+                        <label for="deskripsi_ja" class="block text-xs text-gray-600 my-2">日本語</label>
                         <textarea
                           id="deskripsi_ja"
                           x-model="formData.deskripsi.ja"
@@ -691,8 +691,14 @@
                     </div>
 
                     <!-- Lessons -->
+                    <div>
+                                        <label
+            class='block text-sm font-semibold text-gray-700 my-2'
+          >Lessons</label>
                     <div x-data="{ materis_id: {{json kelas.materi_id}} || [''] }">
-                      <label class='block text-sm font-semibold text-gray-700 mb-2'>Lessons ID</label>
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >ID</label>
                       <template x-for='(materi_id, index) in materis_id' :key='index'>
                         <div class='flex items-center gap-3 mb-3'>
                           <input
@@ -722,7 +728,9 @@
                     </div>
 
                     <div x-data="{ materis_en: {{json kelas.materi_en}} || [''] }">
-                      <label class='block text-sm font-semibold text-gray-700 mb-2'>Lessons EN</label>
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >EN</label>
                       <template x-for='(materi_en, index) in materis_en' :key='index'>
                         <div class='flex items-center gap-3 mb-3'>
                           <input
@@ -752,7 +760,9 @@
                     </div>
 
                     <div x-data="{ materis_ja: {{json kelas.materi_ja}} || [''] }">
-                      <label class='block text-sm font-semibold text-gray-700 mb-2'>Lessons JA</label>
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >JP</label>
                       <template x-for='(materi_ja, index) in materis_ja' :key='index'>
                         <div class='flex items-center gap-3 mb-3'>
                           <input
@@ -780,10 +790,17 @@
                         + Add Lesson
                       </button>
                     </div>
+                    </div>
 
                     <!-- Learning Targets -->
+                    <div>
+                                        <label
+            class='block text-sm font-semibold text-gray-700 my-2'
+          >Learning Targets</label>
                     <div x-data="{ targets_id: {{json kelas.target_pembelajaran_id}} || [''] }">
-                      <label class='block text-sm font-semibold text-gray-700 mb-2'>Learning Targets ID</label>
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >ID</label>
                       <template x-for='(target_id, index) in targets_id' :key='index'>
                         <div class='flex items-center gap-3 mb-3'>
                           <input
@@ -813,7 +830,9 @@
                     </div>
 
                     <div x-data="{ targets_en: {{json kelas.target_pembelajaran_en}} || [''] }">
-                      <label class='block text-sm font-semibold text-gray-700 mb-2'>Learning Targets EN</label>
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >EN</label>
                       <template x-for='(target_en, index) in targets_en' :key='index'>
                         <div class='flex items-center gap-3 mb-3'>
                           <input
@@ -843,7 +862,9 @@
                     </div>
 
                     <div x-data="{ targets_ja: {{json kelas.target_pembelajaran_ja}} || [''] }">
-                      <label class='block text-sm font-semibold text-gray-700 mb-2'>Learning Targets JA</label>
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >JP</label>
                       <template x-for='(target_ja, index) in targets_ja' :key='index'>
                         <div class='flex items-center gap-3 mb-3'>
                           <input
@@ -871,10 +892,17 @@
                         + Add Target
                       </button>
                     </div>
+                    </div>
 
                     <!-- Criteria -->
+                    <div>
+                                        <label
+            class='block text-sm font-semibold text-gray-700 my-2'
+          >Criteria</label>
                     <div x-data="{ kriterias_id: {{json kelas.kriteria_id}} || [''] }">
-                      <label class='block text-sm font-semibold text-gray-700 mb-2'>Criteria ID</label>
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >ID</label>
                       <template x-for='(kriteria_id, index) in kriterias_id' :key='index'>
                         <div class='flex items-center gap-3 mb-3'>
                           <input
@@ -904,7 +932,9 @@
                     </div>
 
                     <div x-data="{ kriterias_en: {{json kelas.kriteria_en}} || [''] }">
-                      <label class='block text-sm font-semibold text-gray-700 mb-2'>Criteria EN</label>
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >EN</label>
                       <template x-for='(kriteria_en, index) in kriterias_en' :key='index'>
                         <div class='flex items-center gap-3 mb-3'>
                           <input
@@ -934,7 +964,9 @@
                     </div>
 
                     <div x-data="{ kriterias_ja: {{json kelas.kriteria_ja}} || [''] }">
-                      <label class='block text-sm font-semibold text-gray-700 mb-2'>Criteria JA</label>
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >JP</label>
                       <template x-for='(kriteria_ja, index) in kriterias_ja' :key='index'>
                         <div class='flex items-center gap-3 mb-3'>
                           <input
@@ -961,6 +993,7 @@
                       >
                         + Add Criteria
                       </button>
+                    </div>
                     </div>
                 </div>
 
