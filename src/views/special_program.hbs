@@ -10,16 +10,16 @@
       methodDropdownOpen: false,
       
       courseCategoriesData: [
-        { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
+        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
         {{#each kategori.jenis_kelas}}
         { value: '{{this.nama_jenis_kelas }}', icon: '{{computeIcon this.icon}}', title: '{{ this.nama_jenis_kelas }}', desc: '{{truncate (getByLang this.deskripsi ../lang) 10}}' },
         {{/each}}
       ],
       
       methodOptions: [
-        { value: 'all', icon: 'fa-th', title: 'All Methods', desc: 'Show all learning methods' },
-        { value: 'online', icon: 'fa-laptop', title: 'Online', desc: 'Learn from anywhere with online classes' },
-        { value: 'offline', icon: 'fa-map-marker-alt', title: 'Offline', desc: 'In-person classes at physical locations' }
+        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: '{{t "test.home.programSection.deskripsiAllMethod"}}' },
+        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: '{{t "test.home.programSection.deskripsiOnline"}}' },
+        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
       ],
 
       get selectedTypeItem() {
@@ -104,8 +104,8 @@
 <section class='py-20 bg-white'>
   <div class='container mx-auto px-4'>
     <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Why Choose Our {{kategori.nama_kategori}}</h2>
-      <p class='text-gray-600 text-lg font-inter'>Benefits join {{kategori.nama_kategori}}</p>
+      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.specialProgram.benefitSection.tittle"}} {{kategori.nama_kategori}}</h2>
+      <p class='text-gray-600 text-lg font-inter'>{{t "test.specialProgram.benefitSection.description"}} {{kategori.nama_kategori}}</p>
     </div>
 
     <div class='grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center max-w-7xl mx-auto'>
@@ -129,8 +129,8 @@
 <section class='py-20 bg-white'>
   <div class='container mx-auto px-4'>
     <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Training Topics</h2>
-      <p class='text-gray-600 text-lg font-inter'>Popular topics available in this program</p>
+      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.specialProgram.trainingSection.tittle"}}</h2>
+      <p class='text-gray-600 text-lg font-inter'>{{t "test.specialProgram.trainingSection.description"}}</p>
     </div>
 
     <div class='max-w-6xl mx-auto'>
@@ -154,8 +154,8 @@
 <section class='py-20 bg-gray-50'>
   <div class='container mx-auto px-4'>
     <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Our Program Process</h2>
-      <p class='text-gray-600 text-lg font-inter'>{{kategori.flow_category.length}} steps to join this program</p>
+      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.specialProgram.programProses.tittle"}}</h2>
+      <p class='text-gray-600 text-lg font-inter'>{{kategori.flow_category.length}} {{t "test.specialProgram.programProses.description"}}</p>
     </div>
 
     <div class='max-w-5xl mx-auto'>
@@ -199,10 +199,10 @@
         color="text-white"
       }}  --}}
 
-       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">Stories from Alumni</h2>
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">{{t "test.home.alumniSection.tittle"}}</h2>
 
     <p class='text-lg text-white py-6 max-w-2xl mx-auto'>
-      Every alumnus has their own unique journey — from the first step of learning, facing challenges, to finally building a successful career in tech. Hear how their experience with Kesatria Academy opened new opportunities and transformed their future.
+      {{t "test.home.alumniSection.description"}}
     </p>
   </div>
 
@@ -302,9 +302,9 @@
     <!-- Header Section -->
     <div class='text-center mb-16 relative'>
       <h2 class='text-4xl font-extrabold text-gray-900 mb-4 relative z-10 font-montserrat'>
-        Available Internship Programs
+        {{t "test.specialProgram.programSection.tittle"}}
       </h2>
-      <p class='text-gray-600 text-lg font-inter'>Choose a program that matches your career goals</p>
+      <p class='text-gray-600 text-lg font-inter'>{{t "test.specialProgram.programSection.description"}}</p>
     </div>
 
     <!-- Filter Section -->
@@ -314,7 +314,7 @@
         <!-- Filter Title -->
         <div class='flex items-center gap-3 mb-6'>
           <div class='w-1 h-8 bg-gradient-to-b from-gray-700 to-gray-900 rounded-full'></div>
-          <h3 class='text-2xl font-bold text-gray-900 font-montserrat'>Find the Right Program</h3>
+          <h3 class='text-2xl font-bold text-gray-900 font-montserrat'>{{t "test.specialProgram.programSection.findProgram"}}</h3>
         </div>
 
         <!-- Filter Controls -->
@@ -324,7 +324,7 @@
           <div @click.away='typeDropdownOpen = false' class='group relative'>
             <label class='flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide'>
               <i class='fas fa-layer-group text-gray-700'></i>
-              Program Type
+              {{t "test.specialProgram.programSection.programType"}}
             </label>
 
             <button
@@ -379,7 +379,7 @@
           <div @click.away='methodDropdownOpen = false' class='group relative'>
             <label class='flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide'>
               <i class='fas fa-laptop text-gray-700'></i>
-              Method
+              {{t "test.specialProgram.programSection.method"}}
             </label>
 
             <button
@@ -434,13 +434,13 @@
           <div class='group'>
             <label class='flex items-center gap-2 text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide'>
               <i class='fas fa-search text-gray-700'></i>
-              Search
+              {{t "test.specialProgram.programSection.search"}}
             </label>
             <div class='relative'>
               <input
                 type='text'
                 x-model='searchQuery'
-                placeholder='Search programs...'
+                placeholder='{{t "test.specialProgram.programSection.placeholderSearch"}}'
                 class='w-full px-5 py-4 pr-12 bg-white backdrop-blur-md border border-gray-300 rounded-2xl text-gray-900 placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 hover:border-gray-400'
               />
               <button
@@ -460,7 +460,7 @@
           x-show="selectedType !== 'all' || searchQuery !== '' || selectedMethod !== 'all'"
         >
           <div class='flex items-center gap-3 flex-wrap'>
-            <span class='text-gray-600 text-sm font-medium'>Active Filters:</span>
+            <span class='text-gray-600 text-sm font-medium'>{{t "test.specialProgram.programSection.ActiveFilters"}}</span>
             <span
               x-show="selectedType !== 'all'"
               class='px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium border border-gray-300'
@@ -484,7 +484,7 @@
             @click='resetFilters()'
             class='px-6 py-2.5 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg font-medium'
           >
-            <i class='fas fa-redo mr-2'></i>Reset All
+            <i class='fas fa-redo mr-2'></i>{{t "test.specialProgram.programSection.resetAll"}}
           </button>
         </div>
       </div>
@@ -492,11 +492,11 @@
       <!-- Results Counter -->
       <div class='mt-6 text-center'>
         <p class='text-gray-600 font-inter'>
-          Showing
+          {{t "test.specialProgram.programSection.showing"}}
           <span class='text-gray-900 font-bold' x-text='filteredKelas.filter((el, idx) => paginatedKelas(el)).length'></span>
-          of
+          {{t "test.specialProgram.programSection.of"}}
           <span class='text-gray-900 font-bold' x-text='filteredKelas.length'></span>
-          programs
+          {{t "test.specialProgram.programSection.program"}}
         </p>
       </div>
     </div>
@@ -567,7 +567,7 @@
             <div class='flex items-center justify-between mb-3'>
               <div class='flex items-center gap-2'>
                 <i class='fas fa-users text-slate-600 animate-pulse'></i>
-                <span class='text-sm font-medium text-slate-600'>Kuota</span>
+                <span class='text-sm font-medium text-slate-600'>{{t "test.specialProgram.programSection.Quota"}}</span>
               </div>
               <span
                 class='text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm'
@@ -575,7 +575,7 @@
                 {{user_kelas.length}}
                 /
                 {{kuota}}
-                peserta
+                {{t "test.specialProgram.programSection.student"}}
               </span>
             </div>
 
@@ -597,7 +597,7 @@
               href='/kelass/{{id}}'
               class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
             >
-              View Program
+              {{t "test.specialProgram.programSection.buttonViewProgram"}}
             </a>
           </div>
         </div>
@@ -610,13 +610,13 @@
       <div class='bg-gray-100 backdrop-blur-md border border-gray-200 w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center'>
         <i class='fas fa-inbox text-5xl text-gray-400'></i>
       </div>
-      <h3 class='text-3xl font-bold text-gray-900 mb-3 font-montserrat'>Program Not Found</h3>
-      <p class='text-gray-600 text-lg mb-6 font-inter'>Try adjusting your search or filter criteria.</p>
+      <h3 class='text-3xl font-bold text-gray-900 mb-3 font-montserrat'>{{t "test.specialProgram.programSection.programNotFound"}}</h3>
+      <p class='text-gray-600 text-lg mb-6 font-inter'>{{t "test.specialProgram.programSection.spanNoProgram"}}</p>
       <button
         @click='resetFilters()'
         class='px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold shadow-md'
       >
-        <i class='fas fa-redo mr-2'></i>Clear All Filters
+        <i class='fas fa-redo mr-2'></i>{{t "test.specialProgram.programSection.clearFilters"}}
       </button>
     </div>
 
@@ -661,10 +661,10 @@
           <h2
             class='text-4xl md:text-5xl font-bold text-white mb-6 font-montserrat'
           >
-            Transform Your Team Today
+            {{t "test.specialProgram.contactSection.tittle"}}
           </h2>
           <p class='text-xl text-gray-100 mb-8 font-inter'>
-            Get a customized training proposal for your organization
+            {{t "test.specialProgram.contactSection.description"}}
           </p>
 
           <div class='flex flex-col sm:flex-row gap-4 justify-center'>
@@ -672,14 +672,14 @@
               href='#programs'
               class='inline-block bg-white text-gray-700 px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all'
             >
-              View Programs
+              {{t "test.specialProgram.contactSection.buttonViewProgram"}}
               <i class='fas fa-arrow-right ml-2'></i>
             </a>
             <a
               href='{{kategori.contact}}' target="_blank"
               class='inline-block bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-secondary border-2 border-transparent hover:border-white/30 hover:shadow-2xl transform hover:-translate-y-1 transition-all'
             >
-              Contact Us
+              {{t "test.specialProgram.contactSection.buttonContactUs"}}
               <i class='fas fa-phone ml-2'></i>
             </a>
           </div>
@@ -697,7 +697,7 @@
         <!-- Content -->
         <div>
           <h2 class='text-4xl font-bold text-gray-900 mb-6 font-montserrat'>
-            Why Choose this Program?
+            {{t "test.specialProgram.chooseSection.tittle"}}
           </h2>
           <div class='space-y-6'>
             {{#each kategori.superiority}}
@@ -754,8 +754,7 @@
           bg="bg-primary"
           color="text-white"
         }}  --}}
-       <h2 class="text-4xl md:text-5xl font-bold leading-tight text-center font-montserrat text-gray-900">Frequently Asked Questions</h2>
-
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight text-center font-montserrat text-gray-900">{{t "test.specialProgram.faqSection.tittle"}}</h2>
       <div
         x-data="{
           activeIndex: null,

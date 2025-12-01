@@ -493,23 +493,23 @@ Get full career support — from crafting your CV and portfolio to preparing for
       methodDropdownOpen: false,
       
       categoriesData: [
-        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allCategory"}}', desc: 'Show all class categories' },
+        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
         {{#each kategori}}
         { value: '{{this.nama_kategori}}', icon: '{{this.icon}}', title: '{{this.nama_kategori}}', desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
         {{/each}}
       ],
       
       courseCategoriesData: [
-        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allTypes"}}', desc: 'All types of learning' },
+        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allTypes"}}', desc: '{{t "test.home.programSection.deskripsiAllTypes"}}' },
         {{#each jenis_kelas}}
         { value: `{{this.nama_jenis_kelas }}`, icon: '{{computeIcon this.icon}}', title: `{{this.nama_jenis_kelas}}`, desc: `{{truncate getByLang this.deskripsi ../lang 10}}` },
         {{/each}}
       ],
       
       methodOptions: [
-        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: 'Show all learning methods' },
-        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: 'Learn from anywhere with online classes' },
-        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: 'In-person classes at physical locations' }
+        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: '{{t "test.home.programSection.deskripsiAllMethod"}}' },
+        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: '{{t "test.home.programSection.deskripsiOnline"}}' },
+        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
       ],
 
       get selectedCategoryItem() {
