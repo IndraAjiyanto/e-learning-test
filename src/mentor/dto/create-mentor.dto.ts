@@ -21,9 +21,6 @@ export class CreateMentorDto {
   @IsOptional()
   teknologiIds: number[];
 
-  @IsString()
-  github: string;
-
   @IsArray()
   deskripsi: string[];
 

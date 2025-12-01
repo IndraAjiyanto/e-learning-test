@@ -25,9 +25,6 @@ export class Mentor {
   @Column()
   linkedin: string;
 
-  @Column()
-  github: string;
-
   @ManyToMany(() => Teknologi, (teknologi) => teknologi.mentors, {
     cascade: true,
     onDelete: 'CASCADE',

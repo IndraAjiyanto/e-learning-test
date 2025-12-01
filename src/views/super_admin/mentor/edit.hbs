@@ -27,28 +27,24 @@
             ja: '{{mentor.deskripsi.ja}}'
           },
           linkedin: '{{mentor.linkedin}}',
-          github: '{{mentor.github}}'
         },
         formErrors: {
           nama: '',
           posisi: { id: '', en: '', ja: '' },
           deskripsi: { id: '', en: '', ja: '' },
           linkedin: '',
-          github: ''
         },
         formValid: {
           nama: true,
           posisi: { id: true, en: true, ja: true },
           deskripsi: { id: true, en: true, ja: true },
           linkedin: true,
-          github: true
         },
         formTouched: {
           nama: false,
           posisi: { id: false, en: false, ja: false },
           deskripsi: { id: false, en: false, ja: false },
           linkedin: false,
-          github: false
         },
 
         validateField(field, value, lang = null) {
@@ -104,15 +100,6 @@
               }
               break;
               
-            case 'github':
-              if (!value.trim()) {
-                this.formErrors.github = 'GitHub link is required';
-                this.formValid.github = false;
-              } else {
-                this.formErrors.github = '';
-                this.formValid.github = true;
-              }
-              break;
           }
         },
 
@@ -180,7 +167,7 @@
           const imageValid = !this.hasFile || this.isValid;
           const posisiValid = Object.values(this.formValid.posisi).every(v => v);
           const deskripsiValid = Object.values(this.formValid.deskripsi).every(v => v);
-          const formValid = this.formValid.nama && posisiValid && deskripsiValid && this.formValid.linkedin && this.formValid.github;
+          const formValid = this.formValid.nama && posisiValid && deskripsiValid && this.formValid.linkedin;
           return imageValid && formValid;
         },
 
@@ -188,8 +175,7 @@
           return this.formErrors.nama !== '' ||
                  Object.values(this.formErrors.posisi).some(e => e !== '') ||
                  Object.values(this.formErrors.deskripsi).some(e => e !== '') ||
-                 this.formErrors.linkedin !== '' ||
-                 this.formErrors.github !== '';
+                 this.formErrors.linkedin !== ''
         }
       }"
   >
@@ -709,46 +695,6 @@
               >
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid LinkedIn link</p>
-              </div>
-            </template>
-          </div>
-
-          <!-- GitHub -->
-          <div class='space-y-2'>
-            <label
-              for='github'
-              class='block text-sm font-semibold text-gray-700 mb-1'
-            >Github</label>
-            <input
-              x-model='formData.github'
-              @input='validateField("github", $event.target.value)'
-              type='text'
-              id='github'
-              name='github'
-              value="{{mentor.github}}"
-              placeholder='Link github'
-              required
-              :class="formErrors.github ? 'border-red-500 focus:ring-red-500' : formValid.github && !formErrors.github ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900'"
-              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-            />
-
-            <!-- Error Message -->
-            <template x-if='formErrors.github'>
-              <div
-                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
-              >
-                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p class='text-xs text-red-700' x-text='formErrors.github'></p>
-              </div>
-            </template>
-
-            <!-- Success Message -->
-            <template x-if='formValid.github && !formErrors.github'>
-              <div
-                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-              >
-                <i class='fas fa-check-circle text-green-500'></i>
-                <p class='text-xs text-green-700'>Valid GitHub link</p>
               </div>
             </template>
           </div>
