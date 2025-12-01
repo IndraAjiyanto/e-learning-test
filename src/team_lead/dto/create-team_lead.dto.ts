@@ -7,8 +7,8 @@ export class CreateTeamLeadDto {
   @IsString()
   nama: string;
 
-  @IsString()
-  posisi: string;
+  @IsArray()
+  posisi: string[];
 
   @IsArray()
   deskripsi: string[];

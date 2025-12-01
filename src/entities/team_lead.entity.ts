@@ -18,7 +18,7 @@ export class TeamLead {
   @Column()
   nama: string;
 
-  @Column({nullable: true})
+  @Column('jsonb',{nullable: true})
   posisi: string[];
 
   @Column('jsonb',{nullable: true})
