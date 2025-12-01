@@ -292,7 +292,7 @@
     <!-- Card 1 -->
     <div
       data-stagger-item
-      class='group p-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2'
+      class='group p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2'
     >
       <div class='flex justify-center mb-6'>
         <div
@@ -312,7 +312,7 @@ Join our free class to explore your interests and discover your true potential i
     <!-- Card 2 -->
     <div
       data-stagger-item
-      class='group p-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2'
+      class='group p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2'
     >
       <div class='flex justify-center mb-6'>
         <div
@@ -332,7 +332,7 @@ Join our free class to explore your interests and discover your true potential i
     <!-- Card 3 -->
     <div
       data-stagger-item
-      class='group p-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2'
+      class='group p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-2'
     >
       <div class='flex justify-center mb-6'>
         <div
@@ -493,23 +493,23 @@ Get full career support — from crafting your CV and portfolio to preparing for
       methodDropdownOpen: false,
       
       categoriesData: [
-        { value: 'all', icon: 'fa-th', title: '{{t "home.programSection.allCategory"}}', desc: 'Show all class categories' },
+        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allCategory"}}', desc: 'Show all class categories' },
         {{#each kategori}}
         { value: '{{this.nama_kategori}}', icon: '{{this.icon}}', title: '{{this.nama_kategori}}', desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
         {{/each}}
       ],
       
       courseCategoriesData: [
-        { value: 'all', icon: 'fa-layer-group', title: '{{t "home.programSection.allTypes"}}', desc: 'All types of learning' },
+        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allTypes"}}', desc: 'All types of learning' },
         {{#each jenis_kelas}}
         { value: `{{this.nama_jenis_kelas }}`, icon: '{{computeIcon this.icon}}', title: `{{this.nama_jenis_kelas}}`, desc: `{{truncate getByLang this.deskripsi ../lang 10}}` },
         {{/each}}
       ],
       
       methodOptions: [
-        { value: 'all', icon: 'fa-th', title: '{{t "home.programSection.allMethod"}}', desc: 'Show all learning methods' },
-        { value: 'online', icon: 'fa-laptop', title: '{{t "home.programSection.online"}}', desc: 'Learn from anywhere with online classes' },
-        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "home.programSection.offline"}}', desc: 'In-person classes at physical locations' }
+        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: 'Show all learning methods' },
+        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: 'Learn from anywhere with online classes' },
+        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: 'In-person classes at physical locations' }
       ],
 
       get selectedCategoryItem() {
@@ -572,10 +572,10 @@ Get full career support — from crafting your CV and portfolio to preparing for
           textColor="text-white"
           color="text-gray-900"
         }}  --}}
-       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">{{t "home.programSection.tittle"}}</h2>
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">{{t "test.home.programSection.tittle"}}</h2>
 
     <p class='text-lg mt-4 text-slate-300 max-w-2xl mx-auto relative z-10'>
-      {{t "home.programSection.description"}}
+      {{t "test.home.programSection.description"}}
     </p>
   </div>
 
@@ -589,7 +589,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
         <div
           class='w-1 h-8 bg-gradient-to-b from-slate-400 to-slate-600 rounded-full'
         ></div>
-        <h3 class='text-2xl font-bold text-white'>{{t "home.programSection.find"}}</h3>
+        <h3 class='text-2xl font-bold text-white'>{{t "test.home.programSection.find"}}</h3>
       </div>
 
       <!-- Filter Controls -->
@@ -603,7 +603,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
             class='flex items-center gap-2 text-slate-300 font-semibold mb-3 text-sm uppercase tracking-wide'
           >
             <i class='fas fa-filter text-slate-400'></i>
-            {{t 'home.programSection.category'}}
+            {{t 'test.home.programSection.category'}}
           </label>
 
           <button
@@ -666,7 +666,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
             class='flex items-center gap-2 text-slate-300 font-semibold mb-3 text-sm uppercase tracking-wide'
           >
             <i class='fas fa-layer-group text-slate-400'></i>
-            {{t 'home.programSection.courseType'}}
+            {{t 'test.home.programSection.courseType'}}
           </label>
 
           <button
@@ -729,7 +729,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
             class='flex items-center gap-2 text-slate-300 font-semibold mb-3 text-sm uppercase tracking-wide'
           >
             <i class='fas fa-laptop text-slate-400'></i>
-            {{t 'home.programSection.method'}}
+            {{t 'test.home.programSection.method'}}
           </label>
 
           <button
@@ -796,13 +796,13 @@ Get full career support — from crafting your CV and portfolio to preparing for
             class='flex items-center gap-2 text-slate-300 font-semibold mb-3 text-sm uppercase tracking-wide'
           >
             <i class='fas fa-search text-slate-400'></i>
-            {{t 'home.programSection.search'}}
+            {{t 'test.home.programSection.search'}}
           </label>
           <div class='relative'>
             <input
               type='text'
               x-model='searchQuery'
-              placeholder='{{t "home.programSection.placeholderSearch"}}'
+              placeholder='{{t "test.home.programSection.placeholderSearch"}}'
               class='w-full px-5 py-4 pr-12 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white placeholder-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:bg-white/10'
             />
             <button
@@ -822,7 +822,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
         x-show="selectedCategory !== 'all' || tab !== 'all' || searchQuery !== '' || selectedMethod !== 'all'"
       >
         <div class='flex items-center gap-3 flex-wrap'>
-          <span class='text-slate-400 text-sm font-medium'>{{t "home.programSection.ActiveFilters"}}</span>
+          <span class='text-slate-400 text-sm font-medium'>{{t "test.home.programSection.ActiveFilters"}}</span>
           <span
             x-show="tab !== 'all'"
             class='px-4 py-2 bg-slate-700/50 text-slate-200 rounded-lg text-sm font-medium'
@@ -858,7 +858,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
           @click='resetFilters()'
           class='px-6 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg font-medium'
         >
-          <i class='fas fa-redo mr-2'></i>{{t "home.programSection.resetAll"}}
+          <i class='fas fa-redo mr-2'></i>{{t "test.home.programSection.resetAll"}}
         </button>
       </div>
     </div>
@@ -866,14 +866,14 @@ Get full career support — from crafting your CV and portfolio to preparing for
     <!-- Results Counter -->
     <div class='mt-6 text-center'>
       <p class='text-slate-400'>
-        {{t "home.programSection.showing"}}
+        {{t "test.home.programSection.showing"}}
         <span
           class='text-white font-bold'
           x-text='filteredKelas.filter((el, idx) => paginatedKelas(el)).length'
         ></span>
-        {{t "home.programSection.of"}}
+        {{t "test.home.programSection.of"}}
         <span class='text-white font-bold' x-text='filteredKelas.length'></span>
-        {{t "home.programSection.program"}}
+        {{t "test.home.programSection.program"}}
       </p>
     </div>
   </div>
@@ -924,10 +924,10 @@ Get full career support — from crafting your CV and portfolio to preparing for
             >
             {{#if (eq metode "online")}}
               <i class='fas fa-laptop text-slate-500'></i>
-              <span>{{t "home.programSection.online"}}</span>
+              <span>{{t "test.home.programSection.online"}}</span>
               {{else if (eq metode "offline")}}
               <i class='fas fa-map-marker-alt text-slate-500'></i>
-              <span>{{t "home.programSection.offline"}}</span>
+              <span>{{t "test.home.programSection.offline"}}</span>
               {{/if}}
             </div>
             <div
@@ -952,7 +952,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
             <div class='flex items-center justify-between mb-3'>
               <div class='flex items-center gap-2'>
                 <i class='fas fa-users text-slate-600 animate-pulse'></i>
-                <span class='text-sm font-medium text-slate-600'>{{t "home.programSection.kuota"}}</span>
+                <span class='text-sm font-medium text-slate-600'>{{t "test.home.programSection.kuota"}}</span>
               </div>
               <span
                 class='text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm'
@@ -960,7 +960,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
                 {{user_kelas.length}}
                 /
                 {{kuota}}
-                {{t "home.programSection.student"}}
+                {{t "test.home.programSection.student"}}
               </span>
             </div>
 
@@ -981,7 +981,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
             href='/kelass/{{id}}'
             class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
           >
-            {{t "home.programSection.buttonViewProgram"}}
+            {{t "test.home.programSection.buttonViewProgram"}}
           </a>
         </div>
         </div>
@@ -1008,7 +1008,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
       @click='resetFilters()'
       class='px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold'
     >
-      <i class='fas fa-redo mr-2'></i>{{t "home.programSection.clearFilters"}}
+      <i class='fas fa-redo mr-2'></i>{{t "test.home.programSection.clearFilters"}}
     </button>
   </div>
 
@@ -1051,10 +1051,10 @@ Get full career support — from crafting your CV and portfolio to preparing for
     <div class='text-center mb-16 min-h-42'>
 
       <h2 class='text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-montserrat'>
-        {{t "home.specialProgram.tittle"}}
+        {{t "test.home.specialProgram.tittle"}}
       </h2>
       <p class='text-lg text-gray-600 max-w-2xl mx-auto font-inter mt-3'>
-        {{t "home.specialProgram.description"}}
+        {{t "test.home.specialProgram.description"}}
       </p>
     </div>
 
@@ -1127,7 +1127,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
 
             <!-- CTA Button -->
             <div class='flex items-center justify-between pt-6 border-t-2 border-gray-200'>
-              <span class='text-gray-600 font-semibold'>{{t "home.programSection.buttonViewProgram"}}</span>
+              <span class='text-gray-600 font-semibold'>{{t "test.home.programSection.buttonViewProgram"}}</span>
               <div class='w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center group-hover:bg-gray-900 transition-colors shadow-lg'>
                 <i class='fas fa-arrow-right text-white group-hover:translate-x-1 transition-transform'></i>
               </div>
@@ -1168,10 +1168,10 @@ Get full career support — from crafting your CV and portfolio to preparing for
         color="text-white"
       }}  --}}
 
-       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">{{t "home.alumniSection.tittle"}}</h2>
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">{{t "test.home.alumniSection.tittle"}}</h2>
 
     <p class='text-lg text-white py-6 max-w-2xl mx-auto'>
-      {{t "home.alumniSection.description"}}
+      {{t "test.home.alumniSection.description"}}
     </p>
   </div>
 
@@ -1267,9 +1267,9 @@ Get full career support — from crafting your CV and portfolio to preparing for
 <!-- Hiring Partners Section -->
 <section class='bg-white py-20 px-6 lg:px-20'>
   <div class='text-center mb-16'>
-    <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">{{t "home.partnerSection.tittle"}}</h2>
+    <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">{{t "test.home.partnerSection.tittle"}}</h2>
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
-      {{t "home.partnerSection.description"}}
+      {{t "test.home.partnerSection.description"}}
     </p>
   </div>
 
@@ -1332,7 +1332,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
   <div class='container mx-auto px-6 max-w-6xl'>
 
     <div class='max-w-4xl mx-auto space-y-8'>
-       <h2 class="text-4xl md:text-5xl font-bold leading-tight text-center font-montserrat text-gray-900">{{t "home.faq.tittle"}}</h2>
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight text-center font-montserrat text-gray-900">{{t "test.home.faq.tittle"}}</h2>
 
       <div
         x-data="{
@@ -1462,7 +1462,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
     x-transition:leave-end='opacity-0 translate-x-2'
     class='hidden md:block absolute right-20 top-1/2 -translate-y-1/2 bg-gradient-to-r from-slate-700 to-slate-800 text-white px-5 py-3 rounded-xl shadow-2xl whitespace-nowrap font-semibold text-sm'
   >
-    {{t "home.needHelp.tittle"}}
+    {{t "test.home.needHelp.tittle"}}
     <div
       class='absolute -right-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-b-8 border-l-8 border-transparent border-l-slate-800'
     ></div>
