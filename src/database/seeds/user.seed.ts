@@ -121,7 +121,7 @@ async function bootstrap() {
       harga: 1000000,
       promo: 5000000,
       grup: 'grup whatsapp',
-      lokasi: 'kantor wiratek',
+      lokasi: ['kantor wiratek'],
       link_lokasi: 'disini',
       metode: 'offline' as Metode,
       proses: 'acc' as Proses,

@@ -57,8 +57,8 @@ export class Kelas {
   @Column({ nullable: true })
   link_lokasi: string;
 
-  @Column()
-  lokasi: string;
+  @Column('jsonb',{nullable: true})
+  lokasi: string[];
 
   @Column({ type: 'enum', enum: ['online', 'offline'] })
   metode: Metode;

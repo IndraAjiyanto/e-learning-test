@@ -151,12 +151,12 @@
                     {{#if (eq kelas.metode 'online')}}
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer">{{kelas.lokasi}}</a></h4>
+                      ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer">{{getByLang kelas.lokasi lang}}</a></h4>
                     {{else}}
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
                         title='{{kelas.lokasi}}'
-                      ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer">{{kelas.lokasi}}</a></h4>
+                      ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer">{{getByLang kelas.lokasi lang}}</a></h4>
                     {{/if}}
                   </div>
                 </div>
@@ -1599,7 +1599,7 @@
                 class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
               >
                 <i class='fas fa-user-tie text-slate-500'></i>
-                <span>{{lokasi}}</span>
+                <span>{{getByLang lokasi ../lang}}</span>
               </div>
             </div>
 

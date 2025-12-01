@@ -199,7 +199,7 @@
                       
                       <!-- ID Description -->
                       <div>
-                        <label for="deskripsi_id" class="block text-xs text-gray-600 my-2">Bahasa Indonesia</label>
+                        <label for="deskripsi_id" class="block text-xs text-gray-600 my-2">ID</label>
                         <textarea
                           id="deskripsi_id"
                           x-model="formData.deskripsi.id"
@@ -213,7 +213,7 @@
                       
                       <!-- EN Description -->
                       <div>
-                        <label for="deskripsi_en" class="block text-xs text-gray-600 my-2">English</label>
+                        <label for="deskripsi_en" class="block text-xs text-gray-600 my-2">EN</label>
                         <textarea
                           id="deskripsi_en"
                           x-model="formData.deskripsi.en"
@@ -227,7 +227,7 @@
                       
                       <!-- JP Description -->
                       <div>
-                        <label for="deskripsi_ja" class="block text-xs text-gray-600 my-2">日本語</label>
+                        <label for="deskripsi_ja" class="block text-xs text-gray-600 my-2">JP</label>
                         <textarea
                           id="deskripsi_ja"
                           x-model="formData.deskripsi.ja"
@@ -267,11 +267,49 @@
                     </div>
 
                     <!-- Location -->
-                    <div>
-                        <label for="lokasi" class="block text-sm font-semibold text-gray-700 mb-1">Location</label>
-                        <input type="text" id="lokasi" name="lokasi" value="{{kelas.lokasi}}" placeholder="Enter location"
-                            class="w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700">
-                    </div>
+
+                          <div class="space-y-4">
+        <label
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Name Location</label>
+          <div>
+            <label class="block text-xs text-gray-600 my-2">ID</label>
+          <input
+            type='text'
+            x-model='formData.lokasi.id'
+            name='lokasi[id]'
+            value="{{kelas.lokasi.id}}"
+            placeholder='Enter location'
+            required
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+          </div>
+          <div>
+            <label class="block text-xs text-gray-600 my-2">EN</label>
+          <input
+            type='text'
+            x-model='formData.lokasi.en'
+            name='lokasi[en]'
+            value="{{kelas.lokasi.en}}"
+            placeholder='Enter location'
+            required
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+          </div>
+          <div>
+            <label class="block text-xs text-gray-600 my-2">JP</label>
+          <input
+            type='text'
+            x-model='formData.lokasi.ja'
+            value="{{kelas.lokasi.ja}}"
+            name='lokasi[ja]'
+            placeholder='Enter location'
+            required
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+          </div>
+        </div>
+                    
                     <div>
                         <label for="link_lokasi" class="block text-sm font-semibold text-gray-700 mb-1">Link Location</label>
                         <input type="text" id="link_lokasi" name="link_lokasi" value="{{kelas.link_lokasi}}" placeholder="Enter location link"

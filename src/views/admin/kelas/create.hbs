@@ -5,7 +5,8 @@
             coverValid: true,
             coverHasFile: false,
             categorySelected: null,
-            formData: { deskripsi: { id: "", en: "", ja: "" } },
+            formData: { deskripsi: { id: "", en: "", ja: "" },
+                        lokasi: { id: "", en: "", ja: "" } },
             updateCoverValidation(isValid, hasFile) {
                 this.coverValid = isValid;
                 this.coverHasFile = hasFile;
@@ -348,20 +349,46 @@
         </div>
 
         <!-- Location -->
-        <div>
-          <label
-            for='lokasi'
+        <div class="space-y-4">
+        <label
             class='block text-sm font-semibold text-gray-700 mb-1'
           >Name Location</label>
+          <div>
+            <label class="block text-xs text-gray-600 my-2">ID</label>
           <input
             type='text'
-            id='lokasi'
-            name='lokasi'
+            x-model='formData.lokasi.id'
+            name='lokasi[id]'
             placeholder='Enter location'
             required
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
           />
+          </div>
+          <div>
+            <label class="block text-xs text-gray-600 my-2">EN</label>
+          <input
+            type='text'
+            x-model='formData.lokasi.en'
+            name='lokasi[en]'
+            placeholder='Enter location'
+            required
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+          </div>
+          <div>
+            <label class="block text-xs text-gray-600 my-2">JP</label>
+          <input
+            type='text'
+            x-model='formData.lokasi.ja'
+            name='lokasi[ja]'
+            placeholder='Enter location'
+            required
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+          </div>
         </div>
+
+
         <div>
           <label
             for='link_lokasi'

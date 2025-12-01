@@ -23,8 +23,8 @@ export class CreateKelassDto {
   @IsInt()
   kategoriId: number;
 
-  @IsString()
-  lokasi: string;
+  @IsArray()
+  lokasi: string[];
 
   @IsInt()
   jenis_kelasId: number;
