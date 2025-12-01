@@ -202,7 +202,7 @@
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:mt-0'
-          >Home</a>
+          >{{t 'test.navbar.home'}}</a>
 
           <a
             href='/dashboard/about'
@@ -211,7 +211,7 @@
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
-          >About</a>
+          >{{t 'test.navbar.about'}}</a>
 
           <!-- Program Dropdown - Mobile & Desktop -->
           <div class='relative md:ml-4'>
@@ -223,7 +223,7 @@
               : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
               class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold text-left rounded-lg transition-colors md:w-auto'
             >
-              <span>Program</span>
+              <span>{{t 'test.navbar.program'}}</span>
               <svg
                 fill='currentColor'
                 viewBox='0 0 20 20'
@@ -319,7 +319,7 @@
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
-          >Portfolio</a>
+          >{{t 'test.navbar.portfolio'}}</a>
 
           <a
             href='/dashboard/alumni'
@@ -422,7 +422,7 @@
                     stroke-width='2'
                     d='M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'
                   ></path></svg>
-                <span>My Learning</span>
+                <span>{{t 'test.navbar.myLearning'}}</span>
               </a>
               <a
                 href='/portfolios/myportfolio/{{user.id}}'
@@ -441,7 +441,7 @@
                     stroke-width='2'
                     d='M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'
                   ></path></svg>
-                <span>My Portfolio</span>
+                <span>{{t 'test.navbar.myPortfolio'}}</span>
               </a>
               <a
                 href='/pembayarans/riwayat/{{user.id}}'
@@ -460,7 +460,7 @@
                     stroke-width='2'
                     d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
                   ></path></svg>
-                <span>History payment</span>
+                <span>{{t 'test.navbar.historyPayment'}}</span>
               </a>
               <a
                 href='/logout'
@@ -477,7 +477,7 @@
                     stroke-width='2'
                     d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
                   ></path></svg>
-                <span>Log out</span>
+                <span>{{t 'test.navbar.logout'}}</span>
               </a>
             </div>
 
@@ -527,7 +527,7 @@
                       stroke-width='2'
                       d='M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'
                     ></path></svg>
-                  <span>My Learning</span>
+                  <span>{{t 'test.navbar.myLearning'}}</span>
                 </a>
                 <a
                   href='/portfolios/myportfolio/{{user.id}}'
@@ -546,7 +546,7 @@
                       stroke-width='2'
                       d='M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'
                     ></path></svg>
-                  <span>My Portfolio</span>
+                  <span>{{t 'test.navbar.myPortfolio'}}</span>
                 </a>
                 <a
                   href='/pembayarans/riwayat/{{user.id}}'
@@ -565,7 +565,7 @@
                       stroke-width='2'
                       d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
                     ></path></svg>
-                  <span>History payment</span>
+                  <span>{{t 'test.navbar.historyPayment'}}</span>
                 </a>
                 <a
                   href='/logout'
@@ -582,7 +582,7 @@
                       stroke-width='2'
                       d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
                     ></path></svg>
-                  <span>Log out</span>
+                  <span>{{t 'test.navbar.logout'}}</span>
                 </a>
               </div>
             </div>
@@ -597,7 +597,7 @@
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:mt-0'
-          >Home</a>
+          >{{t 'test.navbar.home'}}</a>
 
           <a
             href='/dashboard/about'
@@ -606,7 +606,7 @@
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
-          >About</a>
+          >{{t 'test.navbar.about'}}</a>
 
           <div class='relative md:ml-4'>
             <button
@@ -617,7 +617,7 @@
               : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
               class='flex items-center justify-between w-full px-4 py-2 text-sm font-semibold text-left rounded-lg transition-colors md:w-auto'
             >
-              <span>Program</span>
+              <span>{{t 'test.navbar.program'}}</span>
               <svg
                 fill='currentColor'
                 viewBox='0 0 20 20'
@@ -714,7 +714,7 @@
             ? 'bg-white text-gray-900' 
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
-          >Portfolio</a>
+          >{{t 'test.navbar.portfolio'}}</a>
 
           <a
             href='/dashboard/alumni'
