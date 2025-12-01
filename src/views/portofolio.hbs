@@ -1,10 +1,9 @@
 <div class='pt-24 min-h-screen bg-white' x-data='portfolioApp()'>
   <div class='container mx-auto px-4 pb-16'>
     <div class='text-center mb-12'>
-      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>Portfolio</h1>
+      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.portfolio.tittle"}}</h1>
       <p class='text-gray-600 max-w-2xl mx-auto text-lg font-inter'>
-        Explore our collection of exceptional projects from bootcamp alumni.
-        Each portfolio showcases technical skills and creative solutions.
+        {{t "test.portfolio.description"}}
       </p>
     </div>
 
@@ -15,13 +14,13 @@
         >
           <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
             <div class='flex items-center justify-between mb-3'>
-              <h4 class='text-sm font-semibold text-gray-700 font-montserrat'>Active Filters</h4>
+              <h4 class='text-sm font-semibold text-gray-700 font-montserrat'>{{t "test.portfolio.filterTittle"}}</h4>
               <button
                 @click='resetFilters()'
                 class='text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center'
               >
                 <i class='fas fa-undo-alt mr-1 text-xs'></i>
-                Reset
+                {{t "test.portfolio.resetFilters"}}
               </button>
             </div>
             <div class='space-y-2'>
@@ -31,7 +30,7 @@
                 <div
                   class='text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200'
                 >
-                  No active filters
+                  {{t "test.portfolio.noFilters"}}
                 </div>
               </template>
 
@@ -59,7 +58,7 @@
               class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
             >
               <i class='fas fa-tags text-gray-500 mr-2'></i>
-              Category
+                {{t "test.portfolio.categoryTittle"}}
             </h3>
             <div class='space-y-2'>
               <button

@@ -10,9 +10,6 @@ export class CreateMentorDto {
   @IsString()
   profile: string;
 
-  @IsString()
-  ttd: string;
-
   @IsArray()
   teknologi: string[];
 

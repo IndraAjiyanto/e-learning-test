@@ -12,15 +12,7 @@
         imageHeight: 0,
         hasFile: false,
         
-        // TTD validation states
-        ttdPreviewUrl: null,
-        ttdErrorMessage: '',
-        ttdIsValid: true,
-        ttdFileName: '',
-        ttdFileSize: 0,
-        ttdImageWidth: 0,
-        ttdImageHeight: 0,
-        ttdHasFile: false,
+
 
         // Form validation states
         formData: {
@@ -165,52 +157,6 @@
           };
           img.src = objectUrl;
         },
-        
-        validateTTD(file) {
-          if (!file) { this.ttdHasFile = false; return; }
-          this.ttdHasFile = true;
-          this.ttdFileName = file.name;
-          this.ttdFileSize = file.size;
-          this.ttdErrorMessage = '';
-          this.ttdIsValid = true;
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.ttdErrorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
-            this.ttdIsValid = false;
-            this.ttdPreviewUrl = null;
-            return;
-          }
-          const maxSize = 5 * 1024 * 1024;
-          if (file.size > maxSize) {
-            this.ttdErrorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
-            this.ttdIsValid = false;
-            this.ttdPreviewUrl = null;
-            return;
-          }
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(file);
-          img.onload = () => {
-            this.ttdImageWidth = img.width;
-            this.ttdImageHeight = img.height;
-            if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
-              this.ttdErrorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`;
-              this.ttdIsValid = false;
-              this.ttdPreviewUrl = null;
-              URL.revokeObjectURL(objectUrl);
-            } else {
-              this.ttdPreviewUrl = objectUrl;
-              this.ttdIsValid = true;
-              this.ttdErrorMessage = '';
-            }
-          };
-          img.onerror = () => {
-            this.ttdErrorMessage = 'Failed to load image';
-            this.ttdIsValid = false;
-            this.ttdPreviewUrl = null;
-            URL.revokeObjectURL(objectUrl);
-          };
-          img.src = objectUrl;
-        },
 
         clearFile() {
           this.previewUrl = null;
@@ -224,25 +170,13 @@
           this.$refs.profileFile.value = null;
         },
         
-        clearTTD() {
-          this.ttdPreviewUrl = null;
-          this.ttdErrorMessage = '';
-          this.ttdIsValid = true;
-          this.ttdFileName = '';
-          this.ttdFileSize = 0;
-          this.ttdImageWidth = 0;
-          this.ttdImageHeight = 0;
-          this.ttdHasFile = false;
-          this.$refs.ttdFile.value = null;
-        },
 
         canSubmit() {
           const imageValid = !this.hasFile || this.isValid;
-          const ttdValid = !this.ttdHasFile || this.ttdIsValid;
           const posisiValid = Object.values(this.formValid.posisi).every(v => v);
           const deskripsiValid = Object.values(this.formValid.deskripsi).every(v => v);
           const formValid = this.formValid.nama && posisiValid && deskripsiValid && this.formValid.linkedin && this.formValid.github;
-          return imageValid && ttdValid && formValid;
+          return imageValid && formValid;
         },
 
         hasFormErrors() {
@@ -829,82 +763,7 @@
             </template>
           </div>
 
-          <!-- TTD (Signature) -->
-          <div class='space-y-3'>
-            <label
-              for='ttd'
-              class='block text-sm font-semibold text-gray-700 mb-1'
-            >TTD
-              <span class='text-xs text-gray-500 font-normal'>(300x300 -
-                2000x2000px, max 5MB, JPG/PNG)</span>
-            </label>
-            <input
-              type='file'
-              id='ttd'
-              name='ttd'
-              accept='image/jpeg,image/jpg,image/png'
-              x-ref='ttdFile'
-              :class="!ttdIsValid && ttdErrorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
-              class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
-              @change='validateTTD($event.target.files[0])'
-            />
 
-            <!-- Error Message -->
-            <template x-if='!ttdIsValid && ttdErrorMessage'>
-              <div
-                class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-              >
-                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <div>
-                  <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
-                  <p class='text-xs text-red-700' x-text='ttdErrorMessage'></p>
-                </div>
-              </div>
-            </template>
-
-            <!-- Success Message with File Info -->
-            <template x-if='ttdHasFile && ttdIsValid'>
-              <div class='space-y-2'>
-                <div
-                  class='flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
-                >
-                  <div class='flex items-center gap-2'>
-                    <i class='fas fa-check-circle text-green-500'></i>
-                    <div class='text-xs text-green-700'>
-                      <span class='font-semibold'>Valid image:</span>
-                      <span
-                        x-text='`${ttdImageWidth}x${ttdImageHeight}px, ${(ttdFileSize / 1024).toFixed(1)}KB`'
-                      ></span>
-                    </div>
-                  </div>
-                  <button
-                    type='button'
-                    class='text-red-500 hover:text-red-700 transition-colors'
-                    @click='clearTTD()'
-                    title='Remove image'
-                  >
-                    <i class='fas fa-times-circle'></i>
-                  </button>
-                </div>
-
-                <!-- Image Preview -->
-                <div class='relative w-32 h-32'>
-                  <img
-                    :src='ttdPreviewUrl'
-                    alt='Preview TTD'
-                    class='w-32 h-32 object-cover rounded-lg border-2 border-green-500 shadow-sm'
-                  />
-                  <button
-                    type='button'
-                    class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600'
-                    @click='clearTTD()'
-                  >
-                    &times;
-                  </button>
-                </div>
-              </div>
-            </template>
-          </div>
         </div>
       </div>
 
@@ -924,7 +783,7 @@
 
       <!-- Submit Warning -->
       <template
-        x-if='hasFormErrors() || (hasFile && !isValid) || (ttdHasFile && !ttdIsValid)'
+        x-if='hasFormErrors() || (hasFile && !isValid)'
       >
         <div
           class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'

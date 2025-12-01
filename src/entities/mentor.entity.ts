@@ -45,9 +45,6 @@ export class Mentor {
   @Column('jsonb', { nullable: true })
   deskripsi: string[];
 
-  @Column()
-  ttd: string;
-
   @CreateDateColumn()
   createdAt: Date;
 

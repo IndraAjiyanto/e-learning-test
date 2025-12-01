@@ -33,7 +33,6 @@ export class MentorController {
     FileFieldsInterceptor(
       [
         { name: 'profile', maxCount: 1 },
-        { name: 'ttd', maxCount: 1 },
       ],
       { storage: memoryStorage() },
     ),
@@ -63,9 +62,6 @@ export class MentorController {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       if (files?.profile?.length) {
         createMentorDto.profile = uploadedImages[0]; // asumsikan urutan sesuai dengan files
-      }
-      if (files?.ttd?.length) {
-        createMentorDto.ttd = uploadedImages[files.profile ? 1 : 0];
       }
 
       await this.mentorService.create(createMentorDto);
@@ -131,7 +127,6 @@ export class MentorController {
     FileFieldsInterceptor(
       [
         { name: 'profile', maxCount: 1 },
-        { name: 'ttd', maxCount: 1 },
       ],
       { storage: memoryStorage() },
     ),
@@ -166,13 +161,6 @@ export class MentorController {
         }
       }
 
-      if (files?.ttd?.length) {
-        updateMentorDto.ttd = uploadedImages[files.profile ? 1 : 0];
-        if (mentor.ttd) {
-          await this.mentorService.getPublicIdFromUrl(mentor.ttd);
-        }
-      }
-
       await this.mentorService.update(mentorId, updateMentorDto);
       req.flash('success', 'mentor successfully update');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
@@ -197,7 +185,6 @@ export class MentorController {
         res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
       }
       await this.mentorService.getPublicIdFromUrl(mentor.profile);
-      await this.mentorService.getPublicIdFromUrl(mentor.ttd);
       await this.mentorService.remove(mentorId);
       req.flash('success', 'mentor successfully deleted');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
