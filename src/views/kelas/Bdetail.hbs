@@ -332,14 +332,34 @@
                 Requirements
               </h4>
               <ul class='space-y-3'>
-                {{#each kelas.kriteria}}
+                {{#if (eq lang 'id')}}
+                {{#each kelas.kriteria.id}}
                   <li class='flex items-start gap-3 font-inter text-gray-700'>
                     <i
                       class='fas fa-check-square text-gray-400 mt-1 flex-shrink-0'
                     ></i>
-                    <span>{{getByLang this ../lang}}</span>
+                    <span>{{this}}</span>
                   </li>
                 {{/each}}
+                {{else if (eq lang 'en')}}
+                {{#each kelas.kriteria.en}}
+                  <li class='flex items-start gap-3 font-inter text-gray-700'>
+                    <i
+                      class='fas fa-check-square text-gray-400 mt-1 flex-shrink-0'
+                    ></i>
+                    <span>{{this}}</span>
+                  </li>
+                {{/each}}
+                {{else if (eq lang 'jp')}}
+                {{#each kelas.kriteria.jp}}
+                  <li class='flex items-start gap-3 font-inter text-gray-700'>
+                    <i
+                      class='fas fa-check-square text-gray-400 mt-1 flex-shrink-0'
+                    ></i>
+                    <span>{{this}}</span>
+                  </li>
+                {{/each}}
+                {{/if}}
               </ul>
             </div>
 
