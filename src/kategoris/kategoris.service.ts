@@ -97,7 +97,7 @@ export class KategorisService {
 
   async findKelasByKategori(kategoriId: number) {
     return await this.kelasRepository.find({
-      where: { kategori: { id: kategoriId } },
+      where: { kategori: { id: kategoriId }, launch: true },
       relations: ['kategori', 'jenis_kelas', 'user_kelas', 'user_kelas.user'],
     });
   }

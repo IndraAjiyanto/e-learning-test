@@ -734,7 +734,10 @@
             class='block px-4 py-2 text-sm font-semibold border-2 border-white hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors md:ml-4'
           >Login</a>
 
-          <!-- Language Selector -->
+
+
+        {{/if}}
+                  <!-- Language Selector -->
           <div
             class='relative md:ml-4'
             x-data="{ langOpen: false, currentLang: '{{lang}}' }"
@@ -818,8 +821,6 @@
               </form>
             </div>
           </div>
-
-        {{/if}}
       </div>
     </nav>
   </div>
