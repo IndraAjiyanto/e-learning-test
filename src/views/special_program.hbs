@@ -509,7 +509,7 @@
         data-kategori='{{kategori.nama_kategori}}'
         data-category='{{ jenis_kelas.nama_jenis_kelas }}'
         data-nama='{{nama_kelas}}'
-        data-deskripsi='{{deskripsi}}'
+        data-deskripsi='{{getByLang deskripsi ../lang}}'
         data-location='{{metode}}'
         x-show="paginatedKelas($el)"
         x-transition
@@ -558,7 +558,7 @@
           >{{nama_kelas}}</h2>
 
           <p class='text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed'>
-            {{deskripsi}}
+            {{getByLang deskripsi ../lang}}
           </p>
 
           <div

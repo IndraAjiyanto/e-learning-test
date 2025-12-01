@@ -5,10 +5,23 @@
             coverValid: true,
             coverHasFile: false,
             categorySelected: null,
+            formData: { deskripsi: { id: "", en: "", ja: "" } },
             updateCoverValidation(isValid, hasFile) {
                 this.coverValid = isValid;
                 this.coverHasFile = hasFile;
             },
+            validateField(field, lang) {
+                const value = this.formData[field][lang];
+                const fieldName = `${field}_${lang}`;
+                const errorElement = document.getElementById(`${fieldName}_error`);
+                if (errorElement) {
+                    if (!value || value.trim() === "") {
+                        errorElement.classList.remove("hidden");
+                    } else {
+                        errorElement.classList.add("hidden");
+                    }
+                }
+            }
         }'
   >
     <h2 class='text-3xl font-bold mb-8 text-gray-900 text-center'>Create Program</h2>
@@ -216,18 +229,87 @@
         </div>
 
         <!-- Description -->
-        <div>
+        <div class='space-y-4'>
           <label
-            for='deskripsi'
             class='block text-sm font-semibold text-gray-700 mb-1'
           >Description</label>
-          <textarea
-            id='deskripsi'
-            name='deskripsi'
-            rows='4'
-            placeholder='Write a brief description...'
-            class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          ></textarea>
+
+          <!-- ID Description -->
+          <div>
+            <label
+              for='deskripsi_id'
+              class='block text-xs text-gray-600 mb-1'
+            >Bahasa Indonesia</label>
+            <textarea
+              id='deskripsi_id'
+              x-model='formData.deskripsi.id'
+              @blur="validateField('deskripsi', 'id')"
+              rows='3'
+              placeholder='Tulis deskripsi dalam bahasa Indonesia...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+            <div
+              id='deskripsi_id_error'
+              class='hidden text-red-500 text-xs mt-1'
+            >Deskripsi bahasa Indonesia wajib diisi</div>
+          </div>
+
+          <!-- EN Description -->
+          <div>
+            <label
+              for='deskripsi_en'
+              class='block text-xs text-gray-600 mb-1'
+            >English</label>
+            <textarea
+              id='deskripsi_en'
+              x-model='formData.deskripsi.en'
+              @blur="validateField('deskripsi', 'en')"
+              rows='3'
+              placeholder='Write description in English...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+            <div
+              id='deskripsi_en_error'
+              class='hidden text-red-500 text-xs mt-1'
+            >English description is required</div>
+          </div>
+
+          <!-- JP Description -->
+          <div>
+            <label
+              for='deskripsi_ja'
+              class='block text-xs text-gray-600 mb-1'
+            >日本語</label>
+            <textarea
+              id='deskripsi_ja'
+              x-model='formData.deskripsi.ja'
+              @blur="validateField('deskripsi', 'ja')"
+              rows='3'
+              placeholder='日本語で説明を書いてください...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+            <div
+              id='deskripsi_ja_error'
+              class='hidden text-red-500 text-xs mt-1'
+            >日本語の説明が必要です</div>
+          </div>
+
+          <!-- Hidden inputs for form submission -->
+          <input
+            type='hidden'
+            name='deskripsi[id]'
+            x-model='formData.deskripsi.id'
+          />
+          <input
+            type='hidden'
+            name='deskripsi[en]'
+            x-model='formData.deskripsi.en'
+          />
+          <input
+            type='hidden'
+            name='deskripsi[ja]'
+            x-model='formData.deskripsi.ja'
+          />
         </div>
 
         <!-- Method -->
@@ -847,23 +929,22 @@
         </div>
 
         <!-- Lessons -->
-        <div x-data="{ materis: [''] }">
-          <label
-            class='block text-sm font-semibold text-gray-700 mb-2'
-          >Lessons</label>
-          <template x-for='(materi, index) in materis' :key='index'>
+        <div x-data="{ materis_id: [''] }">
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Lessons
+            ID</label>
+          <template x-for='(materi_id, index) in materis_id' :key='index'>
             <div class='flex items-center gap-3 mb-3'>
               <input
                 type='text'
-                x-model='materis[index]'
-                name='materi[]'
+                x-model='materis_id[index]'
+                name='materi_id[]'
                 placeholder='Enter a lesson'
                 class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
               />
               <button
                 type='button'
-                @click='materis.splice(index,1)'
-                x-show='materis.length > 1'
+                @click='materis_id.splice(index,1)'
+                x-show='materis_id.length > 1'
                 class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
               >
                 ✕
@@ -872,7 +953,69 @@
           </template>
           <button
             type='button'
-            @click="materis.push('')"
+            @click="materis_id.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Lesson
+          </button>
+        </div>
+
+        <div x-data="{ materis_en: [''] }">
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Lessons
+            EN</label>
+          <template x-for='(materi_en, index) in materis_en' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='materis_en[index]'
+                name='materi_en[]'
+                placeholder='Enter a lesson'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='materis_en.splice(index,1)'
+                x-show='materis_en.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="materis_en.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Lesson
+          </button>
+        </div>
+
+        <div x-data="{ materis_ja: [''] }">
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Lessons
+            JA</label>
+          <template x-for='(materi_ja, index) in materis_ja' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='materis_ja[index]'
+                name='materi_ja[]'
+                placeholder='Enter a lesson'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='materis_ja.splice(index,1)'
+                x-show='materis_ja.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="materis_ja.push('')"
             class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
           >
             + Add Lesson
@@ -880,22 +1023,22 @@
         </div>
 
         <!-- Learning Targets -->
-        <div x-data="{ targets: [''] }">
+        <div x-data="{ targets_id: [''] }">
           <label class='block text-sm font-semibold text-gray-700 mb-2'>Learning
-            Targets</label>
-          <template x-for='(target, index) in targets' :key='index'>
+            Targets ID</label>
+          <template x-for='(target_id, index) in targets_id' :key='index'>
             <div class='flex items-center gap-3 mb-3'>
               <input
                 type='text'
-                x-model='targets[index]'
-                name='target_pembelajaran[]'
+                x-model='targets_id[index]'
+                name='target_pembelajaran_id[]'
                 placeholder='Enter a learning target'
                 class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
               />
               <button
                 type='button'
-                @click='targets.splice(index,1)'
-                x-show='targets.length > 1'
+                @click='targets_id.splice(index,1)'
+                x-show='targets_id.length > 1'
                 class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
               >
                 ✕
@@ -904,7 +1047,69 @@
           </template>
           <button
             type='button'
-            @click="targets.push('')"
+            @click="targets_id.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Target
+          </button>
+        </div>
+
+        <div x-data="{ targets_en: [''] }">
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Learning
+            Targets EN</label>
+          <template x-for='(target_en, index) in targets_en' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='targets_en[index]'
+                name='target_pembelajaran_en[]'
+                placeholder='Enter a learning target'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='targets_en.splice(index,1)'
+                x-show='targets_en.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="targets_en.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Target
+          </button>
+        </div>
+
+        <div x-data="{ targets_ja: [''] }">
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Learning
+            Targets JA</label>
+          <template x-for='(target_ja, index) in targets_ja' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='targets_ja[index]'
+                name='target_pembelajaran_ja[]'
+                placeholder='Enter a learning target'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='targets_ja.splice(index,1)'
+                x-show='targets_ja.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="targets_ja.push('')"
             class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
           >
             + Add Target
@@ -912,23 +1117,22 @@
         </div>
 
         <!-- Criteria -->
-        <div x-data="{ kriterias: [''] }">
-          <label
-            class='block text-sm font-semibold text-gray-700 mb-2'
-          >Criteria</label>
-          <template x-for='(kriteria, index) in kriterias' :key='index'>
+        <div x-data="{ kriterias_id: [''] }">
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Criteria
+            ID</label>
+          <template x-for='(kriteria_id, index) in kriterias_id' :key='index'>
             <div class='flex items-center gap-3 mb-3'>
               <input
                 type='text'
-                x-model='kriterias[index]'
-                name='kriteria[]'
+                x-model='kriterias_id[index]'
+                name='kriteria_id[]'
                 placeholder='Enter criteria'
                 class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
               />
               <button
                 type='button'
-                @click='kriterias.splice(index,1)'
-                x-show='kriterias.length > 1'
+                @click='kriterias_id.splice(index,1)'
+                x-show='kriterias_id.length > 1'
                 class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
               >
                 ✕
@@ -937,7 +1141,69 @@
           </template>
           <button
             type='button'
-            @click="kriterias.push('')"
+            @click="kriterias_id.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Criteria
+          </button>
+        </div>
+
+        <div x-data="{ kriterias_en: [''] }">
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Criteria
+            EN</label>
+          <template x-for='(kriteria_en, index) in kriterias_en' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='kriterias_en[index]'
+                name='kriteria_en[]'
+                placeholder='Enter criteria'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='kriterias_en.splice(index,1)'
+                x-show='kriterias_en.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="kriterias_en.push('')"
+            class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+          >
+            + Add Criteria
+          </button>
+        </div>
+
+        <div x-data="{ kriterias_ja: [''] }">
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Criteria
+            JA</label>
+          <template x-for='(kriteria_ja, index) in kriterias_ja' :key='index'>
+            <div class='flex items-center gap-3 mb-3'>
+              <input
+                type='text'
+                x-model='kriterias_ja[index]'
+                name='kriteria_ja[]'
+                placeholder='Enter criteria'
+                class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <button
+                type='button'
+                @click='kriterias_ja.splice(index,1)'
+                x-show='kriterias_ja.length > 1'
+                class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+              >
+                ✕
+              </button>
+            </div>
+          </template>
+          <button
+            type='button'
+            @click="kriterias_ja.push('')"
             class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
           >
             + Add Criteria

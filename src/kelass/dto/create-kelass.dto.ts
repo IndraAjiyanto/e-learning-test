@@ -92,8 +92,8 @@ export class CreateKelassDto {
   @IsOptional()
   proses: Proses;
 
-  @IsString()
-  deskripsi: string;
+  @IsArray()
+  deskripsi: string[];
 
   @IsArray()
   @IsOptional()
