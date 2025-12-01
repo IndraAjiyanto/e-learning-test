@@ -2,31 +2,29 @@
   <div class='max-w-7xl mx-auto px-6'>
     <div class='text-center'>
       <div class='flex items-center justify-center space-x-3 mb-4'>
-        <div class='w-10 h-10 rounded-lg flex items-center justify-center'>
-          <img src='/public/image/logo.png' alt='Kesatria Academy Logo' />
+        <div class='rounded-lg flex items-center justify-center'>
+          <img src='/public/image/logo_rata.png' class="w-52 h-52" alt='Kesatria Academy Logo' />
         </div>
-        <span class='text-xl font-bold font-montserrat'>Kesatria Academy</span>
       </div>
       <p class='text-white mb-6 font-inter text-lg'>
-        Empowering Indonesia's digital generation through quality tech education
+        {{t 'test.footer.description'}}
       </p>
       <div class='flex justify-center space-x-6'>
         <a
           href='#'
           class='text-white hover:text-white transition-colors'
-        >Privacy Policy</a>
+        >{{t 'test.footer.privacyPolicy'}}</a>
         <a
           href='#'
           class='text-white hover:text-white transition-colors'
-        >Terms of Service</a>
+        >{{t 'test.footer.termsOfService'}}</a>
         <a
           href='#'
           class='text-white hover:text-white transition-colors'
-        >FAQ</a>
+        >{{t 'test.footer.faq'}}</a>
       </div>
       <div class='mt-8 pt-8 border-t border-textSecondary/30'>
-        <p class='text-white'>&copy; 2025 Kesatria Academy. All rights
-          reserved.</p>
+        <p class='text-white'>{{t 'test.footer.copyright'}}</p>
       </div>
     </div>
   </div>
