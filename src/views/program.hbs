@@ -12,7 +12,7 @@
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
         {{#each kategori.jenis_kelas}}
-        { value: `{{this.nama_jenis_kelas }}`, icon: '{{this.icon}}', title: `{{ this.nama_jenis_kelas }}`, desc: `{{getByLang this.deskripsi ../lang}}` },
+        { value: `{{this.nama_jenis_kelas }}`, icon: '{{this.icon}}', title: `{{ this.nama_jenis_kelas }}`, desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
         {{/each}}
       ],
       

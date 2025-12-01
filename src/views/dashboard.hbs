@@ -495,14 +495,14 @@ Get full career support — from crafting your CV and portfolio to preparing for
       categoriesData: [
         { value: 'all', icon: 'fa-th', title: 'All Categories', desc: 'Show all class categories' },
         {{#each kategori}}
-        { value: '{{this.nama_kategori}}', icon: '{{this.icon}}', title: '{{this.nama_kategori}}', desc: '{{this.deskripsi}}' },
+        { value: '{{this.nama_kategori}}', icon: '{{this.icon}}', title: '{{this.nama_kategori}}', desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
         {{/each}}
       ],
       
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: 'All Types', desc: 'All types of learning' },
         {{#each jenis_kelas}}
-        { value: `{{this.nama_jenis_kelas }}`, icon: '{{computeIcon this.icon}}', title: `{{this.nama_jenis_kelas}}`, desc: `{{getByLang this.deskripsi ../lang}}` },
+        { value: `{{this.nama_jenis_kelas }}`, icon: '{{computeIcon this.icon}}', title: `{{this.nama_jenis_kelas}}`, desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
         {{/each}}
       ],
       
