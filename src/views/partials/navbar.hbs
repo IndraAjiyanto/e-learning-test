@@ -22,6 +22,7 @@
     x-data="{
     open: false,
     programOpen: false,
+    lang: '{{lang}}',
     userOpen: false,
     active: '/dashboard',
     kategori: [],      // Function untuk set active
@@ -74,6 +75,11 @@
                currentPath === '/wip' ||
                currentPath.includes('/dashboard/kategori/');
       },
+
+    getByLang(obj, lang) {
+    if (!obj || typeof obj !== 'object') return '';
+    return obj[lang] || obj['id'] || ''; 
+  },
       
       // Check jika user dropdown aktif - DIPERBAIKI
       isUserActive() {
@@ -259,7 +265,8 @@
                     ></p>
                     <p
                       class='text-xs text-gray-300 mt-0.5'
-                      x-text='kat.deskripsi'
+                                                x-text='getByLang(kat.deskripsi,lang)'
+
                     ></p>
                   </div>
                 </a>
@@ -295,7 +302,7 @@
                         ></p>
                         <p
                           class='text-xs text-gray-600 mt-1 font-inter'
-                          x-text='{{getByLang kat.deskripsi lang}}'
+                          x-text='getByLang(kat.deskripsi,lang)'
                         ></p>
                       </div>
                     </a>
@@ -652,7 +659,8 @@
                     ></p>
                     <p
                       class='text-xs text-gray-300 mt-0.5'
-                      x-text='kat.deskripsi'
+                                                x-text='getByLang(kat.deskripsi,lang)'
+
                     ></p>
                   </div>
                 </a>
@@ -689,7 +697,7 @@
                         ></p>
                         <p
                           class='text-xs text-gray-600 mt-1 font-inter'
-                          x-text='kat.deskripsi'
+                          x-text='getByLang(kat.deskripsi,lang)'
                         ></p>
                       </div>
                     </a>
