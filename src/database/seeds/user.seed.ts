@@ -115,7 +115,7 @@ async function bootstrap() {
   await kelassRepository.save([
     {
       nama_kelas: 'Full Stack Developer',
-      deskripsi: 'belajar menjadi full stack developer',
+      deskripsi: ['belajar menjadi full stack developer'],
       gambar: 'logo.png',
       kuota: 10,
       harga: 1000000,
@@ -125,20 +125,20 @@ async function bootstrap() {
       link_lokasi: 'disini',
       metode: 'offline' as Metode,
       proses: 'acc' as Proses,
-      kriteria: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
+      kriteria_id: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
       launch: false,
       check_paid: true,
       teknologi: [nestJs, reactJs],
-      materi: ['javascript', 'css'],
-      target_pembelajaran: [
+      materi_id: ['javascript', 'css'],
+      target_pembelajaran_id: [
         'paham alur nest js',
         'mahir di bidang full stack developer',
       ],
       jenis_kelas: { id: 1 },
       kategori: { id: 1 },
       hari: 1,
-      tanggal_mulai: new Date('2025-01-01'),
-      tanggal_selesai: new Date('2025-01-31'),
+      tanggal_mulai: new Date('2025-12-01'),
+      tanggal_selesai: new Date('2025-12-31'),
     },
   ]);
 
