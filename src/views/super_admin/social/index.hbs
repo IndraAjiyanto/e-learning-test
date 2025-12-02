@@ -65,6 +65,9 @@
           >YouTube</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >YouTube Video</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Email</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
@@ -116,6 +119,20 @@
                 <i class='fab fa-youtube'></i>
                 <span class='truncate max-w-[150px]'>{{youtube}}</span>
               </a>
+            </td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              {{#if video_youtube}}
+                <a
+                  href='{{video_youtube}}'
+                  target='_blank'
+                  class='text-red-600 hover:underline flex items-center gap-2'
+                >
+                  <i class='fab fa-youtube'></i>
+                  <span class='truncate max-w-[150px]'>{{video_youtube}}</span>
+                </a>
+              {{else}}
+                <span class='text-gray-400 italic'>No video</span>
+              {{/if}}
             </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               <a
@@ -250,9 +267,9 @@
       amount: 0,
 
       get filteredSocials() {
-        let filtered = this.socials.filter(s =>
+        let filtered = this.socials.filter((s) =>
           (
-            `${s.linkedin} ${s.instragram} ${s.youtube} ${s.email} ${s.nomor} ${s.alamat}`
+            `${s.linkedin} ${s.instragram} ${s.youtube} ${s.video_youtube} ${s.email} ${s.nomor} ${s.alamat}`
           )
             .toLowerCase()
             .includes(this.search.toLowerCase())
@@ -263,8 +280,8 @@
         const start = this.pageNumber * this.size;
         const end = start + this.size;
 
-        // Mengembalikan hanya ID sebagai string (sesuai kode asli)
-        return filtered.slice(start, end).map(s => s.id.toString());
+        // Mengembalikan hanya ID sebagai string
+        return filtered.slice(start, end).map((s) => s.id.toString());
       },
 
       pages() {

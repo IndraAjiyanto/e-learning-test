@@ -8,6 +8,9 @@ export class CreateSocialDto {
   instragram: string;
 
   @IsString()
+  video_youtube: string;
+
+  @IsString()
   youtube: string;
 
   @IsEmail()
