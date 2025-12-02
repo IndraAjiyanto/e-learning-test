@@ -468,33 +468,33 @@
             >
               Frequently Asked Questions
             </h3>
+<div class='space-y-4' x-data='{ openFaq: null }'>
+  {{#each kelas.pertanyaan_kelas}}
+    <div class='border border-gray-200 rounded-xl overflow-hidden'>
+      <button
+        class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
+        @click='openFaq = openFaq === {{@index}} ? null : {{@index}}'
+      >
+        <span class='font-montserrat font-semibold text-gray-800'>
+          {{getByLang this.pertanyaan ../lang}}
+        </span>
+        <i
+          class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
+          :class="{'rotate-180': openFaq === {{@index}}}"
+        ></i>
+      </button>
 
-            <div class='space-y-4' x-data='{ openFaq: null }'>
-              <!-- FAQ Item 1 -->
-              {{#each kelas.pertanyaan_kelas}}
-                <div class='border border-gray-200 rounded-xl overflow-hidden'>
-                  <button
-                    class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
-                    @click='openFaq = openFaq === 1 ? null : 1'
-                  >
-                    <span class='font-montserrat font-semibold text-gray-800'>
-                      {{getByLang this.pertanyaan ../lang}}</span>
-                    <i
-                      class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
-                      :class="{'rotate-180': openFaq === 1}"
-                    ></i>
-                  </button>
-                  <div
-                    class='font-inter px-5 pb-5 text-gray-700'
-                    x-show='openFaq === 1'
-                    x-transition
-                  >
-                    {{getByLang this.jawaban ../lang}}
-                  </div>
-                </div>
-              {{/each}}
+      <div
+        class='font-inter px-5 pb-5 text-gray-700'
+        x-show='openFaq === {{@index}}'
+        x-transition
+      >
+        {{getByLang this.jawaban ../lang}}
+      </div>
+    </div>
+  {{/each}}
+</div>
 
-            </div>
           </div>
         </div>
 
