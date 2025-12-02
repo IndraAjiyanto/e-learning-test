@@ -224,16 +224,16 @@
                     {{#each experience}}
                     <li class='flex items-center space-x-2'>
                       <i class='fa-solid fa-circle fa-xs text-gray-500 flex-shrink-0'></i>
-                      <div>
+                      <div class="flex items-center gap-1">
                         <strong>{{getByLang content ../lang}}</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'>{{getByLang isi ../lang}}</p>
+                        <p class='text-xs sm:text-sm text-slate-600'> - {{getByLang isi ../lang}}</p>
                       </div>
                     </li>
                     {{/each}}
                     {{else}}
                     <li class='flex items-start space-x-2'>
                       <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div>
+                      <div class="flex items-center gap-1">
                         <strong>Founder & Chief Executive Officer</strong>
                         <p class='text-xs sm:text-sm text-slate-600'> - PT. Wiratek Solusi Asia</p>
                       </div>
