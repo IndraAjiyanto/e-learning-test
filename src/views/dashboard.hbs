@@ -841,8 +841,8 @@ Get full career support — from crafting your CV and portfolio to preparing for
             x-show="selectedMethod !== 'all'"
             class='px-4 py-2 bg-slate-700/50 text-slate-200 rounded-lg text-sm font-medium'
           >
-            <i class='fas fa-laptop mr-2'></i><span
-              x-text='selectedMethod'
+            <i :class="'fas ' + selectedMethodItem.icon + ' mr-2'"></i><span
+              x-text='selectedMethodItem.title'
             ></span>
           </span>
           <span
@@ -934,7 +934,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
               class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
             >
               <i class='fas fa-user-tie text-slate-500'></i>
-              <span>{{lokasi}}</span>
+              <span>{{getByLang lokasi ../lang}}</span>
             </div>
           </div>
 
