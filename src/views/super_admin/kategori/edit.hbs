@@ -5,39 +5,39 @@
       /* ============================================================
        * STATE
        * ============================================================ */
-      previewUrl: '{{kategori.icon}}' || null,
+      previewUrl: `{{kategori.icon}}` || null,
       errorMessage: '',
       isValid: true,
-      fileName: '{{kategori.icon}}' ? 'Current Icon' : '',
+      fileName: `{{kategori.icon}}` ? 'Current Icon' : '',
       fileSize: 0,
       imageWidth: 0,
       imageHeight: 0,
 
-      hasFile: '{{kategori.icon}}' ? true : false,
-      hasOldIcon: '{{kategori.icon}}' ? true : false,
-      oldIcon: '{{kategori.icon}}' || '',
+      hasFile: `{{kategori.icon}}` ? true : false,
+      hasOldIcon: `{{kategori.icon}}` ? true : false,
+      oldIcon: `{{kategori.icon}}` || '',
 
       formData: {
-        nama_kategori: '{{kategori.nama_kategori}}',
+        nama_kategori: `{{kategori.nama_kategori}}`,
 
         deskripsi: {
-          id: '{{kategori.deskripsi.id}}',
-          en: '{{kategori.deskripsi.en}}',
-          ja: '{{kategori.deskripsi.ja}}'
+          id: `{{kategori.deskripsi.id}}`,
+          en: `{{kategori.deskripsi.en}}`,
+          ja: `{{kategori.deskripsi.ja}}`
         },
 
         text: {
-          id: '{{kategori.text.id}}',
-          en: '{{kategori.text.en}}',
-          ja: '{{kategori.text.ja}}'
+          id: `{{kategori.text.id}}`,
+          en: `{{kategori.text.en}}`,
+          ja: `{{kategori.text.ja}}`
         },
 
-        contact: '{{kategori.contact}}',
+        contact: `{{kategori.contact}}`,
 
         for: {
-          id: '{{kategori.for.id}}',
-          en: '{{kategori.for.en}}',
-          ja: '{{kategori.for.ja}}'
+          id: `{{kategori.for.id}}`,
+          en: `{{kategori.for.en}}`,
+          ja: `{{kategori.for.ja}}`
         },
 
         jenis_kelas: [],
@@ -46,7 +46,7 @@
         info_en: {{{json kategori.info_en}}} || [''],
         info_ja: {{{json kategori.info_ja}}} || [''],
 
-        type: '{{kategori.type}}',
+        type: `{{kategori.type}}`,
       },
 
       selectedJenisKelas: {{{json kategori.jenis_kelas}}},
