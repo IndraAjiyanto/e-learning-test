@@ -3,7 +3,7 @@
             coverValid: true,
             coverHasFile: false,
             categorySelected: {{json kelas.kategori}} || null,
-            formData: { deskripsi: { id: "", en: "", ja: "" } },
+            formData: { deskripsi: { id: "", en: "", ja: "" }, lokasi: { id: "", en: "", ja: "" } },
             updateCoverValidation(isValid, hasFile) {
                 this.coverValid = isValid;
                 this.coverHasFile = hasFile;
@@ -21,7 +21,7 @@
                 }
             }
         }'
-        x-init="formData.deskripsi = { id: '{{kelas.deskripsi.id}}', en: '{{kelas.deskripsi.en}}', ja: '{{kelas.deskripsi.ja}}' }">
+        x-init="formData.deskripsi = { id: '{{kelas.deskripsi.id}}', en: '{{kelas.deskripsi.en}}', ja: '{{kelas.deskripsi.ja}}' }, formData.lokasi = { id: '{{kelas.lokasi.id}}', en: '{{kelas.lokasi.en}}', ja: '{{kelas.lokasi.ja}}' }">
             <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Edit Program</h2>
 
             <form method="POST" action="/kelass/{{kelas.id}}?_method=PATCH" class="grid grid-cols-1 lg:grid-cols-2 gap-8" enctype="multipart/form-data">
@@ -278,7 +278,6 @@
             type='text'
             x-model='formData.lokasi.id'
             name='lokasi[id]'
-            value="{{kelas.lokasi.id}}"
             placeholder='Enter location'
             required
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
@@ -290,7 +289,6 @@
             type='text'
             x-model='formData.lokasi.en'
             name='lokasi[en]'
-            value="{{kelas.lokasi.en}}"
             placeholder='Enter location'
             required
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
@@ -301,7 +299,6 @@
           <input
             type='text'
             x-model='formData.lokasi.ja'
-            value="{{kelas.lokasi.ja}}"
             name='lokasi[ja]'
             placeholder='Enter location'
             required
