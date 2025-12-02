@@ -48,11 +48,6 @@ export class KategorisService {
     const kategori = await this.kategoriRepository.findOne({
       where: { nama_kategori: kategoriName },
       relations: [
-        'kelas',
-        'kelas.jenis_kelas',
-        'kelas.user_kelas',
-        'kelas.kategori',
-        'kelas.alumni',
         'pertanyaan_umum',
         'benefit_category',
         'flow_category',

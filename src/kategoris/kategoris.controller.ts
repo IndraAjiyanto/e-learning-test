@@ -16,7 +16,6 @@ import {
 import { KategorisService } from './kategoris.service';
 import { CreateKategorisDto } from './dto/create-kategoris.dto';
 import { UpdateKategorisDto } from './dto/update-kategoris.dto';
-import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
