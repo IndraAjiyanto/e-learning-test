@@ -779,7 +779,7 @@ export class KelassService {
 
   async allClassExcept(kelasId: number) {
     return await this.kelasRepository.find({
-      where: { id: Not(kelasId) },
+      where: { id: Not(kelasId), launch: true },
       relations: [
         'user_kelas',
         'user_kelas.user',
