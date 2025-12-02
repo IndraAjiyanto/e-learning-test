@@ -804,7 +804,7 @@ export class KelassService {
   async findOneKelasUser(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId, launch: true },
-      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'alur_kelas', 'benefit_kelas', 'cicilan', 'pertanyaan_kelas' ],
+      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'alur_kelas', 'benefit_kelas', 'cicilan', 'pertanyaan_kelas', 'user_kelas', 'user_kelas.user'],
       order: { alur_kelas: { alur_ke: 'ASC' } },
     });
     if(!kelas){
