@@ -114,7 +114,7 @@
                   <ul class='space-y-2 text-sm sm:text-base text-slate-700'>
                     {{#if background.length}}
                     {{#each background}}
-                    <li class='flex items-start space-x-2'>
+                    <li class='flex items-center space-x-2'>
                                                                 <i
                       class='fa-solid fa-circle fa-xs text-gray-500 mt-2 flex-shrink-0'
                     ></i>
@@ -167,7 +167,7 @@
                   <ul class='space-y-2 text-sm sm:text-base text-slate-700'>
                     {{#if award.length}}
                     {{#each award}}
-                    <li class='flex items-start space-x-2'>
+                    <li class='flex items-center space-x-2'>
                                                <i class='fa-solid fa-circle fa-xs text-gray-500 mt-2 flex-shrink-0'></i>
                       <span><strong>{{getByLang content ../lang}}</strong>
                         - {{getByLang isi ../lang}}</span>
@@ -222,8 +222,8 @@
                   <ul class='space-y-3 text-sm sm:text-base text-slate-700'>
                     {{#if experience.length}}
                     {{#each experience}}
-                    <li class='flex items-start space-x-2'>
-                      <i class='fa-solid fa-circle fa-xs text-gray-500 mt-2 flex-shrink-0'></i>
+                    <li class='flex items-center space-x-2'>
+                      <i class='fa-solid fa-circle fa-xs text-gray-500 flex-shrink-0'></i>
                       <div>
                         <strong>{{getByLang content ../lang}}</strong>
                         <p class='text-xs sm:text-sm text-slate-600'>{{getByLang isi ../lang}}</p>
