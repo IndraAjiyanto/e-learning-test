@@ -20,19 +20,19 @@
         :class="mainTab === 'pembayaran' ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
         class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
         <i class="fas fa-credit-card"></i>
-        <span>{{t "test.historyPayment.fullPayment"}}</span>
+        <span>{{t "test.historyPayment.tabFullPayment"}}</span>
       </button>
       <button @click="mainTab = 'pendaftaran'; statusTab = 'all'"
         :class="mainTab === 'pendaftaran' ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200'"
         class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
         <i class="fas fa-user-plus"></i>
-        <span>{{t "test.historyPayment.registration"}}</span>
+        <span>{{t "test.historyPayment.tabRegistration"}}</span>
       </button>
       <button @click="mainTab = 'cicilan'; statusTab = 'all'"
         :class="mainTab === 'cicilan' ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-blue-50 border border-slate-200'"
         class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
         <i class="fas fa-calendar-check"></i>
-        <span>{{t "test.historyPayment.installment"}}</span>
+        <span>{{t "test.historyPayment.tabInstallment"}}</span>
       </button>
     </div>
 
@@ -90,20 +90,20 @@
                 {{#if (roles this.proses 'acc')}}
                   <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <i class="fas fa-check"></i>
-                    <span class="hidden sm:inline">ACCEPTED</span>
-                    <span class="sm:hidden">ACC</span>
+                    <span class="hidden sm:inline">{{t "test.historyPayment.fullPayment.accepted"}}</span>
+                    <span class="sm:hidden">{{ t "test.historyPayment.fullPayment.acc"}}</span>
                   </div>
                 {{else if (roles this.proses 'proces')}}
                   <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <i class="fas fa-clock"></i>
-                    <span class="hidden sm:inline">PROCESSING</span>
-                    <span class="sm:hidden">PROC</span>
+                    <span class="hidden sm:inline">{{ t "test.historyPayment.fullPayment.processing"}}</span>
+                    <span class="sm:hidden">{{ t "test.historyPayment.fullPayment.proc"}}</span>
                   </div>
                 {{else}}
                   <div class="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <i class="fas fa-times"></i>
-                    <span class="hidden sm:inline">REJECTED</span>
-                    <span class="sm:hidden">REJ</span>
+                    <span class="hidden sm:inline">{{ t "test.historyPayment.fullPayment.rejected"}}</span>
+                    <span class="sm:hidden">{{ t "test.historyPayment.fullPayment.rej"}}</span>
                   </div>
                 {{/if}}
               </div>
@@ -112,7 +112,7 @@
                 <div class="space-y-2 md:space-y-3">
                   <div class="bg-slate-600 text-white px-3 py-1 rounded-lg inline-flex items-center gap-2 text-xs font-semibold mb-2">
                     <i class="fas fa-credit-card"></i>
-                    <span>FULL PAYMENT</span>
+                    <span>{{ t "test.historyPayment.fullPayment.fullPayment"}}</span>
                   </div>
                   
                   <h3 class="text-lg md:text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors font-montserrat line-clamp-2">
@@ -122,19 +122,19 @@
                   
                   <div class="flex items-center text-slate-600 text-xs md:text-sm font-inter">
                     <i class="fas fa-calendar-alt mr-2"></i>
-                    <span class="font-medium">Payment Date:</span>
+                    <span class="font-medium">{{ t "test.historyPayment.fullPayment.paymentDate"}}</span>
                     <span class="ml-2">{{formatTanggal this.createdAt}}</span>
                   </div>
 
                   <div class="flex items-center text-xs md:text-sm">
                     <i class="fas fa-info-circle mr-2 text-slate-500"></i>
-                    <span class="font-medium text-slate-700">Status:</span>
+                    <span class="font-medium text-slate-700">{{ t "test.historyPayment.fullPayment.status"}}</span>
                     {{#if (roles this.proses 'acc')}}
-                      <span class="ml-2 text-emerald-700 font-bold">ACCEPTED</span>
+                      <span class="ml-2 text-emerald-700 font-bold">{{ t "test.historyPayment.fullPayment.accepted"}}</span>
                     {{else if (roles this.proses 'proces')}}
-                      <span class="ml-2 text-amber-700 font-bold">PROCESSING</span>
+                      <span class="ml-2 text-amber-700 font-bold">{{ t "test.historyPayment.fullPayment.processing"}}</span>
                     {{else}}
-                      <span class="ml-2 text-red-700 font-bold">REJECTED</span>
+                      <span class="ml-2 text-red-700 font-bold">{{ t "test.historyPayment.fullPayment.rejected"}}</span>
                     {{/if}}
                   </div>
                 </div>
@@ -144,30 +144,30 @@
                   <div class="bg-amber-100 border border-amber-300 rounded-xl p-3 md:p-4 space-y-2">
                     <div class="flex items-center gap-2 text-amber-800 font-semibold text-xs md:text-sm">
                       <i class="fas fa-info-circle"></i>
-                      <span>Payment Under Review</span>
+                      <span>{{ t "test.historyPayment.fullPayment.paymentUnderReview"}}</span>
                     </div>
-                    <p class="text-amber-700 text-xs md:text-sm">Your payment is being verified. If you have questions, contact us:</p>
+                    <p class="text-amber-700 text-xs md:text-sm">{{ t "test.historyPayment.fullPayment.spanPaymentUnderReview"}}</p>
                     <a 
                       href="https://wa.me/6281234567890?text=Hi,%20I%20have%20a%20question%20about%20my%20payment%20for%20{{this.kelas.nama_kelas}}" 
                       target="_blank"
                       class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                       <i class="fab fa-whatsapp text-base md:text-lg"></i>
-                      <span>Contact Admin via WhatsApp</span>
+                      <span>{{ t "test.historyPayment.fullPayment.contactAdmin"}}</span>
                     </a>
                   </div>
                 {{else if (roles this.proses 'rejected')}}
                   <div class="bg-red-100 border border-red-300 rounded-xl p-3 md:p-4 space-y-2">
                     <div class="flex items-center gap-2 text-red-800 font-semibold text-xs md:text-sm">
                       <i class="fas fa-exclamation-triangle"></i>
-                      <span>Payment Rejected</span>
+                      <span>{{ t "test.historyPayment.fullPayment.paymentRejected"}}</span>
                     </div>
-                    <p class="text-red-700 text-xs md:text-sm">Your payment was rejected. Please contact admin for assistance:</p>
+                    <p class="text-red-700 text-xs md:text-sm">{{ t "test.historyPayment.fullPayment.spanPaymentRejected"}}</p>
                     <a 
                       href="https://wa.me/6281234567890?text=Hi,%20my%20payment%20for%20{{this.kelas.nama_kelas}}%20was%20rejected.%20I%20need%20help." 
                       target="_blank"
                       class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                       <i class="fab fa-whatsapp text-base md:text-lg"></i>
-                      <span>Contact Admin via WhatsApp</span>
+                      <span>{{ t "test.historyPayment.fullPayment.contactAdmin"}}</span>
                     </a>
                   </div>
                 {{/if}}
@@ -177,13 +177,13 @@
                     @click="open = true; imageSrc = '{{this.file}}'" 
                     class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-gradient-to-r from-slate-600 to-slate-800 text-white font-semibold text-xs md:text-sm hover:from-slate-700 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                     <i class="fas fa-eye"></i>
-                    <span>View Proof</span>
+                    <span>{{t "test.historyPayment.fullPayment.viewProof"}}</span>
                   </button>
                   <a 
                     href="/kelass/{{this.kelas.id}}" 
                     class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-white text-slate-800 border-2 border-slate-200 font-semibold text-xs md:text-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                     <i class="fas fa-external-link-alt"></i>
-                    <span>View Class</span>
+                    <span>{{t "test.historyPayment.fullPayment.viewProgram"}}</span>
                   </a>
                 </div>
               </div>
@@ -196,8 +196,8 @@
         <div class="text-center py-12 md:py-16 px-4">
           <div class="p-8 md:p-12 max-w-md mx-auto">
             <i class="fas fa-receipt text-5xl md:text-6xl text-slate-400 mb-4 md:mb-6"></i>
-            <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">No Full Payment History</h3>
-            <p class="text-sm md:text-base text-slate-600 font-inter">You haven't made any full payments yet. Start exploring our courses!</p>
+            <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">{{t "test.historyPayment.fullPayment.noFullPayment"}}</h3>
+            <p class="text-sm md:text-base text-slate-600 font-inter">{{t "test.historyPayment.fullPayment.spanNoFullPayment"}}</p>
           </div>
         </div>
       {{/if}}
@@ -225,20 +225,20 @@
                 {{#if (roles this.proses 'acc')}}
                   <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <i class="fas fa-check"></i>
-                    <span class="hidden sm:inline">ACCEPTED</span>
-                    <span class="sm:hidden">ACC</span>
+                    <span class="hidden sm:inline">{{t "test.historyPayment.installment.accepted"}}</span>
+                    <span class="sm:hidden">{{t "test.historyPayment.installment.acc"}}</span>
                   </div>
                 {{else if (roles this.proses 'proces')}}
                   <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <i class="fas fa-clock"></i>
-                    <span class="hidden sm:inline">PROCESSING</span>
-                    <span class="sm:hidden">PROC</span>
+                    <span class="hidden sm:inline">{{t "test.historyPayment.installment.processing"}}</span>
+                    <span class="sm:hidden">{{t "test.historyPayment.installment.proc"}}</span>
                   </div>
                 {{else}}
                   <div class="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <i class="fas fa-times"></i>
-                    <span class="hidden sm:inline">REJECTED</span>
-                    <span class="sm:hidden">REJ</span>
+                    <span class="hidden sm:inline">{{t "test.historyPayment.installment.rejected"}}</span>
+                    <span class="sm:hidden">{{t "test.historyPayment.installment.rej"}}</span>
                   </div>
                 {{/if}}
               </div>
@@ -247,7 +247,7 @@
                 <div class="space-y-2 md:space-y-3">
                   <div class="bg-blue-600 text-white px-3 py-1 rounded-lg inline-flex items-center gap-2 text-xs font-semibold mb-2">
                     <i class="fas fa-calendar-check"></i>
-                    <span>INSTALLMENT</span>
+                    <span>{{t "test.historyPayment.installment.installment"}}</span>
                   </div>
                   
                   <h3 class="text-lg md:text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors font-montserrat line-clamp-2">
@@ -257,25 +257,25 @@
                   
                   <div class="flex items-center text-slate-600 text-xs md:text-sm font-inter">
                     <i class="fas fa-calendar-alt mr-2"></i>
-                    <span class="font-medium">Payment Date:</span>
+                    <span class="font-medium">{{t "test.historyPayment.installment.paymentDate"}}</span>
                     <span class="ml-2">{{formatTanggal this.createdAt}}</span>
                   </div>
 
                   <div class="flex items-center text-xs md:text-sm">
                     <i class="fas fa-money-bill-wave mr-2 text-blue-600"></i>
-                    <span class="font-medium text-slate-700">Installment:</span>
+                    <span class="font-medium text-slate-700">{{t "test.historyPayment.installment.installmentMenu"}}</span>
                     <span class="ml-2 text-blue-700 font-bold">{{this.cicilan.nama_cicilan}}</span>
                   </div>
 
                   <div class="flex items-center text-xs md:text-sm">
                     <i class="fas fa-info-circle mr-2 text-slate-500"></i>
-                    <span class="font-medium text-slate-700">Status:</span>
+                    <span class="font-medium text-slate-700">{{t "test.historyPayment.installment.status"}}</span>
                     {{#if (roles this.proses 'acc')}}
-                      <span class="ml-2 text-emerald-700 font-bold">ACCEPTED</span>
+                      <span class="ml-2 text-emerald-700 font-bold">{{t "test.historyPayment.installment.accepted"}}</span>
                     {{else if (roles this.proses 'proces')}}
-                      <span class="ml-2 text-amber-700 font-bold">PROCESSING</span>
+                      <span class="ml-2 text-amber-700 font-bold">{{t "test.historyPayment.installment.processing"}}</span>
                     {{else}}
-                      <span class="ml-2 text-red-700 font-bold">REJECTED</span>
+                      <span class="ml-2 text-red-700 font-bold">{{t "test.historyPayment.installment.rejected"}}</span>
                     {{/if}}
                   </div>
                 </div>
@@ -285,30 +285,30 @@
                   <div class="bg-amber-100 border border-amber-300 rounded-xl p-3 md:p-4 space-y-2">
                     <div class="flex items-center gap-2 text-amber-800 font-semibold text-xs md:text-sm">
                       <i class="fas fa-info-circle"></i>
-                      <span>Payment Under Review</span>
+                      <span>{{t "test.historyPayment.installment.paymentUnderReview"}}</span>
                     </div>
-                    <p class="text-amber-700 text-xs md:text-sm">Your installment payment is being verified. If you have questions, contact us:</p>
+                    <p class="text-amber-700 text-xs md:text-sm">{{t "test.historyPayment.installment.spanPaymentUnderReview"}}</p>
                     <a 
                       href="https://wa.me/6281234567890?text=Hi,%20I%20have%20a%20question%20about%20my%20installment%20payment%20for%20{{this.kelas.nama_kelas}}" 
                       target="_blank"
                       class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                       <i class="fab fa-whatsapp text-base md:text-lg"></i>
-                      <span>Contact Admin via WhatsApp</span>
+                      <span>{{t "test.historyPayment.installment.contactAdminWhatsApp"}}</span>
                     </a>
                   </div>
                 {{else if (roles this.proses 'rejected')}}
                   <div class="bg-red-100 border border-red-300 rounded-xl p-3 md:p-4 space-y-2">
                     <div class="flex items-center gap-2 text-red-800 font-semibold text-xs md:text-sm">
                       <i class="fas fa-exclamation-triangle"></i>
-                      <span>Payment Rejected</span>
+                      <span>{{t "test.historyPayment.installment.paymentRejected"}}</span>
                     </div>
-                    <p class="text-red-700 text-xs md:text-sm">Your installment payment was rejected. Please contact admin for assistance:</p>
+                    <p class="text-red-700 text-xs md:text-sm">{{t "test.historyPayment.installment.spanPaymentRejected"}}</p>
                     <a 
                       href="https://wa.me/6281234567890?text=Hi,%20my%20installment%20payment%20for%20{{this.kelas.nama_kelas}}%20was%20rejected.%20I%20need%20help." 
                       target="_blank"
                       class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                       <i class="fab fa-whatsapp text-base md:text-lg"></i>
-                      <span>Contact Admin via WhatsApp</span>
+                      <span>{{t "test.historyPayment.installment.contactAdmin"}}</span>
                     </a>
                   </div>
                 {{/if}}
@@ -318,13 +318,13 @@
                     @click="open = true; imageSrc = '{{this.file}}'" 
                     class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-semibold text-xs md:text-sm hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                     <i class="fas fa-eye"></i>
-                    <span>View Proof</span>
+                    <span>{{t "test.historyPayment.installment.viewProof"}}</span>
                   </button>
                   <a 
                     href="/kelass/{{this.kelas.id}}" 
                     class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-white text-slate-800 border-2 border-slate-200 font-semibold text-xs md:text-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                     <i class="fas fa-external-link-alt"></i>
-                    <span>View Class</span>
+                    <span>{{t "test.historyPayment.installment.viewProgram"}}</span>
                   </a>
                 </div>
               </div>
@@ -337,8 +337,8 @@
         <div class="text-center py-12 md:py-16 px-4">
           <div class="p-8 md:p-12 max-w-md mx-auto">
             <i class="fas fa-calendar-check text-5xl md:text-6xl text-blue-400 mb-4 md:mb-6"></i>
-            <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">No Installment History</h3>
-            <p class="text-sm md:text-base text-slate-600 font-inter">You haven't made any installment payments yet. Choose installment option when enrolling!</p>
+            <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">{{t "test.historyPayment.installment.noInstallment"}}</h3>
+            <p class="text-sm md:text-base text-slate-600 font-inter">{{t "test.historyPayment.installment.spanNoInstallment"}}</p>
           </div>
         </div>
       {{/if}}
@@ -366,20 +366,20 @@
                 {{#if (roles this.proses 'acc')}}
                   <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <i class="fas fa-check"></i>
-                    <span class="hidden sm:inline">ACCEPTED</span>
-                    <span class="sm:hidden">ACC</span>
+                    <span class="hidden sm:inline">{{t "test.historyPayment.free.accepted"}}</span>
+                    <span class="sm:hidden">{{t "test.historyPayment.free.acc"}}</span>
                   </div>
                 {{else if (roles this.proses 'proces')}}
                   <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <i class="fas fa-clock"></i>
-                    <span class="hidden sm:inline">PROCESSING</span>
-                    <span class="sm:hidden">PROC</span>
+                    <span class="hidden sm:inline">{{t "test.historyPayment.free.processing"}}</span>
+                    <span class="sm:hidden">{{t "test.historyPayment.free.proc"}}</span>
                   </div>
                 {{else}}
                   <div class="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <i class="fas fa-times"></i>
-                    <span class="hidden sm:inline">REJECTED</span>
-                    <span class="sm:hidden">REJ</span>
+                    <span class="hidden sm:inline">{{t "test.historyPayment.free.rejected"}}</span>
+                    <span class="sm:hidden">{{t "test.historyPayment.free.rej"}}</span>
                   </div>
                 {{/if}}
               </div>
@@ -388,7 +388,7 @@
                 <div class="space-y-2 md:space-y-3">
                   <div class="bg-emerald-600 text-white px-3 py-1 rounded-lg inline-flex items-center gap-2 text-xs font-semibold mb-2">
                     <i class="fas fa-user-plus"></i>
-                    <span>REGISTRATION</span>
+                    <span>{{t "test.historyPayment.free.freeProgram"}}</span>
                   </div>
                   
                   <h3 class="text-lg md:text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors font-montserrat line-clamp-2">
@@ -398,19 +398,19 @@
                   
                   <div class="flex items-center text-slate-600 text-xs md:text-sm font-inter">
                     <i class="fas fa-calendar-alt mr-2"></i>
-                    <span class="font-medium">Registration Date:</span>
+                    <span class="font-medium">{{t "test.historyPayment.free.registrationDate"}}</span>
                     <span class="ml-2">{{formatTanggal this.createdAt}}</span>
                   </div>
 
                   <div class="flex items-center text-xs md:text-sm">
                     <i class="fas fa-info-circle mr-2 text-slate-500"></i>
-                    <span class="font-medium text-slate-700">Status:</span>
+                    <span class="font-medium text-slate-700">{{t "test.historyPayment.free.status"}}</span>
                     {{#if (roles this.proses 'acc')}}
-                      <span class="ml-2 text-emerald-700 font-bold">ACCEPTED</span>
+                      <span class="ml-2 text-emerald-700 font-bold">{{t "test.historyPayment.free.accepted"}}</span>
                     {{else if (roles this.proses 'proces')}}
-                      <span class="ml-2 text-amber-700 font-bold">PROCESSING</span>
+                      <span class="ml-2 text-amber-700 font-bold">{{t "test.historyPayment.free.processing"}}</span>
                     {{else}}
-                      <span class="ml-2 text-red-700 font-bold">REJECTED</span>
+                      <span class="ml-2 text-red-700 font-bold">{{t "test.historyPayment.free.rejected"}}</span>
                     {{/if}}
                   </div>
                 </div>
@@ -420,30 +420,30 @@
                   <div class="bg-amber-100 border border-amber-300 rounded-xl p-3 md:p-4 space-y-2">
                     <div class="flex items-center gap-2 text-amber-800 font-semibold text-xs md:text-sm">
                       <i class="fas fa-info-circle"></i>
-                      <span>Registration Under Review</span>
+                      <span>{{t "test.historyPayment.free.registrationUnderReview"}}</span>
                     </div>
-                    <p class="text-amber-700 text-xs md:text-sm">Your registration is being verified. If you have questions, contact us:</p>
+                    <p class="text-amber-700 text-xs md:text-sm">{{t "test.historyPayment.free.spanRegistrationUnderReview"}}</p>
                     <a 
                       href="https://wa.me/6281234567890?text=Hi,%20I%20have%20a%20question%20about%20my%20registration%20for%20{{this.kelas.nama_kelas}}" 
                       target="_blank"
                       class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                       <i class="fab fa-whatsapp text-base md:text-lg"></i>
-                      <span>Contact Admin via WhatsApp</span>
+                      <span>{{t "test.historyPayment.free.contactAdmin"}}</span>
                     </a>
                   </div>
                 {{else if (roles this.proses 'rejected')}}
                   <div class="bg-red-100 border border-red-300 rounded-xl p-3 md:p-4 space-y-2">
                     <div class="flex items-center gap-2 text-red-800 font-semibold text-xs md:text-sm">
                       <i class="fas fa-exclamation-triangle"></i>
-                      <span>Registration Rejected</span>
+                      <span>{{t "test.historyPayment.free.registrationRejected"}}</span>
                     </div>
-                    <p class="text-red-700 text-xs md:text-sm">Your registration was rejected. Please contact admin for assistance:</p>
+                    <p class="text-red-700 text-xs md:text-sm">{{t "test.historyPayment.free.spanRegistrationRejected"}}</p>
                     <a 
                       href="https://wa.me/6281234567890?text=Hi,%20my%20registration%20for%20{{this.kelas.nama_kelas}}%20was%20rejected.%20I%20need%20help." 
                       target="_blank"
                       class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                       <i class="fab fa-whatsapp text-base md:text-lg"></i>
-                      <span>Contact Admin via WhatsApp</span>
+                      <span>{{t "test.historyPayment.free.contactAdmin"}}</span>
                     </a>
                   </div>
                 {{/if}}
@@ -453,13 +453,13 @@
                     @click="open = true; imageSrc = '{{this.file}}'" 
                     class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white font-semibold text-xs md:text-sm hover:from-emerald-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                     <i class="fas fa-eye"></i>
-                    <span>View Proof</span>
+                    <span>{{t "test.historyPayment.free.viewRegistrationProof"}}</span>
                   </button>
                   <a 
                     href="/kelass/{{this.kelas.id}}" 
                     class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-white text-slate-800 border-2 border-slate-200 font-semibold text-xs md:text-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                     <i class="fas fa-external-link-alt"></i>
-                    <span>View Class</span>
+                    <span>{{t "test.historyPayment.free.viewProgram"}}</span>
                   </a>
                 </div>
               </div>
@@ -472,8 +472,8 @@
         <div class="text-center py-12 md:py-16 px-4">
           <div class="p-8 md:p-12 max-w-md mx-auto">
             <i class="fas fa-user-plus text-5xl md:text-6xl text-emerald-400 mb-4 md:mb-6"></i>
-            <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">No Registration History</h3>
-            <p class="text-sm md:text-base text-slate-600 font-inter">You haven't registered for any free classes yet. Start learning today!</p>
+            <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">{{t "test.historyPayment.free.noFreeProgram"}}</h3>
+            <p class="text-sm md:text-base text-slate-600 font-inter">{{t "test.historyPayment.free.spanNoFreeProgram"}}</p>
           </div>
         </div>
       {{/if}}
@@ -504,7 +504,7 @@
       <div class="bg-gradient-to-r from-slate-600 to-slate-800 p-4 md:p-6 flex items-center justify-between">
         <h3 class="text-base md:text-xl font-bold text-white flex items-center gap-2 font-montserrat">
           <i class="fas fa-image text-sm md:text-base"></i>
-          <span>Payment Proof</span>
+          <span>{{t "test.historyPayment.paymentProof"}}</span>
         </h3>
         <button 
           @click="open = false" 
