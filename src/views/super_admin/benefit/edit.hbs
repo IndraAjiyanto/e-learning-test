@@ -1,5 +1,5 @@
 <div class='py-10' x-data="{
-  icon: '{{benefit.icon}}',
+  icon: `{{benefit.icon}}`,
   get computedClass() {
     const raw = (this.formData.icon || '').toString().trim();
     if (!raw) return 'fa-solid fa-circle-question';
@@ -15,30 +15,30 @@
 
   // Form validation states
   formData: {
-    icon: '{{benefit.icon}}',
+    icon:`{{benefit.icon}}`,
     judul: {
-      id: '{{benefit.judul.id}}',
-      en: '{{benefit.judul.en}}',
-      ja: '{{benefit.judul.ja}}'
+      id: `{{benefit.judul.id}}`,
+      en: `{{benefit.judul.en}}`,
+      ja: `{{benefit.judul.ja}}`
     },
     text: {
-      id: '{{benefit.text.id}}',
-      en: '{{benefit.text.en}}',
-      ja: '{{benefit.text.ja}}'
+      id: `{{benefit.text.id}}`,
+      en: `{{benefit.text.en}}`,
+      ja: `{{benefit.text.ja}}`
     },
-    no: '{{benefit.no}}' || ''
+    no: `{{benefit.no}}` || ''
   },
   formErrors: {
     icon: '',
     judul: { id: '', en: '', ja: '' },
     text: { id: '', en: '', ja: '' },
-    no: '{{benefit.no}}' ? '' : 'Number selection is required'
+    no: `{{benefit.no}}` ? '' : 'Number selection is required'
   },
   formValid: {
     icon: true,
     judul: { id: true, en: true, ja: true },
     text: { id: true, en: true, ja: true },
-    no: !!'{{benefit.no}}'
+    no: !!`{{benefit.no}}`
   },
 
   validateField(field, lang, value) {

@@ -10,23 +10,23 @@
         imageWidth: 0,
         imageHeight: 0,
         hasFile: false,
-        oldPhoto: '{{#if mentor.profile}}{{mentor.profile}}{{else}}/images/default-avatar.png{{/if}}',
+        oldPhoto: `{{#if mentor.profile}}{{mentor.profile}}{{else}}/images/default-avatar.png{{/if}}`,
       
 
         // Form validation states
         formData: {
-          nama: '{{mentor.nama}}',
+          nama: `{{mentor.nama}}`,
           posisi: {
-            id: '{{mentor.posisi.id}}',
-            en: '{{mentor.posisi.en}}',
-            ja: '{{mentor.posisi.ja}}'
+            id: `{{mentor.posisi.id}}`,
+            en: `{{mentor.posisi.en}}`,
+            ja: `{{mentor.posisi.ja}}`
           },
           deskripsi: {
-            id: '{{mentor.deskripsi.id}}',
-            en: '{{mentor.deskripsi.en}}',
-            ja: '{{mentor.deskripsi.ja}}'
+            id: `{{mentor.deskripsi.id}}`,
+            en: `{{mentor.deskripsi.en}}`,
+            ja: `{{mentor.deskripsi.ja}}`
           },
-          linkedin: '{{mentor.linkedin}}',
+          linkedin: `{{mentor.linkedin}}`,
         },
         formErrors: {
           nama: '',

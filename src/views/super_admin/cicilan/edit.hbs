@@ -1,16 +1,16 @@
 <div
   class='pt-28 py-20'
   x-data='{ 
-    bulan: {{cicilan.bulan}}, 
+    bulan: `{{cicilan.bulan}}`, 
     hargaValues: {{json cicilan.harga}}, 
     hargaDisplays: [], 
-    dpValue: "{{cicilan.dp}}", 
+    dpValue: `{{cicilan.dp}}`, 
     dpDisplay: "",
 
     // Form validation states
     formData: {
-      bulan: "{{cicilan.bulan}}",
-      dp: "{{cicilan.dp}}",
+      bulan: `{{cicilan.bulan}}`,
+      dp: `{{cicilan.dp}}`,
       harga: {{json cicilan.harga}}
     },
     formErrors: {

@@ -11,12 +11,12 @@
         imageHeight: 0,
         hasFile: false,
         hasNewFile: false,
-        oldImage: '{{tentang.gambar}}',
+        oldImage: `{{tentang.gambar}}`,
 
         // Form validation states
         formData: {
-          judul: { id: '{{tentang.judul.id}}', en: '{{tentang.judul.en}}', ja: '{{tentang.judul.ja}}' },
-          text: { id: '{{tentang.text.id}}', en: '{{tentang.text.en}}', ja: '{{tentang.text.ja}}' }
+          judul: { id: `{{tentang.judul.id}}`, en: `{{tentang.judul.en}}`, ja: `{{tentang.judul.ja}}` },
+          text: { id: `{{tentang.text.id}}`, en: `{{tentang.text.en}}`, ja: `{{tentang.text.ja}}` }
         },
         formErrors: {
           judul: { id: '', en: '', ja: '' },
@@ -44,7 +44,7 @@
           if (!allowedTypes.includes(file.type)) {
             this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
             this.isValid = false;
-            this.previewUrl = '{{tentang.gambar}}';
+            this.previewUrl = `{{tentang.gambar}}`;
             return;
           }
 
@@ -52,7 +52,7 @@
           if (file.size > maxSize) {
             this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
             this.isValid = false;
-            this.previewUrl = '{{tentang.gambar}}';
+            this.previewUrl = `{{tentang.gambar}}`;
             return;
           }
 
@@ -66,7 +66,7 @@
             if (img.width < 700 || img.width > 4000 || img.height < 700 || img.height > 4000) {
               this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: Width 700-4000px, Height 700-4000px`;
               this.isValid = false;
-              this.previewUrl = '{{tentang.gambar}}';
+              this.previewUrl = `{{tentang.gambar}}`;
               URL.revokeObjectURL(objectUrl);
             } else {
               this.previewUrl = objectUrl;
@@ -78,7 +78,7 @@
           img.onerror = () => {
             this.errorMessage = 'Failed to load image';
             this.isValid = false;
-            this.previewUrl = '{{tentang.gambar}}';
+            this.previewUrl = `{{tentang.gambar}}`;
             URL.revokeObjectURL(objectUrl);
           };
           
@@ -118,7 +118,7 @@
         },
 
         clearFile() {
-          this.previewUrl = '{{tentang.gambar}}';
+          this.previewUrl = `{{tentang.gambar}}`;
           this.errorMessage = '';
           this.isValid = true;
           this.fileName = '';

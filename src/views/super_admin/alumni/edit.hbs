@@ -3,7 +3,7 @@
     class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
     x-data="{
         previewUrl: null,
-        oldPhoto: '{{#if alumni.profile}}{{alumni.profile}}{{else}}/images/default-avatar.png{{/if}}',
+        oldPhoto: `{{#if alumni.profile}}{{alumni.profile}}{{else}}/images/default-avatar.png{{/if}}`,
         errorMessage: '',
         isValid: true,
         fileName: '',
@@ -14,10 +14,10 @@
 
         // Form validation states
         formData: {
-          nama: { id: '{{alumni.nama.id}}', en: '{{alumni.nama.en}}', ja: '{{alumni.nama.ja}}' },
-          pesan: { id: '{{alumni.pesan.id}}', en: '{{alumni.pesan.en}}', ja: '{{alumni.pesan.ja}}' },
-          alumni: { id: '{{alumni.alumni.id}}', en: '{{alumni.alumni.en}}', ja: '{{alumni.alumni.ja}}' },
-          posisi_sekarang: { id: '{{alumni.posisi_sekarang.id}}', en: '{{alumni.posisi_sekarang.en}}', ja: '{{alumni.posisi_sekarang.ja}}' }
+          nama: { id: `{{alumni.nama.id}}`, en: `{{alumni.nama.en}}`, ja: `{{alumni.nama.ja}}` },
+          pesan: { id: `{{alumni.pesan.id}}`, en: `{{alumni.pesan.en}}`, ja: `{{alumni.pesan.ja}}` },
+          alumni: { id: `{{alumni.alumni.id}}`, en: `{{alumni.alumni.en}}`, ja: `{{alumni.alumni.ja}}` },
+          posisi_sekarang: { id: `{{alumni.posisi_sekarang.id}}`, en: `{{alumni.posisi_sekarang.en}}`, ja: `{{alumni.posisi_sekarang.ja}}` }
         },
         formErrors: {
           nama: { id: '', en: '', ja: '' },

@@ -9,18 +9,18 @@
         imageWidth: 0,
         imageHeight: 0,
         hasFile: false,
-        oldPhoto: '{{#if teamLead.profile}}{{teamLead.profile}}{{else}}/images/default-avatar.png{{/if}}',
+        oldPhoto: `{{#if teamLead.profile}}{{teamLead.profile}}{{else}}/images/default-avatar.png{{/if}}`,
 
         // Form validation states
         formData: {
-          nama: '{{teamLead.nama}}',
+          nama: `{{teamLead.nama}}`,
           posisi: `{
           id: `{{teamLead.posisi.id}}`,
           en: `{{teamLead.posisi.en}}`,
           ja: `{{teamLead.posisi.ja}}`
           }`,
-          linkedin: '{{teamLead.linkedin}}',
-          instagram: '{{teamLead.instagram}}',
+          linkedin: `{{teamLead.linkedin}}`,
+          instagram: `{{teamLead.instagram}}`,
           deskripsi: {
             id: `{{teamLead.deskripsi.id}}`,
             en: `{{teamLead.deskripsi_en}}`,
