@@ -5,7 +5,7 @@
     <div class='bg-white rounded-2xl shadow-2xl p-10 border border-slate-200'>
       <h2
         class='text-4xl font-bold text-gray-900 mb-10 text-center font-montserrat'
-      >Complete Your Profile</h2>
+      >{{t "test.profile.createBiodata.tittle"}}</h2>
 
       <form
         action='/biodatas'
@@ -28,13 +28,13 @@
               <label
                 for='nama_lengkap'
                 class='block text-lg font-semibold text-gray-700 mb-3'
-              >Full Name</label>
+              >{{t "test.profile.createBiodata.fullName"}}</label>
               <input
                 type='text'
                 id='nama_lengkap'
                 name='nama_lengkap'
                 required
-                placeholder='Enter your full name'
+                placeholder='{{t "test.profile.createBiodata.placeholderFullName"}}'
                 class='w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white'
               />
             </div>
@@ -44,13 +44,13 @@
               <label
                 for='no'
                 class='block text-lg font-semibold text-gray-700 mb-3'
-              >WhatsApp Number</label>
+              >{{t "test.profile.createBiodata.whatsAppNumber"}}</label>
               <input
                 type='text'
                 id='no'
                 name='no'
                 required
-                placeholder='Enter your WhatsApp number'
+                placeholder='{{t "test.profile.createBiodata.placeholderWhatsAppNumber"}}'
                 class='w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white'
               />
             </div>
@@ -59,7 +59,7 @@
             <div>
               <label
                 class='block text-lg font-semibold text-gray-700 mb-3'
-              >Gender</label>
+              >{{t "test.profile.createBiodata.gender"}}</label>
               <div class='flex flex-col gap-3'>
                 <label
                   class='inline-flex items-center gap-3 cursor-pointer group'
@@ -73,7 +73,7 @@
                   />
                   <span
                     class='text-gray-700 text-lg group-hover:text-slate-900 transition-colors'
-                  >Male</span>
+                  >{{t "test.profile.createBiodata.male"}}</span>
                 </label>
                 <label
                   class='inline-flex items-center gap-3 cursor-pointer group'
@@ -87,7 +87,7 @@
                   />
                   <span
                     class='text-gray-700 text-lg group-hover:text-slate-900 transition-colors'
-                  >Female</span>
+                  >{{t "test.profile.createBiodata.female"}}</span>
                 </label>
               </div>
             </div>
@@ -100,13 +100,13 @@
               <label
                 for='kota'
                 class='block text-lg font-semibold text-gray-700 mb-3'
-              >City</label>
+              >{{t "test.profile.createBiodata.city"}}</label>
               <input
                 type='text'
                 id='kota'
                 name='kota'
                 required
-                placeholder='Enter your city'
+                placeholder='{{ t "test.profile.createBiodata.placeholderCity" }}'
                 class='w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white'
               />
             </div>
@@ -115,7 +115,7 @@
             <div>
               <label
                 class='block text-lg font-semibold text-gray-700 mb-3'
-              >Education</label>
+              >{{t "test.profile.createBiodata.education"}}</label>
               <div class='relative' x-data='{ open: false }'>
                 <!-- Hidden Input untuk Form -->
                 <input
@@ -167,28 +167,28 @@
                       @click="selectedPendidikan = 'Junior High School'; open = false;"
                       class='w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg'
                     >
-                      Junior High School
+                      {{t "test.profile.createBiodata.juniorHighSchool"}}
                     </button>
                     <button
                       type='button'
                       @click="selectedPendidikan = 'Senior High School'; open = false;"
                       class='w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg'
                     >
-                      Senior High School
+                      {{t "test.profile.createBiodata.seniorHighSchool"}}
                     </button>
                     <button
                       type='button'
                       @click="selectedPendidikan = 'Diploma (D3/D4)'; open = false;"
                       class='w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg'
                     >
-                      Diploma (D3/D4)
+                     {{t "test.profile.createBiodata.diploma"}}
                     </button>
                     <button
                       type='button'
                       @click="selectedPendidikan = 'Bachelor Degree (S1)'; open = false;"
                       class='w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg'
                     >
-                      Bachelor Degree (S1)
+                      {{t "test.profile.createBiodata.bachelorDegree"}}
                     </button>
                   </div>
                 </div>
@@ -200,7 +200,7 @@
               <label
                 for='program_studi'
                 class='block text-lg font-semibold text-gray-700 mb-3'
-              >Study Program</label>
+              >{{t "test.profile.createBiodata.studyProgram"}}</label>
               <input
                 type='text'
                 id='program_studi'
@@ -221,13 +221,13 @@
             type='submit'
             class='bg-gradient-to-r from-slate-700 to-slate-900 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
           >
-            Save Profile
+            {{t "test.profile.createBiodata.saveProfile"}}
           </button>
           <a
             href='/users/profile'
             class='px-8 py-4 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 transform hover:-translate-y-1 text-center focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
           >
-            Back to Profile
+            {{t "test.profile.createBiodata.backToProfile"}}
           </a>
         </div>
 
