@@ -805,7 +805,77 @@ export class KelassService {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId, launch: true },
       relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'alur_kelas', 'benefit_kelas', 'cicilan', 'pertanyaan_kelas', 'user_kelas', 'user_kelas.user'],
-      order: { alur_kelas: { alur_ke: 'ASC' } },
+      order: { alur_kelas: { alur_ke: 'ASC' }, pertanyaan_kelas: { id: 'ASC' } },
+      select: {
+        id: true,
+        gambar: true,
+        nama_kelas: true,
+        deskripsi: true,
+        grup: true,
+        metode: true,
+        lokasi: true,
+        link_lokasi: true,
+        kuota: true,
+        bulan: true,
+        hari: true,
+        tanggal_mulai: true,
+        tanggal_selesai: true,
+        materi_en: true,
+        materi_id: true,
+        materi_ja: true,
+        target_pembelajaran_id: true,
+        target_pembelajaran_en: true,
+        target_pembelajaran_ja: true,
+        kriteria_en: true,
+        kriteria_id: true,
+        kriteria_ja: true,
+        harga: true,
+        check_paid: true,
+        promo: true,
+        form: true,
+        kategori: {
+          nama_kategori: true,
+        },
+        teknologi: {
+          svg: true,
+        },
+        benefit_kelas: {
+          benefit: true,
+          isi: true,
+        },
+        pertanyaan_kelas: {
+          id: true,
+          pertanyaan: true,
+          jawaban: true,
+        },
+        alur_kelas: {
+          judul: true,
+          alur_ke: true,
+          isi: true,
+        },
+        mentor: {
+          profile: true,
+          nama: true,
+          deskripsi: true,
+          linkedin: true,
+          teknologi: {
+            svg: true,
+          },
+        },
+        cicilan: {
+          id: true,
+          bulan: true,
+          dp: true,
+          harga: true,
+        },
+        jenis_kelas: {
+          nama_jenis_kelas: true,
+        },
+        user_kelas: {
+          progres: true,
+          user: true
+        },
+        }        
     });
     if(!kelas){
       throw new NotFoundException('Program not found');
@@ -871,21 +941,81 @@ export class KelassService {
   }
 
   async findOne(kelasId: number) {
-    const kelas = await this.kelasRepository
-      .createQueryBuilder('kelas')
-      .leftJoinAndSelect('kelas.kategori', 'kategori')
-      .leftJoinAndSelect('kelas.alumni', 'alumni')
-      .leftJoinAndSelect('kelas.alur_kelas', 'alur_kelas')
-      .leftJoinAndSelect('kelas.benefit_kelas', 'benefit_kelas')
-      .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
-      .leftJoinAndSelect('kelas.pertanyaan_kelas', 'pertanyaan_kelas')
-      .leftJoinAndSelect('kelas.teknologi', 'teknologi')
-      .leftJoinAndSelect('kelas.cicilan', 'cicilan')
-      .leftJoinAndSelect('kelas.mentoring', 'mentoring')
-      .leftJoinAndSelect('mentoring.user', 'mentoring_user')
-      .where('kelas.id = :kelasId', { kelasId })
-      .orderBy('alur_kelas.alur_ke', 'ASC')
-      .getOne();
+const kelas = await this.kelasRepository.findOne({
+  where: { id: kelasId },
+  relations: {
+    kategori: true,
+    alumni: true,
+    alur_kelas: true,
+    benefit_kelas: true,
+    jenis_kelas: true,
+    pertanyaan_kelas: true,
+    teknologi: true,
+    cicilan: true,
+    mentoring: {
+      user: true
+    }
+  },
+  order: {
+    alur_kelas: {
+      alur_ke: 'ASC'
+    }
+  },
+  select: {
+    id: true,
+    gambar: true,
+    nama_kelas: true,
+    deskripsi: true,
+    grup: true,
+    metode: true,
+    lokasi: true,
+    hari: true,
+    bulan: true,
+    tanggal_mulai: true,
+    tanggal_selesai: true,
+    kuota: true,
+    check_paid: true,
+    harga: true,
+    promo: true,
+    form: true, 
+    target_pembelajaran_id: true,
+    target_pembelajaran_en: true,
+    target_pembelajaran_ja: true,
+    benefit_kelas: {
+      id: true,
+      benefit: true,
+      isi: true,
+    },
+    alur_kelas: {
+      id: true,
+      judul: true,
+      alur_ke: true,
+      isi: true,
+    },
+    pertanyaan_kelas:{
+      id: true,
+      pertanyaan: true,
+      jawaban: true,
+    },
+    cicilan: {
+      id: true,
+      bulan: true,
+      dp: true,
+      harga: true,
+    },
+    teknologi: {
+      svg: true,
+    },
+    kategori: {
+      nama_kategori: true,
+  },
+  jenis_kelas: {
+    nama_jenis_kelas: true,
+  }
+}
+
+});
+
 
     if (!kelas) {
       throw new NotFoundException('Program not found');

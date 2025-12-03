@@ -371,7 +371,6 @@ export class KelassController {
 
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      console.log(error)
       req.flash('error', error.message || 'failed update kelas');
       res.redirect('/kelass');
     }

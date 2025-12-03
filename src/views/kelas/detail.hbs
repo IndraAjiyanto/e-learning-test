@@ -45,21 +45,21 @@
                         class='btn bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mb-3'
                       >
                         <i class="fa-solid fa-users"></i>
-                        Join Group
+                        {{t "test.startLearning.joinGroup"}}
                       </a>
             <a
               href='/logbook/user/{{kelas.id}}'
               class='btn bg-gradient-to-r from-green-600 to-green-800 hover:from-green-500 hover:to-green-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mb-3'
             >
               <i class="fa-solid fa-book"></i>
-              My Log Books
+              {{t "test.startLearning.myLogbook"}}
             </a>
             <a
               href='/kelass/detail/{{kelas.id}}'
               class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
             >
               <i class="fa-solid fa-circle-info"></i>
-              Detail Class
+              {{t "test.startLearning.detailProgram"}}
             </a>
           </div>
         </div>
@@ -69,8 +69,8 @@
     <!-- Right Content - Weeks List -->
     <div class="lg:col-span-8">
       <div class="mb-6">
-        <h2 class="text-2xl font-bold text-slate-900 mb-2 font-montserrat">Start Learning</h2>
-        <p class="text-slate-600 text-sm font-inter">Complete each week to unlock the next</p>
+        <h2 class="text-2xl font-bold text-slate-900 mb-2 font-montserrat">{{t "test.startLearning.startLearning"}}</h2>
+        <p class="text-slate-600 text-sm font-inter">{{t "test.startLearning.spanStartLearning"}}</p>
       </div>
 
       <div class="space-y-4">
@@ -91,11 +91,11 @@
             <div>
               <div class="flex items-center gap-2">
                 <h2 class="font-bold text-base text-gray-900 group-hover:text-slate-700 transition-colors font-montserrat">
-                  Week {{this.minggu_ke}} : {{this.keterangan}}
+                  {{t "test.startLearning.week"}} {{this.minggu_ke}} : {{this.keterangan}}
                 </h2>
-                <span class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-2 py-0.5 rounded-full font-semibold font-inter">Completed</span>
+                <span class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-2 py-0.5 rounded-full font-semibold font-inter">{{t "test.startLearning.completed"}}</span>
               </div>
-              <p class="text-xs text-gray-500 mt-0.5 font-inter">Click to review content</p>
+              <p class="text-xs text-gray-500 mt-0.5 font-inter">{{t "test.startLearning.clickToReview"}}</p>
             </div>
           </div>
           <svg 
@@ -123,9 +123,9 @@
 
             <div>
               <h2 class="font-bold text-base text-gray-900 group-hover:text-slate-700 transition-colors font-montserrat">
-                Week {{this.minggu_ke}} : {{this.keterangan}}
+                {{t "test.startLearning.week"}} {{this.minggu_ke}} : {{this.keterangan}}
               </h2>
-              <p class="text-xs text-gray-500 mt-0.5 font-inter">Click to expand week content</p>
+              <p class="text-xs text-gray-500 mt-0.5 font-inter">{{t "test.startLearning.clickToExpandWeek"}}</p>
             </div>
           </div>
           <svg 
@@ -160,9 +160,9 @@
                   <div>
                     <div class="flex items-center gap-2">
                       <h3 class="font-semibold text-sm text-gray-800 group-hover:text-slate-700 transition-colors">
-                        Session {{pertemuan_ke}} - {{topik}}
+                        {{t "test.startLearning.session"}} {{pertemuan_ke}} - {{topik}}
                       </h3>
-                      <span class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-1.5 py-0.5 rounded-full font-semibold">Completed</span>
+                      <span class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-1.5 py-0.5 rounded-full font-semibold">{{t "test.startLearning.completed"}}</span>
                     </div>
                     <div class="flex items-center space-x-3 mt-0.5">
                       <p class="text-xs text-gray-500 flex items-center">
@@ -206,7 +206,7 @@
                 <div class="flex items-center space-x-3">
                   <div>
                     <h3 class="font-semibold text-sm text-gray-800 group-hover:text-slate-700 transition-colors">
-                      Session {{pertemuan_ke}} - {{topik}}
+                      {{t "test.startLearning.session"}} {{pertemuan_ke}} - {{topik}}
                     </h3>
                     <div class="flex items-center space-x-3 mt-0.5">
                       <p class="text-xs text-gray-500 flex items-center">
@@ -243,7 +243,7 @@
                       <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
-                      Attendance Recorded
+                      {{t "test.startLearning.attendanceRecorded"}}
                     </div>
                   </div>
 
@@ -252,7 +252,7 @@
                       <svg class="w-4 h-4 mr-1.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                       </svg>
-                      Materials
+                      {{t "test.startLearning.materials"}}
                     </h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <a href="/materis/pdf/{{id}}" 
@@ -260,21 +260,21 @@
                         <svg class="w-6 h-6 mx-auto mb-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                         </svg>
-                        <span class="font-semibold text-xs">PDF Materials</span>
+                        <span class="font-semibold text-xs">{{t "test.startLearning.pdfMaterial"}}</span>
                       </a>
                       <a href="/materis/video/{{id}}" 
                          class="group block bg-white border-2 border-slate-300 text-slate-700 rounded-lg shadow-md p-4 text-center hover:shadow-lg hover:-translate-y-1 hover:border-slate-400 hover:bg-slate-50 transform transition-all duration-300">
                         <svg class="w-6 h-6 mx-auto mb-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10V9a2 2 0 012-2h2a2 2 0 012 2v1M9 10v5a2 2 0 002 2h2a2 2 0 002-2v-5"/>
                         </svg>
-                        <span class="font-semibold text-xs">Video Lessons</span>
+                        <span class="font-semibold text-xs">{{t "test.startLearning.videoLeassons"}}</span>
                       </a>
                       <a href="/materis/ppt/{{id}}" 
                          class="group block bg-white border-2 border-slate-300 text-slate-700 rounded-lg shadow-md p-4 text-center hover:shadow-lg hover:-translate-y-1 hover:border-slate-400 hover:bg-slate-50 transform transition-all duration-300">
                         <svg class="w-6 h-6 mx-auto mb-1.5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
-                        <span class="font-semibold text-xs">Presentations</span>
+                        <span class="font-semibold text-xs">{{t "test.startLearning.presentation"}}</span>
                       </a>
                     </div>
                   </div>
@@ -289,7 +289,7 @@
                       <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
-                      <span class="font-semibold">Assignment Completed ✓</span>
+                      <span class="font-semibold">{{t "test.startLearning.assignmentCompleted"}}</span>
                     </a>
                     {{else}}
                     <a 
