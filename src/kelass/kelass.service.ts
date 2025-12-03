@@ -906,9 +906,8 @@ export class KelassService {
   }
 
   async findMentoringKelas(kelasId: number) {
-    return await this.mentoringRepository.findOne({
-      where: { kelas: { id: kelasId } },
-      relations: ['user'],
+    return await this.userRepository.findOne({
+      where: { mentoring: { kelas: { id: kelasId } } }
     });
   }
 

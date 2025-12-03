@@ -229,6 +229,7 @@ export class KelassController {
     const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
     const alumni = await this.kelassService.findAlumniKelas(kelasId);
     const mentoring = await this.kelassService.findMentoringKelas(kelasId);
+    const user_kelas = await this.kelassService.findUserKelas(kelasId);
         res.render('admin/kelas/detail', {
       user: req.user,
       pendaftaran,
@@ -243,7 +244,8 @@ export class KelassController {
       logbookUser,
       teknologi,
       alumni,
-      mentoring
+      mentoring,
+      user_kelas
     });
   }
   }
