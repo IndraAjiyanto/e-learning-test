@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { JawabanTugas } from './jawaban_tugas.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Komentar {
@@ -21,6 +22,7 @@ export class Komentar {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'jawaban_tugasId' })
+  @Exclude()
   jawaban_tugas: JawabanTugas;
 
   @CreateDateColumn()

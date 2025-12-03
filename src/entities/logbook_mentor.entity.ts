@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Pertemuan } from './pertemuan.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class LogbookMentor {
@@ -33,10 +34,12 @@ export class LogbookMentor {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.logbook_mentor, { onDelete: 'CASCADE' })
+  @Exclude()
   user: User;
 
   @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.logbook_mentor, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   pertemuan: Pertemuan;
 }

@@ -31,6 +31,7 @@ import { LogbookMentor } from './logbook_mentor.entity';
 import { ProgresQuiz } from './progres_quiz.entity';
 import { Mentoring } from './mentoring.entity';
 import { Pendaftaran } from './pendaftaran.entity';
+import { Exclude } from 'class-transformer';
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
 
@@ -86,60 +87,70 @@ export class User {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   absen: Absen[];
 
   @OneToMany(() => Logbook, (logbook) => logbook.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   logbook: Logbook[];
 
   @OneToMany(() => LogbookMentor, (logbook_mentor) => logbook_mentor.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   logbook_mentor: LogbookMentor[];
 
   @OneToMany(() => Portfolio, (portfolio) => portfolio.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   portfolio: Portfolio[];
 
   @OneToMany(() => Pembayaran, (pembayaran) => pembayaran.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   pembayaran: Pembayaran[];
 
   @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   jawaban_user: JawabanUser[];
 
   @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   jawaban_tugas: JawabanTugas[];
 
   @OneToMany(() => UserKelas, (user_kelas) => user_kelas.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   user_kelas: UserKelas[];
 
   @OneToMany(() => Nilai, (nilai) => nilai.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   nilai: Nilai[];
 
   @OneToMany(() => ProgresMinggu, (progres_minggu) => progres_minggu.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   progres_minggu: ProgresMinggu[];
 
   @OneToMany(
@@ -147,41 +158,48 @@ export class User {
     (progres_pertemuan) => progres_pertemuan.user,
     { cascade: true, onDelete: 'CASCADE' },
   )
+  @Exclude()
   progres_pertemuan: ProgresPertemuan[];
 
   @OneToMany(() => ProgresQuiz, (progres_quiz) => progres_quiz.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   progres_quiz: ProgresQuiz[];
 
   @OneToMany(() => Sertifikat, (sertifikat) => sertifikat.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   sertifikat: Sertifikat[];
 
   @OneToMany(() => Mentoring, (mentoring) => mentoring.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   mentoring: Mentoring[];
 
   @OneToMany(() => Pendaftaran, (pendaftaran) => pendaftaran.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   pendaftaran: Pendaftaran[];
 
   @OneToOne(() => Biodata, (biodata) => biodata.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   biodata: Biodata;
 
   @OneToOne(() => BiodataMentor, (biodata_mentor) => biodata_mentor.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   biodata_mentor: BiodataMentor;
 }

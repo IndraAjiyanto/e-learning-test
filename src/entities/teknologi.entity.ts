@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
 import { Mentor } from './mentor.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Teknologi {
@@ -21,9 +22,11 @@ export class Teknologi {
   svg: string;
 
   @ManyToMany(() => Kelas, (kelas) => kelas.teknologi)
+  @Exclude()
   kelas: Kelas[];
 
   @ManyToMany(() => Mentor, (mentor) => mentor.teknologi)
+  @Exclude()
   mentors: Mentor[];
 
   @CreateDateColumn()

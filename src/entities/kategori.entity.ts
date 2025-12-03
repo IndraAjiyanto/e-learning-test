@@ -15,6 +15,7 @@ import { PertanyaanUmum } from './pertanyaan_umum.entity';
 import { BenefitCategory } from './benefit_category.entity';
 import { FlowCategory } from './flow_category.entity';
 import { Superiority } from './superiority.entity';
+import { Exclude } from 'class-transformer';
 
 export type Type = 'Special Program' | 'Program';
 
@@ -64,27 +65,33 @@ export class Kategori {
   updatedAt: Date;
 
   @OneToMany(() => Kelas, (kelas) => kelas.kategori)
+  @Exclude()
   kelas: Kelas[];
 
   @OneToMany(
     () => PertanyaanUmum,
     (pertanyaan_umum) => pertanyaan_umum.kategori,
   )
+  @Exclude()
   pertanyaan_umum: PertanyaanUmum[];
 
   @OneToMany(
     () => BenefitCategory,
     (benefit_category) => benefit_category.kategori,
   )
+  @Exclude()
   benefit_category: BenefitCategory[];
 
   @OneToMany(() => FlowCategory, (flow_category) => flow_category.kategori)
+  @Exclude()
   flow_category: FlowCategory[];
 
     @OneToMany(() => Superiority, (superiority) => superiority.kategori)
+    @Exclude()
     superiority: Superiority[];
 
   @ManyToMany(() => JenisKelas, (jenisKelas) => jenisKelas.kategoris)
   @JoinTable()
+  @Exclude()
   jenis_kelas: JenisKelas[];
 }

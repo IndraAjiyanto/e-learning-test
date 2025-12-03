@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Kelas } from './kelas.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Mentoring {
@@ -15,9 +16,11 @@ export class Mentoring {
   id: number;
 
   @ManyToOne(() => User, (user) => user.mentoring, { onDelete: 'CASCADE' })
+  @Exclude()
   user: User;
 
   @ManyToOne(() => Kelas, (kelas) => kelas.mentoring, { onDelete: 'CASCADE' })
+  @Exclude()
   kelas: Kelas;
 
   @CreateDateColumn()

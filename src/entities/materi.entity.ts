@@ -8,6 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Pertemuan } from './pertemuan.entity';
+import { Exclude } from 'class-transformer';
 
 export type JenisFile = 'video' | 'pdf' | 'ppt';
 
@@ -37,5 +38,6 @@ export class Materi {
   @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.materi, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   pertemuan: Pertemuan;
 }

@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Quiz } from './quiz.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Nilai {
@@ -24,8 +25,10 @@ export class Nilai {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.nilai, { onDelete: 'CASCADE' })
+  @Exclude()
   user: User;
 
   @ManyToOne(() => Quiz, (quiz) => quiz.nilai, { onDelete: 'CASCADE' })
+  @Exclude()
   quiz: Quiz;
 }

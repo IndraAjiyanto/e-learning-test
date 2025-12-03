@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Pertemuan } from './pertemuan.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class ProgresPertemuan {
@@ -23,11 +24,13 @@ export class ProgresPertemuan {
   @ManyToOne(() => User, (user) => user.progres_pertemuan, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   user: User;
 
   @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.progres_pertemuan, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   pertemuan: Pertemuan;
 
   @CreateDateColumn()

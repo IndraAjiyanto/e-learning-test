@@ -11,6 +11,7 @@ import {
 import { User } from './user.entity';
 import { Kelas } from './kelas.entity';
 import { Cicilan } from './cicilan.entity';
+import { Exclude } from 'class-transformer';
 
 export type Proses = 'acc' | 'proces' | 'rejected';
 
@@ -39,12 +40,15 @@ export class Pembayaran {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.pembayaran, { onDelete: 'CASCADE' })
+  @Exclude()
   user: User;
 
   @ManyToOne(() => Kelas, (kelas) => kelas.pembayaran, { onDelete: 'CASCADE' })
+  @Exclude()
   kelas: Kelas;
 
   @OneToOne(() => Cicilan, (cicilan) => cicilan.pembayaran)
   @JoinColumn()
+  @Exclude()
   cicilan: Cicilan;
 }

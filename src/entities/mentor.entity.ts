@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
 import { Teknologi } from './teknologi.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Mentor {
@@ -34,6 +35,7 @@ export class Mentor {
     joinColumn: { name: 'mentorId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'teknologiId', referencedColumnName: 'id' },
   })
+  @Exclude()
   teknologi: Teknologi[];
 
   @Column()
@@ -49,5 +51,6 @@ export class Mentor {
   updatedAt: Date;
 
   @ManyToOne(() => Kelas, (kelas) => kelas.mentor, { onDelete: 'CASCADE' })
+  @Exclude()
   kelas: Kelas;
 }

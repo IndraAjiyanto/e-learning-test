@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Kelas } from './kelas.entity';
+import { Exclude } from 'class-transformer';
 
 export type Proses = 'acc' | 'proces' | 'rejected';
 
@@ -33,8 +34,10 @@ export class Pendaftaran {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.pendaftaran, { onDelete: 'CASCADE' })
+  @Exclude()
   user: User;
 
   @ManyToOne(() => Kelas, (kelas) => kelas.pendaftaran, { onDelete: 'CASCADE' })
+  @Exclude()    
   kelas: Kelas;
 }

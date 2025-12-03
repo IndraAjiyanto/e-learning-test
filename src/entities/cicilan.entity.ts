@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
 import { Pembayaran } from './pembayaran.entity';
+import { Exclude } from 'class-transformer';
 
 export type Bulan = 3 | 6 | 12;
 
@@ -34,10 +35,12 @@ export class Cicilan {
   updatedAt: Date;
 
   @ManyToOne(() => Kelas, (kelas) => kelas.cicilan, { onDelete: 'CASCADE' })
+  @Exclude()
   kelas: Kelas;
 
   @OneToOne(() => Pembayaran, (pembayaran) => pembayaran.cicilan, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   pembayaran: Pembayaran;
 }

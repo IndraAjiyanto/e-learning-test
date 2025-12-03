@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Alumni {
@@ -30,6 +31,7 @@ export class Alumni {
   posisi_sekarang: string[];
 
   @ManyToOne(() => Kelas, (kelas) => kelas.alumni, { onDelete: 'CASCADE' })
+  @Exclude()
   kelas: Kelas;
 
   @CreateDateColumn()

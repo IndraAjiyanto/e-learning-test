@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Kategori } from "./kategori.entity";
+import { Exclude } from "class-transformer";
 
 @Entity()
 export class BenefitCategory {
@@ -24,6 +25,7 @@ export class BenefitCategory {
         @ManyToOne(() => Kategori, (kategori) => kategori.benefit_category, {
           onDelete: 'CASCADE',
         })
+        @Exclude()
         kategori: Kategori;
 
  

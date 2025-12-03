@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Kategori } from './kategori.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class PertanyaanUmum {
@@ -24,6 +25,7 @@ export class PertanyaanUmum {
     onDelete: 'CASCADE',
     nullable: true,
   })
+  @Exclude()
   kategori?: Kategori;
 
   @CreateDateColumn()

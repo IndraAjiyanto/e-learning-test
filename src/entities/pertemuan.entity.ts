@@ -15,6 +15,7 @@ import { Minggu } from './minggu.entity';
 import { ProgresPertemuan } from './progres_pertemuan.entity';
 import { Logbook } from './logbook.entity';
 import { LogbookMentor } from './logbook_mentor.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Pertemuan {
@@ -46,23 +47,27 @@ export class Pertemuan {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   absen: Absen[];
 
   @OneToMany(() => Materi, (materi) => materi.pertemuan, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   materi: Materi[];
 
   @OneToMany(() => Tugas, (tugas) => tugas.pertemuan, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   tugas: Tugas[];
 
   @ManyToOne(() => Minggu, (minggu) => minggu.pertemuan, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   minggu: Minggu;
 
   @OneToMany(
@@ -70,12 +75,14 @@ export class Pertemuan {
     (progres_pertemuan) => progres_pertemuan.pertemuan,
     { cascade: true, onDelete: 'CASCADE' },
   )
+  @Exclude()
   progres_pertemuan: ProgresPertemuan[];
 
   @OneToMany(() => Logbook, (logbook) => logbook.pertemuan, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   logbook: Logbook[];
 
   @OneToMany(
@@ -83,6 +90,7 @@ export class Pertemuan {
     (logbook_mentor) => logbook_mentor.pertemuan,
     { cascade: true, onDelete: 'CASCADE' },
   )
+  @Exclude()
   logbook_mentor: LogbookMentor[];
 
   @CreateDateColumn()

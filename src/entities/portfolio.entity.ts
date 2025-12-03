@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Kelas } from './kelas.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Portfolio {
@@ -33,8 +34,10 @@ export class Portfolio {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.portfolio, { onDelete: 'CASCADE' })
+  @Exclude()
   user: User;
 
   @ManyToOne(() => Kelas, (kelas) => kelas.portfolio, { onDelete: 'CASCADE' })
+  @Exclude()
   kelas: Kelas;
 }

@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Kategori } from './kategori.entity';
 import { Kelas } from './kelas.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class AlurKelas {
@@ -32,5 +33,6 @@ export class AlurKelas {
   updatedAt: Date;
 
   @ManyToOne(() => Kelas, (kelas) => kelas.alur_kelas, { onDelete: 'CASCADE' })
+  @Exclude()
   kelas: Kelas;
 }

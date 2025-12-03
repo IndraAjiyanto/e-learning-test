@@ -10,6 +10,7 @@ import {
 import { Tugas } from './tugas.entity';
 import { Komentar } from './komentar.entity';
 import { User } from './user.entity';
+import { Exclude } from 'class-transformer';
 
 export type Proses = 'acc' | 'proces' | 'rejected';
 
@@ -40,12 +41,17 @@ export class JawabanTugas {
   @ManyToOne(() => Tugas, (tugas) => tugas.jawaban_tugas, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   tugas: Tugas;
+
   @OneToMany(() => Komentar, (komentar) => komentar.jawaban_tugas, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   komentar: Komentar[];
+  
   @ManyToOne(() => User, (user) => user.jawaban_tugas, { onDelete: 'CASCADE' })
+  @Exclude()
   user: User;
 }

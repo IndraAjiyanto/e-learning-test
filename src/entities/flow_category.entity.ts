@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Kategori } from './kategori.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class FlowCategory {
@@ -32,5 +33,6 @@ export class FlowCategory {
   @ManyToOne(() => Kategori, (kategori) => kategori.flow_category, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   kategori: Kategori;
 }

@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Exclude } from 'class-transformer';
 
 export type JenisKelamin = 'Laki laki' | 'Perempuan';
 export type Pendidikan =
@@ -47,6 +48,7 @@ export class Biodata {
 
   @OneToOne(() => User, (user) => user.biodata)
   @JoinColumn({ name: 'userId' })
+  @Exclude()
   user: User;
 
   @Column()

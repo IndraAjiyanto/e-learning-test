@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Quiz } from './quiz.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class ProgresQuiz {
@@ -18,9 +19,11 @@ export class ProgresQuiz {
   proses: boolean;
 
   @ManyToOne(() => User, (user) => user.progres_quiz, { onDelete: 'CASCADE' })
+  @Exclude()
   user: User;
 
   @ManyToOne(() => Quiz, (quiz) => quiz.progres_quiz, { onDelete: 'CASCADE' })
+  @Exclude()
   quiz: Quiz;
 
   @CreateDateColumn()

@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Pertemuan } from './pertemuan.entity';
 import { JawabanTugas } from './jawaban_tugas.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Tugas {
@@ -30,11 +31,13 @@ export class Tugas {
   @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.tugas, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   pertemuan: Pertemuan;
 
   @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.tugas, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @Exclude()
   jawaban_tugas: JawabanTugas[];
 }

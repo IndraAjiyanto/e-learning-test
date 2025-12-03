@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Kelas } from './kelas.entity';
 import { Kategori } from './kategori.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class JenisKelas {
@@ -26,9 +27,11 @@ export class JenisKelas {
   deskripsi: string[];
 
   @OneToMany(() => Kelas, (kelas) => kelas.jenis_kelas)
+  @Exclude()
   kelas: Kelas[];
 
   @ManyToMany(() => Kategori, (kategori) => kategori.jenis_kelas)
+  @Exclude()
   kategoris: Kategori[];
 
   @CreateDateColumn()

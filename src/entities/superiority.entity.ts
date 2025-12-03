@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Kategori } from "./kategori.entity";
+import { Exclude } from "class-transformer";
 
 @Entity()
 export class Superiority {
@@ -22,5 +23,6 @@ export class Superiority {
           @ManyToOne(() => Kategori, (kategori) => kategori.superiority, {
             onDelete: 'CASCADE',
           })
+          @Exclude()
           kategori: Kategori;
 }
