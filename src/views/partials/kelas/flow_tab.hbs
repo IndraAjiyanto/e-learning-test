@@ -1,6 +1,6 @@
     <!-- ===================== TAB FLOW (ALUR KELAS) ===================== -->
 <div x-show="tab === 'flow'">
-  <div x-data="flowTable({ flow: {{json kelas.alur_kelas}} })">
+  <div x-data="flowTable({ flow: {{json alur_kelas}} })">
     
     <!-- Header: Search + Add -->
     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -49,7 +49,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          {{#each kelas.alur_kelas}}
+          {{#each alur_kelas}}
           <tr class="hover:bg-gray-50 transition"
               x-show="filteredFlow.includes('{{id}}')">
             <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>

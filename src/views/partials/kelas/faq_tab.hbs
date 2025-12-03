@@ -1,6 +1,6 @@
     <!-- ===================== TAB FAQ (PERTANYAAN KELAS) ===================== -->
 <div x-show="tab === 'faq'">
-  <div x-data="faqTable({ faq: {{json kelas.pertanyaan_kelas}} })">
+  <div x-data="faqTable({ faq: {{json pertanyaan_kelas}} })">
     
     <!-- Header: Search + Add -->
     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -48,7 +48,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          {{#each kelas.pertanyaan_kelas}}
+          {{#each pertanyaan_kelas}}
           <tr class="hover:bg-gray-50 transition"
               x-show="filteredFaq.includes('{{id}}')">
             <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>

@@ -29,6 +29,8 @@ import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { PertanyaanKelas } from 'src/entities/pertanyaan_kelas.entity';
 import { BenefitKelas } from 'src/entities/benefit_kelas.entity';
 import { AlurKelas } from 'src/entities/alur_kelas.entity';
+import { Alumni } from 'src/entities/alumni.entity';
+import { Cicilan } from 'src/entities/cicilan.entity';
 
 @Injectable()
 export class KelassService {
@@ -77,6 +79,10 @@ export class KelassService {
     private readonly benefitKelasRepository: Repository<BenefitKelas>,
     @InjectRepository(AlurKelas)
     private readonly alurKelasRepository: Repository<AlurKelas>,
+    @InjectRepository(Alumni)
+    private readonly alumniRepository: Repository<Alumni>,
+    @InjectRepository(Cicilan)
+    private readonly cicilanRepository: Repository<Cicilan>,
   ) {}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -830,7 +836,7 @@ export class KelassService {
   async findOneKelasUser(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId, launch: true },
-      relations: ['kategori', 'jenis_kelas','cicilan'],
+      relations: ['kategori', 'jenis_kelas'],
       select: {
         id: true,
         gambar: true,
@@ -861,12 +867,6 @@ export class KelassService {
         kategori: {
           nama_kategori: true,
         },
-        cicilan: {
-          id: true,
-          bulan: true,
-          dp: true,
-          harga: true,
-        },
         jenis_kelas: {
           nama_jenis_kelas: true,
         }
@@ -881,7 +881,7 @@ export class KelassService {
   async findOneKelasAdmin(kelasId: number) {
     return await this.kelasRepository.findOne({
       where: { id: kelasId },
-      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'mentoring', 'mentoring.user' ],
+      relations: ['kategori', 'jenis_kelas' ],
     });
   }
 
@@ -928,11 +928,22 @@ export class KelassService {
 
 
   async findCicilanKelas(kelasId: number) {
-    const cicilan = await this.pembayaranRepository.findOne({
-      where: { kelas: { id: kelasId } },
-      relations: ['cicilan', 'user'],
+    return await this.cicilanRepository.find({
+      where: { kelas: { id: kelasId } }
     });
-    return cicilan
+  }
+
+  async findAlumniKelas(kelasId: number) {
+    return await this.alumniRepository.find({
+      where: { kelas: { id: kelasId } }
+    });
+  }
+
+  async findMentoringKelas(kelasId: number) {
+    return await this.mentoringRepository.findOne({
+      where: { kelas: { id: kelasId } },
+      relations: ['user'],
+    });
   }
 
   async findOne(kelasId: number) {
@@ -940,21 +951,7 @@ const kelas = await this.kelasRepository.findOne({
   where: { id: kelasId },
   relations: {
     kategori: true,
-    alumni: true,
-    alur_kelas: true,
-    benefit_kelas: true,
     jenis_kelas: true,
-    pertanyaan_kelas: true,
-    teknologi: true,
-    cicilan: true,
-    mentoring: {
-      user: true
-    }
-  },
-  order: {
-    alur_kelas: {
-      alur_ke: 'ASC'
-    }
   },
   select: {
     id: true,
@@ -976,31 +973,12 @@ const kelas = await this.kelasRepository.findOne({
     target_pembelajaran_id: true,
     target_pembelajaran_en: true,
     target_pembelajaran_ja: true,
-    benefit_kelas: {
-      id: true,
-      benefit: true,
-      isi: true,
-    },
-    alur_kelas: {
-      id: true,
-      judul: true,
-      alur_ke: true,
-      isi: true,
-    },
-    pertanyaan_kelas:{
-      id: true,
-      pertanyaan: true,
-      jawaban: true,
-    },
-    cicilan: {
-      id: true,
-      bulan: true,
-      dp: true,
-      harga: true,
-    },
-    teknologi: {
-      svg: true,
-    },
+    materi_en: true,
+    materi_id: true,
+    materi_ja: true,
+    kriteria_en: true,
+    kriteria_id: true,
+    kriteria_ja: true,
     kategori: {
       nama_kategori: true,
   },

@@ -1,6 +1,6 @@
 <!-- ===================== TAB INSTALLMENT (CICILAN) ===================== -->
 <div x-show="tab === 'installment'">
-  <div x-data='installmentTable({ installment: {{json kelas.cicilan}} })'>
+  <div x-data='installmentTable({ installment: {{json cicilan}} })'>
 
     <!-- Header: Search + Add -->
     <div
@@ -71,7 +71,7 @@
           </tr>
         </thead>
         <tbody class='divide-y divide-gray-200'>
-          {{#each kelas.cicilan}}
+          {{#each cicilan}}
             <tr
               class='hover:bg-gray-50 transition'
               x-show="filteredInstallment.includes('{{id}}')"

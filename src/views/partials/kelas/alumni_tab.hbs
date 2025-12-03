@@ -1,5 +1,5 @@
 <!-- ===================== TAB ALUMNI ===================== -->
-<div x-data="alumniTable({ alumni: {{json kelas.alumni}} })">
+<div x-data="alumniTable({ alumni: {{json alumni}} })">
 
   <!-- Header: Search -->
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -52,7 +52,7 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-        {{#each kelas.alumni}}
+        {{#each alumni}}
         <tr class="hover:bg-gray-50 transition"
             x-show="filteredAlumni.includes('{{id}}')">
           <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>

@@ -616,7 +616,7 @@
         fileInputTouched: false,
         waInputTouched: false,
         cicilanData: [
-          {{#each kelas.cicilan}}
+          {{#each cicilan}}
             {
               id: {{this.id}},
               bulan: {{this.bulan}},
@@ -625,7 +625,7 @@
             }{{#unless @last}},{{/unless}}
           {{/each}}
         ],
-        hasCicilan: {{#if kelas.cicilan.[0]}}true{{else}}false{{/if}},
+        hasCicilan: {{#if cicilan.length}}true{{else}}false{{/if}},
         copyToClipboard() { 
           navigator.clipboard.writeText('2847 9237 4298 1234'); 
           this.copied = true; 
@@ -788,7 +788,7 @@
                     {{t "test.detailProgram.installment.chooseInstallmentPeriod"}}
                   </label>
                   <div class='grid grid-cols-3 gap-2'>
-                    {{#each kelas.cicilan}}
+                    {{#each cicilan}}
                       <button
                         @click='installmentMonths = {{this.bulan}}'
                         :class="installmentMonths === {{this.bulan}} ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
