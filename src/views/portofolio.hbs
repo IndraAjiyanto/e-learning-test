@@ -60,7 +60,24 @@
               <i class='fas fa-tags text-gray-500 mr-2'></i>
                 {{t "test.portfolio.categoryTittle"}}
             </h3>
-            <div class='space-y-2'>
+
+            <!-- Search Kategori -->
+            <div class='mb-3'>
+              <div class='relative'>
+                <input
+                  type='text'
+                  x-model='searchKategoriQuery'
+                  @input='filterKategori()'
+                  placeholder='{{t "test.portfolio.searchCategoryPlaceholder"}}'
+                  class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
+                />
+                <i
+                  class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+                ></i>
+              </div>
+            </div>
+
+            <div class='space-y-2 max-h-64 overflow-y-auto'>
               <button
                 @click="selectKategori('')"
                 :class="selectedKategoriId === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
@@ -68,7 +85,7 @@
               >
                 <span class='text-sm'>{{t "test.portfolio.allCategory"}}</span>
               </button>
-              <template x-for='kategori in allKategori' :key='kategori.id'>
+              <template x-for='kategori in filteredKategoriList' :key='kategori.id'>
                 <button
                   @click='selectKategori(kategori.id)'
                   :class="selectedKategoriId == kategori.id ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
@@ -88,7 +105,24 @@
               <i class='fas fa-graduation-cap text-gray-500 mr-2'></i>
               {{t "test.portfolio.classTypeTittle"}}
             </h3>
-            <div class='space-y-2'>
+
+            <!-- Search Jenis Kelas -->
+            <div class='mb-3'>
+              <div class='relative'>
+                <input
+                  type='text'
+                  x-model='searchJenisKelasQuery'
+                  @input='filterJenisKelas()'
+                  placeholder='{{t "test.portfolio.searchClassTypePlaceholder"}}'
+                  class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
+                />
+                <i
+                  class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+                ></i>
+              </div>
+            </div>
+
+            <div class='space-y-2 max-h-64 overflow-y-auto'>
               <button
                 @click="selectJenisKelas('')"
                 :class="selectedJenisKelasId === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
@@ -96,7 +130,7 @@
               >
                 <span class='text-sm'>{{t "test.portfolio.allClassType"}}</span>
               </button>
-              <template x-for='jenis in allJenisKelas' :key='jenis.id'>
+              <template x-for='jenis in filteredJenisKelasList' :key='jenis.id'>
                 <button
                   @click='selectJenisKelas(jenis.id)'
                   :class="selectedJenisKelasId == jenis.id ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
@@ -396,10 +430,14 @@
       displayedPortfolio: [],
       allKategori: {{{json kategori}}},
       allJenisKelas: {{{json jenis_kelas}}},
+      filteredKategoriList: [],
+      filteredJenisKelasList: [],
       selectedKategori: '',
       selectedJenisKelas: '',
       selectedKategoriId: '',
       selectedJenisKelasId: '',
+      searchKategoriQuery: '',
+      searchJenisKelasQuery: '',
       currentPage: 1,
       itemsPerPage: 6,
       totalPages: 1,
@@ -408,12 +446,46 @@
 
       init() {
         console.log('Total Portfolio:', this.allPortfolio.length);
+        // Sort kategori dan jenis kelas alphabetically
+        this.allKategori = this.allKategori.sort((a, b) =>
+          a.nama_kategori.localeCompare(b.nama_kategori)
+        );
+        this.allJenisKelas = this.allJenisKelas.sort((a, b) =>
+          this.getByLang(a.nama_jenis_kelas, this.lang).localeCompare(this.getByLang(b.nama_jenis_kelas, this.lang))
+        );
+        // Initialize filtered lists
+        this.filteredKategoriList = [...this.allKategori];
+        this.filteredJenisKelasList = [...this.allJenisKelas];
         this.filterAndPaginate();
       },
 
       getByLang(obj, lang) {
         if (!obj || typeof obj !== 'object') return '';
         return obj[lang] || obj.id || obj.en || '';
+      },
+
+      // Filter kategori berdasarkan search
+      filterKategori() {
+        if (this.searchKategoriQuery.trim() === '') {
+          this.filteredKategoriList = [...this.allKategori];
+        } else {
+          const query = this.searchKategoriQuery.toLowerCase().trim();
+          this.filteredKategoriList = this.allKategori.filter(kategori =>
+            kategori.nama_kategori.toLowerCase().includes(query)
+          );
+        }
+      },
+
+      // Filter jenis kelas berdasarkan search
+      filterJenisKelas() {
+        if (this.searchJenisKelasQuery.trim() === '') {
+          this.filteredJenisKelasList = [...this.allJenisKelas];
+        } else {
+          const query = this.searchJenisKelasQuery.toLowerCase().trim();
+          this.filteredJenisKelasList = this.allJenisKelas.filter(jenis =>
+            this.getByLang(jenis.nama_jenis_kelas, this.lang).toLowerCase().includes(query)
+          );
+        }
       },
 
       filterAndPaginate() {
@@ -506,6 +578,10 @@
         this.selectedJenisKelasId = '';
         this.selectedKategori = '';
         this.selectedJenisKelas = '';
+        this.searchKategoriQuery = '';
+        this.searchJenisKelasQuery = '';
+        this.filteredKategoriList = [...this.allKategori];
+        this.filteredJenisKelasList = [...this.allJenisKelas];
         this.currentPage = 1;
         this.filterAndPaginate();
       },

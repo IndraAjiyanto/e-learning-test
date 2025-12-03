@@ -2,11 +2,11 @@
 
   <div class='container mx-auto px-4 pb-16'>
     <div class='text-center mb-12'>
-      <h1
-        class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'
-      >{{t "test.alumni.tittle"}}</h1>
+      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t
+          'test.alumni.tittle'
+        }}</h1>
       <p class='text-gray-600 max-w-2xl mx-auto text-lg font-inter'>
-        {{t "test.alumni.description"}}
+        {{t 'test.alumni.description'}}
       </p>
     </div>
 
@@ -21,13 +21,13 @@
             <div class='flex items-center justify-between mb-3'>
               <h4
                 class='text-sm font-semibold text-gray-700 font-montserrat'
-              >{{t "test.alumni.activeFilters"}}</h4>
+              >{{t 'test.alumni.activeFilters'}}</h4>
               <button
                 @click='resetFilters()'
                 class='text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center'
               >
                 <i class='fas fa-undo-alt mr-1 text-xs'></i>
-                {{t "test.alumni.resetFilters"}}
+                {{t 'test.alumni.resetFilters'}}
               </button>
             </div>
             <div class='space-y-2'>
@@ -35,7 +35,7 @@
                 <div
                   class='text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200'
                 >
-                  {{t "test.alumni.noFilters"}}
+                  {{t 'test.alumni.noFilters'}}
                 </div>
               </template>
 
@@ -49,24 +49,46 @@
             </div>
           </div>
 
+          <!-- Search Program -->
+          <div class='mb-6'>
+            <h3
+              class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
+            >
+              <i class='fas fa-search text-gray-500 mr-2'></i>
+              {{t 'test.alumni.searchProgram'}}
+            </h3>
+            <div class='relative'>
+              <input
+                type='text'
+                x-model='searchQuery'
+                @input='filterPrograms()'
+                placeholder='{{t "test.alumni.searchProgramPlaceholder"}}'
+                class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
+              />
+              <i
+                class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+              ></i>
+            </div>
+          </div>
+
           <!-- Kelas Filter -->
           <div class='mb-6'>
             <h3
               class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
             >
               <i class='fas fa-graduation-cap text-gray-500 mr-2'></i>
-              {{t "test.alumni.programTittle"}}
+              {{t 'test.alumni.programTittle'}}
             </h3>
 
-            <div class='space-y-2'>
+            <div class='space-y-2 max-h-64 overflow-y-auto'>
               <button
                 @click='selectKelas(null)'
                 :class="!selectedKelasId ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
                 class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
               >
-                <span class='text-sm'>{{t "test.alumni.allProgram"}}</span>
+                <span class='text-sm'>{{t 'test.alumni.allProgram'}}</span>
               </button>
-              <template x-for='kelas in kelasList' :key='kelas.id'>
+              <template x-for='kelas in filteredKelasList' :key='kelas.id'>
                 <button
                   @click='selectKelas(kelas.id)'
                   :class="selectedKelasId == kelas.id ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
@@ -85,7 +107,9 @@
                 class='text-2xl font-bold text-gray-900'
                 x-text='totalItems'
               ></div>
-              <div class='text-sm text-gray-600'>{{t "test.alumni.alumni"}}</div>
+              <div class='text-sm text-gray-600'>{{t
+                  'test.alumni.alumni'
+                }}</div>
             </div>
           </div>
         </div>
@@ -139,7 +163,7 @@
                       <p
                         class='text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1'
                       >
-                        {{t "test.alumni.currentPosition"}}
+                        {{t 'test.alumni.currentPosition'}}
                       </p>
                       <p
                         class='font-bold text-gray-900 text-sm'
@@ -182,13 +206,15 @@
           >
             <i class='fas fa-users text-gray-400 text-2xl'></i>
           </div>
-          <h3 class='text-xl font-semibold text-gray-900 mb-2'>{{t "test.alumni.noAlumni"}}</h3>
-          <p class='text-gray-600 mb-6'>{{t "test.alumni.tryAdjusting"}}</p>
+          <h3 class='text-xl font-semibold text-gray-900 mb-2'>{{t
+              'test.alumni.noAlumni'
+            }}</h3>
+          <p class='text-gray-600 mb-6'>{{t 'test.alumni.tryAdjusting'}}</p>
           <button
             @click='resetFilters()'
             class='bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all duration-300 border border-gray-700'
           >
-            {{t "test.alumni.resetAllFilters"}}
+            {{t 'test.alumni.resetAllFilters'}}
           </button>
         </div>
 
@@ -230,37 +256,66 @@
 <script>
   function alumniApp() {
     return {
+      // ============================
+      // State
+      // ============================
       allAlumni: {{#if alumni}}{{{json alumni}}}{{else}}[]{{/if}},
       displayedAlumni: [],
-
       kelasList: {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}},
+      filteredKelasList: [],
       selectedKelas: '',
       selectedKelasId: '',
-
+      searchQuery: '',
       currentPage: 1,
       itemsPerPage: 6,
       totalPages: 1,
-
       loading: false,
-      lang: '{{lang}}' || 'id', // Default 'id'
+      lang: '{{lang}}' || 'id',
 
+      // ============================
       // Init
+      // ============================
       init() {
+        this.kelasList = this.kelasList.sort((a, b) =>
+          a.nama_kelas.localeCompare(b.nama_kelas)
+        );
+
+        this.filteredKelasList = [...this.kelasList];
         this.filterAndPaginate();
       },
 
-      // Ambil teks sesuai bahasa
+      // ============================
+      // Helper: get text by language
+      // ============================
       getByLang(obj, lang) {
         if (!obj || typeof obj !== 'object') return '';
         return obj[lang] || obj.id || obj.en || '';
       },
 
-      // Filter + Pagination
+      // ============================
+      // Filter kelas by search query
+      // ============================
+      filterPrograms() {
+        if (this.searchQuery.trim() === '') {
+          this.filteredKelasList = [...this.kelasList];
+        } else {
+          const query = this.searchQuery.toLowerCase().trim();
+
+          this.filteredKelasList = this.kelasList.filter(kelas =>
+            kelas.nama_kelas.toLowerCase().includes(query)
+          );
+        }
+      },
+
+      // ============================
+      // Filtering + Pagination alumni
+      // ============================
       filterAndPaginate() {
         let filtered = this.allAlumni;
 
+        // Filter by kelas
         if (this.selectedKelasId) {
-          filtered = this.allAlumni.filter(alumni =>
+          filtered = filtered.filter(alumni =>
             alumni.kelas && alumni.kelas.id == this.selectedKelasId
           );
         }
@@ -273,25 +328,31 @@
         this.displayedAlumni = filtered.slice(startIndex, endIndex);
       },
 
-      // Getter Alumni yang tampil di UI
+      // ============================
+      // Getter: alumni untuk UI
+      // ============================
       get alumniItems() {
         return this.displayedAlumni || [];
       },
 
-      // Total Alumni (sesuai filter)
+      // ============================
+      // Getter: total alumni setelah filter
+      // ============================
       get totalItems() {
         let filtered = this.allAlumni;
 
         if (this.selectedKelasId) {
-          filtered = this.allAlumni.filter(alumni =>
-            alumni.kelas && alumni.kelas.id == this.selectedKelasId
+          filtered = filtered.filter(
+            alumni => alumni.kelas && alumni.kelas.id == this.selectedKelasId
           );
         }
 
         return filtered.length;
       },
 
-      // Select kategori kelas
+      // ============================
+      // Select kelas
+      // ============================
       selectKelas(kelasId) {
         this.selectedKelasId = kelasId;
         this.currentPage = 1;
@@ -305,21 +366,30 @@
         }
       },
 
-      // Ganti halaman
+      // ============================
+      // Pagination
+      // ============================
       changePage(page) {
         this.currentPage = page;
         this.filterAndPaginate();
       },
 
+      // ============================
       // Reset filter
+      // ============================
       resetFilters() {
         this.selectedKelasId = null;
         this.selectedKelas = '';
+        this.searchQuery = '';
+        this.filteredKelasList = [...this.kelasList];
+
         this.currentPage = 1;
         this.filterAndPaginate();
       },
 
-      // Ambil nama kelas alumni
+      // ============================
+      // Helper: ambil nama kelas alumni
+      // ============================
       getKelasName(alumni) {
         return alumni.kelas?.nama_kelas || 'Unknown';
       }
