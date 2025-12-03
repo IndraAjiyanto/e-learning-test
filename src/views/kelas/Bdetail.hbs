@@ -411,7 +411,7 @@
                 {{t "test.detailProgram.infoProgram.technology"}}
               </h4>
               <div class='flex gap-2 flex-wrap'>
-                {{#each kelas.teknologi}}
+                {{#each teknologi}}
                   <div class='w-6 h-6 flex items-center justify-center'>
                     {{{this.svg}}}
                   </div>
@@ -434,7 +434,7 @@
             <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
 
               <!-- Benefit 1 -->
-              {{#each kelas.benefit_kelas}}
+              {{#each benefit_kelas}}
                 <div
                   class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all'
                 >
@@ -469,7 +469,7 @@
               {{t "test.faq.tittle"}}
             </h3>
 <div class='space-y-4' x-data='{ openFaq: null }'>
-  {{#each kelas.pertanyaan_kelas}}
+  {{#each pertanyaan_kelas}}
     <div class='border border-gray-200 rounded-xl overflow-hidden'>
       <button
         class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
@@ -513,7 +513,7 @@
               <!-- Timeline -->
               <div class='space-y-10'>
                 <!-- Phase 1 -->
-                {{#each kelas.alur_kelas}}
+                {{#each alur_kelas}}
                   <div class='flex gap-6'>
                     <div class='flex flex-col items-center'>
                       <div
@@ -552,7 +552,7 @@
             <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
               <!-- Hardcoded Mentor Cards -->
 
-              {{#each kelas.mentor}}
+              {{#each mentor}}
                 <div
                   class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow'
                 >

@@ -28,6 +28,9 @@ import { Mentoring } from 'src/entities/mentoring.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { Cicilan } from 'src/entities/cicilan.entity';
+import { PertanyaanKelas } from 'src/entities/pertanyaan_kelas.entity';
+import { BenefitKelas } from 'src/entities/benefit_kelas.entity';
+import { AlurKelas } from 'src/entities/alur_kelas.entity';
 
 @Module({
   imports: [
@@ -55,7 +58,10 @@ import { Cicilan } from 'src/entities/cicilan.entity';
       Mentoring,
       Pendaftaran,
       Logbook,
-      LogbookMentor
+      LogbookMentor,
+      PertanyaanKelas,
+      BenefitKelas,
+      AlurKelas,
     ]),
     PertanyaansModule,
     JawabanUsersModule,

@@ -219,7 +219,6 @@ export class KelassController {
     });
   }  else if(req.user!.role === 'super_admin'){
     const kelas = await this.kelassService.findOne(kelasId);
-    const user_kelas = await this.kelassService.findUserKelas(kelasId);
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
     const pendaftaran = await this.kelassService.findPendaftaranKelas(kelasId);
     const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
@@ -229,7 +228,6 @@ export class KelassController {
       pembayaran,
       cicilan,
       kelas,
-      user_kelas,
       mentor,
       logbookMentor,
       logbookUser,
@@ -275,9 +273,16 @@ export class KelassController {
     if (!kelas) {
       req.flash('info', 'not found class');
     } else if (!req.user) {
+      const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+      const alur_kelas = await this.kelassService.findAlurKelas(id);
+      const mentor = await this.kelassService.findMentorKelas(id);
+      const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+      const teknologi = await this.kelassService.findTeknologiKelas(id);
       const kelass = await this.kelassService.allClassExcept(kelas.id);
       const daftar = await this.kelassService.sumStudent(kelas.id);
-      res.render('kelas/Bdetail', { kelas, kelass, daftar });
+      res.render('kelas/Bdetail', { kelas, kelass, daftar, pertanyaan_kelas, alur_kelas, mentor, benefit_kelas, teknologi
+
+       });
     } else {
       for (const u of kelas.user_kelas) {
         if (u.user.id === req.user.id) {
@@ -302,9 +307,15 @@ export class KelassController {
           minggu: mingguUpdated,
         });
       } else {
+        const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+      const alur_kelas = await this.kelassService.findAlurKelas(id);
+      const mentor = await this.kelassService.findMentorKelas(id);
+      const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+      const teknologi = await this.kelassService.findTeknologiKelas(id);
+      const user_kelas = await this.kelassService.findUserKelas(id);
         const kelass = await this.kelassService.allClassExcept(kelas.id);
         const daftar = await this.kelassService.sumStudent(kelas.id);
-        res.render('kelas/Bdetail', { user: req.user, kelas, kelass, daftar });
+        res.render('kelas/Bdetail', { user: req.user, kelas, kelass, daftar, pertanyaan_kelas, alur_kelas, mentor, benefit_kelas, teknologi, user_kelas });
       }
     }
   }

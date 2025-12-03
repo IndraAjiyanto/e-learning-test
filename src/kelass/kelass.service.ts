@@ -17,8 +17,6 @@ import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Nilai } from 'src/entities/nilai.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
-import { Absen } from 'src/entities/absen.entity';
-import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
 import { Pembayaran } from 'src/entities/pembayaran.entity';
 import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Mentor } from 'src/entities/mentor.entity';
@@ -28,7 +26,9 @@ import { Teknologi } from 'src/entities/teknologi.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
-import { Cicilan } from 'src/entities/cicilan.entity';
+import { PertanyaanKelas } from 'src/entities/pertanyaan_kelas.entity';
+import { BenefitKelas } from 'src/entities/benefit_kelas.entity';
+import { AlurKelas } from 'src/entities/alur_kelas.entity';
 
 @Injectable()
 export class KelassService {
@@ -71,8 +71,12 @@ export class KelassService {
     private readonly mentoringRepository: Repository<Mentoring>,
     @InjectRepository(Pendaftaran)
     private readonly pendaftaranRepository: Repository<Pendaftaran>,
-    @InjectRepository(Cicilan)
-    private readonly cicilanRepository: Repository<Cicilan>,
+    @InjectRepository(PertanyaanKelas)
+    private readonly pertanyaanKelasRepository: Repository<PertanyaanKelas>,
+    @InjectRepository(BenefitKelas)
+    private readonly benefitKelasRepository: Repository<BenefitKelas>,
+    @InjectRepository(AlurKelas)
+    private readonly alurKelasRepository: Repository<AlurKelas>,
   ) {}
 
   async create(createKelassDto: CreateKelassDto) {
@@ -797,11 +801,36 @@ export class KelassService {
     return await this.teknologiRepository.find();
   }
 
+  async findTeknologiKelas(kelasId: number) {
+    return await this.teknologiRepository.find({
+      where: { kelas: { id: kelasId } },
+    });
+  }
+
+  async findPertanyaanKelas(kelasId: number) {
+    return await this.pertanyaanKelasRepository.find({
+      where: { kelas: { id: kelasId } },
+      order: { id: 'ASC' },
+    });
+  }
+
+  async findBenefitKelas(kelasId: number) {
+    return await this.benefitKelasRepository.find({
+      where: { kelas: { id: kelasId } },
+    });
+  }
+
+  async findAlurKelas(kelasId: number) {
+    return await this.alurKelasRepository.find({
+      where: { kelas: { id: kelasId } },
+      order: { alur_ke: 'ASC' },
+    });
+  }
+
   async findOneKelasUser(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId, launch: true },
-      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'alur_kelas', 'benefit_kelas', 'cicilan', 'pertanyaan_kelas', 'user_kelas'],
-      order: { alur_kelas: { alur_ke: 'ASC' }, pertanyaan_kelas: { id: 'ASC' } },
+      relations: ['kategori', 'jenis_kelas','cicilan'],
       select: {
         id: true,
         gambar: true,
@@ -832,32 +861,6 @@ export class KelassService {
         kategori: {
           nama_kategori: true,
         },
-        teknologi: {
-          svg: true,
-        },
-        benefit_kelas: {
-          benefit: true,
-          isi: true,
-        },
-        pertanyaan_kelas: {
-          id: true,
-          pertanyaan: true,
-          jawaban: true,
-        },
-        alur_kelas: {
-          judul: true,
-          alur_ke: true,
-          isi: true,
-        },
-        mentor: {
-          profile: true,
-          nama: true,
-          deskripsi: true,
-          linkedin: true,
-          teknologi: {
-            svg: true,
-          },
-        },
         cicilan: {
           id: true,
           bulan: true,
@@ -866,10 +869,7 @@ export class KelassService {
         },
         jenis_kelas: {
           nama_jenis_kelas: true,
-        },
-        user_kelas: {
-          progres: true,
-        },
+        }
         }        
     });
     if(!kelas){
@@ -906,7 +906,7 @@ export class KelassService {
   async findUserKelas(kelasId: number) {
     return await this.userKelasRepository.find({
       where: { kelas: { id: kelasId } },
-      relations: ['user', 'kelas'],
+      relations: ['user'],
     });
   }
 
