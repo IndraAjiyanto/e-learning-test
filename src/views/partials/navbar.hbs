@@ -80,6 +80,13 @@
     if (!obj || typeof obj !== 'object') return '';
     return obj[lang] || obj['id'] || ''; 
   },
+
+  truncate(text, length) {
+    if (!text) return '';
+    const str = text.toString();
+    if (str.length <= length) return str;
+    return str.substring(0, length) + '...';
+  },
       
       // Check jika user dropdown aktif - DIPERBAIKI
       isUserActive() {
@@ -254,7 +261,7 @@
                   class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
                 >
                   <div
-                    class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'
+                    class='bg-gradient-to-br from-primary to-secondary text-white rounded-lg p-3 flex-shrink-0'
                   >
                     <img :src='kat.icon' class='w-6 h-6' alt='' />
                   </div>
@@ -265,7 +272,7 @@
                     ></p>
                     <p
                       class='text-xs text-gray-300 mt-0.5'
-                                                x-text='getByLang(kat.deskripsi,lang)'
+                                                x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
 
                     ></p>
                   </div>
@@ -291,7 +298,7 @@
                       class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                     >
                       <div
-                        class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'
+                        class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-lg p-3 flex-shrink-0'
                       >
                         <img :src='kat.icon' class='w-6 h-6' alt='' />
                       </div>
@@ -302,7 +309,7 @@
                         ></p>
                         <p
                           class='text-xs text-gray-600 mt-1 font-inter'
-                          x-text='getByLang(kat.deskripsi,lang)'
+                          x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
                         ></p>
                       </div>
                     </a>
@@ -659,7 +666,7 @@
                     ></p>
                     <p
                       class='text-xs text-gray-300 mt-0.5'
-                                                x-text='getByLang(kat.deskripsi,lang)'
+                                                x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
 
                     ></p>
                   </div>
@@ -686,7 +693,7 @@
                       class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                     >
                       <div
-                        class='bg-gray-900 text-white rounded-lg p-3 flex-shrink-0'
+                        class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-lg p-3 flex-shrink-0'
                       >
                         <img :src='kat.icon' class='w-6 h-6' alt='' />
                       </div>
@@ -697,7 +704,7 @@
                         ></p>
                         <p
                           class='text-xs text-gray-600 mt-1 font-inter'
-                          x-text='getByLang(kat.deskripsi,lang)'
+                          x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
                         ></p>
                       </div>
                     </a>

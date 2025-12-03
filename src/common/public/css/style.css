@@ -5427,6 +5427,11 @@ details.collapse summary::-webkit-details-marker {
   border-color: rgb(253 224 71 / var(--tw-border-opacity));
 }
 
+.border-secondary {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 48 96 / var(--tw-border-opacity));
+}
+
 .border-b-slate-600 {
   --tw-border-opacity: 1;
   border-bottom-color: rgb(71 85 105 / var(--tw-border-opacity));
@@ -5738,6 +5743,16 @@ details.collapse summary::-webkit-details-marker {
 .bg-yellow-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(234 179 8 / var(--tw-bg-opacity));
+}
+
+.bg-orange-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(234 88 12 / var(--tw-bg-opacity));
+}
+
+.bg-secondary {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 48 96 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-50 {
@@ -7519,6 +7534,11 @@ details.collapse summary::-webkit-details-marker {
   border-color: rgb(255 255 255 / 0.3);
 }
 
+.hover\:border-secondary:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 48 96 / var(--tw-border-opacity));
+}
+
 .hover\:border-b-slate-800:hover {
   --tw-border-opacity: 1;
   border-bottom-color: rgb(30 41 59 / var(--tw-border-opacity));
@@ -7842,6 +7862,12 @@ details.collapse summary::-webkit-details-marker {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+.hover\:from-primary:hover {
+  --tw-gradient-from: #10172a var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(16 23 42 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
 .hover\:to-\[\#055C90\]:hover {
   --tw-gradient-to: #055C90 var(--tw-gradient-to-position);
 }
@@ -7932,6 +7958,10 @@ details.collapse summary::-webkit-details-marker {
 
 .hover\:to-white:hover {
   --tw-gradient-to: #fff var(--tw-gradient-to-position);
+}
+
+.hover\:to-secondary:hover {
+  --tw-gradient-to: #003060 var(--tw-gradient-to-position);
 }
 
 .hover\:text-blue-600:hover {
@@ -8306,6 +8336,11 @@ details.collapse summary::-webkit-details-marker {
 .group:hover .group-hover\:bg-slate-700 {
   --tw-bg-opacity: 1;
   background-color: rgb(51 65 85 / var(--tw-bg-opacity));
+}
+
+.group:hover .group-hover\:bg-primary {
+  --tw-bg-opacity: 1;
+  background-color: rgb(16 23 42 / var(--tw-bg-opacity));
 }
 
 .group:hover .group-hover\:from-slate-600 {

@@ -115,18 +115,18 @@
       >
         <button
           onclick="document.getElementById('courses-section').scrollIntoView({ behavior: 'smooth', block: 'start' })"
-          class=' btn text-xl bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-600 hover:to-slate-800 px-8 sm:px-16 lg:px-20 border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden cursor-pointer' 
+          class=' btn text-xl bg-gradient-to-br from-primary via-secondary to-gray-900 text-white hover:from-primary hover:to-secondary px-8 sm:px-16 lg:px-20 border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden cursor-pointer' 
         >
           <span class='relative z-10 flex items-center gap-2'>
             <i class='fas fa-rocket'></i>
             {{t 'test.home.heroSection.buttonStartLearning'}}
           </span>
           <div
-            class='absolute inset-0 bg-gradient-to-r from-slate-600 to-slate-800 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left'
+            class='absolute inset-0 bg-gradient-to-br from-primary via-secondary to-gray-900 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left'
           ></div>
         </button>
         <button
-          class=' btn text-xl bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-8 sm:px-16 lg:px-20 border-2 border-slate-300 hover:border-slate-400 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2'
+          class=' btn text-xl bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-8 sm:px-16 lg:px-20 border-2 border-secondary hover:border-secondary shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2'
         >
           <span class='flex items-center gap-2'>
             <i class='fas fa-comments'></i>
@@ -260,14 +260,6 @@
 >
   <!-- Title -->
   <div class='text-center max-w-5xl mx-auto mb-10'>
-    {{!-- {{!-- {{> highlightText 
-      before="Our"
-      highlight="Experience"
-      after=""
-      bg="bg-white"
-      textColor="text-white"
-      color="text-gray-900"
-    }}  --}}
 
 
     <h2
@@ -409,7 +401,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
         class='flex items-start gap-5 group rounded-2xl p-4 bg-white/70 hover:bg-white transition-colors duration-300 ring-1 ring-slate-200 hover:ring-slate-300'
       >
         <div
-          class='text-slate-700 text-2xl bg-slate-100 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300'
+          class='text-white text-2xl bg-gradient-to-br from-primary via-secondary to-gray-900 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300'
         >
           <i class='{{#if benefit_2.icon}}{{computeIcon benefit_2.icon}}{{else}}fas fa-users{{/if}}'></i>
         </div>
@@ -429,7 +421,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
         class='flex items-start gap-5 group rounded-2xl p-4 bg-white/70 hover:bg-white transition-colors duration-300 ring-1 ring-slate-200 hover:ring-slate-300'
       >
         <div
-          class='text-slate-700 text-2xl bg-slate-100 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300'
+          class='text-white text-2xl bg-gradient-to-br from-primary via-secondary to-gray-900 p-4 rounded-xl group-hover:bg-primary group-hover:text-white transition-colors duration-300'
         >
           <i class='{{#if benefit_3.icon}}{{computeIcon benefit_3.icon}}{{else}}fas fa-certificate{{/if}}'></i>
         </div>
@@ -639,8 +631,8 @@ Get full career support — from crafting your CV and portfolio to preparing for
                 :class="tab === category.value ? 'bg-slate-100' : ''"
               >
                 <div
-                  class='w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors'
-                  :class="tab === category.value ? 'bg-slate-600 text-white' : 'text-slate-600'"
+                  class='w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors text-white'
+                  :class="tab === category.value ? 'bg-gradient-to-br from-primary via-secondary to-gray-900' : ''"
                 >
                   <img x-show="category.value !== 'all'" :src="category.icon" class="w-8 h-8 object-cover rounded-full" alt="icon">
                   <i x-show="category.value === 'all'" :class='category.icon' class='fas'></i>
@@ -900,7 +892,8 @@ Get full career support — from crafting your CV and portfolio to preparing for
         <img
           src='{{gambar}}'
           alt='{{nama_kelas}}'
-          class='h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-lg'
+          class='h-48 w-full object-cover
+ group-hover:scale-105 transition-transform duration-300 drop-shadow-lg'
         />
 
         <div class='card-body p-6'>

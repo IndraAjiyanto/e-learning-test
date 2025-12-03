@@ -7,9 +7,9 @@
     <div class='text-center mb-12'>
       <h1
         class='text-4xl md:text-5xl font-bold text-slate-800 mb-4 font-montserrat'
-      >My Profile</h1>
+      >{{t "test.profile.tittle"}}</h1>
       <p class='text-lg text-slate-600 max-w-2xl mx-auto font-inter'>
-        Manage your account information and profile settings
+        {{t "test.profile.description"}}
       </p>
     </div>
 
@@ -94,13 +94,13 @@
             href='/users/profile/info_akun'
             class='bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-center whitespace-nowrap'
           >
-            <i class='fas fa-edit mr-2'></i>Edit Profile
+            <i class='fas fa-edit mr-2'></i>{{t "test.profile.editProfile"}}
           </a>
           <a
             href='/users/profile/password'
             class='bg-white text-slate-800 border-0 px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-center whitespace-nowrap'
           >
-            <i class='fas fa-key mr-2'></i>Change Password
+            <i class='fas fa-key mr-2'></i>{{t "test.profile.changePassword"}}
           </a>
         </div>
       </div>
@@ -109,10 +109,8 @@
     <!-- Account Information Section -->
     <div class='mb-10'>
       <div class='mb-6'>
-        <h2 class='text-2xl font-bold text-slate-800 font-montserrat'>Account
-          Information</h2>
-        <p class='text-slate-600 mt-2 font-inter'>Your basic account details and
-          personal information</p>
+        <h2 class='text-2xl font-bold text-slate-800 font-montserrat'>{{t "test.profile.accountlInfo"}}</h2>
+        <p class='text-slate-600 mt-2 font-inter'>{{t "test.profile.personalDetails"}}</p>
       </div>
 
       <div class='bg-white rounded-2xl shadow-xl border border-slate-200 p-8'>
@@ -128,7 +126,7 @@
               <i class='fas fa-user text-gray-700 text-lg'></i>
             </div>
             <div class='flex-1'>
-              <p class='text-sm text-slate-500 font-medium'>Username</p>
+              <p class='text-sm text-slate-500 font-medium'>{{t "test.profile.username"}}</p>
               <p
                 class='text-lg text-slate-800 font-semibold'
               >{{user.username}}</p>
@@ -145,7 +143,7 @@
               <i class='fas fa-envelope text-gray-700 text-lg'></i>
             </div>
             <div class='flex-1'>
-              <p class='text-sm text-slate-500 font-medium'>Email</p>
+              <p class='text-sm text-slate-500 font-medium'>{{t "test.profile.email"}}</p>
               <p class='text-lg text-slate-800 font-semibold'>{{user.email}}</p>
             </div>
           </div>
@@ -161,14 +159,14 @@
               >
                 <h3
                   class='text-xl font-bold text-slate-800 font-montserrat'
-                >Personal Information</h3>
+                >{{t "test.profile.personalInfo"}}</h3>
                 <!-- Edit Information Button -->
                 <a
                   href='/biodatas/formEdit/{{user.biodata.id}}'
                   class='inline-flex items-center gap-2 bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold mt-4 md:mt-0'
                 >
                   <i class='fas fa-edit mr-2'></i>
-                  Edit Information
+                  {{t "test.profile.editInfo"}}
                 </a>
               </div>
 
@@ -183,7 +181,7 @@
                     <i class='fas fa-id-card text-gray-700 text-lg'></i>
                   </div>
                   <div class='flex-1'>
-                    <p class='text-sm text-slate-500 font-medium'>Full Name</p>
+                    <p class='text-sm text-slate-500 font-medium'>{{t "test.profile.fullName"}}</p>
                     <p
                       class='text-lg text-slate-800 font-semibold'
                     >{{user.biodata.nama_lengkap}}</p>
@@ -200,7 +198,7 @@
                     <i class='fas fa-venus-mars text-gray-700 text-lg'></i>
                   </div>
                   <div class='flex-1'>
-                    <p class='text-sm text-slate-500 font-medium'>Gender</p>
+                    <p class='text-sm text-slate-500 font-medium'>{{t "test.profile.gender"}}</p>
                     <p
                       class='text-lg text-slate-800 font-semibold'
                     >{{user.biodata.jenis_kelamin}}</p>
@@ -221,12 +219,11 @@
                   >
                     <i class='fas fa-phone text-gray-700 text-lg'></i>
                   </div>
-                  <p class='text-sm text-slate-500 font-medium'>Phone Number</p>
+                  <p class='text-sm text-slate-500 font-medium'>{{t "test.profile.phoneNumber"}}</p>
                   <p
                     class='text-base text-slate-800 font-semibold'
                   >{{user.biodata.no}}</p>
                 </div>
-
                 <!-- Location -->
                 <div
                   class='p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 text-center'
@@ -236,7 +233,7 @@
                   >
                     <i class='fas fa-map-marker-alt text-gray-700 text-lg'></i>
                   </div>
-                  <p class='text-sm text-slate-500 font-medium'>Location</p>
+                  <p class='text-sm text-slate-500 font-medium'>{{t "test.profile.location"}}</p>
                   <p
                     class='text-base text-slate-800 font-semibold'
                   >{{user.biodata.kota}}</p>
@@ -251,7 +248,7 @@
                   >
                     <i class='fas fa-graduation-cap text-gray-700 text-lg'></i>
                   </div>
-                  <p class='text-sm text-slate-500 font-medium'>Education</p>
+                  <p class='text-sm text-slate-500 font-medium'>{{t "test.profile.education"}}</p>
                   <p
                     class='text-base text-slate-800 font-semibold'
                   >{{user.biodata.pendidikan}}</p>
@@ -266,7 +263,7 @@
                   >
                     <i class='fas fa-book text-gray-700 text-lg'></i>
                   </div>
-                  <p class='text-sm text-slate-500 font-medium'>Study Program</p>
+                  <p class='text-sm text-slate-500 font-medium'>{{t "test.profile.studyProgram"}}</p>
                   <p
                     class='text-base text-slate-800 font-semibold'
                   >{{user.biodata.program_studi}}</p>
@@ -290,17 +287,15 @@
                     ></i>
                   </div>
                   <div>
-                    <p class='font-semibold text-yellow-800 text-lg'>Complete
-                      Your Profile</p>
-                    <p class='text-yellow-700 text-sm'>Complete your biodata to
-                      make your profile more professional.</p>
+                    <p class='font-semibold text-yellow-800 text-lg'>{{t "test.profile.tittleCompleteYourProfile"}}</p>
+                    <p class='text-yellow-700 text-sm'>{{t "test.profile.spanCompleteYourProfile"}}</p>
                   </div>
                 </div>
                 <a
                   href='/biodatas/formCreate'
                   class='bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold whitespace-nowrap'
                 >
-                  Complete Biodata
+                  {{t "test.profile.completeBiodata"}}
                 </a>
               </div>
             </div>
@@ -326,8 +321,7 @@
         &times;
       </button>
 
-      <h3 class='text-xl font-bold text-slate-800 mb-4 font-montserrat'>Profile
-        Picture Preview</h3>
+      <h3 class='text-xl font-bold text-slate-800 mb-4 font-montserrat'>{{t "test.profile.profilePicturePreview"}}</h3>
 
       <!-- Validation Error Alert -->
       <div
@@ -342,7 +336,7 @@
             <i class='fas fa-exclamation-triangle text-white text-lg'></i>
           </div>
           <div class='flex-1'>
-            <p class='font-bold text-red-800 text-base mb-1'>Invalid Image!</p>
+            <p class='font-bold text-red-800 text-base mb-1'>{{t "test.profile.invalidImage"}}</p>
             <p class='text-red-700 text-sm' x-text='validationError'></p>
           </div>
         </div>
@@ -373,7 +367,7 @@
           @click='closeModal()'
           class='px-6 py-3 rounded-xl border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold'
         >
-          Cancel
+          {{t "test.profile.cancel"}}
         </button>
 
         <button
@@ -382,7 +376,7 @@
           :class="validationError !== '' ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transform hover:-translate-y-1'"
           class='px-6 py-3 rounded-xl bg-gradient-to-r from-slate-600 to-slate-800 text-white shadow-lg transition-all duration-300 font-semibold'
         >
-          Save Changes
+          {{t "test.profile.saveChanges"}}
         </button>
       </div>
     </div>
