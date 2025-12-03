@@ -947,49 +947,10 @@ export class KelassService {
   }
 
   async findOne(kelasId: number) {
-const kelas = await this.kelasRepository.findOne({
-  where: { id: kelasId },
-  relations: {
-    kategori: true,
-    jenis_kelas: true,
-  },
-  select: {
-    id: true,
-    gambar: true,
-    nama_kelas: true,
-    deskripsi: true,
-    grup: true,
-    metode: true,
-    lokasi: true,
-    hari: true,
-    bulan: true,
-    tanggal_mulai: true,
-    tanggal_selesai: true,
-    kuota: true,
-    check_paid: true,
-    harga: true,
-    promo: true,
-    form: true, 
-    target_pembelajaran_id: true,
-    target_pembelajaran_en: true,
-    target_pembelajaran_ja: true,
-    materi_en: true,
-    materi_id: true,
-    materi_ja: true,
-    kriteria_en: true,
-    kriteria_id: true,
-    kriteria_ja: true,
-    kategori: {
-      nama_kategori: true,
-  },
-  jenis_kelas: {
-    nama_jenis_kelas: true,
-  }
-}
-
-});
-
-
+    const kelas = await this.kelasRepository.findOne({
+      where: { id: kelasId },
+      relations: ['kategori', 'jenis_kelas' ],
+    });
     if (!kelas) {
       throw new NotFoundException('Program not found');
     }
