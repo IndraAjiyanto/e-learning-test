@@ -769,7 +769,6 @@ export class KelassService {
     return await this.kelasRepository.find({
       relations: [
         'user_kelas',
-        'user_kelas.user',
         'kategori',
         'mentoring',
         'mentoring.user',
@@ -782,11 +781,8 @@ export class KelassService {
       where: { id: Not(kelasId), launch: true },
       relations: [
         'user_kelas',
-        'user_kelas.user',
         'kategori',
         'jenis_kelas',
-        'teknologi',
-        'mentoring',
       ],
     });
   }
@@ -804,7 +800,7 @@ export class KelassService {
   async findOneKelasUser(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId, launch: true },
-      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'alur_kelas', 'benefit_kelas', 'cicilan', 'pertanyaan_kelas', 'user_kelas', 'user_kelas.user'],
+      relations: ['kategori', 'jenis_kelas', 'teknologi', 'mentor', 'mentor.teknologi', 'alur_kelas', 'benefit_kelas', 'cicilan', 'pertanyaan_kelas', 'user_kelas'],
       order: { alur_kelas: { alur_ke: 'ASC' }, pertanyaan_kelas: { id: 'ASC' } },
       select: {
         id: true,
@@ -873,7 +869,6 @@ export class KelassService {
         },
         user_kelas: {
           progres: true,
-          user: true
         },
         }        
     });
