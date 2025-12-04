@@ -1,7 +1,7 @@
 <div class="bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen py-20">
   <div class="max-w-6xl mx-auto px-6">
     <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
-      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center font-montserrat">Edit Portfolio</h2>
+      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center font-montserrat">{{t "test.myPortfolio.editPortfolio.editPortfolio"}}</h2>
 
       <form method="POST" action="/portfolios/{{portfolio.id}}?_method=PATCH" enctype="multipart/form-data">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -10,29 +10,29 @@
           <div class="space-y-6">
             <!-- Judul Portfolio -->
             <div>
-              <label for="judul" class="block text-lg font-semibold text-gray-700 mb-3">Portfolio Title</label>
-              <input type="text" id="judul" name="judul" required placeholder="Enter portfolio title"
+              <label for="judul" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.myPortfolio.editPortfolio.portfolioTittle"}}</label>
+              <input type="text" id="judul" name="judul" required placeholder="{{t "test.myPortfolio.editPortfolio.placeholderTittle"}}"
                 value="{{portfolio.judul}}"
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white" />
             </div>
 
             <!-- Deskripsi -->
             <div>
-              <label for="deskripsi" class="block text-lg font-semibold text-gray-700 mb-3">Description</label>
+              <label for="deskripsi" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.myPortfolio.editPortfolio.description"}}</label>
               <textarea name="deskripsi" id="deskripsi" required
-                placeholder="Write a description..."
+                placeholder="{{t "test.myPortfolio.editPortfolio.placeholderDescription"}}"
                 rows="6"
                 class="w-full text-gray-700 bg-white/70 border border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 hover:bg-white resize-none">{{portfolio.deskripsi}}</textarea>
             </div>
 
             <!-- Link -->
             <div>
-              <label for="link" class="block text-lg font-semibold text-gray-700 mb-3">Link <span class="text-red-500">*</span></label>
+              <label for="link" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.myPortfolio.editPortfolio.link"}} <span class="text-red-500">*</span></label>
               <input type="url" id="link" name="link" required
-                placeholder="Enter link (e.g., https://example.com)..."
+                placeholder="{{t "test.myPortfolio.editPortfolio.placeholderLink"}}"
                 value="{{portfolio.link}}"
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white" />
-              <p class="text-xs text-slate-500 mt-2">Enter a valid URL starting with http:// or https://</p>
+              <p class="text-xs text-slate-500 mt-2">{{t "test.myPortfolio.editPortfolio.spanLink"}}</p>
             </div>
           </div>
 
@@ -41,7 +41,7 @@
             <!-- Existing Images Section -->
             <div x-data="{ existingImages: {{#if portfolio.gambar}}{{json portfolio.gambar}}{{else}}[]{{/if}} }" class="space-y-4">
               <label class="block text-lg font-semibold text-gray-700 mb-3">
-                Current Images
+                {{t "test.myPortfolio.editPortfolio.currentImages"}}
               </label>
               
               <template x-for="(url, index) in existingImages" :key="'existing-' + index">
@@ -58,9 +58,9 @@
                               </svg>
                             </div>
                           </div>
-                          <span class="text-sm font-medium text-slate-700">Existing Image</span>
+                          <span class="text-sm font-medium text-slate-700">{{t "test.myPortfolio.editPortfolio.existingImage"}}</span>
                         </div>
-                        <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">Saved</span>
+                        <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">{{t "test.myPortfolio.editPortfolio.saved"}}</span>
                       </div>
                     </div>
                     <input type="hidden" name="gambar" :value="url">
@@ -78,9 +78,9 @@
             <!-- Upload Gambar Baru -->
             <div x-data="{ newFiles: [] }" class="space-y-4">
               <label class="block text-lg font-semibold text-gray-700 mb-3">
-                Add New Images
+                {{t "test.myPortfolio.editPortfolio.addNewImages"}}
               </label>
-              <p class="text-xs text-slate-500 mb-3">Allowed: JPG, JPEG, PNG, GIF. Max size: 5MB per image</p>
+              <p class="text-xs text-slate-500 mb-3">{{t "test.myPortfolio.editPortfolio.spanUploadImages"}}</p>
               
               <template x-for="(file, index) in newFiles" :key="index">
                 <div class="space-y-4">
@@ -170,7 +170,7 @@
                 <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
-                Add Image
+                {{t "test.myPortfolio.editPortfolio.addImage"}}
               </button>
             </div>
 
@@ -181,11 +181,11 @@
         <div class="flex items-center gap-4 pt-10 mt-8 border-t border-slate-200">
           <button type="submit"
             class="bg-gradient-to-r from-slate-700 to-slate-900 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-            Update Portfolio
+            {{t "test.myPortfolio.editPortfolio.updatePortfolio"}}
           </button>
           <a href="/portfolios/{{portfolio.id}}"
             class="px-8 py-4 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-            Cancel
+            {{t "test.myPortfolio.editPortfolio.cancel"}}
           </a>
         </div>
       </form>
