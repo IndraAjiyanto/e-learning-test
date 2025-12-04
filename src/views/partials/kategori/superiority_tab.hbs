@@ -1,7 +1,7 @@
 <!-- ===================== TAB SUPERIORITY ===================== -->
 <div x-show="tab === 'superiority'">
   <div
-    x-data='superiorityTable({ superiority: {{json kategori.superiority}} })'
+    x-data='superiorityTable({ superiority: {{json superiority}} })'
   >
 
     <!-- Header: Search + Add -->
@@ -70,7 +70,7 @@
           </tr>
         </thead>
         <tbody class='divide-y divide-gray-200'>
-          {{#each kategori.superiority}}
+          {{#each superiority}}
             <tr
               class='hover:bg-gray-50 transition'
               x-show="filteredSuperiority.includes('{{id}}')"

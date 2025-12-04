@@ -3,16 +3,13 @@ import { CreateLogbookDto } from './dto/create-logbook.dto';
 import { UpdateLogbookDto } from './dto/update-logbook.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Logbook } from 'src/entities/logbook.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import cloudinary from 'src/common/config/multer.config';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
-import { paginateQuery } from 'src/common/utils/pagination.helper';
-import { PaginationParams } from 'src/common/decorators/pagination.decorator';
-import * as ExcelJS from 'exceljs';
 
 @Injectable()
 export class LogbookService {

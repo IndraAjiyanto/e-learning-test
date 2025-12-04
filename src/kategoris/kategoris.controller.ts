@@ -83,6 +83,18 @@ export class KategorisController {
     @Res() res: Response,
   ) {
     const kategori = await this.kategorisService.findOneKategori(kategoriName);
+        const benefit_category = await this.kategorisService.findBenefitByKategori(
+      kategori.id,
+    );
+    const flow_category = await this.kategorisService.findFlowByKategori(
+      kategori.id,
+    );
+    const superiority = await this.kategorisService.findSuperiorityByKategori(
+      kategori.id,
+    );
+    const pertanyaan_umum = await this.kategorisService.findFaqByKategori(
+      kategori.id,
+    );
     const alumni = await this.kategorisService.findAlumniByKategori(kategori.id);
     const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
     if (kategori?.type === 'Special Program') {
@@ -90,7 +102,11 @@ export class KategorisController {
         kategori,
         user: req.user,
         kelas,
-        alumni
+        alumni,
+        benefit_category,
+        flow_category,
+        superiority,
+        pertanyaan_umum,
       });
     } else if (kategori?.type === 'Program') {
       res.render('program', { kategori, user: req.user, kelas, alumni });
@@ -105,11 +121,29 @@ export class KategorisController {
     @Req() req: Request,
   ) {
     const kategori = await this.kategorisService.findOne(kategoriId);
+    const benefit_category = await this.kategorisService.findBenefitByKategori(
+      kategoriId,
+    );
+    const flow_category = await this.kategorisService.findFlowByKategori(
+      kategoriId,
+    );
+    const superiority = await this.kategorisService.findSuperiorityByKategori(
+      kategoriId,
+    );
+    const pertanyaan_umum = await this.kategorisService.findFaqByKategori(
+      kategoriId,
+    );
+    const kelas = await this.kategorisService.findKelasByKategori(kategoriId);
     const alumni = await this.kategorisService.findAlumniByKategori(kategoriId);
     res.render('super_admin/kategori/detail', {
       user: req.user,
       kategori,
       alumni,
+      benefit_category,
+      flow_category,
+      superiority,
+      pertanyaan_umum,
+      kelas
     });
   }
 

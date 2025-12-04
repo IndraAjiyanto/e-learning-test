@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateKategorisDto } from './dto/create-kategoris.dto';
 import { UpdateKategorisDto } from './dto/update-kategoris.dto';
 import cloudinary from 'src/common/config/multer.config';
@@ -11,6 +11,7 @@ import { Alumni } from 'src/entities/alumni.entity';
 import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { FlowCategory } from 'src/entities/flow_category.entity';
+import { Superiority } from 'src/entities/superiority.entity';
 
 @Injectable()
 export class KategorisService {
@@ -29,6 +30,8 @@ export class KategorisService {
     private readonly benefitCategoryRepository: Repository<BenefitCategory>,
     @InjectRepository(FlowCategory)
     private readonly flowCategoryRepository: Repository<FlowCategory>,
+    @InjectRepository(Superiority)
+    private readonly superiorityRepository: Repository<Superiority>,
   ) {}
 
   async create(createKategorisDto: CreateKategorisDto) {
@@ -48,11 +51,7 @@ export class KategorisService {
     const kategori = await this.kategoriRepository.findOne({
       where: { nama_kategori: kategoriName },
       relations: [
-        'pertanyaan_umum',
-        'benefit_category',
-        'flow_category',
         'jenis_kelas',
-        'superiority',
       ],
     });
     if(!kategori) {
@@ -73,15 +72,7 @@ export class KategorisService {
     const kategori = await this.kategoriRepository.findOne({
       where: { id: kategoriId },
       relations: [
-        'kelas',
-        'kelas.user_kelas',
-        'kelas.alumni',
-        'kelas.jenis_kelas',
-        'benefit_category',
-        'flow_category',
-        'pertanyaan_umum',
-        'jenis_kelas',
-        'superiority',
+        'jenis_kelas'
       ],
     });
     if (!kategori) {
@@ -93,7 +84,7 @@ export class KategorisService {
   async findKelasByKategori(kategoriId: number) {
     return await this.kelasRepository.find({
       where: { kategori: { id: kategoriId }, launch: true },
-      relations: ['kategori', 'jenis_kelas', 'user_kelas', 'user_kelas.user'],
+      relations: ['jenis_kelas','kategori','user_kelas'],
     });
   }
 
@@ -107,21 +98,24 @@ export class KategorisService {
   async findFaqByKategori(kategoriId: number) {
     return await this.pertanyaanUmumRepository.find({
       where: { kategori: { id: kategoriId } },
-      relations: ['kategori'],
+    });
+  }
+
+  async findSuperiorityByKategori(kategoriId: number) {
+    return await this.superiorityRepository.find({
+      where: { kategori: { id: kategoriId } },
     });
   }
 
   async findBenefitByKategori(kategoriId: number) {
     return await this.benefitCategoryRepository.find({
       where: { kategori: { id: kategoriId } },
-      relations: ['kategori'],
     });
   }
 
   async findFlowByKategori(kategoriId: number) {
     return await this.flowCategoryRepository.find({
       where: { kategori: { id: kategoriId } },
-      relations: ['kategori'],
     });
   }
 
