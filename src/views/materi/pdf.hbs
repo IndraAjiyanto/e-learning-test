@@ -21,7 +21,7 @@
           d='M15 19l-7-7 7-7'
         ></path>
       </svg>
-      Back to Class
+      {{t "test.material.pdf.backToProgram"}}
     </a>
   </div>
 
@@ -64,9 +64,8 @@
                 />
               </svg>
             </div>
-            <p class='text-slate-600 text-lg font-semibold mb-2'>No PDF Selected</p>
-            <p class='text-slate-400 text-sm'>Select a PDF from the list to
-              start reading</p>
+            <p class='text-slate-600 text-lg font-semibold mb-2'>{{t "test.material.pdf.noPDFSelected"}}</p>
+            <p class='text-slate-400 text-sm'>{{t "test.material.pdf.selectPDFInstruction"}}</p>
           </div>
         </div>
       </div>
@@ -74,7 +73,7 @@
       <div class='mt-6'>
         <h1
           class='text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent font-montserrat'
-          x-text="materiJudul || 'Select a pdf to start learning'"
+          x-text="materiJudul || '{{t "test.material.pdf.selectPDFInstruction"}}'"
         ></h1>
 
       </div>
@@ -103,7 +102,7 @@
               />
             </svg>
           </div>
-          Materi Kelas
+          {{t "test.material.pdf.materiProgram"}}
         </h2>
       </div>
 
@@ -125,7 +124,7 @@
                   <button
                     @click.stop="downloadPDF('{{file}}', '{{judul}}.pdf')"
                     class='p-1.5 rounded-lg bg-slate-100 hover:bg-green-600 text-slate-600 hover:text-white transition-all duration-200'
-                    title='Download PDF'
+                    title='{{t "test.material.pdf.downloadPDF"}}'
                   >
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -166,10 +165,8 @@
                 />
               </svg>
             </div>
-            <p class='text-slate-500 text-sm font-medium'>Belum ada materi
-              tersedia</p>
-            <p class='text-slate-400 text-xs mt-1'>Materi akan ditambahkan
-              segera</p>
+            <p class='text-slate-500 text-sm font-medium'>{{t "test.material.pdf.noMateriAvailable"}}</p>
+            <p class='text-slate-400 text-xs mt-1'>{{t "test.material.pdf.spanNoMateriAvailable"}}</p>
           </div>
         {{/if}}
       </div>

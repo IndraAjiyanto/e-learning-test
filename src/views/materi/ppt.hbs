@@ -45,7 +45,7 @@
           d='M15 19l-7-7 7-7'
         ></path>
       </svg>
-      Back to Class
+      {{t "test.material.ppt.backToProgram"}}
     </a>
   </div>
 
@@ -153,8 +153,8 @@
                   />
                 </svg>
               </div>
-              <p class='text-slate-600 text-lg font-semibold mb-2'>No Slides Selected</p>
-              <p class='text-slate-400 text-sm'>Select a material from the list to start presentation</p>
+              <p class='text-slate-600 text-lg font-semibold mb-2'>{{t "test.material.ppt.noPresentationSelected"}}</p>
+              <p class='text-slate-400 text-sm'>{{t "test.material.ppt.selectPPTInstruction"}}</p>
             </div>
           </div>
         </template>
@@ -163,7 +163,7 @@
       <div class='mt-6'>
         <h1
           class='text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent font-montserrat'
-          x-text="slideTitle || 'Select a material to start learning'"
+          x-text="slideTitle || '{{t "test.material.ppt.selectPPTInstruction"}}'"
         ></h1>
       </div>
     </div>    <!-- Materials Sidebar -->
@@ -188,7 +188,7 @@
               d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10'
             />
           </svg>
-          Slide Materials
+          {{t "test.material.ppt.materiProgram"}}
         </h2>
       </div>
 
@@ -213,7 +213,7 @@
                        target='_blank'
                        @click.stop
                        class='p-1.5 rounded-lg bg-slate-100 hover:bg-green-600 text-slate-600 hover:text-white transition-all duration-200'
-                       title='Download PPT'>
+                       title='{{t "test.material.ppt.downloadPPT"}}'>
                       <svg xmlns='http://www.w3.org/2000/svg' class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
                       </svg>
@@ -239,8 +239,8 @@
                 d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
               />
             </svg>
-            <p class='text-slate-500 text-sm font-medium'>No slide materials available</p>
-            <p class='text-slate-400 text-xs mt-1'>Check back later for new content</p>
+            <p class='text-slate-500 text-sm font-medium'>{{t "test.material.ppt.noMateriAvailable"}}</p>
+            <p class='text-slate-400 text-xs mt-1'>{{t "test.material.ppt.spanNoMateriAvailable"}}</p>
           </div>
         {{/if}}
       </div>

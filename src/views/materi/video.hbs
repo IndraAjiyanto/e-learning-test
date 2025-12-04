@@ -21,7 +21,7 @@
           d='M15 19l-7-7 7-7'
         ></path>
       </svg>
-      Back to Class
+      {{t "test.material.video.backToProgram"}}
     </a>
   </div>
 
@@ -83,10 +83,8 @@
                 />
               </svg>
             </div>
-            <p class='text-slate-600 text-lg font-semibold mb-2'>No Video
-              Selected</p>
-            <p class='text-slate-400 text-sm'>Select a video from the list to
-              start watching</p>
+            <p class='text-slate-600 text-lg font-semibold mb-2'>{{t "test.material.video.noVideoSelected"}}</p>
+            <p class='text-slate-400 text-sm'>{{t "test.material.video.selectVideoInstruction"}}</p>
           </div>
         </div>
       </div>
@@ -94,7 +92,7 @@
       <div class='flex justify-between items-center mt-6'>
         <h1
           class='text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent font-montserrat'
-          x-text="videoTitle || 'Select a video to start learning'"
+          x-text="videoTitle || '{{t "test.material.video.selectVideoInstruction"}}'"
         ></h1>
       </div>
     </div>
@@ -120,7 +118,7 @@
               d='M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z'
             />
           </svg>
-          Video Materials
+          {{t "test.material.video.materiProgram"}}
         </h2>
       </div>
 
@@ -159,10 +157,8 @@
                 d='M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z'
               />
             </svg>
-            <p class='text-slate-500 text-sm font-medium'>No video materials
-              available</p>
-            <p class='text-slate-400 text-xs mt-1'>Check back later for new
-              content</p>
+            <p class='text-slate-500 text-sm font-medium'>{{t "test.material.video.noMateriAvailable"}}</p>
+            <p class='text-slate-400 text-xs mt-1'>{{t "test.material.video.spanNoMateriAvailable"}}</p>
           </div>
         {{/if}}
       </div>
