@@ -14,7 +14,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
         <div>
-          <p class="text-slate-600 text-sm font-medium">Total Questions</p>
+          <p class="text-slate-600 text-sm font-medium">{{t "test.quiz.totalQuestions"}}</p>
           <p class="text-2xl font-bold text-slate-900">{{quiz.pertanyaan.length}}</p>
         </div>
       </div>
@@ -23,7 +23,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
         <div>
-          <p class="text-slate-600 text-sm font-medium">Minimum Score</p>
+          <p class="text-slate-600 text-sm font-medium">{{t "test.quiz.minimumScore"}}</p>
           <p class="text-2xl font-bold text-slate-900">{{quiz.nilai_minimal}}</p>
         </div>
       </div>
@@ -38,12 +38,12 @@
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
     </svg>
-    Back to Class
+    {{t "test.quiz.backToProgram"}}
   </a>
     <a href="/quiz/start/{{quiz.id}}" 
        class="bg-gradient-to-r from-slate-700 to-slate-900 text-white inline-flex items-center gap-3 px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg  focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
 
-      <span>Start Quiz</span>
+      <span>{{t "test.quiz.startQuiz"}}</span>
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
 </svg>
@@ -57,7 +57,7 @@
       <svg class="w-8 h-8 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
       </svg>
-      <h2 class="text-2xl font-bold text-slate-900 font-montserrat">Score History</h2>
+      <h2 class="text-2xl font-bold text-slate-900 font-montserrat">{{t "test.quiz.scoreHistory"}}</h2>
     </div>
 
     {{#if nilai.length}}
@@ -65,8 +65,8 @@
         <table class="w-full">
           <thead class="sticky top-0 z-10">
             <tr class="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700 uppercase tracking-wider">Score</th>
-              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700 uppercase tracking-wider">{{t "test.quiz.score"}}</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700 uppercase tracking-wider">{{t "test.quiz.status"}}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 bg-white">
@@ -81,14 +81,14 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    Passed
+                    {{t "test.quiz.passed"}}
                   </span>
                 {{else}}
                   <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border border-red-200">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
-                    Failed
+                    {{t "test.quiz.failed"}}
                   </span>
                 {{/if}}
               </td>
@@ -104,8 +104,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
         </div>
-        <p class="text-slate-500 text-lg font-medium mb-2">No quiz attempts yet</p>
-        <p class="text-slate-400">Start your first quiz to see your score history</p>
+        <p class="text-slate-500 text-lg font-medium mb-2">{{t "test.quiz.noQuizAttempt"}}</p>
+        <p class="text-slate-400">{{t "test.quiz.startYourFirstQuiz"}}</p>
       </div>
     {{/if}}
   </div>
