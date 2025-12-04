@@ -57,7 +57,6 @@ export class PortfoliosService {
       where: { user: { id: userId } },
       relations: [
         'kelas',
-        'user',
         'kelas.kategori',
         'kelas.jenis_kelas',
         'kelas.teknologi',
