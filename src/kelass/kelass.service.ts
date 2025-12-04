@@ -794,7 +794,7 @@ export class KelassService {
   async findOneKelasAdmin(kelasId: number) {
     return await this.kelasRepository.findOne({
       where: { id: kelasId },
-      relations: ['kategori', 'jenis_kelas' ],
+      relations: ['kategori', 'jenis_kelas', 'teknologi','mentoring','mentoring.user' ],
     });
   }
 
@@ -861,7 +861,7 @@ export class KelassService {
   async findOne(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
-      relations: ['kategori', 'jenis_kelas' ],
+      relations: ['kategori', 'jenis_kelas', 'teknologi','mentoring','mentoring.user' ],
     });
     if (!kelas) {
       throw new NotFoundException('Program not found');

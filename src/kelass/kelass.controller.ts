@@ -202,7 +202,6 @@ export class KelassController {
     const logbookMentor = await this.kelassService.findLogbookMentor(kelasId);
     const logbookUser = await this.kelassService.findLogBookUser(kelasId);
     const mentor = await this.kelassService.findMentorKelas(kelasId);
-    const teknologi = await this.kelassService.findTeknologiKelas(kelasId);
     if(req.user!.role === 'admin'){
     const kelas = await this.kelassService.findOneKelasAdmin(kelasId);
     const minggu = await this.kelassService.findMingguKelas(kelasId);
@@ -216,9 +215,8 @@ export class KelassController {
       mentor,
       mingguTerakhir,
       logbookMentor,
-      logbookUser,
-      teknologi
-    });
+      logbookUser
+  });
   }  else if(req.user!.role === 'super_admin'){
     const kelas = await this.kelassService.findOne(kelasId);
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
@@ -228,7 +226,6 @@ export class KelassController {
     const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
     const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
     const alumni = await this.kelassService.findAlumniKelas(kelasId);
-    const mentoring = await this.kelassService.findMentoringKelas(kelasId);
     const user_kelas = await this.kelassService.findUserKelas(kelasId);
         res.render('admin/kelas/detail', {
       user: req.user,
@@ -242,9 +239,7 @@ export class KelassController {
       alur_kelas,
       logbookMentor,
       logbookUser,
-      teknologi,
       alumni,
-      mentoring,
       user_kelas
     });
   }
