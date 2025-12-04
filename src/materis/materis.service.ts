@@ -56,7 +56,7 @@ export class MaterisService {
   async findPertemuan(pertemuanId: number) {
     return await this.pertemuanRepository.findOne({
       where: { id: pertemuanId },
-      relations: ['absen', 'materi', 'tugas', 'minggu', 'minggu.kelas'],
+      relations: ['minggu', 'minggu.kelas'],
     });
   }
 
