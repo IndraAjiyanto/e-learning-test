@@ -1,7 +1,7 @@
 <div class="bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen py-20">
   <div class="max-w-4xl mx-auto px-6">
     <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
-      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center font-montserrat">Edit Profile</h2>
+      <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center font-montserrat">{{t "test.profile.editBiodata.tittle"}}</h2>
 
       <form action="/biodatas/{{biodata.id}}?_method=PATCH" method="POST" x-data="{
         pendidikanOpen: false,
@@ -17,35 +17,34 @@
           <div class="space-y-6">
             <!-- Nama Lengkap -->
             <div>
-              <label for="nama_lengkap" class="block text-lg font-semibold text-gray-700 mb-3">Full Name</label>
+              <label for="nama_lengkap" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.fullName"}}</label>
               <input type="text" id="nama_lengkap" name="nama_lengkap" value="{{biodata.nama_lengkap}}" required
-                placeholder="Enter your full name"
+                placeholder="{{t "test.profile.editBiodata.placeholderFullName"}}"
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
-
             <!-- No WA -->
             <div>
-              <label for="no" class="block text-lg font-semibold text-gray-700 mb-3">WhatsApp Number</label>
+              <label for="no" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.whatsAppNumber"}}</label>
               <input type="text" id="no" name="no" value="{{biodata.no}}" required
-                placeholder="Enter your WhatsApp number"
+                placeholder="{{t "test.profile.editBiodata.placeholderWhatsAppNumber"}}"
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
 
             <!-- Jenis Kelamin (Radio) -->
             <div>
-              <label class="block text-lg font-semibold text-gray-700 mb-3">Gender</label>
+              <label class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.gender"}}</label>
               <div class="flex flex-col gap-3">
                 <label class="inline-flex items-center gap-3 cursor-pointer group">
                   <input type="radio" name="jenis_kelamin" value="Laki laki" 
                     {{#if (roles biodata.jenis_kelamin "Laki laki")}}checked{{/if}} required
                     class="radio border-gray-700 checked:text-gray-700 checked:bg-white">
-                  <span class="text-gray-700 text-lg group-hover:text-slate-900 transition-colors">Male</span>
+                  <span class="text-gray-700 text-lg group-hover:text-slate-900 transition-colors">{{t "test.profile.editBiodata.male"}}</span>
                 </label>
                 <label class="inline-flex items-center gap-3 cursor-pointer group">
                   <input type="radio" name="jenis_kelamin" value="Perempuan"
                     {{#if (roles biodata.jenis_kelamin "Perempuan")}}checked{{/if}} required
                     class="radio border-gray-700 checked:text-gray-700 checked:bg-white">
-                  <span class="text-gray-700 text-lg group-hover:text-slate-900 transition-colors">Female</span>
+                  <span class="text-gray-700 text-lg group-hover:text-slate-900 transition-colors">{{t "test.profile.editBiodata.female"}}</span>
                 </label>
               </div>
             </div>
@@ -55,15 +54,15 @@
           <div class="space-y-6">
             <!-- Kota -->
             <div>
-              <label for="kota" class="block text-lg font-semibold text-gray-700 mb-3">City</label>
+              <label for="kota" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.city"}}</label>
               <input type="text" id="kota" name="kota" value="{{biodata.kota}}" required
-                placeholder="Enter your city"
+                placeholder="{{t "test.profile.editBiodata.placeholderCity"}}"
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
 
             <!-- Pendidikan (Custom Dropdown) -->
             <div>
-              <label class="block text-lg font-semibold text-gray-700 mb-3">Education</label>
+              <label class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.education"}}</label>
               <div class="relative" x-data="{ open: false }">
                 <!-- Hidden Input untuk Form -->
                 <input type="hidden" name="pendidikan" :value="selectedPendidikan" required>
@@ -104,28 +103,28 @@
                       @click="selectedPendidikan = 'Junior High School'; open = false;"
                       class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg"
                     >
-                      Junior High School
+                      {{t "test.profile.editBiodata.juniorHighSchool"}}
                     </button>
                     <button 
                       type="button"
                       @click="selectedPendidikan = 'Senior High School'; open = false;"
                       class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg"
                     >
-                      Senior High School
+                      {{t "test.profile.editBiodata.seniorHighSchool"}}
                     </button>
                     <button 
                       type="button"
                       @click="selectedPendidikan = 'Diploma (D3/D4)'; open = false;"
                       class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg"
                     >
-                      Diploma (D3/D4)
+                      {{t "test.profile.editBiodata.diploma"}}
                     </button>
                     <button 
                       type="button"
                       @click="selectedPendidikan = 'Bachelor Degree (S1)'; open = false;"
                       class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg"
                     >
-                      Bachelor Degree (S1)
+                      {{t "test.profile.editBiodata.bachelorDegree"}}
                     </button>
                   </div>
                 </div>
@@ -134,9 +133,9 @@
 
             <!-- Program Studi -->
             <div>
-              <label for="program_studi" class="block text-lg font-semibold text-gray-700 mb-3">Study Program</label>
+              <label for="program_studi" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.studyProgram"}}</label>
               <input type="text" id="program_studi" name="program_studi" value="{{biodata.program_studi}}" required
-                placeholder="Enter your study program"
+                placeholder="{{t "test.profile.editBiodata.placeholderStudyProgram"}}"
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
           </div>
@@ -146,11 +145,11 @@
         <div class="flex items-center gap-4 pt-10 mt-8 border-t border-slate-200">
           <button type="submit"
             class="bg-gradient-to-r from-slate-700 to-slate-900 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-            Update Profile
+            {{t "test.profile.editBiodata.updateProfile"}}
           </button>
           <a href="/users/profile"
             class="px-8 py-4 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-            Back to Profile
+            {{t "test.profile.editBiodata.backToProfile"}}
           </a>
         </div>
 
