@@ -62,6 +62,7 @@ import { FlowCategoryModule } from './flow_category/flow_category.module';
 import { FaqModule } from './faq/faq.module';
 import { SuperiorityModule } from './superiority/superiority.module';
 import { AcceptLanguageResolver, CookieResolver, I18nMiddleware, I18nModule } from 'nestjs-i18n';
+import { OurExperienceModule } from './our_experience/our_experience.module';
 import path from 'path';
 
 @Module({
@@ -138,7 +139,8 @@ import path from 'path';
     BenefitCategoryModule,
     FlowCategoryModule,
     FaqModule,
-    SuperiorityModule
+    SuperiorityModule,
+    OurExperienceModule
   ],
   controllers: [AppController],
   providers: [AppService],
