@@ -39,8 +39,6 @@ export class KelassService {
     private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Pertemuan)
-    private readonly pertemuanRepository: Repository<Pertemuan>,
     @InjectRepository(Kategori)
     private readonly kategoriRepository: Repository<Kategori>,
     @InjectRepository(JenisKelas)
@@ -667,15 +665,39 @@ export class KelassService {
     return await this.logbookMentorRepository.find({
       where: { pertemuan: { minggu: { kelas: { id: kelasId } } } },
       relations: [
-        'user',
         'pertemuan',
         'pertemuan.minggu',
         'pertemuan.minggu.kelas',
         'pertemuan.minggu.kelas.mentor',
-        'pertemuan.minggu.kelas.mentoring',
         'pertemuan.minggu.kelas.jenis_kelas',
         'pertemuan.minggu.kelas.kategori',
       ],
+      select:{
+        id: true,
+        kegiatan: true,
+        rincian_kegiatan: true,
+        dokumentasi: true,
+        kendala: true,
+        createdAt: true,
+        pertemuan: {
+          pertemuan_ke: true,
+          minggu: {
+            minggu_ke: true,
+            kelas: {
+              nama_kelas: true,
+              mentor: {
+                nama: true,
+              },
+              kategori: {
+                nama_kategori: true,
+              },
+              jenis_kelas: {
+                nama_jenis_kelas: true,
+              },
+            },
+          },
+        },
+      }
     });
   }
 
@@ -691,6 +713,38 @@ export class KelassService {
         'pertemuan.minggu.kelas.jenis_kelas',
         'pertemuan.minggu.kelas.kategori',
       ],
+      select:{
+        id: true,
+        kegiatan: true,
+        rincian_kegiatan: true,
+        dokumentasi: true,
+        proses: true,
+        kendala: true,
+        dokumentasi_lain: true,
+        createdAt: true,
+        user: {
+          username: true,
+          email: true,
+        },
+        pertemuan: {
+          pertemuan_ke: true,
+          minggu: {
+            minggu_ke: true,
+            kelas: {
+              nama_kelas: true,
+              mentor: {
+                nama: true,
+              },
+              kategori: {
+                nama_kategori: true,
+              },
+              jenis_kelas: {
+                nama_jenis_kelas: true,
+              },
+            },
+          },
+            },
+      }
     });
   }
 
