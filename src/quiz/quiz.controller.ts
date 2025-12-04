@@ -60,7 +60,9 @@ export class QuizController {
     @Req() req: Request,
   ) {
     const quiz = await this.quizService.findOne(quizId);
-    res.render('admin/quiz/detail', { user: req.user, quiz });
+    const nilai = await this.quizService.findNilai(quizId);
+    const pertanyaan = await this.quizService.findPertanyaan(quizId);
+    res.render('admin/quiz/detail', { user: req.user, quiz, nilai, pertanyaan });
   }
 
   @Roles('admin')
@@ -83,8 +85,8 @@ export class QuizController {
   ) {
     const quiz = await this.quizService.findOne(quizId);
     const nilai = await this.quizService.findNilaiUser(req.user!.id, quizId);
-
-    res.render('user/quiz/quiz', { user: req.user, quiz, nilai });
+    const pertanyaan = await this.quizService.findPertanyaan(quizId);
+    res.render('user/quiz/quiz', { user: req.user, quiz, nilai, pertanyaan });
   }
 
   @Roles('user')

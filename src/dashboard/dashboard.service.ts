@@ -80,7 +80,7 @@ export class DashboardService {
     return await this.kelasRepository.find({
       where: { launch: true },
       order: { id: 'DESC' },
-      relations: ['kategori', 'jenis_kelas', 'user_kelas','mentor'],
+      relations: ['kategori', 'jenis_kelas', 'user_kelas', 'mentoring', 'mentoring.user'],
     });
   }
 
@@ -103,12 +103,10 @@ export class DashboardService {
       where: { mentoring: { user: { id: userId } } },
       relations: [
         'user_kelas',
-        'user_kelas.user',
         'kategori',
         'jenis_kelas',
         'mentoring',
-        'mentoring.user',
-        'mentor'
+        'mentoring.user'
       ],
     });
   }

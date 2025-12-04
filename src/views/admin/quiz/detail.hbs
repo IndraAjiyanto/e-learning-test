@@ -97,9 +97,9 @@
   </div>
 
 <div x-show="tab === 'question'">
-  {{#if quiz.pertanyaan.length}}
+  {{#if pertanyaan.length}}
    <div class="space-y-4 mb-6">
-      {{#each quiz.pertanyaan}}
+      {{#each pertanyaan}}
       <div x-data="{ open: false }" class="bg-white border rounded-lg shadow">
         
         <button @click="open = !open"
@@ -187,7 +187,7 @@
 </div>
 
 <div x-show="tab === 'answer'">
-    {{#if quiz.nilai.length}}
+    {{#if nilai.length}}
       <div class="overflow-hidden bg-white rounded-xl shadow-lg">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -197,7 +197,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            {{#each quiz.nilai}}
+            {{#each nilai}}
             <tr>
               <td class="px-6 py-4 text-gray-900 font-medium">{{this.user.username}}</td>
               <td class="px-6 py-4">

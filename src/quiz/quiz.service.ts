@@ -42,16 +42,23 @@ export class QuizService {
     return `This action returns all quiz`;
   }
 
+  async findNilai(quizId: number) {
+    const quiz = await this.findOne(quizId);
+    if (!quiz) {
+      throw new NotFoundException('quiz not found');
+    }
+    return await this.nilaiRepository.find({
+      where: { quiz: { id: quizId } },
+      relations: ['user'],
+    });
+  }
+
   async findOne(quizId: number) {
     return await this.quizRepository.findOne({
       where: { id: quizId },
       relations: [
         'minggu',
         'minggu.kelas',
-        'pertanyaan',
-        'pertanyaan.jawaban',
-        'nilai',
-        'nilai.user',
       ],
     });
   }
