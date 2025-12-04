@@ -878,7 +878,7 @@
                     <h5 class='font-medium text-slate-600 mb-2'>{{t "test.detailProgram.installment.monthlyInstallment"}}</h5>
                     <template x-for='(amount, index) in getCicilanByMonth(installmentMonths)?.harga || []' :key='index'>
                       <div class='flex justify-between items-center py-2 px-3 bg-slate-50 rounded-lg'>
-                        <span class='text-sm font-medium text-slate-600' x-text='`Month ${index + 1}`'></span>
+                        <span class='text-sm font-medium text-slate-600' x-text='`{{t "test.detailProgram.infoProgram.month"}} ${index + 1}`'></span>
                         <span class='text-sm font-bold text-slate-900' x-text='`Rp ${amount.toLocaleString("id-ID")}`'></span>
                       </div>
                     </template>
