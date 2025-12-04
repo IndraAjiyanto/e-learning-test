@@ -1,0 +1,448 @@
+<div
+  class='py-10 w-full mx-auto px-6'
+  x-data="{
+  get computedClass() {
+    const raw = (this.formData.icon || '').toString().trim();
+    if (!raw) return 'fa-solid fa-circle-question';
+    const v = raw;
+    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
+    if (hasFaPrefix) {
+      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
+      return v;
+    }
+    if (!v.includes(' ')) return 'fa-solid fa-' + v;
+    return v;
+  },
+
+  // Form validation states
+  formData: {
+    icon: `{{ourExperience.icon}}`,
+    title: { id: `{{ourExperience.title.id}}`, en: `{{ourExperience.title.en}}`, ja: `{{ourExperience.title.ja}}` },
+    description: { id: `{{ourExperience.description.id}}`, en: `{{ourExperience.description.en}}`, ja: `{{ourExperience.description.ja}}` }
+  },
+  formErrors: {
+    icon: '',
+    title: { id: '', en: '', ja: '' },
+    description: { id: '', en: '', ja: '' }
+  },
+  formValid: {
+    icon: false,
+    title: { id: true, en: true, ja: true },
+    description: { id: true, en: true, ja: true }
+  },
+
+  init() {
+    // Validate initial values
+    this.validateField('icon', null, this.formData.icon);
+    this.validateField('title', 'id', this.formData.title.id);
+    this.validateField('title', 'en', this.formData.title.en);
+    this.validateField('title', 'ja', this.formData.title.ja);
+    this.validateField('description', 'id', this.formData.description.id);
+    this.validateField('description', 'en', this.formData.description.en);
+    this.validateField('description', 'ja', this.formData.description.ja);
+  },
+
+  validateField(field, lang, value) {
+    if (field === 'icon') {
+      this.formData.icon = value;
+      if (!value.trim()) {
+        this.formErrors.icon = 'Icon is required';
+        this.formValid.icon = false;
+      } else if (value.trim().length < 2) {
+        this.formErrors.icon = 'Icon must be at least 2 characters';
+        this.formValid.icon = false;
+      } else {
+        this.formErrors.icon = '';
+        this.formValid.icon = true;
+      }
+    } else {
+      this.formData[field][lang] = value;
+      
+      switch(field) {
+        case 'title':
+          if (!value.trim()) {
+            this.formErrors.title[lang] = 'Title is required';
+            this.formValid.title[lang] = false;
+          } else if (value.trim().length < 3) {
+            this.formErrors.title[lang] = 'Title must be at least 3 characters';
+            this.formValid.title[lang] = false;
+          } else {
+            this.formErrors.title[lang] = '';
+            this.formValid.title[lang] = true;
+          }
+          break;
+          
+        case 'description':
+          if (!value.trim()) {
+            this.formErrors.description[lang] = 'Description is required';
+            this.formValid.description[lang] = false;
+          } else if (value.trim().length < 10) {
+            this.formErrors.description[lang] = 'Description must be at least 10 characters';
+            this.formValid.description[lang] = false;
+          } else {
+            this.formErrors.description[lang] = '';
+            this.formValid.description[lang] = true;
+          }
+          break;
+      }
+    }
+  },
+
+  canSubmit() {
+    return this.formValid.icon && 
+           Object.values(this.formValid.title).every(v => v) && 
+           Object.values(this.formValid.description).every(v => v);
+  },
+
+  hasFormErrors() {
+    return this.formErrors.icon !== '' || 
+           Object.values(this.formErrors.title).some(e => e !== '') || 
+           Object.values(this.formErrors.description).some(e => e !== '');
+  }
+}"
+>
+  <div class='max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8'>
+    <h1 class='text-2xl font-bold text-gray-800 mb-6'>Edit Our Experience</h1>
+
+    <form
+      action='/our_experience/formEdit/{{ourExperience.id}}?_method=PATCH'
+      method='post'
+      class='space-y-6'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
+    >
+
+      <!-- Title per Bahasa -->
+      <div class='space-y-4'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
+          Title
+        </label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <input
+              x-model='formData.title.id'
+              @input='validateField("title", "id", $event.target.value)'
+              type='text'
+              name='title[id]'
+              required
+              :class="formErrors.title.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='Judul experience (ID)'
+            />
+
+            <!-- Error Message -->
+            <template x-if='formErrors.title.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.title.id'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.title.id && !formErrors.title.id'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <input
+              x-model='formData.title.en'
+              @input='validateField("title", "en", $event.target.value)'
+              type='text'
+              name='title[en]'
+              required
+              :class="formErrors.title.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='Experience title (EN)'
+            />
+
+            <!-- Error Message -->
+            <template x-if='formErrors.title.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.title.en'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.title.en && !formErrors.title.en'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- JA -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <input
+              x-model='formData.title.ja'
+              @input='validateField("title", "ja", $event.target.value)'
+              type='text'
+              name='title[ja]'
+              required
+              :class="formErrors.title.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='エクスペリエンスタイトル (JA)'
+            />
+
+            <!-- Error Message -->
+            <template x-if='formErrors.title.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.title.ja'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.title.ja && !formErrors.title.ja'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description per Bahasa -->
+      <div class='space-y-4'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
+          Description
+        </label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <textarea
+              x-model='formData.description.id'
+              @input='validateField("description", "id", $event.target.value)'
+              name='description[id]'
+              rows='5'
+              required
+              :class="formErrors.description.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.description.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Deskripsi experience (ID)'
+            ></textarea>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.description.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.description.id'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template
+              x-if='formValid.description.id && !formErrors.description.id'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <textarea
+              x-model='formData.description.en'
+              @input='validateField("description", "en", $event.target.value)'
+              name='description[en]'
+              rows='5'
+              required
+              :class="formErrors.description.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.description.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Experience description (EN)'
+            ></textarea>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.description.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.description.en'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template
+              x-if='formValid.description.en && !formErrors.description.en'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- JA -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JA</label>
+            <textarea
+              x-model='formData.description.ja'
+              @input='validateField("description", "ja", $event.target.value)'
+              name='description[ja]'
+              rows='5'
+              required
+              :class="formErrors.description.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.description.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='エクスペリエンス説明 (JA)'
+            ></textarea>
+
+            <!-- Error Message -->
+            <template x-if='formErrors.description.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.description.ja'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template
+              x-if='formValid.description.ja && !formErrors.description.ja'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <div class='space-y-2'>
+        <label
+          for='icon'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Icon
+        </label>
+        <div class='flex items-center gap-4'>
+          <input
+            x-model='formData.icon'
+            @input='validateField("icon", null, $event.target.value)'
+            type='text'
+            id='icon'
+            name='icon'
+            placeholder='fa-code, fa-layer-group, etc.'
+            :class="formErrors.icon ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+          />
+
+          <!-- Live preview: binds computed class to the <i> element -->
+          <div class='flex items-center gap-3'>
+            <i :class='computedClass' class='text-2xl text-gray-700'></i>
+            <span class='text-sm text-gray-500' x-text='computedClass'></span>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <template x-if='formErrors.icon'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='formErrors.icon'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='formValid.icon && !formErrors.icon'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Icon looks good</p>
+          </div>
+        </template>
+
+        <p class='text-sm text-gray-500 mt-2'>Type a Font Awesome class like
+          <code>fa-code</code>
+          or include full classes like
+          <code>fas fa-code</code>.</p>
+      </div>
+
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='!canSubmit()'
+          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+        >
+          Update
+        </button>
+        <a
+          href='/our_experience'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
+        >
+          Cancel
+        </a>
+      </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors()'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
+
+    </form>
+  </div>
+</div>

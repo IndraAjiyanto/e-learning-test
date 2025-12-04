@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { OurExperience } from '../entities/our_experience.entity';
 import { CreateOurExperienceDto } from './dto/create-our_experience.dto';
 import { UpdateOurExperienceDto } from './dto/update-our_experience.dto';
 
 @Injectable()
 export class OurExperienceService {
-  create(createOurExperienceDto: CreateOurExperienceDto) {
-    return 'This action adds a new ourExperience';
+  constructor(
+    @InjectRepository(OurExperience)
+    private ourExperienceRepository: Repository<OurExperience>,
+  ) {}
+
+  async findAll() {
+    return await this.ourExperienceRepository.find();
   }
 
-  findAll() {
-    return `This action returns all ourExperience`;
+  async create(createOurExperienceDto: CreateOurExperienceDto) {
+    const ourExperience = await this.ourExperienceRepository.create(
+      createOurExperienceDto,
+    );
+    return await this.ourExperienceRepository.save(ourExperience);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ourExperience`;
+  async findOne(id: number) {
+    const ourExperience = await this.ourExperienceRepository.findOne({
+      where: { id },
+    });
+    if (!ourExperience) {
+      throw new NotFoundException('OurExperience not found');
+    }
+    return ourExperience;
   }
 
-  update(id: number, updateOurExperienceDto: UpdateOurExperienceDto) {
-    return `This action updates a #${id} ourExperience`;
+  async update(id: number, updateOurExperienceDto: UpdateOurExperienceDto) {
+    const ourExperience = await this.findOne(id);
+    Object.assign(ourExperience, updateOurExperienceDto);
+    return await this.ourExperienceRepository.save(ourExperience);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ourExperience`;
+  async remove(id: number) {
+    const ourExperience = await this.findOne(id);
+    return await this.ourExperienceRepository.remove(ourExperience);
   }
 }
