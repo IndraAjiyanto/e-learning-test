@@ -35,6 +35,7 @@ export class DashboardController {
         const benefit_2 = await this.dashboardService.findBenefit2();
         const benefit_3 = await this.dashboardService.findBenefit3();
         const tentang = await this.dashboardService.findTentang();
+        const social = await this.dashboardService.findSocial();
         res.render('dashboard', {
           special_program,
           user: req.user,
@@ -52,6 +53,7 @@ export class DashboardController {
           benefit_2,
           benefit_3,
           tentang,
+          social
         });
       }
     } else {
@@ -69,6 +71,7 @@ export class DashboardController {
       const benefit_2 = await this.dashboardService.findBenefit2();
       const benefit_3 = await this.dashboardService.findBenefit3();
       const tentang = await this.dashboardService.findTentang();
+        const social = await this.dashboardService.findSocial();
       res.render('dashboard', {
         special_program,
         user: req.user,
@@ -86,6 +89,7 @@ export class DashboardController {
         benefit_2,
         benefit_3,
         tentang,
+        social
       });
     }
   }

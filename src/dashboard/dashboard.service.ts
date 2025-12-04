@@ -32,8 +32,6 @@ export class DashboardService {
   constructor(
     @InjectRepository(Kelas)
     private readonly kelasRepository: Repository<Kelas>,
-    @InjectRepository(PertanyaanUmum)
-    private readonly pertanyaanUmumRepository: Repository<PertanyaanUmum>,
     @InjectRepository(Alumni)
     private readonly alumniRepository: Repository<Alumni>,
     @InjectRepository(Portfolio)

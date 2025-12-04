@@ -116,7 +116,7 @@
                     {{#each background}}
                     <li class='flex items-center space-x-2'>
                                                                 <i
-                      class='fa-solid fa-circle fa-xs text-gray-500 flex-shrink-0'
+                      class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
                     ></i>
                       <span><strong>{{getByLang content ../lang}}</strong>
                         - {{getByLang isi ../lang}}</span>
@@ -124,12 +124,12 @@
                     {{/each}}
                     {{else}}
                     <li class='flex items-start space-x-2'>
-                      <i class='fa-solid fa-circle fa-xs text-gray-500 mt-2 flex-shrink-0'></i>
+                      <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
                       <span><strong>Bachelor's Degree (S.Kom)</strong>
                         - Information Technology at Universitas Islam Indonesia</span>
                     </li>
                     <li class='flex items-start space-x-2'>
-                      <i class='fa-solid fa-circle fa-xs text-gray-500 mt-2 flex-shrink-0'></i>
+                      <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
                       <span><strong>Master's Degree (M.Sc)</strong>
                         - Advanced Computer Science with Artificial Intelligence Pathway at Manchester University</span>
                     </li>
@@ -168,24 +168,24 @@
                     {{#if award.length}}
                     {{#each award}}
                     <li class='flex items-center space-x-2'>
-                                               <i class='fa-solid fa-circle fa-xs text-gray-500 flex-shrink-0'></i>
+                                               <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
                       <span><strong>{{getByLang content ../lang}}</strong>
                         - {{getByLang isi ../lang}}</span>
                     </li>
                     {{/each}}
                     {{else}}
                     <li class='flex items-start space-x-2'>
-                                                                  <i class='fa-solid fa-circle fa-xs text-gray-500 mt-2 flex-shrink-0'></i>
+                                                                  <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
                       <span><strong>Container Orchestration using Kubernetes</strong>
                         - Big Data 101 - BD101N</span>
                     </li>
                     <li class='flex items-start space-x-2'>
-                                                                  <i class='fa-solid fa-circle fa-xs text-gray-500 mt-2 flex-shrink-0'></i>
+                                                                  <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
                       <span><strong>Duolingo German Fluency</strong>
                         - Elementary (Estimated)</span>
                     </li>
                     <li class='flex items-start space-x-2'>
-                                                                  <i class='fa-solid fa-circle fa-xs text-gray-500 mt-2 flex-shrink-0'></i>
+                                                                  <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
                       <span><strong>Accelerating Through Angular 2</strong></span>
                     </li>
                     {{/if}}
@@ -223,10 +223,10 @@
                     {{#if experience.length}}
                     {{#each experience}}
                     <li class='flex items-center space-x-2'>
-                      <i class='fa-solid fa-circle fa-xs text-gray-500 flex-shrink-0'></i>
+                      <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
                       <div class="flex items-center gap-1">
                         <strong>{{getByLang content ../lang}}</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'> - {{getByLang isi ../lang}}</p>
+                        <p class='text-xs sm:text-sm text-slate-600 text-justify'> - {{getByLang isi ../lang}}</p>
                       </div>
                     </li>
                     {{/each}}
