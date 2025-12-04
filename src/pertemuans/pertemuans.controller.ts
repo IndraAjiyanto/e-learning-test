@@ -67,13 +67,6 @@ export class PertemuansController {
   }
 
   @Roles('admin')
-  @Get()
-  async findAll(@Res() res: Response, @Req() req: any) {
-    const pertemuan = await this.pertemuansService.findAll();
-    res.render('admin/pertemuan/index', { user: req.user, pertemuan });
-  }
-
-  @Roles('admin')
   @Get('formCreate/:mingguId')
   async formCreate(
     @Param('mingguId') mingguId: number,

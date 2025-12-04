@@ -64,31 +64,6 @@ export class PertemuansService {
     }
   }
 
-  async findAll() {
-    return await this.pertemuanRepository
-      .createQueryBuilder('pertemuan')
-      .leftJoin('pertemuan.kelas', 'kelas')
-      .leftJoin('pertemuan.materi', 'materi')
-      .select([
-        'pertemuan.id AS id',
-        'pertemuan.pertemuan_ke AS pertemuan_ke',
-        'pertemuan.topik AS topik',
-        'pertemuan.tanggal AS tanggal',
-        'pertemuan.waktu_awal AS waktu_awal',
-        'pertemuan.waktu_akhir AS waktu_akhir',
-        'kelas.id AS kelas_id',
-        'kelas.nama_kelas AS nama_kelas',
-      ])
-      .addSelect([
-        `SUM(CASE WHEN materi.jenis_file = 'pdf' THEN 1 ELSE 0 END) AS jumlah_pdf`,
-        `SUM(CASE WHEN materi.jenis_file = 'video' THEN 1 ELSE 0 END) AS jumlah_video`,
-        `SUM(CASE WHEN materi.jenis_file = 'ppt' THEN 1 ELSE 0 END) AS jumlah_ppt`,
-      ])
-      .groupBy('pertemuan.id')
-      .addGroupBy('kelas.id')
-      .getRawMany();
-  }
-
   async findAllKelas() {
     return await this.kelasRepository.find();
   }
@@ -116,7 +91,7 @@ export class PertemuansService {
         user_kelas: { kelas: { id: kelasId } },
         absen: { pertemuan: { id: pertemuanId } },
       },
-      relations: ['user_kelas', 'user_kelas.kelas', 'absen', 'absen.pertemuan'],
+      relations: ['absen'],
     });
     return users;
   }
@@ -155,7 +130,7 @@ export class PertemuansService {
   async findOne(id: number) {
     const pertemuan = await this.pertemuanRepository.findOne({
       where: { id },
-      relations: ['minggu', 'minggu.kelas', 'absen', 'materi', 'tugas'],
+      relations: ['minggu', 'minggu.kelas', 'tugas'],
     });
     if (!pertemuan) {
       throw new NotFoundException(`Pertemuan tidak ditemukan`);
