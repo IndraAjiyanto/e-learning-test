@@ -837,7 +837,7 @@ export class KelassService {
   async findOneKelasUser(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId, launch: true },
-      relations: ['kategori', 'jenis_kelas', 'user_kelas' ]     
+      relations: ['kategori', 'jenis_kelas', 'user_kelas', 'user_kelas.user' ]     
     });
     if(!kelas){
       throw new NotFoundException('Program not found');
