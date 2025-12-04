@@ -59,17 +59,6 @@ export class LogbookMentorController {
     }
   }
 
-  @Roles('admin')
-  @Get()
-  async findAll(@Res() res: Response, @Req() req: Request) {
-    const logbook_mentor = await this.logbookMentorService.findAll();
-    const kelas = await this.logbookMentorService.getKelasList(req.user!.id);
-    res.render('admin/logbook_mentor/index', {
-      user: req.user,
-      logbook_mentor,
-      kelas,
-    });
-  }
 
   @Roles('admin')
   @Get(':logbook_mentorId')

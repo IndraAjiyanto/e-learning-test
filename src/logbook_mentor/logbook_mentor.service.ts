@@ -47,16 +47,6 @@ export class LogbookMentorService {
     });
   }
 
-  async findAll() {
-    return await this.logBookMentorRepository.find({
-      relations: [
-        'user',
-        'pertemuan',
-        'pertemuan.minggu',
-        'pertemuan.minggu.kelas',
-      ],
-    });
-  }
 
   async findOne(logbook_mentorId: number) {
     const logbook_mentor = await this.logBookMentorRepository.findOne({
