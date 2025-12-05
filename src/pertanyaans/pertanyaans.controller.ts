@@ -154,7 +154,6 @@ export class PertanyaansController {
         if (pertanyaan.gambar) {
           await this.pertanyaansService.getPublicIdFromUrl(pertanyaan.gambar);
         }
-        console.log(gambar.path);
       }
       await this.pertanyaansService.update(pertanyaanId, updatePertanyaanDto);
       req.flash('success', 'successfuly update question');

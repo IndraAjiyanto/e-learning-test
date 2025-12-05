@@ -190,7 +190,6 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
   // Translation akan di-pass dari controller via render context
   app.use((req: Request, res: Response, next: NextFunction) => {
     const lang = req.cookies?.lang || 'id';
-    console.log('Selected language:', lang);
     res.locals.currentLang = lang;
     res.locals.lang = lang; // Tersedia di semua template HBS sebagai 'lang'
     next();

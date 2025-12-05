@@ -38,7 +38,6 @@ export class SocialController {
       req.flash('success', 'Social created successfully');
       res.redirect('/social');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to create social');
       res.redirect('/social');
     }
@@ -81,7 +80,6 @@ export class SocialController {
       req.flash('success', 'Social updated successfully');
       res.redirect('/social');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to update social');
       res.redirect('/social');
     }
@@ -104,7 +102,6 @@ export class SocialController {
       req.flash('success', 'Social deleted successfully');
       res.redirect('/social');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to delete social');
       res.redirect('/social');
     }

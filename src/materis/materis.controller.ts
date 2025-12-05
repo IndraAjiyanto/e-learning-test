@@ -135,16 +135,12 @@ export class MaterisController {
         pptUrl = uploadResult.pptUrl;
         slideUrls = uploadResult.slideUrls;
 
-        console.log(
-          `Successfully processed PPT with ${slideUrls.length} slides`,
-        );
+
       } catch (convertError) {
-        console.error('LibreOffice conversion/upload error:', convertError);
         // Cleanup jika gagal
         try {
           await fs.unlink(tmpPath);
         } catch (e) {
-          console.error('Cleanup error:', e);
         }
 
         req.flash(
@@ -165,9 +161,7 @@ export class MaterisController {
       // 4️⃣ Cleanup file temporary setelah berhasil (hanya folder slides, PPT sudah dihapus di libreOfficeService)
       try {
         await fs.rm(slideOutputDir, { recursive: true, force: true }); // Hapus folder slides temporary
-        console.log('Temporary files cleaned up successfully');
       } catch (cleanupError) {
-        console.error('Cleanup error (non-critical):', cleanupError);
       }
 
       req.flash(
@@ -176,7 +170,6 @@ export class MaterisController {
       );
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      console.error('PPT upload error:', error);
       req.flash('error', error.message || 'Failed to upload PPT material');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }

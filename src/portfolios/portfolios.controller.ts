@@ -161,11 +161,9 @@ export class PortfoliosController {
       if (deletedImages.length > 0) {
         const deletePromises = deletedImages.map((url) =>
           this.portfoliosService.getPublicIdFromUrl(url).catch((error) => {
-            console.log(`Failed to delete removed image ${url}:`, error);
           }),
         );
         await Promise.allSettled(deletePromises);
-        console.log(`Deleted ${deletedImages.length} removed images`);
       }
 
       // Gabungkan gambar lama yang masih ada + gambar baru
@@ -184,7 +182,6 @@ export class PortfoliosController {
             this.portfoliosService
               .getPublicIdFromUrl(file.path)
               .catch((err) => {
-                console.log(`Failed to cleanup new image ${file.path}:`, err);
               }),
           );
           await Promise.allSettled(deleteNewImagesPromises);
@@ -210,13 +207,11 @@ export class PortfoliosController {
       req.flash('success', 'Portfolio successfully updated');
       return res.redirect(`/portfolios/${portfolioId}`);
     } catch (error) {
-      console.log('Portfolio update error:', error);
 
       // Jika ada gambar baru yang sudah terupload tapi update gagal, hapus gambar baru tersebut
       if (newGambar && newGambar.length > 0) {
         const deleteNewImagesPromises = newGambar.map((file) =>
           this.portfoliosService.getPublicIdFromUrl(file.path).catch((err) => {
-            console.log(`Failed to cleanup new image ${file.path}:`, err);
           }),
         );
         await Promise.allSettled(deleteNewImagesPromises);

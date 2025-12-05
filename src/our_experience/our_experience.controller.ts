@@ -51,7 +51,6 @@ export class OurExperienceController {
       req.flash('success', 'Our experience successfully created');
       res.redirect('/our_experience');
     } catch (error) {
-      console.log(error);
       req.flash('error', 'Failed to create our experience');
       res.redirect('/our_experience');
     }

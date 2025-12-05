@@ -134,7 +134,6 @@ export class GambarBenefitController {
       req.flash('success', 'Image Benefit successfully updated');
       res.redirect('/gambar-benefit');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Image Benefit failed to update');
       res.redirect('/gambar-benefit');
     }

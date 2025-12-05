@@ -34,7 +34,6 @@ export class TeknologiController {
       req.flash('success', 'Tech successfully created');
       res.redirect('/teknologi');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Tech failed to create');
       res.redirect('/teknologi');
     }

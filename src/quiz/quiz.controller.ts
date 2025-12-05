@@ -36,7 +36,6 @@ export class QuizController {
       req.flash('success', 'Quiz created successfully');
       res.redirect(`/minggu/${mingguId}`);
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to create quiz');
       res.redirect(`/minggu/${mingguId}`);
     }

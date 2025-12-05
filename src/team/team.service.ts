@@ -81,7 +81,6 @@ export class TeamService {
     // Buang extension (.jpg, .png, .pdf, dll)
     path = path.replace(/\.[^.]+$/, '');
 
-    console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
 
     await this.deleteFileIfExists(path);
   }
@@ -91,12 +90,9 @@ export class TeamService {
       const result = await cloudinary.uploader.destroy(publicId);
 
       if (result.result === 'not found') {
-        console.log('File not found in Cloudinary.');
       } else {
-        console.log('File deleted from Cloudinary:', result);
       }
     } catch (error) {
-      console.error('Error deleting file from Cloudinary:', error);
       throw error;
     }
   }

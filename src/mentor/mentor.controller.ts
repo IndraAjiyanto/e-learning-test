@@ -68,7 +68,6 @@ export class MentorController {
       req.flash('success', 'mentor successfully created');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'mentor failed to create');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }

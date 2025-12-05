@@ -136,7 +136,6 @@ export class UsersController {
       req.flash('success', 'User created successfully');
       res.redirect('/users');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to create user');
       res.redirect('/users');
     }
@@ -316,26 +315,20 @@ export class UsersController {
           await this.usersService.getPublicIdFromUrl(user.profile);
         }
         updateProfileDto.profile = req.body.uploadedImageUrls?.[0];
-        console.log('New profile URL:', updateProfileDto.profile);
       }
 
       // Convert userId to number for comparison (param comes as string)
       const userIdNum = Number(userId);
-      console.log('Comparing:', req.user!.id, '===', userIdNum);
 
       if (req.user!.id === userIdNum) {
         await this.usersService.updateProfile(userIdNum, updateProfileDto);
-        console.log('=== UPDATE PROFILE SUCCESS ===');
         req.flash('success', 'update profile success');
         res.redirect('/users/profile');
       } else {
-        console.log('=== UPDATE PROFILE FAILED: Unauthorized ===');
         req.flash('error', 'update profile failed');
         res.redirect('/users/profile');
       }
     } catch (error) {
-      console.log('=== UPDATE PROFILE ERROR ===');
-      console.log(error);
       req.flash('error', error.message || 'update profile failed');
       res.redirect('/users/profile');
     }

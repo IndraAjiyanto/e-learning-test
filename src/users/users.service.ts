@@ -148,7 +148,6 @@ export class UsersService {
     // Buang extension (.jpg, .png, .pdf, dll)
     path = path.replace(/\.[^.]+$/, '');
 
-    console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
 
     await this.deleteFileIfExists(path);
   }

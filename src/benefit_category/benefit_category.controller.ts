@@ -42,7 +42,6 @@ export class BenefitCategoryController {
     req.flash('success', 'benefit category successfully created');
     res.redirect('/kategoris/'+kategoriId);
     } catch (error) {
-      console.log(error)
           req.flash('error', 'Failed to create benefit category');
     res.redirect('/kategoris/'+kategoriId);
     }

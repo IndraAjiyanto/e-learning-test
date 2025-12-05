@@ -61,7 +61,6 @@ export class AuthController {
       req.flash('success', 'success regis');
       res.redirect('/login');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'failed to regis');
       res.redirect('/login');
     }

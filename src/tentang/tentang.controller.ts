@@ -153,7 +153,6 @@ export class TentangController {
       req.flash('success', 'Header successfully deleted');
       res.redirect('/tentang');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Header failed to delete');
       res.redirect('/tentang');
     }

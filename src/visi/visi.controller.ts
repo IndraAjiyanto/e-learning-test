@@ -30,13 +30,11 @@ export class VisiController {
     @Req() req: Request,
   ) {
     try {
-      console.log(createVisiDto.visi);
       await this.visiService.create(createVisiDto);
 
       req.flash('success', 'visi successfully created');
       res.redirect('/visi');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'visi failed to create');
       res.redirect('/visi');
     }

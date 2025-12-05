@@ -42,7 +42,6 @@ export class JawabanUsersController {
         },
       );
 
-      console.log(jawabanUser);
 
       await this.jawabanUsersService.create({ jawabanUser });
       await this.jawabanUsersService.nilaiCreate({ jawabanUser });

@@ -62,7 +62,6 @@ export class KerjaSamaController {
       req.flash('success', 'partnership successfully created');
       res.redirect('/kerja-sama');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'partnership failed to create');
       res.redirect('/kerja-sama');
     }
@@ -138,7 +137,6 @@ export class KerjaSamaController {
       req.flash('success', 'partnership successfully updated');
       res.redirect('/kerja-sama');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'partnership failed to update');
       res.redirect('/kerja-sama');
     }

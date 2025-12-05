@@ -61,7 +61,6 @@ export class TugassController {
       req.flash('success', 'Assignment successfully created');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      console.log('Error creating assignment:', error);
       const errorMessage = error.message || 'Failed to create assignment';
       req.flash('error', errorMessage);
       res.redirect(`/pertemuans/${pertemuanId}`);
@@ -107,7 +106,6 @@ export class TugassController {
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
       req.flash('error', error.message || 'unsuccess delete assignment');
-      console.log(error);
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
   }

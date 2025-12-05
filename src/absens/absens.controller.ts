@@ -63,7 +63,6 @@ export class AbsensController {
       req.flash('success', 'Successfully added attendance');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      console.log(error);
       req.flash(
         'error',
         'Failed to add attendance, user has already submitted attendance for this session',
@@ -98,7 +97,6 @@ export class AbsensController {
     @Param('pertemuanId') pertemuanId: number,
   ) {
     const users = await this.absensService.findUsers(pertemuanId);
-    console.log(users);
     res.render('admin/absen/create', { user: req.user, users, pertemuanId });
   }
 

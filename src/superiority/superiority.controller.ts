@@ -50,7 +50,6 @@ export class SuperiorityController {
       req.flash('success', 'superiority successfully created');
       res.redirect('/kategoris/' + kategoriId);
     } catch (error) {
-      console.log(error);
       req.flash('error', 'Failed to create superiority');
       res.redirect('/kategoris/' + kategoriId);
     }

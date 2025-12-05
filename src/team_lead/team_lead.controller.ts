@@ -59,7 +59,6 @@ export class TeamLeadController {
       req.flash('success', 'Team Lead created successfully');
       res.redirect('/team-lead');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to create Team Lead');
       res.redirect('/team-lead');
     }
@@ -117,7 +116,6 @@ export class TeamLeadController {
       req.flash('success', 'Team Lead updated successfully');
       res.redirect('/team-lead');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to update Team Lead');
       res.redirect('/team-lead');
     }
@@ -141,7 +139,6 @@ export class TeamLeadController {
       req.flash('success', 'Team Lead deleted successfully');
       res.redirect('/team-lead');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to delete Team Lead');
       res.redirect('/team-lead');
     }

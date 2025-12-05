@@ -94,7 +94,6 @@ export class ParagrafController {
       req.flash('success', 'paragraph succesfuly delete');
       res.redirect('/paragraf');
     } catch (error) {
-      console.error(error);
       req.flash('error', error.message || 'Failed to delete paragraph');
       res.redirect('/paragraf');
     }

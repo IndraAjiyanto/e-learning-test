@@ -38,7 +38,6 @@ export class ValueController {
       req.flash('success', 'Value created successfully');
       res.redirect('/value');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to create value');
       res.redirect('/value');
     }
@@ -81,7 +80,6 @@ export class ValueController {
       req.flash('success', 'Value updated successfully');
       res.redirect('/value');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to update value');
       res.redirect('/value');
     }
@@ -104,7 +102,6 @@ export class ValueController {
       req.flash('success', 'Value deleted successfully');
       res.redirect('/value');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to delete value');
       res.redirect('/value');
     }

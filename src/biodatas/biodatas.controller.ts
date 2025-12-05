@@ -38,7 +38,6 @@ export class BiodatasController {
       req.flash('success', 'biodata successfully create');
       res.redirect('/users/profile');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'biodata failed to create');
       res.redirect('/users/profile');
     }

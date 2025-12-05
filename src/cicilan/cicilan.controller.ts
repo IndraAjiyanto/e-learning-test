@@ -69,7 +69,6 @@ export class CicilanController {
       req.flash('success', 'Installment created successfully');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Failed to create installment');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
