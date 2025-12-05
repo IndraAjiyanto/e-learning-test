@@ -928,7 +928,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
               {{kategori.nama_kategori}}
             </span>
             <span
-              class='badge flex justify-center h-fit items-center bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
+              class='badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900  text-white px-3 py-1 text-xs font-semibold rounded-full'
             >
               {{ jenis_kelas.nama_jenis_kelas }}
             </span>
@@ -996,7 +996,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
         <div class='card-actions'>
           <a
             href='/kelass/{{id}}'
-            class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
+            class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
           >
             {{t "test.home.programSection.buttonViewProgram"}}
           </a>
@@ -1018,9 +1018,8 @@ Get full career support — from crafting your CV and portfolio to preparing for
     >
       <i class='fas fa-inbox text-5xl text-slate-400'></i>
     </div>
-    <h3 class='text-3xl font-bold text-white mb-3'>No Programs Found</h3>
-    <p class='text-slate-300 text-lg mb-6'>Try adjusting your search or filter
-      criteria.</p>
+    <h3 class='text-3xl font-bold text-white mb-3'>{{t "test.home.programSection.noProgram"}}</h3>
+    <p class='text-slate-300 text-lg mb-6'>{{t "test.home.programSection.spanNoProgram"}}</p>
     <button
       @click='resetFilters()'
       class='px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold'
