@@ -1500,8 +1500,8 @@
                   <button
                     type='submit'
                     :disabled='(fileError) || (!isValidFile && fileInputTouched)'
-                    :class="((fileError) || (!isValidFile && fileInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-emerald-600 hover:to-green-700 transform hover:-translate-y-1'"
-                    class='w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
+                    :class="((fileError) || (!isValidFile && fileInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
+                    class='w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                   >
                     <i class='fas fa-user-plus mr-2'></i>
                     {{t "test.detailProgram.free.buttonSubmitRegistration"}}
