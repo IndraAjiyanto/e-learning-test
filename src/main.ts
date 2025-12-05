@@ -7,7 +7,7 @@ import hbs from 'hbs';
 import session from 'express-session';
 import passport from 'passport';
 import { format } from 'date-fns';
-import { id } from 'date-fns/locale';
+import { enUS, id, ja } from 'date-fns/locale';
 import { RolesGuard } from './common/guards/roles.guard';
 import flash from 'connect-flash';
 import { ForbiddenExceptionFilter } from './common/filters/forbidden-exception.filter';
@@ -54,12 +54,30 @@ async function bootstrap() {
     return str[index];
   });
 
-  hbs.registerHelper('formatTanggal', function (tanggal: string) {
-    if (!tanggal) {
-      return 'Not set';
-    }
-    return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale: id });
-  });
+hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
+  if (!tanggal) {
+    return 'Not set';
+  }
+
+  let locale;
+
+  switch (lang) {
+    case 'id':
+      locale = id;
+      break;
+    case 'en':
+      locale = enUS;
+      break;
+    case 'ja':
+      locale = ja;
+      break;
+    default:
+      locale = id;
+  }
+
+  return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale });
+});
+
 
   hbs.registerHelper('formatTime', function (waktu: string) {
     return waktu.slice(0, 5);

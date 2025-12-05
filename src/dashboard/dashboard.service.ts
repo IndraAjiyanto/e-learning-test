@@ -170,7 +170,6 @@ export class DashboardService {
         'kelas.kategori',
         'kelas.jenis_kelas',
         'user',
-        'user.biodata',
       ],
     });
   }
@@ -182,9 +181,7 @@ export class DashboardService {
         'kelas',
         'kelas.kategori',
         'kelas.teknologi',
-        'kelas.jenis_kelas',
         'user',
-        'user.biodata',
       ],
     });
   }
