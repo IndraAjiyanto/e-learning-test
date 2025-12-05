@@ -126,7 +126,7 @@
           ></div>
         </button>
         <button
-          class=' btn text-xl bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-8 sm:px-16 lg:px-20 border-2 border-secondary hover:border-secondary shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2'
+          class=' btn text-xl bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 px-8 sm:px-16 lg:px-20 border-2 border-secondary shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2'
         >
           <span class='flex items-center gap-2'>
             <i class='fas fa-comments'></i>
@@ -872,7 +872,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
         </div>
         <button
           @click='resetFilters()'
-          class='px-6 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg font-medium'
+          class='px-6 py-2.5 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg font-medium'
         >
           <i class='fas fa-redo mr-2'></i>{{t "test.home.programSection.resetAll"}}
         </button>
@@ -1022,7 +1022,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
     <p class='text-slate-300 text-lg mb-6'>{{t "test.home.programSection.spanNoProgram"}}</p>
     <button
       @click='resetFilters()'
-      class='px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold'
+      class='px-6 py-3 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-lg transition-all duration-300 transform hover:scale-105 font-semibold'
     >
       <i class='fas fa-redo mr-2'></i>{{t "test.home.programSection.clearFilters"}}
     </button>
@@ -1080,17 +1080,17 @@ Get full career support — from crafting your CV and portfolio to preparing for
       <!-- WIP Card -->
       {{#each special_program}}
       <a href='kategoris/program/{{nama_kategori}}' class='group block' data-animate="slide-right" data-delay="100">
-        <div class='relative bg-white rounded-3xl p-8 border-2 border-gray-300 hover:border-gray-500 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden'>
+        <div class='relative bg-white rounded-3xl p-8 border-2 border-gray-300 hover:border-secondary shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden'>
           <!-- Background Pattern -->
           <div class='absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-gray-100/50 to-gray-200/50 rounded-full blur-3xl -z-0'></div>
           
           <div class='relative z-10'>
             <!-- Icon -->
             <div class='mb-6 flex items-center justify-between'>
-              <div class='w-20 h-20 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300'>
+              <div class='w-20 h-20 bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300'>
                 <img src='{{icon}}' alt='{{nama_kategori}}' class='w-12 h-12'>
               </div>
-              <span class='bg-gray-800 text-white px-4 py-2 rounded-full text-sm font-bold'>
+              <span class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-4 py-2 rounded-full text-sm font-bold'>
                 {{getByLang for ../lang}}
               </span>
             </div>
@@ -1144,7 +1144,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
             <!-- CTA Button -->
             <div class='flex items-center justify-between pt-6 border-t-2 border-gray-200'>
               <span class='text-gray-600 font-semibold'>{{t "test.home.programSection.buttonViewProgram"}}</span>
-              <div class='w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center group-hover:bg-gray-900 transition-colors shadow-lg'>
+              <div class='w-12 h-12 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary rounded-full flex items-center justify-center transition-colors shadow-lg'>
                 <i class='fas fa-arrow-right text-white group-hover:translate-x-1 transition-transform'></i>
               </div>
             </div>

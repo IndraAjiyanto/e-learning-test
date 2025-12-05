@@ -80,7 +80,7 @@
             <div class='space-y-2 max-h-64 overflow-y-auto'>
               <button
                 @click="selectKategori('')"
-                :class="selectedKategoriId === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
+                :class="selectedKategoriId === '' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
                 class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
               >
                 <span class='text-sm text-left'>{{t "test.portfolio.allCategory"}}</span>
@@ -88,7 +88,7 @@
               <template x-for='kategori in filteredKategoriList' :key='kategori.id'>
                 <button
                   @click='selectKategori(kategori.id)'
-                  :class="selectedKategoriId == kategori.id ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
+                  :class="selectedKategoriId == kategori.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
                   class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
                 >
                   <span class='text-sm' x-text='kategori.nama_kategori'></span>
@@ -125,7 +125,7 @@
             <div class='space-y-2 max-h-64 overflow-y-auto'>
               <button
                 @click="selectJenisKelas('')"
-                :class="selectedJenisKelasId === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
+                :class="selectedJenisKelasId === '' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
                 class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
               >
                 <span class='text-sm'>{{t "test.portfolio.allClassType"}}</span>
@@ -133,7 +133,7 @@
               <template x-for='jenis in filteredJenisKelasList' :key='jenis.id'>
                 <button
                   @click='selectJenisKelas(jenis.id)'
-                  :class="selectedJenisKelasId == jenis.id ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
+                  :class="selectedJenisKelasId == jenis.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
                   class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
                 >
                   <span class='text-sm text-left' x-text='getByLang(jenis.nama_jenis_kelas, lang)'></span>
@@ -294,7 +294,7 @@
               <div class='p-6 space-y-4'>
                 <div class='flex flex-wrap gap-2'>
                   <span
-                    class='badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
+                    class='badge bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-full'
                     x-text="getByLang(getJenisKelasName(item), lang) || 'No Type'"
                   >
                   </span>
@@ -355,7 +355,7 @@
                 <div class='mt-6'>
                   <a
                     :href="'/dashboard/portfolio/' + item.id"
-                    class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
+                    class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
                   >
                     {{t "test.portfolio.detailButton"}}
                   </a>
@@ -379,7 +379,7 @@
           <p class='text-gray-600 mb-6 font-inter'>{{t "test.portfolio.tryAdjusting"}}</p>
           <button
             @click='resetFilters()'
-            class='bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-3 rounded-lg hover:from-slate-500 hover:to-slate-700 transition-all duration-300'
+            class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white px-6 py-3 rounded-lg  transition-all duration-300'
           >
             {{t "test.portfolio.resetAllFilters"}}
           </button>
