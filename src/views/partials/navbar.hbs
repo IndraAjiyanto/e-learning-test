@@ -25,39 +25,30 @@
     lang: '{{lang}}',
     userOpen: false,
     active: '/dashboard',
-    kategori: [],      // Function untuk set active
+    kategori: [],      
       setActive(path) {
         this.active = path;
         this.open = false;
         this.programOpen = false;
         this.userOpen = false;
         
-        // Debug: log current active state
-        console.log('Active path set to:', path);
       },
       
-      // Function untuk check jika path aktif - DIPERBAIKI
       isActive(path) {
         const currentPath = this.active;
-        console.log('Checking active:', path, 'vs current:', currentPath);
         
-        // Exact match
         if (path === currentPath) {
-          console.log('Exact match found');
           return true;
         }
         
-        // Partial match untuk kategori program
         if (path.includes('/kategori/') && currentPath.includes('/kategori/')) {
           const pathCategory = path.split('/').pop();
           const currentCategory = currentPath.split('/').pop();
           if (pathCategory === currentCategory) {
-            console.log('Category match:', pathCategory);
             return true;
           }
         }
         
-        // Untuk user routes - lebih spesifik
         if (path.includes('/users/profile') && currentPath.includes('/users/profile')) return true;
         if (path.includes('/kelass/kelas_saya') && currentPath.includes('/kelass/kelas_saya')) return true;
         if (path.includes('/portfolios/myportfolio') && currentPath.includes('/portfolios/myportfolio')) return true;
@@ -66,10 +57,8 @@
         return false;
       },
       
-      // Check jika program dropdown aktif - DIPERBAIKI
       isProgramActive() {
         const currentPath = this.active;
-        console.log('Checking program active for:', currentPath);
         return currentPath.includes('/kategori/') || 
                currentPath === '/in-house-training' || 
                currentPath === '/wip' ||
@@ -88,47 +77,34 @@
     return str.substring(0, length) + '...';
   },
       
-      // Check jika user dropdown aktif - DIPERBAIKI
       isUserActive() {
         const currentPath = this.active;
-        console.log('Checking user active for:', currentPath);
         return currentPath.includes('/users/') || 
                currentPath.includes('/kelass/kelas_saya') || 
                currentPath.includes('/portfolios/myportfolio') || 
                currentPath.includes('/pembayarans/riwayat');
       },
       
-      // Initialize dengan current path - DIPERBAIKI
       async init() {
-        // Set active berdasarkan current URL yang sebenarnya
         this.active = window.location.pathname;
-        console.log('Initial active path:', this.active);
         
-        // Fetch kategori data
         try {
           const response = await fetch('/dashboard/api/kategori');
           this.kategori = await response.json();
-          console.log('Kategori loaded:', this.kategori);
         } catch (error) {
-          console.error('Error fetching kategori:', error);
         }
         
-        // Listen untuk popstate (browser back/forward)
         window.addEventListener('popstate', () => {
           this.active = window.location.pathname;
-          console.log('Popstate - new active:', this.active);
         });
         
-        // Intercept semua klik link untuk update state
         document.addEventListener('click', (e) => {
           const link = e.target.closest('a');
           if (link && link.href) {
             const url = new URL(link.href);
             if (url.origin === window.location.origin) {
-              // Delay sedikit untuk memastikan navigation sudah terjadi
               setTimeout(() => {
                 this.active = window.location.pathname;
-                console.log('Link click - new active:', this.active);
               }, 100);
             }
           }
@@ -152,7 +128,7 @@
       </a>
 
       <button
-        class='rounded-lg md:hidden focus:outline-none focus:shadow-outline p-2 hover:bg-gray-800 transition-colors z-50'
+        class='rounded-lg md:hidden focus:outline-none focus:shadow-outline p-2 transition-colors z-50'
         @click='toggleMenu()'
       >
         <svg fill='currentColor' viewBox='0 0 20 20' class='w-6 h-6'>
@@ -198,7 +174,7 @@
         x-transition:leave='transition ease-in duration-200 transform'
         x-transition:leave-start='translate-y-0'
         x-transition:leave-end='translate-y-[-100%]'
-        class='fixed inset-x-0 top-[64px] p-4 transform-gpu overflow-y-auto bg-gray-900 md:static md:p-0 md:flex md:space-x-4 md:items-center md:justify-end md:bg-transparent md:overflow-visible'
+        class='fixed inset-x-0 top-[64px] p-4 transform-gpu overflow-y-auto md:static md:p-0 md:flex bg-secondary md:space-x-4 md:items-center md:justify-end md:bg-transparent md:overflow-visible'
       >
         {{#if (roles user.role 'user')}}
           <!-- Menu untuk user yang login -->
@@ -257,8 +233,8 @@
                 <a
                   :href="'/kategoris/program/' + kat.nama_kategori"
                   @click="setActive('/kategoris/program/' + kat.nama_kategori)"
-                  :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-gray-700' : 'bg-gray-800'"
-                  class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
+                  :class="isActive('/kategoris/program/' + kat.nama_kategori) ?  'bg-gray-100' : 'bg-transparent'"
+                  class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-200 transition-colors'
                 >
                   <div
                     class='bg-gradient-to-br from-primary to-secondary text-white rounded-lg p-3 flex-shrink-0'
