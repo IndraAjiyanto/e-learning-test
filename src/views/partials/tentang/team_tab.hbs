@@ -225,8 +225,7 @@
                     <li class='flex items-center space-x-2'>
                       <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
                       <div class="flex items-center gap-1">
-                        <strong>{{getByLang content ../lang}}</strong>
-                        <p class='text-xs sm:text-sm text-slate-600 text-justify'> - {{getByLang isi ../lang}}</p>
+                        <span class="text-xs sm:text-sm text-justify"><strong>{{getByLang content ../lang}}</strong> - {{getByLang isi ../lang}}</span>
                       </div>
                     </li>
                     {{/each}}
