@@ -20,6 +20,7 @@ export class DashboardController {
         );
         res.render('admin/kelas/index', { user: req.user, kelas });
       } else if (req.user.role === 'user') {
+        const our_experience = await this.dashboardService.findOurExperience();
         const special_program =
           await this.dashboardService.findSpecialProgram();
         const faq = await this.dashboardService.findFAQ();
@@ -53,10 +54,12 @@ export class DashboardController {
           benefit_2,
           benefit_3,
           tentang,
-          social
+          social,
+          our_experience
         });
       }
     } else {
+        const our_experience = await this.dashboardService.findOurExperience();
       const special_program = await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
       const gambar_benefit_1 = await this.dashboardService.findGambar1();
@@ -89,7 +92,8 @@ export class DashboardController {
         benefit_2,
         benefit_3,
         tentang,
-        social
+        social,
+        our_experience
       });
     }
   }

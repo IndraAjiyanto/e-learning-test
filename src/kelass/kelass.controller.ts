@@ -253,7 +253,9 @@ export class KelassController {
     @Req() req: Request,
   ) {
     const kelas = await this.kelassService.findMyCourse(id);
-    res.render('user/mycourse', { kelas, user: req.user });
+        const kategori = await this.kelassService.findKategori();
+    const jenis_kelas = await this.kelassService.findJenisKelas();
+    res.render('user/mycourse', { kelas, user: req.user, kategori, jenis_kelas });
   }
 
   @Roles('user')

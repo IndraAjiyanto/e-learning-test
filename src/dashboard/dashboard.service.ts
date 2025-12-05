@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDashboardDto } from './dto/create-dashboard.dto';
-import { UpdateDashboardDto } from './dto/update-dashboard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { In, Repository } from 'typeorm';
-import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
+import {Repository } from 'typeorm';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
@@ -26,6 +23,7 @@ import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
 import { Paragraf } from 'src/entities/paragraf.entity';
 import { Faq } from 'src/entities/faq.entity';
+import { OurExperience } from 'src/entities/our_experience.entity';
 
 @Injectable()
 export class DashboardService {
@@ -74,7 +72,15 @@ export class DashboardService {
     private readonly paragrafRepository: Repository<Paragraf>,
     @InjectRepository(Faq)
     private readonly faqRepository: Repository<Faq>,
+    @InjectRepository(OurExperience)
+    private readonly ourExperienceRepository: Repository<OurExperience>,
   ) {}
+
+  async findOurExperience() {
+    return await this.ourExperienceRepository.find({
+      order: { id: 'ASC' },
+    });
+  }
 
   async findAllKelas() {
     return await this.kelasRepository.find({
