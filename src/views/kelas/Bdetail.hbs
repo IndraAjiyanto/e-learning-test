@@ -95,7 +95,7 @@
                 >
                   <div class='flex items-start gap-4'>
                     <div
-                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
+                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
                     >
                       <i class='fas fa-laptop text-white text-xl'></i>
                     </div>
@@ -139,7 +139,7 @@
               >
                 <div class='flex items-start gap-4'>
                   <div
-                    class='w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
+                    class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
                   >
                     {{#if (eq kelas.metode 'online')}}
                       <i class='fas fa-globe text-white text-xl'></i>
@@ -173,7 +173,7 @@
                 >
                   <div class='flex items-start gap-4'>
                     <div
-                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
+                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
                     >
                       <i class='fas fa-users text-white text-xl'></i>
                     </div>
@@ -201,7 +201,7 @@
                 >
                   <div class='flex items-start gap-4'>
                     <div
-                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
+                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
                     >
                       <i class='fas fa-calendar-alt text-white text-xl'></i>
                     </div>
@@ -224,7 +224,7 @@
                 >
                   <div class='flex items-start gap-4'>
                     <div
-                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
+                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
                     >
                       <i class='fas fa-clock text-white text-xl'></i>
                     </div>
@@ -1077,7 +1077,7 @@
                 class='font-bold text-emerald-800 flex items-center gap-2 mb-3'
               >
                 <i class='fas fa-clipboard-check'></i>
-                {{t "test.detailProgram.free.registrationInstructions"}}
+                {{t "test.detailProgram.free.freeProgramInstruction"}}
               </h4>
               <ol class='list-decimal pl-5 space-y-2 text-sm text-emerald-700'>
                 <li>{{t "test.detailProgram.free.clickRegistrationForm"}}
@@ -1108,7 +1108,7 @@
           {{#if check_user}}
             <a
               href='/kelass/{{kelas.id}}'
-              class='block w-full text-center bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
+              class='block w-full text-center bg-gradient-to-br from-primary via-secondary to-gray-900  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
             >
               <i class='fas fa-play-circle mr-2'></i>
               {{t "test.detailProgram.continueLearning"}}
@@ -1257,8 +1257,8 @@
                   <button
                     type='submit'
                     :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)'
-                    :class="((fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-slate-800 hover:to-slate-950 transform hover:-translate-y-1'"
-                    class='w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
+                    :class="((fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
+                    class='w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                   >
                     <i class='fas fa-credit-card mr-2'></i>
                     <span>{{t "test.detailProgram.fullPayment.buttonSubmitProof"}}</span>
@@ -1409,8 +1409,8 @@
                     <button
                       type='submit'
                       :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)'
-                      :class="((fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-slate-800 hover:to-slate-950 transform hover:-translate-y-1'"
-                      class='w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
+                      :class="((fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
+                      class='w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                     >
                       <i class='fas fa-calendar-check mr-2'></i>
                       <span x-text="`{{t "test.detailProgram.installment.buttonSubmitProof"}} (${cicilan.bulan} {{t "test.detailProgram.installment.months"}})`"></span>
@@ -1447,7 +1447,7 @@
                       class='block text-sm font-semibold text-slate-700 mb-2'
                     >
                       <i class='fas fa-file-image mr-2'></i>
-                      {{t "test.detailProgram.free.uploadRegistrationScreenshot"}}
+                      {{t "test.detailProgram.free.uploadRegistrationProof"}}
                       <span class='text-red-500'>*</span>
                     </label>
                     <div
@@ -1514,7 +1514,7 @@
         {{else}}
           <a
             href='/login'
-            class='block w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white py-4 px-6 rounded-xl font-semibold hover:from-slate-800 hover:to-slate-950 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center'
+            class='block w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center'
           >
             <i class='fas fa-sign-in-alt mr-2'></i>
             {{t "test.detailProgram.loginToEnroll"}}
@@ -1547,7 +1547,7 @@
           <img
             src='{{gambar}}'
             alt='{{nama_kelas}}'
-            class='h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-lg'
+            class='h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300 drop-shadow-lg'
           />
 
           <div class='card-body p-6'>
@@ -1558,7 +1558,7 @@
                 {{kategori.nama_kategori}}
               </span>
               <span
-                class='badge bg-gradient-to-r from-slate-500 to-slate-600 text-white px-3 py-1 text-xs font-semibold rounded-full'
+                class='badge bg-gradient-to-br from-primary via-secondary to-gray-900  text-white px-3 py-1 text-xs font-semibold rounded-full'
               >
                 {{ jenis_kelas.nama_jenis_kelas }}
               </span>
@@ -1569,8 +1569,13 @@
               <div
                 class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
               >
-                <i class='fas fa-laptop text-slate-500'></i>
-                <span>{{metode}}</span>
+                            {{#if (eq metode "online")}}
+              <i class='fas fa-laptop text-slate-500'></i>
+              <span>{{t "test.home.programSection.online"}}</span>
+              {{else if (eq metode "offline")}}
+              <i class='fas fa-map-marker-alt text-slate-500'></i>
+              <span>{{t "test.home.programSection.offline"}}</span>
+              {{/if}}
               </div>
               <div
                 class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
@@ -1621,7 +1626,7 @@
   <div class='card-actions'>
     <a
       href='/kelass/{{id}}'
-      class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
+      class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
     >
       {{t "test.detailProgram.buttonViewProgram"}}
     </a>
