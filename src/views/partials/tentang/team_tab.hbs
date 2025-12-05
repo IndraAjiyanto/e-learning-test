@@ -222,11 +222,9 @@
                   <ul class='space-y-3 text-sm sm:text-base text-slate-700'>
                     {{#if experience.length}}
                     {{#each experience}}
-                    <li class='flex items-center space-x-2'>
+                    <li class='flex items-start space-x-2'>
                       <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
-                      <div class="flex items-center gap-1">
                         <span class="text-xs sm:text-sm text-justify"><strong>{{getByLang content ../lang}}</strong> - {{getByLang isi ../lang}}</span>
-                      </div>
                     </li>
                     {{/each}}
                     {{else}}
