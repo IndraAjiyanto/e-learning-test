@@ -11,6 +11,9 @@ export class CreateSocialDto {
   video_youtube: string;
 
   @IsString()
+  link_form: string;
+
+  @IsString()
   youtube: string;
 
   @IsEmail()

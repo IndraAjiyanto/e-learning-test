@@ -22,6 +22,9 @@ export class Social {
 
   @Column({nullable: true})
   video_youtube: string;
+
+  @Column({nullable: true})
+  link_form: string;
   
   @Column()
   email: string;

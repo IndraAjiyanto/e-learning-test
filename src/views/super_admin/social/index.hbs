@@ -79,6 +79,9 @@
           >Google Maps</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Link Form job</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Action</th>
         </tr>
       </thead>
@@ -162,6 +165,16 @@
               {{else}}
                 <span class='text-gray-400 italic'>No map</span>
               {{/if}}
+            </td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              <a
+                href='{{link_form}}'
+                target='_blank'
+                class='text-green-600 hover:underline flex items-center gap-2'
+              >
+                <i class='fas fa-link'></i>
+                <span class='truncate max-w-[150px]'>{{link_form}}</span>
+              </a>
             </td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
               <!-- Edit Button -->
