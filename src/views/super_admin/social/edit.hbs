@@ -164,26 +164,16 @@
             }
             break;
 
-          case 'link_alamat':
-            if (!value.trim()) {
-              this.formErrors.link_alamat = 'Google Maps link is required';
-              this.formValid.link_alamat = false;
-            } else {
-              try {
-                const url = new URL(value);
-                if (url.hostname === 'maps.app.goo.gl' || (url.hostname === 'www.google.com' && url.pathname.startsWith('/maps'))) {
-                  this.formErrors.link_alamat = '';
-                  this.formValid.link_alamat = true;
-                } else {
-                  this.formErrors.link_alamat = 'Please enter a valid Google Maps URL';
-                  this.formValid.link_alamat = false;
-                }
-              } catch {
-                this.formErrors.link_alamat = 'Please enter a valid URL';
-                this.formValid.link_alamat = false;
-              }
-            }
-            break;
+case 'link_alamat':
+  if (!value.trim()) {
+    this.formErrors.link_alamat = 'Link alamat is required';
+    this.formValid.link_alamat = false;
+  } else {
+    this.formErrors.link_alamat = '';
+    this.formValid.link_alamat = true;
+  }
+  break;
+
         }
       },
 
@@ -524,8 +514,6 @@
           name='link_alamat'
           x-model='formData.link_alamat'
           @input='validateField("link_alamat", $event.target.value)'
-          type='url'
-          required
           placeholder='https://maps.app.goo.gl/... or https://www.google.com/maps/...'
           :class="formErrors.link_alamat ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.link_alamat ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
