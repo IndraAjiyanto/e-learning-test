@@ -66,7 +66,7 @@
                 :class="selectedKategoriId === '' ? 'bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white' : 'bg-white text-gray-700'"
                 class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
               >
-                <span class='text-sm'>{{t "test.myPortfolio.allCategories"}}</span>
+                <span class='text-sm'>{{t "test.myPortfolio.allCategory"}}</span>
               </button>
               <template x-for='kategori in allKategori' :key='kategori.id'>
                 <button
@@ -298,7 +298,7 @@
                     :href="'/portfolios/' + item.id"
                     class='btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
                   >
-                    {{t "test.myPortfolio.viewDetails"}}
+                    {{t "test.myPortfolio.detailButton"}}
                   </a>
                 </div>
               </div>
