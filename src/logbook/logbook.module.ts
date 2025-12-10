@@ -9,6 +9,8 @@ import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { CommonModule } from 'src/common/common.module';
+import { Quiz } from 'src/entities/quiz.entity';
+import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { CommonModule } from 'src/common/common.module';
       User,
       Pertemuan,
       LogbookMentor,
+      Quiz,
+      ProgresQuiz
     ]),
     CommonModule,
   ],

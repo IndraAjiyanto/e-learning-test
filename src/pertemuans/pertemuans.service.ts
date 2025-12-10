@@ -10,6 +10,8 @@ import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { Minggu } from 'src/entities/minggu.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 
 @Injectable()
 export class PertemuansService {
@@ -34,15 +36,44 @@ export class PertemuansService {
 
     @InjectRepository(LogbookMentor)
     private readonly logbookMentorRepository: Repository<LogbookMentor>,
+
+    @InjectRepository(ProgresPertemuan)
+    private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
+
+    @InjectRepository(ProgresMinggu)
+    private readonly progresMingguRepository: Repository<ProgresMinggu>,
   ) {}
 
   async create(createPertemuanDto: CreatePertemuanDto) {
     const minggu = await this.mingguRepository.findOne({
-      where: { id: createPertemuanDto.mingguId },
+      where: { id: createPertemuanDto.mingguId }, relations: ['kelas'],
     });
     if (!minggu) {
       throw new NotFoundException('minggu ini tidak ada');
     }
+    if(createPertemuanDto.pertemuan_ke === 1){
+      const data = await this.pertemuanRepository.create({
+        ...createPertemuanDto,
+        minggu: minggu,
+      });
+      const new_pertemuan = await this.pertemuanRepository.save(data);
+      const progresMinggu = await this.progresMingguRepository.find({
+        where: { minggu: { id: minggu.id }, proses: true },
+        relations: ['user'],
+      });
+      if(progresMinggu.length > 0){
+      for (const progres of progresMinggu) {
+        await this.progresPertemuanRepository.save({
+          logbook: false,
+          absen: true,
+          pertemuan: new_pertemuan,
+          user: progres.user,
+        });
+      }
+    }
+  }else{
+
+
     const pertemuan = await this.pertemuanRepository.findOne({
       where: {
         pertemuan_ke: createPertemuanDto.pertemuan_ke - 1,
@@ -50,7 +81,9 @@ export class PertemuansService {
       },
     });
 
-    if (!pertemuan?.akhir) {
+    if(!pertemuan){
+      throw new NotFoundException('pertemuan sebelumnya harus dibuat terlebih dahulu');
+    }else if (!pertemuan.akhir) {
       if (createPertemuanDto.akhir_check === 'true') {
         createPertemuanDto.akhir = true;
       }
@@ -58,11 +91,27 @@ export class PertemuansService {
         ...createPertemuanDto,
         minggu: minggu,
       });
-      return await this.pertemuanRepository.save(user);
+      const new_pertemuan = await this.pertemuanRepository.save(user);
+      const progresPertemuan = await this.progresPertemuanRepository.find({
+        where: { pertemuan: { id: pertemuan.id }, absen: true, logbook: true },
+        relations: ['user'],
+      });
+      if(progresPertemuan.length > 0){
+      for (const progres of progresPertemuan) {
+        await this.progresPertemuanRepository.save({
+          absen: true,
+          logbook: false,
+          pertemuan: new_pertemuan,
+          user: progres.user,
+        });
+      }
+
     } else {
       throw new Error('tidak dapat menambahkan pertemuan lagi');
     }
+    }
   }
+}
 
   async findAllKelas() {
     return await this.kelasRepository.find();

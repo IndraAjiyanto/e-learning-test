@@ -64,7 +64,7 @@ import { Alumni } from 'src/entities/alumni.entity';
       BenefitKelas,
       AlurKelas,
       Cicilan,
-      Alumni
+      Alumni,
     ]),
     PertanyaansModule,
     JawabanUsersModule,

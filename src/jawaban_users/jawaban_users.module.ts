@@ -10,6 +10,9 @@ import { Nilai } from 'src/entities/nilai.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 import { Minggu } from 'src/entities/minggu.entity';
+import { UserKelas } from 'src/entities/user_kelas.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { Minggu } from 'src/entities/minggu.entity';
       Quiz,
       ProgresMinggu,
       Minggu,
+      UserKelas,
+      ProgresPertemuan,
+      Pertemuan
     ]),
   ],
   controllers: [JawabanUsersController],

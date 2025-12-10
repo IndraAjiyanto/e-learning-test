@@ -3,11 +3,14 @@ import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quiz } from 'src/entities/quiz.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Minggu } from 'src/entities/minggu.entity';
 import { Nilai } from 'src/entities/nilai.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
+import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 
 @Injectable()
 export class QuizService {
@@ -22,11 +25,15 @@ export class QuizService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Pertanyaan)
     private readonly pertanyaanRepository: Repository<Pertanyaan>,
+    @InjectRepository(ProgresQuiz)
+    private readonly progresQuizRepository: Repository<ProgresQuiz>,
+    @InjectRepository(ProgresPertemuan)
+    private readonly progresPertemuanRepository: Repository<ProgresPertemuan>
   ) {}
 
   async create(createQuizDto: CreateQuizDto) {
     const minggu = await this.mingguRepository.findOne({
-      where: { id: createQuizDto.mingguId },
+      where: { id: createQuizDto.mingguId }, relations: ['pertemuan']
     });
     if (!minggu) {
       throw new Error('Minggu not found');
@@ -35,8 +42,24 @@ export class QuizService {
       ...createQuizDto,
       minggu: minggu,
     });
-    return await this.quizRepository.save(quiz);
-  }
+    const newQuiz = await this.quizRepository.save(quiz);
+    const progres_pertemuan_akhir = await this.progresPertemuanRepository.find({
+      where: { pertemuan: { akhir: true, minggu: { id: minggu.id } }, absen: true, logbook: true }, relations: ['user']
+    });
+
+    if(progres_pertemuan_akhir.length > 0){
+      for (const progres of progres_pertemuan_akhir) {
+        await this.progresQuizRepository.save({
+          quiz: newQuiz,
+          user: progres.user,
+          proses: true
+        });
+      }
+    }
+
+
+
+}
 
   findAll() {
     return `This action returns all quiz`;

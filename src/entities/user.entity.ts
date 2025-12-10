@@ -111,6 +111,7 @@ export class User {
   @Exclude()
   portfolio: Portfolio[];
 
+
   @OneToMany(() => Pembayaran, (pembayaran) => pembayaran.user, {
     cascade: true,
     onDelete: 'CASCADE',

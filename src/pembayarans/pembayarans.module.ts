@@ -9,6 +9,10 @@ import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
 import { Cicilan } from 'src/entities/cicilan.entity';
 import { CommonModule } from 'src/common/common.module';
+import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { Minggu } from 'src/entities/minggu.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 @Module({
   imports: [
@@ -19,6 +23,10 @@ import { CommonModule } from 'src/common/common.module';
       Pembayaran,
       UserKelas,
       Pendaftaran,
+      ProgresMinggu,
+      ProgresPertemuan,
+      Minggu,
+      Pertemuan
     ]),
     CommonModule,
   ],

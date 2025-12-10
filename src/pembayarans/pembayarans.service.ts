@@ -14,6 +14,10 @@ import { v2 as cloudinary } from 'cloudinary';
 import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Pendaftaran } from 'src/entities/pendaftaran.entity';
 import { Cicilan } from 'src/entities/cicilan.entity';
+import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { Minggu } from 'src/entities/minggu.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 @Injectable()
 export class PembayaransService {
@@ -30,6 +34,14 @@ export class PembayaransService {
     private readonly cicilanRepository: Repository<Cicilan>,
     @InjectRepository(UserKelas)
     private readonly userKelasRepository: Repository<UserKelas>,
+    @InjectRepository(ProgresMinggu)
+    private readonly progresMingguRepository: Repository<ProgresMinggu>,
+    @InjectRepository(ProgresPertemuan)
+    private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
+    @InjectRepository(Minggu)
+    private readonly mingguRepository: Repository<Minggu>,
+    @InjectRepository(Pertemuan)
+    private readonly pertemuanRepository: Repository<Pertemuan>,
   ) {}
 
   async create(createPembayaranDto: CreatePembayaranDto) {
@@ -87,10 +99,10 @@ export class PembayaransService {
     }
   }
 
-  async addUserToKelas(userId: number, kelasId: number): Promise<UserKelas> {
+  async addUserToKelas(userId: number, kelasId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['user_kelas', 'user_kelas.kelas'],
+      relations: [],
     });
 
     if (!user) {
@@ -99,7 +111,7 @@ export class PembayaransService {
 
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
-      relations: ['user_kelas', 'user_kelas.user'],
+      relations: ['minggu', 'minggu.pertemuan'],
     });
     if (!kelas) {
       throw new NotFoundException('Program not found');
@@ -118,7 +130,53 @@ export class PembayaransService {
       kelas: kelas,
     });
 
-    return await this.userKelasRepository.save(user_kelas);
+    await this.userKelasRepository.save(user_kelas);
+
+    if (kelas.minggu.length > 0) {
+      const minggu = await this.mingguRepository.findOne({
+        where: { kelas: { id: kelasId }, minggu_ke: 1 },
+        relations: ['pertemuan'],
+      });
+      const minggu_akhir = await this.mingguRepository.findOne({
+          where: { kelas: { id: kelasId }, akhir: true },
+        });
+      if (minggu) {
+        await this.progresMingguRepository.save({
+          minggu: minggu,
+          user: user,
+          proses: true,
+          quiz: false,
+        });
+        const pertemuan = await this.pertemuanRepository.findOne({
+          where: { minggu: { id: minggu.id }, pertemuan_ke: 1 },
+          relations: [],
+        });
+        if (pertemuan) {
+          await this.progresPertemuanRepository.save({
+            pertemuan: pertemuan,
+            user: user,
+            absen: true,
+            logbook: false,
+          });
+        }
+      }else if(minggu_akhir){
+          const progresMingguAkhir = await this.progresMingguRepository.findOne(
+            {
+              where: {
+                minggu: { id: minggu_akhir.id },
+                user: { id: userId },
+                proses: true,
+                quiz: true,
+              },
+            },
+          );
+          if (progresMingguAkhir) {
+            await this.userKelasRepository.update(user_kelas.id, {
+              progres: true,
+            });
+          }
+      }
+    }
   }
 
   async removeUserKelas(userId: number, kelasId: number): Promise<UserKelas> {

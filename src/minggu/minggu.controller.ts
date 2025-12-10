@@ -56,7 +56,8 @@ export class MingguController {
     @Req() req: Request,
   ) {
     const minggu = await this.mingguService.findOne(mingguId);
-    res.render('admin/minggu/detail', { user: req.user, minggu });
+    const pertemuanAkhir = await this.mingguService.findPertemuanAkhir(mingguId);
+    res.render('admin/minggu/detail', { user: req.user, minggu, pertemuanAkhir });
   }
 
   @Roles('admin')
