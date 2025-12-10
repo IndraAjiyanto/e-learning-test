@@ -188,7 +188,7 @@ export class KelassService {
     });
 
     if (!user) {
-      throw new NotFoundException('User tidak ada');
+      throw new NotFoundException('User Not Found');
     }
 
     const kelas = await this.kelasRepository.findOne({
@@ -196,14 +196,14 @@ export class KelassService {
       relations: ['minggu', 'minggu.pertemuan'],
     });
     if (!kelas) {
-      throw new NotFoundException('Kelas tidak ada');
+      throw new NotFoundException('Program Not Found');
     }
 
     const sudahGabung = await this.userKelasRepository.findOne({
       where: { user: { id: userId }, kelas: { id: kelasId } },
     });
     if (sudahGabung) {
-      throw new BadRequestException('User sudah tergabung dalam kelas');
+      throw new BadRequestException('User already joined the program');
     }
 
     if (kelas.check_paid === true) {
@@ -217,7 +217,7 @@ export class KelassService {
       const jumlah_user = daftar.length + gabung.length;
 
       if (jumlah_user >= kelas.kuota) {
-        throw new BadRequestException('Saat ini kelas sedang penuh');
+        throw new BadRequestException('The program is currently full');
       }
 
       const user_kelas = await this.userKelasRepository.save({
@@ -284,7 +284,7 @@ export class KelassService {
       const jumlah_user = daftar.length + gabung.length;
 
       if (jumlah_user >= kelas.kuota) {
-        throw new BadRequestException('Saat ini kelas sedang penuh');
+        throw new BadRequestException('The program is currently full');
       }
 
       const user_kelas = await this.userKelasRepository.create({
@@ -368,7 +368,7 @@ export class KelassService {
   async findMyCourse(userId: number) {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
+      throw new NotFoundException(`User not found`);
     }
 
     return await this.kelasRepository.find({
