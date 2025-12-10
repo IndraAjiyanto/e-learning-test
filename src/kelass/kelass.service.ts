@@ -397,10 +397,26 @@ export class KelassService {
     });
   }
 
+
+  async findQuiz(mingguId: number) {
+    return await this.quizRepository.find({
+      where: { minggu: { id: mingguId } }, relations: ['pertanyaan', 'progres_quiz', 'nilai'],
+      order: { id: 'ASC' }, 
+    });
+  }
+
+
+  async findPertemuan(mingguId: number) {
+    return await this.pertemuanRepository.find({
+      where: { minggu: { id: mingguId } },
+      order: { pertemuan_ke: 'ASC' },  relations: ['progres_pertemuan', 'logbook', 'absen', 'tugas', 'tugas.jawaban_tugas'],
+    });
+  }
+
   async findMinggu(kelasId: number, userId: number) {
     const kelas = await this.findOne(kelasId);
     if (!kelas) {
-      throw new NotFoundException(`Program not found`);
+      throw new NotFoundException('Program not found');
     }
 
     return await this.mingguRepository
@@ -432,7 +448,6 @@ export class KelassService {
         { userId },
       )
       .leftJoinAndSelect('quiz.pertanyaan', 'pertanyaan')
-      .leftJoinAndSelect('jawaban_user.user', 'jawaban_user_user')
 
       .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
       .leftJoinAndSelect(
