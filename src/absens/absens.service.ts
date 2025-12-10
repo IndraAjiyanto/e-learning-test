@@ -48,19 +48,19 @@ export class AbsensService {
       user: user,
     });
 
-    const pertemuan_selanjutnya = await this.pertemuanRepository.findOne({
-      where: {
-        pertemuan_ke: pertemuan.pertemuan_ke + 1,
-        minggu: { id: pertemuan.minggu.id },
-      },
-    });
-    if (pertemuan_selanjutnya) {
-      await this.progresPertemuanRepository.create({
-        pertemuan: { id: pertemuan_selanjutnya.id },
-        user: { id: user.id },
-        absen: true,
-      });
-    }
+    // const pertemuan_selanjutnya = await this.pertemuanRepository.findOne({
+    //   where: {
+    //     pertemuan_ke: pertemuan.pertemuan_ke + 1,
+    //     minggu: { id: pertemuan.minggu.id },
+    //   },
+    // });
+    // if (pertemuan_selanjutnya) {
+    //   await this.progresPertemuanRepository.create({
+    //     pertemuan: { id: pertemuan_selanjutnya.id },
+    //     user: { id: user.id },
+    //     absen: true,
+    //   });
+    // }
 
     return await this.absenRepository.save(absen);
   }

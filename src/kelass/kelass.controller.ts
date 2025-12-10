@@ -309,11 +309,6 @@ export class KelassController {
         }
       }
       if (isUserInKelas) {
-        const minggu = await this.kelassService.findMinggu(id, req.user.id);
-        await Promise.all([
-          this.kelassService.createProgresMinggu(req.user.id, minggu),
-          this.kelassService.createProgresPertemuan(req.user.id, minggu),
-        ]);
         const mingguUpdated = await this.kelassService.findMinggu(
           id,
           req.user.id,

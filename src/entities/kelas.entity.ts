@@ -8,7 +8,6 @@ import {
   JoinTable,
   OneToMany,
   ManyToOne,
-  OneToOne,
   JoinColumn,
 } from 'typeorm';
 import { Portfolio } from './portfolio.entity';

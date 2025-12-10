@@ -5,6 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Minggu } from 'src/entities/minggu.entity';
 import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
+import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
+import { th } from 'date-fns/locale';
+import { UserKelas } from 'src/entities/user_kelas.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 @Injectable()
 export class MingguService {
@@ -14,6 +18,15 @@ export class MingguService {
 
     @InjectRepository(Kelas)
     private readonly kelasRepository: Repository<Kelas>,
+
+    @InjectRepository(ProgresMinggu)
+    private readonly progresMingguRepository: Repository<ProgresMinggu>,
+
+    @InjectRepository(UserKelas)
+    private readonly userKelasRepository: Repository<UserKelas>,
+
+    @InjectRepository(Pertemuan)
+    private readonly pertemuanRepository: Repository<Pertemuan>,
   ) {}
 
   async create(createMingguDto: CreateMingguDto, kelasId: number) {
@@ -23,14 +36,39 @@ export class MingguService {
     if (!kelas) {
       throw new NotFoundException('kelas Not Found');
     }
+    if(createMingguDto.minggu_ke === 1){
+      const data = await this.mingguRepository.create({
+        ...createMingguDto,
+        kelas: kelas,
+      });
+      const minggu = await this.mingguRepository.save(data);
+
+      const userKelass = await this.userKelasRepository.find({
+        where: { kelas: { id: kelas.id }, progres: false },
+        relations: ['user'],
+      });
+if(userKelass.length > 0){
+      for (const userKelas of userKelass) {
+        await this.progresMingguRepository.save({
+          minggu: minggu,
+          user: userKelas.user,
+          quiz: false,
+          proses: true,
+        });
+      }
+    }
+    }else{
+
     const minggu = await this.mingguRepository.findOne({
       where: {
         minggu_ke: createMingguDto.minggu_ke - 1,
         kelas: { id: kelas.id },
-      },
+      }, relations: ['progres_minggu'],
     });
 
-    if (!minggu?.akhir) {
+    if(!minggu){
+      throw new NotFoundException('minggu sebelumnya harus dibuat terlebih dahulu');
+    }else if (!minggu.akhir) {
       if (createMingguDto.akhir_check === 'true') {
         createMingguDto.akhir = true;
       }
@@ -38,9 +76,26 @@ export class MingguService {
         ...createMingguDto,
         kelas: kelas,
       });
-      return await this.mingguRepository.save(data);
-    } else {
-      throw new Error('tidak dapat menambahkan pertemuan lagi');
+      const newMinggu = await this.mingguRepository.save(data);
+
+      if(minggu.progres_minggu.length > 0){
+        const progresMinggu = await this.progresMingguRepository.find({
+          where: { minggu: { id: minggu.id }, proses: true , quiz: true },
+          relations: ['user'],
+        });
+
+      if(progresMinggu.length > 0){
+        for (const progres of progresMinggu) {
+          await this.progresMingguRepository.save({
+            minggu: newMinggu,
+            user: progres.user,
+            quiz: false,
+            proses: true,
+          });
+        }
+      }
+    }
+    }
     }
   }
 
@@ -70,6 +125,12 @@ export class MingguService {
           pertemuan_ke: 'ASC',
         },
       },
+    });
+  }
+
+  async findPertemuanAkhir(mingguId: number) {
+    return await this.pertemuanRepository.findOne({
+      where: { minggu: { id: mingguId }, akhir: true},
     });
   }
 

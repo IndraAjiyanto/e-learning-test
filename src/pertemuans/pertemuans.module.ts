@@ -10,6 +10,8 @@ import { MaterisModule } from 'src/materis/materis.module';
 import { Minggu } from 'src/entities/minggu.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
       Pertanyaan,
       Minggu,
       Logbook,
+      ProgresPertemuan,
+      ProgresMinggu
     ]),
     MaterisModule,
   ],

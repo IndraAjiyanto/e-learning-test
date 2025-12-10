@@ -10,6 +10,8 @@ import { Pertemuan } from 'src/entities/pertemuan.entity';
 import cloudinary from 'src/common/config/multer.config';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { Quiz } from 'src/entities/quiz.entity';
+import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 
 @Injectable()
 export class LogbookService {
@@ -25,6 +27,10 @@ export class LogbookService {
   private readonly logBookMentorRepository: Repository<LogbookMentor>;
   @InjectRepository(ProgresPertemuan)
   private readonly progresPertemuanRepository: Repository<ProgresPertemuan>;
+  @InjectRepository(Quiz)
+  private readonly quizRepository: Repository<Quiz>;
+  @InjectRepository(ProgresQuiz)
+  private readonly progresQuizRepository: Repository<ProgresQuiz>;
 
   async create(createLogbookDto: CreateLogbookDto) {
     const user = await this.userRepository.findOne({
@@ -57,7 +63,10 @@ export class LogbookService {
 
   async findLogBook(userId: number, kelasId: number) {
     return await this.logBookRepository.find({
-      where: { user: { id: userId }, pertemuan: { minggu: { kelas: { id: kelasId } } } },
+      where: {
+        user: { id: userId },
+        pertemuan: { minggu: { kelas: { id: kelasId } } },
+      },
       relations: [
         'user',
         'pertemuan',
@@ -190,6 +199,7 @@ export class LogbookService {
           user: { id: logbook.user.id },
           pertemuan: { id: logbook.pertemuan.id },
         },
+        relations: ['pertemuan', 'pertemuan.minggu'],
       });
 
       if (existingProgres) {
@@ -203,7 +213,45 @@ export class LogbookService {
           user: { id: logbook.user.id },
           pertemuan: { id: logbook.pertemuan.id },
           logbook: true,
+          absen: true
         });
+      }
+
+      const pertemuan = await this.pertemuanRepository.findOne({
+        where: { id: logbook.pertemuan.id },
+        relations: ['minggu', 'minggu.kelas'],
+      });
+      if (pertemuan) {
+        if (pertemuan.akhir) {
+          const quiz = await this.quizRepository.findOne({
+            where: {
+              minggu: { id: pertemuan.minggu.id },
+            },
+          });
+          if (quiz) {
+            await this.progresQuizRepository.save({
+              quiz: { id: quiz.id },
+              user: { id: logbook.user.id },
+              proses: true,
+            });
+          } 
+        } else {
+          const pertemuan_selanjutnya = await this.pertemuanRepository.findOne({
+            where: {
+              pertemuan_ke: pertemuan.pertemuan_ke + 1,
+              minggu: { id: pertemuan.minggu.id },
+            },
+          });
+
+          if (pertemuan_selanjutnya) {
+            await this.progresPertemuanRepository.save({
+              pertemuan: { id: pertemuan_selanjutnya.id },
+              user: { id: logbook.user.id },
+              absen: true,
+              logbook: false,
+            });
+          } 
+        }
       }
     } else if (updateLogbookDto.proses === 'rejected') {
       // Cek apakah progres_pertemuan sudah ada

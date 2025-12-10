@@ -11,6 +11,9 @@ import { Nilai } from 'src/entities/nilai.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 import { Minggu } from 'src/entities/minggu.entity';
+import { UserKelas } from 'src/entities/user_kelas.entity';
+import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { Pertemuan } from 'src/entities/pertemuan.entity';
 
 @Injectable()
 export class JawabanUsersService {
@@ -30,6 +33,12 @@ export class JawabanUsersService {
   private readonly progresMingguRepository: Repository<ProgresMinggu>;
   @InjectRepository(Minggu)
   private readonly mingguRepository: Repository<Minggu>;
+  @InjectRepository(UserKelas)
+  private readonly userKelasRepository: Repository<UserKelas>;
+  @InjectRepository(ProgresPertemuan)
+  private readonly progresPertemuanRepository: Repository<ProgresPertemuan>;
+  @InjectRepository(Pertemuan)
+  private readonly pertemuanRepository: Repository<Pertemuan>;
 
   async create(createJawabanUserDto: CreateJawabanUserDto) {
     const jawabanToInsert: JawabanUser[] = [];
@@ -56,7 +65,7 @@ export class JawabanUsersService {
       if (!user)
         throw new NotFoundException(`User id ${j.userId} tidak ditemukan`);
 
-      const jawabanUser = this.jawabanUserRepository.create({
+      const jawabanUser = await this.jawabanUserRepository.create({
         pertanyaan,
         jawaban,
         user,
@@ -65,7 +74,7 @@ export class JawabanUsersService {
       jawabanToInsert.push(jawabanUser);
     }
 
-    return this.jawabanUserRepository.save(jawabanToInsert);
+    return await this.jawabanUserRepository.save(jawabanToInsert);
   }
 
   async nilaiCreate(createJawabanUserDto: CreateJawabanUserDto) {
@@ -136,7 +145,7 @@ export class JawabanUsersService {
     }
 
     // Update kolom proses menjadi true (minggu selesai)
-    progres_minggu.proses = true;
+    progres_minggu.quiz = true;
     await this.progresMingguRepository.save(progres_minggu);
 
     return progres_minggu;
@@ -149,36 +158,58 @@ export class JawabanUsersService {
     });
     if (!minggu_sebelum) {
       throw new NotFoundException('minggu_sebelum not found');
-    }
-    const minggu = await this.mingguRepository.findOne({
-      where: {
-        minggu_ke: minggu_sebelum.minggu_ke + 1,
+    } else if (minggu_sebelum.akhir === true) {
+      return await this.userKelasRepository.save({
         kelas: { id: minggu_sebelum.kelas.id },
-      },
-    });
-    if (!minggu) {
-      return;
-    } else if (minggu.akhir === true) {
-      return;
-    }
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('user not found');
-    }
-    const existingProgres = await this.progresMingguRepository.findOne({
-      where: { minggu: { id: minggu.id }, user: { id: userId } },
-    });
-    if (existingProgres) {
-      await this.progresMingguRepository.update(existingProgres.id, {
-        quiz: true,
+        user: { id: userId },
+        progres: true,
+        quiz: true
       });
     } else {
-      const newProgres = await this.progresMingguRepository.create({
-        minggu: minggu,
-        user: user,
-        quiz: true,
+      const minggu = await this.mingguRepository.findOne({
+        where: {
+          minggu_ke: minggu_sebelum.minggu_ke + 1,
+          kelas: { id: minggu_sebelum.kelas.id },
+        }, relations: ['pertemuan'],
       });
-      await this.progresMingguRepository.save(newProgres);
+      if (minggu) {
+        if(minggu.pertemuan.length > 0){
+          const pertemuan_satu = await this.pertemuanRepository.findOne({
+            where: { minggu: { id: minggu.id }, pertemuan_ke: 1 },
+          });
+          if(pertemuan_satu){
+
+              await this.progresPertemuanRepository.save({
+              user: { id: userId },
+              pertemuan: pertemuan_satu,
+              logbook: false,
+              absen: true,
+            });
+
+          }
+        }
+        const existingProgres = await this.progresMingguRepository.findOne({
+          where: { minggu: { id: minggu.id }, user: { id: userId } },
+        });
+        if (existingProgres) {
+          await this.progresMingguRepository.update(existingProgres.id, {
+            quiz: true,
+          });
+        } else {
+          await this.progresMingguRepository.save({
+            minggu: minggu,
+            user: { id: userId },
+            proses: true,
+            quiz: true,
+          });
+        }
+          await this.progresMingguRepository.save({
+            minggu: minggu,
+            user: { id: userId },
+            proses: true,
+            quiz: false,
+          });
+      }
     }
   }
 
