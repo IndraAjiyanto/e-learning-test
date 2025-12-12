@@ -14,17 +14,17 @@
         // Form validation states
         formData: {
           nama: `{{teamLead.nama}}`,
-          posisi: `{
+          posisi: {
           id: `{{teamLead.posisi.id}}`,
           en: `{{teamLead.posisi.en}}`,
           ja: `{{teamLead.posisi.ja}}`
-          }`,
+          },
           linkedin: `{{teamLead.linkedin}}`,
           instagram: `{{teamLead.instagram}}`,
           deskripsi: {
             id: `{{teamLead.deskripsi.id}}`,
-            en: `{{teamLead.deskripsi_en}}`,
-            ja: `{{teamLead.deskripsi_ja}}`
+            en: `{{teamLead.deskripsi.en}}`,
+            ja: `{{teamLead.deskripsi.ja}}`
           }
         },
         formErrors: {
@@ -39,7 +39,7 @@
           posisi: { id: true, en: true, ja: true },
           linkedin: true,
           instagram: true,
-          deskripsi: { id: true, en: false, ja: false }
+          deskripsi: { id: true, en: true, ja: true }
         },
 
         validateImage(file) {

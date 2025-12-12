@@ -22,7 +22,7 @@
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allTypes"}}', desc: '{{t "test.home.programSection.deskripsiAllTypes"}}' },
         {{#each jenis_kelas}}
-        { value: `{{this.nama_jenis_kelas }}`, icon: '{{computeIcon this.icon}}', title: `{{this.nama_jenis_kelas}}`, desc: `{{truncate getByLang this.deskripsi ../lang 10}}` },
+        { value: `{{this.nama_jenis_kelas }}`, icon: '{{computeIcon this.icon}}', title: `{{this.nama_jenis_kelas}}`, desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
         {{/each}}
       ],
       
