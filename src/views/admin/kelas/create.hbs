@@ -1268,7 +1268,9 @@
         </div>
       </div>
 
-      <!-- BUTTONS - Full Width -->
+
+        </div>
+              <!-- BUTTONS - Full Width -->
       <div class='lg:col-span-2 space-y-4'>
         <!-- Submit Warning -->
         <template x-if='coverHasFile && !coverValid'>
@@ -1283,7 +1285,9 @@
           </div>
         </template>
 
-        <div class='flex space-x-4'>
+
+      </div>
+              <div class='flex space-x-4'>
           <button
             type='submit'
             :disabled='coverHasFile && !coverValid'
@@ -1299,7 +1303,6 @@
             Cancel
           </a>
         </div>
-      </div>
     </form>
   </div>
 </div>

@@ -656,7 +656,7 @@
 }"
             @click.away='showJenisKelasDropdown = false'
           >
-            <label class='block text-sm font-semibold text-gray-700 mb-1'>Class
+            <label class='block text-sm font-semibold text-gray-700 mb-1'>Program
               Types</label>
 
             <!-- Selected Jenis Kelas -->
@@ -700,7 +700,7 @@
                 x-model='searchJenisKelas'
                 @input='showJenisKelasDropdown = true'
                 @focus='showJenisKelasDropdown = true'
-                placeholder='Search class types...'
+                placeholder='Search program types...'
                 class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
               />
               <i
@@ -727,7 +727,7 @@
               <input type='hidden' name='jenis_kelas[]' :value='id' />
             </template>
 
-            <p class='text-xs text-gray-500 mt-2'>Click to select class types</p>
+            <p class='text-xs text-gray-500 mt-2'>Click to select program types</p>
 
             <!-- Error Message -->
             <template x-if='formErrors.jenis_kelas'>
@@ -750,7 +750,7 @@
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
               >
                 <i class='fas fa-check-circle text-green-500'></i>
-                <p class='text-xs text-green-700'>Class types look good</p>
+                <p class='text-xs text-green-700'>Program types look good</p>
               </div>
             </template>
           </div>
