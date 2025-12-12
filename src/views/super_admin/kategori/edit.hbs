@@ -561,11 +561,12 @@
               type='number'
               id='contact'
               name='contact'
+              required
               :class="formErrors.contact ? 'border-red-500 focus:ring-red-500' : formValid.contact ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               @input='validateField("contact", $event.target.value)'
               x-model='formData.contact'
-              placeholder='Enter contact number (optional)'
+              placeholder='Enter contact number'
             />
 
             <!-- Error Message -->
