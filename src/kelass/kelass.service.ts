@@ -440,41 +440,8 @@ export class KelassService {
         'portfolio.userId = :userId',
         { userId },
       )
-      .leftJoinAndSelect('minggu.quiz', 'quiz')
-      .leftJoinAndSelect(
-        'quiz.progres_quiz',
-        'progres_quiz',
-        'progres_quiz.userId = :userId',
-        { userId },
-      )
-      .leftJoinAndSelect('quiz.pertanyaan', 'pertanyaan')
-
-      .leftJoinAndSelect('minggu.pertemuan', 'pertemuan')
-      .leftJoinAndSelect(
-        'pertemuan.progres_pertemuan',
-        'progres_pertemuan',
-        'progres_pertemuan.userId = :userId',
-        { userId },
-      )
-      .leftJoinAndSelect(
-        'pertemuan.logbook',
-        'logbook',
-        'logbook.userId = :userId',
-        { userId },
-      )
-      .leftJoinAndSelect('pertemuan.absen', 'absen', 'absen.userId = :userId', {
-        userId,
-      })
-      .leftJoinAndSelect('pertemuan.tugas', 'tugas')
-      .leftJoinAndSelect(
-        'tugas.jawaban_tugas',
-        'jawaban_tugas',
-        'jawaban_tugas.userId = :userId AND jawaban_tugas.proses = :proses',
-        { userId, proses: 'acc' },
-      )
       .where('minggu.kelasId = :kelasId', { kelasId })
       .orderBy('minggu.minggu_ke', 'ASC')
-      .addOrderBy('pertemuan.pertemuan_ke', 'ASC')
       .getMany();
   }
 
