@@ -22,9 +22,6 @@ import { JenisFile } from 'src/entities/materi.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Request, Response } from 'express';
-import { join } from 'path';
-import { promises as fs } from 'fs';
-import { LibreOfficeService } from 'src/common/config/libreoffice.service';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { ValidateFileInterceptor } from 'src/common/interceptors/validate-file.interceptor';
@@ -39,7 +36,6 @@ import { ValidateFileOnly } from 'src/common/decorators/validate-file-only.decor
 export class MaterisController {
   constructor(
     private readonly materisService: MaterisService,
-    private readonly libreOfficeService: LibreOfficeService,
   ) {}
 
   @Roles('admin')
@@ -77,103 +73,43 @@ export class MaterisController {
     }
   }
 
-  @Roles('admin')
-  @Post('ppt/:pertemuanId')
-  @UseInterceptors(
-    FileInterceptor(
-      'file',
-      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }),
-    ),
-    ValidateFileOnlyInterceptor,
-  )
-  @ValidateFileOnly({
-    maxSize: 50 * 1024 * 1024, // 50MB
-    allowedTypes: [
-      'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    ],
-    fileExtensions: ['.ppt', '.pptx'],
-  })
-  async createPpt(
-    @Body() createMaterisDto: CreateMaterisDto,
-    @UploadedFile() file: Express.Multer.File,
-    @Res() res: Response,
-    @Param('pertemuanId') pertemuanId: number,
-    @Req() req: Request,
-  ) {
-    try {
-      // Validasi file
-      if (!file) {
-        req.flash('error', 'PPT/PPTX file is required');
-        return res.redirect(`/pertemuans/${pertemuanId}`);
-      }
-
-      // 1️⃣ Simpan file sementara
-      const tmpDir = join(process.cwd(), 'tmp');
-      await fs.mkdir(tmpDir, { recursive: true });
-
-      const fileExtension = file.originalname.toLowerCase().endsWith('.pptx')
-        ? '.pptx'
-        : '.ppt';
-      const tmpFileName = `ppt-${Date.now()}${fileExtension}`;
-      const tmpPath = join(tmpDir, tmpFileName);
-      await fs.writeFile(tmpPath, file.buffer);
-
-      const slideOutputDir = join(process.cwd(), 'tmp', `slides-${Date.now()}`);
-
-      let pptUrl: string;
-      let slideUrls: string[];
-
-      try {
-        const uploadResult =
-          await this.libreOfficeService.convertAndUploadPptToCloudinary(
-            tmpPath,
-            slideOutputDir,
-            pertemuanId,
-          );
-
-        pptUrl = uploadResult.pptUrl;
-        slideUrls = uploadResult.slideUrls;
-
-
-      } catch (convertError) {
-        // Cleanup jika gagal
-        try {
-          await fs.unlink(tmpPath);
-        } catch (e) {
-        }
-
-        req.flash(
-          'error',
-          'Failed to convert and upload PPT. Please make sure LibreOffice is installed correctly',
-        );
-        return res.redirect(`/pertemuans/${pertemuanId}`);
-      }
-
-      // 3️⃣ Simpan ke database
-      createMaterisDto.file = pptUrl;
-      createMaterisDto.pertemuanId = pertemuanId;
-      createMaterisDto.jenis_file = 'ppt';
-      createMaterisDto.slides = slideUrls;
-
-      await this.materisService.create(createMaterisDto);
-
-      // 4️⃣ Cleanup file temporary setelah berhasil (hanya folder slides, PPT sudah dihapus di libreOfficeService)
-      try {
-        await fs.rm(slideOutputDir, { recursive: true, force: true }); // Hapus folder slides temporary
-      } catch (cleanupError) {
-      }
-
-      req.flash(
-        'success',
-        `Successfully uploaded PPT with ${slideUrls.length} slides`,
-      );
-      res.redirect(`/pertemuans/${pertemuanId}`);
-    } catch (error) {
-      req.flash('error', error.message || 'Failed to upload PPT material');
-      res.redirect(`/pertemuans/${pertemuanId}`);
-    }
+@Roles('admin')
+@Post('ppt/:pertemuanId')
+@UseInterceptors(
+  FileInterceptor(
+    'file',
+    createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }),
+  ),
+  ValidateFileInterceptor,
+)
+@ValidateFile({
+  maxSize: 50 * 1024 * 1024,
+  allowedTypes: ['application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+  fileExtensions: ['.ppt', '.pptx'],
+  folder: 'nestjs/ppt',
+  resourceType: 'raw',
+})
+async createPpt(
+  @Body() createMaterisDto: CreateMaterisDto,
+  @UploadedFile() file: Express.Multer.File,
+  @Res() res: Response,
+  @Param('pertemuanId') pertemuanId: number,
+  @Req() req: Request,
+) {
+  try {
+    createMaterisDto.file = req.body.uploadedFileUrls?.[0];
+    createMaterisDto.pertemuanId = pertemuanId;
+    createMaterisDto.jenis_file = 'ppt';
+    
+    await this.materisService.create(createMaterisDto);
+    req.flash('success', 'Successfully created PPT material');
+    res.redirect(`/pertemuans/${pertemuanId}`);
+  } catch (error) {
+    console.error('Error creating PPT material:', error);
+    req.flash('error', error.message || 'Failed to create PPT material');
+    res.redirect(`/pertemuans/${pertemuanId}`);
   }
+}
 
   @Roles('admin')
   @Post('video/:pertemuanId')

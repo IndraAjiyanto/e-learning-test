@@ -106,37 +106,50 @@
     </div>
   </div>
 
-  <div class=' mx-auto' x-data="{ tab: 'session'}">
+<div class='mx-auto' x-data="{ 
+  tab: '', 
+  async toggleFetch(url, tabName) {
+    this.tab = tabName;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      console.log(data);
+      // Add similar conditions for other tabs if needed
+    } catch (error) {
+      console.error('There has been a problem with your fetch operation:', error);
+    }
+  }
+}">
 
-    <div class='flex space-x-4 mb-6'>
+  <div class='flex space-x-4 mb-6'>
+    <button
+      @click="toggleFetch('/minggu/session/{{minggu.id}}', 'session')"
+      :class="tab === 'session' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+      class='px-4 py-2 rounded-lg shadow transition'
+    >
+      Session
+    </button>
+    {{#if mingguTerakhir}}
       <button
-        @click="tab = 'session'"
-        :class="tab === 'session' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+        @click="toggleFetch('/minggu/quiz/{{minggu.id}}', 'quiz')"
+        :class="tab === 'quiz' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
       >
-        Session
+        Quiz
       </button>
-      {{#each minggu.pertemuan}}
-        {{#if akhir}}
-          <button
-            @click="tab = 'quiz'"
-            :class="tab === 'quiz' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
-            class='px-4 py-2 rounded-lg shadow transition'
-          >
-            Quiz
-          </button>
-        {{/if}}
-      {{/each}}
-
-    </div>
-
-    <div x-show="tab === 'session'">
-      {{> minggu/session_tab}}
-    </div>
-
-    <div x-show="tab === 'quiz'">
-      {{> minggu/quiz_tab}}
-    </div>
-
+    {{/if}}
   </div>
+
+  <div x-show="tab === 'session'">
+    {{> minggu/session_tab}}
+  </div>
+
+  <div x-show="tab === 'quiz'">
+    {{> minggu/quiz_tab}}
+  </div>
+
+</div>
 </div>

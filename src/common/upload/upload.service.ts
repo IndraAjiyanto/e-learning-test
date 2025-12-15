@@ -41,10 +41,6 @@ export class UploadService {
     folder: string,
     skipTransformation = false,
   ): Promise<string> {
-    console.log('📤 Starting Cloudinary upload...');
-    console.log('File size:', (file.size / 1024).toFixed(2), 'KB');
-    console.log('Folder:', folder);
-    console.log('Skip transformation:', skipTransformation);
 
     const uploadOptions: any = {
       folder,
@@ -65,11 +61,9 @@ export class UploadService {
         uploadOptions,
         (error, result) => {
           if (error) {
-            console.error('❌ Cloudinary upload error:', error);
             reject(error);
           } else if (result) {
             const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-            console.log(`✅ Upload success in ${elapsed}s:`, result.secure_url);
             resolve(result);
           }
         },

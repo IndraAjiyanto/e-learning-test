@@ -99,6 +99,48 @@ export class PertemuansController {
   }
 
   @Roles('admin')
+  @Get('logbook/:pertemuanId')
+  async getLogBook(
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response,
+  ) {
+    const logbook = await this.pertemuansService.findLogBook(pertemuanId);
+    res.json(logbook);
+  }
+
+  @Roles('admin')
+  @Get('logbook-mentor/:pertemuanId')
+  async getLogBookMentor(
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response,
+  ) {
+    const logbook_mentor = await this.pertemuansService.findLogBookMentor(pertemuanId);
+    res.json(logbook_mentor);
+  }
+
+  @Roles('admin')
+  @Get('absen/:pertemuanId')
+  async getAbsen(
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response, 
+  ) {
+    const pertemuan = await this.pertemuansService.findOne(pertemuanId);
+    const absen = await this.pertemuansService.findMuridInKelas(pertemuan.minggu.kelas.id, pertemuanId);
+    res.json(absen);
+  } 
+
+  @Roles('admin')
+  @Get('tugas/:pertemuanId')
+  async getTugas(
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response,
+  ) {
+    const tugas = await this.pertemuansService.findTugas(pertemuanId);
+    res.json(tugas);
+  }
+
+
+  @Roles('admin')
   @Get(':pertemuanId')
   async findOne(
     @Param('pertemuanId') pertemuanId: number,
@@ -106,13 +148,9 @@ export class PertemuansController {
     @Req() req: Request,
   ) {
     const logbook = await this.pertemuansService.findLogBook(pertemuanId);
-    const logbook_mentor =
-      await this.pertemuansService.findLogBookMentor(pertemuanId);
+    const logbook_mentor = await this.pertemuansService.findLogBookMentor(pertemuanId);
     const pertemuan = await this.pertemuansService.findOne(pertemuanId);
-    const murid = await this.pertemuansService.findMuridInKelas(
-      pertemuan.minggu.kelas.id,
-      pertemuanId,
-    );
+    const murid = await this.pertemuansService.findMuridInKelas( pertemuan.minggu.kelas.id, pertemuanId);
     const materipdf = await this.materisService.findMateriPdf(pertemuanId);
     const materivideo = await this.materisService.findMateriVideo(pertemuanId);
     const materippt = await this.materisService.findMateriPpt(pertemuanId);

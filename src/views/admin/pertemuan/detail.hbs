@@ -83,30 +83,47 @@
 </div>
 
 
-<div class=" w-full mx-auto" x-data="{ tab: 'absen', search: '' }">
+<div class="w-full mx-auto" x-data="{ 
+  tab: '', 
+  search: '',
+  async toggleFetch(url, tabName) {
+    this.tab = tabName;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      console.log(data);
+      // Add similar conditions for other tabs if needed
+    } catch (error) {
+      console.error('There has been a problem with your fetch operation:', error);
+    }
+  }
+}">
 
-    <div class="flex space-x-4 mb-6">
-    <button @click="tab = 'absen'" 
+  <div class="flex space-x-4 mb-6">
+    <button @click="toggleFetch('/pertemuans/absen/{{pertemuan.id}}', 'absen')" 
             :class="tab === 'absen' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Attendance
     </button>
-    <button @click="tab = 'materi'" 
+    <button @click="toggleFetch('/pertemuans/materi/{{pertemuan.id}}', 'materi')" 
             :class="tab === 'materi' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Materi
     </button>
-    <button @click="tab = 'tugas'" 
+    <button @click="toggleFetch('/pertemuans/tugas/{{pertemuan.id}}', 'tugas')" 
             :class="tab === 'tugas' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Assignment
     </button>
-    <button @click="tab = 'logbook'" 
+    <button @click="toggleFetch('/pertemuans/logbook/{{pertemuan.id}}', 'logbook')" 
             :class="tab === 'logbook' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log book user
     </button>
-    <button @click="tab = 'logbook_mentor'" 
+    <button @click="toggleFetch('/pertemuans/logbook-mentor/{{pertemuan.id}}', 'logbook_mentor')" 
             :class="tab === 'logbook_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log book mentor
@@ -129,12 +146,9 @@
     {{> pertemuan/materi_tab}}
   </div>
 
-
   <div x-show="tab === 'tugas'">
     {{> pertemuan/tugas_tab}}
   </div>
-
-
 
 </div>
 </div>

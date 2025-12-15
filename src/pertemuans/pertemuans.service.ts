@@ -3,7 +3,7 @@ import { CreatePertemuanDto } from './dto/create-pertemuan.dto';
 import { UpdatePertemuanDto } from './dto/update-pertemuan.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
@@ -12,6 +12,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
+import { Tugas } from 'src/entities/tugas.entity';
 
 @Injectable()
 export class PertemuansService {
@@ -42,6 +43,10 @@ export class PertemuansService {
 
     @InjectRepository(ProgresMinggu)
     private readonly progresMingguRepository: Repository<ProgresMinggu>,
+
+    @InjectRepository(Tugas)
+    private readonly tugasRepository: Repository<Tugas>,
+
   ) {}
 
   async create(createPertemuanDto: CreatePertemuanDto) {
@@ -135,14 +140,13 @@ export class PertemuansService {
   }
 
   async findMuridInKelas(kelasId: number, pertemuanId: number) {
-    const users = await this.userRepository.find({
+    return await this.userRepository.find({
       where: {
         user_kelas: { kelas: { id: kelasId } },
         absen: { pertemuan: { id: pertemuanId } },
       },
       relations: ['absen'],
     });
-    return users;
   }
 
   async findPertanyaan(pertemuanId: number) {
@@ -176,10 +180,17 @@ export class PertemuansService {
     });
   }
 
+  async findTugas(pertemuanId: number) {
+    return await this.pertemuanRepository.findOne({
+      where: { id: pertemuanId },
+      relations: ['tugas'],
+    });
+  }
+
   async findOne(id: number) {
     const pertemuan = await this.pertemuanRepository.findOne({
       where: { id },
-      relations: ['minggu', 'minggu.kelas', 'tugas'],
+      relations: ['minggu', 'minggu.kelas'],
     });
     if (!pertemuan) {
       throw new NotFoundException(`Pertemuan tidak ditemukan`);

@@ -4,7 +4,6 @@ import { UpdateMaterisDto } from './dto/update-materis.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JenisFile, Materi } from 'src/entities/materi.entity';
 import { Repository } from 'typeorm';
-import { Kelas } from 'src/entities/kelas.entity';
 import { v2 as cloudinary } from 'cloudinary';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 
@@ -13,8 +12,6 @@ export class MaterisService {
   constructor(
     @InjectRepository(Materi)
     private readonly materiRepository: Repository<Materi>,
-    @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>,
     @InjectRepository(Pertemuan)
     private readonly pertemuanRepository: Repository<Pertemuan>,
   ) {}

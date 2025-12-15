@@ -12,6 +12,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
+import { Tugas } from 'src/entities/tugas.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
       Minggu,
       Logbook,
       ProgresPertemuan,
-      ProgresMinggu
+      ProgresMinggu,
+      Tugas
     ]),
     MaterisModule,
   ],

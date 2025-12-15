@@ -5,11 +5,85 @@
     currentSlide: 0,
     slideTitle: "",
     pptFile: "",
-    selectMaterial(slideUrls, title, file) {
-      this.slides = slideUrls;
+    isLoading: false,
+    async selectMaterial(title, file) {
       this.slideTitle = title;
       this.pptFile = file;
+      await this.loadPPTX(file);
+    },
+    async loadPPTX(url) {
+      this.slides = [];
       this.currentSlide = 0;
+      this.isLoading = true;
+      
+      const container = document.getElementById("pptx-slide");
+      if (container) {
+        container.innerHTML = "<div style=\"display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;font-size:16px;\"><svg style=\"width:24px;height:24px;margin-right:8px;animation:spin 1s linear infinite;\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\"></path></svg>Loading presentation...</div><style>@keyframes spin { to { transform: rotate(360deg); }}</style>";
+      }
+      
+      try {
+        console.log("Loading PPTX from:", url);
+        
+        // Gunakan office viewer untuk render PPTX
+        container.innerHTML = "";
+        
+        // Buat container untuk slides
+        const slidesContainer = document.createElement("div");
+        slidesContainer.id = "slides-container";
+        slidesContainer.style.cssText = "width:100%;height:100%;position:relative;overflow:hidden;background:#fff;";
+        container.appendChild(slidesContainer);
+        
+        // Render menggunakan Google Docs Viewer atau Office Online
+        const viewerUrl = https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)};
+        
+        const iframe = document.createElement("iframe");
+        iframe.src = viewerUrl;
+        iframe.style.cssText = "width:100%;height:100%;border:none;";
+        iframe.setAttribute("frameborder", "0");
+        
+        slidesContainer.appendChild(iframe);
+        
+        // Fetch untuk hitung jumlah slide
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const zip = await JSZip.loadAsync(arrayBuffer);
+        
+        const slideFiles = Object.keys(zip.files)
+          .filter(name => name.match(/ppt\/slides\/slide\d+\.xml/))
+          .sort((a, b) => {
+            const numA = parseInt(a.match(/\d+/)[0]);
+            const numB = parseInt(b.match(/\d+/)[0]);
+            return numA - numB;
+          });
+        
+        this.slides = slideFiles.map((_, i) => i);
+        console.log("Found", this.slides.length, "slides");
+        
+        this.isLoading = false;
+        
+      } catch (error) {
+        console.error("Error loading PPTX:", error);
+        this.isLoading = false;
+        if (container) {
+          container.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ef4444;flex-direction:column;gap:16px;padding:20px;">
+              <svg style="width:64px;height:64px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div style="font-size:18px;font-weight:600;">Failed to load presentation</div>
+              <div style="font-size:14px;color:#94a3b8;text-align:center;max-width:400px;">
+                ${error.message}
+              </div>
+              <a href="${url}" target="_blank" style="color:#3b82f6;text-decoration:underline;font-size:14px;margin-top:8px;">
+                Download and open locally
+              </a>
+            </div>
+          `;
+        }
+      }
+    },
+    renderSlide() {
+      // Office viewer handles slide navigation internally
     },
     nextSlide() {
       if (this.currentSlide < this.slides.length - 1) {
@@ -29,7 +103,7 @@
 
   <div class='mb-8'>
     <a
-      @click.prevent="history.back()"
+      href='/kelass/{{pertemuan.minggu.kelas.id}}'
       class='inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
     >
       <svg
@@ -56,81 +130,23 @@
       <div
         class='bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden'
       >
-        <!-- Slides Container -->
-        <template x-if='slides.length > 0'>
-          <div class='relative'>
-            <!-- Main Slide -->
-            <div class='relative h-[600px] bg-gradient-to-br from-slate-50 to-white'>
-            <template x-for='(slide, index) in slides' :key='index'>
-              <div
-                x-show='currentSlide === index'
-                x-transition:enter='transition ease-out duration-300'
-                x-transition:enter-start='opacity-0 transform translate-x-full'
-                x-transition:enter-end='opacity-100 transform translate-x-0'
-                x-transition:leave='transition ease-in duration-300'
-                x-transition:leave-start='opacity-100 transform translate-x-0'
-                x-transition:leave-end='opacity-0 transform -translate-x-full'
-                class='absolute inset-0 flex items-center justify-center p-4'
-              >
-                <img
-                  :src='slide'
-                  :alt='`Slide ${index + 1}`'
-                  class='max-w-full max-h-full object-contain rounded-lg shadow-lg'
-                />
-              </div>
-            </template>
-
-            <!-- Navigation Buttons -->
-            <button
-              @click='prevSlide()'
-              x-show='currentSlide > 0'
-              class='absolute left-4 top-1/2 -translate-y-1/2 bg-slate-900/80 hover:bg-slate-900 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-slate-500'
-            >
-              <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 19l-7-7 7-7'></path>
-              </svg>
-            </button>
-
-            <button
-              @click='nextSlide()'
-              x-show='currentSlide < slides.length - 1'
-              class='absolute right-4 top-1/2 -translate-y-1/2 bg-slate-900/80 hover:bg-slate-900 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-slate-500'
-            >
-              <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7'></path>
-              </svg>
-            </button>
+        <!-- PPT Viewer using PptxViewJS -->
+        <template x-if='pptFile'>
+          <div class='relative h-[600px] bg-gradient-to-br from-slate-50 to-white flex items-center justify-center'>
+            <div id='pptx-slide' class='w-full h-full overflow-auto'></div>
 
             <!-- Slide Counter -->
-            <div class='absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white px-4 py-2 rounded-full shadow-lg'>
-              <span class='font-semibold' x-text='currentSlide + 1'></span>
-              <span class='mx-1'>/</span>
+            <div 
+              x-show='slides.length > 0 && !isLoading'
+              class='absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white px-4 py-2 rounded-full shadow-lg'>
               <span x-text='slides.length'></span>
-            </div>
-          </div>
-
-          <!-- Thumbnail Navigation -->
-          <div class='bg-slate-100 p-4 border-t border-slate-200'>
-            <div class='flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-400 scrollbar-track-slate-200'>
-              <template x-for='(slide, index) in slides' :key='index'>
-                <button
-                  @click='goToSlide(index)'
-                  :class='currentSlide === index ? "ring-2 ring-slate-900 ring-offset-2" : "opacity-60 hover:opacity-100"'
-                  class='flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden transition-all duration-200 focus:outline-none'
-                >
-                  <img
-                    :src='slide'
-                    :alt='`Thumbnail ${index + 1}`'
-                    class='w-full h-full object-cover'
-                  />
-                </button>
-              </template>
+              <span class='mx-1'>slides</span>
             </div>
           </div>
         </template>
 
         <!-- Empty State -->
-        <template x-if='slides.length === 0'>
+        <template x-if='!pptFile'>
           <div
             class='h-[600px] flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50'
           >
@@ -198,7 +214,7 @@
             {{#each materi}}
               <button
                 class='w-full text-left px-4 py-4 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all duration-200 shadow-sm hover:shadow-md group'
-                @click='selectMaterial({{{json this.slides}}}, "{{judul}}", "{{file}}")'
+                @click='selectMaterial({{judul}}, {{file}})'
               >
                 <div class='flex items-center justify-between'>
                   <div class='flex items-center flex-1'>
@@ -247,3 +263,6 @@
     </div>
   </div>
 </div>
+
+<!-- JSZip untuk extract PPTX -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>

@@ -181,165 +181,163 @@
       </div>
 
   <!-- ===================== TAB SECTION ===================== -->
-  <div class=" mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl" x-data="{ tab: '{{#if (eq user.role "super_admin")}}benefit{{else}}week{{/if}}', search: '' }">
+<div class="mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl" 
+     x-data="{ 
+       tab: '', 
+       search: '', 
+       async toggleFetch(url, tabName) {
+         this.tab = tabName;
+         try {
+           const response = await fetch(url);
+           if (!response.ok) {
+             throw new Error('Network response was not ok');
+           }
+           const data = await response.json();
+           console.log(data);
+         } catch (error) {
+           console.error('There has been a problem with your fetch operation:', error);
+         }
+       }
+     }">
 
-    <!-- Tab Navigation -->
-    <div class="flex space-x-4 mb-6">
-      {{#if (eq user.role "admin")}}
-      <button @click="tab = 'week'" 
-              :class="tab === 'week' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Week
-      </button>
+  <!-- Tab Navigation -->
+  <div class="flex space-x-4 mb-6">
+    {{#if (eq user.role "admin")}}
+    <button @click="toggleFetch('/kelass/minggu/{{kelas.id}}', 'week')" 
+            :class="tab === 'week' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Week
+    </button>
 
-      <button @click="tab = 'user'" 
-              :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        User
-      </button>
+    <button @click="toggleFetch('/kelass/userKelas/{{kelas.id}}', 'user')" 
+            :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      User
+    </button>
 
-      <button @click="tab = 'log_book_user'" 
-              :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Log Book User
-      </button>
+    <button @click="toggleFetch('/kelass/logbookUser/{{kelas.id}}', 'log_book_user')" 
+            :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Log Book User
+    </button>
 
-      <button @click="tab = 'log_book_mentor'" 
-              :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Log Book Mentor
-      </button>
+    <button @click="toggleFetch('/kelass/logbookMentor/{{kelas.id}}', 'log_book_mentor')" 
+            :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Log Book Mentor
+    </button>
 
+    {{else if (eq user.role "super_admin")}}
 
+    <button @click="toggleFetch('/kelass/benefit/{{kelas.id}}', 'benefit')" 
+            :class="tab === 'benefit' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Benefit
+    </button>
 
-      {{else if (eq user.role "super_admin")}}
+    <button @click="toggleFetch('/kelass/flow/{{kelas.id}}', 'flow')" 
+            :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Flow
+    </button>
 
-      <button @click="tab = 'benefit'" 
-              :class="tab === 'benefit' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Benefit
-      </button>
+    <button @click="toggleFetch('/kelass/faq/{{kelas.id}}', 'faq')" 
+            :class="tab === 'faq' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      FAQ
+    </button>
 
-      <button @click="tab = 'flow'" 
-              :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Flow
-      </button>
+    {{#if kelas.check_paid}}
+    <button @click="toggleFetch('/kelass/installment/{{kelas.id}}', 'installment')" 
+            :class="tab === 'installment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Installment
+    </button>
+    {{/if}}
 
-      <button @click="tab = 'faq'" 
-              :class="tab === 'faq' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        FAQ
-      </button>
+    <button @click="toggleFetch('/kelass/payment/{{kelas.id}}', 'payment')" 
+            :class="tab === 'payment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Payment
+    </button>
 
-      {{#if kelas.check_paid}}
-                  <button @click="tab = 'installment'" 
-              :class="tab === 'installment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Installment
-      </button>
+    <button @click="toggleFetch('/kelass/alumni/{{kelas.id}}', 'alumni')" 
+            :class="tab === 'alumni' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Alumni
+    </button>
 
-      {{/if}}
+    <button @click="toggleFetch('/kelass/userKelas/{{kelas.id}}', 'user')" 
+            :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      User
+    </button>
 
-      
-            <button @click="tab = 'payment'" 
-              :class="tab === 'payment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Payment
-      </button>
+    <button @click="toggleFetch('/kelass/logbookUser/{{kelas.id}}', 'log_book_user')" 
+            :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Log Book User
+    </button>
 
-      <button @click="tab = 'alumni'" 
-              :class="tab === 'alumni' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Alumni
-      </button>
+    <button @click="toggleFetch('/kelass/logbookMentor/{{kelas.id}}', 'log_book_mentor')" 
+            :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Log Book Mentor
+    </button>
 
-      <button @click="tab = 'user'" 
-              :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        User
-      </button>
-
-      <button @click="tab = 'log_book_user'" 
-              :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Log Book User
-      </button>
-
-      <button @click="tab = 'log_book_mentor'" 
-              :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Log Book Mentor
-      </button>
-
-
-      {{/if}}
-      
-                  <button @click="tab = 'mentor'" 
-              :class="tab === 'mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-              class="px-4 py-2 rounded-lg shadow transition">
-        Mentor
-      </button>
-
-
-    </div>
-
-    <!-- ===================== TAB WEEK ===================== -->
-    <div x-show="tab === 'week'">
-      {{> kelas/week_tab }}
-    </div>   
-     <!-- ===================== TAB MENTOR ===================== -->
-<div x-show="tab === 'mentor'">
-  {{> kelas/mentor_tab}}
-</div>
-
-
-    <!-- ===================== TAB FLOW (ALUR KELAS) ===================== -->
-<div x-show="tab === 'flow'">
-  {{> kelas/flow_tab}}
-</div>
-
-    <!-- ===================== TAB BENEFIT (BENEFIT KELAS) ===================== -->
-<div x-show="tab === 'benefit'">
-  {{> kelas/benefit_tab}}
-</div>
-
-    <!-- ===================== TAB FAQ (PERTANYAAN KELAS) ===================== -->
-<div x-show="tab === 'faq'">
-  {{> kelas/faq_tab}}
-</div>
-
-    <!-- ===================== TAB INSTALLMENT (CICILAN) ===================== -->
-<div x-show="tab === 'installment'">
-  {{> kelas/installment_tab}}
-</div>
-
-    <!-- ===================== TAB ALUMNI ===================== -->
-<div x-show="tab === 'alumni'">
-  {{> kelas/alumni_tab}}
-</div>
-
-    <!-- ===================== TAB USER ===================== -->
-<div x-show="tab === 'user'">
-  {{> kelas/user_tab}}
-</div>
-
-    <!-- ===================== TAB LOG BOOK USER ===================== -->
-<div x-show="tab === 'log_book_user'">
-  {{> kelas/log_book_user_tab}}
-</div>
-
-    <!-- ===================== TAB LOG BOOK MENTOR ===================== -->
-<div x-show="tab === 'log_book_mentor'">
-  {{> kelas/log_book_mentor_tab}}
-</div>
-
-    <!-- ===================== TAB PAYMENT ===================== -->
-<div x-show="tab === 'payment'">
-  {{> kelas/payment_tab}}
-</div>
-
-
+    {{/if}}
+    
+    <button @click="toggleFetch('/kelass/mentor/{{kelas.id}}', 'mentor')" 
+            :class="tab === 'mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Mentor
+    </button>
   </div>
+
+  <!-- Tab Content Areas -->
+  <div x-show="tab === 'week'">
+    {{> kelas/week_tab }}
+  </div>
+
+  <div x-show="tab === 'mentor'">
+    {{> kelas/mentor_tab}}
+  </div>
+
+  <div x-show="tab === 'flow'">
+    {{> kelas/flow_tab}}
+  </div>
+
+  <div x-show="tab === 'benefit'">
+    {{> kelas/benefit_tab}}
+  </div>
+
+  <div x-show="tab === 'faq'">
+    {{> kelas/faq_tab}}
+  </div>
+
+  <div x-show="tab === 'installment'">
+    {{> kelas/installment_tab}}
+  </div>
+
+  <div x-show="tab === 'alumni'">
+    {{> kelas/alumni_tab}}
+  </div>
+
+  <div x-show="tab === 'user'">
+    {{> kelas/user_tab}}
+  </div>
+
+  <div x-show="tab === 'log_book_user'">
+    {{> kelas/log_book_user_tab}}
+  </div>
+
+  <div x-show="tab === 'log_book_mentor'">
+    {{> kelas/log_book_mentor_tab}}
+  </div>
+
+  <div x-show="tab === 'payment'">
+    {{> kelas/payment_tab}}
+  </div>
+</div>
 </div>
 

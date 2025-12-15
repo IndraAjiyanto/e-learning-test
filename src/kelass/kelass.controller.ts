@@ -193,57 +193,186 @@ export class KelassController {
   }
 
   @Roles('admin', 'super_admin')
+  @Get('/logbookMentor/:kelasId')
+  async getLogbookMentor(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const logbookMentor = await this.kelassService.findLogbookMentor(kelasId);
+    res.json(logbookMentor);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/logbookUser/:kelasId')
+  async getLogbookUser(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response, 
+  ) {
+    const logbookUser = await this.kelassService.findLogBookUser(kelasId);
+    res.json(logbookUser);
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('/mentorKelas/:kelasId')
+  async getMentorKelas(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const mentor = await this.kelassService.findMentorKelas(kelasId);
+    res.json(mentor);
+  }
+
+  @Roles('admin')
+  @Get('/minggu/:kelasId')
+  async getMinggu(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const minggu = await this.kelassService.findMingguKelas(kelasId);
+    res.json(minggu);
+  }
+
+  @Roles('admin')
+  @Get('/mingguTerakhir/:kelasId')
+  async getMingguTerakhir(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
+    res.json(mingguTerakhir);
+  }
+
+  @Roles('super_admin', 'admin')
+  @Get('/userKelas/:kelasId')
+  async getUserKelas(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const user_kelas = await this.kelassService.findUserKelas(kelasId);
+    res.json(user_kelas);
+  }
+
+  @Roles('super_admin')
+    @Get('/installment/:kelasId')
+  async getCicilan(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const cicilan = await this.kelassService.findCicilanKelas(kelasId);
+    res.json(cicilan);
+  }
+
+  @Roles('super_admin')
+  @Get('/pendaftaran/:kelasId')
+  async getPendaftaran(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const pendaftaran = await this.kelassService.findPendaftaranKelas(kelasId);
+    res.json(pendaftaran);
+  }
+
+  @Roles('super_admin')
+  @Get('/benefit/:kelasId')
+  async getBenefitKelas(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
+    res.json(benefit_kelas);
+  }
+
+  @Roles('super_admin')
+  @Get('/faq/:kelasId')
+  async getPertanyaanKelas(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const pertanyaan_kelas =
+      await this.kelassService.findPertanyaanKelas(kelasId);
+    res.json(pertanyaan_kelas);
+  }
+
+  @Roles('super_admin')
+  @Get('/flow/:kelasId')
+  async getAlurKelas(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
+    res.json(alur_kelas);
+  }
+
+@Roles('super_admin')
+  @Get('/payment/:kelasId')
+  async getPembayaran(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
+    res.json(pembayaran);
+  }
+
+  @Roles('super_admin')
+  @Get('/alumni/:kelasId')
+  async getAlumni(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const alumni = await this.kelassService.findAlumniKelas(kelasId);
+    res.json(alumni);
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('/detail/kelas/admin/:kelasId')
   async detailKelas(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const logbookMentor = await this.kelassService.findLogbookMentor(kelasId);
-    const logbookUser = await this.kelassService.findLogBookUser(kelasId);
-    const mentor = await this.kelassService.findMentorKelas(kelasId);
+    // const logbookMentor = await this.kelassService.findLogbookMentor(kelasId);
+    // const logbookUser = await this.kelassService.findLogBookUser(kelasId);
+    // const mentor = await this.kelassService.findMentorKelas(kelasId);
     if (req.user!.role === 'admin') {
       const kelas = await this.kelassService.findOneKelasAdmin(kelasId);
-      const minggu = await this.kelassService.findMingguKelas(kelasId);
-      const mingguTerakhir =
-        await this.kelassService.findMingguTerakhir(kelasId);
-      const user_kelas = await this.kelassService.findUserKelas(kelasId);
+      // const minggu = await this.kelassService.findMingguKelas(kelasId);
+      // const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
+      // const user_kelas = await this.kelassService.findUserKelas(kelasId);
       res.render('admin/kelas/detail', {
-        minggu,
-        user_kelas,
+        // minggu,
+        // user_kelas,
         user: req.user,
         kelas,
-        mentor,
-        mingguTerakhir,
-        logbookMentor,
-        logbookUser,
+        // mingguTerakhir
+        // mentor,
+        // mingguTerakhir,
+        // logbookMentor,
+        // logbookUser,
       });
     } else if (req.user!.role === 'super_admin') {
       const kelas = await this.kelassService.findOne(kelasId);
-      const cicilan = await this.kelassService.findCicilanKelas(kelasId);
-      const pendaftaran =
-        await this.kelassService.findPendaftaranKelas(kelasId);
-      const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
-      const pertanyaan_kelas =
-        await this.kelassService.findPertanyaanKelas(kelasId);
-      const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
-      const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
-      const alumni = await this.kelassService.findAlumniKelas(kelasId);
-      const user_kelas = await this.kelassService.findUserKelas(kelasId);
+      // const cicilan = await this.kelassService.findCicilanKelas(kelasId);
+      // const pendaftaran = await this.kelassService.findPendaftaranKelas(kelasId);
+      // const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
+      // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(kelasId);
+      // const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
+      // const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
+      // const alumni = await this.kelassService.findAlumniKelas(kelasId);
+      // const user_kelas = await this.kelassService.findUserKelas(kelasId);
       res.render('admin/kelas/detail', {
         user: req.user,
-        pendaftaran,
-        pembayaran,
-        cicilan,
+        // pendaftaran,
+        // pembayaran,
+        // cicilan,
         kelas,
-        mentor,
-        benefit_kelas,
-        pertanyaan_kelas,
-        alur_kelas,
-        logbookMentor,
-        logbookUser,
-        alumni,
-        user_kelas,
+        // mentor,
+        // benefit_kelas,
+        // pertanyaan_kelas,
+        // alur_kelas,
+        // logbookMentor,
+        // logbookUser,
+        // alumni,
+        // user_kelas,
       });
     }
   }

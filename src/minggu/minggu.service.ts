@@ -9,6 +9,7 @@ import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 import { th } from 'date-fns/locale';
 import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
+import { Quiz } from 'src/entities/quiz.entity';
 
 @Injectable()
 export class MingguService {
@@ -27,6 +28,9 @@ export class MingguService {
 
     @InjectRepository(Pertemuan)
     private readonly pertemuanRepository: Repository<Pertemuan>,
+
+    @InjectRepository(Quiz)
+    private readonly quizRepository: Repository<Quiz>,
   ) {}
 
   async create(createMingguDto: CreateMingguDto, kelasId: number) {
@@ -119,13 +123,24 @@ if(userKelass.length > 0){
   async findOne(mingguId: number) {
     return await this.mingguRepository.findOne({
       where: { id: mingguId },
-      relations: ['pertemuan', 'quiz', 'kelas'],
+      relations: [ 'kelas'],
       order: {
         pertemuan: {
           pertemuan_ke: 'ASC',
         },
       },
     });
+  }
+
+  async findPertemuan(mingguId: number) {
+    return await this.pertemuanRepository.find({
+      where: { minggu: { id: mingguId } },
+      order: { pertemuan_ke: 'ASC' },
+    });
+  }
+
+  async findQuiz(mingguId: number) {
+    return await this.quizRepository.find({where: {minggu: {id: mingguId}}});
   }
 
   async findPertemuanAkhir(mingguId: number) {

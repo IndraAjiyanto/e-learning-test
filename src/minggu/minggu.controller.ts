@@ -61,6 +61,26 @@ export class MingguController {
   }
 
   @Roles('admin')
+  @Get('/session/:mingguId')
+  async getSession(
+    @Param('mingguId') mingguId: number,
+    @Res() res: Response,
+  ){
+    const pertemuan = await this.mingguService.findPertemuan(mingguId);
+    res.json(pertemuan);
+  }
+
+  @Roles('admin')
+  @Get('/quiz/:mingguId')
+  async getQuiz(
+    @Param('mingguId') mingguId: number,
+    @Res() res: Response,
+  ){
+    const quiz = await this.mingguService.findQuiz(mingguId);
+    res.json(quiz);
+  }
+
+  @Roles('admin')
   @Get('formEdit/:mingguId')
   async formEdit(
     @Param('mingguId') mingguId: number,
