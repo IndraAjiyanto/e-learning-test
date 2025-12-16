@@ -232,15 +232,15 @@ export class KelassController {
     res.json(minggu);
   }
 
-  @Roles('admin')
-  @Get('/mingguTerakhir/:kelasId')
-  async getMingguTerakhir(
-    @Param('kelasId') kelasId: number,
-    @Res() res: Response,
-  ) {
-    const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
-    res.json(mingguTerakhir);
-  }
+  // @Roles('admin')
+  // @Get('/mingguTerakhir/:kelasId')
+  // async getMingguTerakhir(
+  //   @Param('kelasId') kelasId: number,
+  //   @Res() res: Response,
+  // ) {
+  //   const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
+  //   res.json(mingguTerakhir);
+  // }
 
   @Roles('super_admin', 'admin')
   @Get('/userKelas/:kelasId')
@@ -336,7 +336,7 @@ export class KelassController {
     if (req.user!.role === 'admin') {
       const kelas = await this.kelassService.findOneKelasAdmin(kelasId);
       // const minggu = await this.kelassService.findMingguKelas(kelasId);
-      // const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
+      const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
       // const user_kelas = await this.kelassService.findUserKelas(kelasId);
       res.render('admin/kelas/detail', {
         // minggu,
@@ -345,7 +345,7 @@ export class KelassController {
         kelas,
         // mingguTerakhir
         // mentor,
-        // mingguTerakhir,
+        mingguTerakhir,
         // logbookMentor,
         // logbookUser,
       });

@@ -1001,3 +1001,32 @@
     </div>
   </aside>
 </div>
+
+
+<script>
+function tabData() {
+  return {
+    search: '',
+    tab: localStorage.getItem('activeTab') || 'all',
+    data: localStorage.getItem('activeData')
+      ? JSON.parse(localStorage.getItem('activeData'))
+      : [],
+    
+    async toggleFetch(url, tabName) {
+      this.tab = tabName;
+      localStorage.setItem('activeTab', tabName);
+      
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network error');
+        
+        this.data = await response.json();
+        localStorage.setItem('activeData', JSON.stringify(this.data));
+        console.log('✅ Data fetched:', this.data);
+      } catch (error) {
+        console.error('❌ Error:', error);
+      }
+    }
+  }
+}
+</script>

@@ -60,6 +60,7 @@ if(userKelass.length > 0){
           proses: true,
         });
       }
+      return minggu;
     }
     }else{
 
@@ -99,6 +100,7 @@ if(userKelass.length > 0){
         }
       }
     }
+    return newMinggu;
     }
     }
   }
@@ -124,11 +126,6 @@ if(userKelass.length > 0){
     return await this.mingguRepository.findOne({
       where: { id: mingguId },
       relations: [ 'kelas'],
-      order: {
-        pertemuan: {
-          pertemuan_ke: 'ASC',
-        },
-      },
     });
   }
 

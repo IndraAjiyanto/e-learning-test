@@ -182,23 +182,7 @@
 
   <!-- ===================== TAB SECTION ===================== -->
 <div class="mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl" 
-     x-data="{ 
-       tab: '', 
-       search: '', 
-       async toggleFetch(url, tabName) {
-         this.tab = tabName;
-         try {
-           const response = await fetch(url);
-           if (!response.ok) {
-             throw new Error('Network response was not ok');
-           }
-           const data = await response.json();
-           console.log(data);
-         } catch (error) {
-           console.error('There has been a problem with your fetch operation:', error);
-         }
-       }
-     }">
+     x-data="tabData()">
 
   <!-- Tab Navigation -->
   <div class="flex space-x-4 mb-6">
@@ -295,7 +279,7 @@
   </div>
 
   <!-- Tab Content Areas -->
-  <div x-show="tab === 'week'">
+  <div x-show="tab === 'week'" x-data="weekData()" x-init="fetchWeeks()">
     {{> kelas/week_tab }}
   </div>
 
@@ -340,4 +324,3 @@
   </div>
 </div>
 </div>
-
