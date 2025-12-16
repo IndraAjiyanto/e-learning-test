@@ -90,7 +90,7 @@
 
                 <!-- Edit -->
                 <a
-                  href='/cicilan/formEdit/${installment.id}'
+                  href="`/cicilan/formEdit/${installment.id}`"
                   class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
                   title='Edit'
                 >
@@ -120,7 +120,7 @@
 
                 <!-- Delete -->
                 <form
-                  action='/cicilan/${installment.id}?_method=DELETE'
+                  action="`/cicilan/${installment.id}?_method=DELETE`"
                   method='post'
                   class='inline'
                 >
@@ -228,7 +228,7 @@ function installmentData() {
 
     viewPage(i) {
       this.pageNumber = i;
-    }
+    },
 
     formatRupiah(value) {
   return new Intl.NumberFormat('id-ID', {
