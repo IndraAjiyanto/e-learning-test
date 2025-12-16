@@ -52,7 +52,7 @@
           <tr class="hover:bg-gray-50 transition">
             <td class="px-6 py-4 text-sm text-gray-800" x-text="pageNumber * size + index + 1"></td>
             <td class="px-6 py-4 text-sm text-gray-800">
-                              <i :class="computeIcon(benefit.icon)"></i>
+                              <i :class="benefit.icon"></i>
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
               <template x-for="b in benefit.benefit">
@@ -144,7 +144,7 @@ function benefitData() {
 
     get filteredData() {
       let filtered = this.data.filter(b =>
-        (`${b.benefit} ${b.isi}`)
+        (`${b.benefit.id} ${b.benefit.en} ${b.benefit.ja} ${b.isi.id} ${b.isi.en} ${b.isi.ja}`)
           .toLowerCase()
           .includes(this.search.toLowerCase())
       );
