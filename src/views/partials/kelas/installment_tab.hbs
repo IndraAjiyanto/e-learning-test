@@ -1,6 +1,4 @@
 <!-- ===================== TAB INSTALLMENT (CICILAN) ===================== -->
-<div x-show="tab === 'installment'">
-  <div x-data='installmentTable({ installment: {{json cicilan}} })'>
 
     <!-- Header: Search + Add -->
     <div
@@ -49,7 +47,7 @@
     </div>
 
     <!-- Table -->
-    <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+    <div x-show="data & data.length > 0" class='overflow-x-auto bg-white shadow-lg rounded-xl'>
       <table class='min-w-full divide-y divide-gray-200'>
         <thead class='bg-gray-100'>
           <tr>
@@ -71,32 +69,28 @@
           </tr>
         </thead>
         <tbody class='divide-y divide-gray-200'>
-          {{#each cicilan}}
+          <template x-for="(installment, index) in filteredData" :key="installment.id">
             <tr
               class='hover:bg-gray-50 transition'
-              x-show="filteredInstallment.includes('{{id}}')"
             >
-              <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
-              <td class='px-6 py-4 text-sm text-gray-800'>{{bulan}} Months</td>
+              <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
+              <td class='px-6 py-4 text-sm text-gray-800' x-text="installment.bulan + ' Months'"></td>
               <td class='px-6 py-4 text-sm text-gray-800'>
-                <div>Rp {{formatRupiah dp}}</div>
+                <div x-text="formatRupiah(installment.dp)"></div>
               </td>
               <td class='px-6 py-4 text-sm text-gray-800'>
                 <div class='space-y-1'>
-                  {{#each harga}}
-                    <div class='text-xs bg-gray-100 px-2 py-1 rounded'>
-                      Month
-                      {{addOne @index}}:
-                      {{formatRupiah this}}
+                  <template x-for="(harga, index) in installment.harga" :key="index">
+                    <div class='text-xs bg-gray-100 px-2 py-1 rounded' x-text="'Month ' + (index + 1) + ': ' + formatRupiah(harga)">
                     </div>
-                  {{/each}}
+                  </template>
                 </div>
               </td>
               <td class='px-6 py-4 text-sm flex items-center gap-3'>
 
                 <!-- Edit -->
                 <a
-                  href='/cicilan/formEdit/{{id}}'
+                  href='/cicilan/formEdit/${installment.id}'
                   class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
                   title='Edit'
                 >
@@ -126,7 +120,7 @@
 
                 <!-- Delete -->
                 <form
-                  action='/cicilan/{{id}}?_method=DELETE'
+                  action='/cicilan/${installment.id}?_method=DELETE'
                   method='post'
                   class='inline'
                 >
@@ -154,7 +148,7 @@
                 </form>
               </td>
             </tr>
-          {{/each}}
+            </template>
         </tbody>
       </table>
     </div>
@@ -187,34 +181,54 @@
         :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
       >Next</button>
     </div>
-  </div>
-</div>
 
 <script>
-    function installmentTable({ installment }) {
+function installmentData() {
   return {
-    searchInput: "",
-    search: "",
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    searchInput: '',
+    search: '',
     pageNumber: 0,
     size: 5,
-    installment,
     amount: 0,
-    get filteredInstallment() {
-      let filtered = this.installment.filter(i =>
-        (`${i.bulan}`).toLowerCase()
+
+    async fetchInstallment() {
+      const res = await fetch('/kelass/installment/{{kelas.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
+    get filteredData() {
+      let filtered = this.data.filter(i =>
+                 (`${i.bulan}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
+
       this.amount = filtered.length;
 
       const start = this.pageNumber * this.size;
-      const end = start + this.size;
-      return filtered.slice(start, end).map(i => i.id.toString());
+      return filtered.slice(start, start + this.size);
     },
-    pages() { return Array.from({ length: this.pageCount() }); },
-    pageCount() { return Math.ceil(this.amount / this.size); },
-    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
-    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
-    viewPage(index) { this.pageNumber = index; },
+
+    pageCount() {
+      return Math.ceil(this.amount / this.size);
+    },
+
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
+
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
+
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
+
+    viewPage(i) {
+      this.pageNumber = i;
+    }
   }
 }
 </script>
