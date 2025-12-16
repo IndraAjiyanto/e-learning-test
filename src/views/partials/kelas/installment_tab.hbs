@@ -47,7 +47,7 @@
     </div>
 
     <!-- Table -->
-    <div x-show="data & data.length > 0" class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+    <div x-show="data && data.length > 0" class='overflow-x-auto bg-white shadow-lg rounded-xl'>
       <table class='min-w-full divide-y divide-gray-200'>
         <thead class='bg-gray-100'>
           <tr>
@@ -229,6 +229,14 @@ function installmentData() {
     viewPage(i) {
       this.pageNumber = i;
     }
+
+    formatRupiah(value) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR'
+  }).format(value);
+}
+
   }
 }
 </script>
