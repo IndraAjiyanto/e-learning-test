@@ -51,30 +51,30 @@
       </thead>
       <template x-if="data && data.length > 0">
       <tbody class="divide-y divide-gray-200">
-        <template x-for="alumni in data" :key="alumni.id">
+        <template x-for="alumni in filteredData" :key="alumni.id">
           <tr class="hover:bg-gray-50 transition">
             <td class="px-6 py-4 text-sm text-gray-800">
               <img :src="alumni.profile" :alt="alumni.nama.id" class="w-10 h-10 rounded-full object-cover">
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <div class="line-clamp-3" x-text="alumni.nama.id"></div>
-              <div class="line-clamp-3" x-text="alumni.nama.en"></div>
-              <div class="line-clamp-3" x-text="alumni.nama.ja"></div>
+              <template x-for="nama in alumni.nama">
+              <div class="line-clamp-3" x-text="nama"></div>
+              </template>
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <div class="line-clamp-3" x-text="alumni.pesan.id"></div>
-              <div class="line-clamp-3" x-text="alumni.pesan.en"></div>
-              <div class="line-clamp-3" x-text="alumni.pesan.ja"></div>
+              <template x-for="pesan in alumni.pesan">
+              <div class="line-clamp-3" x-text="pesan"></div>
+              </template>
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <div class="line-clamp-3" x-text="alumni.alumni.id"></div>
-              <div class="line-clamp-3" x-text="alumni.alumni.en"></div>
-              <div class="line-clamp-3" x-text="alumni.alumni.ja"></div>
+              <template x-for="status in alumni.alumni">
+              <div class="line-clamp-3" x-text="status"></div>
+              </template>
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <div class="line-clamp-3" x-text="alumni.posisi_sekarang.id"></div>
-              <div class="line-clamp-3" x-text="alumni.posisi_sekarang.en"></div>
-              <div class="line-clamp-3" x-text="alumni.posisi_sekarang.ja"></div>
+              <template x-for="posisi in alumni.posisi_sekarang">
+              <div class="line-clamp-3" x-text="posisi"></div>
+              </template>
             </td>
             <td class="px-6 py-4 text-sm flex items-center gap-3">
               <!-- Edit -->
@@ -138,48 +138,52 @@
   </div>
 
 <script>
-    function alumniTable({ alumni }) {
-  return {
-    searchInput: "",
-    search: "",
-    pageNumber: 0,
-    size: 10,
-    alumni,
-    amount: 0,
-    get filteredAlumni() {
-      console.log('Alumni data:', this.alumni); // Debug log
-      let filtered = this.alumni.filter(a =>
-        (`${a.nama} ${a.pesan} ${a.alumni} ${a.posisi_sekarang} `).toLowerCase()
-          .includes(this.search.toLowerCase())
-      );
-      this.amount = filtered.length;
-      console.log('Filtered alumni:', filtered); // Debug log
-
-      const start = this.pageNumber * this.size;
-      const end = start + this.size;
-      const sliced = filtered.slice(start, end).map(a => a.id.toString());
-      console.log('Sliced alumni IDs:', sliced); // Debug log
-      return sliced;
-    },
-    pages() { return Array.from({ length: this.pageCount() }); },
-    pageCount() { return Math.ceil(this.amount / this.size); },
-    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
-    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
-    viewPage(index) { this.pageNumber = index; },
-  }
-}
-</script>
-
-<script>
 function alumniData() {
   return {
     data: JSON.parse(localStorage.getItem('activeData')) || [],
+    searchInput: '',
+    search: '',
+    pageNumber: 0,
+    size: 10,
+    amount: 0,
 
     async fetchAlumni() {
       const res = await fetch('/kelass/alumni/{{kelas.id}}');
       this.data = await res.json();
-
       localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
+    get filteredData() {
+      let filtered = this.data.filter(a =>
+        (`${a.nama} ${a.pesan} ${a.posisi_sekarang}`)
+          .toLowerCase()
+          .includes(this.search.toLowerCase())
+      );
+
+      this.amount = filtered.length;
+
+      const start = this.pageNumber * this.size;
+      return filtered.slice(start, start + this.size);
+    },
+
+    pageCount() {
+      return Math.ceil(this.amount / this.size);
+    },
+
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
+
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
+
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
+
+    viewPage(i) {
+      this.pageNumber = i;
     }
   }
 }

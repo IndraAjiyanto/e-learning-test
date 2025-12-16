@@ -1027,6 +1027,24 @@ function tabData() {
         console.error('❌ Error:', error);
       }
     }
+
+    async  computeIcon(iconValue) {
+    const raw = (iconValue || '').toString().trim();
+    if (!raw) return 'fa-solid fa-circle-question';
+
+    const v = raw;
+    const hasFaPrefix =
+      /(\\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\\b)/i.test(v)
+      || v.split(/\s+/).some(s => /^fa-/i.test(s));
+
+    if (hasFaPrefix) {
+      if (/^fa-\\w+/i.test(v) && !/\\s+/.test(v)) return 'fa-solid ' + v;
+      return v;
+    }
+
+    if (!v.includes(' ')) return 'fa-solid fa-' + v;
+    return v;
+  }
   }
 }
 </script>
