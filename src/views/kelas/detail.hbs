@@ -82,15 +82,29 @@
             <!-- Week Design (Completed or In Progress) -->
             <div 
               x-data="{
-                openMinggu: false,
-                pertemuanData: [],
-                quizData: [],
+                openMinggu: localStorage.getItem(`open-minggu-{{this.id}}`) === 'true',
+                pertemuanData: localStorage.getItem(`pertemuan-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`pertemuan-data-{{this.id}}`)) : [],
+                quizData: localStorage.getItem(`quiz-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`quiz-data-{{this.id}}`)) : [],
                 loading: false,
                 error: null,
                 dataLoaded: false,
+
+                  init() {
+    // Cek apakah ada data di localStorage
+    const hasPertemuanData = localStorage.getItem(`pertemuan-data-{{this.id}}`);
+    const hasQuizData = localStorage.getItem(`quiz-data-{{this.id}}`);
+    
+    if (hasPertemuanData && hasQuizData) {
+      this.pertemuanData = JSON.parse(hasPertemuanData);
+      this.quizData = JSON.parse(hasQuizData);
+      this.dataLoaded = true;
+      console.log('✅ Data loaded from localStorage for minggu {{this.id}}');
+    }
+    },
                 
                 async toggleAndFetch() {
                   this.openMinggu = !this.openMinggu;
+                  localStorage.setItem(`open-minggu-{{this.id}}`, this.openMinggu);
                   
                   // Fetch data hanya jika dibuka dan belum pernah di-load
                   if (this.openMinggu && !this.dataLoaded) {
@@ -115,6 +129,8 @@
                     
                     this.pertemuanData = await pertemuanResponse.json();
                     this.quizData = await quizResponse.json();
+                    localStorage.setItem(`pertemuan-data-{{this.id}}`, JSON.stringify(this.pertemuanData));
+                    localStorage.setItem(`quiz-data-{{this.id}}`, JSON.stringify(this.quizData));
                     this.dataLoaded = true;
                   } catch (err) {
                     this.error = err.message;
@@ -188,11 +204,22 @@
                 <div x-show="!loading && !error && dataLoaded" class="space-y-3 mt-4">
                   <!-- Sessions List -->
                   <template x-for="pertemuan in pertemuanData" :key="pertemuan.id">
-                    <div x-data="{ open: false }" class="border border-gray-200 rounded-lg shadow-md bg-white overflow-hidden hover:shadow-lg transition-all duration-300">
-                      <button 
-                        @click="open = !open" 
-                        class="w-full flex justify-between items-center px-4 py-3 hover:bg-slate-50 transition-all duration-300 text-left group"
-                      >
+<div
+  x-data="{
+    open: localStorage.getItem(`open-pertemuan-${pertemuan.id}`) === 'true'
+  }"
+  @click.away="open = false; localStorage.setItem(`open-pertemuan-${pertemuan.id}`, false)"
+  class="border border-gray-200 rounded-lg shadow-md bg-white overflow-hidden"
+>
+
+                      <button
+  @click="
+    open = !open;
+    localStorage.setItem(`open-pertemuan-${pertemuan.id}`, open);
+  "
+  class="w-full flex justify-between items-center px-4 py-3 text-left"
+>
+
                         <div class="flex items-center space-x-3">
                           <div>
                             <div class="flex items-center gap-2">
