@@ -1,5 +1,4 @@
 <!-- ===================== TAB ALUMNI ===================== -->
-<div x-data="alumniTable({ alumni: {{json alumni}} })">
 
   <!-- Header: Search -->
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -38,11 +37,10 @@
   </div>
 
   <!-- Table -->
-  <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+<div x-show="data && data.length > 0" class="overflow-x-auto bg-white shadow-lg rounded-xl">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-100">
         <tr>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Profile</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Message</th>
@@ -51,73 +49,72 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
       </thead>
+      <template x-if="data && data.length > 0">
       <tbody class="divide-y divide-gray-200">
-        {{#each alumni}}
-        <tr class="hover:bg-gray-50 transition"
-            x-show="filteredAlumni.includes('{{id}}')">
-          <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">
-            <img src="{{foto}}" alt="{{nama}}" class="w-10 h-10 rounded-full object-cover">
-          </td>
-          <td class="px-6 py-4 text-sm text-gray-800">
-            {{#each nama}}
-            <div class="line-clamp-3">{{this}}</div> 
-            {{/each}}
-
+        <template x-for="alumni in data" :key="alumni.id">
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4 text-sm text-gray-800">
+              <img :src="alumni.profile" :alt="alumni.nama.id" class="w-10 h-10 rounded-full object-cover">
             </td>
-          <td class="px-6 py-4 text-sm text-gray-800">
-            {{#each pesan}}
-            <div class="line-clamp-3">{{this}}</div> 
-            {{/each}}
+            <td class="px-6 py-4 text-sm text-gray-800">
+              <div class="line-clamp-3" x-text="alumni.nama.id"></div>
+              <div class="line-clamp-3" x-text="alumni.nama.en"></div>
+              <div class="line-clamp-3" x-text="alumni.nama.ja"></div>
             </td>
-          <td class="px-6 py-4 text-sm text-gray-800">
-            {{#each alumni}}
-            <div class="line-clamp-3">{{this}}</div> 
-            {{/each}}
+            <td class="px-6 py-4 text-sm text-gray-800">
+              <div class="line-clamp-3" x-text="alumni.pesan.id"></div>
+              <div class="line-clamp-3" x-text="alumni.pesan.en"></div>
+              <div class="line-clamp-3" x-text="alumni.pesan.ja"></div>
             </td>
-          <td class="px-6 py-4 text-sm text-gray-800">
-            {{#each posisi_sekarang}}
-            <div class="line-clamp-3">{{this}}</div> 
-            {{/each}}
+            <td class="px-6 py-4 text-sm text-gray-800">
+              <div class="line-clamp-3" x-text="alumni.alumni.id"></div>
+              <div class="line-clamp-3" x-text="alumni.alumni.en"></div>
+              <div class="line-clamp-3" x-text="alumni.alumni.ja"></div>
             </td>
-          <td class="px-6 py-4 text-sm flex items-center gap-3">
-            <!-- Edit -->
-            <a href="/alumni/formEdit/{{id}}"
-               class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition"
-               title="Edit">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   fill="none" viewBox="0 0 24 24"
-                   stroke-width="1.5" stroke="currentColor"
-                   class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M16.862 4.487l1.687-1.688a1.875 1.875
-                         0 112.652 2.652L10.582 16.07a4.5
-                         4.5 0 01-1.897 1.13l-2.685.805.805-2.685
-                         a4.5 4.5 0 011.13-1.897l10.927-10.936z" />
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M19.5 7.125L16.875 4.5" />
-              </svg>
-            </a>
-
-            <!-- Delete -->
-            <form action="/alumni/{{id}}/{{../kelas.id}}?_method=DELETE" method="post" class="inline">
-              <button type="button"
-                      onclick="confirmDelete(this)"
-                      class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"
-                      title="Delete">
+            <td class="px-6 py-4 text-sm text-gray-800">
+              <div class="line-clamp-3" x-text="alumni.posisi_sekarang.id"></div>
+              <div class="line-clamp-3" x-text="alumni.posisi_sekarang.en"></div>
+              <div class="line-clamp-3" x-text="alumni.posisi_sekarang.ja"></div>
+            </td>
+            <td class="px-6 py-4 text-sm flex items-center gap-3">
+              <!-- Edit -->
+              <a :href="`/alumni/formEdit/${alumni.id}`"
+                 class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition"
+                 title="Edit">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none" viewBox="0 0 24 24"
                      stroke-width="1.5" stroke="currentColor"
                      class="w-5 h-5">
                   <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12" />
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875
+                           0 112.652 2.652L10.582 16.07a4.5
+                           4.5 0 01-1.897 1.13l-2.685.805.805-2.685
+                           a4.5 4.5 0 011.13-1.897l10.927-10.936z" />
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M19.5 7.125L16.875 4.5" />
                 </svg>
-              </button>
-            </form>
-          </td>
-        </tr>
-        {{/each}}
+              </a>
+
+              <!-- Delete -->
+              <form :action="`/alumni/${alumni.id}/{{kelas.id}}?_method=DELETE`" method="post" class="inline">
+                <button type="button"
+                        onclick="confirmDelete(this)"
+                        class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"
+                        title="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       fill="none" viewBox="0 0 24 24"
+                       stroke-width="1.5" stroke="currentColor"
+                       class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </form>
+            </td>
+          </tr>
+        </template>
       </tbody>
+      </template>
     </table>
   </div>
 
@@ -139,7 +136,6 @@
       class="px-3 py-1 rounded border border-gray-900 text-gray-900"
       :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
   </div>
-</div>
 
 <script>
     function alumniTable({ alumni }) {
@@ -170,6 +166,21 @@
     nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
     prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
     viewPage(index) { this.pageNumber = index; },
+  }
+}
+</script>
+
+<script>
+function alumniData() {
+  return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+
+    async fetchAlumni() {
+      const res = await fetch('/kelass/alumni/{{kelas.id}}');
+      this.data = await res.json();
+
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    }
   }
 }
 </script>

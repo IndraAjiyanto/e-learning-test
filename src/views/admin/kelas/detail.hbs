@@ -283,43 +283,43 @@
     {{> kelas/week_tab }}
   </div>
 
-  <div x-show="tab === 'mentor'">
+  <div x-show="tab === 'mentor'" x-data="mentorData()" x-init="fetchMentors()">
     {{> kelas/mentor_tab}}
   </div>
 
-  <div x-show="tab === 'flow'">
+  <div x-show="tab === 'flow'" x-data="flowData()" x-init="fetchFlow()">
     {{> kelas/flow_tab}}
   </div>
 
-  <div x-show="tab === 'benefit'">
+  <div x-show="tab === 'benefit'" x-data="benefitData()" x-init="fetchBenefits()">
     {{> kelas/benefit_tab}}
   </div>
 
-  <div x-show="tab === 'faq'">
+  <div x-show="tab === 'faq'" x-data="faqData()" x-init="fetchFaqs()">
     {{> kelas/faq_tab}}
   </div>
 
-  <div x-show="tab === 'installment'">
+  <div x-show="tab === 'installment'" x-data="installmentData()" x-init="fetchInstallments()">
     {{> kelas/installment_tab}}
   </div>
 
-  <div x-show="tab === 'alumni'">
+  <div x-show="tab === 'alumni'" x-data="alumniData()" x-init="fetchAlumni()">
     {{> kelas/alumni_tab}}
   </div>
 
-  <div x-show="tab === 'user'">
+  <div x-show="tab === 'user'" x-data="userData()" x-init="fetchUsers()">
     {{> kelas/user_tab}}
   </div>
 
-  <div x-show="tab === 'log_book_user'">
+  <div x-show="tab === 'log_book_user'" x-data="logBookUserData()" x-init="fetchLogBookUsers()">
     {{> kelas/log_book_user_tab}}
   </div>
 
-  <div x-show="tab === 'log_book_mentor'">
+  <div x-show="tab === 'log_book_mentor'" x-data="logBookMentorData()" x-init="fetchLogBookMentors()">
     {{> kelas/log_book_mentor_tab}}
   </div>
 
-  <div x-show="tab === 'payment'">
+  <div x-show="tab === 'payment'" x-data="paymentData()" x-init="fetchPayments()">
     {{> kelas/payment_tab}}
   </div>
 </div>
