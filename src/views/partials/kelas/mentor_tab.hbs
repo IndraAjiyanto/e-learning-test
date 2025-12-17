@@ -1,7 +1,5 @@
     <!-- ===================== TAB MENTOR ===================== -->
-<div x-show="tab === 'mentor'">
-  <div 
-       x-data="mentorTable({ mentor: {{json mentor}} })">
+
     
     <!-- Header: Search + Add -->
     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -38,7 +36,7 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+    <div x-show="data && data.length > 0" class="overflow-x-auto bg-white shadow-lg rounded-xl">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-100">
           <tr>
@@ -53,27 +51,30 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          {{#each mentor}}
-          <tr class="hover:bg-gray-50 transition"
-              x-show="filteredMentor.includes('{{id}}')">
-            <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
-            <td class="px-6 py-4 text-sm text-gray-800"><img src="{{profile}}" alt=""></td>
-            <td class="px-6 py-4 text-sm text-gray-800">{{nama}}</td>
+          <template x-for="(mentor,index) in filteredData" :key="mentor.id">
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4 text-sm text-gray-800" x-text="pageNumber * size + index + 1"></td>
+            <td class="px-6 py-4 text-sm text-gray-800"><img :src="mentor.profile" alt=""></td>
+            <td class="px-6 py-4 text-sm text-gray-800" x-text="mentor.nama"></td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              {{#each posisi}}
-              <div class="line-clamp-3">{{this}}</div>
-              {{/each}}
+              <template x-for="pos in mentor.posisi" :key="pos">
+              <div class="line-clamp-3" x-text="pos"></div>
+              </template>
               </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              {{#each deskripsi}}
-              <div class="line-clamp-3">{{this}}</div>
-              {{/each}}
+              <template x-for="desc in mentor.deskripsi" :key="desc">
+              <div class="line-clamp-3" x-text="desc"></div>
+              </template>
               </td>
-            <td class="px-6 py-4 text-sm text-gray-800"> <div class="flex flex-wrap gap-1"></div>{{#each teknologi}}<span class="w-2 h-2">{{{this.svg}}}</span>{{/each}}</div></td>
-            <td class="px-6 py-4 text-sm text-gray-800">{{linkedin}}</td>
+            <td class="px-6 py-4 text-sm text-gray-800"> <div class="flex flex-wrap gap-1">
+              <template x-for="tech in mentor.teknologi" :key="tech.id">
+                <span class="w-4 h-4" x-html="tech.svg"></span>
+              </template>
+              </div></td>
+            <td class="px-6 py-4 text-sm text-gray-800" x-text="mentor.linkedin"></td>
             <td class="px-6 py-4 text-sm flex items-center gap-3">
               <!-- Edit -->
-              <a href="/mentor/formEdit/{{id}}"
+              <a :href="`/mentor/formEdit/${mentor.id}`"
                  class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition"
                  title="Edit">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +92,7 @@
               </a>
 
               <!-- Delete -->
-              <form action="/mentor/{{id}}/{{../kelas.id}}?_method=DELETE" method="post" class="inline">
+              <form :action="`/mentor/${mentor.id}/${../kelas.id}?_method=DELETE`" method="post" class="inline">
                 <button type="button" 
                         onclick="confirmDelete(this)" 
                         class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"
@@ -107,7 +108,7 @@
               </form>
             </td>
           </tr>
-          {{/each}}
+          </template>
         </tbody>
       </table>
     </div>
@@ -130,39 +131,55 @@
         class="px-3 py-1 rounded border border-gray-900 text-gray-900"
         :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
     </div>
-  </div>
-</div>
+
 
 <script>
-function mentorTable({ mentor }) {
+function mentorData() {
   return {
-    searchInput: "",
-    search: "",
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    searchInput: '',
+    search: '',
     pageNumber: 0,
-    size: 5,
-    mentor,
+    size: 10,
     amount: 0,
-    get filteredMentor() {
-      let filtered = this.mentor.filter(u =>
-        (`${u.nama} ${u.email} ${u.bidang || ''}`).toLowerCase()
+
+    async fetchMentors() {
+      const res = await fetch('/kelass/mentorKelas/{{kelas.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
+    get filteredData() {
+      let filtered = this.data.filter(u =>
+        (`${u.nama}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
+
       this.amount = filtered.length;
 
       const start = this.pageNumber * this.size;
-      const end = start + this.size;
-      return filtered.slice(start, end).map(u => u.id.toString());
+      return filtered.slice(start, start + this.size);
     },
-    pages() { return Array.from({ length: this.pageCount() }); },
-    pageCount() { return Math.ceil(this.amount / this.size); },
-    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
-    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
-    viewPage(index) { this.pageNumber = index; },
+
+    pageCount() {
+      return Math.ceil(this.amount / this.size);
+    },
+
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
+
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
+
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
+
+    viewPage(i) {
+      this.pageNumber = i;
+    }
   }
 }
-
-
-
-
-
 </script>
