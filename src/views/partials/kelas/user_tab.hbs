@@ -1,5 +1,4 @@
 <!-- ===================== TAB USER ===================== -->
-<div x-data='userTable({ user: {{json user_kelas}} })'>
 
   <!-- Header: Search + Add -->
   <div
@@ -40,7 +39,7 @@
   </div>
 
   <!-- Table -->
-  <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+  <div x-show="data && data.length > 0" class='overflow-x-auto bg-white shadow-lg rounded-xl'>
     <table class='min-w-full divide-y divide-gray-200'>
       <thead class='bg-gray-100'>
         <tr>
@@ -59,37 +58,33 @@
         </tr>
       </thead>
       <tbody class='divide-y divide-gray-200'>
-        {{#each kelas.user_kelas}}
+        <template x-for="(item, index) in filteredData" :key="item.user.id">
           <tr
             class='hover:bg-gray-50 transition'
-            x-show="filteredUser.includes('{{user.id}}')"
           >
-            <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
                         <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#if user.profile}}
+                          <template x-if="item.user.profile">
                 <img
-                  src='{{user.profile}}'
-                  alt='{{user.username}}'
+                  :src="item.user.profile"
+                  :alt="item.user.username"
                   class='w-12 h-12 rounded-full object-cover border'
                 />
-              {{else}}
+              </template>
+              <template x-if="!item.user.profile">
                 <div
                   class='w-12 h-12 bg-gray-600 rounded-full border border-gray-300 flex items-center justify-center'
                 >
-                  <span class='text-white font-bold text-lg'>{{substring
-                      user.username
-                      0
-                      1
-                    }}</span>
+                  <span class='text-white font-bold text-lg' x-text="item.user.username.substring(0, 1)"></span>
                 </div>
-              {{/if}}
+              </template>
             </td>
             <td
               class='px-6 py-4 text-sm text-gray-800'
-            >{{user.username}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{user.email}}</td>
+            ><span x-text="item.user.username"></span></td>
+            <td class='px-6 py-4 text-sm text-gray-800'><span x-text="item.user.email"></span></td>
           </tr>
-        {{/each}}
+          </template>
       </tbody>
     </table>
   </div>
@@ -122,58 +117,56 @@
       :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
     >Next</button>
   </div>
-</div>
+
 
 <script>
-  function userTable({ user }) {
-    return {
-      searchInput: "",
-      search: "",
-      pageNumber: 0,
-      size: 5,
-      user,
-      amount: 0,
+function userData() {
+  return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    searchInput: '',
+    search: '',
+    pageNumber: 0,
+    size: 10,
+    amount: 0,
 
-      get filteredUser() {
-        // Filtering
-        let filtered = this.user.filter(u =>
-          (`${u.user.nama_lengkap} ${u.user.email}`)
+    async fetchUsers() {
+      const res = await fetch('/kelass/userKelas/{{kelas.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
+    get filteredData() {
+      let filtered = this.data.filter(u =>
+                  (`${u.user.username} ${u.user.email}`)
             .toLowerCase()
             .includes(this.search.toLowerCase())
-        );
+      );
 
-        this.amount = filtered.length;
+      this.amount = filtered.length;
 
-        // Pagination
-        const start = this.pageNumber * this.size;
-        const end = start + this.size;
+      const start = this.pageNumber * this.size;
+      return filtered.slice(start, start + this.size);
+    },
 
-        return filtered.slice(start, end).map(u => u.user.id.toString());
-      },
+    pageCount() {
+      return Math.ceil(this.amount / this.size);
+    },
 
-      pages() {
-        return Array.from({ length: this.pageCount() });
-      },
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
 
-      pageCount() {
-        return Math.ceil(this.amount / this.size);
-      },
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
 
-      nextPage() {
-        if (this.pageNumber < this.pageCount() - 1) {
-          this.pageNumber++;
-        }
-      },
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
 
-      prevPage() {
-        if (this.pageNumber > 0) {
-          this.pageNumber--;
-        }
-      },
-
-      viewPage(index) {
-        this.pageNumber = index;
-      }
-    };
+    viewPage(i) {
+      this.pageNumber = i;
+    }
   }
+}
 </script>
