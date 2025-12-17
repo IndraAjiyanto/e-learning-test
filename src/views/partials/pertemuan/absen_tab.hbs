@@ -1,6 +1,3 @@
-<div 
-     x-data="absenTable({ peserta: {{json murid}} })">
-  
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
 
     <div class="flex items-center gap-3">
@@ -32,7 +29,7 @@
   </div>
 
   <!-- Table -->
-  <div class="overflow-x-auto bg-white shadow-lg rounded-xl">
+  <div x-show="data && data.length > 0 " class="overflow-x-auto bg-white shadow-lg rounded-xl">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-100">
         <tr>
@@ -44,21 +41,19 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-        {{#each murid}}
-        <tr class="hover:bg-gray-50 transition"
-            x-show="filteredPeserta.includes('{{id}}')">
-          <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{username}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{email}}</td>
+        <template x-for="(peserta, index) in filteredData" :key="peserta.id">
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-6 py-4 text-sm text-gray-800" x-text="pageNumber * size + index + 1"></td>
+          <td class="px-6 py-4 text-sm text-gray-800" x-text="peserta.username"></td>
+          <td class="px-6 py-4 text-sm text-gray-800" x-text="peserta.email"></td>
           <td class="px-6 py-4 text-sm">
-            {{#each absen}}
-              <span class="font-medium">{{status}}</span>
-            {{/each}}
+            <template x-for="pesertaAbsen in peserta.absen" :key="pesertaAbsen.id">
+              <span class="font-medium" x-text="pesertaAbsen.status"></span>
+              </template>
           </td>
           <td class="px-6 py-4 text-sm text-gray-800 flex items-center gap-3">
-            {{#each absen}}
-
-                <form action="/absens/formEdit/{{id}}" method="get">
+            <template x-for="pesertaAbsen in peserta.absen" :key="pesertaAbsen.id">
+                <form :action="`/absens/formEdit/${pesertaAbsen.id}`" method="get">
     <button type="submit" 
             class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition" 
             title="Edit">
@@ -75,10 +70,11 @@
       <path stroke-linecap="round" stroke-linejoin="round"
             d="M19.5 7.125L16.875 4.5" />
     </svg>
-  </a>
+  </button>
+  </form>
 
-              <form action="/absens/{{id}}/{{../../pertemuan.id}}?_method=DELETE" method="post" class="inline">
-                <button type="button" 
+              <form :action="`/absens/${pesertaAbsen.id}/{{pertemuan.id}}?_method=DELETE`" method="post" class="inline">
+                <button type="submit" 
             onclick="confirmDelete(this)" 
             class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition" 
             title="Delete">      <svg xmlns="http://www.w3.org/2000/svg" 
@@ -88,10 +84,10 @@
         <path stroke-linecap="round" stroke-linejoin="round" 
               d="M6 18L18 6M6 6l12 12" /></button>
               </form>
-            {{/each}}
+              </template>
           </td>
         </tr>
-        {{/each}}
+        </template>
       </tbody>
     </table>
   </div>
@@ -114,33 +110,55 @@
       class="px-3 py-1 rounded border border-gray-900 text-gray-900"
       :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }">Next</button>
   </div>
-</div>
+
 
 <script>
-function absenTable({ peserta }) {
+function absenData() {
   return {
-    searchInput: "",
-    search: "",
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    searchInput: '',
+    search: '',
     pageNumber: 0,
     size: 5,
-    peserta,
     amount: 0,
-    get filteredPeserta() {
-      let filtered = this.peserta.filter(u =>
-        (`${u.username} ${u.email} ${u.status || ''}`).toLowerCase()
+
+    async fetchAbsens() {
+      const res = await fetch('/pertemuans/absen/{{pertemuan.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
+    get filteredData() {
+      let filtered = this.data.filter(u =>
+            (`${u.username} ${u.email}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
+
       this.amount = filtered.length;
 
       const start = this.pageNumber * this.size;
-      const end = start + this.size;
-      return filtered.slice(start, end).map(u => u.id.toString());
+      return filtered.slice(start, start + this.size);
     },
-    pages() { return Array.from({ length: this.pageCount() }); },
-    pageCount() { return Math.ceil(this.amount / this.size); },
-    nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
-    prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
-    viewPage(index) { this.pageNumber = index; },
+
+    pageCount() {
+      return Math.ceil(this.amount / this.size);
+    },
+
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
+
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
+
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
+
+    viewPage(i) {
+      this.pageNumber = i;
+    }
   }
 }
 </script>

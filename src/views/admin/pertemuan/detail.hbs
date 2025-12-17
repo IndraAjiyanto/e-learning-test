@@ -1,5 +1,5 @@
 <div class="px-6 py-10 w-full mx-auto">
-<div class="mx-auto" x-data="{ search: '' }">
+<div class="mx-auto">
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
     <div class="mb-4">
@@ -83,24 +83,7 @@
 </div>
 
 
-<div class="w-full mx-auto" x-data="{ 
-  tab: '', 
-  search: '',
-  async toggleFetch(url, tabName) {
-    this.tab = tabName;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      console.log(data);
-      // Add similar conditions for other tabs if needed
-    } catch (error) {
-      console.error('There has been a problem with your fetch operation:', error);
-    }
-  }
-}">
+<div class="w-full mx-auto" x-data="tabData()">
 
   <div class="flex space-x-4 mb-6">
     <button @click="toggleFetch('/pertemuans/absen/{{pertemuan.id}}', 'absen')" 
@@ -130,7 +113,7 @@
     </button>
   </div>
 
-  <div x-show="tab === 'logbook'">
+  <div x-show="tab === 'logbook'" x-data="logBookData()" x-init="fetchData()">
     {{> pertemuan/logbook_tab}}
   </div>
 
@@ -138,15 +121,15 @@
     {{> pertemuan/logbook_mentor_tab}}
   </div>
 
-  <div x-show="tab === 'absen'">
+  <div x-show="tab === 'absen'" x-data="absenData()" x-init="fetchAbsens()">
     {{> pertemuan/absen_tab}}
   </div>  
 
-  <div x-show="tab === 'materi'">
+  <div x-show="tab === 'materi'" x-data="materiData()" x-init="fetchMateris()">
     {{> pertemuan/materi_tab}}
   </div>
 
-  <div x-show="tab === 'tugas'">
+  <div x-show="tab === 'tugas'" x-data="tugasData()" x-init="fetchTugas()">
     {{> pertemuan/tugas_tab}}
   </div>
 
