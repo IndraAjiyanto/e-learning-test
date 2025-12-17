@@ -1,5 +1,4 @@
 <!-- ===================== TAB LOG BOOK MENTOR ===================== -->
-<div x-data='logBookMentorTable({ logbookMentor: {{json logbookMentor}} })'>
 
   <!-- Header: Search + Export -->
   <div
@@ -65,7 +64,7 @@
   </div>
 
   <!-- Table -->
-  <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+  <div x-show="data && data.length > 0" class='overflow-x-auto bg-white shadow-lg rounded-xl'>
     <table class='min-w-full divide-y divide-gray-200'>
       <thead class='bg-gray-100'>
         <tr>
@@ -108,41 +107,37 @@
         </tr>
       </thead>
       <tbody class='divide-y divide-gray-200'>
-        {{#each logbookMentor}}
+        <template x-for='(logbook_mentor, index) in filteredData' :key='logbook_mentor.id'>
           <tr
-            class='hover:bg-gray-50 transition'
-            x-show="filteredlogbookMentor.includes('{{id}}')"
-          >
-            <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
+            class='hover:bg-gray-50 transition'>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.mentor.[0].nama}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{formatTanggal
-                createdAt
-              }}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.kelas.mentor[0].nama"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="formatTanggal(logbook_mentor.createdAt)"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.pertemuan_ke}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.pertemuan_ke"
+            ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.minggu_ke}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.minggu_ke"
+            ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.nama_kelas}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.kelas.nama_kelas"
+            ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas"
+            ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.kategori.nama_kategori}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kegiatan}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.kelas.kategori.nama_kategori"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.kegiatan"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{rincian_kegiatan}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{dokumentasi}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kendala}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.rincian_kegiatan"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.dokumentasi"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.kendala"></td>
           </tr>
-        {{/each}}
+          </template>
       </tbody>
     </table>
   </div>
@@ -178,7 +173,6 @@
       Next
     </button>
   </div>
-</div>
 
 <!-- SheetJS Library for Excel Export -->
 <script
@@ -186,21 +180,23 @@
 ></script>
 
 <script>
-  function logBookMentorTable({ logbookMentor }) {
-    return {
-      searchInput: "",
-      search: "",
-      pageNumber: 0,
-      size: 5,
-      logbookMentor,
-      amount: 0,
-      filteredData: [],
-      paginatedData: [],
+function logBookMentorData() {
+  return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    searchInput: '',
+    search: '',
+    pageNumber: 0,
+    size: 5,
+    amount: 0,
 
-      get filteredlogbookMentor() {
-        const s = this.search.toLowerCase();
+    async fetchLogBookMentors() {
+      const res = await fetch('/kelass/logbookMentor/{{kelas.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
 
-        let filtered = this.logbookMentor.filter(l =>
+    get filteredData() {
+      let filtered = this.data.filter(l =>
           (
             `${l.pertemuan.minggu.kelas.mentor[0].nama}
              ${l.pertemuan.pertemuan_ke}
@@ -212,45 +208,42 @@
              ${l.rincian_kegiatan}
              ${l.dokumentasi}
              ${l.kendala}`
-          ).toLowerCase().includes(s)
-        );
+          ).toLowerCase().
+          includes(this.search.toLowerCase())
+      );
 
-        this.amount = filtered.length;
-        this.filteredData = filtered;
+      this.amount = filtered.length;
 
-        const start = this.pageNumber * this.size;
-        const end = start + this.size;
+      const start = this.pageNumber * this.size;
+      return filtered.slice(start, start + this.size);
+    },
 
-        this.paginatedData = filtered.slice(start, end);
+    pageCount() {
+      return Math.ceil(this.amount / this.size);
+    },
 
-        return this.paginatedData.map(l => l.id.toString());
-      },
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
 
-      pages() {
-        return Array.from({ length: this.pageCount() });
-      },
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
 
-      pageCount() {
-        return Math.ceil(this.amount / this.size);
-      },
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
 
-      nextPage() {
-        if (this.pageNumber < this.pageCount() - 1) {
-          this.pageNumber++;
-        }
-      },
+    viewPage(i) {
+      this.pageNumber = i;
+    },
 
-      prevPage() {
-        if (this.pageNumber > 0) {
-          this.pageNumber--;
-        }
-      },
+    formatTanggal(value) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(value).toLocaleDateString('id-ID', options);
+    },
 
-      viewPage(index) {
-        this.pageNumber = index;
-      },
-
-      exportToExcel() {
+    exportToExcel() {
         try {
           const dataToExport = this.filteredData.map((l, index) => ({
             No: index + 1,
@@ -295,8 +288,6 @@
           console.error(err);
         }
       },
-    };
   }
-
-  console.log(logbookMentor);
+}
 </script>
