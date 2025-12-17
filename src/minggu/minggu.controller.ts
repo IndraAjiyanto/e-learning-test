@@ -56,26 +56,25 @@ export class MingguController {
     @Req() req: Request,
   ) {
     const minggu = await this.mingguService.findOne(mingguId);
-    const pertemuanAkhir = await this.mingguService.findPertemuanAkhir(mingguId);
-    res.render('admin/minggu/detail', { user: req.user, minggu, pertemuanAkhir });
+    const pertemuanAkhir =
+      await this.mingguService.findPertemuanAkhir(mingguId);
+    res.render('admin/minggu/detail', {
+      user: req.user,
+      minggu,
+      pertemuanAkhir,
+    });
   }
 
   @Roles('admin')
   @Get('/session/:mingguId')
-  async getSession(
-    @Param('mingguId') mingguId: number,
-    @Res() res: Response,
-  ){
+  async getSession(@Param('mingguId') mingguId: number, @Res() res: Response) {
     const pertemuan = await this.mingguService.findPertemuan(mingguId);
     res.json(pertemuan);
   }
 
   @Roles('admin')
   @Get('/quiz/:mingguId')
-  async getQuiz(
-    @Param('mingguId') mingguId: number,
-    @Res() res: Response,
-  ){
+  async getQuiz(@Param('mingguId') mingguId: number, @Res() res: Response) {
     const quiz = await this.mingguService.findQuiz(mingguId);
     res.json(quiz);
   }

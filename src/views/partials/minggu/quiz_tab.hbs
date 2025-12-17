@@ -1,22 +1,19 @@
-<div x-show="tab === 'quiz'">
 
-  {{#if minggu.quiz.length}}
     <!-- Questions List -->
+    <template x-if="data && data.length > 0">
     <ul class='space-y-3 mb-6'>
 
-      {{#each minggu.quiz}}
+      <template x-for="quiz in data" :key="quiz.id">
         <div
           class='bg-gray-50 p-4 rounded-xl shadow-lg hover:bg-gray-100 transition'
         >
           <div class='flex justify-between items-start'>
             <div>
-              <p class='font-semibold text-gray-900 mb-1'>
-                quiz :
-                {{this.nama_quiz}}
+              <p class='font-semibold text-gray-900 mb-1' x-text="'quiz :' + quiz.nama_quiz"></p>
               </p>
             </div>
             <a
-              href='/quiz/{{this.id}}'
+              :href="`/quiz/${quiz.id}`"
               class='p-2 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition'
             >
               <svg
@@ -43,10 +40,11 @@
             </a>
           </div>
         </div>
-      {{/each}}
+        </template>
     </ul>
-  {{else}}
+    </template>
     <!-- Empty State -->
+    <template x-if="!data || data.length === 0">
     <div
       class='flex flex-col items-center justify-center text-center py-16 bg-gray-50 border border-dashed rounded-lg mb-6'
     >
@@ -71,10 +69,10 @@
         button to add a new quiz.
       </p>
     </div>
-  {{/if}}
+    </template>
 
   <!-- Add New Question -->
-  {{#if minggu.quiz.length}}{{else}}
+  <template x-if="!data || data.length === 0">
     <a
       href='/quiz/formCreate/{{minggu.id}}'
       class='flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-lg hover:bg-gray-100 transition'
@@ -95,6 +93,20 @@
       </svg>
       <span class='text-gray-600 font-medium'>Add Quiz</span>
     </a>
-  {{/if}}
+    </template>
 
-</div>
+
+<script>
+function quizData() {
+  return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+
+    async fetchQuizzes() {
+      const res = await fetch('/minggu/quiz/{{minggu.id}}');
+      this.data = await res.json();
+
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    }
+  }
+}
+</script>

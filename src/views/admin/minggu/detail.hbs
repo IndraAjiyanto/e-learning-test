@@ -106,23 +106,7 @@
     </div>
   </div>
 
-<div class='mx-auto' x-data="{ 
-  tab: '', 
-  async toggleFetch(url, tabName) {
-    this.tab = tabName;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      console.log(data);
-      // Add similar conditions for other tabs if needed
-    } catch (error) {
-      console.error('There has been a problem with your fetch operation:', error);
-    }
-  }
-}">
+<div class='mx-auto' x-data="tabData()">
 
   <div class='flex space-x-4 mb-6'>
     <button
@@ -132,7 +116,7 @@
     >
       Session
     </button>
-    {{#if mingguTerakhir}}
+    {{#if pertemuanAkhir}}
       <button
         @click="toggleFetch('/minggu/quiz/{{minggu.id}}', 'quiz')"
         :class="tab === 'quiz' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
@@ -143,11 +127,11 @@
     {{/if}}
   </div>
 
-  <div x-show="tab === 'session'">
+  <div x-show="tab === 'session'" x-data="sessionData()" x-init="fetchSessions()">
     {{> minggu/session_tab}}
   </div>
 
-  <div x-show="tab === 'quiz'">
+  <div x-show="tab === 'quiz'" x-data="quizData()" x-init="fetchQuizzes()">
     {{> minggu/quiz_tab}}
   </div>
 
