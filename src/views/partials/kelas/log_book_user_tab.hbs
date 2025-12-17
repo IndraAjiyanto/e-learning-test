@@ -1,5 +1,4 @@
 <!-- ===================== TAB LOG BOOK USER ===================== -->
-<div x-data='logBookUserTable({ logBook: {{json logbookUser}} })'>
 
   <!-- Header: Search + Export -->
   <div
@@ -66,7 +65,7 @@
   </div>
 
   <!-- Table -->
-  <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+  <div x-show="data && data.length > 0" class='overflow-x-auto bg-white shadow-lg rounded-xl'>
     <table class='min-w-full divide-y divide-gray-200'>
       <thead class='bg-gray-100'>
         <tr>
@@ -121,47 +120,44 @@
         </tr>
       </thead>
       <tbody class='divide-y divide-gray-200'>
-        {{#each logbookUser}}
+        <template x-for="(logbookUser, index) in filteredData" :key="logbookUser.id">
           <tr
             class='hover:bg-gray-50 transition'
-            x-show="filteredLogBook.includes('{{id}}')"
           >
-            <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{user.username}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{user.email}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{formatTanggal
-                createdAt
-              }}</td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.user.username"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.user.email"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="formatTanggal(logbookUser.createdAt)"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.pertemuan_ke}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.pertemuan.pertemuan_ke"
+            ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.minggu_ke}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.pertemuan.minggu.minggu_ke"
+            ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.nama_kelas}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.pertemuan.minggu.kelas.nama_kelas"
+            ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas"
+            ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.kategori.nama_kategori}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.pertemuan.minggu.kelas.kategori.nama_kategori"
+            ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.mentor.[0].nama}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kegiatan}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.pertemuan.minggu.kelas.mentor[0]?.nama_lengkap || ''"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.kegiatan"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{rincian_kegiatan}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{dokumentasi}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{proses}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kendala}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.rincian_kegiatan"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.dokumentasi"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.proses"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.kendala"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{dokumentasi_lain}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.dokumentasi_lain"
+            ></td>
           </tr>
-        {{/each}}
+          </template>
       </tbody>
     </table>
   </div>
@@ -197,7 +193,6 @@
       Next
     </button>
   </div>
-</div>
 
 <!-- SheetJS Library for Excel Export -->
 <script
@@ -205,20 +200,23 @@
 ></script>
 
 <script>
-  function logBookUserTable({ logBook }) {
-    return {
-      searchInput: "",
-      search: "",
-      pageNumber: 0,
-      size: 5,
-      logBook,
-      amount: 0,
-      filteredData: [],
+function logBookUserData() {
+  return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    searchInput: '',
+    search: '',
+    pageNumber: 0,
+    size: 5,
+    amount: 0,
 
-      get filteredLogBook() {
-        const s = this.search.toLowerCase();
+    async fetchLogBookUsers() {
+      const res = await fetch('/kelass/logbookUser/{{kelas.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
 
-        let filtered = this.logBook.filter(l =>
+    get filteredData() {
+      let filtered = this.data.filter(l =>
           (
             `${l.user.username}
              ${l.pertemuan.pertemuan_ke}
@@ -233,45 +231,42 @@
              ${l.proses}
              ${l.kendala}
              ${l.dokumentasi_lain}`
-          )
-            .toLowerCase()
-            .includes(s)
-        );
+          ).toLowerCase().
+          includes(this.search.toLowerCase())
+      );
 
-        this.amount = filtered.length;
-        this.filteredData = filtered;
+      this.amount = filtered.length;
 
-        const start = this.pageNumber * this.size;
-        const end = start + this.size;
+      const start = this.pageNumber * this.size;
+      return filtered.slice(start, start + this.size);
+    },
 
-        return filtered.slice(start, end).map(l => l.id.toString());
-      },
+    pageCount() {
+      return Math.ceil(this.amount / this.size);
+    },
 
-      pages() {
-        return Array.from({ length: this.pageCount() });
-      },
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
 
-      pageCount() {
-        return Math.ceil(this.amount / this.size);
-      },
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
 
-      nextPage() {
-        if (this.pageNumber < this.pageCount() - 1) {
-          this.pageNumber++;
-        }
-      },
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
 
-      prevPage() {
-        if (this.pageNumber > 0) {
-          this.pageNumber--;
-        }
-      },
+    viewPage(i) {
+      this.pageNumber = i;
+    },
 
-      viewPage(index) {
-        this.pageNumber = index;
-      },
+    formatTanggal(value) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(value).toLocaleDateString('id-ID', options);
+    },
 
-      exportToExcel() {
+    exportToExcel() {
         try {
           const dataToExport = this.filteredData.map((l, index) => ({
             No: index + 1,
@@ -323,7 +318,7 @@
           alert("Failed to export data to Excel");
           console.error(err);
         }
-      }
-    };
+      },
   }
+}
 </script>
