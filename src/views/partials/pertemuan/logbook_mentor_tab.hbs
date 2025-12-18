@@ -1,7 +1,4 @@
-<div
-  class='max-w-5xl mx-auto'
-  x-data='logbookTable({ logbooks: {{json logbook_mentor}} })'
->
+
 
   <div
     class='mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4'
@@ -75,7 +72,7 @@
     </div>
   </div>
 
-  <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+  <div x-show="data && data.length > 0" class='overflow-x-auto bg-white shadow-lg rounded-xl'>
     <table class='min-w-full divide-y divide-gray-200'>
       <thead class='bg-gray-100'>
         <tr>
@@ -106,33 +103,32 @@
         </tr>
       </thead>
       <tbody class='divide-y divide-gray-200'>
-        {{#each logbook_mentor}}
+        <template x-for="(logbook, index) in filteredData" :key="logbook.id">
           <tr
             class='hover:bg-gray-50 transition'
-            x-show="filteredLogbooks.includes('{{id}}')"
           >
-            <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kegiatan}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook.kegiatan"></td>
             <td
               class='px-6 py-4 text-sm text-gray-800'
-            >{{rincian_kegiatan}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kendala}}</td>
+            x-text="logbook.rincian_kegiatan"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook.kendala"></td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               <img
-                src='{{dokumentasi}}'
+                :src='logbook.dokumentasi'
                 alt='Dokumentasi'
                 class='w-16 h-16 object-cover rounded border'
               />
             </td>
             <td
-              class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.nama_kelas}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{user.username}}</td>
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook.pertemuan.minggu.kelas.nama_kelas"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook.user.username"></td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               <div class='flex items-center justify-center gap-2'>
                 <!-- Detail Button -->
                 <button
-                  @click="openModal('{{id}}')"
+                  @click="openModal(logbook.id)"
                   class='p-2 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition'
                   title='View Detail'
                 >
@@ -161,7 +157,7 @@
 
                 <!-- Edit Button -->
                 <a
-                  href='/logbook-mentor/formEdit/{{id}}'
+                  :href="`/logbook-mentor/formEdit/${logbook.id}`"
                   class='p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
                   title='Edit'
                 >
@@ -191,7 +187,7 @@
 
                 <!-- Delete Button -->
                 <form
-                  action='/logbook-mentor/{{pertemuan.id}}/{{id}}?_method=DELETE'
+                  :action="`/logbook-mentor/${logbook.pertemuan.id}/${logbook.id}?_method=DELETE`"
                   method='post'
                   class='inline'
                 >
@@ -221,7 +217,7 @@
             </td>
 
           </tr>
-        {{/each}}
+          </template>
       </tbody>
     </table>
   </div>
@@ -514,39 +510,41 @@
       :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
     >Next</button>
   </div>
-</div>
 
 <script>
-  function logbookTable({ logbooks }) {
+  function logBookMentorData() {
     return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
       searchInput: "",
       search: "",
       pageNumber: 0,
       size: 5,
-      logbooks,
       amount: 0,
 
       showModal: false,
       selectedLogbook: null,
 
+      async fetchLogBookMentor() {
+      const res = await fetch('/pertemuans/logbook-mentor/{{pertemuan.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
       // =============================
       // FILTER + PAGINATION
       // =============================
-      get filteredLogbooks() {
-        const s = this.search.toLowerCase();
-
-        const filtered = this.logbooks.filter(l =>
+      get filteredData() {
+        const filtered = this.data.filter(l =>
           (
             `${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`
-          ).toLowerCase().includes(s)
+          ).toLowerCase()
+          .includes(this.search.toLowerCase())
         );
 
         this.amount = filtered.length;
 
-        const start = this.pageNumber * this.size;
-        const end = start + this.size;
-
-        return filtered.slice(start, end).map(l => l.id.toString());
+      const start = this.pageNumber * this.size;
+      return filtered.slice(start, start + this.size);
       },
 
       // =============================

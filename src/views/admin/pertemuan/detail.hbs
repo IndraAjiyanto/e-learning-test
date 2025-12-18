@@ -117,7 +117,7 @@
     {{> pertemuan/logbook_tab}}
   </div>
 
-  <div x-show="tab === 'logbook_mentor'">
+  <div x-show="tab === 'logbook_mentor'" x-data="logBookMentorData()" x-init="fetchLogBookMentor()">
     {{> pertemuan/logbook_mentor_tab}}
   </div>
 
