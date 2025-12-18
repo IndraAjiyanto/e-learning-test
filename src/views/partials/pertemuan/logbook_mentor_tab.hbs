@@ -554,7 +554,7 @@
         try {
           const s = this.search.toLowerCase();
 
-          const filtered = this.logbooks.filter(l =>
+          const filtered = this.data.filter(l =>
             (
               `${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`
             ).toLowerCase().includes(s)
@@ -637,7 +637,7 @@
       },
 
       openModal(id) {
-        this.selectedLogbook = this.logbooks.find(l => l.id == id);
+        this.selectedLogbook = this.data.find(l => l.id == id);
         this.showModal = true;
       },
 
