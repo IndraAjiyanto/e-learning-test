@@ -56,7 +56,6 @@ export class TugassController {
 
       createTugassDto.pertemuanId = pertemuanId;
       createTugassDto.file = req.body.uploadedFileUrls[0];
-      createTugassDto.nilai = 0;
       await this.tugassService.create(createTugassDto);
       req.flash('success', 'Assignment successfully created');
       res.redirect(`/pertemuans/${pertemuanId}`);
@@ -105,6 +104,7 @@ export class TugassController {
       req.flash('success', 'successfuly delete assignment');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
+      console.error('Error deleting assignment:', error);
       req.flash('error', error.message || 'unsuccess delete assignment');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }

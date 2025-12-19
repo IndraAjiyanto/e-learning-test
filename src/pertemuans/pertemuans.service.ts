@@ -181,9 +181,8 @@ export class PertemuansService {
   }
 
   async findTugas(pertemuanId: number) {
-    return await this.pertemuanRepository.findOne({
-      where: { id: pertemuanId },
-      relations: ['tugas'],
+    return await this.tugasRepository.find({
+      where: { pertemuan : { id: pertemuanId } },
     });
   }
 

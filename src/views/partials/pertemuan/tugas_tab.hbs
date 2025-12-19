@@ -1,15 +1,15 @@
   <!-- Assignment List Section -->
-  {{#if pertemuan.tugas.length}}
+  <template x-if="data && data.length > 0">
     <ul class="space-y-3 mb-6">
-      {{#each pertemuan.tugas}}
+      <template x-for="assigment in data" :key="assigment.id">
         <li class="flex justify-between items-center bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
           <!-- Title -->
-          <span class="text-gray-800 font-semibold text-lg">{{judul}}</span>
+          <span class="text-gray-800 font-semibold text-lg" x-text="assigment.judul"></span>
 
           <!-- Actions -->
           <div class="flex items-center gap-2">
 
-    <form action="/jawaban-tugass/{{id}}" method="get">
+    <form :action="`/jawaban-tugass/${assigment.id}`" method="get">
     <button type="submit" 
             class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition" 
             title="Edit">
@@ -29,7 +29,7 @@
   </form>
 
 
-              <form action="/tugass/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+              <form :action="`/tugass/${assigment.id}/{{pertemuan.id}}?_method=DELETE`" method="post" class="inline">
                 <button type="button" 
             onclick="confirmDelete(this)" 
             class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition" 
@@ -42,10 +42,11 @@
               </form>
           </div>
         </li>
-      {{/each}}
+        </template>
     </ul>
-  {{else}}
+    </template>
     <!-- Empty State -->
+    <template x-if="!data || data.length === 0">
     <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-400 mb-4" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +59,7 @@
         Click <span class="font-semibold">Add Assignment</span> to create a new one.
       </p>
     </div>
-  {{/if}}
+    </template>
 
   <!-- Add Assignment -->
   <a href="/tugass/formCreate/{{pertemuan.id}}" 
@@ -71,3 +72,19 @@
     </svg>
     <span class="text-gray-700 font-medium">Add Assignment</span>
   </a>
+
+
+  <script>
+function tugasData() {
+  return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+
+    async fetchTugas() {
+      const res = await fetch('/pertemuans/tugas/{{pertemuan.id}}');
+      this.data = await res.json();
+
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+  }
+}
+</script>

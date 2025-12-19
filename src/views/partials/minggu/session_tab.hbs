@@ -22,7 +22,7 @@
               </div>
             </div>
             <a
-              :href="'/pertemuans/' + session.id"
+              :href="`/pertemuans/${session.id}`"
               class='p-2 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition'
             >
               <svg
@@ -109,7 +109,7 @@ function sessionData() {
     data: JSON.parse(localStorage.getItem('activeData')) || [],
 
     async fetchSessions() {
-      const res = await fetch('/minggu/session/{{minggu.id}}');
+      const res = await fetch(`/minggu/session/{{minggu.id}}`);
       this.data = await res.json();
 
       localStorage.setItem('activeData', JSON.stringify(this.data));

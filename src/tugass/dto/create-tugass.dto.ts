@@ -6,7 +6,5 @@ export class CreateTugassDto {
   @IsString()
   judul: string;
   @IsNumber()
-  nilai: number;
-  @IsNumber()
   pertemuanId: number;
 }

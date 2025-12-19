@@ -147,22 +147,22 @@ export class PertemuansController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const logbook = await this.pertemuansService.findLogBook(pertemuanId);
-    const logbook_mentor = await this.pertemuansService.findLogBookMentor(pertemuanId);
+    // const logbook = await this.pertemuansService.findLogBook(pertemuanId);
+    // const logbook_mentor = await this.pertemuansService.findLogBookMentor(pertemuanId);
     const pertemuan = await this.pertemuansService.findOne(pertemuanId);
-    const murid = await this.pertemuansService.findMuridInKelas( pertemuan.minggu.kelas.id, pertemuanId);
-    const materipdf = await this.materisService.findMateriPdf(pertemuanId);
-    const materivideo = await this.materisService.findMateriVideo(pertemuanId);
-    const materippt = await this.materisService.findMateriPpt(pertemuanId);
+    // const murid = await this.pertemuansService.findMuridInKelas( pertemuan.minggu.kelas.id, pertemuanId);
+    // const materipdf = await this.materisService.findMateriPdf(pertemuanId);
+    // const materivideo = await this.materisService.findMateriVideo(pertemuanId);
+    // const materippt = await this.materisService.findMateriPpt(pertemuanId);
     res.render('admin/pertemuan/detail', {
       user: req.user,
       pertemuan,
-      murid,
-      materipdf,
-      materippt,
-      materivideo,
-      logbook,
-      logbook_mentor,
+      // murid,
+      // materipdf,
+      // materippt,
+      // materivideo,
+      // logbook,
+      // logbook_mentor,
     });
   }
 
