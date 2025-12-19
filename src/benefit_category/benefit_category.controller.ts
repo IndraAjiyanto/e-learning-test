@@ -72,15 +72,15 @@ export class BenefitCategoryController {
   }
 
   @Roles('super_admin')
-  @Delete(':id')
-  async deleteFromForm(@Param('id') id: number, @Req() req: Request, @Res() res: Response) {
+  @Delete(':id/:kategoriId')
+  async deleteFromForm(@Param('id') id: number, @Param('kategoriId') kategoriId: number, @Req() req: Request, @Res() res: Response) {
     try {
       await this.benefitCategoryService.remove(id);
       req.flash('success', 'Benefit category successfully deleted');
-      res.redirect('/kategoris');
+      res.redirect('/kategoris/'+kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to delete benefit category');
-      res.redirect('/kategoris');
+      res.redirect('/kategoris/'+kategoriId);
     }
   }
 }
