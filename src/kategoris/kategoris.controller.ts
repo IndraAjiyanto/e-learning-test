@@ -114,6 +114,75 @@ export class KategorisController {
   }
 
   @Roles('super_admin')
+  @Get('benefit/:kategoriId')
+  async findBenefitByKategori(
+    @Param('kategoriId') kategoriId: number,  
+    @Res() res: Response,
+  ) {
+    const benefit_category = await this.kategorisService.findBenefitByKategori(
+      kategoriId,
+    );
+    res.json(benefit_category);
+  }
+
+  @Roles('super_admin')
+  @Get('flow/:kategoriId')
+  async findFlowByKategori(
+    @Param('kategoriId') kategoriId: number,
+    @Res() res: Response,
+  ) {
+    const flow_category = await this.kategorisService.findFlowByKategori(
+      kategoriId,
+    );
+    res.json(flow_category);
+  }
+
+
+  @Roles('super_admin')
+  @Get('superiority/:kategoriId')
+  async findSuperiorityByKategori(
+    @Param('kategoriId') kategoriId: number,
+    @Res() res: Response,
+  ) {
+    const superiority = await this.kategorisService.findSuperiorityByKategori(
+      kategoriId,
+    );
+    res.json(superiority);
+  }
+
+  @Roles('super_admin')
+  @Get('faq/:kategoriId')
+  async findFaqByKategori(
+    @Param('kategoriId') kategoriId: number,
+    @Res() res: Response,
+  ) {
+    const pertanyaan_umum = await this.kategorisService.findFaqByKategori(
+      kategoriId,
+    );
+    res.json(pertanyaan_umum);
+  }
+
+  @Roles('super_admin')
+  @Get('kelas/:kategoriId')
+  async findKelasByKategori(
+    @Param('kategoriId') kategoriId: number,
+    @Res() res: Response,
+  ) {
+    const kelas = await this.kategorisService.findKelasByKategori(kategoriId);
+    res.json(kelas);
+  }
+
+  @Roles('super_admin')
+  @Get('alumni/:kategoriId')
+  async findAlumniByKategori(
+    @Param('kategoriId') kategoriId: number,
+    @Res() res: Response,
+  ) {
+    const alumni = await this.kategorisService.findAlumniByKategori(kategoriId);
+    res.json(alumni);
+  }
+
+  @Roles('super_admin')
   @Get(':kategoriId')
   async findOne(
     @Param('kategoriId') kategoriId: number,
@@ -121,29 +190,29 @@ export class KategorisController {
     @Req() req: Request,
   ) {
     const kategori = await this.kategorisService.findOne(kategoriId);
-    const benefit_category = await this.kategorisService.findBenefitByKategori(
-      kategoriId,
-    );
-    const flow_category = await this.kategorisService.findFlowByKategori(
-      kategoriId,
-    );
-    const superiority = await this.kategorisService.findSuperiorityByKategori(
-      kategoriId,
-    );
-    const pertanyaan_umum = await this.kategorisService.findFaqByKategori(
-      kategoriId,
-    );
-    const kelas = await this.kategorisService.findKelasByKategori(kategoriId);
-    const alumni = await this.kategorisService.findAlumniByKategori(kategoriId);
+    // const benefit_category = await this.kategorisService.findBenefitByKategori(
+    //   kategoriId,
+    // );
+    // const flow_category = await this.kategorisService.findFlowByKategori(
+    //   kategoriId,
+    // );
+    // const superiority = await this.kategorisService.findSuperiorityByKategori(
+    //   kategoriId,
+    // );
+    // const pertanyaan_umum = await this.kategorisService.findFaqByKategori(
+    //   kategoriId,
+    // );
+    // const kelas = await this.kategorisService.findKelasByKategori(kategoriId);
+    // const alumni = await this.kategorisService.findAlumniByKategori(kategoriId);
     res.render('super_admin/kategori/detail', {
       user: req.user,
       kategori,
-      alumni,
-      benefit_category,
-      flow_category,
-      superiority,
-      pertanyaan_umum,
-      kelas
+      // alumni,
+      // benefit_category,
+      // flow_category,
+      // superiority,
+      // pertanyaan_umum,
+      // kelas
     });
   }
 
