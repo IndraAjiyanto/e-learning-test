@@ -89,19 +89,20 @@ export class FlowCategoryController {
   }
 
   @Roles('super_admin')
-  @Delete(':id')
+  @Delete(':id/:kategoriId')
   async deleteFromForm(
     @Param('id') id: number,
+    @Param('kategoriId') kategoriId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
       await this.flowCategoryService.remove(id);
       req.flash('success', 'Flow category successfully deleted');
-      res.redirect('/kategoris');
+      res.redirect('/kategoris/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to delete flow category');
-      res.redirect('/kategoris');
+      res.redirect('/kategoris/' + kategoriId);
     }
   }
 }
