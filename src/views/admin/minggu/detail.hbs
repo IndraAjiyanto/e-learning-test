@@ -137,3 +137,46 @@
 
 </div>
 </div>
+
+<script>
+function tabData() {
+  return {
+    search: '',
+    tab: localStorage.getItem('activeTabWeek'),
+    data: localStorage.getItem('activeData')
+      ? JSON.parse(localStorage.getItem('activeData'))
+      : [],
+
+
+    async init() {
+      if(!this.tab) {
+          this.tab = 'session';
+          localStorage.setItem('activeTabWeek', 'session');
+      }
+    },
+    
+    async toggleFetch(url, tabName) {
+      this.tab = tabName;
+      localStorage.setItem('activeTabWeek', tabName);
+      
+      try {
+        if(url === '') {
+          this.data = [];
+          localStorage.removeItem('activeData');
+          console.log('ℹ️ No data to fetch for this tab.');
+          return;
+        }else{
+          const response = await fetch(url);
+        if (!response.ok) throw new Error('Network error');
+        
+        this.data = await response.json();
+        localStorage.setItem('activeData', JSON.stringify(this.data));
+        console.log('✅ Data fetched:', this.data);
+        }
+      } catch (error) {
+        console.error('❌ Error:', error);
+      }
+    }
+  }
+}
+</script>

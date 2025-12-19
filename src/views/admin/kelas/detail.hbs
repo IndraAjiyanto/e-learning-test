@@ -182,7 +182,7 @@
 
   <!-- ===================== TAB SECTION ===================== -->
 <div class="mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl" 
-     x-data="tabData()">
+     x-data="tabData()" x-init="init()">
 
   <!-- Tab Navigation -->
   <div class="flex space-x-4 mb-6">
@@ -197,18 +197,6 @@
             :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       User
-    </button>
-
-    <button @click="toggleFetch('/kelass/logbookUser/{{kelas.id}}', 'log_book_user')" 
-            :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-            class="px-4 py-2 rounded-lg shadow transition">
-      Log Book User
-    </button>
-
-    <button @click="toggleFetch('/kelass/logbookMentor/{{kelas.id}}', 'log_book_mentor')" 
-            :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
-            class="px-4 py-2 rounded-lg shadow transition">
-      Log Book Mentor
     </button>
 
     {{else if (eq user.role "super_admin")}}
@@ -257,7 +245,8 @@
       User
     </button>
 
-    <button @click="toggleFetch('/kelass/logbookUser/{{kelas.id}}', 'log_book_user')" 
+    {{/if}}
+        <button @click="toggleFetch('/kelass/logbookUser/{{kelas.id}}', 'log_book_user')" 
             :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log Book User
@@ -268,8 +257,6 @@
             class="px-4 py-2 rounded-lg shadow transition">
       Log Book Mentor
     </button>
-
-    {{/if}}
     
     <button @click="toggleFetch('/kelass/mentorKelas/{{kelas.id}}', 'mentor')" 
             :class="tab === 'mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
@@ -324,3 +311,51 @@
   </div>
 </div>
 </div>
+
+<script>
+function tabData() {
+  return {
+    search: '',
+    tab: localStorage.getItem('activeTab'),
+    data: localStorage.getItem('activeData')
+      ? JSON.parse(localStorage.getItem('activeData'))
+      : [],
+
+
+    async init() {
+      if(!this.tab) {
+        if("{{user.role}}" === "admin") {
+          this.tab = 'week';
+          localStorage.setItem('activeTab', 'week');
+        } else if ("{{user.role}}" === "super_admin") {
+          this.tab = 'benefit';
+          localStorage.setItem('activeTab', 'benefit');
+        }
+      }
+    },
+    
+    async toggleFetch(url, tabName) {
+      this.tab = tabName;
+      localStorage.setItem('activeTab', tabName);
+      
+      try {
+        if(url === '') {
+          this.data = [];
+          localStorage.removeItem('activeData');
+          console.log('ℹ️ No data to fetch for this tab.');
+          return;
+        }else{
+          const response = await fetch(url);
+        if (!response.ok) throw new Error('Network error');
+        
+        this.data = await response.json();
+        localStorage.setItem('activeData', JSON.stringify(this.data));
+        console.log('✅ Data fetched:', this.data);
+        }
+      } catch (error) {
+        console.error('❌ Error:', error);
+      }
+    }
+  }
+}
+</script>
