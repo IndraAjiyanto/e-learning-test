@@ -1,34 +1,34 @@
   <div class="bg-white rounded-xl shadow-lg p-6">
     
-    <div x-data="{ tab: 'pdf' }" class="space-y-6">
+    <div x-data="materiData()" x-init="init()" class="space-y-6">
       <div class="flex space-x-4">
-        <button @click="tab = 'pdf'" 
-                :class="tab === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+        <button @click="toggleFetchMateri('/pertemuans/pdf/{{pertemuan.id}}', 'pdf')" 
+                :class="tabMateri === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
                 class="px-4 py-2 rounded-lg shadow transition">PDF</button>
-        <button @click="tab = 'video'" 
-                :class="tab === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+        <button @click="toggleFetchMateri('/pertemuans/video/{{pertemuan.id}}', 'video')" 
+                :class="tabMateri === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
                 class="px-4 py-2 rounded-lg shadow transition">Video</button>
-        <button @click="tab = 'ppt'" 
-                :class="tab === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+        <button @click="toggleFetchMateri('/pertemuans/ppt/{{pertemuan.id}}', 'ppt')" 
+                :class="tabMateri === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
                 class="px-4 py-2 rounded-lg shadow transition">PPT</button>
       </div>
 
 <!-- PDF Section -->
-<div x-show="tab === 'pdf'">
+<div x-show="tabMateri === 'pdf'">
 
-  {{#if materipdf.length}}
+  <template x-if="dataMateri && dataMateri.length > 0">
     <ul class="space-y-2 mb-6">
-      {{#each materipdf}}
+      <template x-for="materi in dataMateri" :key="materi.id">
 <li class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-lg hover:bg-gray-100 transition">
-  <span class="text-gray-800">{{judul}}</span>
+  <span class="text-gray-800" x-text="materi.judul"></span>
   <div class="flex space-x-2">
 
     <!-- View Button -->
     <button @click="$dispatch('open-materi-modal', { 
-              id: {{id}}, 
-              judul: '{{judul}}', 
-              jenis_file: '{{jenis_file}}', 
-              file: '{{file}}',
+              id: materi.id, 
+              judul: materi.judul, 
+              jenis_file: materi.jenis_file, 
+              file: materi.file,
             })"
        class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition" 
        title="View">
@@ -44,7 +44,7 @@
     </button>
 
     <!-- Delete Button -->
-    <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+    <form :action="`/materis/${materi.id}/{{pertemuan.id}}?_method=DELETE`" method="post" class="inline">
       <button type="button" 
               onclick="confirmDelete(this)" 
               class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition" 
@@ -61,9 +61,10 @@
 
   </div>
 </li>
-      {{/each}}
+</template>
     </ul>
-  {{else}}
+    </template>
+  <template x-if="!dataMateri || dataMateri.length === 0">
     <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -73,7 +74,8 @@
       <p class="text-gray-600 font-medium">No PDF available</p>
       <p class="text-gray-500 text-sm mt-1">Click <span class="font-semibold">Create PDF</span> to add new material.</p>
     </div>
-  {{/if}}
+    </template>
+
       <a href="/materis/formCreate/pdf/{{pertemuan.id}}" 
      class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
     <svg xmlns="http://www.w3.org/2000/svg" 
@@ -87,17 +89,17 @@
 </div>
 
 <!-- Video Section -->
-<div x-show="tab === 'video'">
+<div x-show="tabMateri === 'video'">
 
-  {{#if materivideo.length}}
+  <template x-if="dataMateri && dataMateri.length > 0">
     <ul class="space-y-2 mb-6">
-      {{#each materivideo}}
+      <template x-for="materi in dataMateri" :key="materi.id">
 <li class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-lg hover:bg-gray-100 transition">
-  <span class="text-gray-800">{{judul}} : {{file}}</span>
+  <span class="text-gray-800" x-text="materi.judul"></span><a :href="materi.file" x-text="materi.file"></a>
   <div class="flex space-x-2">
     
     <!-- Delete -->
-    <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+    <form :action="`/materis/${materi.id}/{{pertemuan.id}}?_method=DELETE`" method="post" class="inline">
       <button type="button" onclick="confirmDelete(this)"
               class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"
               title="Delete">
@@ -112,9 +114,10 @@
     </form>
   </div>
 </li>
-      {{/each}}
+</template>
     </ul>
-  {{else}}
+    </template>
+    <template x-if="!dataMateri || dataMateri.length === 0">
     <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -124,7 +127,8 @@
       <p class="text-gray-600 font-medium">No video available</p>
       <p class="text-gray-500 text-sm mt-1">Click <span class="font-semibold">Create Video</span> to add new material.</p>
     </div>
-  {{/if}}
+    </template>
+
         <a href="/materis/formCreate/video/{{pertemuan.id}}" 
      class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
     <svg xmlns="http://www.w3.org/2000/svg" 
@@ -138,23 +142,23 @@
 </div>
 
 <!-- PPT Section -->
-<div x-show="tab === 'ppt'">
+<div x-show="tabMateri === 'ppt'">
 
-  {{#if materippt.length}}
+  <template x-if="dataMateri && dataMateri.length > 0">
     <ul class="space-y-2 mb-6">
-      {{#each materippt}}
+      <template x-for="materi in dataMateri" :key="materi.id">
 <li class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-lg hover:bg-gray-100 transition">
-  <span class="text-gray-800">{{judul}}</span>
+  <span class="text-gray-800" x-text="materi.judul"></span>
   <div class="flex space-x-2">
     
     <!-- View Button -->
     <button @click="
                     $dispatch('open-materi-modal', { 
-                      id: {{id}}, 
-                      judul: '{{judul}}', 
-                      jenis_file: '{{jenis_file}}', 
-                      file: '{{file}}',
-                      slides: {{{json slides}}}
+                      id: materi.id, 
+                      judul: materi.judul, 
+                      jenis_file: materi.jenis_file, 
+                      file: materi.file,
+                      slides: materi.slides
                     })"
        class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition" 
        title="View">
@@ -170,7 +174,7 @@
     </button>
 
     <!-- Delete -->
-    <form action="/materis/{{id}}/{{../pertemuan.id}}?_method=DELETE" method="post" class="inline">
+    <form :action="`/materis/${materi.id}/{{pertemuan.id}}?_method=DELETE`" method="post" class="inline">
       <button type="button" onclick="confirmDelete(this)"
               class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"
               title="Delete">
@@ -185,9 +189,10 @@
     </form>
   </div>
 </li>
-      {{/each}}
+</template>
     </ul>
-  {{else}}
+    </template>
+  <template x-if="!dataMateri || dataMateri.length === 0">
     <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -197,7 +202,8 @@
       <p class="text-gray-600 font-medium">No PPT available</p>
       <p class="text-gray-500 text-sm mt-1">Click <span class="font-semibold">Create PPT</span> to add new material.</p>
     </div>
-  {{/if}}
+    </template>
+
         <a href="/materis/formCreate/ppt/{{pertemuan.id}}" 
      class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
     <svg xmlns="http://www.w3.org/2000/svg" 
@@ -212,12 +218,6 @@
 
     </div>
   </div>
-
-  
-
-
-
-  
 <!-- Modal untuk View Materi -->
 <div x-data="materiModal()" 
      @open-materi-modal.window="openModal($event.detail)"
@@ -397,6 +397,39 @@ function materiModal() {
         this.currentSlide--;
       }
     }
+  }
+}
+
+function materiData() {
+  return {
+    tabMateri: localStorage.getItem('tabMateri') || 'pdf',
+    dataMateri: localStorage.getItem('dataMateri') ? JSON.parse(localStorage.getItem('dataMateri')) : [],
+
+    async init() {
+      const urlMap = {
+        pdf: '/pertemuans/pdf/{{pertemuan.id}}',
+        video: '/pertemuans/video/{{pertemuan.id}}',
+        ppt: '/pertemuans/ppt/{{pertemuan.id}}'
+      }
+
+      await this.toggleFetchMateri(urlMap[this.tabMateri], this.tabMateri);
+    },
+
+    async toggleFetchMateri(url, jenis) {
+      this.tabMateri = jenis;
+      localStorage.setItem('tabMateri', jenis);
+      try{
+      const res = await fetch(url);
+      this.dataMateri = await res.json();
+  
+      localStorage.setItem('dataMateri', JSON.stringify(this.dataMateri));
+      } catch (error) {
+        console.error('❌ Error:', error);
+      }
+
+    }
+
+
   }
 }
 </script>

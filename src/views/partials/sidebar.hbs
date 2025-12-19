@@ -1017,12 +1017,19 @@ function tabData() {
       localStorage.setItem('activeTab', tabName);
       
       try {
-        const response = await fetch(url);
+        if(url === '') {
+          this.data = [];
+          localStorage.removeItem('activeData');
+          console.log('ℹ️ No data to fetch for this tab.');
+          return;
+        }else{
+          const response = await fetch(url);
         if (!response.ok) throw new Error('Network error');
         
         this.data = await response.json();
         localStorage.setItem('activeData', JSON.stringify(this.data));
         console.log('✅ Data fetched:', this.data);
+        }
       } catch (error) {
         console.error('❌ Error:', error);
       }

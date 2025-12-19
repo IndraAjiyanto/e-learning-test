@@ -139,6 +139,36 @@ export class PertemuansController {
     res.json(tugas);
   }
 
+  @Roles('admin')
+  @Get('pdf/:pertemuanId')
+  async getMateriPdf(
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response,
+  ) {
+    const materiPdf = await this.materisService.findMateriPdf(pertemuanId);
+    res.json(materiPdf);
+  }
+
+  @Roles('admin')
+  @Get('video/:pertemuanId')
+  async getMateriVideo(
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response,
+  ) {
+    const materiVideo = await this.materisService.findMateriVideo(pertemuanId);
+    res.json(materiVideo);
+  }
+
+
+  @Roles('admin')
+  @Get('ppt/:pertemuanId')
+  async getMateriPpt(
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response,
+  ) {
+    const materiPpt = await this.materisService.findMateriPpt(pertemuanId);
+    res.json(materiPpt);
+  }
 
   @Roles('admin')
   @Get(':pertemuanId')
