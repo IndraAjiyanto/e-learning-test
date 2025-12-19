@@ -7,7 +7,7 @@ import { CreateKelassDto } from './dto/create-kelass.dto';
 import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { In, Not, Repository } from 'typeorm';
+import { In, IsNull, Not, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Kategori } from 'src/entities/kategori.entity';
@@ -676,6 +676,13 @@ export class KelassService {
   async findPendaftaranKelas(kelasId: number) {
     return await this.pendaftaranRepository.find({
       where: { kelas: { id: kelasId } },
+      relations: ['user', 'kelas'],
+    });
+  }
+
+  async findPaymentInstallmentKelas(kelasId: number) {
+    return await this.pembayaranRepository.find({
+      where: { kelas: { id: kelasId }, cicilan: Not(IsNull()) },
       relations: ['user', 'kelas'],
     });
   }

@@ -263,13 +263,23 @@ export class KelassController {
   }
 
   @Roles('super_admin')
-  @Get('/pendaftaran/:kelasId')
+  @Get('/register/:kelasId')
   async getPendaftaran(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
   ) {
     const pendaftaran = await this.kelassService.findPendaftaranKelas(kelasId);
     res.json(pendaftaran);
+  }
+
+  @Roles('super_admin')
+  @Get('/paymentInstallment/:kelasId')
+  async getPaymentInstallment(
+    @Param('kelasId') kelasId: number,
+    @Res() res: Response,
+  ) {
+    const paymentInstallment = await this.kelassService.findPaymentInstallmentKelas(kelasId);
+    res.json(paymentInstallment);
   }
 
   @Roles('super_admin')
