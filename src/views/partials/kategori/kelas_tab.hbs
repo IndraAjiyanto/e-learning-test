@@ -1,38 +1,37 @@
 <!-- ===================== TAB KELAS ===================== -->
-<div x-show="tab === 'kelas'" class='space-y-4'>
+<div x-show="tab === 'kelas'" class='space-y-4' x-data="kelasData()" x-init="fetchKelas()">
   <div class='flex justify-between items-center mb-4'>
     <h3 class='text-lg font-semibold text-gray-800'>Program in this Category</h3>
   </div>
 
-  {{#if kelas}}
-    <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-      {{#each kelas}}
+    <div x-show="data && data.length > 0" class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+      <template x-for="kelasItem in data" :key="kelasItem.id">
         <div
           class='bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition'
         >
           <div class='p-4'>
             <div class='flex items-center mb-3'>
               <img
-                src='{{this.gambar}}'
-                alt='{{this.nama_kelas}}'
+                :src="kelasItem.gambar"
+                :alt="kelasItem.nama_kelas"
                 class='w-12 h-12 rounded-lg object-cover mr-3'
               />
               <div>
                 <h4
-                  class='font-semibold text-gray-800 text-sm'
-                >{{this.nama_kelas}}</h4>
+                  class='font-semibold text-gray-800 text-sm' x-text="kelasItem.nama_kelas"
+                ></h4>
                 <p
                   class='text-xs text-gray-500'
-                >{{this.jenis_kelas.nama_jenis_kelas}}</p>
+                x-text="kelasItem.jenis_kelas.nama_jenis_kelas"></p>
               </div>
             </div>
             <p
               class='text-xs text-gray-700 mb-3 line-clamp-2'
-            >{{this.deskripsi}}</p>
+            x-text="kelasItem.deskripsi"></p>
             <div class='flex justify-between items-center'>
-              <span class='text-xs text-gray-500'>{{this.metode}}</span>
+              <span class='text-xs text-gray-500' x-text="kelasItem.metode"></span>
               <a
-                href='/kelass/detail/kelas/admin/{{this.id}}'
+                :href="`/kelass/detail/kelas/admin/${kelasItem.id}`"
                 class='text-xs text-blue-600 hover:text-blue-800 font-medium'
               >
                 View Details →
@@ -40,13 +39,27 @@
             </div>
           </div>
         </div>
-      {{/each}}
+      </template>
     </div>
-  {{else}}
-    <div class='text-center py-8'>
+
+    <div x-show="!data || data.length === 0" class='text-center py-8'>
       <h3 class='mt-2 text-sm font-medium text-gray-900'>No program</h3>
       <p class='mt-1 text-sm text-gray-500'>Get started by creating a new
         program.</p>
     </div>
-  {{/if}}
 </div>
+
+<script>
+  function kelasData() {
+    return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+
+                   async fetchKelas() {
+      const res = await fetch('/kategoris/kelas/{{kategori.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
+    };
+  }
+</script>

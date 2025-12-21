@@ -21,6 +21,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   multerConfigMemory,
+  multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -38,7 +39,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Post(':kelasId')
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemory),
+    FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -48,7 +49,7 @@ export class AlumniController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024, // 1MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/alumni',
+    folder: 'alumni',
   })
   async create(
     @Param('kelasId') kelasId: number,
@@ -102,7 +103,7 @@ export class AlumniController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024, // 5MB max (kept consistent with create)
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/alumni',
+    folder: 'alumni',
   })
   async update(
     @UploadedFile() profile: Express.Multer.File,
@@ -116,7 +117,7 @@ export class AlumniController {
       const alumni = await this.alumniService.findOne(alumniId);
       if (profile) {
         // remove old image if exists (public id extraction)
-        await this.alumniService.getPublicIdFromUrl(alumni.profile);
+        await this.alumniService.deleteFile(alumni.profile);
         // ValidateImageInterceptor uploads and sets uploadedImageUrls on the body (same as create)
         updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       }
@@ -143,7 +144,7 @@ export class AlumniController {
         req.flash('error', 'Alumni not found');
         res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
       }
-      await this.alumniService.getPublicIdFromUrl(alumni.profile);
+      await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
       req.flash('success', 'Alumni successfully removed');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);

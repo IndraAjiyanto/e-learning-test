@@ -1,7 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import { memoryStorage, Options as MulterOptions } from 'multer';
+import { memoryStorage, diskStorage, Options as MulterOptions } from 'multer';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
+import * as fs from 'fs';
 
 dotenv.config();
 
@@ -77,25 +79,12 @@ interface CreateMemoryConfigOptions {
 
 /**
  * Factory function untuk membuat memory storage config yang fleksibel
- * @param options - Konfigurasi untuk tipe file yang diperbolehkan
- * @returns MulterOptions untuk memory storage
- *
- * @example
- * // Hanya gambar
- * createMemoryConfig({ fileTypes: ['image'] })
- *
- * // Gambar dan PDF
- * createMemoryConfig({ fileTypes: ['image', 'pdf'] })
- *
- * // Semua dokumen dengan custom size
- * createMemoryConfig({ fileTypes: ['document'], maxSize: 10 })
  */
 export const createMemoryConfig = (
   options: CreateMemoryConfigOptions,
 ): MulterOptions => {
   const { fileTypes, maxSize = 5, customErrorMessage } = options;
 
-  // Gabungkan semua mime types dan extensions dari tipe file yang dipilih
   const allowedMimeTypes: string[] = [];
   const allowedExtensions: string[] = [];
   let errorMessage = customErrorMessage;
@@ -116,13 +105,11 @@ export const createMemoryConfig = (
         .toLowerCase()
         .substring(file.originalname.lastIndexOf('.'));
 
-      // Jika fileTypes adalah 'any', terima semua file
       if (fileTypes.includes('any')) {
         callback(null, true);
         return;
       }
 
-      // Validasi mime type dan extension
       const isValidMimeType = allowedMimeTypes.includes(file.mimetype);
       const isValidExtension = allowedExtensions.includes(fileExtension);
 
@@ -136,7 +123,99 @@ export const createMemoryConfig = (
       }
     },
     limits: {
-      fileSize: maxSize * 1024 * 1024, // Convert MB to bytes
+      fileSize: maxSize * 1024 * 1024,
+    },
+  };
+};
+
+// ============================================
+// LOCAL DISK STORAGE CONFIG (BARU!)
+// ============================================
+
+interface CreateLocalConfigOptions {
+  folder: string; // folder tujuan, misal: 'alumni', 'payment', 'documents'
+  fileTypes: (keyof typeof FILE_TYPES)[];
+  maxSize?: number; // in MB
+  customErrorMessage?: string;
+}
+
+/**
+ * Factory function untuk membuat local disk storage config
+ * @param options - Konfigurasi untuk menyimpan file ke local disk
+ * @returns MulterOptions untuk local disk storage
+ *
+ * @example
+ * // Simpan gambar ke local
+ * createLocalConfig({
+ *   folder: 'alumni',
+ *   fileTypes: ['image']
+ * })
+ * // File akan disimpan di: public/uploads/alumni/
+ */
+export const createLocalConfig = (
+  options: CreateLocalConfigOptions,
+): MulterOptions => {
+  const { folder, fileTypes, maxSize = 10, customErrorMessage } = options;
+
+  const allowedMimeTypes: string[] = [];
+  const allowedExtensions: string[] = [];
+  let errorMessage = customErrorMessage;
+
+  fileTypes.forEach((type) => {
+    const config = FILE_TYPES[type];
+    allowedMimeTypes.push(...config.mimeTypes);
+    allowedExtensions.push(...config.extensions);
+    if (!errorMessage) {
+      errorMessage = config.errorMessage;
+    }
+  });
+
+  // Path ke folder upload
+  const uploadPath = path.join(process.cwd(), 'public', 'uploads', folder);
+
+  // Buat folder jika belum ada
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+  }
+
+  return {
+    storage: diskStorage({
+      destination: (req, file, cb) => {
+        cb(null, uploadPath);
+      },
+      filename: (req, file, cb) => {
+        // Generate unique filename
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 15);
+        const fileExtension = path.extname(file.originalname);
+        const filename = `${timestamp}-${randomString}${fileExtension}`;
+        cb(null, filename);
+      },
+    }),
+    fileFilter: (req, file, callback) => {
+      const fileExtension = file.originalname
+        .toLowerCase()
+        .substring(file.originalname.lastIndexOf('.'));
+
+      if (fileTypes.includes('any')) {
+        callback(null, true);
+        return;
+      }
+
+      const isValidMimeType = allowedMimeTypes.includes(file.mimetype);
+      const isValidExtension = allowedExtensions.includes(fileExtension);
+
+      if (isValidMimeType && isValidExtension) {
+        callback(null, true);
+      } else {
+        callback(
+          new Error(errorMessage || 'Format file tidak valid') as any,
+          false,
+        );
+      }
+    },
+    limits: {
+      fileSize: maxSize * 1024 * 1024,
     },
   };
 };
@@ -144,32 +223,12 @@ export const createMemoryConfig = (
 interface CreateCloudinaryConfigOptions {
   folder: string;
   fileTypes: (keyof typeof FILE_TYPES)[];
-  maxSize?: number; // in MB
+  maxSize?: number;
   resourceType?: 'image' | 'video' | 'raw' | 'auto';
   transformation?: any[];
   customErrorMessage?: string;
 }
 
-/**
- * Factory function untuk membuat Cloudinary storage config yang fleksibel
- * @param options - Konfigurasi untuk upload ke Cloudinary
- * @returns MulterOptions untuk Cloudinary storage
- *
- * @example
- * // Upload gambar ke Cloudinary
- * createCloudinaryConfig({
- *   folder: 'nestjs/images/profile',
- *   fileTypes: ['image'],
- *   transformation: [{ width: 500, height: 500, crop: 'limit' }]
- * })
- *
- * // Upload PDF ke Cloudinary
- * createCloudinaryConfig({
- *   folder: 'nestjs/documents',
- *   fileTypes: ['pdf'],
- *   resourceType: 'raw'
- * })
- */
 export const createCloudinaryConfig = (
   options: CreateCloudinaryConfigOptions,
 ): MulterOptions => {
@@ -182,7 +241,6 @@ export const createCloudinaryConfig = (
     customErrorMessage,
   } = options;
 
-  // Gabungkan allowed formats
   const allowedFormats: string[] = [];
   fileTypes.forEach((type) => {
     const config = FILE_TYPES[type];
@@ -210,13 +268,37 @@ export const createCloudinaryConfig = (
 };
 
 // ============================================
-// PREDEFINED CONFIGS (untuk backward compatibility)
+// PREDEFINED CONFIGS
 // ============================================
 
 export const multerConfigMemory = createMemoryConfig({
   fileTypes: ['image'],
 });
 
+// export const multerConfigLocalPayment = createLocalConfig({
+//   folder: 'payment',
+//   fileTypes: ['image'],
+// });
+
+// export const multerConfigLocalVideo = createLocalConfig({
+//   folder: 'videos',
+//   fileTypes: ['video'],
+//   maxSize: 100,
+// });
+
+// export const multerConfigLocalPdf = createLocalConfig({
+//   folder: 'documents',
+//   fileTypes: ['pdf'],
+//   maxSize: 20,
+// });
+
+// export const multerConfigLocalPpt = createLocalConfig({
+//   folder: 'presentations',
+//   fileTypes: ['ppt'],
+//   maxSize: 50,
+// });
+
+// CLOUDINARY CONFIGS (untuk yang masih pakai Cloudinary)
 export const multerConfigImage = createCloudinaryConfig({
   folder: 'nestjs/images/profile',
   fileTypes: ['image'],
@@ -243,3 +325,10 @@ export const multerConfigPdf = createCloudinaryConfig({
   resourceType: 'raw',
   maxSize: 20,
 });
+
+export const multerConfigMemoryOnly = {
+  storage: memoryStorage(),
+  limits: {
+    fileSize: 20 * 1024 * 1024, // 20MB - batas kasar, validasi detail di interceptor
+  },
+};

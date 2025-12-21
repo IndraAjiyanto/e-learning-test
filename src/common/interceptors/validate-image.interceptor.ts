@@ -13,6 +13,8 @@ import {
 import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { UploadService } from '../upload/upload.service';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class ValidateImageInterceptor implements NestInterceptor {
@@ -31,52 +33,52 @@ export class ValidateImageInterceptor implements NestInterceptor {
       context.getHandler(),
     );
 
-    // kalau handler gak pakai @ValidateImage, langsung lanjut aja
     if (!options) return next.handle();
 
-    // deteksi apakah pakai FileInterceptor atau FilesInterceptor atau FileFieldsInterceptor
     const files: Express.Multer.File[] = [];
 
     if (Array.isArray(request.files)) {
-      // FilesInterceptor - banyak file dengan nama sama
       files.push(...request.files);
     } else if (typeof request.files === 'object' && request.files !== null) {
-      // FileFieldsInterceptor - banyak file dengan nama beda
       Object.values(
         request.files as { [fieldname: string]: Express.Multer.File[] },
       ).forEach((fileArray) => {
         files.push(...fileArray);
       });
     } else if (request.file) {
-      // FileInterceptor - satu file
       files.push(request.file);
     }
 
-    // kalau gak ada file, skip
     if (!files.length) return next.handle();
 
     try {
       const uploadResults: string[] = [];
 
       for (const file of files) {
-        // Validasi file size
+        // ========================================
+        // VALIDASI 1: FILE SIZE
+        // ========================================
         if (options.maxSize && file.size > options.maxSize) {
           throw new Error(
-            `File size exceeds maximum allowed size of ${(options.maxSize / 1024 / 1024).toFixed(2)}MB`,
+            `Ukuran file terlalu besar. Maksimal ${(options.maxSize / 1024 / 1024).toFixed(2)}MB`,
           );
         }
 
-        // Validasi file type
+        // ========================================
+        // VALIDASI 2: FILE TYPE (MIME TYPE)
+        // ========================================
         if (
           options.allowedTypes &&
           !options.allowedTypes.includes(file.mimetype)
         ) {
           throw new Error(
-            `File type ${file.mimetype} is not allowed. Allowed types: ${options.allowedTypes.join(', ')}`,
+            `Tipe file tidak diizinkan. Hanya: ${options.allowedTypes.join(', ')}`,
           );
         }
 
-        // Validasi dimensi gambar (hanya jika semua options dimensi ada)
+        // ========================================
+        // VALIDASI 3: IMAGE DIMENSIONS
+        // ========================================
         if (
           options.minWidth &&
           options.maxWidth &&
@@ -91,15 +93,51 @@ export class ValidateImageInterceptor implements NestInterceptor {
           });
         }
 
-        const imageUrl = await this.uploadService.uploadToCloudinary(
-          file,
-          options.folder,
-          options.skipTransformation ?? false, // use option from decorator, default false
-        );
-        uploadResults.push(imageUrl);
+        // ========================================
+        // SIMPAN FILE (SETELAH SEMUA VALIDASI LOLOS)
+        // ========================================
+
+        // Cek apakah file sudah ada di disk (dari diskStorage)
+        if (file.path) {
+          // File sudah disimpan oleh diskStorage
+          const relativePath = file.path
+            .replace(process.cwd(), '')
+            .replace(/\\/g, '/')
+            .replace('/public', '');
+          uploadResults.push(relativePath);
+          
+        } else if (file.buffer) {
+          // File di memory - simpan ke local disk
+          const uploadDir = path.join(
+            process.cwd(),
+            'public',
+            'asset',
+            options.folder || 'images',
+          );
+
+          // Buat folder jika belum ada
+          await fs.mkdir(uploadDir, { recursive: true });
+
+          // Generate unique filename
+          const timestamp = Date.now();
+          const randomString = Math.random().toString(36).substring(2, 15);
+          const fileExtension = path.extname(file.originalname);
+          const filename = `${timestamp}-${randomString}${fileExtension}`;
+
+          // Full path file
+          const filePath = path.join(uploadDir, filename);
+
+          // Simpan file ke disk
+          await fs.writeFile(filePath, file.buffer);
+
+          // URL relatif untuk database
+          const fileUrl = `/asset/${options.folder || 'images'}/${filename}`;
+          uploadResults.push(fileUrl);
+        } else {
+          throw new Error('File tidak valid: tidak ada buffer atau path');
+        }
       }
 
-      // taruh hasil upload di body agar bisa diakses di controller
       request.body.uploadedImageUrls = uploadResults;
     } catch (err) {
       throw new BadRequestException(err.message);
