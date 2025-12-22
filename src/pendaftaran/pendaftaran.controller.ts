@@ -18,7 +18,7 @@ import { UpdatePendaftaranDto } from './dto/update-pendaftaran.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigPayment } from 'src/common/config/multer.config';
+import { multerConfigMemoryOnly, multerConfigPayment } from 'src/common/config/multer.config';
 import { Request, Response } from 'express';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -32,13 +32,13 @@ export class PendaftaranController {
   @Roles('user')
   @Post(':userId/:kelasId')
   @UseInterceptors(
-    FileInterceptor('file', { storage: memoryStorage() }),
+    FileInterceptor('file', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/registration',
+    folder: 'registration',
   })
   async create(
     @Param('userId') userId: number,
@@ -56,7 +56,7 @@ export class PendaftaranController {
       const pendaftaran =
         await this.pendaftaranService.create(createPendaftaranDto);
       if (pendaftaran == false) {
-        await this.pendaftaranService.getPublicIdFromUrl(
+        await this.pendaftaranService.deleteFile(
           createPendaftaranDto.file,
         );
         req.flash(
