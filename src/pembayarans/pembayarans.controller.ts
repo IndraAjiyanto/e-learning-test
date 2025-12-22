@@ -22,6 +22,7 @@ import { Request, Response } from 'express';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { memoryStorage } from 'multer';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('pembayarans')
@@ -31,13 +32,13 @@ export class PembayaransController {
   @Roles('user')
   @Post(':userId/:kelasId')
   @UseInterceptors(
-    FileInterceptor('file', { storage: memoryStorage() }),
+    FileInterceptor('file',multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/payment',
+    folder: 'payment',
   })
   async create(
     @Param('userId') userId: number,
@@ -54,7 +55,7 @@ export class PembayaransController {
       const pembayaran =
         await this.pembayaransService.create(createPembayaranDto);
       if (pembayaran == false) {
-        await this.pembayaransService.getPublicIdFromUrl(
+        await this.pembayaransService.deleteFile(
           createPembayaranDto.file,
         );
         req.flash(
@@ -78,13 +79,13 @@ export class PembayaransController {
   @Roles('user')
   @Post(':userId/:kelasId/:cicilanId')
   @UseInterceptors(
-    FileInterceptor('file', { storage: memoryStorage() }),
+    FileInterceptor('file', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/payment',
+    folder: 'payment',
   })
   async createPembayaranCicilan(
     @Param('cicilanId') cicilanId: number,
@@ -103,7 +104,7 @@ export class PembayaransController {
       const pembayaran =
         await this.pembayaransService.create(createPembayaranDto);
       if (pembayaran == false) {
-        await this.pembayaransService.getPublicIdFromUrl(
+        await this.pembayaransService.deleteFile(
           createPembayaranDto.file,
         );
         req.flash(
