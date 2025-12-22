@@ -35,38 +35,6 @@ export class KerjaSamaService {
     return kerja_sama;
   }
 
-  async getPublicIdFromUrl(url: string) {
-    // Pisahkan berdasarkan "/upload/"
-    const parts = url.split('/upload/');
-    if (parts.length < 2) {
-      return null;
-    }
-
-    // Ambil bagian setelah upload/
-    let path = parts[1];
-
-    // Hapus "v1234567890/" (versi auto Cloudinary)
-    path = path.replace(/^v[0-9]+\/?/, '');
-
-    // Buang extension (.jpg, .png, .pdf, dll)
-    path = path.replace(/\.[^.]+$/, '');
-
-
-    await this.deleteFileIfExists(path);
-  }
-
-  async deleteFileIfExists(publicId: string) {
-    try {
-      const result = await cloudinary.uploader.destroy(publicId);
-
-      if (result.result === 'not found') {
-      } else {
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async update(kerja_samaId: number, updateKerjaSamaDto: UpdateKerjaSamaDto) {
     const kerja_sama = await this.findOne(kerja_samaId);
     if (!kerja_sama) {

@@ -23,6 +23,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { memoryStorage } from 'multer';
 import { Request, Response } from 'express';
 import { Proses } from 'src/entities/logbook.entity';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('logbook')
@@ -32,13 +33,13 @@ export class LogbookController {
   @Roles('user','admin')
   @Post(':pertemuanId')
   @UseInterceptors(
-    FileInterceptor('dokumentasi', { storage: memoryStorage() }),
+    FileInterceptor('dokumentasi',multerConfigMemoryOnly ),
     ValidateImageInterceptor,
   )
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/logbook/user',
+    folder: 'logbook/user',
   })
   async create(
     @Param('pertemuanId') pertemuanId: number,
@@ -142,13 +143,13 @@ export class LogbookController {
   @Roles('admin', 'user')
   @Patch(':logbookId')
   @UseInterceptors(
-    FileInterceptor('dokumentasi', { storage: memoryStorage() }),
+    FileInterceptor('dokumentasi', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/logbook/user',
+    folder: 'logbook/user',
   })
   async update(
     @UploadedFile() dokumentasi: Express.Multer.File,
@@ -160,7 +161,7 @@ export class LogbookController {
     try {
       const logbook = await this.logbookService.findOne(logbookId);
       if (dokumentasi) {
-        await this.logbookService.getPublicIdFromUrl(logbook.dokumentasi);
+        await this.logbookService.deleteFile(logbook.dokumentasi);
         updateLogbookDto.dokumentasi =
           req.body.uploadedImageUrls?.[0] || dokumentasi.path;
       }
@@ -214,6 +215,8 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     try {
+      const logbook = await this.logbookService.findOne(logbookId);
+      await this.logbookService.deleteFile(logbook.dokumentasi);
       await this.logbookService.remove(logbookId);
       req.flash('success', 'logbook successfully deleted');
       res.redirect(`/pertemuans/${pertemuanId}`);

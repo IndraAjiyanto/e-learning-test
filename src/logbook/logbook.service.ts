@@ -12,6 +12,8 @@ import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class LogbookService {
@@ -133,35 +135,24 @@ export class LogbookService {
     return pertemuan;
   }
 
-  async getPublicIdFromUrl(url: string) {
-    // Pisahkan berdasarkan "/upload/"
-    const parts = url.split('/upload/');
-    if (parts.length < 2) {
-      return null;
-    }
-
-    // Ambil bagian setelah upload/
-    let path = parts[1];
-
-    // Hapus "v1234567890/" (versi auto Cloudinary)
-    path = path.replace(/^v[0-9]+\/?/, '');
-
-    // Buang extension (.jpg, .png, .pdf, dll)
-    path = path.replace(/\.[^.]+$/, '');
-
-
-    await this.deleteFileIfExists(path);
-  }
-
-  async deleteFileIfExists(publicId: string) {
+    async deleteFile(url: string) {
+    if (!url) return;
+  
     try {
-      const result = await cloudinary.uploader.destroy(publicId);
-
-      if (result.result === 'not found') {
-      } else {
-      }
+      // Convert URL ke full path
+      // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
+      const filePath = path.join(process.cwd(), 'public', url);
+      
+      // Hapus file
+      await fs.unlink(filePath);
+      console.log('File deleted:', filePath);
     } catch (error) {
-      throw error;
+      if (error.code === 'ENOENT') {
+        console.log('File not found, skipping delete:', url);
+      } else {
+        console.error('Error deleting file:', error);
+        // Tidak throw error agar proses lain tetap jalan
+      }
     }
   }
 
