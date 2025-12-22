@@ -69,6 +69,38 @@ export class AlumniController {
     }
   }
 
+    @Roles('super_admin')
+  @Post('create/:kategoriId')
+  @UseInterceptors(
+    FileInterceptor('profile', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 300,
+    maxWidth: 2000,
+    minHeight: 300,
+    maxHeight: 2000,
+    maxSize: 5 * 1024 * 1024, // 1MB max
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'alumni',
+  })
+  async createAlumni(
+    @Param('kategoriId') kategoriId: number,
+    @Body() createAlumnusDto: CreateAlumnusDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
+      await this.alumniService.create(createAlumnusDto);
+      req.flash('success', 'Alumni successfully created');
+      res.redirect(`/kategoris/${kategoriId}`);
+    } catch (error) {
+      req.flash('error', error.message || 'Alumni failed to create');
+      res.redirect(`/kategoris/${kategoriId}`);
+    }
+  }
+
   @Roles('super_admin')
   @Get('formCreate/:kelasId')
   async formCreate(
@@ -80,6 +112,17 @@ export class AlumniController {
   }
 
   @Roles('super_admin')
+  @Get('kategori/formCreate/:kategoriId')
+  async formCreateByKategori(
+    @Param('kategoriId') kategoriId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const kelas = await this.alumniService.findKelasByKategori(kategoriId);
+    res.render('super_admin/alumni/createAlumni', { user: req.user, kategoriId, kelas });
+  }
+
+  @Roles('super_admin')
   @Get('formEdit/:alumniId')
   async formEdit(
     @Param('alumniId') alumniId: number,
@@ -88,6 +131,17 @@ export class AlumniController {
   ) {
     const alumni = await this.alumniService.findOne(alumniId);
     res.render('super_admin/alumni/edit', { user: req.user, alumni });
+  }
+
+  @Roles('super_admin')
+  @Get('kategori/formEdit/:alumniId')
+  async formEditAlumni(
+    @Param('alumniId') alumniId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const alumni = await this.alumniService.findOne(alumniId);
+    res.render('super_admin/alumni/editAlumni', { user: req.user, alumni });
   }
 
   @Roles('super_admin')
@@ -131,6 +185,46 @@ export class AlumniController {
   }
 
   @Roles('super_admin')
+  @Patch('kategori/:alumniId/:kategoriId')
+  @UseInterceptors(
+    FileInterceptor('profile', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 300,
+    maxWidth: 2000,
+    minHeight: 300,
+    maxHeight: 2000,
+    maxSize: 5 * 1024 * 1024, // 5MB max (kept consistent with create)
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'alumni',
+  })
+  async updateAlumni(
+    @UploadedFile() profile: Express.Multer.File,
+    @Param('alumniId') alumniId: number,
+    @Param('kategoriId') kategoriId: number,
+    @Body() updateAlumnusDto: UpdateAlumnusDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      const alumni = await this.alumniService.findOne(alumniId);
+      if (profile) {
+        // remove old image if exists (public id extraction)
+        await this.alumniService.deleteFile(alumni.profile);
+        // ValidateImageInterceptor uploads and sets uploadedImageUrls on the body (same as create)
+        updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
+      }
+      await this.alumniService.update(alumniId, updateAlumnusDto);
+      req.flash('success', 'Alumni successfully updated');
+      res.redirect(`/kategoris/${kategoriId}`);
+    } catch (error) {
+      req.flash('error', error.message || 'Alumni failed to update');
+      res.redirect(`/kategoris/${kategoriId}`);
+    }
+  }
+
+  @Roles('super_admin')
   @Delete(':alumniId/:kelasId')
   async remove(
     @Param('alumniId') alumniId: number,
@@ -151,6 +245,30 @@ export class AlumniController {
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to remove');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+    }
+  }
+
+  @Roles('super_admin')
+  @Delete('kategori/:alumniId/:kategoriId')
+  async removeAlumni(
+    @Param('alumniId') alumniId: number,
+    @Param('kategoriId') kategoriId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      const alumni = await this.alumniService.findOne(alumniId);
+      if (!alumni) {
+        req.flash('error', 'Alumni not found');
+        res.redirect(`/kategoris/${kategoriId}`);
+      }
+      await this.alumniService.deleteFile(alumni.profile);
+      await this.alumniService.remove(alumniId);
+      req.flash('success', 'Alumni successfully removed');
+      res.redirect(`/kategoris/${kategoriId}`);
+    } catch (error) {
+      req.flash('error', error.message || 'Alumni failed to remove');
+      res.redirect(`/kategoris/${kategoriId}`);
     }
   }
 }

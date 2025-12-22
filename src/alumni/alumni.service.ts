@@ -39,9 +39,16 @@ export class AlumniService {
     return await this.kelasRepository.find();
   }
 
+
+  async findKelasByKategori(kategoriId: number) {
+    return await this.kelasRepository.find({
+      where: { kategori: { id: kategoriId } },
+    });
+  }
+
   async findOne(alumniId: number) {
     const alumni = await this.alumniRepository.findOne({
-      where: { id: alumniId },relations: ['kelas']
+      where: { id: alumniId },relations: ['kelas','kelas.kategori']
     });
     if (!alumni) {
       throw new NotFoundException('Alumni not found');
