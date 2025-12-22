@@ -93,7 +93,7 @@ export class AlumniController {
   @Roles('super_admin')
   @Patch(':alumniId/:kelasId')
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemory),
+    FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({

@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   createMemoryConfig,
   multerConfigMemory,
+  multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -39,7 +40,7 @@ export class GambarBenefitController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemory),
+    FileInterceptor('gambar', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -49,7 +50,7 @@ export class GambarBenefitController {
     maxHeight: 1500,
     maxSize: 3 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/gambar_benefit',
+    folder: 'gambar_benefit',
   })
   async create(
     @Body() createGambarBenefitDto: CreateGambarBenefitDto,
@@ -101,8 +102,7 @@ export class GambarBenefitController {
   @Patch(':id')
   @UseInterceptors(
     FileInterceptor(
-      'gambar',
-      createMemoryConfig({ fileTypes: ['image'], maxSize: 5 }),
+      'gambar', multerConfigMemoryOnly
     ),
     ValidateImageInterceptor,
   )
@@ -113,7 +113,7 @@ export class GambarBenefitController {
     maxHeight: 1500,
     maxSize: 3 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/gambar_benefit',
+    folder: 'gambar_benefit',
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
@@ -125,7 +125,7 @@ export class GambarBenefitController {
     try {
       const gambar_benefit = await this.gambarBenefitService.findOne(+id);
       if (gambar) {
-        await this.gambarBenefitService.getPublicIdFromUrl(
+        await this.gambarBenefitService.deleteFile(
           gambar_benefit.gambar,
         );
         updateGambarBenefitDto.gambar = req.body.uploadedImageUrls?.[0];
@@ -147,13 +147,13 @@ export class GambarBenefitController {
     @Req() req: Request,
   ) {
     try {
-      const gambar_benefit = await this.gambarBenefitService.findOne(+id);
+      const gambar_benefit = await this.gambarBenefitService.findOne(id);
       if (!gambar_benefit) {
         req.flash('error', 'Image Benefit not found');
         res.redirect('/gambar-benefit');
       }
-      await this.gambarBenefitService.getPublicIdFromUrl(gambar_benefit.gambar);
-      await this.gambarBenefitService.remove(+id);
+      await this.gambarBenefitService.deleteFile(gambar_benefit.gambar);
+      await this.gambarBenefitService.remove(id);
       req.flash('success', 'Image Benefit successfully removed');
       res.redirect('/gambar-benefit');
     } catch (error) {
