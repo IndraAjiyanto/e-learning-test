@@ -32,6 +32,10 @@
               <span class='text-xs text-gray-500' x-text="kelasItem.metode"></span>
               <a
                 :href="`/kelass/detail/kelas/admin/${kelasItem.id}`"
+                  @click.prevent="
+    localStorage.setItem('kelasPrevUrl', window.location.href);
+    window.location.href = `/kelass/detail/kelas/admin/${kelasItem.id}`;
+  "
                 class='text-xs text-blue-600 hover:text-blue-800 font-medium'
               >
                 View Details →

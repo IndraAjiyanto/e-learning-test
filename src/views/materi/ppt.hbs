@@ -1,103 +1,12 @@
 <div
   class='max-w-7xl mx-auto px-4 py-10 pt-28'
   x-data='{
-    slides: [],
-    currentSlide: 0,
     slideTitle: "",
     pptFile: "",
-    isLoading: false,
     async selectMaterial(title, file) {
       this.slideTitle = title;
       this.pptFile = file;
-      await this.loadPPTX(file);
     },
-    async loadPPTX(url) {
-      this.slides = [];
-      this.currentSlide = 0;
-      this.isLoading = true;
-      
-      const container = document.getElementById("pptx-slide");
-      if (container) {
-        container.innerHTML = "<div style=\"display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;font-size:16px;\"><svg style=\"width:24px;height:24px;margin-right:8px;animation:spin 1s linear infinite;\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15\"></path></svg>Loading presentation...</div><style>@keyframes spin { to { transform: rotate(360deg); }}</style>";
-      }
-      
-      try {
-        console.log("Loading PPTX from:", url);
-        
-        // Gunakan office viewer untuk render PPTX
-        container.innerHTML = "";
-        
-        // Buat container untuk slides
-        const slidesContainer = document.createElement("div");
-        slidesContainer.id = "slides-container";
-        slidesContainer.style.cssText = "width:100%;height:100%;position:relative;overflow:hidden;background:#fff;";
-        container.appendChild(slidesContainer);
-        
-        // Render menggunakan Google Docs Viewer atau Office Online
-        const viewerUrl = https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)};
-        
-        const iframe = document.createElement("iframe");
-        iframe.src = viewerUrl;
-        iframe.style.cssText = "width:100%;height:100%;border:none;";
-        iframe.setAttribute("frameborder", "0");
-        
-        slidesContainer.appendChild(iframe);
-        
-        // Fetch untuk hitung jumlah slide
-        const response = await fetch(url);
-        const arrayBuffer = await response.arrayBuffer();
-        const zip = await JSZip.loadAsync(arrayBuffer);
-        
-        const slideFiles = Object.keys(zip.files)
-          .filter(name => name.match(/ppt\/slides\/slide\d+\.xml/))
-          .sort((a, b) => {
-            const numA = parseInt(a.match(/\d+/)[0]);
-            const numB = parseInt(b.match(/\d+/)[0]);
-            return numA - numB;
-          });
-        
-        this.slides = slideFiles.map((_, i) => i);
-        console.log("Found", this.slides.length, "slides");
-        
-        this.isLoading = false;
-        
-      } catch (error) {
-        console.error("Error loading PPTX:", error);
-        this.isLoading = false;
-        if (container) {
-          container.innerHTML = `
-            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ef4444;flex-direction:column;gap:16px;padding:20px;">
-              <svg style="width:64px;height:64px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <div style="font-size:18px;font-weight:600;">Failed to load presentation</div>
-              <div style="font-size:14px;color:#94a3b8;text-align:center;max-width:400px;">
-                ${error.message}
-              </div>
-              <a href="${url}" target="_blank" style="color:#3b82f6;text-decoration:underline;font-size:14px;margin-top:8px;">
-                Download and open locally
-              </a>
-            </div>
-          `;
-        }
-      }
-    },
-    renderSlide() {
-      // Office viewer handles slide navigation internally
-    },
-    nextSlide() {
-      if (this.currentSlide < this.slides.length - 1) {
-        this.currentSlide++;
-      }
-    },
-    prevSlide() {
-      if (this.currentSlide > 0) {
-        this.currentSlide--;
-      }
-    },
-    goToSlide(index) {
-      this.currentSlide = index;
-    }
   }'
 >
 
@@ -106,18 +15,8 @@
       href='/kelass/{{pertemuan.minggu.kelas.id}}'
       class='inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
     >
-      <svg
-        class='w-5 h-5'
-        fill='none'
-        stroke='currentColor'
-        viewBox='0 0 24 24'
-      >
-        <path
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          stroke-width='2'
-          d='M15 19l-7-7 7-7'
-        ></path>
+      <svg class='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 19l-7-7 7-7'></path>
       </svg>
       {{t "test.material.ppt.backToProgram"}}
     </a>
@@ -125,48 +24,29 @@
 
   <div class='grid grid-cols-1 lg:grid-cols-3 gap-8'>
 
-    <!-- Slide Viewer -->
+    <!-- PPT Viewer -->
     <div class='col-span-2'>
-      <div
-        class='bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden'
-      >
-        <!-- PPT Viewer using PptxViewJS -->
+      <div class='bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden'>
+        
+        <!-- PPT Display Container -->
         <template x-if='pptFile'>
-          <div class='relative h-[600px] bg-gradient-to-br from-slate-50 to-white flex items-center justify-center'>
-            <div id='pptx-slide' class='w-full h-full overflow-auto'></div>
-
-            <!-- Slide Counter -->
-            <div 
-              x-show='slides.length > 0 && !isLoading'
-              class='absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white px-4 py-2 rounded-full shadow-lg'>
-              <span x-text='slides.length'></span>
-              <span class='mx-1'>slides</span>
-            </div>
+          <div class='relative h-[600px] bg-white'>
+            <!-- Iframe untuk tampilkan PPT langsung -->
+            <iframe
+              x-bind:src="pptFile"
+              class='w-full h-full border-none'
+              frameborder='0'
+            ></iframe>
           </div>
         </template>
 
         <!-- Empty State -->
         <template x-if='!pptFile'>
-          <div
-            class='h-[600px] flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50'
-          >
+          <div class='h-[600px] flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50'>
             <div class='text-center px-6'>
-              <div
-                class='p-6 bg-white/50 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center shadow-lg'
-              >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  class='h-12 w-12 text-slate-400'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke='currentColor'
-                >
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    stroke-width='2'
-                    d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-                  />
+              <div class='p-6 bg-white/50 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center shadow-lg'>
+                <svg xmlns='http://www.w3.org/2000/svg' class='h-12 w-12 text-slate-400' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                  <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
                 </svg>
               </div>
               <p class='text-slate-600 text-lg font-semibold mb-2'>{{t "test.material.ppt.noPresentationSelected"}}</p>
@@ -182,27 +62,14 @@
           x-text="slideTitle || '{{t "test.material.ppt.selectPPTInstruction"}}'"
         ></h1>
       </div>
-    </div>    <!-- Materials Sidebar -->
-    <div
-      class='bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl shadow-lg overflow-hidden'
-    >
+    </div>
+
+    <!-- Materials Sidebar -->
+    <div class='bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl shadow-lg overflow-hidden'>
       <div class='bg-gradient-to-r from-slate-900 to-slate-800 px-6 py-4'>
-        <h2
-          class='text-xl font-semibold text-white flex items-center font-montserrat'
-        >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            class='h-6 w-6 mr-2'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10'
-            />
+        <h2 class='text-xl font-semibold text-white flex items-center font-montserrat'>
+          <svg xmlns='http://www.w3.org/2000/svg' class='h-6 w-6 mr-2' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' />
           </svg>
           {{t "test.material.ppt.materiProgram"}}
         </h2>
@@ -214,13 +81,11 @@
             {{#each materi}}
               <button
                 class='w-full text-left px-4 py-4 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all duration-200 shadow-sm hover:shadow-md group'
-                @click='selectMaterial({{judul}}, {{file}})'
+                @click='selectMaterial("{{judul}}", "{{file}}")'
               >
                 <div class='flex items-center justify-between'>
                   <div class='flex items-center flex-1'>
-                    <span
-                      class='font-medium text-slate-900 group-hover:text-slate-700 transition-colors duration-200'
-                    >{{judul}}</span>
+                    <span class='font-medium text-slate-900 group-hover:text-slate-700 transition-colors duration-200'>{{judul}}</span>
                   </div>
                   <div class='flex items-center gap-2'>
                     <!-- Download Icon -->
@@ -241,19 +106,8 @@
           </div>
         {{else}}
           <div class='text-center py-8'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              class='h-12 w-12 text-slate-400 mx-auto mb-3'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-              />
+            <svg xmlns='http://www.w3.org/2000/svg' class='h-12 w-12 text-slate-400 mx-auto mb-3' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+              <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
             </svg>
             <p class='text-slate-500 text-sm font-medium'>{{t "test.material.ppt.noMateriAvailable"}}</p>
             <p class='text-slate-400 text-xs mt-1'>{{t "test.material.ppt.spanNoMateriAvailable"}}</p>
@@ -264,5 +118,5 @@
   </div>
 </div>
 
-<!-- JSZip untuk extract PPTX -->
+<!-- JSZip untuk extract PPTX (jika diperlukan di masa depan) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>

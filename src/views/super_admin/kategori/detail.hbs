@@ -253,13 +253,12 @@
     {{> kategori/flow_tab }}
 </div>
 </div>
-</div>
 
 <script>
 function tabData() {
   return {
     search: '',
-    tab: localStorage.getItem('activeTab') || 'kelas',
+    tab: localStorage.getItem('activeTabKategori') || 'kelas',
     data: localStorage.getItem('activeData')
       ? JSON.parse(localStorage.getItem('activeData'))
       : [],
@@ -267,13 +266,13 @@ function tabData() {
     async init() {
       if( !this.tab ) {
           this.tab = 'kelas';
-          localStorage.setItem('activeTab', 'kelas');
+          localStorage.setItem('activeTabKategori', 'kelas');
       }
     },
     
     async toggleFetch(url, tabName) {
       this.tab = tabName;
-      localStorage.setItem('activeTab', tabName);
+      localStorage.setItem('activeTabKategori', tabName);
       
       try {
         if(url === '') {

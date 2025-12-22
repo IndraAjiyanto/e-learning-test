@@ -3,22 +3,38 @@
   <div class="mb-6 mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl space-y-8 relative">
 
     <!-- Tombol Back -->
-    <div>
-      <a href="/kelass" 
-         class="inline-flex items-center text-gray-600 text-base font-medium hover:underline">
-        <svg xmlns="http://www.w3.org/2000/svg" 
-             class="h-5 w-5 mr-1" 
-             fill="none" 
-             viewBox="0 0 24 24" 
-             stroke="currentColor">
-          <path stroke-linecap="round" 
-                stroke-linejoin="round" 
-                stroke-width="2" 
-                d="M15 19l-7-7 7-7" />
-        </svg>
-        Back
-      </a>
-    </div>
+<div x-data="{
+  prev: '/kelass',
+  init() {
+    this.prev = localStorage.getItem('kelasPrevUrl') || '/kelass';
+  },
+  goBack() {
+    const prevUrl = localStorage.getItem('kelasPrevUrl');
+    if (prevUrl) {
+      localStorage.removeItem('kelasPrevUrl');
+      window.location.href = prevUrl;
+    } else {
+      window.location.href = '/kelass';
+    }
+  }
+}" x-init="init()">
+  <a 
+    x-bind:href="prev"
+    @click.prevent="goBack()"
+    class="inline-flex items-center text-gray-600 text-base font-medium hover:underline cursor-pointer">
+    <svg xmlns="http://www.w3.org/2000/svg" 
+         class="h-5 w-5 mr-1" 
+         fill="none" 
+         viewBox="0 0 24 24" 
+         stroke="currentColor">
+      <path stroke-linecap="round" 
+            stroke-linejoin="round" 
+            stroke-width="2" 
+            d="M15 19l-7-7 7-7" />
+    </svg>
+    Back
+  </a>
+</div>
 
     <!-- Tombol Aksi (Top Right Corner) -->
     <div class="absolute top-4 right-4 flex items-center gap-2 z-10">
