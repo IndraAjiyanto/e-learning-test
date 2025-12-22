@@ -33,11 +33,11 @@
       >
         <!-- PDF Viewer ketika sudah dipilih -->
         <div x-show='pdfSrc'>
-          <iframe
-            class='h-[600px] w-full'
-            x-bind:src="'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(pdfSrc)"
-          >
-          </iframe>
+<iframe
+  class='h-[600px] w-full'
+  x-bind:src="pdfSrc"
+  type="application/pdf"
+></iframe>
         </div>
 
         <!-- Tampilan default ketika belum ada PDF yang dipilih -->

@@ -190,7 +190,7 @@
   <!-- ===================== TAB SECTION ===================== -->
   <div
     class='mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl'
-    x-data="tabData()"
+    x-data="tabData()" x-init="init()"
   >
 
     <!-- Tab Navigation -->
@@ -200,7 +200,7 @@
         :class="tab === 'kelas' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
       >
-        Classes
+        Program
       </button>
       <button
         @click="toggleFetch('/kategoris/alumni/{{kategori.id}}', 'alumni')"
@@ -263,6 +263,13 @@ function tabData() {
     data: localStorage.getItem('activeData')
       ? JSON.parse(localStorage.getItem('activeData'))
       : [],
+
+    async init() {
+      if( !this.tab ) {
+          this.tab = 'kelas';
+          localStorage.setItem('activeTab', 'kelas');
+      }
+    },
     
     async toggleFetch(url, tabName) {
       this.tab = tabName;
