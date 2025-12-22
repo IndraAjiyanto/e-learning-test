@@ -30,10 +30,6 @@ export class TugassService {
     return await this.tugasRepository.save(tugas);
   }
 
-  findAll() {
-    return `This action returns all tugass`;
-  }
-
   async findOne(id: number) {
     const tugas = await this.tugasRepository.findOne({ where: { id: id } });
     if (!tugas) {

@@ -77,21 +77,6 @@ export class TugassController {
     res.render('admin/tugas/create', { user: req.user, pertemuanId });
   }
 
-  @Get()
-  findAll() {
-    return this.tugassService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tugassService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTugassDto: UpdateTugassDto) {
-    return this.tugassService.update(+id, updateTugassDto);
-  }
-
   @Roles('admin')
   @Delete(':tugasId/:pertemuanId')
   async remove(

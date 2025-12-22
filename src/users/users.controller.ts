@@ -29,6 +29,7 @@ import {
   createMemoryConfig,
   multerConfigImage,
   multerConfigMemory,
+  multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
@@ -112,7 +113,7 @@ export class UsersController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemory),
+    FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -122,7 +123,7 @@ export class UsersController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024, // 3MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/profile',
+    folder: 'profile_user',
     skipTransformation: true, // profile images are already validated, no need transformation
   })
   async create(
@@ -221,7 +222,7 @@ export class UsersController {
   @Roles('super_admin')
   @Patch('super_admin/:userId')
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemory),
+    FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -231,7 +232,7 @@ export class UsersController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024, // 1MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/profile',
+    folder: 'profile_user',
     skipTransformation: true, // profile images are already validated, no need transformation
   })
   async updateAdmin(
@@ -245,7 +246,7 @@ export class UsersController {
       const user = await this.usersService.findOne(userId);
       if (profile) {
         if (user.profile) {
-          await this.usersService.getPublicIdFromUrl(user.profile);
+          await this.usersService.deleteFile(user.profile);
         }
         updateUserDto.profile = req.body.uploadedImageUrls?.[0];
       }
@@ -286,7 +287,7 @@ export class UsersController {
   @Roles('user', 'admin', 'super_admin')
   @Patch('update/profile/:userId')
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemory),
+    FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -296,7 +297,7 @@ export class UsersController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024, // 5MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/profile',
+    folder: 'profile_user',
     skipTransformation: true, // profile images are already validated, no need transformation
   })
   async updateProfile(
@@ -312,7 +313,7 @@ export class UsersController {
       if (profile) {
         // Hanya hapus foto lama jika user sudah punya foto profile sebelumnya
         if (user.profile) {
-          await this.usersService.getPublicIdFromUrl(user.profile);
+          await this.usersService.deleteFile(user.profile);
         }
         updateProfileDto.profile = req.body.uploadedImageUrls?.[0];
       }
@@ -347,7 +348,7 @@ export class UsersController {
         req.flash('error', 'User not found');
         res.redirect('/users');
       }
-      await this.usersService.getPublicIdFromUrl(user.profile);
+      await this.usersService.deleteFile(user.profile);
 
       await this.usersService.remove(id);
 
