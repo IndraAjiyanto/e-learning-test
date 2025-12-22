@@ -23,6 +23,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   createMemoryConfig,
   multerConfigMemory,
+  multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
@@ -39,13 +40,13 @@ export class TeamLeadController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemory),
+    FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 1MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/profile',
+    folder: 'profile_teamLead',
   })
   async create(
     @Body() createTeamLeadDto: CreateTeamLeadDto,
@@ -91,13 +92,13 @@ export class TeamLeadController {
   @Roles('super_admin')
   @Patch(':id')
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemory),
+    FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 1MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/profile',
+    folder: 'profile_teamLead',
   })
   async update(
     @UploadedFile() profile: Express.Multer.File,
@@ -109,7 +110,7 @@ export class TeamLeadController {
     try {
       const teamLead = await this.teamLeadService.findOne(id);
       if (profile) {
-        await this.teamLeadService.getPublicIdFromUrl(teamLead.profile);
+        await this.teamLeadService.deleteFile(teamLead.profile);
         updateTeamLeadDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.teamLeadService.update(id, updateTeamLeadDto);
@@ -134,7 +135,7 @@ export class TeamLeadController {
         req.flash('error', 'Team Lead not found');
         res.redirect('/team-lead');
       }
-      await this.teamLeadService.getPublicIdFromUrl(teamLead.profile);
+      await this.teamLeadService.deleteFile(teamLead.profile);
       await this.teamLeadService.remove(id);
       req.flash('success', 'Team Lead deleted successfully');
       res.redirect('/team-lead');

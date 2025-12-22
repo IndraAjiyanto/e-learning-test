@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TeamLead } from 'src/entities/team_lead.entity';
 import { Repository } from 'typeorm';
 import cloudinary from 'src/common/config/multer.config';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class TeamLeadService {
@@ -47,39 +49,24 @@ export class TeamLeadService {
     await this.teamLeadRepository.remove(teamLead);
   }
 
-  async getPublicIdFromUrl(url: string) {
-    // Pisahkan berdasarkan "/upload/"
-    const parts = url.split('/upload/');
-    if (parts.length < 2) {
-      return null;
-    }
+  async deleteFile(url: string) {
+  if (!url) return;
 
-    // Ambil bagian setelah upload/
-    let path = parts[1];
-
-    // Hapus "v1234567890/" (versi auto Cloudinary)
-    path = path.replace(/^v[0-9]+\/?/, '');
-
-    // Buang extension (.jpg, .png, .pdf, dll)
-    path = path.replace(/\.[^.]+$/, '');
-
-    console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
-
-    await this.deleteFileIfExists(path);
-  }
-
-  async deleteFileIfExists(publicId: string) {
-    try {
-      const result = await cloudinary.uploader.destroy(publicId);
-
-      if (result.result === 'not found') {
-        console.log('File not found in Cloudinary.');
-      } else {
-        console.log('File deleted from Cloudinary:', result);
-      }
-    } catch (error) {
-      console.error('Error deleting file from Cloudinary:', error);
-      throw error;
+  try {
+    // Convert URL ke full path
+    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
+    const filePath = path.join(process.cwd(), 'public', url);
+    
+    // Hapus file
+    await fs.unlink(filePath);
+    console.log('File deleted:', filePath);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.log('File not found, skipping delete:', url);
+    } else {
+      console.error('Error deleting file:', error);
+      // Tidak throw error agar proses lain tetap jalan
     }
   }
+}
 }
