@@ -23,6 +23,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   createMemoryConfig,
   multerConfigMemory,
+  multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
@@ -39,13 +40,13 @@ export class TeamController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemory),
+    FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 1MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/profile',
+    folder: 'profile_team',
   })
   async create(
     @Body() createTeamDto: CreateTeamDto,
@@ -92,13 +93,13 @@ export class TeamController {
   @Roles('super_admin')
   @Patch(':teamId')
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemory),
+    FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/profile',
+    folder: 'profile_team',
   })
   async update(
     @Param('teamId') teamId: number,
@@ -109,7 +110,7 @@ export class TeamController {
     try {
       const team = await this.teamService.findOne(teamId);
       if (req.body.uploadedImageUrls?.length) {
-        await this.teamService.getPublicIdFromUrl(team.profile);
+        await this.teamService.deleteFile(team.profile);
         updateTeamDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.teamService.update(teamId, updateTeamDto);
@@ -130,7 +131,7 @@ export class TeamController {
   ) {
     try {
       const team = await this.teamService.findOne(teamId);
-      await this.teamService.getPublicIdFromUrl(team.profile);
+      await this.teamService.deleteFile(team.profile);
       await this.teamService.remove(teamId);
       req.flash('success', 'team successfully deleted');
       res.redirect('/team');
