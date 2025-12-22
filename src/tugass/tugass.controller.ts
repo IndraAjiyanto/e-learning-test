@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateFile } from 'src/common/decorators/validate-file.decorator';
 import { ValidateFileInterceptor } from 'src/common/interceptors/validate-file.interceptor';
 import { memoryStorage } from 'multer';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('tugass')
@@ -31,7 +32,7 @@ export class TugassController {
   @Roles('admin')
   @Post(':pertemuanId')
   @UseInterceptors(
-    FileInterceptor('file', { storage: memoryStorage() }),
+    FileInterceptor('file', multerConfigMemoryOnly),
     ValidateFileInterceptor,
   )
   @ValidateFile({
@@ -100,11 +101,12 @@ export class TugassController {
     @Res() res: Response,
   ) {
     try {
+      const tugas = await this.tugassService.findOne(tugasId);
+      await this.tugassService.deleteFile(tugas.file);
       await this.tugassService.remove(tugasId);
       req.flash('success', 'successfuly delete assignment');
       res.redirect(`/pertemuans/${pertemuanId}`);
     } catch (error) {
-      console.error('Error deleting assignment:', error);
       req.flash('error', error.message || 'unsuccess delete assignment');
       res.redirect(`/pertemuans/${pertemuanId}`);
     }
