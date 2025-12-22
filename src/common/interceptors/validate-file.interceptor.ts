@@ -6,8 +6,9 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { v2 as cloudinary } from 'cloudinary';
 import { Reflector } from '@nestjs/core';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class ValidateFileInterceptor implements NestInterceptor {
@@ -35,82 +36,94 @@ export class ValidateFileInterceptor implements NestInterceptor {
       allowedTypes,
       fileExtensions,
       folder,
-      resourceType = 'auto', // Default 'auto', bisa diubah ke 'raw', 'image', 'video'
+      resourceType = 'auto',
     } = options;
 
-    // Validate file size
-    if (maxSize && file.size > maxSize) {
-      throw new BadRequestException(
-        `File size exceeds maximum allowed size of ${maxSize / 1024 / 1024}MB`,
-      );
-    }
-
-    // Validate file type
-    if (allowedTypes && !allowedTypes.includes(file.mimetype)) {
-      throw new BadRequestException(
-        `File type ${file.mimetype} is not allowed. Allowed types: ${allowedTypes.join(', ')}`,
-      );
-    }
-
-    // Validate file extension
-    if (fileExtensions) {
-      const fileExt = `.${file.originalname.split('.').pop()}`;
-      if (!fileExtensions.includes(fileExt.toLowerCase())) {
-        throw new BadRequestException(
-          `File extension ${fileExt} is not allowed. Allowed extensions: ${fileExtensions.join(', ')}`,
-        );
-      }
-    }
-
     try {
-      // Upload to Cloudinary with specified resource_type
-      const uploadResult: any = await new Promise((resolve, reject) => {
-        const uploadOptions: any = {
-          folder: folder || 'uploads',
-        };
+      // ========================================
+      // VALIDASI 1: FILE SIZE
+      // ========================================
+      if (maxSize && file.size > maxSize) {
+        throw new Error(
+          `Ukuran file terlalu besar. Maksimal ${(maxSize / 1024 / 1024).toFixed(2)}MB`,
+        );
+      }
 
-        // Set resource_type based on file type or explicit option
-        if (resourceType === 'raw' || file.mimetype === 'application/pdf') {
-          uploadOptions.resource_type = 'raw';
-        } else if (
-          resourceType === 'image' ||
-          file.mimetype.startsWith('image/')
-        ) {
-          uploadOptions.resource_type = 'image';
-        } else if (
-          resourceType === 'video' ||
-          file.mimetype.startsWith('video/')
-        ) {
-          uploadOptions.resource_type = 'video';
-        } else {
-          uploadOptions.resource_type = 'auto';
+      // ========================================
+      // VALIDASI 2: FILE TYPE (MIME TYPE)
+      // ========================================
+      if (allowedTypes && !allowedTypes.includes(file.mimetype)) {
+        throw new Error(
+          `Tipe file ${file.mimetype} tidak diizinkan. Hanya: ${allowedTypes.join(', ')}`,
+        );
+      }
+
+      // ========================================
+      // VALIDASI 3: FILE EXTENSION
+      // ========================================
+      if (fileExtensions) {
+        const fileExt = `.${file.originalname.split('.').pop()}`;
+        if (!fileExtensions.includes(fileExt.toLowerCase())) {
+          throw new Error(
+            `Ekstensi file ${fileExt} tidak diizinkan. Hanya: ${fileExtensions.join(', ')}`,
+          );
         }
+      }
 
-        const uploadStream = cloudinary.uploader.upload_stream(
-          uploadOptions,
-          (error, result) => {
-            if (error) {
-              console.error('Cloudinary upload error:', error);
-              reject(error);
-            } else {
-              resolve(result);
-            }
-          },
+      // ========================================
+      // SIMPAN FILE KE LOCAL STORAGE
+      // ========================================
+
+      // Cek apakah file sudah ada di disk (dari diskStorage)
+      if (file.path) {
+        // File sudah disimpan oleh diskStorage
+        const relativePath = file.path
+          .replace(process.cwd(), '')
+          .replace(/\\/g, '/')
+          .replace('/public', '');
+
+        if (!request.body.uploadedFileUrls) {
+          request.body.uploadedFileUrls = [];
+        }
+        request.body.uploadedFileUrls.push(relativePath);
+      } else if (file.buffer) {
+        // File di memory - simpan ke local disk
+        const uploadDir = path.join(
+          process.cwd(),
+          'public',
+          'asset',
+          folder || 'uploads',
         );
 
-        uploadStream.end(file.buffer);
-      });
+        // Buat folder jika belum ada
+        await fs.mkdir(uploadDir, { recursive: true });
 
-      // Store uploaded file URL in request body
-      if (!request.body.uploadedFileUrls) {
-        request.body.uploadedFileUrls = [];
+        // Generate unique filename
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 15);
+        const fileExtension = path.extname(file.originalname);
+        const filename = `${timestamp}-${randomString}${fileExtension}`;
+
+        // Full path file
+        const filePath = path.join(uploadDir, filename);
+
+        // Simpan file ke disk
+        await fs.writeFile(filePath, file.buffer);
+
+        // URL relatif untuk database
+        const fileUrl = `/asset/${folder || 'uploads'}/${filename}`;
+
+        if (!request.body.uploadedFileUrls) {
+          request.body.uploadedFileUrls = [];
+        }
+        request.body.uploadedFileUrls.push(fileUrl);
+
+        console.log('File berhasil disimpan ke:', fileUrl);
+      } else {
+        throw new Error('File tidak valid: tidak ada buffer atau path');
       }
-      request.body.uploadedFileUrls.push(uploadResult.secure_url);
-
-      console.log('File uploaded to Cloudinary:', uploadResult.secure_url);
-    } catch (error) {
-      console.error('Error uploading to Cloudinary:', error);
-      throw new BadRequestException('Failed to upload file to cloud storage');
+    } catch (err) {
+      throw new BadRequestException(err.message);
     }
 
     return next.handle();
