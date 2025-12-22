@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   createMemoryConfig,
   multerConfigMemory,
+  multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -39,7 +40,7 @@ export class KerjaSamaController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemory),
+    FileInterceptor('gambar', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -49,7 +50,7 @@ export class KerjaSamaController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/kerja_sama',
+    folder: 'kerja_sama',
   })
   async create(
     @Body() createKerjaSamaDto: CreateKerjaSamaDto,
@@ -106,8 +107,7 @@ export class KerjaSamaController {
   @Patch(':kerja_samaId')
   @UseInterceptors(
     FileInterceptor(
-      'gambar',
-      createMemoryConfig({ fileTypes: ['image'], maxSize: 5 }),
+      'gambar', multerConfigMemoryOnly  
     ),
     ValidateImageInterceptor,
   )
@@ -118,7 +118,7 @@ export class KerjaSamaController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/kerja_sama',
+    folder: 'kerja_sama',
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
@@ -130,7 +130,7 @@ export class KerjaSamaController {
     try {
       const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
       if (gambar) {
-        await this.kerjaSamaService.getPublicIdFromUrl(kerja_sama.gambar);
+        await this.kerjaSamaService.deleteFile(kerja_sama.gambar);
         updateKerjaSamaDto.gambar = req.body.uploadedImageUrls?.[0];
       }
       await this.kerjaSamaService.update(kerja_samaId, updateKerjaSamaDto);
@@ -155,7 +155,7 @@ export class KerjaSamaController {
         req.flash('error', 'partnership not found');
         res.redirect('/kerja-sama');
       }
-      await this.kerjaSamaService.getPublicIdFromUrl(kerja_sama.gambar);
+      await this.kerjaSamaService.deleteFile(kerja_sama.gambar);
       await this.kerjaSamaService.remove(kerja_samaId);
       req.flash('success', 'partnership successfully remove');
       res.redirect('/kerja-sama');

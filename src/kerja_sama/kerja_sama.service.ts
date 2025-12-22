@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { KerjaSama } from 'src/entities/kerja_sama.entity';
 import { Repository } from 'typeorm';
 import cloudinary from 'src/common/config/multer.config';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class KerjaSamaService {
@@ -80,5 +82,26 @@ export class KerjaSamaService {
       throw new NotFoundException('partnership not found');
     }
     return await this.kerjaSamaRepository.remove(kerja_sama);
+  }
+
+    async deleteFile(url: string) {
+    if (!url) return;
+  
+    try {
+      // Convert URL ke full path
+      // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
+      const filePath = path.join(process.cwd(), 'public', url);
+      
+      // Hapus file
+      await fs.unlink(filePath);
+      console.log('File deleted:', filePath);
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        console.log('File not found, skipping delete:', url);
+      } else {
+        console.error('Error deleting file:', error);
+        // Tidak throw error agar proses lain tetap jalan
+      }
+    }
   }
 }
