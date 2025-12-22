@@ -22,7 +22,7 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemory } from 'src/common/config/multer.config';
+import { multerConfigMemory, multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
 @UseFilters(FileUploadExceptionFilter)
@@ -34,7 +34,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('icon', multerConfigMemory),
+    FileInterceptor('icon', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -42,7 +42,7 @@ export class KategorisController {
     maxWidth: 2000,
     minHeight: 1000,
     maxHeight: 2000,
-    folder: 'nestjs/images/kategori',
+    folder: 'kategori',
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
@@ -235,7 +235,7 @@ export class KategorisController {
   @Roles('super_admin')
   @Patch(':kategoriId')
   @UseInterceptors(
-    FileInterceptor('icon', multerConfigMemory),
+    FileInterceptor('icon', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -243,7 +243,7 @@ export class KategorisController {
     maxWidth: 2000,
     minHeight: 1000,
     maxHeight: 2000,
-    folder: 'nestjs/images/kategori',
+    folder: 'kategori',
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
@@ -256,7 +256,7 @@ export class KategorisController {
     try {
       const kategori = await this.kategorisService.findOne(kategoriId);
       if (req.body.uploadedImageUrls) {
-        await this.kategorisService.getPublicIdFromUrl(kategori.icon);
+        await this.kategorisService.deleteFile(kategori.icon);
         updateKategorisDto.icon = req.body.uploadedImageUrls?.[0];
       }
       await this.kategorisService.update(kategoriId, updateKategorisDto);
@@ -277,7 +277,7 @@ export class KategorisController {
   ) {
     try {
       const kategori = await this.kategorisService.findOne(kategoriId);
-      await this.kategorisService.getPublicIdFromUrl(kategori.icon);
+      await this.kategorisService.deleteFile(kategori.icon);
       await this.kategorisService.remove(kategoriId);
       req.flash('success', 'kategori successfully deleted');
       res.redirect('/kategoris');

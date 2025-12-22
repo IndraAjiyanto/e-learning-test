@@ -12,6 +12,8 @@ import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { FlowCategory } from 'src/entities/flow_category.entity';
 import { Superiority } from 'src/entities/superiority.entity';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class KategorisService {
@@ -141,43 +143,26 @@ export class KategorisService {
     return await this.kategoriRepository.save(kategori);
   }
 
-  async getPublicIdFromUrl(url: string) {
-    // Cek jika url null atau undefined
-    if (!url) {
-      return null;
-    }
+  async deleteFile(url: string) {
+  if (!url) return;
 
-    // Pisahkan berdasarkan "/upload/"
-    const parts = url.split('/upload/');
-    if (parts.length < 2) {
-      return null;
-    }
-
-    // Ambil bagian setelah upload/
-    let path = parts[1];
-
-    // Hapus "v1234567890/" (versi auto Cloudinary)
-    path = path.replace(/^v[0-9]+\/?/, '');
-
-    // Buang extension (.jpg, .png, .pdf, dll)
-    path = path.replace(/\.[^.]+$/, '');
-
-    console.log('Public ID:', path); // Debug: lihat public ID yang dihasilkan
-
-    await this.deleteFileIfExists(path);
-  }
-
-  async deleteFileIfExists(publicId: string) {
-    try {
-      const result = await cloudinary.uploader.destroy(publicId);
-
-      if (result.result === 'not found') {
-      } else {
-      }
-    } catch (error) {
-      throw error;
+  try {
+    // Convert URL ke full path
+    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
+    const filePath = path.join(process.cwd(), 'public', url);
+    
+    // Hapus file
+    await fs.unlink(filePath);
+    console.log('File deleted:', filePath);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.log('File not found, skipping delete:', url);
+    } else {
+      console.error('Error deleting file:', error);
+      // Tidak throw error agar proses lain tetap jalan
     }
   }
+}
 
   async remove(kategoriId: number) {
     const kategori = await this.findOne(kategoriId);
