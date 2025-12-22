@@ -22,6 +22,7 @@ import { Request, Response } from 'express';
 import {
   multerConfigImage,
   multerConfigMemory,
+  multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -35,7 +36,7 @@ export class PortfoliosController {
   @Roles('user')
   @Post(':kelasId')
   @UseInterceptors(
-    FilesInterceptor('gambar', 100, multerConfigMemory),
+    FilesInterceptor('gambar', 100, multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -43,7 +44,7 @@ export class PortfoliosController {
     maxWidth: 1920,
     minHeight: 1000,
     maxHeight: 1080,
-    folder: 'nestjs/images/portfolio/user',
+    folder: 'portfolio',
   })
   async create(
     @Param('kelasId') kelasId: number,
@@ -131,7 +132,14 @@ export class PortfoliosController {
 
   @Roles('user')
   @Patch(':portfolioId')
-  @UseInterceptors(FilesInterceptor('gambar', 10, multerConfigImage))
+  @UseInterceptors(FilesInterceptor('gambar', 10, multerConfigMemoryOnly), ValidateImageInterceptor)
+    @ValidateImage({
+    minWidth: 1900,
+    maxWidth: 1920,
+    minHeight: 1000,
+    maxHeight: 1080,
+    folder: 'portfolio',
+  })
   async update(
     @UploadedFiles() newGambar: Express.Multer.File[],
     @Param('portfolioId') portfolioId: number,
@@ -160,7 +168,7 @@ export class PortfoliosController {
       // Hapus gambar yang dihapus user dari Cloudinary
       if (deletedImages.length > 0) {
         const deletePromises = deletedImages.map((url) =>
-          this.portfoliosService.getPublicIdFromUrl(url).catch((error) => {
+          this.portfoliosService.deleteFile(url).catch((error) => {
           }),
         );
         await Promise.allSettled(deletePromises);
@@ -180,7 +188,7 @@ export class PortfoliosController {
         if (newGambar && newGambar.length > 0) {
           const deleteNewImagesPromises = newGambar.map((file) =>
             this.portfoliosService
-              .getPublicIdFromUrl(file.path)
+              .deleteFile(file.path)
               .catch((err) => {
               }),
           );
@@ -211,7 +219,7 @@ export class PortfoliosController {
       // Jika ada gambar baru yang sudah terupload tapi update gagal, hapus gambar baru tersebut
       if (newGambar && newGambar.length > 0) {
         const deleteNewImagesPromises = newGambar.map((file) =>
-          this.portfoliosService.getPublicIdFromUrl(file.path).catch((err) => {
+          this.portfoliosService.deleteFile(file.path).catch((err) => {
           }),
         );
         await Promise.allSettled(deleteNewImagesPromises);
