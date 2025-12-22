@@ -8,6 +8,8 @@ import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { User } from 'src/entities/user.entity';
 import cloudinary from 'src/common/config/multer.config';
 import { Kelas } from 'src/entities/kelas.entity';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class LogbookMentorService {
@@ -59,37 +61,26 @@ export class LogbookMentorService {
     return logbook_mentor;
   }
 
-  async getPublicIdFromUrl(url: string) {
-    // Pisahkan berdasarkan "/upload/"
-    const parts = url.split('/upload/');
-    if (parts.length < 2) {
-      return null;
-    }
+  async deleteFile(url: string) {
+  if (!url) return;
 
-    // Ambil bagian setelah upload/
-    let path = parts[1];
-
-    // Hapus "v1234567890/" (versi auto Cloudinary)
-    path = path.replace(/^v[0-9]+\/?/, '');
-
-    // Buang extension (.jpg, .png, .pdf, dll)
-    path = path.replace(/\.[^.]+$/, '');
-
-
-    await this.deleteFileIfExists(path);
-  }
-
-  async deleteFileIfExists(publicId: string) {
-    try {
-      const result = await cloudinary.uploader.destroy(publicId);
-
-      if (result.result === 'not found') {
-      } else {
-      }
-    } catch (error) {
-      throw error;
+  try {
+    // Convert URL ke full path
+    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
+    const filePath = path.join(process.cwd(), 'public', url);
+    
+    // Hapus file
+    await fs.unlink(filePath);
+    console.log('File deleted:', filePath);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.log('File not found, skipping delete:', url);
+    } else {
+      console.error('Error deleting file:', error);
+      // Tidak throw error agar proses lain tetap jalan
     }
   }
+}
 
   async update(
     logbook_mentorId: number,
@@ -108,7 +99,6 @@ export class LogbookMentorService {
     if (!logbook) {
       throw new NotFoundException('logbook not found');
     }
-    await this.getPublicIdFromUrl(logbook.dokumentasi);
     await this.logBookMentorRepository.remove(logbook);
   }
 }

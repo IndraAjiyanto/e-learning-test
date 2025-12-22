@@ -18,7 +18,7 @@ import { UpdateLogbookMentorDto } from './dto/update-logbook_mentor.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemory } from 'src/common/config/multer.config';
+import { multerConfigMemory, multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { Request, Response } from 'express';
@@ -31,11 +31,11 @@ export class LogbookMentorController {
   @Roles('admin')
   @Post(':pertemuanId')
   @UseInterceptors(
-    FileInterceptor('dokumentasi', multerConfigMemory),
+    FileInterceptor('dokumentasi', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    folder: 'nestjs/images/logbook_mentor',
+    folder: 'logbook_mentor',
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
@@ -100,11 +100,11 @@ export class LogbookMentorController {
   @Roles('admin')
   @Patch(':logbook_mentorId')
   @UseInterceptors(
-    FileInterceptor('dokumentasi', multerConfigMemory),
+    FileInterceptor('dokumentasi', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    folder: 'nestjs/images/logbook_mentor',
+    folder: 'logbook_mentor',
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
@@ -118,7 +118,7 @@ export class LogbookMentorController {
     try {
       const logbook = await this.logbookMentorService.findOne(logbook_mentorId);
       if (dokumentasi) {
-        await this.logbookMentorService.getPublicIdFromUrl(logbook.dokumentasi);
+        await this.logbookMentorService.deleteFile(logbook.dokumentasi);
         updateLogbookMentorDto.dokumentasi = req.body.uploadedImageUrls?.[0];
       }
       await this.logbookMentorService.update(
@@ -143,6 +143,8 @@ export class LogbookMentorController {
     @Req() req: Request,
   ) {
     try {
+      const logbook = await this.logbookMentorService.findOne(logbook_mentorId);
+      await this.logbookMentorService.deleteFile(logbook.dokumentasi);
       await this.logbookMentorService.remove(logbook_mentorId);
       req.flash('success', 'logbook successfully deleted');
       res.redirect(`/pertemuans/${pertemuanId}`);

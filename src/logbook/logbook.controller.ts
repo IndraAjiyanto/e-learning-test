@@ -39,7 +39,7 @@ export class LogbookController {
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'logbook/user',
+    folder: 'logbook_user',
   })
   async create(
     @Param('pertemuanId') pertemuanId: number,
@@ -149,7 +149,7 @@ export class LogbookController {
   @ValidateImage({
     maxSize: 5 * 1024 * 1024, // 5MB
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'logbook/user',
+    folder: 'logbook_user',
   })
   async update(
     @UploadedFile() dokumentasi: Express.Multer.File,
