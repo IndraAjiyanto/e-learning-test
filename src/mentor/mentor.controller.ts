@@ -21,6 +21,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('mentor')
@@ -34,8 +35,7 @@ export class MentorController {
       [
         { name: 'profile', maxCount: 1 },
       ],
-      { storage: memoryStorage() },
-    ),
+      multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -45,7 +45,7 @@ export class MentorController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024, // 3MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/mentor',
+    folder: 'mentor',
   })
   async create(
     @Param('kelasId') kelasId: number,
@@ -127,7 +127,7 @@ export class MentorController {
       [
         { name: 'profile', maxCount: 1 },
       ],
-      { storage: memoryStorage() },
+      multerConfigMemoryOnly,
     ),
     ValidateImageInterceptor,
   )
@@ -138,7 +138,7 @@ export class MentorController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024, // 3MB max
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/mentor',
+    folder: 'mentor',
   })
   async update(
     @Param('mentorId') mentorId: number,
@@ -156,7 +156,7 @@ export class MentorController {
       if (files?.profile?.length) {
         updateMentorDto.profile = uploadedImages[0];
         if (mentor.profile) {
-          await this.mentorService.getPublicIdFromUrl(mentor.profile);
+          await this.mentorService.deleteFile(mentor.profile);
         }
       }
 
@@ -183,7 +183,7 @@ export class MentorController {
         req.flash('error', 'mentor not found');
         res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
       }
-      await this.mentorService.getPublicIdFromUrl(mentor.profile);
+      await this.mentorService.deleteFile(mentor.profile);
       await this.mentorService.remove(mentorId);
       req.flash('success', 'mentor successfully deleted');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
