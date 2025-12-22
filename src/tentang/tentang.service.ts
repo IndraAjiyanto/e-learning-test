@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Tentang } from 'src/entities/tentang.entity';
 import { Repository } from 'typeorm';
 import { v2 as cloudinary } from 'cloudinary';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class TentangService {
@@ -49,18 +51,24 @@ export class TentangService {
     return await this.tentangRepository.remove(tentang);
   }
 
-  async getPublicIdFromUrl(imageUrl: string): Promise<string | null> {
-    try {
-      const parts = imageUrl.split('/');
-      const filename = parts[parts.length - 1];
-      const publicId = filename.split('.')[0];
-      const folder = parts.slice(-2, -1)[0];
-      const fullPublicId = `${folder}/${publicId}`;
+  async deleteFile(url: string) {
+  if (!url) return;
 
-      await cloudinary.uploader.destroy(fullPublicId);
-      return fullPublicId;
-    } catch (error) {
-      return null;
+  try {
+    // Convert URL ke full path
+    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
+    const filePath = path.join(process.cwd(), 'public', url);
+    
+    // Hapus file
+    await fs.unlink(filePath);
+    console.log('File deleted:', filePath);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.log('File not found, skipping delete:', url);
+    } else {
+      console.error('Error deleting file:', error);
+      // Tidak throw error agar proses lain tetap jalan
     }
   }
+}
 }

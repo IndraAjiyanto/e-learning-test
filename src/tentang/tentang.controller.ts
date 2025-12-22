@@ -21,8 +21,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  createMemoryConfig,
-  multerConfigMemory,
+  multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
@@ -39,7 +38,7 @@ export class TentangController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemory),
+    FileInterceptor('gambar', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -49,7 +48,7 @@ export class TentangController {
     maxHeight: 4000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/tentang',
+    folder: 'tentang',
   })
   async create(
     @Body() createTentangDto: CreateTentangDto,
@@ -105,7 +104,7 @@ export class TentangController {
   @Roles('super_admin')
   @Patch(':id')
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemory),
+    FileInterceptor('gambar', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -115,7 +114,7 @@ export class TentangController {
     maxHeight: 4000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/tentang',
+    folder: 'tentang',
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
@@ -127,7 +126,7 @@ export class TentangController {
     try {
       const tentang = await this.tentangService.findOne(id);
       if (gambar) {
-        await this.tentangService.getPublicIdFromUrl(tentang.gambar);
+        await this.tentangService.deleteFile(tentang.gambar);
         updateTentangDto.gambar = req.body.uploadedImageUrls?.[0];
       }
       await this.tentangService.update(id, updateTentangDto);
@@ -148,7 +147,7 @@ export class TentangController {
   ) {
     try {
       const tentang = await this.tentangService.findOne(id);
-      await this.tentangService.getPublicIdFromUrl(tentang.gambar);
+      await this.tentangService.deleteFile(tentang.gambar);
       await this.tentangService.remove(id);
       req.flash('success', 'Header successfully deleted');
       res.redirect('/tentang');
