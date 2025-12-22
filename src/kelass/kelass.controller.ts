@@ -18,7 +18,7 @@ import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemory } from 'src/common/config/multer.config';
+import { multerConfigMemory, multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { UsersService } from 'src/users/users.service';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
@@ -38,7 +38,7 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemory),
+    FileInterceptor('gambar', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -46,7 +46,7 @@ export class KelassController {
     maxWidth: 1920,
     minHeight: 1000,
     maxHeight: 1080,
-    folder: 'nestjs/images/banner/class',
+    folder: 'program',
     maxSize: 10 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
@@ -521,7 +521,7 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Patch(':kelasId')
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemory),
+    FileInterceptor('gambar', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -529,7 +529,7 @@ export class KelassController {
     maxWidth: 1920,
     minHeight: 1000,
     maxHeight: 1080,
-    folder: 'nestjs/images/banner/class',
+    folder: 'program',
     maxSize: 10 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
@@ -544,7 +544,7 @@ export class KelassController {
       const kelas = await this.kelassService.findOne(kelasId);
       if (gambar) {
         // delete previous image in cloud (if exists)
-        await this.usersService.getPublicIdFromUrl(kelas.gambar);
+        await this.kelassService.deleteFile(kelas.gambar);
         // use uploadedImageUrls provided by validator/uploader (memory upload -> cloud)
         updateKelassDto.gambar = req.body.uploadedImageUrls?.[0];
       }
@@ -616,7 +616,7 @@ export class KelassController {
         req.flash('error', 'Kelas not found');
         res.redirect('/kelass');
       }
-      await this.usersService.getPublicIdFromUrl(kelas.gambar);
+      await this.kelassService.deleteFile(kelas.gambar);
       await this.kelassService.remove(kelasId);
       req.flash('success', 'Class successfully removed');
       res.redirect('/kelass');
