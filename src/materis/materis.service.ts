@@ -6,6 +6,8 @@ import { JenisFile, Materi } from 'src/entities/materi.entity';
 import { Repository } from 'typeorm';
 import { v2 as cloudinary } from 'cloudinary';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class MaterisService {
@@ -110,70 +112,26 @@ export class MaterisService {
     return materi;
   }
 
-  async getPublicIdFromUrl(
-    url: string,
-    resourceType: 'image' | 'video' | 'raw' = 'image',
-  ) {
-    // Pisahkan berdasarkan "/upload/"
-    // Untuk raw files, URL bisa jadi: .../raw/upload/... atau .../upload/...
-    const parts = url.split('/upload/');
-    if (parts.length < 2) {
-      return null;
-    }
+  async deleteFile(url: string) {
+  if (!url) return;
 
-    // Ambil bagian setelah upload/
-    let path = parts[1];
-
-    // Hapus "v1234567890/" (versi auto Cloudinary)
-    path = path.replace(/^v[0-9]+\/?/, '');
-
-    // Untuk raw files (PDF, PPT), JANGAN buang extension
-    // Untuk image/video, buang extension
-    if (resourceType !== 'raw') {
-      path = path.replace(/\.[^.]+$/, '');
-    }
-
-    await this.deleteFileIfExists(path, resourceType);
-  }
-  async deleteFileIfExists(
-    publicId: string,
-    resourceType: 'image' | 'video' | 'raw' = 'image',
-  ) {
-    try {
-      // Hapus file sesuai dengan resource type yang ditentukan
-      let result;
-
-      if (resourceType === 'raw') {
-        // Untuk raw files, gunakan type: 'upload' dan resource_type: 'raw'
-        result = await cloudinary.uploader.destroy(publicId, {
-          type: 'upload',
-          resource_type: 'raw',
-        });
-
-        // Jika masih not found, coba dengan api.delete_resources
-        if (result.result === 'not found') {
-          const deleteResult = await cloudinary.api.delete_resources(
-            [publicId],
-            {
-              type: 'upload',
-              resource_type: 'raw',
-            },
-          );
-          result =
-            deleteResult.deleted[publicId] === 'deleted'
-              ? { result: 'ok' }
-              : { result: 'not found' };
-        }
-      } else {
-        result = await cloudinary.uploader.destroy(publicId, {
-          resource_type: resourceType,
-        });
-      }
-    } catch (error) {
-      console.error('Error deleting file from Cloudinary:', error);
-      throw error;
+  try {
+    // Convert URL ke full path
+    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
+    const filePath = path.join(process.cwd(), 'public', url);
+    
+    // Hapus file
+    await fs.unlink(filePath);
+    console.log('File deleted:', filePath);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.log('File not found, skipping delete:', url);
+    } else {
+      console.error('Error deleting file:', error);
+      // Tidak throw error agar proses lain tetap jalan
     }
   }
+}
 
   async update(id: number, updateMaterisDto: UpdateMaterisDto) {
     const materi = await this.findOne(id);
@@ -197,7 +155,7 @@ export class MaterisService {
         materi.jenis_file === 'pdf' || materi.jenis_file === 'ppt'
           ? 'raw'
           : 'image';
-      await this.getPublicIdFromUrl(materi.file, resourceType);
+      await this.deleteFile(materi.file);
     }
 
     // Jika materi PPT, hapus juga semua slides
@@ -208,7 +166,7 @@ export class MaterisService {
     ) {
       for (const slideUrl of materi.slides) {
         try {
-          await this.getPublicIdFromUrl(slideUrl, 'image'); // Slides adalah image
+          await this.deleteFile(slideUrl); // Slides adalah image
         } catch (error) {
           console.error(`Failed to delete slide: ${slideUrl}`, error);
         }

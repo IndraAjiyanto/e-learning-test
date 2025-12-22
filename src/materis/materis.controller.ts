@@ -17,7 +17,7 @@ import { MaterisService } from './materis.service';
 import { CreateMaterisDto } from './dto/create-materis.dto';
 import { UpdateMaterisDto } from './dto/update-materis.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { createMemoryConfig } from 'src/common/config/multer.config';
+import { createMemoryConfig, multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { JenisFile } from 'src/entities/materi.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -42,8 +42,7 @@ export class MaterisController {
   @Post('pdf/:pertemuanId')
   @UseInterceptors(
     FileInterceptor(
-      'file',
-      createMemoryConfig({ fileTypes: ['pdf'], maxSize: 10 }),
+      'file', multerConfigMemoryOnly,
     ),
     ValidateFileInterceptor,
   )
@@ -51,7 +50,7 @@ export class MaterisController {
     maxSize: 10 * 1024 * 1024, // 10MB
     allowedTypes: ['application/pdf'],
     fileExtensions: ['.pdf'],
-    folder: 'nestjs/pdf',
+    folder: 'materi/pdf',
     resourceType: 'raw',
   })
   async createPdf(
@@ -77,8 +76,7 @@ export class MaterisController {
 @Post('ppt/:pertemuanId')
 @UseInterceptors(
   FileInterceptor(
-    'file',
-    createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }),
+    'file', multerConfigMemoryOnly,
   ),
   ValidateFileInterceptor,
 )
@@ -86,7 +84,7 @@ export class MaterisController {
   maxSize: 50 * 1024 * 1024,
   allowedTypes: ['application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
   fileExtensions: ['.ppt', '.pptx'],
-  folder: 'nestjs/ppt',
+  folder: 'materi/ppt',
   resourceType: 'raw',
 })
 async createPpt(
@@ -202,8 +200,7 @@ async createPpt(
   @Patch('pdf/:id')
   @UseInterceptors(
     FileInterceptor(
-      'file',
-      createMemoryConfig({ fileTypes: ['pdf'], maxSize: 10 }),
+      'file', multerConfigMemoryOnly,
     ),
     ValidateFileInterceptor,
   )
@@ -211,7 +208,7 @@ async createPpt(
     maxSize: 10 * 1024 * 1024, // 10MB
     allowedTypes: ['application/pdf'],
     fileExtensions: ['.pdf'],
-    folder: 'nestjs/pdf',
+    folder: 'materi/pdf',
   })
   async updatePdf(
     @Param('id') id: number,
@@ -222,7 +219,7 @@ async createPpt(
     const materi = await this.materisService.findOne(id);
 
     if (file) {
-      await this.materisService.getPublicIdFromUrl(materi.file);
+      await this.materisService.deleteFile(materi.file);
       updateMaterisDto.file = req.body.uploadedFileUrls?.[0];
     }
 
@@ -234,17 +231,19 @@ async createPpt(
   @UseInterceptors(
     FileInterceptor(
       'file',
-      createMemoryConfig({ fileTypes: ['ppt'], maxSize: 50 }),
+      multerConfigMemoryOnly,
     ),
-    ValidateFileOnlyInterceptor,
+    ValidateFileInterceptor,
   )
-  @ValidateFileOnly({
+  @ValidateFile({
     maxSize: 50 * 1024 * 1024, // 50MB
     allowedTypes: [
       'application/vnd.ms-powerpoint',
       'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     ],
     fileExtensions: ['.ppt', '.pptx'],
+  folder: 'materi/ppt',
+
   })
   async updatePpt(
     @Param('id') id: number,
@@ -255,7 +254,7 @@ async createPpt(
     const materi = await this.materisService.findOne(id);
 
     if (file) {
-      await this.materisService.getPublicIdFromUrl(materi.file);
+      await this.materisService.deleteFile(materi.file);
 
       // Untuk update PPT, perlu proses convert juga jika diperlukan
       // Untuk saat ini kita skip convert, hanya update file saja
