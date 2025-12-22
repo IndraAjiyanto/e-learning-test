@@ -57,9 +57,9 @@
               <div class="line-clamp-3" x-text="title"></div>
               </template>
               </td>
-              <td class="px-6 py-4 text-sm text-gray-800">
-  <i :class="computeIcon(benefit.icon)" class="text-2xl"></i>
-</td>
+       <td class="px-6 py-4 text-sm text-gray-800">
+            <i :class="computeIcon(benefit.icon)"></i>
+            </td>
             <td class="px-6 py-4 text-sm text-gray-800">
               <template x-for="description in benefit.description" :key="description">
               <div class="line-clamp-3" x-text="description"></div>
@@ -135,29 +135,6 @@
     pageNumber: 0,
     size: 10,
     amount: 0,
-    
-
-
-   computeIcon(iconValue) {
-      const raw = (iconValue || '').toString().trim();
-      
-      // Jika kosong, return default icon
-      if (!raw) return 'fa-solid fa-circle-question';
-      
-      // Jika sudah ada 'fa-solid' atau 'fa-regular' atau 'fa-brands', return as-is
-      if (/^fa-(solid|regular|brands|light|thin|duotone)/.test(raw)) {
-        return raw;
-      }
-      
-      // Jika hanya ada 'fa-xxx' (tanpa prefix), tambahkan 'fa-solid'
-      if (/^fa-/.test(raw)) {
-        return 'fa-solid ' + raw;
-      }
-      
-      // Jika tidak ada 'fa-' sama sekali (misal: 'home'), tambahkan prefix lengkap
-      return 'fa-solid fa-' + raw;
-    },
-
 
             async fetchBenefit() {
       const res = await fetch('/kategoris/benefit/{{kategori.id}}');
@@ -181,6 +158,12 @@
     nextPage() { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; },
     prevPage() { if (this.pageNumber > 0) this.pageNumber--; },
     viewPage(index) { this.pageNumber = index; },
+        computeIcon(iconValue) {
+      const raw = (iconValue || '').toString().trim();
+      if (!raw) return 'fa-solid fa-circle-question';
+      if (/^fa-/.test(raw)) return 'fa-solid ' + raw;
+      return raw;
+    }
   }
 
   

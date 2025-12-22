@@ -93,7 +93,11 @@
             >{{nama_kategori}}</td>
             <td
               class='px-6 py-4 text-sm text-gray-600 max-w-xs truncate'
-            >{{deskripsi}}</td>
+            >
+            {{#each deskripsi}}
+            <div>{{this}}</div>
+            {{/each}}
+            </td>
             <td class='px-6 py-4 text-sm text-gray-600'>
               {{#if info}}
               {{info}}
