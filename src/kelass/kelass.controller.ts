@@ -103,6 +103,75 @@ export class KelassController {
   }
 
   @Roles('admin', 'super_admin')
+  @Post(':kategoriId')
+  @UseInterceptors(
+    FileInterceptor('gambar', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    minWidth: 1900,
+    maxWidth: 1920,
+    minHeight: 1000,
+    maxHeight: 1080,
+    folder: 'program',
+    maxSize: 10 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+  })
+  async createKelas(
+    @Body() createKelassDto: CreateKelassDto,
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('kategoriId') kategoriId: number,
+  ) {
+    try {
+      createKelassDto.gambar = req.body.uploadedImageUrls?.[0];
+
+      if (createKelassDto.bulan) {
+        createKelassDto.hari = 0;
+      }
+
+      if (createKelassDto.hari) {
+        createKelassDto.bulan = 0;
+      }
+
+      if (createKelassDto.paid_check === 'true') {
+        createKelassDto.form = '';
+        createKelassDto.check_paid = true;
+        if (req.user!.role === 'super_admin') {
+          createKelassDto.proses = 'acc';
+        } else if (req.user!.role === 'admin') {
+          createKelassDto.proses = 'proces';
+        }
+      } else if (createKelassDto.paid_check === 'false') {
+        createKelassDto.check_paid = false;
+        createKelassDto.harga = 0;
+        createKelassDto.promo = 0;
+        if (req.user!.role === 'super_admin') {
+          createKelassDto.proses = 'acc';
+        } else if (req.user!.role === 'admin') {
+          createKelassDto.proses = 'proces';
+        }
+      }
+      createKelassDto.kategoriId = kategoriId;
+      const kelas = await this.kelassService.create(createKelassDto);
+      if (req.user!.role === 'super_admin') {
+        await this.kelassService.createMentoring(
+          createKelassDto.mentoringId,
+          kelas.id,
+        );
+      }
+      if (req.user!.role === 'admin') {
+        await this.kelassService.createMentoring(req.user!.id, kelas.id);
+      }
+      req.flash('success', 'class successfully created');
+      res.redirect(`/kategoris/${kategoriId}`);
+    } catch (error) {
+      req.flash('error', error.message || 'class failed created');
+      res.redirect(`/kategoris/${kategoriId}`);
+    }
+  }
+
+  @Roles('admin', 'super_admin')
   @Post('tambahMurid/:kelasId')
   async addUserToKelas(
     @Param('kelasId') kelasId: number,
@@ -147,6 +216,23 @@ export class KelassController {
       jenis_kelas,
       teknologi,
       mentoring,
+    });
+  }
+
+  @Roles('super_admin')
+  @Get('/formCreate/:kategoriId')
+    async formCreateKelas(@Res() res: Response, @Req() req: Request, @Param('kategoriId') kategoriId: number) {
+      const kategori = await this.kelassService.findOneKategori(kategoriId);
+    const jenis_kelas = await this.kelassService.findJenisKelas();
+    const teknologi = await this.kelassService.findTeknologi();
+    const mentoring = await this.kelassService.findMentoring();
+    return res.render('admin/kelas/formCreate', {
+      user: req.user,
+      jenis_kelas,
+      teknologi,
+      mentoring,
+      kategori,
+      kategoriId
     });
   }
 

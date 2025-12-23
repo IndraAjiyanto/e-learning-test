@@ -168,7 +168,7 @@ export class KategorisController {
     @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
   ) {
-    const kelas = await this.kategorisService.findKelasByKategori(kategoriId);
+    const kelas = await this.kategorisService.findKelasByKategoriAll(kategoriId);
     res.json(kelas);
   }
 

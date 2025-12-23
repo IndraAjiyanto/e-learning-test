@@ -87,6 +87,16 @@ export class KelassService {
     private readonly pertemuanRepository: Repository<Pertemuan>,
   ) {}
 
+  async findOneKategori(kategoriId: number) {
+    const kategori = await this.kategoriRepository.findOne({
+      where: { id: kategoriId },
+    });
+    if (!kategori) {
+      throw new NotFoundException('Kategori tidak ditemukan');
+    }
+    return kategori;
+  }
+
   async create(createKelassDto: CreateKelassDto) {
     const kategori = await this.kategoriRepository.findOne({
       where: { id: createKelassDto.kategoriId },

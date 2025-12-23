@@ -90,6 +90,14 @@ export class KategorisService {
     });
   }
 
+
+  async findKelasByKategoriAll(kategoriId: number) {
+    return await this.kelasRepository.find({
+      where: { kategori: { id: kategoriId } },
+      relations: ['jenis_kelas','kategori','user_kelas'],
+    });
+  }
+
   async findAlumniByKategori(kategoriId: number) {
     return await this.alumniRepository.find({
       where: { kelas: { kategori: { id: kategoriId } } },
