@@ -1,9 +1,6 @@
 <div class="py-10 w-full mx-auto px-6">
   <!-- ===================== CARD DETAIL KELAS ===================== -->
-  <div class="mb-6 mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl space-y-8 relative">
-
-    <!-- Tombol Back -->
-    <div x-data="{
+  <div class="mb-6 mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl space-y-8 relative" x-data="{
       prev: '/kelass',
       init() {
         this.prev = localStorage.getItem('kelasPrevUrl') || '/kelass';
@@ -18,6 +15,9 @@
         }
       }
     }" x-init="init()">
+
+    <!-- Tombol Back -->
+    <div >
       <a 
         x-bind:href="prev"
         @click.prevent="goBack()"
@@ -40,7 +40,7 @@
     <div class="absolute top-0 right-6 flex flex-col items-end gap-1 z-10">
       <!-- Tombol Launch/Toggle di Atas -->
       {{#if (roles kelas.proses "acc")}}
- <form action="/kelass/{{kelas.id}}/toggle-status?_method=PATCH" method="POST">
+      <form action="/kelass/{{kelas.id}}/toggle-status?_method=PATCH" method="POST">
         <button type="button" 
                 onclick="confirmAction(this, '{{#if kelas.launch}}Are you sure cancel launch this program?{{else}}Are you sure launch this program?{{/if}}')"
                 class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none
@@ -74,7 +74,8 @@
         </a>
 
         <!-- Tombol Delete (Kanan) -->
-        <form action="/kelass/{{kelas.id}}?_method=DELETE" method="post" class="inline">
+        <form action="/kelass/{{kelas.id}}?_method=DELETE" method="post" class="inline" x-data>
+          <input type="hidden" name="previous" :value="prev">
           <button
             type="button"
             onclick="confirmDelete(this)"

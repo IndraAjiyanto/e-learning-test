@@ -709,28 +709,29 @@ export class KelassController {
     }
   }
 
-  @Roles('admin', 'super_admin')
-  @Delete(':kelasId')
-  async remove(
-    @Param('kelasId') kelasId: number,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    try {
-      const kelas = await this.kelassService.findOne(kelasId);
-      if (!kelas) {
-        req.flash('error', 'Kelas not found');
-        res.redirect('/kelass');
-      }
-      await this.kelassService.deleteFile(kelas.gambar);
-      await this.kelassService.remove(kelasId);
-      req.flash('success', 'Class successfully removed');
-      res.redirect('/kelass');
-    } catch (error) {
-      req.flash('error', error.message || 'Class failed removed');
-      res.redirect('/kelass');
+ @Roles('admin', 'super_admin')
+@Delete(':kelasId')  // Hapus :previous dari route
+async remove(
+  @Param('kelasId') kelasId: number,
+  @Body('previous') previous: string,  // Ambil dari body, bukan param
+  @Res() res: Response,
+  @Req() req: Request,
+) {
+  try {
+    const kelas = await this.kelassService.findOne(kelasId);
+    if (!kelas) {
+      req.flash('error', 'Program not found');
+      return res.redirect(previous || '/kelass');
     }
+    await this.kelassService.deleteFile(kelas.gambar);
+    await this.kelassService.remove(kelasId);
+    req.flash('success', 'Class successfully removed');
+    return res.redirect(previous || '/kelass');
+  } catch (error) {
+    req.flash('error', error.message || 'Class failed removed');
+    return res.redirect(previous || '/kelass');
   }
+}
 
   @Roles('admin', 'super_admin')
   @Delete(':userId/kelas/:kelasId')
