@@ -643,6 +643,17 @@ export class KelassService {
     return kelas;
   }
 
+  async findOneKelasUserLaunch(kelasId: number) {
+    const kelas = await this.kelasRepository.findOne({
+      where: { id: kelasId },
+      relations: ['kategori', 'jenis_kelas', 'user_kelas', 'user_kelas.user'],
+    });
+    if (!kelas) {
+      throw new NotFoundException('Program not found');
+    }
+    return kelas;
+  }
+
   async findOneKelasAdmin(kelasId: number) {
     return await this.kelasRepository.findOne({
       where: { id: kelasId },

@@ -89,17 +89,17 @@
                 error: null,
                 dataLoaded: false,
 
-                  init() {
-    // Cek apakah ada data di localStorage
-    const hasPertemuanData = localStorage.getItem(`pertemuan-data-{{this.id}}`);
-    const hasQuizData = localStorage.getItem(`quiz-data-{{this.id}}`);
-    
-    if (hasPertemuanData && hasQuizData) {
-      this.pertemuanData = JSON.parse(hasPertemuanData);
-      this.quizData = JSON.parse(hasQuizData);
-      this.dataLoaded = true;
-      console.log('✅ Data loaded from localStorage for minggu {{this.id}}');
-    }
+                  async init() {
+
+          const pertemuanResponse = await fetch('/kelass/pertemuan/{{this.id}}');
+          const quizResponse = await fetch('/kelass/quiz/{{this.id}}');
+
+          this.pertemuanData = await pertemuanResponse.json();
+      localStorage.setItem(`pertemuan-data-{{this.id}}`, JSON.stringify(this.pertemuanData));
+
+          this.quizData = await quizResponse.json();
+      localStorage.setItem(`quiz-data-{{this.id}}`, JSON.stringify(this.quizData));
+          this.dataLoaded = true;
     },
                 
                 async toggleAndFetch() {
@@ -140,7 +140,7 @@
                   }
                 }
               }"
-              class="border border-gray-200 rounded-xl shadow-md bg-white overflow-hidden hover:shadow-lg transition-all duration-300"
+              class="border border-gray-200 rounded-xl shadow-md bg-white overflow-hidden hover:shadow-lg transition-all duration-300" x-init="init()"
             >
               <button 
                 @click="toggleAndFetch()" 
@@ -257,7 +257,7 @@
 
                       <div x-show="open" x-collapse class="px-4 pb-4 bg-gradient-to-b from-white to-gray-50/50">
                         <!-- Attendance Check -->
-                        <template x-if="pertemuan.absen">
+                        <template x-if="pertemuan.absen.length > 0">
                           <div>
                             <div class="flex items-center mb-4 mt-3">
                               <div class="flex items-center px-3 py-1.5 bg-gradient-to-r from-green-100 to-green-200 text-green-800 rounded-full text-xs font-semibold shadow-sm">
@@ -380,7 +380,7 @@
                         </template>
 
                         <!-- Attendance Required (Not yet attended) -->
-                        <template x-if="!pertemuan.absen">
+                        <template x-if="pertemuan.absen.length === 0">
                           <div>
                             <div class="flex items-center mb-4 mt-3">
                               <div class="flex items-center px-3 py-1.5 bg-gradient-to-r from-red-100 to-red-200 text-red-800 rounded-full text-xs font-semibold shadow-sm">

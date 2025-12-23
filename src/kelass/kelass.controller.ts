@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   UseFilters,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { KelassService } from './kelass.service';
 import { CreateKelassDto } from './dto/create-kelass.dto';
@@ -422,7 +423,8 @@ export class KelassController {
   @Roles('admin', 'super_admin')
   @Get('/detail/kelas/admin/:kelasId')
   async detailKelas(
-    @Param('kelasId') kelasId: number,
+    @Param('kelasId', ParseIntPipe) kelasId: number,
+
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -531,11 +533,9 @@ export class KelassController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kelas = await this.kelassService.findOneKelasUser(id);
     let isUserInKelas = false;
-    if (!kelas) {
-      req.flash('info', 'not found class');
-    } else if (!req.user) {
+    if (!req.user) {
+    const kelas = await this.kelassService.findOneKelasUser(id);
       const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
       const alur_kelas = await this.kelassService.findAlurKelas(id);
       const mentor = await this.kelassService.findMentorKelas(id);
@@ -558,6 +558,7 @@ export class KelassController {
         user_kelas,
       });
     } else {
+    const kelas = await this.kelassService.findOneKelasUserLaunch(id);
       for (const u of kelas.user_kelas) {
         if (u.user.id === req.user.id) {
           isUserInKelas = true;
@@ -576,6 +577,7 @@ export class KelassController {
           minggu: mingguUpdated,
         });
       } else {
+    const kelas = await this.kelassService.findOneKelasUser(id);
         const pertanyaan_kelas =
           await this.kelassService.findPertanyaanKelas(id);
         const alur_kelas = await this.kelassService.findAlurKelas(id);

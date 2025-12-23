@@ -111,8 +111,6 @@ export class PertemuansService {
         });
       }
 
-    } else {
-      throw new Error('tidak dapat menambahkan pertemuan lagi');
     }
     }
   }

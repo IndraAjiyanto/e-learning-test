@@ -196,7 +196,7 @@
             Learning Details
           </h3>
           <div class="space-y-1 text-xs">
-            <p><span class="font-medium text-gray-600">Account Mentor:</span> <span class="text-gray-800">{{kelas.mentoring.user.username}}</span></p>
+            <p><span class="font-medium text-gray-600">Account Mentor:</span> <span class="text-gray-800">{{#each kelas.mentoring}}{{this.user.username}}{{/each}}</span></p>
             <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_id 40}}</span></p>
             <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_en 40}}</span></p>
             <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_ja 40}}</span></p>
