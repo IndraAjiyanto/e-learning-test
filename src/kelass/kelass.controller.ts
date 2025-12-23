@@ -666,7 +666,8 @@ export class KelassController {
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'failed update kelas');
-      res.redirect('/kelass');
+            res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+
     }
   }
 
@@ -686,6 +687,25 @@ export class KelassController {
     } catch (error) {
       req.flash('error', error.message || 'class failed to launch');
       res.redirect('/kelass');
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Patch(':kelasId/toggle-status')
+  async updateStatus(
+    @Param('kelasId') kelasId: number,
+    @Body() updateKelassDto: UpdateKelassDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.kelassService.updateLaunch(kelasId, updateKelassDto);
+      req.flash('success', 'class successfuly switch status');
+            res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+
+    } catch (error) {
+      req.flash('error', error.message || 'class failed to switch status');
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 

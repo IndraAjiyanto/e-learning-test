@@ -3,200 +3,218 @@
   <div class="mb-6 mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl space-y-8 relative">
 
     <!-- Tombol Back -->
-<div x-data="{
-  prev: '/kelass',
-  init() {
-    this.prev = localStorage.getItem('kelasPrevUrl') || '/kelass';
-  },
-  goBack() {
-    const prevUrl = localStorage.getItem('kelasPrevUrl');
-    if (prevUrl) {
-      localStorage.removeItem('kelasPrevUrl');
-      window.location.href = prevUrl;
-    } else {
-      window.location.href = '/kelass';
-    }
-  }
-}" x-init="init()">
-  <a 
-    x-bind:href="prev"
-    @click.prevent="goBack()"
-    class="inline-flex items-center text-gray-600 text-base font-medium hover:underline cursor-pointer">
-    <svg xmlns="http://www.w3.org/2000/svg" 
-         class="h-5 w-5 mr-1" 
-         fill="none" 
-         viewBox="0 0 24 24" 
-         stroke="currentColor">
-      <path stroke-linecap="round" 
-            stroke-linejoin="round" 
-            stroke-width="2" 
-            d="M15 19l-7-7 7-7" />
-    </svg>
-    Back
-  </a>
-</div>
-
-    <!-- Tombol Aksi (Top Right Corner) -->
-    <div class="absolute top-4 right-4 flex items-center gap-2 z-10">
-      <!-- Tombol Edit -->
-      <a href="/kelass/edit/{{kelas.id}}"
-         class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
-         title="Edit Class">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             fill="none" viewBox="0 0 24 24"
-             stroke-width="2" stroke="currentColor"
-             class="w-4 h-4">
-          <path stroke-linecap="round" stroke-linejoin="round"
-                d="M16.862 4.487l1.687-1.688a1.875 1.875
-                   0 112.652 2.652L10.582 16.07a4.5
-                   4.5 0 01-1.897 1.13l-2.685.805.805-2.685
-                   a4.5 4.5 0 011.13-1.897l10.927-10.936z" />
-          <path stroke-linecap="round" stroke-linejoin="round"
-                d="M19.5 7.125L16.875 4.5" />
+    <div x-data="{
+      prev: '/kelass',
+      init() {
+        this.prev = localStorage.getItem('kelasPrevUrl') || '/kelass';
+      },
+      goBack() {
+        const prevUrl = localStorage.getItem('kelasPrevUrl');
+        if (prevUrl) {
+          localStorage.removeItem('kelasPrevUrl');
+          window.location.href = prevUrl;
+        } else {
+          window.location.href = '/kelass';
+        }
+      }
+    }" x-init="init()">
+      <a 
+        x-bind:href="prev"
+        @click.prevent="goBack()"
+        class="inline-flex items-center text-gray-600 text-base font-medium hover:underline cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="h-5 w-5 mr-1" 
+             fill="none" 
+             viewBox="0 0 24 24" 
+             stroke="currentColor">
+          <path stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M15 19l-7-7 7-7" />
         </svg>
+        Back
       </a>
+    </div>
 
-      <!-- Tombol Delete -->
-      <form action="/kelass/{{kelas.id}}?_method=DELETE" method="post" class="inline">
-        <button
-          type="button"
-          onclick="confirmDelete(this)"
-          class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm"
-          title="Delete Class">
+    <!-- Tombol Aksi (Top Right Corner) - Sejajar dengan Back Button -->
+    <div class="absolute top-0 right-6 flex flex-col items-end gap-1 z-10">
+      <!-- Tombol Launch/Toggle di Atas -->
+      {{#if (roles kelas.proses "acc")}}
+ <form action="/kelass/{{kelas.id}}/toggle-status?_method=PATCH" method="POST">
+        <button type="button" 
+                onclick="confirmAction(this, '{{#if kelas.launch}}Are you sure cancel launch this program?{{else}}Are you sure launch this program?{{/if}}')"
+                class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none
+                  {{#if kelas.launch}} bg-green-500 {{else}} bg-gray-300 {{/if}}">
+          <span 
+            class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform
+              {{#if kelas.launch}} translate-x-5 {{else}} translate-x-1 {{/if}}">
+          </span>
+        </button>
+      </form>
+      {{/if}}
+      
+      <!-- Tombol Edit dan Delete di Bawah (Samping Kanan Kiri) -->
+      <div class="flex items-center gap-2">
+        <!-- Tombol Edit (Kiri) -->
+        <a href="/kelass/edit/{{kelas.id}}"
+           class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
+           title="Edit Class">
           <svg xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24"
                stroke-width="2" stroke="currentColor"
                class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M6 18L18 6M6 6l12 12" />
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875
+                     0 112.652 2.652L10.582 16.07a4.5
+                     4.5 0 01-1.897 1.13l-2.685.805.805-2.685
+                     a4.5 4.5 0 011.13-1.897l10.927-10.936z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M19.5 7.125L16.875 4.5" />
           </svg>
-        </button>
-      </form>
+        </a>
+
+        <!-- Tombol Delete (Kanan) -->
+        <form action="/kelass/{{kelas.id}}?_method=DELETE" method="post" class="inline">
+          <button
+            type="button"
+            onclick="confirmDelete(this)"
+            class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm"
+            title="Delete Class">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 fill="none" viewBox="0 0 24 24"
+                 stroke-width="2" stroke="currentColor"
+                 class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </form>
+      </div>
     </div>
 
-      <!-- Image and Description Row -->
-      <div class="flex flex-col lg:flex-row gap-4 mb-4">
+    <!-- Image and Description Row -->
+    <div class="flex flex-col lg:flex-row gap-4 mb-4">
 
-        <!-- Gambar Kelas -->
-        <div class="flex-shrink-0">
-          <img src="{{kelas.gambar}}"
-               alt="Cover {{kelas.nama_kelas}}"
-               class="w-48 h-32 lg:w-56 lg:h-40 object-cover rounded-lg shadow-md">
-        </div>
+      <!-- Gambar Kelas -->
+      <div class="flex-shrink-0">
+        <img src="{{kelas.gambar}}"
+             alt="Cover {{kelas.nama_kelas}}"
+             class="w-48 h-32 lg:w-56 lg:h-40 object-cover rounded-lg shadow-md">
+      </div>
 
-        <!-- Description Section -->
-        <div class="flex-1 bg-white rounded-lg p-3 border border-gray-200">
+      <!-- Description Section -->
+      <div class="flex-1 bg-white rounded-lg p-3 border border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+          <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+          </svg>
+          Description
+        </h3>
+        <p class="text-gray-700 leading-relaxed text-sm">{{kelas.deskripsi.id}}</p>
+        <p class="text-gray-700 leading-relaxed text-sm">{{kelas.deskripsi.en}}</p>
+        <p class="text-gray-700 leading-relaxed text-sm">{{kelas.deskripsi.ja}}</p>
+      </div>
+    </div>
+
+    <!-- Info Cards Below -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Basic Information -->
+        <div class="bg-gray-50 rounded-lg p-3">
           <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
-            <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+            <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            Description
+            Basic Information
           </h3>
-          <p class="text-gray-700 leading-relaxed text-sm">{{kelas.deskripsi.id}}</p>
-          <p class="text-gray-700 leading-relaxed text-sm">{{kelas.deskripsi.en}}</p>
-          <p class="text-gray-700 leading-relaxed text-sm">{{kelas.deskripsi.ja}}</p>
-        </div>
-      </div>
-
-      <!-- Info Cards Below -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <!-- Basic Information -->
-          <div class="bg-gray-50 rounded-lg p-3">
-            <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
-              <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              Basic Information
-            </h3>
-            <div class="space-y-1 text-xs">
-              <p><span class="font-medium text-gray-600">Program Name:</span> <span class="text-gray-800">{{kelas.nama_kelas}}</span></p>
-              <p><span class="font-medium text-gray-600">Category:</span> <span class="text-gray-800">{{kelas.kategori.nama_kategori}}</span></p>
-              <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{ kelas.jenis_kelas.nama_jenis_kelas}}</span></p>
-              <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (eq kelas.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
-              <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{#each kelas.lokasi}}{{this}}{{/each}}</span></p>
-              {{#if (eq kelas.kategori.nama_kategori "Short Class")}}
-              <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.hari}} day</span></p>
-              {{else}}
-              <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.bulan}} month</span></p>
-              {{/if}}
-              <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if kelas.tanggal_mulai}}{{formatTanggal kelas.tanggal_mulai}}{{else}}Not set{{/if}}</span></p>
-              <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if kelas.tanggal_selesai}}{{formatTanggal kelas.tanggal_selesai}}{{else}}Not set{{/if}}</span></p>
-            </div>
+          <div class="space-y-1 text-xs">
+            <p><span class="font-medium text-gray-600">Program Name:</span> <span class="text-gray-800">{{kelas.nama_kelas}}</span></p>
+            <p><span class="font-medium text-gray-600">Category:</span> <span class="text-gray-800">{{kelas.kategori.nama_kategori}}</span></p>
+            <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{ kelas.jenis_kelas.nama_jenis_kelas}}</span></p>
+            <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (eq kelas.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{#each kelas.lokasi}}{{this}}{{/each}}</span></p>
+            {{#if (eq kelas.kategori.nama_kategori "Short Class")}}
+            <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.hari}} day</span></p>
+            {{else}}
+            <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.bulan}} month</span></p>
+            {{/if}}
+            <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if kelas.tanggal_mulai}}{{formatTanggal kelas.tanggal_mulai}}{{else}}Not set{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if kelas.tanggal_selesai}}{{formatTanggal kelas.tanggal_selesai}}{{else}}Not set{{/if}}</span></p>
           </div>
+        </div>
 
-          <!-- Capacity & Enrollment -->
-          <div class="bg-green-50 rounded-lg p-3">
-            <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
-              <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-              </svg>
-              Capacity & Enrollment
-            </h3>
-            <div class="space-y-1 text-xs">
-              <p><span class="font-medium text-gray-600">Capacity:</span> <span class="text-gray-800">{{kelas.kuota}} students</span></p>
-              <p><span class="font-medium text-gray-600">Enrolled:</span> <span class="text-gray-800">{{user_kelas.length}} students</span></p>
-              <div class="mt-2">
-                <div class="flex justify-between text-xs text-gray-600 mb-1">
-                  <span>Progress</span>
-                  <span>{{kelas.user_kelas.length}}/{{kelas.kuota}}</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-green-500 h-2 rounded-full transition-all duration-300"
-                       style="width: {{#if kelas.kuota}}{{multiply (divide kelas.user_kelas.length kelas.kuota) 100}}%{{else}}0%{{/if}}"></div>
-                </div>
+        <!-- Capacity & Enrollment -->
+        <div class="bg-green-50 rounded-lg p-3">
+          <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+            <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            Capacity & Enrollment
+          </h3>
+          <div class="space-y-1 text-xs">
+            <p><span class="font-medium text-gray-600">Capacity:</span> <span class="text-gray-800">{{kelas.kuota}} students</span></p>
+            <p><span class="font-medium text-gray-600">Enrolled:</span> <span class="text-gray-800">{{user_kelas.length}} students</span></p>
+            <div class="mt-2">
+              <div class="flex justify-between text-xs text-gray-600 mb-1">
+                <span>Progress</span>
+                <span>{{kelas.user_kelas.length}}/{{kelas.kuota}}</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-green-500 h-2 rounded-full transition-all duration-300"
+                     style="width: {{#if kelas.kuota}}{{multiply (divide kelas.user_kelas.length kelas.kuota) 100}}%{{else}}0%{{/if}}"></div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Pricing/Form Information -->
-          <div class="bg-blue-50 rounded-lg p-3">
-            <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
-              <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-              </svg>
-              {{#if kelas.check_paid}}Pricing Information{{else}}Form Information{{/if}}
-            </h3>
-            <div class="space-y-1 text-xs">
-              {{#if kelas.check_paid}}
-              <p><span class="font-medium text-gray-600">Price:</span> <span class="text-gray-800 font-semibold">Rp {{formatRupiah kelas.harga}}</span></p>
-              <p><span class="font-medium text-gray-600">Promo:</span> <span class="text-green-600 font-semibold">Rp {{formatRupiah kelas.promo}}</span></p>
-              <p><span class="font-medium text-gray-600">Type:</span> <span class="text-green-600">Paid</span></p>
-              {{else}}
-              <p><span class="font-medium text-gray-600">Form:</span> <span class="text-gray-800">{{#if kelas.form}}{{kelas.form}}{{else}}No form required{{/if}}</span></p>
-              <p><span class="font-medium text-gray-600">Type:</span> <span class="text-blue-600">Free</span></p>
-              {{/if}}
-            </div>
+        <!-- Pricing/Form Information -->
+        <div class="bg-blue-50 rounded-lg p-3">
+          <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+            <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+            {{#if kelas.check_paid}}Pricing Information{{else}}Form Information{{/if}}
+          </h3>
+          <div class="space-y-1 text-xs">
+            {{#if kelas.check_paid}}
+            <p><span class="font-medium text-gray-600">Price:</span> <span class="text-gray-800 font-semibold">Rp {{formatRupiah kelas.harga}}</span></p>
+            <p><span class="font-medium text-gray-600">Promo:</span> <span class="text-green-600 font-semibold">Rp {{formatRupiah kelas.promo}}</span></p>
+            <p><span class="font-medium text-gray-600">Type:</span> <span class="text-green-600">Paid</span></p>
+            {{else}}
+            <p><span class="font-medium text-gray-600">Form:</span> <span class="text-gray-800">{{#if kelas.form}}{{kelas.form}}{{else}}No form required{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">Type:</span> <span class="text-blue-600">Free</span></p>
+            {{/if}}
           </div>
+        </div>
 
-          <!-- Learning Details -->
-          <div class="bg-purple-50 rounded-lg p-3">
-            <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
-              <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-              </svg>
-              Learning Details
-            </h3>
-            <div class="space-y-1 text-xs">
-              <p><span class="font-medium text-gray-600">Account Mentor:</span> <span class="text-gray-800">{{kelas.mentoring.user.username}}</span></p>
-              <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_id 40}}</span></p>
-              <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_en 40}}</span></p>
-              <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_ja 40}}</span></p>
-              <div class="mt-2">
-                <p class="font-medium text-gray-600 mb-1">Technologies:</p>
-                <div class="flex flex-wrap gap-1">
-                  {{#each kelas.teknologi}}
-                  <span class="w-4 h-4">
-                    {{{ this.svg }}}
-                  </span>
-                  {{/each}}
-                </div>
+        <!-- Learning Details -->
+        <div class="bg-purple-50 rounded-lg p-3">
+          <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+            <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            Learning Details
+          </h3>
+          <div class="space-y-1 text-xs">
+            <p><span class="font-medium text-gray-600">Account Mentor:</span> <span class="text-gray-800">{{kelas.mentoring.user.username}}</span></p>
+            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_id 40}}</span></p>
+            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_en 40}}</span></p>
+            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_ja 40}}</span></p>
+            <div class="mt-2">
+              <p class="font-medium text-gray-600 mb-1">Technologies:</p>
+              <div class="flex flex-wrap gap-1">
+                {{#each kelas.teknologi}}
+                <span class="w-4 h-4">
+                  {{{ this.svg }}}
+                </span>
+                {{/each}}
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-  <!-- ===================== TAB SECTION ===================== -->
+<!-- ===================== TAB SECTION ===================== -->
 <div class="mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl" 
      x-data="tabData()" x-init="init()">
 
