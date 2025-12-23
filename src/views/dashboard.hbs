@@ -511,7 +511,7 @@ Get full career support — from crafting your CV and portfolio to preparing for
       categoriesData: [
         { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
         {{#each kategori}}
-        { value: '{{this.nama_kategori}}', icon: '{{this.icon}}', title: '{{this.nama_kategori}}', desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
+        { value: '{{this.nama_kategori}}', icon: `{{this.icon}}`, title: '{{this.nama_kategori}}', desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
         {{/each}}
       ],
       
@@ -628,8 +628,12 @@ Get full career support — from crafting your CV and portfolio to preparing for
             class='w-full px-5 py-4 pr-12 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:bg-white/10 text-left relative'
           >
             <div class='flex items-center gap-3'>
-              <img x-show="selectedCategoryItem.value !== 'all'" :src="selectedCategoryItem.icon" class="w-5 h-5 object-cover rounded" alt="icon">
-              <i x-show="selectedCategoryItem.value === 'all'" :class='selectedCategoryItem.icon' class='fas text-slate-400'></i>
+              <template x-if="selectedCategoryItem.value !== 'all'">
+              <img  :src="selectedCategoryItem.icon" class="w-5 h-5 object-cover rounded" alt="icon">
+              </template>
+              <template x-if="selectedCategoryItem.value === 'all'">
+              <i :class='selectedCategoryItem.icon' class='fas text-slate-400'></i>
+              </template>
               <span x-text='selectedCategoryItem.title'></span>
             </div>
             <div
@@ -658,8 +662,12 @@ Get full career support — from crafting your CV and portfolio to preparing for
                   class='w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors text-white'
                   :class="tab === category.value ? 'bg-gradient-to-br from-primary via-secondary to-gray-900' : ''"
                 >
-                  <img x-show="category.value !== 'all'" :src="category.icon" class="w-8 h-8 object-cover rounded-full" alt="icon">
+                <template x-if="category.value !== 'all'">
+                  <img  :src="category.icon" class="w-8 h-8 object-cover rounded-full" alt="icon">
+</template>
+<template x-if="category.value === 'all'">
                   <i x-show="category.value === 'all'" :class='category.icon' class='fas'></i>
+                  </template>
                 </div>
                 <div class='flex-1'>
                   <h4

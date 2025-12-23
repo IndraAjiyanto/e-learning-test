@@ -124,8 +124,12 @@
             class='w-full px-5 py-4 pr-12 bg-white border border-gray-300 rounded-2xl text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all duration-300 hover:border-slate-400 text-left relative shadow-sm'
           >
             <div class='flex items-center gap-3'>
-              <img x-show="selectedCategoryItem.value !== 'all'" :src="selectedCategoryItem.icon" class="w-5 h-5 object-cover rounded" alt="icon">
-              <i x-show="selectedCategoryItem.value === 'all'" :class='selectedCategoryItem.icon' class='fas text-slate-600'></i>
+              <template x-if="selectedCategoryItem.value !== 'all'">
+              <img :src="selectedCategoryItem.icon" class="w-5 h-5 object-cover rounded" alt="icon">
+              </template>
+              <template x-if="selectedCategoryItem.value === 'all'">
+              <i :class='selectedCategoryItem.icon' class='fas text-slate-600'></i>
+              </template>
               <span x-text='selectedCategoryItem.title'></span>
             </div>
             <div
@@ -154,8 +158,12 @@
                   class='w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-slate-200 transition-colors text-white'
                   :class="tab === category.value ? 'bg-gradient-to-br from-primary via-secondary to-gray-900' : ''"
                 >
-                  <img x-show="category.value !== 'all'" :src="category.icon" class="w-8 h-8 object-cover rounded-full" alt="icon">
-                  <i x-show="category.value === 'all'" :class='category.icon' class='fas'></i>
+                <template x-if="category.value !== 'all'">
+                  <img  :src="category.icon" class="w-8 h-8 object-cover rounded-full" alt="icon">
+                  </template>
+                  <template x-if="category.value === 'all'">
+                  <i :class='category.icon' class='fas'></i>
+                  </template>
                 </div>
                 <div class='flex-1'>
                   <h4
