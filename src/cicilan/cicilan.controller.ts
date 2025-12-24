@@ -96,6 +96,7 @@ export class CicilanController {
       if (updateCicilanDto.bulan) {
         updateCicilanDto.bulan = Number(updateCicilanDto.bulan) as 3 | 6 | 12;
       }
+      console.log('Update DTO:', updateCicilanDto.dp);
 
       const cicilan = await this.cicilanService.update(id, updateCicilanDto);
       req.flash('success', 'Installment updated successfully');

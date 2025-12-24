@@ -38,7 +38,7 @@ export class CicilanService {
   async findAll() {
     return await this.cicilanRepository.find({
       relations: ['kelas'],
-      order: { createdAt: 'DESC' },
+      order: { bulan: 'ASC' },
     });
   }
 
@@ -86,6 +86,10 @@ export class CicilanService {
 
     if (updateCicilanDto.bulan) {
       cicilan.bulan = updateCicilanDto.bulan;
+    }
+
+    if (updateCicilanDto.dp) {
+      cicilan.dp = updateCicilanDto.dp;
     }
 
     return await this.cicilanRepository.save(cicilan);

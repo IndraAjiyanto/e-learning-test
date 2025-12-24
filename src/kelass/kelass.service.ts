@@ -712,7 +712,7 @@ export class KelassService {
 
   async findCicilanKelas(kelasId: number) {
     return await this.cicilanRepository.find({
-      where: { kelas: { id: kelasId } },
+      where: { kelas: { id: kelasId } }, order: { bulan: 'ASC' },
     });
   }
 
