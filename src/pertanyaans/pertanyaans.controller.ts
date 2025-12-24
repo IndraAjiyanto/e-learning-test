@@ -23,7 +23,9 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { JawabanUsersService } from 'src/jawaban_users/jawaban_users.service';
 import { QuizService } from 'src/quiz/quiz.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigImage } from 'src/common/config/multer.config';
+import { multerConfigImage, multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('pertanyaans')
@@ -38,19 +40,25 @@ export class PertanyaansController {
 
   @Roles('admin')
   @Post(':quizId')
-  @UseInterceptors(FileInterceptor('gambar', multerConfigImage))
+    @UseInterceptors(
+      FileInterceptor('profile', multerConfigMemoryOnly),
+      ValidateImageInterceptor,
+    )
+    @ValidateImage({
+      maxSize: 5 * 1024 * 1024, // 5MB
+      allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+      folder: 'quiz_question',
+    })
   async create(
     @Res() res: Response,
     @Req() req: Request,
     @Body() createPertanyaanDto: CreatePertanyaanDto,
     @Param('quizId') quizId: number,
-    @UploadedFile() gambar: Express.Multer.File,
   ) {
     try {
       createPertanyaanDto.quizId = quizId;
-      if (gambar) {
-        createPertanyaanDto.gambar = gambar.path;
-      }
+        createPertanyaanDto.gambar = req.body.uploadedImageUrls?.[0];
+
       const pertanyaan =
         await this.pertanyaansService.create(createPertanyaanDto);
       for (let i = 0; i < createPertanyaanDto.pilihan.length; i++) {
@@ -138,7 +146,15 @@ export class PertanyaansController {
 
   @Roles('admin')
   @Patch(':pertanyaanId/:quizId')
-  @UseInterceptors(FileInterceptor('gambar', multerConfigImage))
+      @UseInterceptors(
+      FileInterceptor('profile', multerConfigMemoryOnly),
+      ValidateImageInterceptor,
+    )
+    @ValidateImage({
+      maxSize: 5 * 1024 * 1024, // 5MB
+      allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+      folder: 'quiz_question',
+    })
   async update(
     @Param('pertanyaanId') pertanyaanId: number,
     @UploadedFile() gambar: Express.Multer.File,
@@ -149,10 +165,10 @@ export class PertanyaansController {
   ) {
     try {
       const pertanyaan = await this.pertanyaansService.findOne(pertanyaanId);
-      if (gambar) {
-        updatePertanyaanDto.gambar = gambar.path;
+      if (req.body.uploadedImageUrls?.length) {
+        updatePertanyaanDto.gambar = req.body.uploadedImageUrls[0];
         if (pertanyaan.gambar) {
-          await this.pertanyaansService.getPublicIdFromUrl(pertanyaan.gambar);
+          await this.pertanyaansService.deleteFile(pertanyaan.gambar);
         }
       }
       await this.pertanyaansService.update(pertanyaanId, updatePertanyaanDto);
@@ -175,7 +191,7 @@ export class PertanyaansController {
     try {
       const pertanyaan = await this.pertanyaansService.findOne(pertanyaanId);
       if (pertanyaan.gambar) {
-        await this.pertanyaansService.getPublicIdFromUrl(pertanyaan.gambar);
+        await this.pertanyaansService.deleteFile(pertanyaan.gambar);
       }
       await this.pertanyaansService.remove(pertanyaanId);
       req.flash('success', 'successfuly delete question');

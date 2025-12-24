@@ -10,6 +10,7 @@ import { Jawaban } from 'src/entities/jawaban.entity';
 import { JawabanUsersModule } from 'src/jawaban_users/jawaban_users.module';
 import { Quiz } from 'src/entities/quiz.entity';
 import { QuizModule } from 'src/quiz/quiz.module';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { QuizModule } from 'src/quiz/quiz.module';
     JawabansModule,
     JawabanUsersModule,
     QuizModule,
+    CommonModule
   ],
   controllers: [PertanyaansController],
   providers: [PertanyaansService],
