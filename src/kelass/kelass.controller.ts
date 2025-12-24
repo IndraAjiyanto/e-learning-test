@@ -757,16 +757,25 @@ async remove(
   @Get('pertemuan/:mingguId')
   async getPertemuan(
     @Res() res: Response,
+    @Req() req: Request,
     @Param('mingguId') mingguId: number,
   ) {
-    const pertemuan = await this.kelassService.findPertemuan(mingguId);
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const pertemuan = await this.kelassService.findPertemuan(mingguId, user.id);
     res.json(pertemuan);
   }
 
   @Roles('user')
   @Get('quiz/:mingguId')
-  async getQuiz(@Res() res: Response, @Param('mingguId') mingguId: number) {
-    const quiz = await this.kelassService.findQuiz(mingguId);
+  async getQuiz(@Res() res: Response, @Param('mingguId') mingguId: number, @Req() req: Request) {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const quiz = await this.kelassService.findQuiz(mingguId, user.id);
     res.json(quiz);
   }
 }

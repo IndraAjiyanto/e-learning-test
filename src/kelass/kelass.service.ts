@@ -410,19 +410,63 @@ export class KelassService {
   }
 
 
-  async findQuiz(mingguId: number) {
-    return await this.quizRepository.find({
-      where: { minggu: { id: mingguId } }, relations: ['pertanyaan', 'progres_quiz', 'nilai'],
-      order: { id: 'ASC' }, 
-    });
+  async findQuiz(mingguId: number, userId: number) {
+    return await this.quizRepository
+      .createQueryBuilder('quiz')
+      .leftJoinAndSelect(
+        'quiz.progres_quiz',
+        'progres_quiz',
+        'progres_quiz.userId = :userId',
+        { userId },
+      )
+      .leftJoinAndSelect(
+        'quiz.pertanyaan',
+        'pertanyaan'
+      )
+      .leftJoinAndSelect(
+        'quiz.nilai',
+        'nilai'
+      )
+      .where('quiz.mingguId = :mingguId', { mingguId: mingguId })
+      .orderBy('quiz.id', 'ASC')
+      .getMany();
+     
   }
 
 
-  async findPertemuan(mingguId: number) {
-    return await this.pertemuanRepository.find({
-      where: { minggu: { id: mingguId } },
-      order: { pertemuan_ke: 'ASC' },  relations: ['progres_pertemuan', 'logbook', 'absen', 'tugas', 'tugas.jawaban_tugas'],
-    });
+  async findPertemuan(mingguId: number, userId: number) {
+
+    return await this.pertemuanRepository
+      .createQueryBuilder('pertemuan')
+      .leftJoinAndSelect(
+        'pertemuan.progres_pertemuan',
+        'progres_pertemuan',
+        'progres_pertemuan.userId = :userId',
+        { userId },
+      )
+      .leftJoinAndSelect(
+        'pertemuan.logbook',
+        'logbook'
+      )
+      .leftJoinAndSelect(
+        'pertemuan.absen',
+        'absen',
+        'absen.userId = :userId',
+        { userId },
+      )
+      .leftJoinAndSelect(
+        'pertemuan.tugas',
+        'tugas'
+      )
+      .leftJoinAndSelect(
+        'tugas.jawaban_tugas',
+        'jawaban_tugas',
+        'jawaban_tugas.userId = :userId',
+        { userId },
+      )
+      .where('pertemuan.mingguId = :mingguId', { mingguId: mingguId })
+      .orderBy('pertemuan.pertemuan_ke', 'ASC')
+      .getMany();
   }
 
   async findMinggu(kelasId: number, userId: number) {
