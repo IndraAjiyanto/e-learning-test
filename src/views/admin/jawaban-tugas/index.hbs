@@ -1,5 +1,5 @@
 <div class="px-6 py-10 bg-gray-50 min-h-screen">
-  <div class="max-w-5xl mx-auto">
+  <div class="w-full mx-auto" x-data="answerTabData()" x-init="init()">
     
     <!-- Back Button -->
     <div class="mb-6">
@@ -12,7 +12,9 @@
       </a>
     </div>
     
-    <!-- Task PDF Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Left Column: Assignment File -->
+      <div>
     {{#if tugas.file}}
     <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
       <div class="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-4">
@@ -33,7 +35,7 @@
       <div class="p-6 bg-gray-50">
         <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-gray-200">
           <iframe 
-            src="https://mozilla.github.io/pdf.js/web/viewer.html?file={{tugas.file}}" 
+              src="{{tugas.file}}"
             class="w-full h-[600px]" 
             type="application/pdf"
           ></iframe>
@@ -41,23 +43,35 @@
       </div>
     </div>
     {{/if}}
+      </div>
+
+      <!-- Right Column: User Answers -->
+      <div>
 
     <!-- Header Section -->
     <div class="mb-8">
-      <div class="inline-block px-4 py-2 bg-gray-900/10 backdrop-blur-sm rounded-full mb-4">
-        <span class="text-gray-900 text-sm font-medium">Answer Management</span>
-      </div>
       <h3 class="text-4xl font-bold text-gray-900 mb-2">User Answers</h3>
       <p class="text-gray-600">Review and give feedback on each submitted answer</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-6">
+      <div class="flex space-x-4">
+        <button @click="setTab('all')" :class="activeTab === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow transition">All</button>
+        <button @click="setTab('proces')" :class="activeTab === 'proces' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow transition">Under Review</button>
+        <button @click="setTab('acc')" :class="activeTab === 'acc' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow transition">Approved</button>
+        
+        <button @click="setTab('rejected')" :class="activeTab === 'rejected' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-lg shadow transition">Rejected</button>
+      </div>
     </div>
 
     {{#if jawaban_tugas.length}}
       <div class="space-y-6">
         {{#each jawaban_tugas}}
-          <div class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+          <div data-status="{{this.proses}}" x-data="cardData()" class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300">
             
             <!-- Card Header -->
-            <div class="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-4">
+            <div @click="isOpen = !isOpen" class="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-4 cursor-pointer">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
@@ -71,22 +85,27 @@
                   </div>
                 </div>
                 
-                <span class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full
-                  {{#if (roles this.proses 'acc')}} bg-green-100 text-green-700
-                  {{else if (roles this.proses 'rejected')}} bg-red-100 text-red-700
-                  {{else}} bg-yellow-100 text-yellow-700 {{/if}}">
-                  <span class="w-2 h-2 rounded-full mr-2 
-                    {{#if (roles this.proses 'acc')}} bg-green-500
-                    {{else if (roles this.proses 'rejected')}} bg-red-500
-                    {{else}} bg-yellow-500 {{/if}}">
+                <div class="flex items-center gap-3">
+                  <span class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full
+                    {{#if (roles this.proses 'acc')}} bg-green-100 text-green-700
+                    {{else if (roles this.proses 'rejected')}} bg-red-100 text-red-700
+                    {{else}} bg-yellow-100 text-yellow-700 {{/if}}">
+                    <span class="w-2 h-2 rounded-full mr-2 
+                      {{#if (roles this.proses 'acc')}} bg-green-500
+                      {{else if (roles this.proses 'rejected')}} bg-red-500
+                      {{else}} bg-yellow-500 {{/if}}">
+                    </span>
+                    {{this.proses}}
                   </span>
-                  {{this.proses}}
-                </span>
+                  <svg :class="isOpen ? 'rotate-180' : ''" class="w-5 h-5 text-white transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
               </div>
             </div>
 
             <!-- Card Body -->
-            <div class="p-6 space-y-5">
+            <div x-show="isOpen" x-transition class="p-6 space-y-5">
               
               <!-- Uploaded File Info -->
               <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
@@ -104,7 +123,7 @@
               </div>
 
               <!-- Comment Form -->
-              <form action="/komentar/{{tugas.id}}/{{this.id}}" method="POST" class="space-y-4">
+              <form action="/jawaban-tugass/{{tugas.id}}/{{this.id}}?_method=PATCH" method="POST" class="space-y-4">
                 <div>
                   <label class="block text-sm font-semibold text-gray-900 mb-2">
                     Leave a Comment
@@ -170,3 +189,38 @@
 
   </div>
 </div>
+
+<script>
+function answerTabData() {
+  return {
+    activeTab: localStorage.getItem('answerTab') || 'all',
+
+    init() {
+      this.filterCards();
+    },
+
+    setTab(status) {
+      this.activeTab = status;
+      localStorage.setItem('answerTab', status);
+      this.filterCards();
+    },
+
+    filterCards() {
+      const cards = document.querySelectorAll('[data-status]');
+      cards.forEach(card => {
+        if (this.activeTab === 'all' || card.dataset.status === this.activeTab) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  }
+}
+
+function cardData() {
+  return {
+    isOpen: false
+  }
+}
+</script>

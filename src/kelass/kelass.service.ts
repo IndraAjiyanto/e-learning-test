@@ -707,6 +707,7 @@ export class KelassService {
         'teknologi',
         'mentoring',
         'mentoring.user',
+        'user_kelas',
       ],
     });
   }

@@ -79,10 +79,6 @@ export class JenisKelasController {
   ) {
     try {
       const jenis_kelas = await this.jenisKelasService.findOne(jenis_kelasId);
-      if (icon) {
-        await this.jenisKelasService.getPublicIdFromUrl(jenis_kelas.icon);
-        updateJenisKelaDto.icon = icon.path;
-      }
       await this.jenisKelasService.update(jenis_kelasId, updateJenisKelaDto);
       req.flash('success', 'Program type successfully update');
       res.redirect('/jenis-kelas');
@@ -105,7 +101,6 @@ export class JenisKelasController {
         req.flash('error', 'jenis_kelas not found');
         return res.redirect('/jenis-kelas');
       }
-      await this.jenisKelasService.getPublicIdFromUrl(jenis_kelas.icon);
       await this.jenisKelasService.remove(jenis_kelasId);
       req.flash('success', 'Program type successfully delete');
       res.redirect('/jenis-kelas');

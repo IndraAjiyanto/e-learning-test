@@ -5,8 +5,9 @@ export class CreateJawabanTugassDto {
   @IsString()
   file: string;
 
-  @IsInt()
-  nilai: number;
+  @IsString()
+  @IsOptional()
+  komentar: string;
 
   @IsInt()
   userId: number;

@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Tugas } from 'src/entities/tugas.entity';
 import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
+import { Komentar } from 'src/entities/komentar.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([JawabanTugas, Tugas, User])],
+  imports: [TypeOrmModule.forFeature([JawabanTugas, Tugas, User, Komentar])],
 
   controllers: [JawabanTugassController],
   providers: [JawabanTugassService],

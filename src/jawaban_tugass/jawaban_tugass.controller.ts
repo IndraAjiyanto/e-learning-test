@@ -33,7 +33,6 @@ export class JawabanTugassController {
   ) {
     try {
       createJawabanTugassDto.proses = 'proces';
-      createJawabanTugassDto.nilai = 0;
       if (req.user) {
         createJawabanTugassDto.userId = req.user.id;
       }
@@ -91,12 +90,29 @@ export class JawabanTugassController {
     });
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
+  @Roles('admin','user')
+  @Patch(':tugasId/:jawaban_tugasId')
+  async update(
+    @Param('jawaban_tugasId') jawaban_tugasId: number,
+    @Param('tugasId') tugasId: number,
     @Body() updateJawabanTugassDto: UpdateJawabanTugassDto,
+    @Res() res: Response,
+    @Req() req: Request,
   ) {
-    return this.jawabanTugassService.update(+id, updateJawabanTugassDto);
+    try {
+      if(!updateJawabanTugassDto.proses){
+      updateJawabanTugassDto.proses = 'proces';
+      }
+      await this.jawabanTugassService.update(jawaban_tugasId, updateJawabanTugassDto);
+      if(updateJawabanTugassDto.komentar){
+      await this.jawabanTugassService.createKomentar(updateJawabanTugassDto.komentar, jawaban_tugasId);
+      }
+      req.flash('success', 'Update answer successfuly');
+      res.redirect(`/jawaban-tugass/${tugasId}`);
+    } catch (error) {
+            req.flash('error', error.message || 'Update answer unsuccessfully');
+      res.redirect(`/jawaban-tugass/${tugasId}`);
+    }
   }
 
   @Delete(':id')

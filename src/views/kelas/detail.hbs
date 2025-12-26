@@ -90,7 +90,6 @@
                 dataLoaded: false,
 
                   async init() {
-
           const pertemuanResponse = await fetch('/kelass/pertemuan/{{this.id}}');
           const quizResponse = await fetch('/kelass/quiz/{{this.id}}');
 
@@ -307,8 +306,19 @@
                             <!-- Assignment Section -->
                             <div class="mb-4">
                               <template x-for="tugas in pertemuan.tugas" :key="tugas.id">
-                                <div>
-                                  <template x-if="tugas.jawaban_tugas">
+                                <div class="my-4">
+                                  <template x-if="tugas.jawaban_tugas.length <= 0 ">
+                                    <a 
+                                      :href="`/jawaban-tugass/${pertemuan.id}/${tugas.id}`"
+                                      class="group flex items-center justify-center px-5 py-2.5 text-center bg-blue-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-blue-500 w-full transform transition-all duration-300 text-sm"
+                                    >
+                                      <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                      </svg>
+                                      <span class="font-semibold">{{t "test.startLearning.startAssignment"}}</span>
+                                    </a>
+                                  </template>
+                                  <template x-if="tugas.jawaban_tugas[0].proses === 'acc'">
                                     <a 
                                       :href="`/jawaban-tugass/${pertemuan.id}/${tugas.id}`"
                                       class="group flex items-center justify-center px-5 py-2.5 text-center bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-emerald-500 hover:to-emerald-600 w-full transform transition-all duration-300 text-sm"
@@ -319,10 +329,21 @@
                                       <span class="font-semibold">{{t "test.startLearning.assignmentCompleted"}}</span>
                                     </a>
                                   </template>
-                                  <template x-if="!tugas.jawaban_tugas">
+                                  <template x-if="tugas.jawaban_tugas[0].proses === 'proces'">
                                     <a 
                                       :href="`/jawaban-tugass/${pertemuan.id}/${tugas.id}`"
-                                      class="group flex items-center justify-center px-5 py-2.5 text-center bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-slate-600 hover:to-slate-700 w-full transform transition-all duration-300 text-sm"
+                                      class="group flex items-center justify-center px-5 py-2.5 text-center bg-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-yellow-500 w-full transform transition-all duration-300 text-sm"
+                                    >
+                                      <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                      </svg>
+                                      <span class="font-semibold">{{t "test.startLearning.startAssignment"}}</span>
+                                    </a>
+                                  </template>
+                                  <template x-if="tugas.jawaban_tugas[0].proses === 'rejected'">
+                                    <a 
+                                      :href="`/jawaban-tugass/${pertemuan.id}/${tugas.id}`"
+                                      class="group flex items-center justify-center px-5 py-2.5 text-center bg-red-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-red-500 w-full transform transition-all duration-300 text-sm"
                                     >
                                       <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
@@ -440,19 +461,12 @@
                     <template x-if="pertemuan.progres_pertemuan.length === 0 || pertemuan.progres_pertemuan[0].absen === false">
   <div class="border border-gray-300 rounded-xl shadow-md bg-gradient-to-r from-gray-100 to-gray-200 overflow-hidden opacity-75">
     <!-- Header Section -->
-    <div class="w-full flex justify-between items-center px-5 py-3 bg-gradient-to-r from-gray-200 to-gray-300">
-      <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 bg-gray-400 rounded-lg flex items-center justify-center text-white font-bold text-base">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-          </svg>
-        </div>
+    <div class="w-full flex justify-between items-center px-5 py-3 bg-white text-left">
         <div>
           <h3 class="font-bold text-base text-gray-600" x-text="`{{t 'test.startLearning.session'}} ${pertemuan.pertemuan_ke} - ${pertemuan.topik}`"></h3>
           <p class="text-xs text-gray-500 mt-0.5">
             {{t "test.startLearning.completePreviousRequirements"}}
           </p>
-        </div>
       </div>
       <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>

@@ -22,9 +22,6 @@ export class JawabanTugas {
   @Column()
   file: string;
 
-  @Column()
-  nilai: number;
-
   @Column({
     type: 'enum',
     enum: ['acc', 'proces', 'rejected'],

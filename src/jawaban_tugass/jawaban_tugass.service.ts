@@ -6,6 +6,7 @@ import { JawabanTugas } from 'src/entities/jawaban_tugas.entity';
 import { Not, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Tugas } from 'src/entities/tugas.entity';
+import { Komentar } from 'src/entities/komentar.entity';
 
 @Injectable()
 export class JawabanTugassService {
@@ -15,6 +16,8 @@ export class JawabanTugassService {
   private readonly userRepository: Repository<User>;
   @InjectRepository(Tugas)
   private readonly tugasRepository: Repository<Tugas>;
+  @InjectRepository(Komentar)
+  private readonly komentarRepository: Repository<Komentar>;
 
   async create(createJawabanTugassDto: CreateJawabanTugassDto) {
     const user = await this.userRepository.findOne({
@@ -30,12 +33,27 @@ export class JawabanTugassService {
       throw new NotFoundException('tugas Not found');
     }
     const jawaban_tugas = await this.jawabanTugasRepository.create({
-      ...createJawabanTugassDto,
+      file: createJawabanTugassDto.file,
+      proses: createJawabanTugassDto.proses,
       user: user,
       tugas: tugas,
     });
     return await this.jawabanTugasRepository.save(jawaban_tugas);
   }
+
+    async createKomentar(komentarText: string, jawaban_tugasId: number) {
+      const jawaban_tugas = await this.jawabanTugasRepository.findOne({
+        where: { id: jawaban_tugasId },
+      });
+      if (!jawaban_tugas) {
+        throw new NotFoundException('answer not found');
+      }
+      const komentar = await this.komentarRepository.create({
+        komentar: komentarText,
+        jawaban_tugas: jawaban_tugas,
+      });
+      return await this.komentarRepository.save(komentar);
+    }
 
   async findTugas(tugasId: number) {
     return await this.tugasRepository.findOne({
@@ -72,12 +90,28 @@ export class JawabanTugassService {
     return `This action returns all jawabanTugass`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} jawabanTugass`;
+  async findOne(id: number) {
+    const jawaban_tugas = await this.jawabanTugasRepository.findOne({
+      where: { id: id },
+    });
+    if (!jawaban_tugas) {
+      throw new NotFoundException('Jawaban Tugas Not Found');
+    }
+    return jawaban_tugas;
   }
 
-  update(id: number, updateJawabanTugassDto: UpdateJawabanTugassDto) {
-    return `This action updates a #${id} jawabanTugass`;
+  async update(id: number, updateJawabanTugassDto: UpdateJawabanTugassDto) {
+        const jawaban_tugas = await this.findOne(id);
+    if (!jawaban_tugas) {
+      throw new NotFoundException('answer not found');
+    }
+    if(updateJawabanTugassDto.proses){
+    jawaban_tugas.proses = updateJawabanTugassDto.proses;
+    }
+    if(updateJawabanTugassDto.file){
+    jawaban_tugas.file = updateJawabanTugassDto.file;
+    }
+    return await this.jawabanTugasRepository.save(jawaban_tugas);
   }
 
   remove(id: number) {
