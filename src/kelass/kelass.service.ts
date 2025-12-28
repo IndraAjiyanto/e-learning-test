@@ -33,6 +33,7 @@ import { Alumni } from 'src/entities/alumni.entity';
 import { Cicilan } from 'src/entities/cicilan.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { Portfolio } from 'src/entities/portfolio.entity';
 
 @Injectable()
 export class KelassService {
@@ -49,8 +50,6 @@ export class KelassService {
     private readonly mingguRepository: Repository<Minggu>,
     @InjectRepository(ProgresMinggu)
     private readonly progresMingguRepository: Repository<ProgresMinggu>,
-    @InjectRepository(Nilai)
-    private readonly nilaiRepository: Repository<Nilai>,
     @InjectRepository(Quiz)
     private readonly quizRepository: Repository<Quiz>,
     @InjectRepository(ProgresPertemuan)
@@ -61,8 +60,6 @@ export class KelassService {
     private readonly userKelasRepository: Repository<UserKelas>,
     @InjectRepository(Mentor)
     private readonly mentorRepository: Repository<Mentor>,
-    @InjectRepository(ProgresQuiz)
-    private readonly progresQuizRepository: Repository<ProgresQuiz>,
     @InjectRepository(Logbook)
     private readonly logbookRepository: Repository<Logbook>,
     @InjectRepository(LogbookMentor)
@@ -85,6 +82,8 @@ export class KelassService {
     private readonly cicilanRepository: Repository<Cicilan>,
     @InjectRepository(Pertemuan)
     private readonly pertemuanRepository: Repository<Pertemuan>,
+    @InjectRepository(Portfolio)
+    private readonly portfolioRepository: Repository<Portfolio>,
   ) {}
 
   async findOneKategori(kategoriId: number) {
@@ -686,6 +685,19 @@ export class KelassService {
     }
     return kelas;
   }
+
+  async findOneUserKelas(userId: number, kelasId: number) {
+    return await this.userKelasRepository.findOne({
+      where: { kelas: { id: kelasId }, user: { id: userId } },
+    });
+  }
+
+  async findOnePortfolio(userId: number, kelasId: number) {
+    return await this.portfolioRepository.findOne({
+      where: { user: { id: userId }, kelas: { id: kelasId } },
+    });
+  }
+
 
   async findOneKelasUserLaunch(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({

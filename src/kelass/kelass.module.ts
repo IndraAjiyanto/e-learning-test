@@ -32,6 +32,7 @@ import { PertanyaanKelas } from 'src/entities/pertanyaan_kelas.entity';
 import { BenefitKelas } from 'src/entities/benefit_kelas.entity';
 import { AlurKelas } from 'src/entities/alur_kelas.entity';
 import { Alumni } from 'src/entities/alumni.entity';
+import { Portfolio } from 'src/entities/portfolio.entity';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { Alumni } from 'src/entities/alumni.entity';
       AlurKelas,
       Cicilan,
       Alumni,
+      Portfolio
     ]),
     PertanyaansModule,
     JawabanUsersModule,

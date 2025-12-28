@@ -159,7 +159,7 @@ export class JawabanUsersService {
     if (!minggu_sebelum) {
       throw new NotFoundException('minggu_sebelum not found');
     } else if (minggu_sebelum.akhir === true) {
-      return await this.userKelasRepository.save({
+       await this.userKelasRepository.save({
         kelas: { id: minggu_sebelum.kelas.id },
         user: { id: userId },
         progres: true,
@@ -192,23 +192,17 @@ export class JawabanUsersService {
           where: { minggu: { id: minggu.id }, user: { id: userId } },
         });
         if (existingProgres) {
-          await this.progresMingguRepository.update(existingProgres.id, {
-            quiz: true,
+           await this.progresMingguRepository.update(existingProgres.id, {
+            proses: true,
           });
         } else {
           await this.progresMingguRepository.save({
             minggu: minggu,
             user: { id: userId },
             proses: true,
-            quiz: true,
-          });
-        }
-          await this.progresMingguRepository.save({
-            minggu: minggu,
-            user: { id: userId },
-            proses: true,
             quiz: false,
           });
+        }
       }
     }
   }

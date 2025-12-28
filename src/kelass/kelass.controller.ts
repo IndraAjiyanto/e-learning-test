@@ -570,8 +570,12 @@ export class KelassController {
           id,
           req.user.id,
         );
-
+        const user_kelas = await this.kelassService.findOneUserKelas(req.user.id, kelas.id);
+        const portfolio = await this.kelassService.findOnePortfolio(req.user.id, kelas.id);
+        console.log(portfolio)
         res.render('kelas/detail', {
+          user_kelas,
+          portfolio,
           user: req.user,
           kelas,
           minggu: mingguUpdated,
