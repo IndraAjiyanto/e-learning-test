@@ -3,6 +3,7 @@
             coverValid: true,
             coverHasFile: false,
             categorySelected: {{json kelas.kategori}} || null,
+            paidClass: {{#if kelas.check_paid}}true{{else}}false{{/if}},
             formData: { deskripsi: { id: "", en: "", ja: "" }, lokasi: { id: "", en: "", ja: "" } },
             updateCoverValidation(isValid, hasFile) {
                 this.coverValid = isValid;
@@ -314,7 +315,7 @@
                     </div>
 
                     <!-- Paid Class Toggle -->
-                    <div x-data='{ paidClass: {{#if kelas.check_paid}}true{{else}}false{{/if}} }' class='space-y-6'>
+                    <div class='space-y-6'>
                         <div class='flex items-center gap-3'>
                             <label class='relative inline-flex items-center cursor-pointer'>
                                 <input type='checkbox' x-model='paidClass' class='sr-only' />
@@ -537,7 +538,7 @@
 
                     <!-- Month -->
                     <div
-                      x-show="!categorySelected || categorySelected.nama_kategori !== 'Short Class'"
+                      x-show="paidClass"
                     >
                       <label for='bulan' class='block text-sm font-semibold text-gray-700 mb-1'>Month</label>
                       <div x-data="{
@@ -565,7 +566,7 @@
 
                     <!-- Day -->
                     <div
-                      x-show="categorySelected && categorySelected.nama_kategori === 'Short Class'"
+                      x-show="!paidClass"
                     >
                       <label for='hari' class='block text-sm font-semibold text-gray-700 mb-1'>Day</label>
                       <div x-data="{
