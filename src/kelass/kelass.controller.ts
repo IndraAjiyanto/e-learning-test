@@ -494,13 +494,13 @@ export class KelassController {
   }
 
   @Roles('user')
-  @Get('detail/:kelasId')
+  @Get('kelas/detail/:kelasId')
   async viewDetail(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kelas = await this.kelassService.findOneKelasUser(kelasId);
+    const kelas = await this.kelassService.findOneKelas(kelasId);
     const check_user = await this.kelassService.checkUserInKelas(
       kelas.id,
       req.user!.id,

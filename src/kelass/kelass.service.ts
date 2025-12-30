@@ -675,6 +675,18 @@ export class KelassService {
     });
   }
 
+
+  async findOneKelas(kelasId: number) {
+    const kelas = await this.kelasRepository.findOne({
+      where: { id: kelasId },
+      relations: ['kategori', 'jenis_kelas', 'teknologi', 'user_kelas'],
+    });
+    if (!kelas) {
+      throw new NotFoundException('Program not found');
+    }
+    return kelas;
+  }
+
   async findOneKelasUser(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId, launch: true },
