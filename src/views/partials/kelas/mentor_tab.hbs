@@ -57,12 +57,12 @@
             <td class="px-6 py-4 text-sm text-gray-800"><img :src="mentor.profile" alt=""></td>
             <td class="px-6 py-4 text-sm text-gray-800" x-text="mentor.nama"></td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="pos in mentor.posisi" :key="pos">
+              <template x-for="pos in mentor.posisi" >
               <div class="line-clamp-3" x-text="pos"></div>
               </template>
               </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="desc in mentor.deskripsi" :key="desc">
+              <template x-for="desc in mentor.deskripsi" >
               <div class="line-clamp-3" x-text="desc"></div>
               </template>
               </td>
