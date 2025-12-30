@@ -56,14 +56,18 @@
         
         return false;
       },
-      
+
       isProgramActive() {
-        const currentPath = this.active;
-        return currentPath.includes('/kategori/') || 
-               currentPath === '/in-house-training' || 
-               currentPath === '/wip' ||
-               currentPath.includes('/dashboard/kategori/');
-      },
+  const currentPath = this.active;
+
+  return (
+    currentPath.includes('/kategoris/') ||
+    currentPath.includes('/dashboard/kategoris/') ||
+    kategori.some(kat =>
+      currentPath === `/kategoris/${kat.nama_kategori}`
+    )
+  );
+},
 
     getByLang(obj, lang) {
     if (!obj || typeof obj !== 'object') return '';
