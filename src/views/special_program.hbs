@@ -65,21 +65,19 @@
 >
 
 <!-- Hero Section -->
-<section class='relative pt-32 pb-40 bg-gradient-to-br from-primary via-secondary to-slate-700 overflow-hidden'>
-  <!-- Background Pattern -->
-  <div class='absolute inset-0 opacity-10'>
-    <div class='absolute inset-0' style='background-image: url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");'></div>
-  </div>
+<section class='relative pt-32 pb-48 bg-gradient-to-br from-primary via-secondary to-slate-700 overflow-hidden  justify-center items-center flex'>
 
-  <div class='container mx-auto px-4 relative z-10'>
-    <div class='max-w-4xl mx-auto text-center'>
+
+  <div class='container mx-auto relative '>
+    <div class='max-w-4xl mx-auto flex flex-col md:flex-row md:gap-40 items-center px-2'>
       <!-- Logo/Icon -->
-      <div class='mb-8 flex justify-center'>
-        <div class='w-24 h-24 bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300'>
-          <img src='{{kategori.icon}}' alt='In-House Training' class='w-16 h-16'>
+      <div class='md:w-2/4 flex justify-center'>
+        <div class=' p-5 bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300'>
+          <img src='{{kategori.icon}}' alt='In-House Training' class='w-40 h-auto'>
         </div>
       </div>
 
+      <div class="md:w-2/4 text-center mt-10 md:mt-0 md:text-left">
       <h1 class='text-5xl md:text-6xl font-bold text-white mb-6 font-montserrat leading-tight'>
         {{kategori.nama_kategori}}
       </h1>
@@ -89,6 +87,14 @@
       <p class='text-base text-gray-300 max-w-3xl mx-auto font-inter leading-relaxed'>
         {{getByLang kategori.deskripsi lang}}
       </p>
+                 <a
+              href='#programs'
+              class='inline-block mt-7 bg-white text-gray-700 px-5 py-1 rounded-xl font-bold text-lg hover:shadow-2xl text-left transform hover:-translate-y-1 transition-all'
+            >
+              {{t "test.specialProgram.contactSection.buttonViewProgram"}}
+            </a>
+      </div>
+
     </div>
   </div>
 
@@ -102,26 +108,25 @@
 
 <!-- Benefits Section -->
 <section class='py-20 bg-white'>
-  <div class='container mx-auto px-4'>
-    <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.specialProgram.benefitSection.tittle"}} {{kategori.nama_kategori}}</h2>
-      <p class='text-gray-600 text-lg font-inter'>{{t "test.specialProgram.benefitSection.description"}} {{kategori.nama_kategori}}</p>
+  <div class='container mx-auto px-4 flex flex-col md:flex-row items-center justify-center'>
+    <div class='text-center items-center  w-1/2'>
+      <h2 class='text-4xl font-bold text-gray-900 font-montserrat'>{{t "test.specialProgram.benefitSection.tittle"}} {{kategori.nama_kategori}}</h2>
     </div>
 
-    <div class='grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center max-w-7xl mx-auto'>
+    <div class="md:w-1/2  max-w-xl space-y-8 text-base/7 text-gray-400 lg:max-w-none">
 {{#each benefit_category}}
-      <div class='group p-8 bg-white border-b-slate-600 rounded-2xl shadow-xl hover:border-b-slate-800 border-b-8 hover:bg-slate-50 transition-all duration-300 transform hover:-translate-y-2'>
-        <div class='flex justify-center mb-6'>
-          <div class='w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-2xl group-hover:from-slate-600 group-hover:to-slate-800 group-hover:text-white transition-all duration-300'>
-            <i class='{{computeIcon this.icon}}'></i>
-          </div>
-        </div>
-        <h3 class='text-xl font-bold text-gray-900 mb-4 font-montserrat'>{{getByLang this.title ../lang}}</h3>
-        <p class='text-gray-600 text-lg leading-relaxed font-inter'>{{getByLang this.description ../lang}}</p>
-      </div>
-      {{/each}}
 
-    </div>
+            <div class="relative pl-9">
+       
+            <i class='{{computeIcon this.icon}} text-gray-900 text-xl pr-5'></i>
+                <div class="inline text-xl font-bold text-gray-900 mb-4 font-montserrat">{{getByLang this.title ../lang}} : </div>
+              <div class="inline text-gray-600 text-lg leading-relaxed font-inter">{{getByLang this.description ../lang}}</div>
+            </div>
+            {{/each}}
+
+
+          </div>
+
   </div>
 </section>
 
@@ -673,13 +678,7 @@
           </p>
 
           <div class='flex flex-col sm:flex-row gap-4 justify-center'>
-            <a
-              href='#programs'
-              class='inline-block bg-white text-gray-700 px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all'
-            >
-              {{t "test.specialProgram.contactSection.buttonViewProgram"}}
-              <i class='fas fa-arrow-right ml-2'></i>
-            </a>
+           
             <a
               href='{{kategori.contact}}' target="_blank"
               class='inline-block bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white px-8 py-4 rounded-xl font-bold text-lg   hover:shadow-2xl transform hover:-translate-y-1 transition-all'
@@ -873,5 +872,4 @@
 
 
 </div>
-
 
