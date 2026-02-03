@@ -87,12 +87,12 @@
       <p class='text-base text-gray-300 max-w-3xl mx-auto font-inter leading-relaxed'>
         {{getByLang kategori.deskripsi lang}}
       </p>
-                 <a
-              href='#programs'
+                 <button
+              onclick="document.getElementById('programs').scrollIntoView({ behavior: 'smooth', block: 'start' })"
               class='inline-block mt-7 bg-white text-gray-700 px-5 py-1 rounded-xl font-bold text-lg hover:shadow-2xl text-left transform hover:-translate-y-1 transition-all'
             >
               {{t "test.specialProgram.contactSection.buttonViewProgram"}}
-            </a>
+            </button>
       </div>
 
     </div>
@@ -113,10 +113,10 @@
       <h2 class='text-4xl font-bold text-gray-900 font-montserrat'>{{t "test.specialProgram.benefitSection.tittle"}} {{kategori.nama_kategori}}</h2>
     </div>
 
-    <div class="md:w-1/2  max-w-xl space-y-8 text-base/7 text-gray-400 lg:max-w-none">
+    <div class="md:w-1/2  max-w-xl space-y-8 text-base/7 text-gray-400 lg:max-w-none mt-10 md:mt-0">
 {{#each benefit_category}}
 
-            <div class="relative pl-9">
+            <div class="relative">
        
             <i class='{{computeIcon this.icon}} text-gray-900 text-xl pr-5'></i>
                 <div class="inline text-xl font-bold text-gray-900 mb-4 font-montserrat">{{getByLang this.title ../lang}} : </div>
