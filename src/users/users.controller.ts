@@ -35,6 +35,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { error } from 'console';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -153,20 +154,22 @@ export class UsersController {
     return res.render('profile/index', { user: user, portfolio });
   }
 
+  @Roles('user', 'admin', 'super_admin')
   @Get('profile/password')
-  editPassword(@Res() res: Response, @Req() req: any) {
+  async editPassword(@Res() res: Response, @Req() req: Request) {
     return res.render('profile/editPassword', { user: req.user });
   }
 
+  @Roles('user', 'admin', 'super_admin')
   @Get('profile/info_akun')
-  editInfoAkun(@Res() res: Response, @Req() req: any) {
+  async editInfoAkun(@Res() res: Response, @Req() req: Request) {
     return res.render('profile/editInfo', { user: req.user });
   }
 
   // get All users
   @Roles('super_admin')
   @Get()
-  async findAll(@Res() res: Response, @Req() req: any) {
+  async findAll(@Res() res: Response, @Req() req: Request) {
     const users = await this.usersService.findAll();
     res.render('super_admin/user/index', { user: req.user, users });
   }
@@ -177,7 +180,7 @@ export class UsersController {
   async formEdit(
     @Param('userId') userId: number,
     @Res() res: Response,
-    @Req() req: any,
+    @Req() req: Request,
   ) {
     const users = await this.usersService.findOne(userId);
     res.render('super_admin/user/edit', { user: req.user, users });
@@ -186,15 +189,15 @@ export class UsersController {
   // form create user
   @Roles('super_admin')
   @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: any) {
+  async formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/user/create', { user: req.user });
   }
 
-  @Roles('super_admin', 'admin')
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
+  // @Roles('super_admin', 'admin')
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.usersService.findOne(+id);
+  // }
 
   @Roles('user', 'admin', 'super_admin')
   @Patch(':id')
@@ -268,7 +271,7 @@ export class UsersController {
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
     try {
-      if (req.user!.id === id) {
+      if (req.user!.id == id) {
         await this.usersService.updatePassword(id, updatePasswordDto);
         req.flash('success', 'Password successfully updated');
         res.redirect('/users/profile');
