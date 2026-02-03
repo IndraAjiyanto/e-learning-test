@@ -48,7 +48,7 @@ export class UsersController {
   // ============================================
 
   @Get('forgot-password')
-  forgotPasswordPage(@Res() res: Response) {
+  async forgotPasswordPage(@Res() res: Response) {
     return res.render('forgot-password');
   }
 
@@ -75,7 +75,7 @@ export class UsersController {
   }
 
   @Get('reset-password')
-  resetPasswordPage(
+  async resetPasswordPage(
     @Query('token') token: string,
     @Res() res: Response,
     @Req() req: Request,
