@@ -87,6 +87,57 @@ export class UsersController {
     return res.render('reset-password', { token });
   }
 
+  @Post('send-verify-email')
+  async sendVerifyEmailPage(@Res() res: Response, @Req() req: Request, @Query('token') token: string) {
+    try {
+    const user = await this.usersService.sendVerificationEmail(token);
+    return res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
+    } catch (error) {
+      req.flash('error', error.message || 'Failed to send verification email');
+      return res.redirect('/users/send-verify-email');
+    }
+  }
+
+  @Get('send-verify-email')
+  async sendVerifyEmail(
+    @Query('token') token: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+    const remainingMs = await this.usersService.tokenExpired(token);
+    const user = await this.usersService.findUserByToken(token);
+    return res.render('verify-email', {remainingMs: remainingMs, user: user});
+    } catch (error) {
+      req.flash('error', error.message || 'Failed to send verification email');
+      return res.render('verify-email');
+    }
+  }
+
+  @Get('verify-email')
+  async verifyEmail(
+    @Query('token') token: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.usersService.verifyEmail(token);
+      req.flash('success', 'Email verified successfully! You can now login.');
+      res.redirect('/login');
+    } catch (error) {
+      req.flash('error', error.message || 'Email verification failed');
+      res.redirect('/login');
+    }
+  }
+
+  @Get('token-expired')
+  async tokenExpiredPage(    
+    @Query('token') token: string,
+    @Res() res: Response,
+    @Req() req: Request,) {
+    return res.render('token-expired');
+  }
+
   @Post('reset-password')
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
@@ -192,12 +243,6 @@ export class UsersController {
   async formCreate(@Res() res: Response, @Req() req: Request) {
     res.render('super_admin/user/create', { user: req.user });
   }
-
-  // @Roles('super_admin', 'admin')
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(+id);
-  // }
 
   @Roles('user', 'admin', 'super_admin')
   @Patch(':id')
@@ -351,7 +396,9 @@ export class UsersController {
         req.flash('error', 'User not found');
         res.redirect('/users');
       }
-      await this.usersService.deleteFile(user.profile);
+      if(user.profile){
+        await this.usersService.deleteFile(user.profile);
+      }
 
       await this.usersService.remove(id);
 

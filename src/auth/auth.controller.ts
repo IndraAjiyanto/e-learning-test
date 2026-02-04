@@ -22,7 +22,6 @@ export class AuthController {
   async getLogin(
     @Res() res: Response,
     @Req() req: any,
-    @I18n() i18n: I18nContext,
   ) {
     if (req.user) {
       const previous = req.headers.referer || '/dashboard';
@@ -57,9 +56,9 @@ export class AuthController {
     @Res() res: Response,
   ) {
     try {
-      await this.authService.createAcount(createUserDto);
+      const user = await this.authService.createAcount(createUserDto);
       req.flash('success', 'success regis');
-      res.redirect('/login');
+      res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
     } catch (error) {
       req.flash('error', error.message || 'failed to regis');
       res.redirect('/login');
@@ -74,11 +73,9 @@ export class AuthController {
         body.password,
       );
 
-      if (!user) {
-        req.flash('error', 'Email atau password salah');
-        return res.redirect('/login');
-      }
-
+      if(user!.isVerified === false) {
+          res.redirect('/users/send-verify-email?token='+ user!.verifikasiToken);
+      }else{
       req.login(user, (err) => {
         if (err) {
           req.flash('error', 'Terjadi kesalahan saat login');
@@ -86,6 +83,7 @@ export class AuthController {
         }
         res.redirect('/dashboard');
       });
+      }
     } catch (error) {
       req.flash('error', error.message || 'Email atau password salah');
       return res.redirect('/login');

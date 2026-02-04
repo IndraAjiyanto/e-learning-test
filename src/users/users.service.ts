@@ -186,7 +186,7 @@ export class UsersService {
 
     // Set token and expiration (1 hour from now)
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+    user.resetPasswordExpires = new Date(Date.now() + 60000); // 1 hour
 
     await this.userRepository.save(user);
 
@@ -199,8 +199,8 @@ export class UsersService {
       );
     } catch (error) {
       // Rollback token if email fails
-      user.resetPasswordToken = null as any;
-      user.resetPasswordExpires = null as any;
+      user.resetPasswordToken = null;
+      user.resetPasswordExpires = null;
       await this.userRepository.save(user);
       throw new BadRequestException(
         'Failed to send reset email. Please try again later.',
@@ -236,8 +236,8 @@ export class UsersService {
 
     // Update password (will be hashed by @BeforeUpdate hook)
     user.password = password;
-    user.resetPasswordToken = null as any;
-    user.resetPasswordExpires = null as any;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
 
     await this.userRepository.save(user);
 
@@ -246,5 +246,95 @@ export class UsersService {
       message:
         'Password has been reset successfully. You can now login with your new password.',
     };
+  }
+
+  async verifyEmail(token: string) {
+    // Hash the token from URL to compare with database
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Find user with valid token and not expired
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.verifikasiToken = :hashedToken', { hashedToken })
+      .andWhere('user.verifikasiTokenExpires > :now', { now: new Date() })
+      .getOne();
+
+    if (!user) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
+    // Mark email as verified and clear token fields
+    user.isVerified = true;
+    user.verifikasiToken = null;
+    user.verifikasiTokenExpires = null;
+
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  async sendVerificationEmail(token: string) {
+    const user = await this.userRepository.findOne({ where: { verifikasiToken: token } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if ( user.verifikasiToken && user.verifikasiTokenExpires && user.verifikasiTokenExpires > new Date()) {
+    throw new BadRequestException(
+      'Verification email already sent. Please check your inbox or wait until token expires.',
+    );
+  }
+    // Generate reset token (random 32 bytes hex string)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+       
+           // Hash token before storing in database
+           const hashedToken = crypto
+             .createHash('sha256')
+             .update(resetToken)
+             .digest('hex');
+       user.verifikasiToken = hashedToken;
+       user.verifikasiTokenExpires = new Date(Date.now() + 60000); // 1 hour from now
+
+    const newUser = await this.userRepository.save(user);
+
+    // Send email with unhashed token (this is what user clicks)
+    try {
+      await this.emailService.sendVerificationEmail(
+        user.email,
+        resetToken,
+        user.username,
+      );
+      return newUser;
+    } catch (error) {
+      // Rollback token if email fails
+      user.verifikasiToken = null;
+      user.verifikasiTokenExpires = null;
+      await this.userRepository.save(user);
+      throw new BadRequestException(
+        'Failed to send reset email. Please try again later.',
+      );
+    }
+  }
+
+  async tokenExpired(token: string) {
+    const user = await this.userRepository.findOne({ where: { verifikasiToken: token } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if(user.isVerified){
+      throw new BadRequestException('User already verified');
+    }
+      if ( user.verifikasiToken && user.verifikasiTokenExpires && user.verifikasiTokenExpires > new Date()) {
+    const remainingMs = user.verifikasiTokenExpires.getTime() - Date.now();
+    return remainingMs;
+  }
+  }
+
+  async findUserByToken(token: string) {
+    const user = await this.userRepository.findOne({ where: { verifikasiToken: token } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 }

@@ -59,6 +59,11 @@ async function bootstrap() {
     return str[index];
   });
 
+  hbs.registerHelper("formatMinutes", function (ms: number) {
+  const minutes = Math.floor(ms / 60000);
+  return minutes;
+});
+
 hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
   if (!tanggal) {
     return 'Not set';

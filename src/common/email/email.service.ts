@@ -17,6 +17,23 @@ export class EmailService {
     });
   }
 
+  async sendVerificationEmail(to: string, verificationToken: string, username: string) {
+    const verificationUrl = `${process.env.APP_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
+    const mailOptions = {
+      from: `"${process.env.MAIL_FROM_NAME || 'Kesatria Academy'}" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
+      to,
+      subject: 'Email Verification - Kesatria Academy',
+      html: `
+        <p>Hi <strong>${username}</strong>,</p>
+        <p>Thank you for registering at Kesatria Academy. Please verify your email address by clicking the link below:</p>
+        <p><a href="${verificationUrl}">Verify Email</a></p>
+        <p>If you did not create an account, no further action is required.</p>
+        <p>Best regards,<br/>Kesatria Academy Team</p>
+      `,
+    };
+    await this.transporter.sendMail(mailOptions);
+  }
+
   async sendPasswordResetEmail(
     to: string,
     resetToken: string,
@@ -117,10 +134,8 @@ export class EmailService {
 
     try {
       const info = await this.transporter.sendMail(mailOptions);
-      console.log('✅ Password reset email sent:', info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
-      console.error('❌ Error sending password reset email:', error);
       throw error;
     }
   }

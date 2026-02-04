@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsBoolean,
+  IsDate,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -23,6 +24,14 @@ export class CreateUserDto {
 
   @IsString()
   confirm_password: string;
+
+  @IsString()
+  @IsOptional()
+  verifikasiToken: string;
+
+  @IsDate()
+  @IsOptional()
+  verifikasiTokenExpires: Date;
 
   @IsString()
   profile: string;

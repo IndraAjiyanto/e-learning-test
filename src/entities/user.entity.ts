@@ -49,8 +49,8 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  profile: string;
+  @Column({ type: 'varchar', nullable: true })
+  profile: string | null;
 
   @Column({
     type: 'enum',
@@ -59,11 +59,20 @@ export class User {
   })
   role: UserRole;
 
-  @Column({ nullable: true })
-  resetPasswordToken: string;
+  @Column({ type: 'varchar', nullable: true })
+  resetPasswordToken: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  resetPasswordExpires: Date;
+  resetPasswordExpires: Date | null;
+
+  @Column({ default: false, nullable: true })
+  isVerified: boolean;
+
+  @Column({ type: 'varchar', nullable: true })
+  verifikasiToken: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  verifikasiTokenExpires: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;
