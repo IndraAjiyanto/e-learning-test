@@ -122,7 +122,24 @@
       {{/if}}
 
       {{#if remainingMs}}
-      {{formatMinutes  remainingMs}}
+      <div id="countdown"></div>
+       <script src="https://cdn.jsdelivr.net/npm/simplycountdown.js"></script>
+
+<script>
+  let remainingTime = {{remainingMs}};
+  const el = document.getElementById("countdown");
+
+  setInterval(() => {
+    if (remainingTime <= 0) location.reload();
+
+    let m = Math.floor(remainingTime / 60000);
+    let s = Math.floor((remainingTime % 60000) / 1000);
+
+    el.innerHTML = m + " menit " + s + " detik";
+
+    remainingTime -= 1000;
+  }, 1000);
+</script>
       {{else}}
 
       <!-- Forgot Password Form -->
