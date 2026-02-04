@@ -26,16 +26,12 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  createMemoryConfig,
-  multerConfigImage,
-  multerConfigMemory,
   multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { error } from 'console';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -91,10 +87,11 @@ export class UsersController {
   async sendVerifyEmailPage(@Res() res: Response, @Req() req: Request, @Query('token') token: string) {
     try {
     const user = await this.usersService.sendVerificationEmail(token);
-    return res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
+    req.flash('success', 'Verification email sent successfully');
+    res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
     } catch (error) {
       req.flash('error', error.message || 'Failed to send verification email');
-      return res.redirect('/users/send-verify-email');
+      res.redirect('/users/send-verify-email');
     }
   }
 
@@ -126,16 +123,8 @@ export class UsersController {
       res.redirect('/login');
     } catch (error) {
       req.flash('error', error.message || 'Email verification failed');
-      res.redirect('/login');
+      res.redirect('/users/send-verify-email?token=' + token);
     }
-  }
-
-  @Get('token-expired')
-  async tokenExpiredPage(    
-    @Query('token') token: string,
-    @Res() res: Response,
-    @Req() req: Request,) {
-    return res.render('token-expired');
   }
 
   @Post('reset-password')

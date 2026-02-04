@@ -57,7 +57,7 @@ export class AuthController {
   ) {
     try {
       const user = await this.authService.createAcount(createUserDto);
-      req.flash('success', 'success regis');
+      req.flash('success', 'success regis, please verify your email');
       res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
     } catch (error) {
       req.flash('error', error.message || 'failed to regis');

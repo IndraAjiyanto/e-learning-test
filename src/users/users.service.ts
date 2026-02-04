@@ -184,13 +184,11 @@ export class UsersService {
       .update(resetToken)
       .digest('hex');
 
-    // Set token and expiration (1 hour from now)
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = new Date(Date.now() + 60000); // 1 hour
+    user.resetPasswordExpires = new Date(Date.now() + 60000);
 
     await this.userRepository.save(user);
 
-    // Send email with unhashed token (this is what user clicks)
     try {
       await this.emailService.sendPasswordResetEmail(
         user.email,
@@ -293,7 +291,7 @@ export class UsersService {
              .update(resetToken)
              .digest('hex');
        user.verifikasiToken = hashedToken;
-       user.verifikasiTokenExpires = new Date(Date.now() + 60000); // 1 hour from now
+       user.verifikasiTokenExpires = new Date(Date.now() + 60000);
 
     const newUser = await this.userRepository.save(user);
 

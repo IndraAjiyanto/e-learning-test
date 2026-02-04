@@ -6,7 +6,6 @@ import { UsersService } from 'src/users/users.service';
 import { KelassService } from 'src/kelass/kelass.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { EmailService } from 'src/common/email/email.service';
-import e from 'connect-flash';
 
 @Injectable()
 export class AuthService {
@@ -39,7 +38,7 @@ export class AuthService {
           .update(resetToken)
           .digest('hex');
     createUserDto.verifikasiToken = hashedToken;
-    createUserDto.verifikasiTokenExpires = new Date(Date.now() + 60000); // 1 hour from now
+    createUserDto.verifikasiTokenExpires = new Date(Date.now() + 60000);
 
     if (!isMatch) {
       try {
