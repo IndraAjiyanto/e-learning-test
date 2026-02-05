@@ -23,7 +23,6 @@ export class AlurKelasService {
       throw new NotFoundException('Program not found');
     }
 
-    // Auto-generate alur_ke
     const alurTerakhir = await this.findAlurKelas(createAlurKelaDto.kelasId);
     createAlurKelaDto.alur_ke = alurTerakhir + 1;
 

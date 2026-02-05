@@ -1,10 +1,6 @@
 import { Repository, SelectQueryBuilder, ObjectLiteral } from 'typeorm';
 import { PaginationResult } from '../decorators/pagination.decorator';
 
-/**
- * Helper function untuk pagination yang lebih simple
- * Bisa digunakan dengan QueryBuilder atau Repository
- */
 export async function paginateQuery<T extends ObjectLiteral>(
   queryBuilder: SelectQueryBuilder<T>,
   page: number = 1,
@@ -28,9 +24,6 @@ export async function paginateQuery<T extends ObjectLiteral>(
   };
 }
 
-/**
- * Helper function untuk pagination dengan Repository biasa
- */
 export async function paginateRepository<T extends ObjectLiteral>(
   repository: Repository<T>,
   options: {

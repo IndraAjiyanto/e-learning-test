@@ -35,8 +35,4 @@ export class BiodatasService {
     Object.assign(biodata, updateBiodataDto);
     return await this.biodataRepository.save(biodata);
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} biodata`;
-  }
 }

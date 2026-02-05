@@ -97,9 +97,7 @@ export class ValidateImageInterceptor implements NestInterceptor {
         // SIMPAN FILE (SETELAH SEMUA VALIDASI LOLOS)
         // ========================================
 
-        // Cek apakah file sudah ada di disk (dari diskStorage)
         if (file.path) {
-          // File sudah disimpan oleh diskStorage
           const relativePath = file.path
             .replace(process.cwd(), '')
             .replace(/\\/g, '/')
@@ -107,7 +105,6 @@ export class ValidateImageInterceptor implements NestInterceptor {
           uploadResults.push(relativePath);
           
         } else if (file.buffer) {
-          // File di memory - simpan ke local disk
           const uploadDir = path.join(
             process.cwd(),
             'public',
@@ -115,22 +112,17 @@ export class ValidateImageInterceptor implements NestInterceptor {
             options.folder || 'images',
           );
 
-          // Buat folder jika belum ada
           await fs.mkdir(uploadDir, { recursive: true });
 
-          // Generate unique filename
           const timestamp = Date.now();
           const randomString = Math.random().toString(36).substring(2, 15);
           const fileExtension = path.extname(file.originalname);
           const filename = `${timestamp}-${randomString}${fileExtension}`;
 
-          // Full path file
           const filePath = path.join(uploadDir, filename);
 
-          // Simpan file ke disk
           await fs.writeFile(filePath, file.buffer);
 
-          // URL relatif untuk database
           const fileUrl = `/asset/${options.folder || 'images'}/${filename}`;
           uploadResults.push(fileUrl);
         } else {

@@ -12,7 +12,6 @@ export class ForbiddenExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    // Redirect to login page
     response.redirect('/login');
   }
 }

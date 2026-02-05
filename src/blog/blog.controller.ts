@@ -10,7 +10,6 @@ import {
   Req,
   UseGuards,
   UseInterceptors,
-  UploadedFiles,
   UseFilters,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
@@ -139,7 +138,6 @@ export class BlogController {
     try {
       const blog = await this.blogService.findOne(+id);
 
-      // Get existing images that user wants to keep
       let existingImages: string[] = [];
       if (req.body.existing_images) {
         existingImages = Array.isArray(req.body.existing_images)
@@ -147,7 +145,6 @@ export class BlogController {
           : [req.body.existing_images];
       }
 
-      // Delete images that are no longer needed
       if (blog.gambar && blog.gambar.length > 0) {
         for (const url of blog.gambar) {
           if (!existingImages.includes(url)) {
@@ -156,7 +153,6 @@ export class BlogController {
         }
       }
 
-      // Combine existing images with new uploaded images
       const newUploadedImages = req.body.uploadedImageUrls || [];
       updateBlogDto.gambar = [...existingImages, ...newUploadedImages];
 
@@ -183,7 +179,6 @@ export class BlogController {
         req.flash('error', 'Blog not found');
         res.redirect('/blog');
       }
-      // Delete all images
       if (blog.gambar && blog.gambar.length > 0) {
         for (const url of blog.gambar) {
           await this.blogService.getPublicIdFromUrl(url);

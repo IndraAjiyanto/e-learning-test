@@ -15,7 +15,6 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { v2 as cloudinary } from 'cloudinary';
 import { Portfolio } from 'src/entities/portfolio.entity';
 import { EmailService } from 'src/common/email/email.service';
 import * as fs from 'fs/promises';
@@ -26,9 +25,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-
-    @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>,
 
     @InjectRepository(Portfolio)
     private readonly portfolioRepository: Repository<Portfolio>,

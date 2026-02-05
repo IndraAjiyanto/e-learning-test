@@ -16,7 +16,6 @@ import { UpdateBiodataDto } from './dto/update-biodata.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
-import { User } from 'src/entities/user.entity';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('biodatas')
@@ -76,10 +75,5 @@ export class BiodatasController {
       req.flash('error', error.message || 'biodata failed to update');
       res.redirect('/users/profile');
     }
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.biodatasService.remove(+id);
   }
 }

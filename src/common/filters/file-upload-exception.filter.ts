@@ -13,7 +13,6 @@ export class FileUploadExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    // Get error message
     let message = 'Terjadi kesalahan saat upload file';
 
     if (exception instanceof BadRequestException) {
@@ -26,10 +25,8 @@ export class FileUploadExceptionFilter implements ExceptionFilter {
       message = exception.message;
     }
 
-    // Normalize to lowercase for case-insensitive checks
     const msgLower = (message || '').toString().toLowerCase();
 
-    // Check if error is related to file upload (case-insensitive)
     const isFileError =
       msgLower.includes('format file') ||
       msgLower.includes('ukuran file') ||
@@ -42,17 +39,13 @@ export class FileUploadExceptionFilter implements ExceptionFilter {
       (exception as any).storageErrors;
 
     if (isFileError) {
-      // Set flash message
       (request as any).flash('error', message);
 
-      // Get referer or default route
       const referer = request.get('Referer') || '/';
 
-      // Redirect back
       return response.redirect(referer);
     }
 
-    // If not file upload error, throw to global exception handler
     throw exception;
   }
 }

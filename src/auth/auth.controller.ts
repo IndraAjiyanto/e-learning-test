@@ -7,12 +7,10 @@ import {
   Req,
   Param,
   Body,
-  Redirect,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { I18n, I18nContext } from 'nestjs-i18n';
 
 @Controller()
 export class AuthController {

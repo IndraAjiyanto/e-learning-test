@@ -45,10 +45,9 @@ export class UploadService {
     const uploadOptions: any = {
       folder,
       resource_type: 'auto',
-      timeout: 60000, // 60 second timeout
+      timeout: 60000, 
     };
 
-    // Skip transformation for profile images (already validated dimensions)
     if (!skipTransformation) {
       uploadOptions.transformation = [
         { quality: 'auto', fetch_format: 'auto' },

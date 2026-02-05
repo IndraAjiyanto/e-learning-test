@@ -16,7 +16,6 @@ export class CicilanService {
   ) {}
 
   async create(createCicilanDto: CreateCicilanDto) {
-    // Check if kelas exists
     const kelas = await this.kelasRepository.findOne({
       where: { id: createCicilanDto.kelasId },
     });

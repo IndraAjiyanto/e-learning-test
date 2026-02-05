@@ -52,12 +52,10 @@ export class CicilanController {
     @Param('kelasId') kelasId: number,
   ) {
     try {
-      // Convert harga array from string to number
       if (createCicilanDto.harga && Array.isArray(createCicilanDto.harga)) {
         createCicilanDto.harga = createCicilanDto.harga.map((h) => Number(h));
       }
 
-      // Convert dp to number if present (down payment)
       if (createCicilanDto.dp !== undefined) {
         createCicilanDto.dp = Number(createCicilanDto.dp);
       }
@@ -83,12 +81,10 @@ export class CicilanController {
     @Res() res: Response,
   ) {
     try {
-      // Convert harga array from string to number
       if (updateCicilanDto.harga && Array.isArray(updateCicilanDto.harga)) {
         updateCicilanDto.harga = updateCicilanDto.harga.map((h) => Number(h));
       }
 
-      // Convert dp to number if present
       if (updateCicilanDto.dp !== undefined) {
         updateCicilanDto.dp = Number(updateCicilanDto.dp);
       }

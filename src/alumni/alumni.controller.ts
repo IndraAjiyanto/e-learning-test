@@ -20,7 +20,6 @@ import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  multerConfigMemory,
   multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -47,7 +46,7 @@ export class AlumniController {
     maxWidth: 2000,
     minHeight: 300,
     maxHeight: 2000,
-    maxSize: 5 * 1024 * 1024, // 1MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'alumni',
   })
@@ -80,7 +79,7 @@ export class AlumniController {
     maxWidth: 2000,
     minHeight: 300,
     maxHeight: 2000,
-    maxSize: 5 * 1024 * 1024, // 1MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'alumni',
   })
@@ -155,7 +154,7 @@ export class AlumniController {
     maxWidth: 2000,
     minHeight: 300,
     maxHeight: 2000,
-    maxSize: 5 * 1024 * 1024, // 5MB max (kept consistent with create)
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'alumni',
   })
@@ -170,9 +169,7 @@ export class AlumniController {
     try {
       const alumni = await this.alumniService.findOne(alumniId);
       if (profile) {
-        // remove old image if exists (public id extraction)
         await this.alumniService.deleteFile(alumni.profile);
-        // ValidateImageInterceptor uploads and sets uploadedImageUrls on the body (same as create)
         updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
@@ -195,7 +192,7 @@ export class AlumniController {
     maxWidth: 2000,
     minHeight: 300,
     maxHeight: 2000,
-    maxSize: 5 * 1024 * 1024, // 5MB max (kept consistent with create)
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'alumni',
   })
@@ -210,9 +207,7 @@ export class AlumniController {
     try {
       const alumni = await this.alumniService.findOne(alumniId);
       if (profile) {
-        // remove old image if exists (public id extraction)
         await this.alumniService.deleteFile(alumni.profile);
-        // ValidateImageInterceptor uploads and sets uploadedImageUrls on the body (same as create)
         updateAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);

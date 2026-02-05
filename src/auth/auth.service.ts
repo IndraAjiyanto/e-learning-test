@@ -29,10 +29,8 @@ export class AuthService {
       createUserDto.password,
       createUserDto.confirm_password,
     );
-        // Generate reset token (random 32 bytes hex string)
         const resetToken = crypto.randomBytes(32).toString('hex');
     
-        // Hash token before storing in database
         const hashedToken = crypto
           .createHash('sha256')
           .update(resetToken)

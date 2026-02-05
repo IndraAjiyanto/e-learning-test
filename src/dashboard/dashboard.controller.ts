@@ -100,7 +100,6 @@ export class DashboardController {
 
   @Get('portofolio')
   async portfolio(@Req() req: Request, @Res() res: Response) {
-    // Ambil semua data sekaligus
     const portfolioList = await this.dashboardService.findPortfolio();
     const kategoriList = await this.dashboardService.findKategori();
     const jenisKelasList = await this.dashboardService.findJenisKelas();
@@ -125,7 +124,6 @@ export class DashboardController {
 
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
-    // Ambil semua data sekaligus
     const alumniList = await this.dashboardService.findAlumni();
     const kelasList = await this.dashboardService.findKelas();
 
