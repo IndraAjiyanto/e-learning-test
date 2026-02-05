@@ -139,20 +139,11 @@ export class LogbookService {
     if (!url) return;
   
     try {
-      // Convert URL ke full path
-      // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
       const filePath = path.join(process.cwd(), 'public', url);
       
-      // Hapus file
       await fs.unlink(filePath);
-      console.log('File deleted:', filePath);
     } catch (error) {
-      if (error.code === 'ENOENT') {
-        console.log('File not found, skipping delete:', url);
-      } else {
-        console.error('Error deleting file:', error);
-        // Tidak throw error agar proses lain tetap jalan
-      }
+      throw new Error('Failed to delete file: ' + error.message);
     }
   }
 
@@ -180,7 +171,6 @@ export class LogbookService {
     Object.assign(logbook, updateLogbookDto);
 
     if (updateLogbookDto.proses === 'acc') {
-      // Cek apakah progres_pertemuan sudah ada
       const existingProgres = await this.progresPertemuanRepository.findOne({
         where: {
           user: { id: logbook.user.id },
@@ -190,12 +180,10 @@ export class LogbookService {
       });
 
       if (existingProgres) {
-        // Update jika sudah ada
         await this.progresPertemuanRepository.update(existingProgres.id, {
           logbook: true,
         });
       } else {
-        // Buat baru jika belum ada
         await this.progresPertemuanRepository.save({
           user: { id: logbook.user.id },
           pertemuan: { id: logbook.pertemuan.id },
@@ -241,7 +229,6 @@ export class LogbookService {
         }
       }
     } else if (updateLogbookDto.proses === 'rejected') {
-      // Cek apakah progres_pertemuan sudah ada
       const existingProgres = await this.progresPertemuanRepository.findOne({
         where: {
           user: { id: logbook.user.id },
@@ -250,12 +237,10 @@ export class LogbookService {
       });
 
       if (existingProgres) {
-        // Update jika sudah ada
         await this.progresPertemuanRepository.update(existingProgres.id, {
           logbook: false,
         });
       } else {
-        // Buat baru jika belum ada
         await this.progresPertemuanRepository.save({
           user: { id: logbook.user.id },
           pertemuan: { id: logbook.pertemuan.id },

@@ -8,7 +8,6 @@ import {
   Delete,
   Res,
   Req,
-  Render,
 } from '@nestjs/common';
 import { PertanyaanKelasService } from './pertanyaan_kelas.service';
 import { CreatePertanyaanKelaDto } from './dto/create-pertanyaan_kela.dto';

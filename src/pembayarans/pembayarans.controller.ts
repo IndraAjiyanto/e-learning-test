@@ -5,10 +5,8 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
   UseInterceptors,
-  UploadedFile,
   Res,
   Req,
 } from '@nestjs/common';
@@ -21,7 +19,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
-import { memoryStorage } from 'multer';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
@@ -36,7 +33,7 @@ export class PembayaransController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'payment',
   })
@@ -83,7 +80,7 @@ export class PembayaransController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'payment',
   })

@@ -1,18 +1,14 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UseGuards,
   Req,
   Res,
 } from '@nestjs/common';
 import { KomentarService } from './komentar.service';
 import { CreateKomentarDto } from './dto/create-komentar.dto';
-import { UpdateKomentarDto } from './dto/update-komentar.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
@@ -44,28 +40,5 @@ export class KomentarController {
       req.flash('error', error.message || 'comment unsuccess send');
       res.redirect(`/jawaban-tugass/${tugasId}`);
     }
-  }
-
-  @Get()
-  findAll() {
-    return this.komentarService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.komentarService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateKomentarDto: UpdateKomentarDto,
-  ) {
-    return this.komentarService.update(+id, updateKomentarDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.komentarService.remove(+id);
   }
 }

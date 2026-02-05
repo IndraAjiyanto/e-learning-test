@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber } from 'class-validator';
 
 export class CreateParagrafDto {
   @IsArray()

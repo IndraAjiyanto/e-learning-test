@@ -18,8 +18,6 @@ export class ParagrafService {
   }
 
   async noPertemuan() {
-    // TypeORM's `findOne` requires selection conditions in v0.3+.
-    // To get the highest `p_ke`, fetch the first row ordered by p_ke desc.
     const paragrafList = await this.paragrafRepository.find({
       order: { p_ke: 'DESC' },
       take: 1,

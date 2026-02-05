@@ -20,7 +20,6 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
-import { memoryStorage } from 'multer';
 import { Request, Response } from 'express';
 import { Proses } from 'src/entities/logbook.entity';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
@@ -37,7 +36,7 @@ export class LogbookController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'logbook_user',
   })
@@ -48,7 +47,6 @@ export class LogbookController {
     @Req() req: Request,
   ) {
     try {
-      // Pastikan file berhasil diupload
       if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
         throw new Error('Image upload failed. Please try again.');
       }
@@ -147,7 +145,7 @@ export class LogbookController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'logbook_user',
   })

@@ -27,18 +27,6 @@ export class KomentarService {
     return await this.komentarRepository.save(komentar);
   }
 
-  findAll() {
-    return `This action returns all komentar`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} komentar`;
-  }
-
-  update(id: number, updateKomentarDto: UpdateKomentarDto) {
-    return `This action updates a #${id} komentar`;
-  }
-
   async updateJawabanTugas(jawaban_tugasId: number, proses: Proses) {
     const jawaban_tugas = await this.jawabanTugasRepository.findOne({
       where: { id: jawaban_tugasId },
@@ -52,7 +40,4 @@ export class KomentarService {
     return await this.jawabanTugasRepository.save(jawaban_tugas);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} komentar`;
-  }
 }

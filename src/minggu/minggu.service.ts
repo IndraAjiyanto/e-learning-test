@@ -6,7 +6,6 @@ import { Minggu } from 'src/entities/minggu.entity';
 import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
-import { th } from 'date-fns/locale';
 import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Quiz } from 'src/entities/quiz.entity';

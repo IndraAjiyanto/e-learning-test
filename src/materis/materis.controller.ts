@@ -17,7 +17,7 @@ import { MaterisService } from './materis.service';
 import { CreateMaterisDto } from './dto/create-materis.dto';
 import { UpdateMaterisDto } from './dto/update-materis.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { createMemoryConfig, multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { JenisFile } from 'src/entities/materi.entity';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -26,8 +26,6 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { ValidateFileInterceptor } from 'src/common/interceptors/validate-file.interceptor';
 import { ValidateFile } from 'src/common/decorators/validate-file.decorator';
-import { ValidateFileOnlyInterceptor } from 'src/common/interceptors/validate-file-only.interceptor';
-import { ValidateFileOnly } from 'src/common/decorators/validate-file-only.decorator';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
@@ -47,7 +45,7 @@ export class MaterisController {
     ValidateFileInterceptor,
   )
   @ValidateFile({
-    maxSize: 10 * 1024 * 1024, // 10MB
+    maxSize: 10 * 1024 * 1024,
     allowedTypes: ['application/pdf'],
     fileExtensions: ['.pdf'],
     folder: 'materi/pdf',
@@ -205,7 +203,7 @@ async createPpt(
     ValidateFileInterceptor,
   )
   @ValidateFile({
-    maxSize: 10 * 1024 * 1024, // 10MB
+    maxSize: 10 * 1024 * 1024,
     allowedTypes: ['application/pdf'],
     fileExtensions: ['.pdf'],
     folder: 'materi/pdf',
@@ -236,7 +234,7 @@ async createPpt(
     ValidateFileInterceptor,
   )
   @ValidateFile({
-    maxSize: 50 * 1024 * 1024, // 50MB
+    maxSize: 50 * 1024 * 1024,
     allowedTypes: [
       'application/vnd.ms-powerpoint',
       'application/vnd.openxmlformats-officedocument.presentationml.presentation',
@@ -256,10 +254,7 @@ async createPpt(
     if (file) {
       await this.materisService.deleteFile(materi.file);
 
-      // Untuk update PPT, perlu proses convert juga jika diperlukan
-      // Untuk saat ini kita skip convert, hanya update file saja
-      // Jika butuh convert ulang, implementasi sama seperti create
-      updateMaterisDto.file = materi.file; // Keep existing for now
+      updateMaterisDto.file = materi.file;
     }
 
     return await this.materisService.update(id, updateMaterisDto);

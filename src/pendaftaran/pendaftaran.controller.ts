@@ -5,12 +5,10 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
   UseInterceptors,
   Res,
   Req,
-  UploadedFile,
 } from '@nestjs/common';
 import { PendaftaranService } from './pendaftaran.service';
 import { CreatePendaftaranDto } from './dto/create-pendaftaran.dto';
@@ -18,11 +16,10 @@ import { UpdatePendaftaranDto } from './dto/update-pendaftaran.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemoryOnly, multerConfigPayment } from 'src/common/config/multer.config';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { Request, Response } from 'express';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
-import { memoryStorage } from 'multer';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('pendaftaran')
@@ -36,7 +33,7 @@ export class PendaftaranController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'registration',
   })
@@ -44,7 +41,6 @@ export class PendaftaranController {
     @Param('userId') userId: number,
     @Param('kelasId') kelasId: number,
     @Body() createPendaftaranDto: CreatePendaftaranDto,
-    @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -81,11 +77,6 @@ export class PendaftaranController {
   @Get()
   async findAll() {
     return await this.pendaftaranService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pendaftaranService.findOne(+id);
   }
 
   @Roles('super_admin')

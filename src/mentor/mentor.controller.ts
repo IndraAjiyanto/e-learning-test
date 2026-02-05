@@ -18,7 +18,6 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
@@ -43,7 +42,7 @@ export class MentorController {
     maxWidth: 2000,
     minHeight: 300,
     maxHeight: 2000,
-    maxSize: 5 * 1024 * 1024, // 3MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'mentor',
   })
@@ -57,11 +56,9 @@ export class MentorController {
       createMentorDto.kelasId = kelasId;
       const uploadedImages = req.body.uploadedImageUrls || [];
 
-      // uploadedImages berisi array, tapi urutan tergantung pada yang diupload
-      // Gunakan req.files untuk menentukan field mana
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       if (files?.profile?.length) {
-        createMentorDto.profile = uploadedImages[0]; // asumsikan urutan sesuai dengan files
+        createMentorDto.profile = uploadedImages[0];
       }
 
       await this.mentorService.create(createMentorDto);
@@ -136,7 +133,7 @@ export class MentorController {
     maxWidth: 2000,
     minHeight: 300,
     maxHeight: 2000,
-    maxSize: 5 * 1024 * 1024, // 3MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'mentor',
   })
@@ -151,7 +148,6 @@ export class MentorController {
       const mentor = await this.mentorService.findOne(mentorId);
       const uploadedImages = req.body.uploadedImageUrls || [];
 
-      // uploadedImages berisi array, urutan sesuai dengan files
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       if (files?.profile?.length) {
         updateMentorDto.profile = uploadedImages[0];

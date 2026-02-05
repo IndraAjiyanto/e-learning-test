@@ -18,7 +18,7 @@ import { UpdateLogbookMentorDto } from './dto/update-logbook_mentor.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemory, multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { Request, Response } from 'express';
@@ -44,7 +44,6 @@ export class LogbookMentorController {
     @Body() createLogbookMentorDto: CreateLogbookMentorDto,
     @Res() res: Response,
     @Req() req: Request,
-    @UploadedFile() dokumentasi: Express.Multer.File,
   ) {
     try {
       createLogbookMentorDto.dokumentasi = req.body.uploadedImageUrls?.[0];
