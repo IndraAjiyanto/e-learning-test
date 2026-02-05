@@ -20,8 +20,6 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  createMemoryConfig,
-  multerConfigMemory,
   multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';

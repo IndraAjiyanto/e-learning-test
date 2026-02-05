@@ -4,7 +4,6 @@ import { UpdateJenisKelaDto } from './dto/update-jenis_kela.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import { Repository } from 'typeorm';
-import cloudinary from 'src/common/config/multer.config';
 
 @Injectable()
 export class JenisKelasService {

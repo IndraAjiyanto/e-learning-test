@@ -22,7 +22,7 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemory, multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
 @UseFilters(FileUploadExceptionFilter)

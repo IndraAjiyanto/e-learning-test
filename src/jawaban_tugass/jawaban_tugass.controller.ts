@@ -114,9 +114,4 @@ export class JawabanTugassController {
       res.redirect(`/jawaban-tugass/${tugasId}`);
     }
   }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.jawabanTugassService.remove(+id);
-  }
 }

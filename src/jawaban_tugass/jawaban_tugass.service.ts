@@ -86,10 +86,6 @@ export class JawabanTugassService {
     });
   }
 
-  findAll() {
-    return `This action returns all jawabanTugass`;
-  }
-
   async findOne(id: number) {
     const jawaban_tugas = await this.jawabanTugasRepository.findOne({
       where: { id: id },
@@ -112,9 +108,5 @@ export class JawabanTugassService {
     jawaban_tugas.file = updateJawabanTugassDto.file;
     }
     return await this.jawabanTugasRepository.save(jawaban_tugas);
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} jawabanTugass`;
   }
 }

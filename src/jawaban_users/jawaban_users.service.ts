@@ -3,7 +3,7 @@ import { CreateJawabanUserDto } from './dto/create-jawaban_user.dto';
 import { UpdateJawabanUserDto } from './dto/update-jawaban_user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JawabanUser } from 'src/entities/jawaban_user.entity';
-import { DeepPartial, In, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { Jawaban } from 'src/entities/jawaban.entity';
 import { User } from 'src/entities/user.entity';
@@ -78,18 +78,14 @@ export class JawabanUsersService {
   }
 
   async nilaiCreate(createJawabanUserDto: CreateJawabanUserDto) {
-    // ambil array jawabanUser
     const jawabanUser = createJawabanUserDto.jawabanUser;
 
-    // 1. Ambil semua id jawaban yg dipilih user
     const jawabanIds = jawabanUser.map((j) => j.jawabanId);
 
-    // 2. Ambil data jawaban dari DB, beserta apakah benar/salah
     const jawabanBenar = await this.jawabanRepository.findBy({
       id: In(jawabanIds),
     });
 
-    // 3. Hitung jumlah benar
     let benar = 0;
     jawabanBenar.forEach((j) => {
       if (j.jawaban_benar) {
@@ -97,18 +93,15 @@ export class JawabanUsersService {
       }
     });
 
-    // 4. Hitung nilai
     const totalSoal = jawabanUser.length;
     const nilai = Math.round((benar / totalSoal) * 100);
 
-    // 5. Simpan ke tabel nilai / riwayat
     const userId = jawabanUser[0].userId;
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
     }
 
-    // ambil quizId dari pertanyaan pertama
     const quizId = await this.pertanyaanRepository
       .findOne({
         where: { id: jawabanUser[0].pertanyaanId },
@@ -144,7 +137,6 @@ export class JawabanUsersService {
       throw new NotFoundException('progres_minggu not found');
     }
 
-    // Update kolom proses menjadi true (minggu selesai)
     progres_minggu.quiz = true;
     await this.progresMingguRepository.save(progres_minggu);
 
@@ -238,21 +230,5 @@ export class JawabanUsersService {
     }, 0);
 
     return totalNilai;
-  }
-
-  findAll() {
-    return `This action returns all jawabanUsers`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} jawabanUser`;
-  }
-
-  update(id: number, updateJawabanUserDto: UpdateJawabanUserDto) {
-    return `This action updates a #${id} jawabanUser`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} jawabanUser`;
   }
 }

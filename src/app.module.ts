@@ -50,7 +50,6 @@ import { TeamLeadModule } from './team_lead/team_lead.module';
 import { ValueModule } from './value/value.module';
 import { CommitmentModule } from './commitment/commitment.module';
 import { PendaftaranModule } from './pendaftaran/pendaftaran.module';
-import { InHouseTrainingModule } from './in_house_training/in_house_training.module';
 import { ParagrafModule } from './paragraf/paragraf.module';
 import { ContactModule } from './contact/contact.module';
 import { AwardModule } from './award/award.module';
@@ -129,7 +128,6 @@ import path from 'path';
     ValueModule,
     CommitmentModule,
     PendaftaranModule,
-    InHouseTrainingModule,
     ParagrafModule,
     ContactModule,
     AwardModule,
@@ -147,6 +145,6 @@ import path from 'path';
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {
-    consumer.apply(I18nMiddleware).forRoutes('*'); // WAJIB
+    consumer.apply(I18nMiddleware).forRoutes('*');
   }
 }

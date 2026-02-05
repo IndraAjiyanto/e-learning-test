@@ -19,8 +19,7 @@ import { UpdateKelassDto } from './dto/update-kelass.dto';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemory, multerConfigMemoryOnly } from 'src/common/config/multer.config';
-import { UsersService } from 'src/users/users.service';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
@@ -32,10 +31,8 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 export class KelassController {
   constructor(
     private readonly kelassService: KelassService,
-    private readonly usersService: UsersService,
   ) {}
 
-  // create class
   @Roles('admin', 'super_admin')
   @Post()
   @UseInterceptors(
@@ -190,7 +187,6 @@ export class KelassController {
     }
   }
 
-  // Get all class
   @Roles('admin', 'super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
@@ -203,7 +199,6 @@ export class KelassController {
     }
   }
 
-  // Form create class
   @Roles('admin', 'super_admin')
   @Get('/create')
   async formCreate(@Res() res: Response, @Req() req: Request) {
@@ -255,7 +250,6 @@ export class KelassController {
     });
   }
 
-  // formEdit
   @Roles('admin', 'super_admin')
   @Get('/edit/:kelasId')
   async formEdit(
@@ -318,16 +312,6 @@ export class KelassController {
     const minggu = await this.kelassService.findMingguKelas(kelasId);
     res.json(minggu);
   }
-
-  // @Roles('admin')
-  // @Get('/mingguTerakhir/:kelasId')
-  // async getMingguTerakhir(
-  //   @Param('kelasId') kelasId: number,
-  //   @Res() res: Response,
-  // ) {
-  //   const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
-  //   res.json(mingguTerakhir);
-  // }
 
   @Roles('super_admin', 'admin')
   @Get('/userKelas/:kelasId')
@@ -428,49 +412,19 @@ export class KelassController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    // const logbookMentor = await this.kelassService.findLogbookMentor(kelasId);
-    // const logbookUser = await this.kelassService.findLogBookUser(kelasId);
-    // const mentor = await this.kelassService.findMentorKelas(kelasId);
     if (req.user!.role === 'admin') {
       const kelas = await this.kelassService.findOneKelasAdmin(kelasId);
-      // const minggu = await this.kelassService.findMingguKelas(kelasId);
       const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
-      // const user_kelas = await this.kelassService.findUserKelas(kelasId);
       res.render('admin/kelas/detail', {
-        // minggu,
-        // user_kelas,
         user: req.user,
         kelas,
-        // mingguTerakhir
-        // mentor,
         mingguTerakhir,
-        // logbookMentor,
-        // logbookUser,
       });
     } else if (req.user!.role === 'super_admin') {
       const kelas = await this.kelassService.findOne(kelasId);
-      // const cicilan = await this.kelassService.findCicilanKelas(kelasId);
-      // const pendaftaran = await this.kelassService.findPendaftaranKelas(kelasId);
-      // const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
-      // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(kelasId);
-      // const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
-      // const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
-      // const alumni = await this.kelassService.findAlumniKelas(kelasId);
-      // const user_kelas = await this.kelassService.findUserKelas(kelasId);
       res.render('admin/kelas/detail', {
         user: req.user,
-        // pendaftaran,
-        // pembayaran,
-        // cicilan,
         kelas,
-        // mentor,
-        // benefit_kelas,
-        // pertanyaan_kelas,
-        // alur_kelas,
-        // logbookMentor,
-        // logbookUser,
-        // alumni,
-        // user_kelas,
       });
     }
   }
@@ -608,7 +562,6 @@ export class KelassController {
     }
   }
 
-  // update kelas
   @Roles('admin', 'super_admin')
   @Patch(':kelasId')
   @UseInterceptors(
@@ -634,14 +587,11 @@ export class KelassController {
     try {
       const kelas = await this.kelassService.findOne(kelasId);
       if (gambar) {
-        // delete previous image in cloud (if exists)
         await this.kelassService.deleteFile(kelas.gambar);
-        // use uploadedImageUrls provided by validator/uploader (memory upload -> cloud)
         updateKelassDto.gambar = req.body.uploadedImageUrls?.[0];
       }
 
       if (updateKelassDto.mentoringId) {
-        // Check if mentoring exists and if we need to update it
         const currentMentoringUserId = kelas.mentoring?.[0]?.user?.id;
         const newMentoringUserId = Number(updateKelassDto.mentoringId);
 
@@ -653,14 +603,12 @@ export class KelassController {
         }
       }
 
-      // Handle paid_check logic
       if (updateKelassDto.paid_check === 'true') {
         updateKelassDto.check_paid = true;
       } else if (updateKelassDto.paid_check === 'false') {
         updateKelassDto.check_paid = false;
       }
 
-      // Super admin always approve
       if (req.user?.role === 'super_admin') {
         updateKelassDto.proses = 'acc';
       }
@@ -676,7 +624,6 @@ export class KelassController {
     }
   }
 
-  // toogle update
   @Roles('admin', 'super_admin')
   @Patch(':kelasId/toggle-launch')
   async updateLaunch(
@@ -715,10 +662,10 @@ export class KelassController {
   }
 
  @Roles('admin', 'super_admin')
-@Delete(':kelasId')  // Hapus :previous dari route
+@Delete(':kelasId') 
 async remove(
   @Param('kelasId') kelasId: number,
-  @Body('previous') previous: string,  // Ambil dari body, bukan param
+  @Body('previous') previous: string,
   @Res() res: Response,
   @Req() req: Request,
 ) {

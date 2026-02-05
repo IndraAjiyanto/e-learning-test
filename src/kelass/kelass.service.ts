@@ -14,13 +14,11 @@ import { Kategori } from 'src/entities/kategori.entity';
 import { Minggu } from 'src/entities/minggu.entity';
 import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import { Nilai } from 'src/entities/nilai.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { Pembayaran } from 'src/entities/pembayaran.entity';
 import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Mentor } from 'src/entities/mentor.entity';
-import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Teknologi } from 'src/entities/teknologi.entity';
 import { Mentoring } from 'src/entities/mentoring.entity';
@@ -110,7 +108,6 @@ export class KelassService {
       throw new NotFoundException('jenis_kelas ini tidak ada');
     }
 
-    // Get teknologi entities if teknologiIds provided
     let teknologi: Teknologi[] = [];
     if (
       createKelassDto.teknologiIds &&
@@ -153,7 +150,6 @@ export class KelassService {
   }
 
   async updateMentoring(userId: number, kelasId: number) {
-    // Cari kelas terlebih dahulu
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
     });
@@ -162,7 +158,6 @@ export class KelassService {
       throw new NotFoundException('Kelas tidak ditemukan');
     }
 
-    // Cari user admin yang akan jadi mentoring
     const newMentorUser = await this.userRepository.findOne({
       where: { id: userId, role: 'admin' },
     });
@@ -173,18 +168,15 @@ export class KelassService {
       );
     }
 
-    // Cari mentoring yang sudah ada untuk kelas ini
     const existingMentoring = await this.mentoringRepository.findOne({
       where: { kelas: { id: kelasId } },
       relations: ['kelas', 'user'],
     });
 
     if (existingMentoring) {
-      // Update mentoring yang sudah ada
       existingMentoring.user = newMentorUser;
       return await this.mentoringRepository.save(existingMentoring);
     } else {
-      // Create new mentoring jika belum ada
       const newMentoring = this.mentoringRepository.create({
         user: newMentorUser,
         kelas: kelas,
@@ -859,7 +851,6 @@ export class KelassService {
       kelas.jenis_kelas = jenis_kelas;
     }
 
-    // Handle teknologi relation
     if (updateKelassDto.teknologiIds !== undefined) {
       if (updateKelassDto.teknologiIds.length > 0) {
         kelas.teknologi = await this.teknologiRepository.findBy({
@@ -899,20 +890,11 @@ export class KelassService {
     if (!url) return;
   
     try {
-      // Convert URL ke full path
-      // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
       const filePath = path.join(process.cwd(), 'public', url);
       
-      // Hapus file
       await fs.unlink(filePath);
-      console.log('File deleted:', filePath);
     } catch (error) {
-      if (error.code === 'ENOENT') {
-        console.log('File not found, skipping delete:', url);
-      } else {
-        console.error('Error deleting file:', error);
-        // Tidak throw error agar proses lain tetap jalan
-      }
+      throw new BadRequestException('Failed to delete file: ' + error.message);
     }
   }
 

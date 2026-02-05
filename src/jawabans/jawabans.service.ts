@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateJawabanDto } from './dto/create-jawaban.dto';
-import { UpdateJawabanDto } from './dto/update-jawaban.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Jawaban } from 'src/entities/jawaban.entity';
 import { Repository } from 'typeorm';
@@ -27,25 +26,9 @@ export class JawabansService {
     return await this.jawabanRepository.save(jawaban);
   }
 
-  findAll() {
-    return `This action returns all jawabans`;
-  }
-
   async findJawabanBenar(pertanyaanId: number) {
     return await this.jawabanRepository.find({
       where: { pertanyaan: { id: pertanyaanId } },
     });
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} jawaban`;
-  }
-
-  update(id: number, updateJawabanDto: UpdateJawabanDto) {
-    return `This action updates a #${id} jawaban`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} jawaban`;
   }
 }

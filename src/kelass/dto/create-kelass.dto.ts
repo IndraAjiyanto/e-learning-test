@@ -7,7 +7,6 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
 import { Metode, Proses } from 'src/entities/kelas.entity';
 
 export class CreateKelassDto {

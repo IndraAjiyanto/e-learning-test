@@ -4,9 +4,9 @@ import { UpdateGambarBenefitDto } from './dto/update-gambar_benefit.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 import { Repository } from 'typeorm';
-import cloudinary from 'src/common/config/multer.config';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { th } from 'date-fns/locale';
 
 @Injectable()
 export class GambarBenefitService {
@@ -42,20 +42,11 @@ export class GambarBenefitService {
   if (!url) return;
 
   try {
-    // Convert URL ke full path
-    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
     const filePath = path.join(process.cwd(), 'public', url);
     
-    // Hapus file
     await fs.unlink(filePath);
-    console.log('File deleted:', filePath);
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      console.log('File not found, skipping delete:', url);
-    } else {
-      console.error('Error deleting file:', error);
-      // Tidak throw error agar proses lain tetap jalan
-    }
+    throw new NotFoundException('File not found');
   }
 }
 

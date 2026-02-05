@@ -1,17 +1,13 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { JawabanUsersService } from './jawaban_users.service';
-import { UpdateJawabanUserDto } from './dto/update-jawaban_user.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -51,28 +47,5 @@ export class JawabanUsersController {
       req.flash('error', error.message || 'gagal menjawab pertanyaan');
       res.redirect(`/quiz/form/${quizId}`);
     }
-  }
-
-  @Get()
-  findAll() {
-    return this.jawabanUsersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.jawabanUsersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateJawabanUserDto: UpdateJawabanUserDto,
-  ) {
-    return this.jawabanUsersService.update(+id, updateJawabanUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.jawabanUsersService.remove(+id);
   }
 }
