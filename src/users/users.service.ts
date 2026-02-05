@@ -8,7 +8,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Not, Repository } from 'typeorm';
-import { Kelas } from 'src/entities/kelas.entity';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -45,7 +44,6 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    // return await this.userRepository.findOne({where: {email}, relations: ['user_kelas', 'user_kelas.kelas' ,'absen']});
     return await this.userRepository.findOne({
       where: { email },
       relations: {
@@ -129,20 +127,11 @@ export class UsersService {
   if (!url) return;
 
   try {
-    // Convert URL ke full path
-    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
     const filePath = path.join(process.cwd(), 'public', url);
     
-    // Hapus file
     await fs.unlink(filePath);
-    console.log('File deleted:', filePath);
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      console.log('File not found, skipping delete:', url);
-    } else {
-      console.error('Error deleting file:', error);
-      // Tidak throw error agar proses lain tetap jalan
-    }
+    throw new Error('Failed to delete file: ' + error.message);
   }
 }
 
@@ -161,11 +150,9 @@ export class UsersService {
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const { email } = forgotPasswordDto;
 
-    // Find user by email
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      // Don't reveal that user doesn't exist for security reasons
       throw new NotFoundException(
         'If this email exists, a reset link has been sent.',
       );
@@ -177,10 +164,8 @@ export class UsersService {
     );
   }
 
-    // Generate reset token (random 32 bytes hex string)
     const resetToken = crypto.randomBytes(32).toString('hex');
 
-    // Hash token before storing in database
     const hashedToken = crypto
       .createHash('sha256')
       .update(resetToken)
@@ -198,7 +183,6 @@ export class UsersService {
         user.username,
       );
     } catch (error) {
-      // Rollback token if email fails
       user.resetPasswordToken = null;
       user.resetPasswordExpires = null;
       await this.userRepository.save(user);
@@ -213,15 +197,12 @@ export class UsersService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { token, password, confirmPassword } = resetPasswordDto;
 
-    // Check if passwords match
     if (password !== confirmPassword) {
       throw new BadRequestException('Passwords do not match');
     }
 
-    // Hash the token from URL to compare with database
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    // Find user with valid token and not expired
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.resetPasswordToken = :hashedToken', { hashedToken })
@@ -232,7 +213,6 @@ export class UsersService {
       throw new BadRequestException('Invalid or expired reset token');
     }
 
-    // Update password (will be hashed by @BeforeUpdate hook)
     user.password = password;
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
@@ -261,10 +241,8 @@ export class UsersService {
   }
 
   async verifyEmail(token: string) {
-    // Hash the token from URL to compare with database
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    // Find user with valid token and not expired
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.verifikasiToken = :hashedToken', { hashedToken })
@@ -275,7 +253,6 @@ export class UsersService {
       throw new BadRequestException('Invalid or expired verification token');
     }
 
-    // Mark email as verified and clear token fields
     user.isVerified = true;
     user.verifikasiToken = null;
     user.verifikasiTokenExpires = null;
@@ -296,10 +273,8 @@ export class UsersService {
       'Verification email already sent. Please check your inbox or wait until token expires.',
     );
   }
-    // Generate reset token (random 32 bytes hex string)
     const resetToken = crypto.randomBytes(32).toString('hex');
        
-           // Hash token before storing in database
            const hashedToken = crypto
              .createHash('sha256')
              .update(resetToken)
@@ -309,7 +284,6 @@ export class UsersService {
 
     const newUser = await this.userRepository.save(user);
 
-    // Send email with unhashed token (this is what user clicks)
     try {
       await this.emailService.sendVerificationEmail(
         user.email,
@@ -318,7 +292,6 @@ export class UsersService {
       );
       return newUser;
     } catch (error) {
-      // Rollback token if email fails
       user.verifikasiToken = null;
       user.verifikasiTokenExpires = null;
       await this.userRepository.save(user);
@@ -367,10 +340,8 @@ export class UsersService {
   }
 
   async validateResetToken(token: string) {
-    // Hash the token from URL to compare with database
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    // Find user with valid token and not expired
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.resetPasswordToken = :hashedToken', { hashedToken })

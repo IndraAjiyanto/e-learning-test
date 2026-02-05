@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateSertifikatDto } from './dto/create-sertifikat.dto';
-import { UpdateSertifikatDto } from './dto/update-sertifikat.dto';
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import * as fs from 'fs';
@@ -251,21 +249,5 @@ export class SertifikatService {
     return await this.biodataRepository.findOne({
       where: { user: { id: userId } },
     });
-  }
-
-  findAll() {
-    return `This action returns all sertifikat`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} sertifikat`;
-  }
-
-  update(id: number, updateSertifikatDto: UpdateSertifikatDto) {
-    return `This action updates a #${id} sertifikat`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} sertifikat`;
   }
 }

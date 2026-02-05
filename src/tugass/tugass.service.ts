@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Tugas } from 'src/entities/tugas.entity';
 import { Repository } from 'typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
-import { v2 as cloudinary } from 'cloudinary';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -45,20 +44,11 @@ export class TugassService {
   if (!url) return;
 
   try {
-    // Convert URL ke full path
-    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
     const filePath = path.join(process.cwd(), 'public', url);
     
-    // Hapus file
     await fs.unlink(filePath);
-    console.log('File deleted:', filePath);
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      console.log('File not found, skipping delete:', url);
-    } else {
-      console.error('Error deleting file:', error);
-      // Tidak throw error agar proses lain tetap jalan
-    }
+    throw new Error('Failed to delete file: ' + error.message);
   }
 }
 

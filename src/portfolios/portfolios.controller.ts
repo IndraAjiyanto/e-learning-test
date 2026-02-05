@@ -10,18 +10,14 @@ import {
   Req,
   Res,
   UseInterceptors,
-  UploadedFile,
   UploadedFiles,
 } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
-import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import {
-  multerConfigImage,
-  multerConfigMemory,
   multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -143,29 +139,24 @@ export class PortfoliosController {
   async update(
     @UploadedFiles() newGambar: Express.Multer.File[],
     @Param('portfolioId') portfolioId: number,
-    @Body() updatePortfolioDto: any, // Ubah jadi any untuk fleksibilitas
+    @Body() updatePortfolioDto: any,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       const oldPortfolio = await this.portfoliosService.findOne(portfolioId);
 
-      // Ambil gambar lama yang masih ada di form (tidak dihapus user)
-      // updatePortfolioDto.gambar berisi array gambar lama yang tidak di-X
       const remainingOldImages = updatePortfolioDto.gambar || [];
 
-      // Pastikan remainingOldImages adalah array
       const oldImagesArray = Array.isArray(remainingOldImages)
         ? remainingOldImages
         : [remainingOldImages];
 
-      // Cari gambar lama yang dihapus (ada di database tapi tidak ada di form)
       const originalImages = oldPortfolio.gambar || [];
       const deletedImages = originalImages.filter(
         (url) => !oldImagesArray.includes(url),
       );
 
-      // Hapus gambar yang dihapus user dari Cloudinary
       if (deletedImages.length > 0) {
         const deletePromises = deletedImages.map((url) =>
           this.portfoliosService.deleteFile(url).catch((error) => {
@@ -174,7 +165,6 @@ export class PortfoliosController {
         await Promise.allSettled(deletePromises);
       }
 
-      // Gabungkan gambar lama yang masih ada + gambar baru
       let finalGambar = [...oldImagesArray];
 
       if (newGambar && newGambar.length > 0) {
@@ -182,9 +172,7 @@ export class PortfoliosController {
         finalGambar = [...finalGambar, ...newImagePaths];
       }
 
-      // Validasi total gambar tidak melebihi batas maksimal
       if (finalGambar.length > 10) {
-        // Jika melebihi batas, hapus gambar baru yang baru saja diupload
         if (newGambar && newGambar.length > 0) {
           const deleteNewImagesPromises = newGambar.map((file) =>
             this.portfoliosService
@@ -202,7 +190,6 @@ export class PortfoliosController {
         return res.redirect(`/portfolios/${portfolioId}/edit`);
       }
 
-      // Siapkan data untuk update
       const updateData = {
         judul: updatePortfolioDto.judul,
         deskripsi: updatePortfolioDto.deskripsi,
@@ -216,7 +203,6 @@ export class PortfoliosController {
       return res.redirect(`/portfolios/${portfolioId}`);
     } catch (error) {
 
-      // Jika ada gambar baru yang sudah terupload tapi update gagal, hapus gambar baru tersebut
       if (newGambar && newGambar.length > 0) {
         const deleteNewImagesPromises = newGambar.map((file) =>
           this.portfoliosService.deleteFile(file.path).catch((err) => {
@@ -228,11 +214,5 @@ export class PortfoliosController {
       req.flash('error', error.message || 'Portfolio failed to update');
       return res.redirect(`/portfolios/${portfolioId}/edit`);
     }
-  }
-
-  @Roles('user')
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.portfoliosService.remove(+id);
   }
 }

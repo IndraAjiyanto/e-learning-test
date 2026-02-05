@@ -21,8 +21,6 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  createMemoryConfig,
-  multerConfigMemory,
   multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -44,7 +42,7 @@ export class TeamController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 1MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'profile_team',
   })
@@ -97,7 +95,7 @@ export class TeamController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'profile_team',
   })

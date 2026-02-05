@@ -3,7 +3,7 @@ import { CreatePertemuanDto } from './dto/create-pertemuan.dto';
 import { UpdatePertemuanDto } from './dto/update-pertemuan.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';

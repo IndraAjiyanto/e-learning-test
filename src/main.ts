@@ -115,7 +115,6 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
   });
 
   hbs.registerHelper('roles', function (userRole, ...roles) {
-    // Remove the last argument which is the options object
     const allowedRoles = roles.slice(0, -1);
     return allowedRoles.includes(userRole);
   });
@@ -196,12 +195,10 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Middleware untuk i18n - hanya set fallback function
-  // Translation akan di-pass dari controller via render context
   app.use((req: Request, res: Response, next: NextFunction) => {
     const lang = req.cookies?.lang || 'id';
     res.locals.currentLang = lang;
-    res.locals.lang = lang; // Tersedia di semua template HBS sebagai 'lang'
+    res.locals.lang = lang;
     next();
   });
   app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
@@ -232,19 +229,16 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
         return i18n.t(key);
       }
     } catch (e) {
-      // Fallback if context not available
     }
     return key;
   });
 
-  // Helper untuk convert newline ke <br> tag
   hbs.registerHelper('nl2br', function (text) {
     if (!text) return '';
     const escaped = hbs.Utils.escapeExpression(text);
     return new hbs.SafeString(escaped.replace(/\n/g, '<br>'));
   });
 
-  // Helper untuk check if string is valid JSON
   hbs.registerHelper('isJSON', function (str) {
     if (!str || typeof str !== 'string') return false;
     try {
@@ -255,13 +249,11 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
     }
   });
 
-  // Helper untuk convert TinyMCE JSON to plain text
   hbs.registerHelper('jsonToText', function (jsonStr) {
     if (!jsonStr || typeof jsonStr !== 'string') return '';
     try {
       const data = JSON.parse(jsonStr);
       if (data.html) {
-        // Remove HTML tags and decode entities
         return data.html
           .replace(/<[^>]*>/g, '')
           .replace(/&nbsp;/g, ' ')
@@ -274,19 +266,17 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
       }
       return '';
     } catch (e) {
-      return jsonStr; // Return as-is if not JSON
+      return jsonStr;
     }
   });
 
-  // Helper untuk default value
   hbs.registerHelper('default', function (value, defaultValue) {
     return value || defaultValue;
   });
 
-  // Helper untuk akses dynamic property dari object (untuk JSONB dengan key lang)
   hbs.registerHelper('getByLang', function (obj, lang) {
     if (!obj || typeof obj !== 'object') return '';
-    return obj[lang] || obj['id'] || ''; // Fallback ke 'id' jika lang tidak ada
+    return obj[lang] || obj['id'] || '';
   });
 
   await app.listen(process.env.PORT ?? 3000);

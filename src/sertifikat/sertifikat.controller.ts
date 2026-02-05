@@ -1,17 +1,11 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
   Res,
   Req,
 } from '@nestjs/common';
 import { SertifikatService } from './sertifikat.service';
-import { CreateSertifikatDto } from './dto/create-sertifikat.dto';
-import { UpdateSertifikatDto } from './dto/update-sertifikat.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
@@ -39,28 +33,5 @@ export class SertifikatController {
         res.render('user/sertifikat/detail', { user: req.user, sertifikat });
       }
     }
-  }
-
-  @Get()
-  findAll() {
-    return this.sertifikatService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sertifikatService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateSertifikatDto: UpdateSertifikatDto,
-  ) {
-    return this.sertifikatService.update(+id, updateSertifikatDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sertifikatService.remove(+id);
   }
 }

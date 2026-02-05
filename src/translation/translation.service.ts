@@ -8,18 +8,4 @@ export class TranslationService {
 
   async translate(createTranslationDto: CreateTranslationDto) {}
 
-  /**
-   * Get all translations for a specific locale
-   * Returns object with key-value pairs: { 'key': 'translated_value' }
-   */
-
-
-  /**
-   * Get specific translation by key and locale
-   */
-
-
-  /**
-   * Get available locales
-   */
 }

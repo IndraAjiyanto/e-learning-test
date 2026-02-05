@@ -18,7 +18,6 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
-import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)

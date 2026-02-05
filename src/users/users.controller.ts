@@ -121,7 +121,7 @@ export class UsersController {
   // PUBLIC ROUTES - Verify account (No Auth Required)
   // ============================================
 
-  
+
 
   @Post('send-verify-email')
   async sendVerifyEmailPage(@Res() res: Response, @Req() req: Request, @Query('token') token: string) {
@@ -185,10 +185,10 @@ export class UsersController {
     maxWidth: 2000,
     minHeight: 300,
     maxHeight: 2000,
-    maxSize: 5 * 1024 * 1024, // 3MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'profile_user',
-    skipTransformation: true, // profile images are already validated, no need transformation
+    skipTransformation: true,
   })
   async create(
     @Body() createUserDto: CreateUserDto,
@@ -229,7 +229,6 @@ export class UsersController {
     return res.render('profile/editInfo', { user: req.user });
   }
 
-  // get All users
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
@@ -237,7 +236,6 @@ export class UsersController {
     res.render('super_admin/user/index', { user: req.user, users });
   }
 
-  // get one user to edit
   @Roles('super_admin')
   @Get('formEdit/:userId')
   async formEdit(
@@ -249,7 +247,6 @@ export class UsersController {
     res.render('super_admin/user/edit', { user: req.user, users });
   }
 
-  // form create user
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
@@ -278,7 +275,6 @@ export class UsersController {
     }
   }
 
-  // update user
   @Roles('super_admin')
   @Patch('super_admin/:userId')
   @UseInterceptors(
@@ -290,10 +286,10 @@ export class UsersController {
     maxWidth: 2000,
     minHeight: 300,
     maxHeight: 2000,
-    maxSize: 5 * 1024 * 1024, // 1MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'profile_user',
-    skipTransformation: true, // profile images are already validated, no need transformation
+    skipTransformation: true,
   })
   async updateAdmin(
     @UploadedFile() profile: Express.Multer.File,
@@ -337,7 +333,6 @@ export class UsersController {
         res.redirect('/users/profile');
       }
     } catch (error) {
-      // Tangkap error message spesifik dari service
       const errorMessage = error.message || 'Failed to update password';
       req.flash('error', errorMessage);
       res.redirect('/users/profile');
@@ -355,10 +350,10 @@ export class UsersController {
     maxWidth: 2000,
     minHeight: 300,
     maxHeight: 2000,
-    maxSize: 5 * 1024 * 1024, // 5MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'profile_user',
-    skipTransformation: true, // profile images are already validated, no need transformation
+    skipTransformation: true,
   })
   async updateProfile(
     @Param('userId') userId: number,
@@ -371,14 +366,12 @@ export class UsersController {
 
       const user = await this.usersService.findOne(userId);
       if (profile) {
-        // Hanya hapus foto lama jika user sudah punya foto profile sebelumnya
         if (user.profile) {
           await this.usersService.deleteFile(user.profile);
         }
         updateProfileDto.profile = req.body.uploadedImageUrls?.[0];
       }
 
-      // Convert userId to number for comparison (param comes as string)
       const userIdNum = Number(userId);
 
       if (req.user!.id === userIdNum) {

@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { Jawaban } from 'src/entities/jawaban.entity';
 import { Quiz } from 'src/entities/quiz.entity';
-import cloudinary from 'src/common/config/multer.config';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -37,10 +36,6 @@ export class PertanyaansService {
     return await this.pertanyaanRepository.save(pertanyaan);
   }
 
-  findAll() {
-    return `This action returns all pertanyaans`;
-  }
-
   async findPertanyaan(quizId: number) {
     return await this.pertanyaanRepository.find({
       where: { quiz: { id: quizId } },
@@ -65,12 +60,10 @@ export class PertanyaansService {
       throw new NotFoundException('Pertanyaan tidak ditemukan');
     }
 
-    // update pertanyaan_soal
     pertanyaan.pertanyaan_soal = updatePertanyaanDto.pertanyaan_soal;
     pertanyaan.gambar = updatePertanyaanDto.gambar;
     await this.pertanyaanRepository.save(pertanyaan);
 
-    // ambil jawaban lama
     const jawabanLama = await this.jawabanRepository.find({
       where: { pertanyaan: { id: pertanyaanId } },
     });
@@ -79,10 +72,8 @@ export class PertanyaansService {
       throw new NotFoundException('Jawaban tidak ditemukan');
     }
 
-    // hapus jawaban lama
     await this.jawabanRepository.remove(jawabanLama);
 
-    // insert jawaban baru
     const jawabanBaru = updatePertanyaanDto.pilihan.map((pilihan, index) => {
       return this.jawabanRepository.create({
         jawaban: pilihan,
@@ -113,20 +104,11 @@ export class PertanyaansService {
   if (!url) return;
 
   try {
-    // Convert URL ke full path
-    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
     const filePath = path.join(process.cwd(), 'public', url);
     
-    // Hapus file
     await fs.unlink(filePath);
-    console.log('File deleted:', filePath);
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      console.log('File not found, skipping delete:', url);
-    } else {
-      console.error('Error deleting file:', error);
-      // Tidak throw error agar proses lain tetap jalan
-    }
+    throw new Error('Failed to delete file: ' + error.message);
   }
 }
 }

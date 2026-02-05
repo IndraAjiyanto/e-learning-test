@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Redirect,
   UseGuards,
   Req,
   Res,

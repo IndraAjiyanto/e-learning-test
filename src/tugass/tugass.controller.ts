@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
@@ -14,14 +13,12 @@ import {
 } from '@nestjs/common';
 import { TugassService } from './tugass.service';
 import { CreateTugassDto } from './dto/create-tugass.dto';
-import { UpdateTugassDto } from './dto/update-tugass.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateFile } from 'src/common/decorators/validate-file.decorator';
 import { ValidateFileInterceptor } from 'src/common/interceptors/validate-file.interceptor';
-import { memoryStorage } from 'multer';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
@@ -36,11 +33,11 @@ export class TugassController {
     ValidateFileInterceptor,
   )
   @ValidateFile({
-    maxSize: 10 * 1024 * 1024, // 10MB
+    maxSize: 10 * 1024 * 1024,
     allowedTypes: ['application/pdf'],
     fileExtensions: ['.pdf'],
     folder: 'assignments',
-    resourceType: 'raw', // Penting: gunakan 'raw' untuk PDF
+    resourceType: 'raw',
   })
   async create(
     @Body() createTugassDto: CreateTugassDto,
@@ -50,7 +47,6 @@ export class TugassController {
     @Req() req: Request,
   ) {
     try {
-      // Pastikan file berhasil diupload ke Cloudinary
       if (!req.body.uploadedFileUrls || !req.body.uploadedFileUrls[0]) {
         throw new Error('File upload failed. Please try again.');
       }

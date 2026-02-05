@@ -21,8 +21,6 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  createMemoryConfig,
-  multerConfigMemory,
   multerConfigMemoryOnly,
 } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -44,7 +42,7 @@ export class TeamLeadController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 1MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'profile_teamLead',
   })
@@ -52,7 +50,6 @@ export class TeamLeadController {
     @Body() createTeamLeadDto: CreateTeamLeadDto,
     @Res() res: Response,
     @Req() req: Request,
-    @UploadedFile() profile: Express.Multer.File,
   ) {
     try {
       createTeamLeadDto.profile = req.body.uploadedImageUrls?.[0];
@@ -96,7 +93,7 @@ export class TeamLeadController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    maxSize: 5 * 1024 * 1024, // 1MB max
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'profile_teamLead',
   })

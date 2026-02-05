@@ -10,7 +10,6 @@ import {
   Res,
   UseGuards,
   UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
 import { PertanyaansService } from './pertanyaans.service';
 import { CreatePertanyaanDto } from './dto/create-pertanyaan.dto';
@@ -23,7 +22,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { JawabanUsersService } from 'src/jawaban_users/jawaban_users.service';
 import { QuizService } from 'src/quiz/quiz.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfigImage, multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
@@ -45,7 +44,7 @@ export class PertanyaansController {
       ValidateImageInterceptor,
     )
     @ValidateImage({
-      maxSize: 5 * 1024 * 1024, // 5MB
+      maxSize: 5 * 1024 * 1024,
       allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
       folder: 'quiz_question',
     })
@@ -151,13 +150,12 @@ export class PertanyaansController {
       ValidateImageInterceptor,
     )
     @ValidateImage({
-      maxSize: 5 * 1024 * 1024, // 5MB
+      maxSize: 5 * 1024 * 1024,
       allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
       folder: 'quiz_question',
     })
   async update(
     @Param('pertanyaanId') pertanyaanId: number,
-    @UploadedFile() gambar: Express.Multer.File,
     @Param('quizId') quizId: number,
     @Body() updatePertanyaanDto: UpdatePertanyaanDto,
     @Req() req: Request,

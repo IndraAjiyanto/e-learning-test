@@ -3,13 +3,12 @@ import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quiz } from 'src/entities/quiz.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Minggu } from 'src/entities/minggu.entity';
 import { Nilai } from 'src/entities/nilai.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
-import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 
 @Injectable()
@@ -56,14 +55,7 @@ export class QuizService {
         });
       }
     }
-
-
-
 }
-
-  findAll() {
-    return `This action returns all quiz`;
-  }
 
   async findNilai(quizId: number) {
     const quiz = await this.findOne(quizId);
@@ -102,13 +94,13 @@ export class QuizService {
         quiz: { id: quizId },
       },
       relations: {
-        jawaban: true, // Format baru TypeORM
+        jawaban: true,
         quiz: true,
       },
       order: {
-        id: 'ASC', // Urutkan pertanyaan
+        id: 'ASC',
         jawaban: {
-          id: 'ASC', // Urutkan jawaban
+          id: 'ASC',
         },
       },
     });

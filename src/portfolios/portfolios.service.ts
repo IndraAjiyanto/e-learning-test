@@ -6,7 +6,6 @@ import { Portfolio } from 'src/entities/portfolio.entity';
 import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
-import cloudinary from 'src/common/config/multer.config';
 import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import * as fs from 'fs/promises';
@@ -82,7 +81,6 @@ export class PortfoliosService {
   ) {
     const skip = (page - 1) * limit;
 
-    // Build query with filters
     const queryBuilder = this.portfolioRepository
       .createQueryBuilder('portfolio')
       .leftJoinAndSelect('portfolio.kelas', 'kelas')
@@ -90,7 +88,6 @@ export class PortfoliosService {
       .leftJoinAndSelect('kelas.kategori', 'kategori')
       .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas');
 
-    // Apply filters if provided
     if (kategoriId) {
       queryBuilder.andWhere('kategori.id = :kategoriId', { kategoriId });
     }
@@ -99,10 +96,8 @@ export class PortfoliosService {
       queryBuilder.andWhere('jenis_kelas.id = :jenisKelasId', { jenisKelasId });
     }
 
-    // Get total count for pagination
     const total = await queryBuilder.getCount();
 
-    // Apply pagination
     const items = await queryBuilder
       .skip(skip)
       .take(limit)
@@ -133,28 +128,15 @@ export class PortfoliosService {
   if (!url) return;
 
   try {
-    // Convert URL ke full path
-    // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
     const filePath = path.join(process.cwd(), 'public', url);
     
-    // Hapus file
     await fs.unlink(filePath);
-    console.log('File deleted:', filePath);
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      console.log('File not found, skipping delete:', url);
-    } else {
-      console.error('Error deleting file:', error);
-      // Tidak throw error agar proses lain tetap jalan
-    }
+    throw new Error('Failed to delete file: ' + error.message);
   }
 }
 
   async update(portfolioId: number, updatePortfolioDto: UpdatePortfolioDto) {
     await this.portfolioRepository.update(portfolioId, updatePortfolioDto);
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} portfolio`;
   }
 }
