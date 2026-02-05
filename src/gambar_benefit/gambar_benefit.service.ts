@@ -6,7 +6,6 @@ import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 import { Repository } from 'typeorm';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { th } from 'date-fns/locale';
 
 @Injectable()
 export class GambarBenefitService {

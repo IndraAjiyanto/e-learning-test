@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBenefitKelaDto } from './dto/create-benefit_kela.dto';
 import { UpdateBenefitKelaDto } from './dto/update-benefit_kela.dto';
-import cloudinary from 'src/common/config/multer.config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BenefitKelas } from 'src/entities/benefit_kelas.entity';
 import { Repository } from 'typeorm';

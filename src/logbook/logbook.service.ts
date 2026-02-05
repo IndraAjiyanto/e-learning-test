@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Kelas } from 'src/entities/kelas.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
-import cloudinary from 'src/common/config/multer.config';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { Quiz } from 'src/entities/quiz.entity';

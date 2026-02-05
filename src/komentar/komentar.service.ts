@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateKomentarDto } from './dto/create-komentar.dto';
-import { UpdateKomentarDto } from './dto/update-komentar.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Komentar } from 'src/entities/komentar.entity';
 import { Repository } from 'typeorm';

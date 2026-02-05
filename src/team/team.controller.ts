@@ -10,7 +10,6 @@ import {
   Res,
   Req,
   UseInterceptors,
-  UploadedFile,
   UseFilters,
 } from '@nestjs/common';
 import { TeamService } from './team.service';

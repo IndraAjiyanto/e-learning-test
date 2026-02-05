@@ -4,7 +4,6 @@ import { UpdateMaterisDto } from './dto/update-materis.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JenisFile, Materi } from 'src/entities/materi.entity';
 import { Repository } from 'typeorm';
-import { v2 as cloudinary } from 'cloudinary';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';

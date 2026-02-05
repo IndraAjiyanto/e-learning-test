@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { th } from 'date-fns/locale';
 
 @Injectable()
 export class AlumniService {

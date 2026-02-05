@@ -6,7 +6,6 @@ import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { Repository } from 'typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { User } from 'src/entities/user.entity';
-import cloudinary from 'src/common/config/multer.config';
 import { Kelas } from 'src/entities/kelas.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';

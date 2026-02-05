@@ -3,7 +3,7 @@ import { CreateAbsenDto } from './dto/create-absen.dto';
 import { UpdateAbsenDto } from './dto/update-absen.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Absen } from 'src/entities/absen.entity';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
 import { User } from 'src/entities/user.entity';
 import { Kelas } from 'src/entities/kelas.entity';

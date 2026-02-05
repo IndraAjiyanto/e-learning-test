@@ -6,11 +6,9 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   Res,
   Req,
   UseInterceptors,
-  UploadedFile,
   UseFilters,
 } from '@nestjs/common';
 import { KategorisService } from './kategoris.service';
