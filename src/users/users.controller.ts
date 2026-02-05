@@ -45,8 +45,17 @@ export class UsersController {
 
   @Get('forgot-password')
   async forgotPasswordPage(@Res() res: Response, @Req() req: Request, @Query('token') token: string) {
+    if(token === undefined){
+    return res.render('forgot-password');
+    }
+    const user = await this.usersService.findUserByTokenPassword(token);
+    if(user.isVerified){
     const remainingMs = await this.usersService.tokenPasswordExpired(token);
     return res.render('forgot-password', { remainingMs: remainingMs });
+    }else{
+      req.flash('error', 'Please verify your email first');
+      res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
+    }
   }
 
   @Post('forgot-password')
@@ -63,11 +72,12 @@ export class UsersController {
       );
       res.redirect('/users/forgot-password?token=' + token);
     } catch (error) {
+      const user = await this.usersService.findUserByEmail(forgotPasswordDto.email);
       req.flash(
         'error',
         error.message || 'Failed to process password reset request',
       );
-      res.redirect('/users/forgot-password');
+      res.redirect('/users/forgot-password?token=' + user.resetPasswordToken);
     }
   }
 
@@ -110,6 +120,8 @@ export class UsersController {
     // ============================================
   // PUBLIC ROUTES - Verify account (No Auth Required)
   // ============================================
+
+  
 
   @Post('send-verify-email')
   async sendVerifyEmailPage(@Res() res: Response, @Req() req: Request, @Query('token') token: string) {

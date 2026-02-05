@@ -332,6 +332,14 @@ export class UsersService {
     }
   }
 
+  async findUserByTokenPassword(token: string) {
+    const user = await this.userRepository.findOne({ where: { resetPasswordToken: token } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
   async tokenExpired(token: string) {
     const user = await this.userRepository.findOne({ where: { verifikasiToken: token } });
     if (!user) {
