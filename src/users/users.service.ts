@@ -175,6 +175,12 @@ export class UsersService {
       );
     }
 
+  if ( user.resetPasswordToken && user.resetPasswordExpires && user.resetPasswordExpires > new Date()) {
+    throw new BadRequestException(
+      'Verification email already sent. Please check your inbox or wait until token expires.',
+    );
+  }
+
     // Generate reset token (random 32 bytes hex string)
     const resetToken = crypto.randomBytes(32).toString('hex');
 
@@ -187,7 +193,7 @@ export class UsersService {
     user.resetPasswordToken = hashedToken;
     user.resetPasswordExpires = new Date(Date.now() + 60000);
 
-    await this.userRepository.save(user);
+    const newUser = await this.userRepository.save(user);
 
     try {
       await this.emailService.sendPasswordResetEmail(
@@ -205,9 +211,7 @@ export class UsersService {
       );
     }
 
-    return {
-      message: 'Password reset email has been sent. Please check your inbox.',
-    };
+    return newUser.resetPasswordToken;
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
@@ -244,6 +248,20 @@ export class UsersService {
       message:
         'Password has been reset successfully. You can now login with your new password.',
     };
+  }
+
+    async tokenPasswordExpired(token: string) {
+    const user = await this.userRepository.findOne({ where: { resetPasswordToken: token } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if(!user.isVerified){
+      throw new BadRequestException('User not verified');
+    }
+      if ( user.resetPasswordToken && user.resetPasswordExpires && user.resetPasswordExpires > new Date()) {
+    const remainingMs = user.resetPasswordExpires.getTime() - Date.now();
+    return remainingMs;
+  }
   }
 
   async verifyEmail(token: string) {
@@ -335,4 +353,29 @@ export class UsersService {
     }
     return user;
   }
+
+  async findUserByEmail(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async validateResetToken(token: string) {
+    // Hash the token from URL to compare with database
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Find user with valid token and not expired
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.resetPasswordToken = :hashedToken', { hashedToken })
+      .andWhere('user.resetPasswordExpires > :now', { now: new Date() })
+      .getOne();
+    if (!user) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+    return user;
+  }
+
 }

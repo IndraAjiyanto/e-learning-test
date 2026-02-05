@@ -44,8 +44,9 @@ export class UsersController {
   // ============================================
 
   @Get('forgot-password')
-  async forgotPasswordPage(@Res() res: Response) {
-    return res.render('forgot-password');
+  async forgotPasswordPage(@Res() res: Response, @Req() req: Request, @Query('token') token: string) {
+    const remainingMs = await this.usersService.tokenPasswordExpired(token);
+    return res.render('forgot-password', { remainingMs: remainingMs });
   }
 
   @Post('forgot-password')
@@ -55,12 +56,12 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
-      await this.usersService.forgotPassword(forgotPasswordDto);
+      const token = await this.usersService.forgotPassword(forgotPasswordDto);
       req.flash(
         'success',
         'Password reset link has been sent to your email. Please check your inbox.',
       );
-      res.redirect('/users/forgot-password');
+      res.redirect('/users/forgot-password?token=' + token);
     } catch (error) {
       req.flash(
         'error',
@@ -73,15 +74,42 @@ export class UsersController {
   @Get('reset-password')
   async resetPasswordPage(
     @Query('token') token: string,
+    @Query('email') email: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    if (!token) {
-      req.flash('error', 'Invalid or missing reset token');
-      return res.redirect('/login');
+    try {
+      await this.usersService.validateResetToken(token);
+      return res.render('reset-password', { token });
+    } catch (error) {
+      const token = await this.usersService.findUserByEmail(email);
+            req.flash('error', 'Invalid or missing reset token');
+      return res.redirect('/users/forgot-password?token=' + token.resetPasswordToken);
     }
-    return res.render('reset-password', { token });
   }
+
+    @Post('reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.usersService.resetPassword(resetPasswordDto);
+      req.flash(
+        'success',
+        'Password has been reset successfully! You can now login with your new password.',
+      );
+      res.redirect('/login');
+    } catch (error) {
+      req.flash('error', error.message || 'Failed to reset password');
+      res.redirect(`/users/reset-password?token=${resetPasswordDto.token}`);
+    }
+  }
+
+    // ============================================
+  // PUBLIC ROUTES - Verify account (No Auth Required)
+  // ============================================
 
   @Post('send-verify-email')
   async sendVerifyEmailPage(@Res() res: Response, @Req() req: Request, @Query('token') token: string) {
@@ -114,6 +142,7 @@ export class UsersController {
   @Get('verify-email')
   async verifyEmail(
     @Query('token') token: string,
+    @Query('email') email: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -122,27 +151,9 @@ export class UsersController {
       req.flash('success', 'Email verified successfully! You can now login.');
       res.redirect('/login');
     } catch (error) {
+      const user = await this.usersService.findUserByEmail(email);
       req.flash('error', error.message || 'Email verification failed');
-      res.redirect('/users/send-verify-email?token=' + token);
-    }
-  }
-
-  @Post('reset-password')
-  async resetPassword(
-    @Body() resetPasswordDto: ResetPasswordDto,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    try {
-      await this.usersService.resetPassword(resetPasswordDto);
-      req.flash(
-        'success',
-        'Password has been reset successfully! You can now login with your new password.',
-      );
-      res.redirect('/login');
-    } catch (error) {
-      req.flash('error', error.message || 'Failed to reset password');
-      res.redirect(`/users/reset-password?token=${resetPasswordDto.token}`);
+      res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
     }
   }
 
