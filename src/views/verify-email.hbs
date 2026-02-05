@@ -122,24 +122,31 @@
       {{/if}}
 
       {{#if remainingMs}}
-      <div id="countdown"></div>
-       <script src="https://cdn.jsdelivr.net/npm/simplycountdown.js"></script>
+            <div class="my-countdown simply-countdown"></div>
 
 <script>
-  let remainingTime = {{remainingMs}};
-  const el = document.getElementById("countdown");
+  const remainingMs = {{ remainingMs }};
+  const target = new Date(Date.now() + remainingMs);
 
-  setInterval(() => {
-    if (remainingTime <= 0) location.reload();
+  simplyCountdown('.my-countdown', {
+    year: target.getFullYear(),
+    month: target.getMonth() + 1,
+    day: target.getDate(),
+    hours: target.getHours(),
+    minutes: target.getMinutes(),
+    seconds: target.getSeconds(),
 
-    let m = Math.floor(remainingTime / 60000);
-    let s = Math.floor((remainingTime % 60000) / 1000);
+    words: {
+      days: { root: 'Hari', lambda: (root, n) => root },
+      hours: { root: 'Jam', lambda: (root, n) => root },
+      minutes: { root: 'Menit', lambda: (root, n) => root },
+      seconds: { root: 'Detik', lambda: (root, n) => root }
+    },
 
-    el.innerHTML = m + " menit " + s + " detik";
-
-    remainingTime -= 1000;
-  }, 1000);
+    onEnd: () => location.reload()
+  });
 </script>
+
       {{else}}
 
       <!-- Forgot Password Form -->
