@@ -101,7 +101,7 @@ export class EmailService {
 
                       <div style="padding: 20px; background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px; margin: 24px 0;">
                         <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.6;">
-                          <strong>⚠️ Important:</strong> This link will expire in <strong>1 hour</strong>. If you didn't request this password reset, please ignore this email or contact support if you have concerns.
+                          <strong>⚠️ Important:</strong> This link will expire in <strong>2 minutes</strong>. If you didn't request this password reset, please ignore this email or contact support if you have concerns.
                         </p>
                       </div>
 

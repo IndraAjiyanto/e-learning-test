@@ -191,7 +191,7 @@ export class UsersService {
       .digest('hex');
 
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = new Date(Date.now() + 60000);
+    user.resetPasswordExpires = new Date(Date.now() + 120000);
 
     const newUser = await this.userRepository.save(user);
 
@@ -309,7 +309,7 @@ export class UsersService {
              .update(resetToken)
              .digest('hex');
        user.verifikasiToken = hashedToken;
-       user.verifikasiTokenExpires = new Date(Date.now() + 60000);
+       user.verifikasiTokenExpires = new Date(Date.now() + 120000);
 
     const newUser = await this.userRepository.save(user);
 
