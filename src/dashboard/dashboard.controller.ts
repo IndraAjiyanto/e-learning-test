@@ -12,13 +12,9 @@ export class DashboardController {
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
-        const kelas = await this.dashboardService.findAllKelas();
-        res.render('admin/kelas/index', { user: req.user, kelas });
+        res.redirect('/users');
       } else if (req.user.role === 'admin') {
-        const kelas = await this.dashboardService.findKelasByMentoring(
-          req.user!.id,
-        );
-        res.render('admin/kelas/index', { user: req.user, kelas });
+        res.redirect('/kelass');
       } else if (req.user.role === 'user') {
         const our_experience = await this.dashboardService.findOurExperience();
         const special_program =

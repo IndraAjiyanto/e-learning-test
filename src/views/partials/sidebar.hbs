@@ -13,20 +13,50 @@
     sidebarOpen: window.innerWidth >= 1024, 
     active: localStorage.getItem('activeLink') || '/dashboard',
     activeDropdown: localStorage.getItem('activeDropdown') || null,
+    activeSubDropdown: localStorage.getItem('activeSubDropdown') || null,
+
     setActive(path) {
+    if (path === '/users'){
+      this.activeDropdown = null;
+      localStorage.removeItem('activeDropdown');
+    }
       this.active = path;
       localStorage.setItem('activeLink', path);
       if (window.innerWidth < 1024) {
         this.sidebarOpen = false;
       }
     },
+
     setActiveDropdown(dropdown) {
-      this.activeDropdown = dropdown;
-      localStorage.setItem('activeDropdown', dropdown);
+    if (this.active === '/users'){
+    this.active = null;
+    localStorage.removeItem('activeLink');
+    }
+  if (this.activeDropdown === dropdown) {
+    this.activeDropdown = null;
+    localStorage.removeItem('activeDropdown');
+  } else {
+    this.activeDropdown = dropdown;
+    localStorage.setItem('activeDropdown', dropdown);
+  }
       if (window.innerWidth < 1024) {
         this.sidebarOpen = false;
       }
     },
+
+  setActiveSubDropdown(subDropdown) {
+  if (this.activeSubDropdown === subDropdown) {
+    this.activeSubDropdown = null;
+    localStorage.removeItem('activeSubDropdown');
+  } else {
+    this.activeSubDropdown = subDropdown;
+    localStorage.setItem('activeSubDropdown', subDropdown);
+  }
+      if (window.innerWidth < 1024) {
+        this.sidebarOpen = false;
+      }
+    },
+
     init() {
       window.addEventListener('resize', () => {
         if (window.innerWidth >= 1024) {
@@ -115,8 +145,8 @@
           href='/kelass'
           @click="setActive('/kelass')"
           :class="active === '/kelass' 
-            ? 'bg-white text-gray-900' 
-            : 'bg-transparent text-white hover:bg-gray-700'"
+            ? 'bg-gray-700 text-white' 
+            : 'bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'"
           class='flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group'
         >
           <svg
@@ -140,7 +170,10 @@
         <div class='space-y-1'>
           <button
             @click='setActiveDropdown("dashboard")'
-            class='flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors bg-transparent text-white hover:bg-gray-700'
+            :class="activeDropdown === 'dashboard' 
+            ? 'bg-gray-700 text-white' 
+            : 'bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'"
+            class='flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors'
           >
             <div class='flex items-center gap-3'>
               <svg
@@ -336,8 +369,8 @@
           href='/users'
           @click="setActive('/users')"
           :class="active === '/users' 
-            ? 'bg-white text-gray-900' 
-            : 'bg-transparent text-white hover:bg-gray-700'"
+            ? 'bg-gray-700 text-white' 
+            : 'bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'"
           class='flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group'
         >
           <svg
@@ -360,7 +393,10 @@
         <div class='space-y-1'>
           <button
             @click='setActiveDropdown("program")'
-            class='flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors bg-transparent text-white hover:bg-gray-700'
+                        :class="activeDropdown === 'program' 
+            ? 'bg-gray-700 text-white' 
+            : 'bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'"
+            class='flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors'
           >
             <div class='flex items-center gap-3'>
               <svg
@@ -505,7 +541,10 @@
         <div class='space-y-1'>
           <button
             @click='setActiveDropdown("about")'
-            class='flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors bg-transparent text-white hover:bg-gray-700'
+                        :class="activeDropdown === 'about' 
+            ? 'bg-gray-700 text-white' 
+            : 'bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'"
+            class='flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors'
           >
             <div class='flex items-center gap-3'>
               <svg
@@ -667,10 +706,13 @@
               <span>Commitment</span>
             </a>
 
-            <div x-data='{ visiMisiOpen: false }' class='space-y-1'>
+            <div class='space-y-1'>
               <button
-                @click='visiMisiOpen = !visiMisiOpen'
-                class='flex items-center justify-between w-full px-4 py-2 rounded-lg transition-colors bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'
+                @click='setActiveSubDropdown("visiMisi")'
+                                  :class="activeSubDropdown === 'visiMisi' 
+                    ? 'bg-gray-600 text-white' 
+                    : 'bg-transparent text-gray-400 hover:bg-gray-600 hover:text-white'"
+                class='flex items-center justify-between w-full px-4 py-2 rounded-lg transition-colors'
               >
                 <div class='flex items-center gap-3'>
                   <svg
@@ -695,7 +737,7 @@
                   <span>Visi Misi</span>
                 </div>
                 <svg
-                  :class="{'rotate-180': visiMisiOpen}"
+                  :class="{'rotate-180': activeSubDropdown === 'visiMisi'}"
                   class='w-3 h-3 transition-transform'
                   fill='currentColor'
                   viewBox='0 0 20 20'
@@ -708,7 +750,7 @@
                 </svg>
               </button>
               <div
-                x-show='visiMisiOpen'
+                x-show="activeSubDropdown === 'visiMisi'"
                 x-transition:enter='transition ease-out duration-200'
                 x-transition:enter-start='opacity-0 -translate-y-1'
                 x-transition:enter-end='opacity-100 translate-y-0'
@@ -766,10 +808,13 @@
               </div>
             </div>
 
-            <div x-data='{ teamLeadOpen: false }' class='space-y-1'>
+            <div class='space-y-1'>
               <button
-                @click='teamLeadOpen = !teamLeadOpen'
-                class='flex items-center justify-between w-full px-4 py-2 rounded-lg transition-colors bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'
+                @click='setActiveSubDropdown("teamLead")'
+                :class="activeSubDropdown === 'teamLead' 
+                    ? 'bg-gray-600 text-white' 
+                    : 'bg-transparent text-gray-400 hover:bg-gray-600 hover:text-white'"
+                class='flex items-center justify-between w-full px-4 py-2 rounded-lg transition-colors'
               >
                 <div class='flex items-center gap-3'>
                   <svg
@@ -788,7 +833,7 @@
                   <span>Team Lead</span>
                 </div>
                 <svg
-                  :class="{'rotate-180': teamLeadOpen}"
+                  :class="{'rotate-180': activeSubDropdown === 'teamLead'}"
                   class='w-3 h-3 transition-transform'
                   fill='currentColor'
                   viewBox='0 0 20 20'
@@ -801,7 +846,7 @@
                 </svg>
               </button>
               <div
-                x-show='teamLeadOpen'
+                x-show="activeSubDropdown === 'teamLead'"
                 x-transition:enter='transition ease-out duration-200'
                 x-transition:enter-start='opacity-0 -translate-y-1'
                 x-transition:enter-end='opacity-100 translate-y-0'
