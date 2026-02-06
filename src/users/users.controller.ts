@@ -262,7 +262,7 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     try {
-      if (req.user!.id === id) {
+      if (req.user!.id == id) {
         await this.usersService.update(id, updateUserDto);
         req.flash('success', 'User successfully updated');
         res.redirect('/users/profile');
