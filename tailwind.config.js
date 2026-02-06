@@ -3,6 +3,9 @@ module.exports = {
   content: [
     './src/**/*.{html,ts,tsx,js,jsx}',
     './src/views/**/*.{html,hbs,ejs,pug}',
+    './src/views/**/*.hbs',
+    './src/views/partials/**/*.hbs',
+    './src/views/layouts/**/*.hbs',
   ],
   theme: {
     extend: {

@@ -16,24 +16,25 @@ import cookieParser from 'cookie-parser';
 import { NextFunction, Request, Response } from 'express';
 import { I18nContext } from 'nestjs-i18n';
 
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useGlobalFilters(new ForbiddenExceptionFilter());
   app.useGlobalFilters(new NotFoundExceptionFilter());
-  app.useStaticAssets(join(__dirname, '..', 'src', 'common', 'public'), {
-    prefix: '/public/',
-  });
+app.useStaticAssets(join(process.cwd(), 'src', 'common', 'public'), {
+  prefix: '/public/',
+});
 
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
   });
 
-  app.useStaticAssets(join(__dirname, '..', 'public', 'asset'), {
+  app.useStaticAssets(join(process.cwd(), 'public', 'asset'), {
     prefix: '/asset/',
   });
 
-  app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
+  app.setBaseViewsDir(join(process.cwd(), 'src', 'views'));
   hbs.registerHelper('addOne', function (index: number) {
     return index + 1;
   });
@@ -171,7 +172,10 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
   });
 
   hbs.registerPartials(resolve(process.cwd(), 'src', 'views', 'partials'));
+  app.set('view cache', false);
+
   app.setViewEngine('hbs');
+  
 
   app.set('view options', { layout: 'layouts/main' });
   app.use(methodOverride('_method'));
@@ -278,6 +282,7 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
     if (!obj || typeof obj !== 'object') return '';
     return obj[lang] || obj['id'] || '';
   });
+
 
   await app.listen(process.env.PORT ?? 3000);
 }

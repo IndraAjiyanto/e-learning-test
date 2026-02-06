@@ -631,11 +631,11 @@
                 <a
                   :href="'/kategoris/program/' + kat.nama_kategori"
                   @click="setActive('/kategoris/program/' + kat.nama_kategori)"
-                  :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-gray-700' : 'bg-gray-800'"
-                  class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors'
+                  :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-white' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                 >
                   <div
-                    class='bg-white text-gray-900 rounded-lg p-3 flex-shrink-0'
+                    class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-lg p-3 flex-shrink-0'
                   >
                     <img :src='kat.icon' class='w-6 h-6' alt='' />
                   </div>
