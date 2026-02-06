@@ -41,17 +41,14 @@ export class TugassService {
     return `This action updates a #${id} tugass`;
   }
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.unlink(filePath);
-  } catch (error) {
-    throw new Error('Failed to delete file: ' + error.message);
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.unlink(filePath);
+    } catch (error) {}
   }
-}
-
 
   async remove(tugasId: number) {
     const tugas = await this.tugasRepository.findOne({

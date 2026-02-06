@@ -51,11 +51,9 @@ export class KategorisService {
   async findOneKategori(kategoriName: string) {
     const kategori = await this.kategoriRepository.findOne({
       where: { nama_kategori: kategoriName },
-      relations: [
-        'jenis_kelas',
-      ],
+      relations: ['jenis_kelas'],
     });
-    if(!kategori) {
+    if (!kategori) {
       throw new NotFoundException('Category not found');
     }
     return kategori;
@@ -72,9 +70,7 @@ export class KategorisService {
   async findOne(kategoriId: number) {
     const kategori = await this.kategoriRepository.findOne({
       where: { id: kategoriId },
-      relations: [
-        'jenis_kelas'
-      ],
+      relations: ['jenis_kelas'],
     });
     if (!kategori) {
       throw new NotFoundException('Category not found');
@@ -85,15 +81,14 @@ export class KategorisService {
   async findKelasByKategori(kategoriId: number) {
     return await this.kelasRepository.find({
       where: { kategori: { id: kategoriId }, launch: true },
-      relations: ['jenis_kelas','kategori','user_kelas'],
+      relations: ['jenis_kelas', 'kategori', 'user_kelas'],
     });
   }
-
 
   async findKelasByKategoriAll(kategoriId: number) {
     return await this.kelasRepository.find({
       where: { kategori: { id: kategoriId } },
-      relations: ['jenis_kelas','kategori','user_kelas'],
+      relations: ['jenis_kelas', 'kategori', 'user_kelas'],
     });
   }
 
@@ -151,16 +146,14 @@ export class KategorisService {
   }
 
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.unlink(filePath);
-  } catch (error) {
-    throw new Error('Failed to delete file: ' + error.message);
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.unlink(filePath);
+    } catch (error) {}
   }
-}
 
   async remove(kategoriId: number) {
     const kategori = await this.findOne(kategoriId);

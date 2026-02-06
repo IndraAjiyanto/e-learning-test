@@ -134,16 +134,14 @@ export class LogbookService {
     return pertemuan;
   }
 
-    async deleteFile(url: string) {
+  async deleteFile(url: string) {
     if (!url) return;
-  
+
     try {
       const filePath = path.join(process.cwd(), 'public', url);
-      
+
       await fs.unlink(filePath);
-    } catch (error) {
-      throw new Error('Failed to delete file: ' + error.message);
-    }
+    } catch (error) {}
   }
 
   async findOne(logbookId: number) {
@@ -187,7 +185,7 @@ export class LogbookService {
           user: { id: logbook.user.id },
           pertemuan: { id: logbook.pertemuan.id },
           logbook: true,
-          absen: true
+          absen: true,
         });
       }
 
@@ -208,7 +206,7 @@ export class LogbookService {
               user: { id: logbook.user.id },
               proses: true,
             });
-          } 
+          }
         } else {
           const pertemuan_selanjutnya = await this.pertemuanRepository.findOne({
             where: {
@@ -224,7 +222,7 @@ export class LogbookService {
               absen: true,
               logbook: false,
             });
-          } 
+          }
         }
       }
     } else if (updateLogbookDto.proses === 'rejected') {

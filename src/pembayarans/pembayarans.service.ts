@@ -139,8 +139,8 @@ export class PembayaransService {
         relations: ['pertemuan'],
       });
       const minggu_akhir = await this.mingguRepository.findOne({
-          where: { kelas: { id: kelasId }, akhir: true },
-        });
+        where: { kelas: { id: kelasId }, akhir: true },
+      });
       if (minggu) {
         await this.progresMingguRepository.save({
           minggu: minggu,
@@ -160,22 +160,20 @@ export class PembayaransService {
             logbook: false,
           });
         }
-      }else if(minggu_akhir){
-          const progresMingguAkhir = await this.progresMingguRepository.findOne(
-            {
-              where: {
-                minggu: { id: minggu_akhir.id },
-                user: { id: userId },
-                proses: true,
-                quiz: true,
-              },
-            },
-          );
-          if (progresMingguAkhir) {
-            await this.userKelasRepository.update(user_kelas.id, {
-              progres: true,
-            });
-          }
+      } else if (minggu_akhir) {
+        const progresMingguAkhir = await this.progresMingguRepository.findOne({
+          where: {
+            minggu: { id: minggu_akhir.id },
+            user: { id: userId },
+            proses: true,
+            quiz: true,
+          },
+        });
+        if (progresMingguAkhir) {
+          await this.userKelasRepository.update(user_kelas.id, {
+            progres: true,
+          });
+        }
       }
     }
   }
@@ -308,14 +306,12 @@ export class PembayaransService {
   }
 
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.unlink(filePath);
-  } catch (error) {
-    throw new Error('Failed to delete file: ' + error.message);
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.unlink(filePath);
+    } catch (error) {}
   }
-}
 }

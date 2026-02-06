@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-
 @Injectable()
 export class TeamService {
   constructor(
@@ -32,7 +31,7 @@ export class TeamService {
     return team_new;
   }
   async findAll() {
-    return await this.teamRepository.find({order: {team_ke: 'ASC'}});
+    return await this.teamRepository.find({ order: { team_ke: 'ASC' } });
   }
 
   async findOne(teamId: number) {
@@ -68,14 +67,12 @@ export class TeamService {
   }
 
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.unlink(filePath);
-  } catch (error) {
-    throw new Error('Failed to delete file: ' + error.message);
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.unlink(filePath);
+    } catch (error) {}
   }
-}
 }

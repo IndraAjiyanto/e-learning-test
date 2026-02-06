@@ -15,10 +15,10 @@ export class TentangService {
   ) {}
 
   async create(createTentangDto: CreateTentangDto) {
-    const tentang = await this.tentangRepository.create({...createTentangDto
+    const tentang = await this.tentangRepository.create({
+      ...createTentangDto,
     });
-    return await this.tentangRepository.save(tentang)
-
+    return await this.tentangRepository.save(tentang);
   }
 
   async findAll() {
@@ -51,14 +51,12 @@ export class TentangService {
   }
 
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.unlink(filePath);
-  } catch (error) {
-    throw new Error('Failed to delete file: ' + error.message);
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.unlink(filePath);
+    } catch (error) {}
   }
-}
 }

@@ -103,7 +103,9 @@ export class UsersService {
     }
 
     if (updatePaaswordDto.password_baru.length < 6) {
-      throw new BadRequestException('New password must be at least 6 characters');
+      throw new BadRequestException(
+        'New password must be at least 6 characters',
+      );
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -124,16 +126,14 @@ export class UsersService {
   }
 
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.unlink(filePath);
-  } catch (error) {
-    throw new Error('Failed to delete file: ' + error.message);
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.unlink(filePath);
+    } catch (error) {}
   }
-}
 
   async remove(id: number) {
     const user = await this.findOne(id);
@@ -158,11 +158,15 @@ export class UsersService {
       );
     }
 
-  if ( user.resetPasswordToken && user.resetPasswordExpires && user.resetPasswordExpires > new Date()) {
-    throw new BadRequestException(
-      'Verification email already sent. Please check your inbox or wait until token expires.',
-    );
-  }
+    if (
+      user.resetPasswordToken &&
+      user.resetPasswordExpires &&
+      user.resetPasswordExpires > new Date()
+    ) {
+      throw new BadRequestException(
+        'Verification email already sent. Please check your inbox or wait until token expires.',
+      );
+    }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
 
@@ -219,25 +223,30 @@ export class UsersService {
 
     await this.userRepository.save(user);
 
-
     return {
       message:
         'Password has been reset successfully. You can now login with your new password.',
     };
   }
 
-    async tokenPasswordExpired(token: string) {
-    const user = await this.userRepository.findOne({ where: { resetPasswordToken: token } });
+  async tokenPasswordExpired(token: string) {
+    const user = await this.userRepository.findOne({
+      where: { resetPasswordToken: token },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if(!user.isVerified){
+    if (!user.isVerified) {
       throw new BadRequestException('User not verified');
     }
-      if ( user.resetPasswordToken && user.resetPasswordExpires && user.resetPasswordExpires > new Date()) {
-    const remainingMs = user.resetPasswordExpires.getTime() - Date.now();
-    return remainingMs;
-  }
+    if (
+      user.resetPasswordToken &&
+      user.resetPasswordExpires &&
+      user.resetPasswordExpires > new Date()
+    ) {
+      const remainingMs = user.resetPasswordExpires.getTime() - Date.now();
+      return remainingMs;
+    }
   }
 
   async verifyEmail(token: string) {
@@ -263,24 +272,30 @@ export class UsersService {
   }
 
   async sendVerificationEmail(token: string) {
-    const user = await this.userRepository.findOne({ where: { verifikasiToken: token } });
+    const user = await this.userRepository.findOne({
+      where: { verifikasiToken: token },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    if ( user.verifikasiToken && user.verifikasiTokenExpires && user.verifikasiTokenExpires > new Date()) {
-    throw new BadRequestException(
-      'Verification email already sent. Please check your inbox or wait until token expires.',
-    );
-  }
+    if (
+      user.verifikasiToken &&
+      user.verifikasiTokenExpires &&
+      user.verifikasiTokenExpires > new Date()
+    ) {
+      throw new BadRequestException(
+        'Verification email already sent. Please check your inbox or wait until token expires.',
+      );
+    }
     const resetToken = crypto.randomBytes(32).toString('hex');
-       
-           const hashedToken = crypto
-             .createHash('sha256')
-             .update(resetToken)
-             .digest('hex');
-       user.verifikasiToken = hashedToken;
-       user.verifikasiTokenExpires = new Date(Date.now() + 120000);
+
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+    user.verifikasiToken = hashedToken;
+    user.verifikasiTokenExpires = new Date(Date.now() + 120000);
 
     const newUser = await this.userRepository.save(user);
 
@@ -302,7 +317,9 @@ export class UsersService {
   }
 
   async findUserByTokenPassword(token: string) {
-    const user = await this.userRepository.findOne({ where: { resetPasswordToken: token } });
+    const user = await this.userRepository.findOne({
+      where: { resetPasswordToken: token },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -310,21 +327,29 @@ export class UsersService {
   }
 
   async tokenExpired(token: string) {
-    const user = await this.userRepository.findOne({ where: { verifikasiToken: token } });
+    const user = await this.userRepository.findOne({
+      where: { verifikasiToken: token },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if(user.isVerified){
+    if (user.isVerified) {
       throw new BadRequestException('User already verified');
     }
-      if ( user.verifikasiToken && user.verifikasiTokenExpires && user.verifikasiTokenExpires > new Date()) {
-    const remainingMs = user.verifikasiTokenExpires.getTime() - Date.now();
-    return remainingMs;
-  }
+    if (
+      user.verifikasiToken &&
+      user.verifikasiTokenExpires &&
+      user.verifikasiTokenExpires > new Date()
+    ) {
+      const remainingMs = user.verifikasiTokenExpires.getTime() - Date.now();
+      return remainingMs;
+    }
   }
 
   async findUserByToken(token: string) {
-    const user = await this.userRepository.findOne({ where: { verifikasiToken: token } });
+    const user = await this.userRepository.findOne({
+      where: { verifikasiToken: token },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -352,5 +377,4 @@ export class UsersService {
     }
     return user;
   }
-
 }

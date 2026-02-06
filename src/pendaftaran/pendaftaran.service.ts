@@ -74,16 +74,14 @@ export class PendaftaranService {
   }
 
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.unlink(filePath);
-  } catch (error) {
-    throw new Error('Failed to delete file: ' + error.message);
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.unlink(filePath);
+    } catch (error) {}
   }
-}
 
   async findAll() {
     return await this.pendaftaranRepository.find();
@@ -100,8 +98,8 @@ export class PendaftaranService {
       where: { id },
       relations: ['user', 'kelas'],
     });
-    if(!pendaftaran){
-      throw new NotFoundException('registration not found')
+    if (!pendaftaran) {
+      throw new NotFoundException('registration not found');
     }
     return pendaftaran;
   }
@@ -140,7 +138,7 @@ export class PendaftaranService {
     return await this.userKelasRepository.save(user_kelas);
   }
 
-   async removeUserKelas(userId: number, kelasId: number): Promise<UserKelas> {
+  async removeUserKelas(userId: number, kelasId: number): Promise<UserKelas> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });

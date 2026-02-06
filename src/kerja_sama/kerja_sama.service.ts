@@ -51,15 +51,13 @@ export class KerjaSamaService {
     return await this.kerjaSamaRepository.remove(kerja_sama);
   }
 
-    async deleteFile(url: string) {
+  async deleteFile(url: string) {
     if (!url) return;
-  
+
     try {
       const filePath = path.join(process.cwd(), 'public', url);
-      
+
       await fs.unlink(filePath);
-    } catch (error) {
-      throw new Error('Failed to delete file: ' + error.message);
-    }
+    } catch (error) {}
   }
 }

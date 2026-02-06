@@ -38,7 +38,6 @@ export class AlumniService {
     return await this.kelasRepository.find();
   }
 
-
   async findKelasByKategori(kategoriId: number) {
     return await this.kelasRepository.find({
       where: { kategori: { id: kategoriId } },
@@ -47,7 +46,8 @@ export class AlumniService {
 
   async findOne(alumniId: number) {
     const alumni = await this.alumniRepository.findOne({
-      where: { id: alumniId },relations: ['kelas','kelas.kategori']
+      where: { id: alumniId },
+      relations: ['kelas', 'kelas.kategori'],
     });
     if (!alumni) {
       throw new NotFoundException('Alumni not found');
@@ -55,18 +55,15 @@ export class AlumniService {
     return alumni;
   }
 
-
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.unlink(filePath);
-  } catch (error) {
-    throw new Error('Failed to delete file: ' + error.message);
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.unlink(filePath);
+    } catch (error) {}
   }
-}
 
   async update(alumniId: number, updateAlumnusDto: UpdateAlumnusDto) {
     const alumni = await this.findOne(alumniId);
