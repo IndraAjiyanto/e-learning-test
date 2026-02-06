@@ -1,9 +1,8 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join, resolve } from 'path';
+import { join } from 'path';
 import { AppModule } from './app.module';
 import methodOverride from 'method-override';
-import hbs from 'hbs';
 import session from 'express-session';
 import passport from 'passport';
 import { format } from 'date-fns';
@@ -15,16 +14,20 @@ import { NotFoundExceptionFilter } from './common/filters/not-found-exception.fi
 import cookieParser from 'cookie-parser';
 import { NextFunction, Request, Response } from 'express';
 import { I18nContext } from 'nestjs-i18n';
-
+import { engine } from 'express-handlebars';
+import Handlebars from 'handlebars';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // Global filters
   app.useGlobalFilters(new ForbiddenExceptionFilter());
   app.useGlobalFilters(new NotFoundExceptionFilter());
-app.useStaticAssets(join(process.cwd(), 'src', 'common', 'public'), {
-  prefix: '/public/',
-});
+
+  // Static assets
+  app.useStaticAssets(join(process.cwd(), 'src', 'common', 'public'), {
+    prefix: '/public/',
+  });
 
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
@@ -34,150 +37,213 @@ app.useStaticAssets(join(process.cwd(), 'src', 'common', 'public'), {
     prefix: '/asset/',
   });
 
-  app.setBaseViewsDir(join(process.cwd(), 'src', 'views'));
-  hbs.registerHelper('addOne', function (index: number) {
-    return index + 1;
-  });
-  hbs.registerHelper('formDate', function (date) {
-    return new Date(date).toISOString().split('T')[0];
-  });
-
+  // Cookie parser
   app.use(cookieParser());
 
-  hbs.registerHelper(
-    'isNowBetween',
-    function (tanggal: string, waktu_awal: string, waktu_akhir: string) {
-      const now = new Date();
+  // Konfigurasi Handlebars dengan engine()
+  app.engine(
+    'hbs',
+    engine({
+      extname: '.hbs',
+      defaultLayout: 'main',
+      layoutsDir: join(process.cwd(), 'src', 'views', 'layouts'),
+      partialsDir: join(process.cwd(), 'src', 'views', 'partials'),
+      helpers: {
+        // Helper untuk perhitungan
+        addOne: (index: number) => index + 1,
+        check: (a: number, b: number) => a < b,
+        eq: (a: any, b: any) => a == b,
+        gte: (a: number, b: number) => a >= b,
+        gt: (a: number, b: number) => a > b,
+        multiply: (a: number, b: number) => a * b,
+        divide: (a: number, b: number) => (b !== 0 ? a / b : 0),
+        subtract: (a: number, b: number) => a - b,
+        
+        // Helper untuk array
+        isArray: (value: any) => Array.isArray(value),
+        array: function(...args: any[]) {
+          return args.slice(0, -1);
+        },
+        lookup: (str: any[], index: number) => str[index],
+        
+        // Helper untuk string
+        substring: (str: string, start: number, end: number) => {
+          if (str && typeof str === 'string') {
+            return str.substring(start, end).toUpperCase();
+          }
+          return '';
+        },
+        truncate: (text: string, length: number) => {
+          if (!text) return '';
+          const str = text.toString();
+          if (str.length <= length) return str;
+          return str.substring(0, length) + '...';
+        },
+        nl2br: (text: string) => {
+          if (!text) return '';
+          const escaped = Handlebars.escapeExpression(text);
+          return new Handlebars.SafeString(escaped.replace(/\n/g, '<br>'));
+        },
+        
+        // Helper untuk tanggal dan waktu
+        formDate: (date: Date) => new Date(date).toISOString().split('T')[0],
+        formatDate: (date: Date) => {
+          if (!date) return '';
+          const d = new Date(date);
+          const options: Intl.DateTimeFormatOptions = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          };
+          return d.toLocaleDateString('en-US', options);
+        },
+        formatTanggal: (tanggal: string, lang: string) => {
+          if (!tanggal) {
+            return 'Not set';
+          }
 
-      const start = new Date(`${tanggal}T${waktu_awal}`);
-      const end = new Date(`${tanggal}T${waktu_akhir}`);
+          let locale;
 
-      return now >= start && now <= end;
-    },
+          switch (lang) {
+            case 'id':
+              locale = id;
+              break;
+            case 'en':
+              locale = enUS;
+              break;
+            case 'ja':
+              locale = ja;
+              break;
+            default:
+              locale = id;
+          }
+
+          return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale });
+        },
+        formatTime: (waktu: string) => waktu.slice(0, 5),
+        formatMinutes: (ms: number) => Math.floor(ms / 60000),
+        
+        // Helper untuk logika bisnis
+        isNowBetween: (tanggal: string, waktu_awal: string, waktu_akhir: string) => {
+          const now = new Date();
+          const start = new Date(`${tanggal}T${waktu_awal}`);
+          const end = new Date(`${tanggal}T${waktu_akhir}`);
+          return now >= start && now <= end;
+        },
+        hasUserAbsen: (absenList: any[], userId: string) => {
+          if (!absenList || !Array.isArray(absenList)) {
+            return false;
+          }
+          return absenList.some((absen) => absen.user && absen.user.id === userId);
+        },
+        roles: (userRole: string, ...roles: string[]) => {
+          const allowedRoles = roles.slice(0, -1);
+          return allowedRoles.includes(userRole);
+        },
+        
+        // Helper untuk role-based access
+        hasRole: (user: any, role: string, options: any) => {
+          if (user && user.role === role) {
+            return options.fn(this);
+          }
+          return options.inverse(this);
+        },
+        hasAnyRole: (user: any, roles: string[], options: any) => {
+          if (user && roles.includes(user.role)) {
+            return options.fn(this);
+          }
+          return options.inverse(this);
+        },
+        
+        // Helper untuk format mata uang
+        formatRupiah: (angka: number) => {
+          if (angka == null || angka === undefined) {
+            return 'Not set';
+          }
+          return angka.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+          });
+        },
+        
+        // Helper untuk ikon
+        computeIcon: (iconValue: string) => {
+          const raw = (iconValue || '').toString().trim();
+          if (!raw) return 'fa-solid fa-circle-question';
+
+          const v = raw;
+          const hasFaPrefix =
+            /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) ||
+            v.split(/\s+/).some((s: string) => /^fa-/i.test(s));
+
+          if (hasFaPrefix) {
+            if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
+            return v;
+          }
+
+          if (!v.includes(' ')) return 'fa-solid fa-' + v;
+          return v;
+        },
+        
+        // Helper untuk i18n dan JSON
+        json: (context: any) => JSON.stringify(context),
+        t: (key: string) => {
+          try {
+            const i18n = I18nContext.current();
+            if (i18n) {
+              return i18n.t(key);
+            }
+          } catch (e) {
+            // ignore error
+          }
+          return key;
+        },
+        isJSON: (str: string) => {
+          if (!str || typeof str !== 'string') return false;
+          try {
+            JSON.parse(str);
+            return true;
+          } catch (e) {
+            return false;
+          }
+        },
+        jsonToText: (jsonStr: string) => {
+          if (!jsonStr || typeof jsonStr !== 'string') return '';
+          try {
+            const data = JSON.parse(jsonStr);
+            if (data.html) {
+              return data.html
+                .replace(/<[^>]*>/g, '')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .trim();
+            } else if (data.text) {
+              return data.text;
+            }
+            return '';
+          } catch (e) {
+            return jsonStr;
+          }
+        },
+        
+        // Helper default dan utility
+        default: (value: any, defaultValue: any) => value || defaultValue,
+        getByLang: (obj: any, lang: string) => {
+          if (!obj || typeof obj !== 'object') return '';
+          return obj[lang] || obj['id'] || '';
+        },
+      },
+    }),
   );
 
-  hbs.registerHelper('lookup', function (str, index) {
-    return str[index];
-  });
-
-  hbs.registerHelper("formatMinutes", function (ms: number) {
-  const minutes = Math.floor(ms / 60000);
-  return minutes;
-});
-
-hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
-  if (!tanggal) {
-    return 'Not set';
-  }
-
-  let locale;
-
-  switch (lang) {
-    case 'id':
-      locale = id;
-      break;
-    case 'en':
-      locale = enUS;
-      break;
-    case 'ja':
-      locale = ja;
-      break;
-    default:
-      locale = id;
-  }
-
-  return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale });
-});
-
-
-  hbs.registerHelper('formatTime', function (waktu: string) {
-    return waktu.slice(0, 5);
-  });
-
-  hbs.registerHelper('hasUserAbsen', function (absenList, userId) {
-    if (!absenList || !Array.isArray(absenList)) {
-      return false;
-    }
-
-    return absenList.some((absen) => {
-      return absen.user && absen.user.id === userId;
-    });
-  });
-
-  hbs.registerHelper('formatRupiah', function (angka: number) {
-    if (angka == null || angka === undefined) {
-      return 'Not set';
-    }
-    return angka.toLocaleString('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    });
-  });
-
-  hbs.registerHelper('roles', function (userRole, ...roles) {
-    const allowedRoles = roles.slice(0, -1);
-    return allowedRoles.includes(userRole);
-  });
-  hbs.registerHelper('check', (a, b) => a < b);
-  hbs.registerHelper('eq', (a, b) => a == b);
-  hbs.registerHelper('gte', (a, b) => a >= b);
-  hbs.registerHelper('gt', (a, b) => a > b);
-  hbs.registerHelper('multiply', (a, b) => a * b);
-  hbs.registerHelper('divide', (a, b) => (b !== 0 ? a / b : 0));
-  hbs.registerHelper('subtract', (a, b) => a - b);
-  hbs.registerHelper('isArray', (value) => Array.isArray(value));
-  hbs.registerHelper('substring', (str, start, end) => {
-    if (str && typeof str === 'string') {
-      return str.substring(start, end).toUpperCase();
-    }
-    return '';
-  });
-
-  hbs.registerHelper('computeIcon', function (iconValue) {
-    const raw = (iconValue || '').toString().trim();
-    if (!raw) return 'fa-solid fa-circle-question';
-
-    const v = raw;
-    const hasFaPrefix =
-      /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(
-        v,
-      ) || v.split(/\s+/).some((s) => /^fa-/i.test(s));
-
-    if (hasFaPrefix) {
-      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
-      return v;
-    }
-
-    if (!v.includes(' ')) return 'fa-solid fa-' + v;
-    return v;
-  });
-
-  hbs.registerHelper('truncate', function (text, length) {
-    if (!text) return '';
-    const str = text.toString();
-    if (str.length <= length) return str;
-    return str.substring(0, length) + '...';
-  });
-
-  hbs.registerHelper('formatDate', function (date) {
-    if (!date) return '';
-    const d = new Date(date);
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    };
-    return d.toLocaleDateString('en-US', options);
-  });
-
-  hbs.registerPartials(resolve(process.cwd(), 'src', 'views', 'partials'));
+  app.setBaseViewsDir(join(process.cwd(), 'src', 'views'));
+  app.setViewEngine('hbs');
   app.set('view cache', false);
 
-  app.setViewEngine('hbs');
-  
-
-  app.set('view options', { layout: 'layouts/main' });
+  // Middleware lainnya
   app.use(methodOverride('_method'));
   app.use(
     session({
@@ -187,9 +253,11 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
       cookie: { maxAge: 3600000 },
     }),
   );
+  
   app.use(flash());
-
-  app.use((req, res, next) => {
+  
+  // Flash messages middleware
+  app.use((req: Request, res: Response, next: NextFunction) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.info = req.flash('info');
@@ -199,91 +267,18 @@ hbs.registerHelper('formatTanggal', function (tanggal: string, lang: string) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Language middleware
   app.use((req: Request, res: Response, next: NextFunction) => {
     const lang = req.cookies?.lang || 'id';
     res.locals.currentLang = lang;
     res.locals.lang = lang;
     next();
   });
+
+  // Global guard
   app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
-
-  hbs.registerHelper('hasRole', function (user, role, options) {
-    if (user && user.role === role) {
-      return options.fn(this);
-    }
-    return options.inverse(this);
-  });
-
-  hbs.registerHelper('hasAnyRole', function (user, roles, options) {
-    if (user && roles.includes(user.role)) {
-      return options.fn(this);
-    }
-    return options.inverse(this);
-  });
-
-  hbs.registerHelper('array', function (...args) {
-    return args.slice(0, -1);
-  });
-  hbs.registerHelper('json', (context) => JSON.stringify(context));
-
-  hbs.registerHelper('t', function (key: string) {
-    try {
-      const i18n = I18nContext.current();
-      if (i18n) {
-        return i18n.t(key);
-      }
-    } catch (e) {
-    }
-    return key;
-  });
-
-  hbs.registerHelper('nl2br', function (text) {
-    if (!text) return '';
-    const escaped = hbs.Utils.escapeExpression(text);
-    return new hbs.SafeString(escaped.replace(/\n/g, '<br>'));
-  });
-
-  hbs.registerHelper('isJSON', function (str) {
-    if (!str || typeof str !== 'string') return false;
-    try {
-      JSON.parse(str);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  });
-
-  hbs.registerHelper('jsonToText', function (jsonStr) {
-    if (!jsonStr || typeof jsonStr !== 'string') return '';
-    try {
-      const data = JSON.parse(jsonStr);
-      if (data.html) {
-        return data.html
-          .replace(/<[^>]*>/g, '')
-          .replace(/&nbsp;/g, ' ')
-          .replace(/&amp;/g, '&')
-          .replace(/&lt;/g, '<')
-          .replace(/&gt;/g, '>')
-          .trim();
-      } else if (data.text) {
-        return data.text;
-      }
-      return '';
-    } catch (e) {
-      return jsonStr;
-    }
-  });
-
-  hbs.registerHelper('default', function (value, defaultValue) {
-    return value || defaultValue;
-  });
-
-  hbs.registerHelper('getByLang', function (obj, lang) {
-    if (!obj || typeof obj !== 'object') return '';
-    return obj[lang] || obj['id'] || '';
-  });
-
 
   await app.listen(process.env.PORT ?? 3000);
 }
+
 bootstrap();

@@ -3988,6 +3988,10 @@ details.collapse summary::-webkit-details-marker {
   z-index: 100;
 }
 
+.z-\[999\] {
+  z-index: 999;
+}
+
 .col-span-2 {
   grid-column: span 2 / span 2;
 }
@@ -7678,6 +7682,11 @@ details.collapse summary::-webkit-details-marker {
   background-color: rgb(234 179 8 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-blue-200:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(191 219 254 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-gradient-to-r:hover {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
@@ -8582,6 +8591,14 @@ details.collapse summary::-webkit-details-marker {
     right: 2rem;
   }
 
+  .md\:right-0 {
+    right: 0px;
+  }
+
+  .md\:z-\[100\] {
+    z-index: 100;
+  }
+
   .md\:col-span-2 {
     grid-column: span 2 / span 2;
   }
@@ -8605,6 +8622,10 @@ details.collapse summary::-webkit-details-marker {
 
   .md\:mt-0 {
     margin-top: 0px;
+  }
+
+  .md\:ml-0 {
+    margin-left: 0px;
   }
 
   .md\:block {

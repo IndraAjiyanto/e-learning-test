@@ -237,21 +237,21 @@
                 <a
                   :href="'/kategoris/program/' + kat.nama_kategori"
                   @click="setActive('/kategoris/program/' + kat.nama_kategori)"
-                  :class="isActive('/kategoris/program/' + kat.nama_kategori) ?  'bg-gray-100' : 'bg-transparent'"
-                  class='flex items-start gap-3 p-3 rounded-lg hover:bg-gray-200 transition-colors'
+                  :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-blue-50 text-gray-900' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-blue-50 transition-colors'
                 >
                   <div
-                    class='bg-gradient-to-br from-primary to-secondary text-white rounded-lg p-3 flex-shrink-0'
+                    class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-lg p-3 flex-shrink-0'
                   >
                     <img :src='kat.icon' class='w-6 h-6' alt='' />
                   </div>
-                  <div class='flex-1'>
+                  <div class='flex-1  ml-2 md:ml-0'>
                     <p
-                      class='font-semibold text-white'
+                      class='font-semibold'
                       x-text='kat.nama_kategori'
                     ></p>
                     <p
-                      class='text-xs text-gray-300 mt-0.5'
+                      class='text-xs mt-0.5'
                                                 x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
 
                     ></p>
@@ -259,6 +259,7 @@
                 </a>
               </template>
             </div>
+
             <!-- Desktop Dropdown -->
             <div
               x-show='programOpen'
@@ -631,21 +632,21 @@
                 <a
                   :href="'/kategoris/program/' + kat.nama_kategori"
                   @click="setActive('/kategoris/program/' + kat.nama_kategori)"
-                  :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-white' : 'bg-transparent'"
-                  class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
+                  :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-blue-50 text-gray-900' : 'bg-transparent'"
+                  class='flex items-start rounded-lg p-3 hover:bg-blue-50 transition-colors'
                 >
                   <div
                     class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-lg p-3 flex-shrink-0'
                   >
                     <img :src='kat.icon' class='w-6 h-6' alt='' />
                   </div>
-                  <div class='flex-1'>
+                  <div class='flex-1  ml-2 md:ml-0'>
                     <p
-                      class='font-semibold text-white'
+                      class='font-semibold'
                       x-text='kat.nama_kategori'
                     ></p>
                     <p
-                      class='text-xs text-gray-300 mt-0.5'
+                      class='text-xs mt-0.5'
                                                 x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
 
                     ></p>
@@ -726,7 +727,7 @@
         {{/if}}
                   <!-- Language Selector -->
           <div
-            class='relative md:ml-4'
+            class='relative md:ml-4 mt-2 md:mt-0'
             x-data="{ langOpen: false, currentLang: '{{lang}}' }"
           >
             <button
@@ -760,7 +761,7 @@
               x-transition:enter='transition ease-out duration-100'
               x-transition:enter-start='transform opacity-0 scale-95'
               x-transition:enter-end='transform opacity-100 scale-100'
-              class='absolute right-0 w-32 mt-2 rounded-lg shadow-lg z-[100] bg-white overflow-hidden'
+              class='absolute md:right-0 w-32 mt-2 rounded-lg shadow-lg z-[100] bg-white overflow-hidden'
             >
               <form
                 action='/translation'
