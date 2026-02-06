@@ -89,7 +89,7 @@ export class KelassService {
       where: { id: kategoriId },
     });
     if (!kategori) {
-      throw new NotFoundException('Kategori tidak ditemukan');
+      throw new NotFoundException('category not Found');
     }
     return kategori;
   }
@@ -99,13 +99,13 @@ export class KelassService {
       where: { id: createKelassDto.kategoriId },
     });
     if (!kategori) {
-      throw new NotFoundException('kategori ini tidak ada');
+      throw new NotFoundException('category not Found');
     }
     const jenis_kelas = await this.jenisKelasRepository.findOne({
       where: { id: createKelassDto.jenis_kelasId },
     });
     if (!jenis_kelas) {
-      throw new NotFoundException('jenis_kelas ini tidak ada');
+      throw new NotFoundException('type program not Found');
     }
 
     let teknologi: Teknologi[] = [];
@@ -132,14 +132,14 @@ export class KelassService {
       where: { id: userId, role: 'admin' },
     });
     if (!user) {
-      throw new NotFoundException('User tidak ada');
+      throw new NotFoundException('User not Found');
     }
 
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
     });
     if (!kelas) {
-      throw new NotFoundException('Kelas tidak ada');
+      throw new NotFoundException('Program not Found');
     }
 
     const mentoring = await this.mentoringRepository.create({
@@ -155,7 +155,7 @@ export class KelassService {
     });
 
     if (!kelas) {
-      throw new NotFoundException('Kelas tidak ditemukan');
+      throw new NotFoundException('Program not Found');
     }
 
     const newMentorUser = await this.userRepository.findOne({
@@ -164,7 +164,7 @@ export class KelassService {
 
     if (!newMentorUser) {
       throw new NotFoundException(
-        `User admin dengan id ${userId} tidak ditemukan`,
+        `Mentor not Found`
       );
     }
 
@@ -421,7 +421,6 @@ export class KelassService {
       .where('quiz.mingguId = :mingguId', { mingguId: mingguId })
       .orderBy('quiz.id', 'ASC')
       .getMany();
-     
   }
 
 

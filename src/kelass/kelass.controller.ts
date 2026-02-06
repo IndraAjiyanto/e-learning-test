@@ -92,10 +92,10 @@ export class KelassController {
       if (req.user!.role === 'admin') {
         await this.kelassService.createMentoring(req.user!.id, kelas.id);
       }
-      req.flash('success', 'class successfully created');
+      req.flash('success', 'program successfully created');
       res.redirect('/kelass');
     } catch (error) {
-      req.flash('error', error.message || 'class failed created');
+      req.flash('error', error.message || 'program failed created');
       res.redirect('/kelass');
     }
   }
@@ -161,10 +161,10 @@ export class KelassController {
       if (req.user!.role === 'admin') {
         await this.kelassService.createMentoring(req.user!.id, kelas.id);
       }
-      req.flash('success', 'class successfully created');
+      req.flash('success', 'program successfully created');
       res.redirect(`/kategoris/${kategoriId}`);
     } catch (error) {
-      req.flash('error', error.message || 'class failed created');
+      req.flash('error', error.message || 'program failed created');
       res.redirect(`/kategoris/${kategoriId}`);
     }
   }
@@ -179,10 +179,10 @@ export class KelassController {
   ) {
     try {
       await this.kelassService.addUserToKelas(userId, kelasId);
-      req.flash('success', 'user successfuly add to class');
+      req.flash('success', 'user successfuly add to program');
       res.redirect(`/kelass/addUser/${kelasId}`);
     } catch (error) {
-      req.flash('error', error.message || 'user failed add to class');
+      req.flash('error', error.message || 'user failed add to program');
       res.redirect(`/kelass/addUser/${kelasId}`);
     }
   }
