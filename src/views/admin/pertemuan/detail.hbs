@@ -136,10 +136,6 @@
 </div>
 </div>
 
-
-
-
-<!-- SheetJS Library for Excel Export -->
 <script
   src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
 ></script>
@@ -169,7 +165,6 @@ function tabData() {
         if(url === '') {
           this.data = [];
           localStorage.removeItem('activeData');
-          console.log('ℹ️ No data to fetch for this tab.');
           return;
         }else{
           const response = await fetch(url);
@@ -177,10 +172,8 @@ function tabData() {
         
         this.data = await response.json();
         localStorage.setItem('activeData', JSON.stringify(this.data));
-        console.log('✅ Data fetched:', this.data);
         }
       } catch (error) {
-        console.error('❌ Error:', error);
       }
     }
   }

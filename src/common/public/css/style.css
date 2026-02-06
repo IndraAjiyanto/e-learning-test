@@ -3988,10 +3988,6 @@ details.collapse summary::-webkit-details-marker {
   z-index: 100;
 }
 
-.z-\[999\] {
-  z-index: 999;
-}
-
 .col-span-2 {
   grid-column: span 2 / span 2;
 }
@@ -7682,11 +7678,6 @@ details.collapse summary::-webkit-details-marker {
   background-color: rgb(234 179 8 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-blue-200:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(191 219 254 / var(--tw-bg-opacity));
-}
-
 .hover\:bg-gradient-to-r:hover {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
@@ -8587,16 +8578,12 @@ details.collapse summary::-webkit-details-marker {
     bottom: 2rem;
   }
 
-  .md\:right-8 {
-    right: 2rem;
-  }
-
   .md\:right-0 {
     right: 0px;
   }
 
-  .md\:z-\[100\] {
-    z-index: 100;
+  .md\:right-8 {
+    right: 2rem;
   }
 
   .md\:col-span-2 {
@@ -8616,16 +8603,20 @@ details.collapse summary::-webkit-details-marker {
     margin-bottom: 1.5rem;
   }
 
+  .md\:ml-0 {
+    margin-left: 0px;
+  }
+
+  .md\:ml-16 {
+    margin-left: 4rem;
+  }
+
   .md\:ml-4 {
     margin-left: 1rem;
   }
 
   .md\:mt-0 {
     margin-top: 0px;
-  }
-
-  .md\:ml-0 {
-    margin-left: 0px;
   }
 
   .md\:block {
@@ -8831,6 +8822,10 @@ details.collapse summary::-webkit-details-marker {
 
   .md\:text-left {
     text-align: left;
+  }
+
+  .md\:text-center {
+    text-align: center;
   }
 
   .md\:text-2xl {

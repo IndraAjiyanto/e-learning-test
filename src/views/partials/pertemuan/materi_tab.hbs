@@ -95,7 +95,7 @@
     <ul class="space-y-2 mb-6">
       <template x-for="materi in dataMateri" :key="materi.id">
 <li class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-lg hover:bg-gray-100 transition">
-  <span class="text-gray-800" x-text="materi.judul"></span><a :href="materi.file" x-text="materi.file"></a>
+  <span class="text-gray-800" x-text="materi.judul"></span><a :href="materi.file" x-text="materi.file" class="text-blue-600 underline" target="_blank"></a>
   <div class="flex space-x-2">
     
     <!-- Delete -->
@@ -261,83 +261,19 @@
         <!-- PDF Viewer -->
         <template x-if="materi.jenis_file === 'pdf'">
           <div class="w-full h-[600px] bg-white">
-            <iframe :src="'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(materi.file)" 
+            <iframe :src="materi.file" 
+            type="application/pdf"
                     class="w-full h-full border rounded-lg bg-white"
                     frameborder="0">
             </iframe>
           </div>
         </template>
 
-        <!-- Video Player -->
-        <template x-if="materi.jenis_file === 'video'">
-          <div class="w-full aspect-video">
-            <iframe :src="materi.file" 
-                    class="w-full h-full rounded-lg"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-            </iframe>
-          </div>
-        </template>
-
-        <!-- PPT Slides Viewer -->
-        {{!-- <template x-if="materi.jenis_file === 'ppt'">
-          <div class="space-y-4">
-            <div class="flex justify-between items-center bg-gray-50 p-4 rounded-lg">
-              <button @click="prevSlide()" 
-                      :disabled="currentSlide === 0"
-                      class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                ← Previous
-              </button>
-              <span class="text-gray-700 font-semibold">
-                Slide <span x-text="currentSlide + 1"></span> / <span x-text="totalSlides"></span>
-              </span>
-              <button @click="nextSlide()" 
-                      :disabled="currentSlide === totalSlides - 1"
-                      class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                Next →
-              </button>
-            </div>
-
-            <div class="w-full bg-gray-900 rounded-lg p-4 flex items-center justify-center" style="min-height: 500px;">
-              <img :src="materi.slides[currentSlide]" 
-                   alt="Slide"
-                   class="max-w-full max-h-[500px] object-contain rounded shadow-lg">
-            </div>
-
-            <!-- Thumbnail Navigation -->
-            <div class="grid grid-cols-5 gap-2">
-              <template x-for="(slide, index) in materi.slides" :key="index">
-                <div @click="currentSlide = index"
-                     :class="currentSlide === index ? 'ring-4 ring-blue-500' : 'ring-1 ring-gray-300'"
-                     class="cursor-pointer rounded overflow-hidden hover:ring-4 hover:ring-blue-300 transition">
-                  <img :src="slide" 
-                       :alt="'Slide ' + (index + 1)"
-                       class="w-full h-20 object-cover">
-                  <div class="text-xs text-center py-1 bg-gray-100" x-text="index + 1"></div>
-                </div>
-              </template>
-            </div>
-          </div>
-        </template> --}}
-
       </div>
       
       <!-- Footer -->
       <div class="flex items-center justify-between p-6 border-t bg-gray-50">
-        <a :href="materi.file" 
-           target="_blank"
-           download
-           class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow">
-          <svg xmlns="http://www.w3.org/2000/svg" 
-               fill="none" viewBox="0 0 24 24" 
-               stroke-width="1.5" stroke="currentColor" 
-               class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" 
-                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-          </svg>
-          Download File
-        </a>
+ 
       </div>
       
     </div>
