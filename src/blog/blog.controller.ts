@@ -8,7 +8,6 @@ import {
   Delete,
   Res,
   Req,
-  UseGuards,
   UseInterceptors,
   UseFilters,
 } from '@nestjs/common';
@@ -17,7 +16,6 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemory } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
@@ -25,21 +23,11 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
-@UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('blog')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
-
-  @Get('all')
-  async viewBlog(@Res() res: Response, @Req() req: Request) {
-    const blogs = await this.blogService.findAll();
-    res.render('blog', {
-      blogs,
-      user: req.user,
-    });
-  }
 
   @Get('detail/:id')
   async viewBlogDetail(@Param('id') id: number, @Res() res: Response, @Req() req: Request) {
@@ -187,7 +175,7 @@ export class BlogController {
     @Req() req: Request,
   ) {
     try {
-      const blog = await this.blogService.findOne(+id);
+      const blog = await this.blogService.findOne(id);
       if (!blog) {
         req.flash('error', 'Blog not found');
         res.redirect('/blog');
@@ -197,7 +185,7 @@ export class BlogController {
           await this.blogService.getPublicIdFromUrl(url);
         }
       }
-      await this.blogService.remove(+id);
+      await this.blogService.remove(id);
       req.flash('success', 'Blog successfully removed');
       res.redirect('/blog');
     } catch (error) {

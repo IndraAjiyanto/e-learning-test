@@ -130,6 +130,20 @@ export class DashboardController {
     });
   }
 
+
+  @Get('blog')
+  async blog(@Req() req: Request, @Res() res: Response) {
+    const blog = await this.dashboardService.findBlog();
+    const kategori_blog = await this.dashboardService.findBlogCategory();
+    res.render('blog', {
+      user: req.user,
+      blog,
+      kategori_blog,
+    });
+  }
+
+
+
   @Get('about')
   async about(@Req() req: Request, @Res() res: Response) {
     const team = await this.dashboardService.findTeam();

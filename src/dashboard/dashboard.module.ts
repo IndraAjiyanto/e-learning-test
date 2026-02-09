@@ -27,6 +27,7 @@ import { Paragraf } from 'src/entities/paragraf.entity';
 import { Faq } from 'src/entities/faq.entity';
 import { TranslationModule } from 'src/translation/translation.module';
 import { OurExperience } from 'src/entities/our_experience.entity';
+import { KategoriBlog } from 'src/entities/kategori_blog.entity';
 
 @Module({
   imports: [
@@ -55,6 +56,8 @@ import { OurExperience } from 'src/entities/our_experience.entity';
       Paragraf,
       Faq,
       OurExperience,
+      Blog,
+      KategoriBlog
     ]),
     TranslationModule, // Import TranslationModule
   ],

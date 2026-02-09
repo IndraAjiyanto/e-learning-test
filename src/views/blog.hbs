@@ -1,332 +1,423 @@
-<!-- Hero Section -->
-<section
-  class='relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-24 pt-32'
->
-  <div class='absolute inset-0 opacity-10'>
-    <div
-      class='absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]'
-    ></div>
-  </div>
-  <div class='max-w-7xl mx-auto px-6 relative z-10'>
-    <div class='text-center'>
-      <h1 class='text-5xl md:text-6xl font-bold mb-6 animate-fade-in'>
-        Our Blog
-      </h1>
-      <p class='text-xl text-gray-300 max-w-3xl mx-auto animate-fade-in-up'>
-        Discover insights, tutorials, and stories from our learning community
+<div class='pt-24 min-h-screen bg-white' x-data='blogApp()'>
+  <div class='container mx-auto px-4 pb-16'>
+    <div class='text-center mb-12'>
+      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.portfolio.tittle"}}</h1>
+      <p class='text-gray-600 max-w-2xl mx-auto text-lg font-inter'>
+        {{t "test.portfolio.description"}}
       </p>
     </div>
-  </div>
-</section>
 
-<!-- Categories Section -->
-<section
-  class='py-12 bg-gray-50'
-  x-data="{selectedCategory: 'all', searchQuery: ''}"
->
-  <div class='max-w-7xl mx-auto px-6'>
-    <!-- Search Bar -->
-    <div class='max-w-2xl mx-auto mb-8'>
-      <div class='relative'>
-        <input
-          type='text'
-          x-model='searchQuery'
-          placeholder='Search articles...'
-          class='w-full px-6 py-4 pl-12 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 shadow-sm'
-        />
-        <svg
-          class='absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400'
-          fill='none'
-          stroke='currentColor'
-          viewBox='0 0 24 24'
+    <div class='grid grid-cols-1 lg:grid-cols-4 gap-8'>
+      <div class='lg:col-span-1'>
+        <div
+          class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6'
         >
-          <path
-            stroke-linecap='round'
-            stroke-linejoin='round'
-            stroke-width='2'
-            d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-          />
-        </svg>
-      </div>
-    </div>
-
-    <!-- Category Filters -->
-    <div class='flex flex-wrap justify-center gap-4'>
-      <button
-        @click="selectedCategory = 'all'"
-        :class="selectedCategory === 'all' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
-        class='px-6 py-3 rounded-full font-medium transition-all shadow-sm'
-      >
-        <span class='flex items-center gap-2'>
-          <svg
-            class='w-5 h-5'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M4 6h16M4 12h16M4 18h16'
-            />
-          </svg>
-          All Articles
-        </span>
-      </button>
-      {{#each categories}}
-        <button
-          @click="selectedCategory = '{{id}}'"
-          :class="selectedCategory === '{{id}}' ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
-          class='px-6 py-3 rounded-full font-medium transition-all shadow-sm'
-        >
-          <span class='flex items-center gap-2'>
-            <span>{{{icon}}}</span>
-            {{nama}}
-          </span>
-        </button>
-      {{/each}}
-    </div>
-
-    <!-- Blog Posts Grid -->
-    <div class='mt-16'>
-      <div class='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
-        {{#each blogs}}
-          <article
-            x-show="(selectedCategory === 'all' || selectedCategory === '{{kategori_blog.id}}') && 
-                  (searchQuery === '' || 
-                   '{{judul}}'.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                   '{{isi}}'.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                   '{{kategori_blog.nama}}'.toLowerCase().includes(searchQuery.toLowerCase()))"
-            x-transition:enter='transition ease-out duration-300'
-            x-transition:enter-start='opacity-0 transform scale-95'
-            x-transition:enter-end='opacity-100 transform scale-100'
-            x-transition:leave='transition ease-in duration-200'
-            x-transition:leave-start='opacity-100 transform scale-100'
-            x-transition:leave-end='opacity-0 transform scale-95'
-            class='bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group'
-          >
-            <!-- Image -->
-            <div class='relative overflow-hidden h-56'>
-              {{#if gambar}}
-                {{#if (isArray gambar)}}
-                  {{#each gambar}}
-                    {{#if @first}}
-                      <img
-                        src='{{this}}'
-                        alt='Blog image'
-                        class='w-full h-full object-cover group-hover:scale-110 transition-transform duration-300'
-                      />
-                    {{/if}}
-                  {{/each}}
-                  {{#if (gt gambar.length 1)}}
-                    <div
-                      class='absolute top-4 right-4 bg-black/70 text-white px-3 py-1.5 rounded-full text-sm font-semibold'
-                    >
-                      +{{subtract gambar.length 1}}
-                      photos
-                    </div>
-                  {{/if}}
-                {{else}}
-                  <img
-                    src='{{gambar}}'
-                    alt='Blog image'
-                    class='w-full h-full object-cover group-hover:scale-110 transition-transform duration-300'
-                  />
-                {{/if}}
-              {{else}}
+          <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+            <div class='flex items-center justify-between mb-3'>
+              <h4 class='text-sm font-semibold text-gray-700 font-montserrat'>{{t "test.portfolio.filterTittle"}}</h4>
+              <button
+                @click='resetFilters()'
+                class='text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center'
+              >
+                <i class='fas fa-undo-alt mr-1 text-xs'></i>
+                {{t "test.portfolio.resetFilters"}}
+              </button>
+            </div>
+            <div class='space-y-2'>
+              <template
+                x-if="selectedKategori === ''"
+              >
                 <div
-                  class='w-full h-full bg-gray-200 flex items-center justify-center'
+                  class='text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200'
                 >
-                  <span class='text-gray-400'>No image</span>
+                  {{t "test.portfolio.noFilters"}}
                 </div>
-              {{/if}}
-              <div
-                class='absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full'
-              >
+              </template>
+
+              <template x-if="selectedKategori !== ''">
                 <span
-                  class='flex items-center gap-2 text-sm font-semibold text-gray-900'
+                  class='block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border'
                 >
-                  <span>{{{kategori_blog.icon}}}</span>
-                  {{kategori_blog.nama}}
+                  <span x-text='selectedKategori'></span>
                 </span>
+              </template>
+            </div>
+          </div>
+
+          <div class='mb-6'>
+            <h3
+              class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
+            >
+              <i class='fas fa-tags text-gray-500 mr-2'></i>
+                {{t "test.portfolio.categoryTittle"}}
+            </h3>
+
+            <div class='mb-3'>
+              <div class='relative'>
+                <input
+                  type='text'
+                  x-model='searchKategoriQuery'
+                  @input='filterKategori()'
+                  placeholder='{{t "test.portfolio.searchCategoryPlaceholder"}}'
+                  class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
+                />
+                <i
+                  class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+                ></i>
               </div>
             </div>
 
-            <!-- Content -->
-            <div class='p-6'>
-              <!-- Date -->
-              <div class='flex items-center gap-2 text-sm text-gray-500 mb-3'>
-                <svg
-                  class='w-4 h-4'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    stroke-width='2'
-                    d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
-                  />
-                </svg>
-                <time>{{formatDate createdAt}}</time>
-              </div>
-
-              <!-- Title -->
-              <h3
-                class='text-xl font-bold text-gray-900 mb-3 group-hover:text-gray-600 transition-colors line-clamp-2'
+            <div class='space-y-2 max-h-64 overflow-y-auto'>
+              <button
+                @click="selectKategori('')"
+                :class="selectedKategoriId === '' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
+                class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
               >
-                {{judul}}
-              </h3>
-
-              <!-- Excerpt -->
-              <p class='text-gray-600 mb-4 line-clamp-3'>
-                {{isi}}
-              </p>
-
-              <!-- Read More -->
-              <a
-                href='/blog/detail/{{id}}'
-                class='inline-flex items-center gap-2 text-gray-900 font-semibold hover:gap-3 transition-all'
-              >
-                Read More
-                <svg
-                  class='w-5 h-5'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
+                <span class='text-sm text-left'>{{t "test.portfolio.allCategory"}}</span>
+              </button>
+              <template x-for='kategori in filteredKategoriList' :key='kategori.id'>
+                <button
+                  @click='selectKategori(kategori.id)'
+                  :class="selectedKategoriId == kategori.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
+                  class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
                 >
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    stroke-width='2'
-                    d='M17 8l4 4m0 0l-4 4m4-4H3'
-                  />
-                </svg>
-              </a>
+                  <span class='text-sm' x-text='kategori.nama'></span>
+                </button>
+              </template>
             </div>
-          </article>
-        {{/each}}
+          </div>
+
+          <div class='mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+            <div class='text-center'>
+              <div
+                class='text-2xl font-bold text-gray-900'
+                x-text='totalItems'
+              ></div>
+              <div class='text-sm text-gray-600'>{{t "test.portfolio.projectAvailable"}}</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {{#unless blogs}}
-        <div class='text-center py-16'>
-          <div
-            class='inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4'
-          >
-            <svg
-              class='w-10 h-10 text-gray-400'
-              fill='none'
-              stroke='currentColor'
-              viewBox='0 0 24 24'
+      <div class='lg:col-span-3'>
+        <div
+          x-show='loading'
+          class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+        >
+          <template x-for='i in 6' :key='i'>
+            <div
+              class='bg-white border border-gray-200 rounded-xl shadow-lg animate-pulse'
             >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z'
-              />
-            </svg>
-          </div>
-          <h3 class='text-2xl font-bold text-gray-900 mb-2'>No Blog Posts Yet</h3>
-          <p class='text-gray-600'>Check back soon for new content!</p>
+              <div class='h-44 bg-gray-200 rounded-t-xl'></div>
+              <div class='p-6 space-y-4'>
+                <div class='h-4 bg-gray-200 rounded w-3/4'></div>
+                <div class='h-4 bg-gray-200 rounded w-1/2'></div>
+                <div class='h-20 bg-gray-200 rounded'></div>
+              </div>
+            </div>
+          </template>
         </div>
-      {{/unless}}
+
+        <div
+          x-show='!loading'
+          class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+        >
+          <template
+            x-for='item in blogItems'
+            :key='item.id'
+            x-data='{ currentSlide: 0, autoSlide: null }'
+            x-init="
+                            // Handle multiple images
+                            const images = Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'];
+                            // Auto slide jika ada lebih dari 1 gambar
+                            if (images.length > 1) {
+                                autoSlide = setInterval(() => { 
+                                    currentSlide = (currentSlide + 1) % images.length 
+                                }, 3000);
+                            }
+                        "
+            @mouseenter='if (autoSlide) clearInterval(autoSlide)'
+            @mouseleave='if (Array.isArray(item.gambar) && item.gambar.length > 1) autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1) }, 3000)'
+          >
+
+            <div
+              class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'
+            >
+              <div class='relative overflow-hidden rounded-t-xl'>
+                <div class='relative h-44 w-full'>
+                  <template
+                    x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'])"
+                    :key='index'
+                  >
+                    <img
+                      :src='image'
+                      :alt="item.judul + ' - Image ' + (index + 1)"
+                      class='absolute inset-0 w-full h-44 object-cover transition-opacity duration-500'
+                      :class="{ 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }"
+                    />
+                  </template>
+                </div>
+
+                <template
+                  x-if='Array.isArray(item.gambar) && item.gambar.length > 1'
+                >
+                  <div>
+                    <button
+                      @click='currentSlide = currentSlide === 0 ? (Array.isArray(item.gambar) ? item.gambar.length : 1) - 1 : currentSlide - 1'
+                      class='absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
+                    >
+                      <svg
+                        class='w-4 h-4'
+                        fill='none'
+                        stroke='currentColor'
+                        viewBox='0 0 24 24'
+                      >
+                        <path
+                          stroke-linecap='round'
+                          stroke-linejoin='round'
+                          stroke-width='2'
+                          d='M15 19l-7-7 7-7'
+                        ></path>
+                      </svg>
+                    </button>
+                    <button
+                      @click='currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1)'
+                      class='absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
+                    >
+                      <svg
+                        class='w-4 h-4'
+                        fill='none'
+                        stroke='currentColor'
+                        viewBox='0 0 24 24'
+                      >
+                        <path
+                          stroke-linecap='round'
+                          stroke-linejoin='round'
+                          stroke-width='2'
+                          d='M9 5l7 7-7 7'
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </template>
+
+                <div
+                  class='absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md'
+                >
+                  <span x-text="item.author"></span>
+                </div>
+
+                <template
+                  x-if='Array.isArray(item.gambar) && item.gambar.length > 1'
+                >
+                  <div
+                    class='absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2'
+                  >
+                    <template
+                      x-for='(image, index) in item.gambar'
+                      :key='index'
+                    >
+                      <button
+                        @click='currentSlide = index'
+                        class='w-2 h-2 rounded-full transition-all duration-200'
+                        :class="{ 'bg-white': currentSlide === index, 'bg-white/50': currentSlide !== index }"
+                      ></button>
+                    </template>
+                  </div>
+                </template>
+              </div>
+
+              <div class='p-6 space-y-4'>
+                <div class='flex flex-wrap gap-1'>
+                  <span
+                    class='badge bg-gradient-to-br from-primary via-secondary to-gray-900  text-white px-3 py-1 text-xs font-semibold rounded-full'
+                    x-text="getCategoryName(item) || 'No Type'"
+                  >
+                  </span>
+                </div>
+
+                <h3
+                  class='text-lg font-semibold text-gray-900 leading-tight'
+                  x-text="item.judul || 'No Title'"
+                ></h3>
+
+
+                <div class='mt-6'>
+                  <a
+                    :href="'/blog/detail/' + item.id"
+                    class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
+                  >
+                    {{t "test.portfolio.detailButton"}}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div
+          x-show='!loading && blogItems.length === 0'
+          class='text-center py-12'
+        >
+          <div
+            class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'
+          >
+            <i class='fas fa-search text-gray-400 text-2xl'></i>
+          </div>
+          <h3 class='text-xl font-semibold text-gray-900 mb-2 font-montserrat'>No {{t "test.portfolio.projectNotFound"}}</h3>
+          <p class='text-gray-600 mb-6 font-inter'>{{t "test.portfolio.tryAdjusting"}}</p>
+          <button
+            @click='resetFilters()'
+            class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white px-6 py-3 rounded-lg  transition-all duration-300'
+          >
+            {{t "test.portfolio.resetAllFilters"}}
+          </button>
+        </div>
+        </div>
+
+        <div
+          class='flex justify-center items-center gap-4 mt-12'
+          x-show='!loading && totalPages > 1'
+        >
+          <button
+            @click='changePage(Math.max(1, currentPage - 1))'
+            :disabled='currentPage === 1 || loading'
+            class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+          >
+            <i class='fas fa-chevron-left'></i>
+          </button>
+
+          <template x-for='page in totalPages' :key='page'>
+            <button
+              @click='changePage(page)'
+              :disabled='loading'
+              class='w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm disabled:opacity-50'
+              :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+              x-text='page'
+            ></button>
+          </template>
+
+          <button
+            @click='changePage(Math.min(totalPages, currentPage + 1))'
+            :disabled='currentPage === totalPages || loading'
+            class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+          >
+            <i class='fas fa-chevron-right'></i>
+          </button>
+        </div>
+      </div>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- Newsletter Section -->
-<section class='py-16 bg-gradient-to-r from-gray-900 to-gray-800 text-white'>
-  <div class='max-w-4xl mx-auto px-6 text-center'>
-    <div
-      class='inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-6'
-    >
-      <svg
-        class='w-8 h-8'
-        fill='none'
-        stroke='currentColor'
-        viewBox='0 0 24 24'
-      >
-        <path
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          stroke-width='2'
-          d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'
-        />
-      </svg>
-    </div>
-    <h2 class='text-3xl md:text-4xl font-bold mb-4'>
-      Stay Updated
-    </h2>
-    <p class='text-xl text-gray-300 mb-8'>
-      Subscribe to our newsletter and never miss out on the latest articles and
-      updates
-    </p>
-    <form class='max-w-md mx-auto flex gap-3'>
-      <input
-        type='email'
-        placeholder='Enter your email'
-        class='flex-1 px-6 py-4 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-white'
-        required
-      />
-      <button
-        type='submit'
-        class='px-8 py-4 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-100 transition-colors'
-      >
-        Subscribe
-      </button>
-    </form>
-  </div>
-</section>
+<script>
+  function blogApp() {
+    return {
+      allBlog: {{#if blog}}{{{json blog}}}{{else}}[]{{/if}},
+      displayedBlog: [],
+      allKategori: {{{json kategori_blog}}},
+      filteredKategoriList: [],
+      selectedKategori: '',
+      selectedKategoriId: '',
+      searchKategoriQuery: '',
+      currentPage: 1,
+      itemsPerPage: 6,
+      totalPages: 1,
+      loading: false,
+      lang: '{{lang}}',
 
-<style>
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+      init() {
+        this.allKategori = this.allKategori.sort((a, b) =>
+          a.nama.localeCompare(b.nama)
+        );
+        this.filteredKategoriList = [...this.allKategori];
+        this.filterAndPaginate();
+      },
+
+      getByLang(obj, lang) {
+        if (!obj || typeof obj !== 'object') return '';
+        return obj[lang] || obj.id || obj.en || '';
+      },
+
+      filterKategori() {
+        if (this.searchKategoriQuery.trim() === '') {
+          this.filteredKategoriList = [...this.allKategori];
+        } else {
+          const query = this.searchKategoriQuery.toLowerCase().trim();
+          this.filteredKategoriList = this.allKategori.filter(kategori =>
+            kategori.nama.toLowerCase().includes(query)
+          );
+        }
+      },
+
+      filterAndPaginate() {
+        let filtered = this.allBlog;
+        
+        if (this.selectedKategoriId) {
+          filtered = filtered.filter(item => {
+            const kategoriId = item.kategori_blog?.id;
+            return kategoriId == this.selectedKategoriId;
+          });
+        }
+        
+        this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
+        
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        
+        this.displayedBlog = filtered.slice(startIndex, endIndex);
+      },
+
+      get blogItems() {
+        return this.displayedBlog || [];
+      },
+
+      get totalItems() {
+        let filtered = this.allBlog;
+        
+        if (this.selectedKategoriId) {
+          filtered = filtered.filter(item => {
+            const kategoriId = item.kategori_blog?.id;
+            return kategoriId == this.selectedKategoriId;
+          });
+        }
+        
+        return filtered.length;
+      },
+
+      selectKategori(kategoriId) {
+        this.selectedKategoriId = kategoriId;
+        this.currentPage = 1;
+        this.filterAndPaginate();
+        
+        if (kategoriId) {
+          const kat = this.allKategori.find(k => k.id == kategoriId);
+          this.selectedKategori = kat ? kat.nama : '';
+        } else {
+          this.selectedKategori = '';
+        }
+      },
+
+      changePage(page) {
+        this.currentPage = page;
+        this.filterAndPaginate();
+      },
+
+      resetFilters() {
+        this.selectedKategoriId = '';
+        this.selectedKategori = '';
+        this.searchKategoriQuery = '';
+        this.filteredKategoriList = [...this.allKategori];
+        this.currentPage = 1;
+        this.filterAndPaginate();
+      },
+
+      getCategoryName(item) {
+        if (item.kategori_blog?.nama)
+          return item.kategori_blog.nama;
+        return null;
+      },
   }
-
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
-
-  .animate-fade-in {
-    animation: fade-in 1s ease-out;
-  }
-
-  .animate-fade-in-up {
-    animation: fade-in-up 1s ease-out 0.2s both;
-  }
-
-  .bg-grid-white\/\[0\.05\] {
-    background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  }
-
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-</style>
+</script>

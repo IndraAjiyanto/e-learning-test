@@ -24,6 +24,7 @@ import { Background } from 'src/entities/background.entity';
 import { Paragraf } from 'src/entities/paragraf.entity';
 import { Faq } from 'src/entities/faq.entity';
 import { OurExperience } from 'src/entities/our_experience.entity';
+import { KategoriBlog } from 'src/entities/kategori_blog.entity';
 
 @Injectable()
 export class DashboardService {
@@ -74,7 +75,15 @@ export class DashboardService {
     private readonly faqRepository: Repository<Faq>,
     @InjectRepository(OurExperience)
     private readonly ourExperienceRepository: Repository<OurExperience>,
+    @InjectRepository(KategoriBlog)
+    private readonly kategoriBlogRepository: Repository<KategoriBlog>,
   ) {}
+
+  async findBlogCategory() {
+    return await this.kategoriBlogRepository.find({
+      order: { nama: 'ASC' },
+    });
+  }
 
   async findOurExperience() {
     return await this.ourExperienceRepository.find({
@@ -159,7 +168,7 @@ export class DashboardService {
   async findBlog() {
     return await this.blogRepository.find({
       order: { id: 'DESC' },
-      relations: ['kategori_blog', 'user', 'user.biodata'],
+      relations: ['kategori_blog'],
     });
   }
 
