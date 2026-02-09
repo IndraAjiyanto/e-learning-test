@@ -24,9 +24,7 @@ export class BlogService {
       throw new NotFoundException('Category not found');
     }
     const blog = this.blogRepository.create({
-      judul: createBlogDto.judul,
-      isi: createBlogDto.isi,
-      gambar: createBlogDto.gambar,
+      ...createBlogDto,
       kategori_blog: kategori,
     });
     return await this.blogRepository.save(blog);
@@ -112,6 +110,7 @@ export class BlogService {
     if (updateBlogDto.judul) blog.judul = updateBlogDto.judul;
     if (updateBlogDto.isi) blog.isi = updateBlogDto.isi;
     if (updateBlogDto.gambar) blog.gambar = updateBlogDto.gambar;
+    if (updateBlogDto.author) blog.author = updateBlogDto.author;
 
     return await this.blogRepository.save(blog);
   }

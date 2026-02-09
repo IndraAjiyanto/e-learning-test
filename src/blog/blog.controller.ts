@@ -32,6 +32,21 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
+  @Get('all')
+  async viewBlog(@Res() res: Response, @Req() req: Request) {
+    const blogs = await this.blogService.findAll();
+    res.render('blog', {
+      blogs,
+      user: req.user,
+    });
+  }
+
+  @Get('detail/:id')
+  async viewBlogDetail(@Param('id') id: number, @Res() res: Response, @Req() req: Request) {
+    const blog = await this.blogService.findOne(id);
+    res.render('blog-detail', {blog, user: req.user});
+  }
+
   @Roles('super_admin')
   @Get('')
   async findAll(@Res() res: Response, @Req() req: Request) {
@@ -108,7 +123,6 @@ export class BlogController {
       req.flash('success', 'Blog successfully created');
       res.redirect('/blog');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }
@@ -160,7 +174,6 @@ export class BlogController {
       req.flash('success', 'Blog successfully updated');
       res.redirect('/blog');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Blog failed to update');
       res.redirect('/blog');
     }

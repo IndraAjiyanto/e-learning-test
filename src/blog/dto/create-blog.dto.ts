@@ -9,6 +9,10 @@ export class CreateBlogDto {
   @IsNotEmpty()
   isi: string;
 
+  @IsString()
+  @IsNotEmpty()
+  author: string;
+
   @IsArray()
   gambar: string[];
 

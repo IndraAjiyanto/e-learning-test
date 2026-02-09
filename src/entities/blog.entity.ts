@@ -19,6 +19,9 @@ export class Blog {
   @Column()
   isi: string;
 
+  @Column()
+  author: string;
+
   @Column('jsonb')
   gambar: string[];
 

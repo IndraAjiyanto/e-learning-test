@@ -1,325 +1,273 @@
-<div class='pt-28 py-20'>
-  <div
-    class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
-    x-data="{ 
-    existingImages: {{json blog.gambar}},
-    files: [],
-    validateImage(fileList) {
-      if (!fileList || fileList.length === 0) return;
-      
-      const newFiles = Array.from(fileList);
-      const maxFiles = 10;
-      const currentTotal = this.existingImages.length + this.files.length;
-      
-      if (currentTotal + newFiles.length > maxFiles) {
-        alert(`Maximum ${maxFiles} images allowed (current: ${currentTotal})`);
-        return;
-      }
-
-      newFiles.forEach(file => {
-        const fileData = {
-          file: file,
-          name: file.name,
-          size: file.size,
-          previewUrl: null,
-          error: '',
-          isValid: false,
-          width: 0,
-          height: 0
-        };
-
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!allowedTypes.includes(file.type)) {
-          fileData.error = 'Only JPEG, JPG, and PNG formats are allowed';
-          this.files.push(fileData);
-          return;
-        }
-
-        const maxSize = 5 * 1024 * 1024;
-        if (file.size > maxSize) {
-          fileData.error = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
-          this.files.push(fileData);
-          return;
-        }
-
-        const img = new Image();
-        const objectUrl = URL.createObjectURL(file);
-        
-        img.onload = () => {
-          fileData.width = img.width;
-          fileData.height = img.height;
-          
-          if (img.width < 800 || img.width > 1920 || img.height < 400 || img.height > 1080) {
-            fileData.error = `Dimensions ${img.width}x${img.height}px. Required: 800-1920px width, 400-1080px height`;
-          } else {
-            fileData.previewUrl = objectUrl;
-            fileData.isValid = true;
-          }
-          this.$nextTick();
-        };
-        
-        img.onerror = () => {
-          fileData.error = 'Failed to load image';
-          URL.revokeObjectURL(objectUrl);
-        };
-        
-        img.src = objectUrl;
-        this.files.push(fileData);
-      });
-
-      $refs.fileInput.value = null;
-    },
-    removeExistingImage(index) {
-      this.existingImages.splice(index, 1);
-    },
-    removeNewFile(index) {
-      if (this.files[index].previewUrl) {
-        URL.revokeObjectURL(this.files[index].previewUrl);
-      }
-      this.files.splice(index, 1);
-    },
-    canSubmit() {
-      const hasImages = this.existingImages.length > 0 || this.files.length > 0;
-      const allNewValid = this.files.every(f => f.isValid);
-      return hasImages && allNewValid;
-    },
-    prepareSubmit() {
-      const form = $refs.uploadForm;
-      const formData = new FormData(form);
-      
-      // Add existing images as hidden input
-      formData.delete('existing_images');
-      this.existingImages.forEach((url, index) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'existing_images[]';
-        input.value = url;
-        form.appendChild(input);
-      });
-      
-      // Remove old file input and add valid files
-      formData.delete('gambar');
-      this.files.forEach((fileData) => {
-        if (fileData.isValid) {
-          formData.append('gambar', fileData.file);
-        }
-      });
-      
-      return true;
-    }
-  }"
-  >
+<div class='py-10'>
+  <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Edit Blog Post</h2>
 
-    <form
-      action='/blog/{{blog.id}}?_method=PATCH'
-      method='post'
-      enctype='multipart/form-data'
-      class='space-y-6'
-      x-ref='uploadForm'
-      @submit.prevent="if(canSubmit() && prepareSubmit()) { $el.submit(); } else { alert('Please provide at least one valid image.'); }"
-    >
+    <form method='POST' action='/blog/{{blog.id}}?_method=PATCH' enctype='multipart/form-data' class="space-y-6">
+      <div class='grid grid-cols-1 lg:grid-cols-2 gap-8'>
 
-      <!-- Title -->
-      <div>
-        <label for='judul' class='block text-sm font-medium text-gray-700 mb-2'>
-          Title <span class='text-red-500'>*</span>
-        </label>
-        <input
-          type='text'
-          id='judul'
-          name='judul'
-          required
-          value="{{blog.judul}}"
-          placeholder='Enter blog title'
-          class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900'
-        />
-      </div>
+        <!-- Kolom Kiri -->
+        <div class='space-y-6'>
+          <!-- Author -->
+          <div>
+            <label for='author' class='block text-sm font-medium text-gray-700 mb-2'>Author</label>
+            <input
+              type='text'
+              id='author'
+              name='author'
+              required
+              value="{{blog.author}}"
+              placeholder='Enter author name'
+              class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 bg-white'
+            />
+          </div>
 
-      <!-- Category -->
-      <div>
-        <label for='kategori_blog' class='block text-sm font-medium text-gray-700 mb-2'>
-          Category <span class='text-red-500'>*</span>
-        </label>
-        <select
-          id='kategori_blog'
-          name='kategori_blog'
-          required
-          class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900'
-        >
-          <option value="" disabled>Select category</option>
-          {{#each categories}}
-            <option value="{{id}}" {{#if (eq id ../blog.kategori_blog.id)}}selected{{/if}}>{{nama}}</option>
-          {{/each}}
-        </select>
-      </div>
+          <!-- Title -->
+          <div>
+            <label for='judul' class='text-sm font-medium text-gray-700 mb-2'>Blog Title</label>
+            <input
+              type='text'
+              id='judul'
+              name='judul'
+              required
+              value="{{blog.judul}}"
+              placeholder='Enter blog title'
+              class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 bg-white'
+            />
+          </div>
 
-      <!-- Content -->
-      <div>
-        <label for='isi' class='block text-sm font-medium text-gray-700 mb-2'>
-          Content <span class='text-red-500'>*</span>
-        </label>
-        <textarea
-          id='isi'
-          name='isi'
-          required
-          rows='12'
-          placeholder='Write your blog content here...'
-          class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 resize-none'
-        >{{blog.isi}}</textarea>
-      </div>
+          <!-- Category -->
+          <div
+            x-data="{
+              search: '{{blog.kategori_blog.nama}}',
+              selectedCategory: {{json blog.kategori_blog}},
+              showDropdown: false,
+              availableCategories: {{json categories}},
+              get filteredCategories() {
+                return this.availableCategories.filter(c => 
+                  c.nama.toLowerCase().includes(this.search.toLowerCase())
+                );
+              },
+              selectCategory(category) {
+                this.selectedCategory = category;
+                this.search = category.nama;
+                this.showDropdown = false;
+              },
+              clearCategory() {
+                this.selectedCategory = null;
+                this.search = '';
+              }
+            }"
+            @click.away='showDropdown = false'
+          >
+            <label for='kategori_blog' class='block text-sm font-medium text-gray-700 mb-2'>Category</label>
 
-      <!-- Upload Images -->
-      <div>
-        <label for='gambar' class='block text-sm font-medium text-gray-700 mb-2'>
-          Blog Images
-          <span class='text-xs text-gray-500'>(Max 10 images total)</span>
-        </label>
-        <div class='space-y-4'>
-          
-          <!-- Existing Images -->
-          <div x-show='existingImages.length > 0'>
-            <p class='text-sm font-medium text-gray-700 mb-3'>
-              Current Images (<span x-text='existingImages.length'></span>):
-            </p>
-            <div class='grid grid-cols-2 md:grid-cols-3 gap-4'>
-              <template x-for='(url, index) in existingImages' :key='index'>
+            <div class='relative'>
+              <input
+                type='text'
+                x-model='search'
+                @focus='showDropdown = true'
+                @input='showDropdown = true'
+                placeholder='Search and select category...'
+                class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 bg-white pr-10'
+              />
+              <i class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+
+              <!-- Dropdown -->
+              <div
+                x-show='showDropdown && filteredCategories.length > 0'
+                class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+              >
+                <template x-for='category in filteredCategories' :key='category.id'>
+                  <button
+                    type='button'
+                    @click='selectCategory(category)'
+                    class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                    :class="{'bg-gray-100': selectedCategory && selectedCategory.id === category.id}"
+                  >
+                    <span class='text-sm font-medium text-gray-700' x-text='category.nama'></span>
+                    <span x-show='selectedCategory && selectedCategory.id === category.id' class='ml-auto text-blue-500'>
+                      <i class='fas fa-check'></i>
+                    </span>
+                  </button>
+                </template>
+              </div>
+
+              <input
+                type='hidden'
+                id='kategori_blog'
+                name='kategori_blog'
+                x-model='selectedCategory ? selectedCategory.id : ""'
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div>
+            <label for='isi' class='text-sm font-medium text-gray-700 mb-2'>Content</label>
+            <textarea
+              name='isi'
+              id='isi'
+              required
+              placeholder='Write your blog content here...'
+              rows='10'
+              class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 bg-white'
+            >{{blog.isi}}</textarea>
+          </div>
+        </div>
+
+        <!-- Kolom Kanan -->
+        <div class='space-y-6'>
+          <!-- Current Images -->
+          {{#if blog.gambar}}
+          <div>
+            <label class='text-sm font-medium text-gray-700 mb-2'>Current Images</label>
+            <div class='grid grid-cols-2 gap-4 mb-6'>
+              {{#if (isArray blog.gambar)}}
+                {{#each blog.gambar}}
                 <div class='relative group'>
-                  <div class='aspect-video bg-gray-100 rounded-lg overflow-hidden border-2 border-blue-500'>
+                  <div class='p-4 bg-slate-50 rounded-xl border border-slate-200'>
                     <img
-                      :src='url'
-                      alt='Existing image'
-                      class='w-full h-full object-cover'
+                      src='{{this}}'
+                      alt='Current Image {{@index}}'
+                      class='w-full h-48 object-cover rounded-lg border-2 border-blue-500 shadow-sm'
                     />
                   </div>
                   <button
                     type='button'
-                    @click='removeExistingImage(index)'
-                    class='absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition shadow-lg z-10'
-                    title='Remove image'
+                    onclick="removeExistingImage('{{this}}')"
+                    class='absolute -top-2 -right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all duration-300 transform hover:scale-110'
                   >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      stroke-width='2'
-                      stroke='currentColor'
-                      class='w-4 h-4'
-                    >
-                      <path stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' />
+                    <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12' />
                     </svg>
                   </button>
-                  <div class='mt-2 text-xs'>
-                    <p class='text-blue-600 font-medium'>Current Image</p>
-                  </div>
+                  <input type='hidden' name='existing_images[]' value='{{this}}' id='existing-{{@index}}'>
                 </div>
-              </template>
-            </div>
-          </div>
-
-          <!-- File Input for New Images -->
-          <div>
-            <label class='block text-sm font-medium text-gray-700 mb-2'>
-              Add New Images (Optional)
-            </label>
-            <input
-              type='file'
-              id='gambar'
-              name='gambar'
-              accept='image/jpeg,image/jpg,image/png'
-              multiple
-              @change='validateImage($event.target.files)'
-              x-ref='fileInput'
-              class='block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-600 cursor-pointer border border-gray-300 rounded-lg'
-            />
-          </div>
-
-          <!-- Validation Requirements -->
-          <div class='text-xs text-gray-500 space-y-1'>
-            <p>✓ Format: JPEG, JPG, or PNG</p>
-            <p>✓ Max size per image: 5MB</p>
-            <p>✓ Dimensions: Width 800-1920px, Height 400-1080px</p>
-            <p>✓ Maximum 10 images total</p>
-          </div>
-
-          <!-- New Files Preview -->
-          <div x-show='files.length > 0'>
-            <p class='text-sm font-medium text-gray-700 mb-3'>
-              New Images to Upload (<span x-text='files.length'></span>):
-            </p>
-            <div class='grid grid-cols-2 md:grid-cols-3 gap-4'>
-              <template x-for='(fileData, index) in files' :key='index'>
+                {{/each}}
+              {{else}}
                 <div class='relative group'>
-                  <div
-                    class='aspect-video bg-gray-100 rounded-lg overflow-hidden border-2'
-                    :class="fileData.isValid ? 'border-green-500' : 'border-red-500'"
-                  >
-                    <template x-if='fileData.previewUrl'>
-                      <img
-                        :src='fileData.previewUrl'
-                        :alt='fileData.name'
-                        class='w-full h-full object-cover'
-                      />
-                    </template>
-                    <template x-if='!fileData.previewUrl && fileData.error'>
-                      <div class='w-full h-full flex items-center justify-center p-2'>
-                        <svg class='w-12 h-12 text-red-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' />
-                        </svg>
-                      </div>
-                    </template>
+                  <div class='p-4 bg-slate-50 rounded-xl border border-slate-200'>
+                    <img
+                      src='{{blog.gambar}}'
+                      alt='Current Image'
+                      class='w-full h-48 object-cover rounded-lg border-2 border-blue-500 shadow-sm'
+                    />
                   </div>
                   <button
                     type='button'
-                    @click='removeNewFile(index)'
-                    class='absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition shadow-lg z-10'
-                    title='Remove image'
+                    onclick="removeExistingImage('{{blog.gambar}}')"
+                    class='absolute -top-2 -right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all duration-300 transform hover:scale-110'
                   >
-                    <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' class='w-4 h-4'>
-                      <path stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' />
+                    <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12' />
                     </svg>
                   </button>
-                  <div class='mt-2 text-xs space-y-1'>
-                    <p class='text-gray-700 truncate' :title='fileData.name'>
-                      <span x-text='fileData.name'></span>
-                    </p>
-                    <p class='text-gray-500'>
-                      <span x-text='(fileData.size / 1024 / 1024).toFixed(2)'></span> MB
-                      <template x-if='fileData.width > 0'>
-                        <span> | <span x-text='fileData.width'></span>x<span x-text='fileData.height'></span>px</span>
-                      </template>
-                    </p>
-                    <p x-show='fileData.error' class='text-red-600 font-medium' x-text='fileData.error'></p>
-                    <p x-show='fileData.isValid' class='text-green-600 font-medium'>✓ Valid</p>
-                  </div>
+                  <input type='hidden' name='existing_images[]' value='{{blog.gambar}}' id='existing-0'>
                 </div>
-              </template>
+              {{/if}}
             </div>
+            <input type='hidden' id='removed_images' name='removed_images' value=''>
           </div>
+          {{/if}}
 
-          <!-- Total Count -->
-          <div class='p-3 bg-gray-50 border border-gray-200 rounded-lg'>
-            <p class='text-sm text-gray-700'>
-              <strong>Total Images:</strong>
-              <span x-text='existingImages.length + files.filter(f => f.isValid).length'></span> / 10
-            </p>
+          <!-- Upload New Images -->
+          <div x-data='{ 
+            files: [], 
+            validateFile(file) {
+              const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+              return allowedTypes.includes(file.type);
+            }
+          }' class='space-y-4'>
+            <label class='text-sm font-medium text-gray-700 mb-2'>
+              {{#if blog.gambar}}Upload Additional Images{{else}}Upload Images{{/if}}
+            </label>
+
+            <template x-for='(file, index) in files' :key='index'>
+              <div class='space-y-4'>
+                <div class='flex items-center gap-4'>
+                  <div class='flex-1'>
+                    <input
+                      type='file'
+                      name='gambar'
+                      accept='image/jpeg,image/jpg,image/png,image/gif,image/webp'
+                      @change='if ($event.target.files[0]) { 
+                        if (validateFile($event.target.files[0])) {
+                          file.preview = URL.createObjectURL($event.target.files[0]);
+                        } else {
+                          alert("Only image files (JPEG, JPG, PNG, GIF, WEBP) are allowed");
+                          $event.target.value = "";
+                        }
+                      }'
+                      class='w-full border border-slate-300 rounded-xl px-5 py-4 bg-white/70 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200'
+                    />
+                  </div>
+
+                  <button
+                    type='button'
+                    @click='files.splice(index, 1)'
+                    class='w-12 h-12 bg-red-500 hover:bg-red-600 text-white rounded-xl flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-lg'
+                  >
+                    <svg class='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12'></path>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Image Preview -->
+                <template x-if='file.preview'>
+                  <div class='relative'>
+                    <div class='p-4 bg-slate-50 rounded-xl border border-slate-200'>
+                      <img
+                        :src='file.preview'
+                        alt='Image Preview'
+                        class='w-full max-w-xs h-48 object-cover rounded-lg border-2 border-slate-300 shadow-sm mx-auto'
+                      />
+                      <button
+                        type='button'
+                        class='absolute -top-2 -right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all duration-300 transform hover:scale-110'
+                        @click='file.preview = null'
+                      >
+                        <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                          <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12' />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </template>
+
+            <button
+              type='button'
+              @click='files.push({ preview: null })'
+              class='w-full border-2 border-dashed border-slate-300 rounded-xl px-6 py-4 text-slate-500 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2 transition-all duration-300 group'
+            >
+              <svg
+                class='w-5 h-5 group-hover:scale-110 transition-transform duration-200'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 6v6m0 0v6m0-6h6m-6 0H6'></path>
+              </svg>
+              {{#if blog.gambar}}Add Additional Image{{else}}Add Image{{/if}}
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Submit Buttons -->
-      <div class='flex gap-3 mt-6'>
+      <!-- Action Buttons -->
+      <div class='flex gap-2'>
         <button
           type='submit'
-          :disabled='!canSubmit()'
-          :class="canSubmit() ? 'bg-gray-900 hover:bg-gray-600 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'"
-          class='flex-1 py-2 px-4 text-white font-semibold rounded-lg shadow transition'
+          class='py-2 px-4 bg-gray-900 text-white font-semibold rounded-lg shadow hover:bg-gray-600 transition'
         >
-          Update Blog
+          Update
         </button>
         <a
-          href='/blog/admin/list'
-          class='flex-1 py-2 px-4 bg-gray-300 text-gray-700 font-semibold rounded-lg shadow hover:bg-gray-400 transition text-center'
+          href='/blog'
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition items-center'
         >
           Cancel
         </a>
@@ -327,3 +275,59 @@
     </form>
   </div>
 </div>
+
+<script>
+// Function to remove existing images
+let removedImages = [];
+function removeExistingImage(imageUrl) {
+  if (confirm('Are you sure you want to remove this image?')) {
+    // Add to removed images array
+    removedImages.push(imageUrl);
+    
+    // Update hidden input with JSON string
+    document.getElementById('removed_images').value = JSON.stringify(removedImages);
+    
+    // Hide the image container
+    const imgContainer = event.target.closest('.group');
+    if (imgContainer) {
+      imgContainer.style.display = 'none';
+    }
+  }
+}
+
+// Form validation to ensure at least one image
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  
+  form.addEventListener('submit', function(e) {
+    // Check if there are any existing images that haven't been removed
+    const existingImagesInputs = document.querySelectorAll('input[name="existing_images[]"]');
+    let hasExistingImages = false;
+    
+    existingImagesInputs.forEach(input => {
+      if (input.closest('.group') && input.closest('.group').style.display !== 'none') {
+        hasExistingImages = true;
+      }
+    });
+    
+    // Check if there are any new images
+    const fileInputs = document.querySelectorAll('input[type="file"][name="gambar"]');
+    let hasNewImages = false;
+    
+    fileInputs.forEach(input => {
+      if (input.files && input.files.length > 0 && input.files[0].size > 0) {
+        hasNewImages = true;
+      }
+    });
+    
+    // If no images at all, prevent submission
+    if (!hasExistingImages && !hasNewImages) {
+      e.preventDefault();
+      alert('At least one image is required for the blog post.');
+      return false;
+    }
+    
+    return true;
+  });
+});
+</script>
