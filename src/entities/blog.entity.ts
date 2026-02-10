@@ -16,7 +16,7 @@ export class Blog {
   @Column()
   judul: string;
 
-  @Column()
+  @Column({type: 'text'})
   isi: string;
 
   @Column()

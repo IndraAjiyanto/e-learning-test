@@ -112,6 +112,7 @@ export class BlogController {
       req.flash('success', 'Blog successfully created');
       res.redirect('/blog');
     } catch (error) {
+      console.log(error);
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }

@@ -3,11 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {{#if blog}}
+  <title>{{blog.judul}}</title>
+  <meta property="og:title" content="{{blog.judul}}" />
+  <meta property="og:description" content="{{blog.isi}}" />
+  <meta property="og:url" content="https://e-learning.inndra.me/blog/detail/{{blog.id}}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="{{blog.gambar.[0]}}" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{blog.judul}}" />
+  <meta name="twitter:description" content="{{blog.isi}}" />
+  <meta name="twitter:image" content="{{blog.gambar.[0]}}" />
+  {{else}}
   <title>{{title}}</title>
+  {{/if}}
+
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script defer  src="/public/assets/main.js"></script>
   <script src="/public/js/texttype.js"></script>
-       <script src="/public/js/simplycountdown.js"></script>
+  <script src="/public/js/quil.js"></script>
+  <script src="/public/js/quil-image-uploader.js"></script>
+  <script src="/public/js/simplycountdown.js"></script>
   <link href="/public/css/style.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
@@ -15,6 +32,7 @@
   <link rel="stylesheet" href="/public/css/scroll-animations.css">
   <link rel="stylesheet" href="/public/css/cropper.min.css">
       <link rel="stylesheet" href="/public/css/simplyCountdown.css">
+      <link rel="stylesheet" href="/public/css/quil.css">
 <script src="/public/js/cropper.min.js"></script>
 
 </head>

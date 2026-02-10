@@ -141,7 +141,6 @@ async function bootstrap() {
           return allowedRoles.includes(userRole);
         },
         
-        // Helper untuk role-based access
         hasRole: (user: any, role: string, options: any) => {
           if (user && user.role === role) {
             return options.fn(this);
@@ -155,7 +154,6 @@ async function bootstrap() {
           return options.inverse(this);
         },
         
-        // Helper untuk format mata uang
         formatRupiah: (angka: number) => {
           if (angka == null || angka === undefined) {
             return 'Not set';
@@ -167,7 +165,6 @@ async function bootstrap() {
           });
         },
         
-        // Helper untuk ikon
         computeIcon: (iconValue: string) => {
           const raw = (iconValue || '').toString().trim();
           if (!raw) return 'fa-solid fa-circle-question';
@@ -186,7 +183,6 @@ async function bootstrap() {
           return v;
         },
         
-        // Helper untuk i18n dan JSON
         json: (context: any) => JSON.stringify(context),
         t: (key: string) => {
           try {
@@ -195,7 +191,6 @@ async function bootstrap() {
               return i18n.t(key);
             }
           } catch (e) {
-            // ignore error
           }
           return key;
         },
@@ -229,7 +224,6 @@ async function bootstrap() {
           }
         },
         
-        // Helper default dan utility
         default: (value: any, defaultValue: any) => value || defaultValue,
         getByLang: (obj: any, lang: string) => {
           if (!obj || typeof obj !== 'object') return '';
@@ -243,7 +237,6 @@ async function bootstrap() {
   app.setViewEngine('hbs');
   app.set('view cache', false);
 
-  // Middleware lainnya
   app.use(methodOverride('_method'));
   app.use(
     session({
@@ -256,7 +249,6 @@ async function bootstrap() {
   
   app.use(flash());
   
-  // Flash messages middleware
   app.use((req: Request, res: Response, next: NextFunction) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
@@ -267,7 +259,6 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Language middleware
   app.use((req: Request, res: Response, next: NextFunction) => {
     const lang = req.cookies?.lang || 'id';
     res.locals.currentLang = lang;
@@ -275,7 +266,6 @@ async function bootstrap() {
     next();
   });
 
-  // Global guard
   app.useGlobalGuards(new RolesGuard(app.get(Reflector)));
 
   await app.listen(process.env.PORT ?? 3000);
