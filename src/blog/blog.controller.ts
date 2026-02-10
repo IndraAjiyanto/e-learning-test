@@ -16,8 +16,8 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemory } from 'src/common/config/multer.config';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { multerConfigMemory, multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
@@ -34,6 +34,7 @@ export class BlogController {
     const blog = await this.blogService.findOne(id);
     res.render('blog-detail', {blog, user: req.user});
   }
+
 
   @Roles('super_admin')
   @Get('')
@@ -98,7 +99,7 @@ export class BlogController {
     maxHeight: 1080,
     maxSize: 3 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/blog',
+    folder: 'blog',
   })
   async create(
     @Body() createBlogDto: CreateBlogDto,
@@ -116,6 +117,33 @@ export class BlogController {
       res.redirect('/blog');
     }
   }
+
+  @Roles('super_admin')
+  @Post('upload-image')
+  @UseInterceptors(
+    FileInterceptor('image', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'blog/isi',
+    skipTransformation: true,
+  })
+    async uploadImage(
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+          const imageUrl = req.body.uploadedImageUrls?.[0];
+          console.log('Uploaded Image URL:', imageUrl);
+    return res.json({ url: imageUrl }); 
+    } catch (error) {
+      console.log(error);
+      req.flash('error', error.message || 'Blog failed to create');
+      res.redirect('/blog');
+    }
+  }
+
 
   @Roles('super_admin')
   @Patch(':id')

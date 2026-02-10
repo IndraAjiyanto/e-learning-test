@@ -39,7 +39,6 @@
 <body class="bg-slate-50 text-base-content">
   
   {{#if (roles user.role 'admin' 'super_admin')}}
-    <!-- Layout with Sidebar for Admin and Super Admin -->
     {{> sidebar}}
     <div class="lg:ml-64 min-h-screen">
       <main class="min-h-screen">
@@ -47,7 +46,6 @@
       </main>
     </div>
   {{else}}
-    <!-- Normal Layout with Navbar for User and Guest -->
     {{> navbar}}  
     <main class="min-h-screen">
       {{{ body }}}  
@@ -59,19 +57,15 @@
   {{> sweetalert}}
 
     <script>
-      // public/js/main.js
       document.addEventListener('DOMContentLoaded', function() {
-      // Initialize scroll animations
       const scrollAnimator = new ScrollAnimator();
       scrollAnimator.initAll();
       
-      // Initialize stagger animations for specific containers
       const staggerContainers = document.querySelectorAll('[data-stagger-container]');
       staggerContainers.forEach(container => {
         scrollAnimator.initStagger(container);
       });
 
-      // Add to global scope for potential manual usage
       window.scrollAnimator = scrollAnimator;
       })
     </script>
