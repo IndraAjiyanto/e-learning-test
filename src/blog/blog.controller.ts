@@ -31,9 +31,8 @@ export class BlogController {
 
   @Get('detail/:id')
   async viewBlogDetail(@Param('id') id: number, @Res() res: Response, @Req() req: Request) {
-    const recentBlogs = await this.blogService.getRecentBlogs(id);
     const blog = await this.blogService.findOne(id);
-    res.render('blog-detail', {blog, user: req.user, recentBlogs});
+    res.render('blog-detail', {blog, user: req.user});
   }
 
   @Roles('super_admin')
