@@ -3,7 +3,7 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from 'src/entities/blog.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { KategoriBlog } from 'src/entities/kategori_blog.entity';
 import cloudinary from 'src/common/config/multer.config';
 
@@ -54,11 +54,12 @@ export class BlogService {
     });
   }
 
-  async getRecentBlogs(limit: number = 5) {
+  async getRecentBlogs(id: number) {
     return await this.blogRepository.find({
+      where: { id: Not(id) },
       relations: ['kategori_blog'],
       order: { createdAt: 'DESC' },
-      take: limit,
+      take: 3,
     });
   }
 

@@ -4462,6 +4462,15 @@ details.collapse summary::-webkit-details-marker {
   width: 100%;
 }
 
+.w-4\/6 {
+  width: 66.666667%;
+}
+
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
 .min-w-0 {
   min-width: 0px;
 }
@@ -8455,6 +8464,10 @@ details.collapse summary::-webkit-details-marker {
     margin-top: 0px;
   }
 
+  .md\:mb-0 {
+    margin-bottom: 0px;
+  }
+
   .md\:block {
     display: block;
   }
@@ -8587,6 +8600,10 @@ details.collapse summary::-webkit-details-marker {
 
   .md\:overflow-visible {
     overflow: visible;
+  }
+
+  .md\:whitespace-normal {
+    white-space: normal;
   }
 
   .md\:rounded-2xl {

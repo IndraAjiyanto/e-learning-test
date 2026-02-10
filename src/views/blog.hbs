@@ -1,9 +1,9 @@
 <div class='pt-24 min-h-screen bg-white' x-data='blogApp()'>
   <div class='container mx-auto px-4 pb-16'>
     <div class='text-center mb-12'>
-      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.portfolio.tittle"}}</h1>
+      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.blog.tittle"}}</h1>
       <p class='text-gray-600 max-w-2xl mx-auto text-lg font-inter'>
-        {{t "test.portfolio.description"}}
+        {{t "test.blog.description"}}
       </p>
     </div>
 
@@ -14,13 +14,13 @@
         >
           <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
             <div class='flex items-center justify-between mb-3'>
-              <h4 class='text-sm font-semibold text-gray-700 font-montserrat'>{{t "test.portfolio.filterTittle"}}</h4>
+              <h4 class='text-sm font-semibold text-gray-700 font-montserrat'>{{t "test.blog.filterTittle"}}</h4>
               <button
                 @click='resetFilters()'
                 class='text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center'
               >
                 <i class='fas fa-undo-alt mr-1 text-xs'></i>
-                {{t "test.portfolio.resetFilters"}}
+                {{t "test.blog.resetFilters"}}
               </button>
             </div>
             <div class='space-y-2'>
@@ -30,7 +30,7 @@
                 <div
                   class='text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200'
                 >
-                  {{t "test.portfolio.noFilters"}}
+                  {{t "test.blog.noFilters"}}
                 </div>
               </template>
 
@@ -49,7 +49,7 @@
               class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
             >
               <i class='fas fa-tags text-gray-500 mr-2'></i>
-                {{t "test.portfolio.categoryTittle"}}
+                {{t "test.blog.categoryTittle"}}
             </h3>
 
             <div class='mb-3'>
@@ -58,7 +58,7 @@
                   type='text'
                   x-model='searchKategoriQuery'
                   @input='filterKategori()'
-                  placeholder='{{t "test.portfolio.searchCategoryPlaceholder"}}'
+                  placeholder='{{t "test.blog.searchCategoryPlaceholder"}}'
                   class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
                 />
                 <i
@@ -73,7 +73,7 @@
                 :class="selectedKategoriId === '' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
                 class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
               >
-                <span class='text-sm text-left'>{{t "test.portfolio.allCategory"}}</span>
+                <span class='text-sm text-left'>{{t "test.blog.allCategory"}}</span>
               </button>
               <template x-for='kategori in filteredKategoriList' :key='kategori.id'>
                 <button
@@ -93,7 +93,7 @@
                 class='text-2xl font-bold text-gray-900'
                 x-text='totalItems'
               ></div>
-              <div class='text-sm text-gray-600'>{{t "test.portfolio.projectAvailable"}}</div>
+              <div class='text-sm text-gray-600'>{{t "test.blog.projectAvailable"}}</div>
             </div>
           </div>
         </div>
@@ -247,7 +247,7 @@
                     :href="'/blog/detail/' + item.id"
                     class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
                   >
-                    {{t "test.portfolio.detailButton"}}
+                    {{t "test.blog.detailButton"}}
                   </a>
                 </div>
               </div>
@@ -264,13 +264,13 @@
           >
             <i class='fas fa-search text-gray-400 text-2xl'></i>
           </div>
-          <h3 class='text-xl font-semibold text-gray-900 mb-2 font-montserrat'>No {{t "test.portfolio.projectNotFound"}}</h3>
-          <p class='text-gray-600 mb-6 font-inter'>{{t "test.portfolio.tryAdjusting"}}</p>
+          <h3 class='text-xl font-semibold text-gray-900 mb-2 font-montserrat'>No {{t "test.blog.projectNotFound"}}</h3>
+          <p class='text-gray-600 mb-6 font-inter'>{{t "test.blog.tryAdjusting"}}</p>
           <button
             @click='resetFilters()'
             class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white px-6 py-3 rounded-lg  transition-all duration-300'
           >
-            {{t "test.portfolio.resetAllFilters"}}
+            {{t "test.blog.resetAllFilters"}}
           </button>
         </div>
         </div>
