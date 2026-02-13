@@ -24,6 +24,8 @@ import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-except
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import * as cheerio from 'cheerio';
 import editorjsHTML from 'editorjs-html';
+import * as fs from "fs";
+import * as path from "path";
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -113,10 +115,61 @@ export class BlogController {
     @Req() req: Request,
   ) {
     try {
-      createBlogDto.gambar = req.body.uploadedImageUrls || [];
-          const edjsParser = editorjsHTML();
-const html = edjsParser.parse(JSON.parse(createBlogDto.isi));
+      const tempDir = path.join(process.cwd(), "public/asset/blog/temp");
+const finalDir = path.join(process.cwd(), "public/asset/blog/isi");
+
+createBlogDto.gambar = req.body.uploadedImageUrls || [];
+
+// convert JSON → HTML
+const edjsParser = editorjsHTML();
+let html = edjsParser.parse(JSON.parse(createBlogDto.isi));
+
+// parse HTML
+const $ = cheerio.load(html);
+const usedImages: string[] = [];
+
+$("img").each((_, el) => {
+  const src = $(el).attr("src");
+  if (src && src.includes("/asset/blog/temp/")) {
+    usedImages.push(src);
+  }
+});
+
+// semua file temp
+const tempFiles = fs.readdirSync(tempDir);
+
+tempFiles.forEach(file => {
+  const tempUrl = `/asset/blog/temp/${file}`;
+  const oldPath = path.join(tempDir, file);
+  const newPath = path.join(finalDir, file);
+
+  try {
+    if (usedImages.includes(tempUrl)) {
+
+      // move file
+      fs.renameSync(oldPath, newPath);
+
+      // update path html
+      html = html.replaceAll(
+        `/asset/blog/temp/${file}`,
+        `/asset/blog/isi/${file}`
+      );
+
+    } else {
+
+      // delete unused
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+
+    }
+  } catch (err) {
+    console.log("File processing error:", err.message);
+  }
+});
+
 createBlogDto.isi = html;
+
       await this.blogService.create(createBlogDto);
       req.flash('success', 'Blog successfully created');
       res.redirect('/blog');
@@ -134,7 +187,7 @@ createBlogDto.isi = html;
   )
   @ValidateImage({
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'blog/isi',
+    folder: 'blog/temp',
     skipTransformation: true,
   })
     async uploadImage(
