@@ -1,0 +1,104 @@
+<div class=' py-10'   x-data="{
+  icon: '{{topic.icon}}',
+  get computedClass() {
+    const raw = (this.icon || '').toString().trim();
+    if (!raw) return 'fa-solid fa-circle-question';
+    const v = raw;
+    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
+    if (hasFaPrefix) {
+      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
+      return v;
+    }
+    if (!v.includes(' ')) return 'fa-solid fa-' + v;
+    return v;
+  }
+}">
+  <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Edit Topic</h2>
+    <form
+      action='/topic/{{topic.id}}?_method=PATCH'
+      method='post'
+      class='space-y-6'
+
+      <!-- Nama -->
+      <div>
+        <label for='nama' class='block text-sm font-medium text-gray-700 mb-2'>
+          Topic Name
+          <span class='text-red-500'>*</span>
+        </label>
+        <input
+          type='text'
+          id='nama'
+          name='nama'
+          required
+          value='{{topic.nama}}'
+          placeholder='Enter topic name'
+          class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 bg-white'
+        />
+      </div>
+
+      <!-- Icon -->
+      <div>
+        <label
+          for='icon'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Icon</label>
+        <div class='flex items-center gap-4'>
+          <input
+            x-model='icon'
+            type='text'
+            id='icon'
+            name='icon'
+            placeholder='code or fa-code or fa-solid fa-code'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+
+          <div class='flex items-center gap-3'>
+            <i :class='computedClass' class='text-2xl text-gray-700'></i>
+            <span class='text-sm text-gray-500' x-text='computedClass'></span>
+          </div>
+        </div>
+        <p class='text-sm text-gray-500 mt-2'>Type an icon name like
+          <code>code</code>
+          or
+          <code>fa-code</code>. It will preview using Font Awesome 6 (e.g.
+          <code>fa-solid fa-code</code>).</p>
+      </div>
+
+      <!-- Deskripsi -->
+      <div>
+        <label
+          for='deskripsi'
+          class='block text-sm font-medium text-gray-700 mb-2'
+        >
+          Description
+          <span class='text-red-500'>*</span>
+        </label>
+        <textarea
+          id='deskripsi'
+          name='deskripsi'
+          required
+          rows='5'
+          placeholder='Enter topic description...'
+          class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 resize-none bg-white'
+        >{{topic.deskripsi}}</textarea>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div class='flex gap-2 mt-6'>
+        <button
+          type='submit'
+          class='py-2 px-4 bg-gray-900 text-white font-semibold rounded-lg shadow hover:bg-gray-600 transition'
+        >
+          Update
+        </button>
+        <a
+          href='/topic'
+          class=' px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition  items-center'
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

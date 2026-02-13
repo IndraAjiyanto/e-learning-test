@@ -22,6 +22,8 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import * as cheerio from 'cheerio';
+import editorjsHTML from 'editorjs-html';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -50,9 +52,11 @@ export class BlogController {
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const categories = await this.blogService.getAllCategories();
+    const topics = await this.blogService.getAllTopics();
     res.render('super_admin/blog/create', {
       user: req.user,
       categories,
+      topics,
     });
   }
 
@@ -77,12 +81,14 @@ export class BlogController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const blog = await this.blogService.findOne(+id);
+    const blog = await this.blogService.findOne(id);
     const categories = await this.blogService.getAllCategories();
+    const topics = await this.blogService.getAllTopics();
     res.render('super_admin/blog/edit', {
       user: req.user,
       blog,
       categories,
+      topics,
     });
   }
 
@@ -108,11 +114,13 @@ export class BlogController {
   ) {
     try {
       createBlogDto.gambar = req.body.uploadedImageUrls || [];
+          const edjsParser = editorjsHTML();
+const html = edjsParser.parse(JSON.parse(createBlogDto.isi));
+createBlogDto.isi = html;
       await this.blogService.create(createBlogDto);
       req.flash('success', 'Blog successfully created');
       res.redirect('/blog');
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }
@@ -136,7 +144,7 @@ export class BlogController {
     try {
           const imageUrl = req.body.uploadedImageUrls?.[0];
           console.log('Uploaded Image URL:', imageUrl);
-    return res.json({ url: imageUrl }); 
+    return res.json({ success: 1, file:{ url: imageUrl }}); 
     } catch (error) {
       console.log(error);
       req.flash('error', error.message || 'Blog failed to create');
@@ -179,7 +187,7 @@ export class BlogController {
       if (blog.gambar && blog.gambar.length > 0) {
         for (const url of blog.gambar) {
           if (!existingImages.includes(url)) {
-            await this.blogService.getPublicIdFromUrl(url);
+            await this.blogService.deleteFile(url);
           }
         }
       }
@@ -197,7 +205,7 @@ export class BlogController {
   }
 
   @Roles('super_admin')
-  @Delete('admin/delete/:id')
+  @Delete(':id')
   async remove(
     @Param('id') id: number,
     @Res() res: Response,
@@ -211,9 +219,21 @@ export class BlogController {
       }
       if (blog.gambar && blog.gambar.length > 0) {
         for (const url of blog.gambar) {
-          await this.blogService.getPublicIdFromUrl(url);
+          await this.blogService.deleteFile(url);
         }
       }
+if (blog.isi) {
+  const $ = cheerio.load(blog.isi);
+  const imgUrls = $('img')
+    .toArray()                
+    .map(img => $(img).attr('src')) 
+    .filter(src => !!src); 
+
+  await Promise.all(
+    imgUrls.map(url => this.blogService.deleteFile(url!))
+  );
+}
+
       await this.blogService.remove(id);
       req.flash('success', 'Blog successfully removed');
       res.redirect('/blog');

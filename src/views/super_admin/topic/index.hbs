@@ -1,18 +1,17 @@
 <div
   class='w-full px-6 py-10'
-  x-data='blogTable({ blogs: {{json blogs}} })'
+  x-data='topicTable({ topic: {{json topic}} })'
 >
   <div
     class='mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4'
   >
-    <h2 class='text-3xl font-bold text-gray-900 text-center md:text-left'>Blog
-      Management</h2>
+    <h2 class='text-3xl font-bold text-gray-900 text-center md:text-left'>Topic Management</h2>
 
     <div class='flex items-center gap-3'>
       <div class='relative w-full md:w-64'>
         <input
           type='text'
-          placeholder='Search blog...'
+          placeholder='Search topic...'
           x-model='searchInput'
           @input='search = searchInput; pageNumber=0'
           class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
@@ -39,10 +38,10 @@
       </div>
 
       <a
-        href='/blog/formCreate'
-        class='bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+        href='/topic/formCreate'
+        class='bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition whitespace-nowrap'
       >
-        Create Blog
+        Create Topic
       </a>
     </div>
   </div>
@@ -56,140 +55,61 @@
           >No</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Author</th>
+          >Icon</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Image</th>
+          >Nama</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Title</th>
+          >Deskripsi</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Category</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Topic</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Date</th>
+          >Total Blog</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Action</th>
         </tr>
       </thead>
       <tbody class='divide-y divide-gray-200'>
-        {{#each blogs}}
+        {{#each topic}}
           <tr
             class='hover:bg-gray-50 transition'
-            x-show="filteredBlogs.includes('{{id}}')"
+            x-show="filteredTopic.includes('{{id}}')"
           >
             <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
 
-                        <td class='px-6 py-4 text-sm text-gray-800 max-w-xs'>
-              <div class='font-semibold line-clamp-2'>{{author}}</div>
-            </td>
-
-            <!-- Image -->
+            <!-- Icon -->
             <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#if gambar}}
-                {{#if (isArray gambar)}}
-                  <div class='flex gap-1'>
-                    {{#each gambar}}
-                      {{#if @first}}
-                        <img
-                          src='{{this}}'
-                          alt='Blog image'
-                          class='w-20 h-16 object-cover rounded-md shadow-sm border'
-                        />
-                      {{/if}}
-                    {{/each}}
-                    {{#if (gt gambar.length 1)}}
-                      <div
-                        class='w-16 h-16 bg-gray-200 rounded-md shadow-sm border flex items-center justify-center text-xs text-gray-600 font-semibold'
-                      >
-                        +{{subtract gambar.length 1}}
-                      </div>
-                    {{/if}}
-                  </div>
-                {{else}}
-                  <img
-                    src='{{gambar}}'
-                    alt='Blog image'
-                    class='w-20 h-16 object-cover rounded-md shadow-sm border'
-                  />
-                {{/if}}
-              {{else}}
-                <div
-                  class='w-20 h-16 bg-gray-200 rounded-md flex items-center justify-center'
-                >
-                  <span class='text-gray-400 text-xs'>No image</span>
-                </div>
-              {{/if}}
-            </td>
-
-            <!-- Title -->
-            <td class='px-6 py-4 text-sm text-gray-800 max-w-xs'>
-              <div class='font-semibold line-clamp-2'>{{judul}}</div>
-            </td>
-
-            <!-- Category -->
-                        <td class='px-6 py-4 text-sm text-gray-800'>
-              <span
-                class='inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold'
+              <div
+                class='w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-2xl text-gray-700'
               >
-                <i class="{{computeIcon kategori_blog.icon}}"></i>
-                {{kategori_blog.nama}}
-              </span>
+                <i class='{{computeIcon icon}}'></i>
+              </div>
             </td>
-            
+
+            <!-- Nama -->
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              <div class='font-semibold'>{{nama}}</div>
+            </td>
+
+            <!-- Deskripsi -->
+            <td class='px-6 py-4 text-sm text-gray-600 max-w-md'>
+              <div class='line-clamp-2'>{{deskripsi}}</div>
+            </td>
+
+            <!-- Total Blog -->
             <td class='px-6 py-4 text-sm text-gray-800'>
               <span
-                class='inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold'
+                class='inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold'
               >
-                <i class="{{computeIcon topic.icon}}"></i>
-                {{topic.nama}}
+                {{#if blog}}{{blog.length}}{{else}}0{{/if}}
               </span>
-            </td>
-
-
-
-            <!-- Date -->
-            <td class='px-6 py-4 text-sm text-gray-600'>
-              {{formatDate createdAt}}
             </td>
 
             <!-- Action -->
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
-              <!-- View -->
-              <a
-                href='/blog/detail/{{id}}'
-                target='_blank'
-                class='p-2 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800 transition'
-                title='View'
-              >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke-width='1.5'
-                  stroke='currentColor'
-                  class='w-5 h-5'
-                >
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    d='M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z'
-                  />
-                  <path
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                    d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
-                  />
-                </svg>
-              </a>
-
               <!-- Edit -->
-              <form action='/blog/formEdit/{{id}}' method='get'>
+              <form action='/topic/formEdit/{{id}}' method='get'>
                 <button
                   type='submit'
                   class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
@@ -206,11 +126,7 @@
                     <path
                       stroke-linecap='round'
                       stroke-linejoin='round'
-                      d='M16.862 4.487l1.687-1.688a1.875 
-                         1.875 0 112.652 2.652L10.582 
-                         16.07a4.5 4.5 0 01-1.897 
-                         1.13l-2.685.805.805-2.685a4.5 
-                         4.5 0 011.13-1.897l10.927-10.936z'
+                      d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13l-2.685.805.805-2.685a4.5 4.5 0 011.13-1.897l10.927-10.936z'
                     />
                     <path
                       stroke-linecap='round'
@@ -222,10 +138,7 @@
               </form>
 
               <!-- Delete -->
-              <form
-                action='/blog/{{id}}?_method=DELETE'
-                method='post'
-              >
+              <form action='/topic/{{id}}?_method=DELETE' method='POST'>
                 <button
                   type='button'
                   onclick='confirmDelete(this)'
@@ -291,18 +204,18 @@
 </div>
 
 <script>
-  function blogTable({ blogs }) {
+  function topicTable({ topic }) {
     return {
       searchInput: "",
       search: "",
       pageNumber: 0,
-      size: 10,
-      blogs,
+      size: 5,
+      topic,
       amount: 0,
 
-      get filteredBlogs() {
-        let filtered = this.blogs.filter(b =>
-          (`${b.judul} ${b.kategori_blog.nama}`)
+      get filteredTopic() {
+        let filtered = this.topic.filter(c =>
+          (`${c.nama} ${c.deskripsi}`)
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );
@@ -312,9 +225,7 @@
         const start = this.pageNumber * this.size;
         const end = start + this.size;
 
-        return filtered
-          .slice(start, end)
-          .map(b => b.id.toString());
+        return filtered.slice(start, end).map(c => c.id.toString());
       },
 
       pages() {
@@ -326,36 +237,16 @@
       },
 
       nextPage() {
-        if (this.pageNumber < this.pageCount() - 1) {
-          this.pageNumber++;
-        }
+        if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
       },
 
       prevPage() {
-        if (this.pageNumber > 0) {
-          this.pageNumber--;
-        }
+        if (this.pageNumber > 0) this.pageNumber--;
       },
 
       viewPage(index) {
         this.pageNumber = index;
-      }
+      },
     };
   }
-
-  function confirmDelete(button) {
-    if (confirm("Are you sure you want to delete this blog post?")) {
-      button.closest("form").submit();
-    }
-  }
 </script>
-
-
-<style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-</style>

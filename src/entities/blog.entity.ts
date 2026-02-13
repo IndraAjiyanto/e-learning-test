@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { KategoriBlog } from './kategori_blog.entity';
+import { Topic } from './topic.entity';
 
 @Entity()
 export class Blog {
@@ -35,4 +36,9 @@ export class Blog {
     onDelete: 'CASCADE',
   })
   kategori_blog: KategoriBlog;
+
+  @ManyToOne(() => Topic, (topic) => topic.blog, {
+    onDelete: 'CASCADE',
+  })
+  topic: Topic;
 }

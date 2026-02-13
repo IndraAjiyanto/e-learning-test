@@ -163,4 +163,19 @@
   .custom-scrollbar &::-webkit-scrollbar {
     @apply size-1.5;
   }
+
+  #editor h1 {
+  @apply text-3xl font-bold mb-4;
+}
+#editor h2 {
+  @apply text-2xl font-semibold mb-3;
+}
+#editor h3 {
+  @apply text-xl font-medium mb-2;
+}
+
+/* Optional paragraph spacing */
+#editor p {
+  @apply text-base mb-3;
+}   
 }

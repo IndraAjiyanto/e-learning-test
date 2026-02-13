@@ -19,4 +19,8 @@ export class CreateBlogDto {
   @IsNumber()
   @IsNotEmpty()
   kategori_blog: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  topic: number;
 }

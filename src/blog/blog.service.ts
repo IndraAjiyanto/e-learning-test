@@ -5,7 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from 'src/entities/blog.entity';
 import { Not, Repository } from 'typeorm';
 import { KategoriBlog } from 'src/entities/kategori_blog.entity';
-import cloudinary from 'src/common/config/multer.config';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import { Topic } from 'src/entities/topic.entity';
+
 
 @Injectable()
 export class BlogService {
@@ -14,6 +17,8 @@ export class BlogService {
     private readonly blogRepository: Repository<Blog>,
     @InjectRepository(KategoriBlog)
     private readonly kategoriBlogRepository: Repository<KategoriBlog>,
+    @InjectRepository(Topic)
+    private readonly topicRepository: Repository<Topic>,
   ) {}
 
   async create(createBlogDto: CreateBlogDto) {
@@ -23,16 +28,23 @@ export class BlogService {
     if (!kategori) {
       throw new NotFoundException('Category not found');
     }
+    const topic = await this.topicRepository.findOne({
+      where: { id: createBlogDto.topic },
+    });
+    if (!topic) {
+      throw new NotFoundException('Topic not found');
+    }
     const blog = this.blogRepository.create({
       ...createBlogDto,
       kategori_blog: kategori,
+      topic: topic,
     });
     return await this.blogRepository.save(blog);
   }
 
   async findAll() {
     return await this.blogRepository.find({
-      relations: ['kategori_blog'],
+      relations: ['kategori_blog', 'topic'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -40,7 +52,7 @@ export class BlogService {
   async findOne(id: number) {
     const blog = await this.blogRepository.findOne({
       where: { id },
-      relations: ['kategori_blog'],
+      relations: ['kategori_blog', 'topic'],
     });
     if (!blog) {
       throw new NotFoundException('Blog not found');
@@ -54,44 +66,32 @@ export class BlogService {
     });
   }
 
+  async getAllTopics() {
+    return await this.topicRepository.find({
+      order: { nama: 'ASC' },
+    });
+  }
+
   async getRecentBlogs(id: number) {
     return await this.blogRepository.find({
       where: { id: Not(id) },
-      relations: ['kategori_blog'],
+      relations: ['kategori_blog', 'topic'],
       order: { createdAt: 'DESC' },
       take: 3,
     });
   }
-  
 
-  async getPublicIdFromUrl(url: string) {
-    const parts = url.split('/upload/');
-    if (parts.length < 2) {
-      return null;
-    }
+  async deleteFile(url: string) {
+  if (!url) return;
 
-    let path = parts[1];
-    path = path.replace(/^v[0-9]+\/?/, '');
-    path = path.replace(/\.[^.]+$/, '');
-
-    console.log('Public ID:', path);
-    await this.deleteFileIfExists(path);
+  try {
+    const filePath = path.join(process.cwd(), 'public', url);
+    
+    await fs.unlink(filePath);
+  } catch (error) {
+    throw new NotFoundException('File not found');
   }
-
-  async deleteFileIfExists(publicId: string) {
-    try {
-      const result = await cloudinary.uploader.destroy(publicId);
-
-      if (result.result === 'not found') {
-        console.log('File not found in Cloudinary.');
-      } else {
-        console.log('File deleted from Cloudinary:', result);
-      }
-    } catch (error) {
-      console.error('Error deleting file from Cloudinary:', error);
-      throw error;
-    }
-  }
+}
 
   async update(id: number, updateBlogDto: UpdateBlogDto) {
     const blog = await this.findOne(id);
@@ -107,6 +107,16 @@ export class BlogService {
         throw new NotFoundException('Category not found');
       }
       blog.kategori_blog = kategori;
+    }
+
+    if (updateBlogDto.topic) {
+      const topic = await this.topicRepository.findOne({
+        where: { id: updateBlogDto.topic },
+      });
+      if (!topic) {
+        throw new NotFoundException('Topic not found');
+      }
+      blog.topic = topic;
     }
 
     if (updateBlogDto.judul) blog.judul = updateBlogDto.judul;
