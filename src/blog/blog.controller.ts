@@ -164,7 +164,6 @@ tempFiles.forEach(file => {
 
     }
   } catch (err) {
-    console.log("File processing error:", err.message);
   }
 });
 
@@ -196,10 +195,8 @@ createBlogDto.isi = html;
   ) {
     try {
           const imageUrl = req.body.uploadedImageUrls?.[0];
-          console.log('Uploaded Image URL:', imageUrl);
     return res.json({ success: 1, file:{ url: imageUrl }}); 
     } catch (error) {
-      console.log(error);
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }
