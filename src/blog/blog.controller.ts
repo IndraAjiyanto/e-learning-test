@@ -23,9 +23,9 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import * as cheerio from 'cheerio';
-import editorjsHTML from 'editorjs-html';
 import * as fs from "fs";
 import * as path from "path";
+import editorjsHTML from "src/common/public/js/edjs";
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -120,11 +120,8 @@ const finalDir = path.join(process.cwd(), "public/asset/blog/isi");
 
 createBlogDto.gambar = req.body.uploadedImageUrls || [];
 
-// convert JSON → HTML
-const edjsParser = editorjsHTML();
-let html = edjsParser.parse(JSON.parse(createBlogDto.isi));
+let html = editorjsHTML.parse(JSON.parse(createBlogDto.isi));
 
-// parse HTML
 const $ = cheerio.load(html);
 const usedImages: string[] = [];
 
@@ -135,7 +132,6 @@ $("img").each((_, el) => {
   }
 });
 
-// semua file temp
 const tempFiles = fs.readdirSync(tempDir);
 
 tempFiles.forEach(file => {
@@ -146,10 +142,8 @@ tempFiles.forEach(file => {
   try {
     if (usedImages.includes(tempUrl)) {
 
-      // move file
       fs.renameSync(oldPath, newPath);
 
-      // update path html
       html = html.replaceAll(
         `/asset/blog/temp/${file}`,
         `/asset/blog/isi/${file}`
@@ -157,7 +151,6 @@ tempFiles.forEach(file => {
 
     } else {
 
-      // delete unused
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }
@@ -225,25 +218,52 @@ createBlogDto.isi = html;
     @Req() req: Request,
   ) {
     try {
-      const blog = await this.blogService.findOne(+id);
+      if(updateBlogDto.isi) {
+       const oldBlog = await this.blogService.findOne(id);
 
-      let existingImages: string[] = [];
-      if (req.body.existing_images) {
-        existingImages = Array.isArray(req.body.existing_images)
-          ? req.body.existing_images
-          : [req.body.existing_images];
-      }
+  const extractImages = (html: string) => {
+    const $ = cheerio.load(html);
+    const arr: string[] = [];
 
-      if (blog.gambar && blog.gambar.length > 0) {
-        for (const url of blog.gambar) {
-          if (!existingImages.includes(url)) {
-            await this.blogService.deleteFile(url);
-          }
-        }
-      }
+    $("img").each((_, el) => {
+      const src = $(el).attr("src");
+      if (src) arr.push(src);
+    });
 
-      const newUploadedImages = req.body.uploadedImageUrls || [];
-      updateBlogDto.gambar = [...existingImages, ...newUploadedImages];
+    return arr;
+  };
+
+  const oldImages = extractImages(oldBlog.isi);
+
+  let newHtml = editorjsHTML.parse(JSON.parse(updateBlogDto.isi));
+
+  const newImages = extractImages(newHtml);
+
+  const deletedImages = oldImages.filter(x => !newImages.includes(x));
+
+  deletedImages.forEach(url => {
+    const filePath = path.join(process.cwd(), "public", url);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  });
+
+  newImages.forEach(url => {
+    if (url.includes("/asset/blog/temp/")) {
+
+      const filename = path.basename(url);
+
+      const oldPath = path.join(process.cwd(),"public/asset/blog/temp",filename);
+      const newPath = path.join(process.cwd(),"public/asset/blog/isi",filename);
+
+      if (fs.existsSync(oldPath)) fs.renameSync(oldPath, newPath);
+
+      newHtml = newHtml.replaceAll(
+        `/asset/blog/temp/${filename}`,
+        `/asset/blog/isi/${filename}`
+      );
+    }
+  });
+  updateBlogDto.isi = newHtml;
+}
 
       await this.blogService.update(id, updateBlogDto);
       req.flash('success', 'Blog successfully updated');

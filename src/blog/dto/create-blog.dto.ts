@@ -9,6 +9,10 @@ export class CreateBlogDto {
   @IsNotEmpty()
   isi: string;
 
+  // @IsString()
+  // @IsNotEmpty()
+  // isi_editorjs: string;
+
   @IsString()
   @IsNotEmpty()
   author: string;

@@ -23,6 +23,9 @@ export class Blog {
   @Column()
   author: string;
 
+  // @Column({type: 'text'})
+  // tags: string;
+
   @Column('jsonb')
   gambar: string[];
 
