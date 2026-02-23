@@ -26,8 +26,13 @@ const parser = edjsHTML({
     `;
   },
   paragraph: (block) => {
-    return `<p class="mb-3 text-lg text-gray-800">${block.data.text}</p>`;
+    const align = block.data.alignment;
+    return `<p class="mb-3 text-lg text-gray-800 text-${align}">${block.data.text}</p>`;
   },
+  header: (block) => {
+    const level = block.data.level;
+    return `<h${level} class="mb-4 text-4xl font-bold text-gray-900">${block.data.text}</h${level}>`;
+  }
 });
 
 export default parser;
