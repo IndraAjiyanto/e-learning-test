@@ -2,151 +2,157 @@
   <div class='max-w-7xl mx-auto px-6'>
 
     <a
-  href="/dashboard/blog"
-  class="gap-2 bg-white shadow-lg rounded-full items-center text-gray-900 p-3 hover:bg-gray-100 transition mb-5 inline-flex"
->
-  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-      d="M15 19l-7-7 7-7" />
-  </svg>
-  <p class="pr-2">
-  {{t "test.detailBlog.backToBlog"}}
-  </p>
-</a>
+      href="/dashboard/blog"
+      class="gap-2 bg-white shadow-lg rounded-full items-center text-gray-900 p-3 hover:bg-gray-100 transition mb-5 inline-flex"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M15 19l-7-7 7-7" />
+      </svg>
+      <p class="pr-2">
+        {{t "test.detailBlog.backToBlog"}}
+      </p>
+    </a>
 
-
-<div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-6">
-  <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight md:mb-0 mb-2">
-    {{blog.judul}}
-  </h1>
-
-<div
-  class="inline-flex w-fit max-w-full items-center gap-2
-         bg-gradient-to-br from-primary via-secondary to-gray-900
-         text-white px-4 py-2 rounded-full text-sm"
->
-  <i class="{{computeIcon blog.kategori_blog.icon}}"></i>
-  <span class="font-semibold whitespace-nowrap md:whitespace-normal">
-    {{blog.kategori_blog.nama}}
-  </span>
-</div>
-
-</div>
-
-
-    <div class='flex flex-wrap items-center gap-6 text-gray-600 mb-8 pb-8 border-b border-gray-200'>
-            <div class='flex items-center gap-2'>
-<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="2"
-    d="M12 12a4 4 0 100-8 4 4 0 000 8zm6 8H6a6 6 0 0112 0z"
-  />
-</svg>
-
-        <span>{{blog.author}}</span>
-      </div>
-      <div class='flex items-center gap-2'>
-        <svg class='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-          <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
-        </svg>
-        <time>{{formatDate blog.createdAt}}</time>
-      </div>
-
-    </div>
-
-    {{#if blog.gambar}}
-      {{#if (isArray blog.gambar)}}
+    <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+      <div class="lg:w-2/3">
         <div x-data='{ currentSlide: 0, totalSlides: {{blog.gambar.length}} }' class='relative mb-12'>
-<div class="relative rounded-2xl overflow-hidden shadow-2xl max-w-full md:max-w-4xl mx-auto">
-  {{#each blog.gambar}}
-    <div
-      x-show="currentSlide === {{@index}}"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="opacity-0 transform translate-x-full"
-      x-transition:enter-end="opacity-100 transform translate-x-0"
-      x-transition:leave="transition ease-in duration-300"
-      x-transition:leave-start="opacity-100 transform translate-x-0"
-      x-transition:leave-end="opacity-0 transform -translate-x-full"
-      class="w-full"
-    >
-      <img
-        src="{{this}}"
-        alt="Blog image {{addOne @index}}"
-        class="w-full h-auto object-contain"
-      />
-    </div>
-  {{/each}}
+          <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+            {{#each blog.gambar}}
+              <div
+                x-show="currentSlide === {{@index}}"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate-x-full"
+                x-transition:enter-end="opacity-100 transform translate-x-0"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100 transform translate-x-0"
+                x-transition:leave-end="opacity-0 transform -translate-x-full"
+                class="w-full"
+              >
+                <img
+                  src="{{this}}"
+                  alt="Blog image {{@index}}"
+                  class="w-full h-auto object-contain"
+                />
+              </div>
+            {{/each}}
+      
+            
+            <button
+              @click="currentSlide = currentSlide > 0 ? currentSlide - 1 : totalSlides - 1"
+              class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              @click="currentSlide = currentSlide < totalSlides - 1 ? currentSlide + 1 : 0"
+              class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
 
-  {{#if (gt blog.gambar.length 1)}}
-    <button
-      @click="currentSlide = currentSlide > 0 ? currentSlide - 1 : totalSlides - 1"
-      class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition"
-    >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-    </button>
-    <button
-      @click="currentSlide = currentSlide < totalSlides - 1 ? currentSlide + 1 : 0"
-      class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition"
-    >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </button>
-  {{/if}}
-</div>
+          <div class='flex gap-2 mt-4 overflow-x-auto pb-2'>
+            {{#each blog.gambar}}
+              <button
+                @click='currentSlide = @index'
+                :class='currentSlide === @index ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
+                class='flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden transition-all hover:ring-gray-600'
+              >
+                <img src='{{this}}' alt='Thumbnail {{@index}}' class='w-full h-full object-cover'/>
+              </button>
+            {{/each}}
+          </div>
 
-
-          {{#if (gt blog.gambar.length 1)}}
-            <div class='flex gap-2 mt-4 overflow-x-auto pb-2'>
-              {{#each blog.gambar}}
-                <button
-                  @click='currentSlide = {{@index}}'
-                  :class='currentSlide === {{@index}} ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
-                  class='flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden transition-all hover:ring-gray-600'
-                >
-                  <img
-                    src='{{this}}'
-                    alt='Thumbnail {{addOne @index}}'
-                    class='w-full h-full object-cover'
-                  />
-                </button>
-              {{/each}}
-            </div>
-
-            <div class='flex justify-center gap-2 mt-4'>
-              {{#each blog.gambar}}
-                <button
-                  @click='currentSlide = {{@index}}'
-                  :class='currentSlide === {{@index}} ? "bg-gray-900 w-8" : "bg-gray-300 w-2"'
-                  class='h-2 rounded-full transition-all'
-                ></button>
-              {{/each}}
-            </div>
-          {{/if}}
+          <div class='flex justify-center gap-2 mt-4'>
+            {{#each blog.gambar}}
+              <button
+                @click='currentSlide = @index'
+                :class='currentSlide === @index ? "bg-gray-900 w-8" : "bg-gray-300 w-2"'
+                class="h-2 rounded-full transition-all"
+              ></button>
+            {{/each}}
+          </div>
         </div>
-      {{else}}
-        <div class='relative rounded-2xl overflow-hidden shadow-2xl mb-12'>
-          <img
-            src='{{blog.gambar}}'
-            alt='{{blog.judul}}'
-            class='w-full h-auto'
-          />
-        </div>
-      {{/if}}
-    {{/if}}
 
-    <div class='prose prose-lg max-w-none'>
-      <div class='text-gray-700 leading-relaxed whitespace-pre-line'>
-        {{{blog.isi}}}
+        <div class='max-w-none'>
+{{{blog.isi}}}
+        </div>
+
+  
       </div>
+      <div class="lg:w-1/3">
+        <div class="lg:sticky lg:top-24 space-y-6">
+          <div class="flex flex-col gap-4">
+            <h1 >
+              {{blog.judul}}
+            </h1>
+
+            <div
+              class="inline-flex w-fit max-w-full items-center gap-2
+                     bg-gradient-to-br from-primary via-secondary to-gray-900
+                     text-white px-4 py-2 rounded-full text-sm"
+            >
+              <i class="{{computeIcon blog.kategori_blog.icon}}"></i>
+              <span class="font-semibold whitespace-nowrap md:whitespace-normal">
+                {{blog.kategori_blog.nama}}
+              </span>
+            </div>
+          </div>
+
+          <div class="space-y-4 border-t border-b border-gray-200 py-6">
+            <div class='flex items-center gap-3'>
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12a4 4 0 100-8 4 4 0 000 8zm6 8H6a6 6 0 0112 0z" />
+              </svg>
+              <div>
+                <p class="text-sm text-gray-500">Penulis</p>
+                <span class="font-medium text-gray-900">{{blog.author}}</span>
+              </div>
+            </div>
+            
+            <div class='flex items-center gap-3'>
+              <svg class='w-5 h-5 text-gray-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+              </svg>
+              <div>
+                <p class="text-sm text-gray-500">Tanggal Publikasi</p>
+                <time class="font-medium text-gray-900">{{formatDate blog.createdAt}}</time>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl p-6 space-y-4">
+            <h4 class="font-semibold text-gray-900">Informasi Artikel</h4>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Topic</span>
+              <span class="font-medium text-gray-900">{{blog.topic.nama}}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Keyword</span>
+              <span class="font-medium text-gray-900">{{blog.keyword}}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Tags</span>
+              
+                <span class="font-medium text-gray-900">{{#each blog.tags}}{{this}} {{/each}}</span>
+            </div>
+          </div>
+
+          <div class="lg:hidden">
+            <h3 class='text-lg font-semibold text-gray-900 mb-4'>{{t "test.detailBlog.share"}}</h3>
+            <div class='flex flex-wrap gap-2'>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </div>
-
-
-
   </div>
 </article>
 
@@ -156,135 +162,10 @@
       <h2 class='text-3xl font-bold text-gray-900 mb-8'>{{t "test.detailBlog.relatedBlog"}}</h2>
       <div class='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
         {{#each recentBlogs}}
-         <div
-    x-data='{ 
-      currentSlide: 0, 
-      autoSlide: null,
-      images: {{#if this.gambar}}[{{#each this.gambar}}"{{this}}"{{#unless @last}},{{/unless}}{{/each}}]{{else}}[]{{/if}}
-    }'
-    x-init="
-      if (images.length > 1) {
-        autoSlide = setInterval(() => { 
-          currentSlide = (currentSlide + 1) % images.length;
-        }, 3000);
-      }
-    "
-            @mouseenter='if (autoSlide) clearInterval(autoSlide)'
-            @mouseleave='if (Array.isArray({{this.gambar}}) && {{this.gambar}}.length > 1) autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % (Array.isArray({{this.gambar}}) ? {{this.gambar}}.length : 1) }, 3000)'
-          >
-
-            <div
-              class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'
-            >
-              <div class='relative overflow-hidden rounded-t-xl'>
-                <div class='relative h-44 w-full'>
-                  <div
-                  >
-                  {{#each this.gambar}}
-                    <img
-                      :src='{{this}}'
-                      :alt="{{../judul}} + ' - Image ' + (index + 1)"
-                      class='absolute inset-0 w-full h-44 object-cover transition-opacity duration-500'
-                      :class="{ 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }"
-                    />
-                    {{/each}}
-                  </div>
-                </div>
-
-        
-                {{#if this.gambar}}
-                  <div>
-                    <button
-                      @click='currentSlide = currentSlide === 0 ? (Array.isArray({{this.gambar}}) ? {{this.gambar}}.length : 1) - 1 : currentSlide - 1'
-                      class='absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
-                    >
-                      <svg
-                        class='w-4 h-4'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                      >
-                        <path
-                          stroke-linecap='round'
-                          stroke-linejoin='round'
-                          stroke-width='2'
-                          d='M15 19l-7-7 7-7'
-                        ></path>
-                      </svg>
-                    </button>
-                    <button
-                      @click='currentSlide = (currentSlide + 1) % (Array.isArray({{this.gambar}}) ? {{this.gambar}}.length : 1)'
-                      class='absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
-                    >
-                      <svg
-                        class='w-4 h-4'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                      >
-                        <path
-                          stroke-linecap='round'
-                          stroke-linejoin='round'
-                          stroke-width='2'
-                          d='M9 5l7 7-7 7'
-                        ></path>
-                      </svg>
-                    </button>
-                  </div>
-                {{/if}}
-
-                <div
-                  class='absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md'
-                >
-                  <span x-text="{{this.author}}"></span>
-                </div>
-
-                {{#if this.gambar}}
-                  <div
-                    class='absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2'
-                  >
-                    {{#each this.gambar}}
-                      <button
-                        @click='currentSlide = index'
-                        class='w-2 h-2 rounded-full transition-all duration-200'
-                        :class="{ 'bg-white': currentSlide === index, 'bg-white/50': currentSlide !== index }"
-                      ></button>
-                      {{/each}}
-                  </div>
-                  {{/if}}
-              </div>
-
-              <div class='p-6 space-y-4'>
-                <div class='flex flex-wrap gap-1'>
-                  <span
-                    class='badge bg-gradient-to-br from-primary via-secondary to-gray-900  text-white px-3 py-1 text-xs font-semibold rounded-full'
-                    x-text="{{this.kategori_blog.nama}}"
-                  >
-                  </span>
-                </div>
-
-                <h3
-                  class='text-lg font-semibold text-gray-900 leading-tight'
-                  x-text="{{this.judul}}"
-                ></h3>
-
-
-                <div class='mt-6'>
-                  <a
-                    :href="'/blog/detail/' + {{this.id}}"
-                    class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
-                  >
-                    {{t "test.blog.detailButton"}}
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
         {{/each}}
       </div>
-
       <div class='text-center mt-12'>
-        <a href='/dashboard/blog' class='inline-flex items-center gap-2  font-semibold btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 border-0 shadow-lg hover:shadow-xl transition-xall duration-300 transform hover:-translate-y-1'>
+        <a href='/dashboard/blog' class='inline-flex items-center gap-2 font-semibold btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 border-0 shadow-lg hover:shadow-xl transition-xall duration-300 transform hover:-translate-y-1'>
           {{t "test.detailBlog.buttonViewAllBlog"}}
         </a>
       </div>
@@ -292,89 +173,36 @@
   </section>
 {{/if}}
 
-<style>
-  .prose {
-    font-size: 1.125rem;
-    line-height: 1.75;
-  }
-
-  .prose p {
-    margin-bottom: 1.5rem;
-  }
-
-  .prose h2 {
-    font-size: 1.875rem;
-    font-weight: 700;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    color: #111827;
-  }
-
-  .prose h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-    color: #111827;
-  }
-
-  .prose ul, .prose ol {
-    margin-bottom: 1.5rem;
-    padding-left: 1.5rem;
-  }
-
-  .prose li {
-    margin-bottom: 0.5rem;
-  }
-
-  .prose blockquote {
-    border-left: 4px solid #111827;
-    padding-left: 1.5rem;
-    margin: 1.5rem 0;
-    font-style: italic;
-    color: #4B5563;
-  }
-
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-</style>
-
-
 <script>
   const shareData = (platform, blog) => {
-  const url = window.location.href;
-  const title = blog.judul;
-  const description = blog.isi || "";
-  const image = blog.gambar?.[0] || "";
-
-  switch(platform) {
-    case 'facebook':
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-      break;
-
-    case 'twitter':
-      window.open(
-        `https://twitter.com/intent/tweet?text=${encodeURIComponent(title + " - " + description)}&url=${encodeURIComponent(url)}`,
-        '_blank'
-      );
-      break;
-
-    case 'whatsapp':
-      window.open(
-        `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`,
-        '_blank'
-      );
-      break;
-
-    case 'copy':
-      const textToCopy = `${url}`;
-      navigator.clipboard.writeText(textToCopy).then(() => alert('Link copied with title!'));x
-      break;
-  }
-};
-
+    const url = window.location.href;
+    const title = blog.judul;
+    const description = blog.isi || "";
+    const image = blog.gambar?.[0] || "";
+    
+    switch(platform) {
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
+        
+      case 'twitter':
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(title + " - " + description)}&url=${encodeURIComponent(url)}`,
+          '_blank'
+        );
+        break;
+        
+      case 'whatsapp':
+        window.open(
+          `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`,
+          '_blank'
+        );
+        break;
+        
+      case 'copy':
+        const textToCopy = `${url}`;
+        navigator.clipboard.writeText(textToCopy).then(() => alert('Link copied with title!'));
+        break;
+    }
+  };
 </script>

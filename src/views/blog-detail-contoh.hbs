@@ -16,7 +16,7 @@
 
     <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
       <div class="lg:w-2/3">
-        <div x-data='{ currentSlide: 0, totalSlides: 5 }' class='relative mb-12'>
+        <div x-data='{ currentSlide: 0, totalSlides: {{blog.gambar.length}} }' class='relative mb-12'>
           <div class="relative rounded-2xl overflow-hidden shadow-2xl">
             <div
               x-show="currentSlide === 1"
@@ -54,32 +54,30 @@
           </div>
 
           <div class='flex gap-2 mt-4 overflow-x-auto pb-2'>
-            <button
-              @click='currentSlide = 1'
-              :class='currentSlide === 1 ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
-              class='flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden transition-all hover:ring-gray-600'
-            >
-              <img src='https://ceosuite.co.id/wp-content/uploads/2022/06/rapat-bisnis-di-kantor-scaled-compressed.jpg' alt='Thumbnail 1' class='w-full h-full object-cover'/>
-            </button>
+            {{#each blog.gambar}}
+              <button
+                @click='currentSlide = @index'
+                :class='currentSlide === @index ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
+                class='flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden transition-all hover:ring-gray-600'
+              >
+                <img src='{{this}}' alt='Thumbnail {{@index}}' class='w-full h-full object-cover'/>
+              </button>
+            {{/each}}
           </div>
 
           <div class='flex justify-center gap-2 mt-4'>
-            <button @click='currentSlide = 1' :class='currentSlide === 1 ? "bg-gray-900 w-8" : "bg-gray-300 w-2"' class="h-2 rounded-full transition-all"></button>
-            <button @click='currentSlide = 2' :class='currentSlide === 2 ? "bg-gray-900 w-8" : "bg-gray-300 w-2"' class="h-2 rounded-full transition-all"></button>
-            <button @click='currentSlide = 3' :class='currentSlide === 3 ? "bg-gray-900 w-8" : "bg-gray-300 w-2"' class="h-2 rounded-full transition-all"></button>
-            <button @click='currentSlide = 4' :class='currentSlide === 4 ? "bg-gray-900 w-8" : "bg-gray-300 w-2"' class="h-2 rounded-full transition-all"></button>
-            <button @click='currentSlide = 5' :class='currentSlide === 5 ? "bg-gray-900 w-8" : "bg-gray-300 w-2"' class="h-2 rounded-full transition-all"></button>
+            {{#each blog.gambar}}
+              <button
+                @click='currentSlide = @index'
+                :class='currentSlide === @index ? "bg-gray-900 w-8" : "bg-gray-300 w-2"'
+                class="h-2 rounded-full transition-all"
+              ></button>
+            {{/each}}
           </div>
         </div>
 
         <div class='max-w-none'>
-          <div class="flex justify-center mb-12">
-            <div class="relative rounded-2xl overflow-hidden w-full sm:w-4/5 md:w-3/4 lg:w-2/3 flex justify-center items-center">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkwIWZ7seqaQpjGXESlqKIVVV8Kl_TAof6yA&s" alt="askdnsaj" class="max-w-full h-auto object-contain"/>
-            </div>
-          </div>
-          
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam laborum nam mollitia facere asperiores laudantium distinctio earum nihil quisquam necessitatibus nulla quas quaerat, consectetur praesentium corporis ipsum, consequuntur exercitationem. Reprehenderit.
+{{blog.isi}}
         </div>
 
   
@@ -88,7 +86,7 @@
         <div class="lg:sticky lg:top-24 space-y-6">
           <div class="flex flex-col gap-4">
             <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
-              LOREM
+              {{blog.judul}}
             </h1>
 
             <div
@@ -98,7 +96,7 @@
             >
               <i class="{{computeIcon blog.kategori_blog.icon}}"></i>
               <span class="font-semibold whitespace-nowrap md:whitespace-normal">
-                Lorem ipsum dolor
+                {{blog.kategori_blog.nama}}
               </span>
             </div>
           </div>
@@ -110,7 +108,7 @@
               </svg>
               <div>
                 <p class="text-sm text-gray-500">Penulis</p>
-                <span class="font-medium text-gray-900">Indra Ajiyanto</span>
+                <span class="font-medium text-gray-900">{{blog.author}}</span>
               </div>
             </div>
             
@@ -120,24 +118,26 @@
               </svg>
               <div>
                 <p class="text-sm text-gray-500">Tanggal Publikasi</p>
-                <time class="font-medium text-gray-900">23 Januari 2025</time>
+                <time class="font-medium text-gray-900">{{blog.created_at}}</time>
               </div>
             </div>
           </div>
 
           <div class="bg-gray-50 rounded-xl p-6 space-y-4">
             <h4 class="font-semibold text-gray-900">Informasi Artikel</h4>
-            <div class="flex justify-between items-center">
+            {{!-- <div class="flex justify-between items-center">
               <span class="text-gray-600">Kategori</span>
               <span class="font-medium text-gray-900">Lorem ipsum</span>
-            </div>
+            </div> --}}
             <div class="flex justify-between items-center">
-              <span class="text-gray-600">Waktu Baca</span>
-              <span class="font-medium text-gray-900">5 menit</span>
+              <span class="text-gray-600">Keyword</span>
+              <span class="font-medium text-gray-900">{{blog.keyword}}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-gray-600">Tags</span>
-              <span class="font-medium text-gray-900">#bisnis #tips</span>
+              {{#each blog.tags}}
+                <span class="font-medium text-gray-900">{{this}}</span>
+              {{/each}}
             </div>
           </div>
 
