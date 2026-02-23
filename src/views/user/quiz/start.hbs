@@ -1,7 +1,7 @@
 <div class="max-w-7xl mx-auto px-4 pt-28">
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-50 to-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-8">
-        <h2 class="text-2xl mt-0 font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-2 font-montserrat">
+        <h2 class="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-2 font-montserrat">
             {{pertanyaan.[0].quiz.nama_quiz}}
         </h2>
         <p class="text-slate-600 font-inter">
@@ -17,7 +17,7 @@
             <!-- Sidebar - Question List -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sticky top-6">
-                    <h3 class="text-lg font-semibold text-slate-900 mt-0 mb-4 font-montserrat">{{t "test.quiz.start.questionList"}}</h3>
+                    <h3 class="text-lg font-semibold text-slate-900 mb-4 font-montserrat">{{t "test.quiz.start.questionList"}}</h3>
                     <div class="space-y-2 max-h-[600px] overflow-y-auto">
                         {{#each pertanyaan}}
                         <button 
