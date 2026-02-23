@@ -72,7 +72,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12a4 4 0 100-8 4 4 0 000 8zm6 8H6a6 6 0 0112 0z" />
               </svg>
               <div>
-                <p class="text-sm text-gray-500">{{t "test.detailBlog.author"}}</p>
+                <p class="text-sm text-gray-500">Penulis</p>
                 <span class="font-medium text-gray-900">{{blog.author}}</span>
               </div>
             </div>
@@ -82,24 +82,24 @@
                 <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
               </svg>
               <div>
-                <p class="text-sm text-gray-500">{{t "test.detailBlog.published"}}</p>
+                <p class="text-sm text-gray-500">Tanggal Publikasi</p>
                 <time class="font-medium text-gray-900">{{formatDate blog.createdAt}}</time>
               </div>
             </div>
           </div>
 
           <div class="bg-gray-50 rounded-xl p-6 space-y-4">
-            <h4 class="font-semibold text-gray-900 mt-0 mb-0">{{t "test.detailBlog.informationBlog"}}</h4>
+            <h4 class="font-semibold text-gray-900 mt-0 mb-0">Informasi Artikel</h4>
             <div class="flex justify-between items-center">
-              <span class="text-gray-600">{{t "test.detailBlog.topic"}}</span>
+              <span class="text-gray-600">Topic</span>
               <span class="font-medium text-gray-900">{{blog.topic.nama}}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-600">{{t "test.detailBlog.keyword"}}</span>
+              <span class="text-gray-600">Keyword</span>
               <span class="font-medium text-gray-900">{{blog.keyword}}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-600">{{t "test.detailBlog.tags"}}</span>
+              <span class="text-gray-600">Tags</span>
               
                 <span class="font-medium text-gray-900">{{#each blog.tags}}{{this}} {{/each}}</span>
             </div>
