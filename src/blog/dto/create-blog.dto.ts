@@ -9,11 +9,9 @@ export class CreateBlogDto {
   @IsNotEmpty()
   isi: string;
 
-  @IsArray()
-  tags: string[];
-
-  @IsString()
-  keyword: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // isi_editorjs: string;
 
   @IsString()
   @IsNotEmpty()

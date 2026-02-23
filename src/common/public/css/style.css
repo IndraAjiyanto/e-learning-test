@@ -102,7 +102,8 @@ h3,
 h4,
 h5,
 h6 {
-  color: #0f0f0f;
+  font-size: inherit;
+  font-weight: inherit;
 }
 
 /*
@@ -324,6 +325,12 @@ Removes the default spacing and border for appropriate elements.
 blockquote,
 dl,
 dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 hr,
 figure,
 p,
@@ -4119,6 +4126,10 @@ details.collapse summary::-webkit-details-marker {
 
 .-mr-5 {
   margin-right: -1.25rem;
+}
+
+.mb-0 {
+  margin-bottom: 0px;
 }
 
 .mb-1 {
@@ -8674,10 +8685,6 @@ details.collapse summary::-webkit-details-marker {
     margin-right: 0px;
   }
 
-  .md\:mb-0 {
-    margin-bottom: 0px;
-  }
-
   .md\:mb-3 {
     margin-bottom: 0.75rem;
   }
@@ -8700,6 +8707,10 @@ details.collapse summary::-webkit-details-marker {
 
   .md\:mt-0 {
     margin-top: 0px;
+  }
+
+  .md\:mb-0 {
+    margin-bottom: 0px;
   }
 
   .md\:block {
@@ -8766,16 +8777,16 @@ details.collapse summary::-webkit-details-marker {
     width: 100vw;
   }
 
-  .md\:max-w-4xl {
-    max-width: 56rem;
-  }
-
   .md\:max-w-screen-sm {
     max-width: 640px;
   }
 
   .md\:max-w-sm {
     max-width: 24rem;
+  }
+
+  .md\:max-w-4xl {
+    max-width: 56rem;
   }
 
   .md\:grid-cols-2 {

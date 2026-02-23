@@ -17,17 +17,14 @@ const parser = edjsHTML({
       <img 
         src="${file.url}" 
         alt="${caption || "Image"}"
-        class="h-auto object-contain"
+        class="${classList.join(" ")} h-auto object-contain"
         loading="lazy"
       />
       </div>
       </div>
       </div>
     `;
-  },
-  paragraph: (block) => {
-    return `<p class="mb-3 text-lg text-gray-800">${block.data.text}</p>`;
-  },
+  }
 });
 
 export default parser;

@@ -55,12 +55,10 @@ export class BlogController {
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const categories = await this.blogService.getAllCategories();
     const topics = await this.blogService.getAllTopics();
-    const notSidebar = true;
     res.render('super_admin/blog/create', {
       user: req.user,
       categories,
       topics,
-      notSidebar
     });
   }
 
@@ -88,13 +86,11 @@ export class BlogController {
     const blog = await this.blogService.findOne(id);
     const categories = await this.blogService.getAllCategories();
     const topics = await this.blogService.getAllTopics();
-    const notSidebar = true;
     res.render('super_admin/blog/edit', {
       user: req.user,
       blog,
       categories,
       topics,
-      notSidebar
     });
   }
 
@@ -192,7 +188,7 @@ createBlogDto.isi = html;
   ) {
     try {
           const imageUrl = req.body.uploadedImageUrls?.[0];
-    res.json({ success: 1, file:{ url: imageUrl }}); 
+    return res.json({ success: 1, file:{ url: imageUrl }}); 
     } catch (error) {
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');

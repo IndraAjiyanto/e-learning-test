@@ -41,18 +41,12 @@
 <body class="bg-slate-50 text-base-content">
   
   {{#if (roles user.role 'admin' 'super_admin')}}
-          {{#if notSidebar}}
-                <main class="min-h-screen">
-        {{{ body }}}  
-      </main>
-      {{else}}
     {{> sidebar}}
     <div class="lg:ml-64 min-h-screen">
       <main class="min-h-screen">
         {{{ body }}}  
       </main>
     </div>
-    {{/if}}
   {{else}}
     {{> navbar}}  
     <main class="min-h-screen">
