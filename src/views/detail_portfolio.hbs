@@ -7,7 +7,7 @@
             <span class="text-[#003060] font-semibold">{{portfolio.kelas.nama_kelas}}</span>
         </div>
         
-        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight font-montserrat">
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mt-0 mb-6 leading-tight font-montserrat">
             {{portfolio.judul}}
         </h1>
     </div>
@@ -89,7 +89,7 @@
             
             <!-- Technologies -->
             <div class="bg-white rounded-2xl p-8 shadow-xl">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 font-montserrat">{{t "test.detailPortfolio.technologiesUsed"}}</h2>
+                <h2 class="text-2xl font-bold text-gray-900 mt-0 mb-6 font-montserrat">{{t "test.detailPortfolio.technologiesUsed"}}</h2>
                 <div class="flex flex-wrap gap-3">
                     {{#each portfolio.kelas.teknologi}}
                     <span class="w-10 h-10 ">{{{this.svg}}}</span>
@@ -99,7 +99,7 @@
 
             <!-- Project Details -->
             <div class="bg-white rounded-2xl p-8 shadow-xl">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 font-montserrat">{{t "test.detailPortfolio.projectOverview"}}</h2>
+                <h2 class="text-2xl font-bold text-gray-900 mt-0 mb-6 font-montserrat">{{t "test.detailPortfolio.projectOverview"}}</h2>
                 <div class="space-y-4 text-gray-700 leading-relaxed font-inter">
                     <p>
             {{portfolio.deskripsi}}
@@ -119,7 +119,7 @@
             
             <!-- Student Profile Card -->
             <div class="bg-white rounded-2xl p-6 shadow-xl">
-                <h3 class="text-xl font-bold text-gray-900 mb-6 font-montserrat">{{t "test.detailPortfolio.studentProfile"}}</h3>
+                <h3 class="text-xl font-bold text-gray-900 mt-0 mb-6 font-montserrat">{{t "test.detailPortfolio.studentProfile"}}</h3>
                 
                 <div class="flex items-center gap-4 mb-6">
                     <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center overflow-hidden ring-4 ring-gray-100">
@@ -138,7 +138,7 @@
                         {{/if}}
                     </div>
                     <div>
-                        <h4 class="text-lg font-bold text-gray-900 font-montserrat">{{portfolio.user.username}}</h4>
+                        <h4 class="text-lg font-bold text-gray-900 mt-0 mb-0 font-montserrat">{{portfolio.user.username}}</h4>
                         <p class="text-gray-600 font-medium font-inter">{{portfolio.user.email}}</p>
                     </div>
                 </div>

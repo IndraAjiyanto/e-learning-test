@@ -2,7 +2,7 @@
 
   <div class='container mx-auto px-4 pb-16'>
     <div class='text-center mb-12'>
-      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t
+      <h1 class='text-4xl font-bold text-gray-900 mt-0 mb-4 font-montserrat'>{{t
           'test.alumni.tittle'
         }}</h1>
       <p class='text-gray-600 max-w-2xl mx-auto text-lg font-inter'>
@@ -20,7 +20,7 @@
           <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
             <div class='flex items-center justify-between mb-3'>
               <h4
-                class='text-sm font-semibold text-gray-700 font-montserrat'
+                class='text-sm font-semibold mt-0 mb-0 text-gray-700 font-montserrat'
               >{{t 'test.alumni.activeFilters'}}</h4>
               <button
                 @click='resetFilters()'
@@ -52,7 +52,7 @@
           <!-- Search Program -->
           <div class='mb-6'>
             <h3
-              class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
+              class='text-base font-semibold text-gray-900 mt-0 mb-3 flex items-center font-montserrat'
             >
               <i class='fas fa-search text-gray-500 mr-2'></i>
               {{t 'test.alumni.searchProgram'}}
@@ -74,7 +74,7 @@
           <!-- Kelas Filter -->
           <div class='mb-6'>
             <h3
-              class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
+              class='text-base font-semibold text-gray-900 mt-0 mb-3 flex items-center font-montserrat'
             >
               <i class='fas fa-graduation-cap text-gray-500 mr-2'></i>
               {{t 'test.alumni.programTittle'}}
@@ -138,7 +138,7 @@
                   </div>
                   <div class='flex-1 min-w-0'>
                     <h3
-                      class='font-bold text-gray-900 text-lg truncate'
+                      class='font-bold text-gray-900 mt-0 mb-0 text-lg truncate'
                       x-text='getByLang(alumni.nama, lang)'
                     ></h3>
                     <p
@@ -206,7 +206,7 @@
           >
             <i class='fas fa-users text-gray-400 text-2xl'></i>
           </div>
-          <h3 class='text-xl font-semibold text-gray-900 mb-2'>{{t
+          <h3 class='text-xl font-semibold text-gray-900 mt-0 mb-2'>{{t
               'test.alumni.noAlumni'
             }}</h3>
           <p class='text-gray-600 mb-6'>{{t 'test.alumni.tryAdjusting'}}</p>

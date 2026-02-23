@@ -88,7 +88,7 @@
       <div class="lg:w-1/3">
         <div class="lg:sticky lg:top-24 space-y-6">
           <div class="flex flex-col gap-4">
-            <h1 >
+            <h1 class="mt-0 mb-0">
               {{blog.judul}}
             </h1>
 
@@ -127,7 +127,7 @@
           </div>
 
           <div class="bg-gray-50 rounded-xl p-6 space-y-4">
-            <h4 class="font-semibold text-gray-900">Informasi Artikel</h4>
+            <h4 class="font-semibold text-gray-900 mt-0 mb-0">Informasi Artikel</h4>
             <div class="flex justify-between items-center">
               <span class="text-gray-600">Topic</span>
               <span class="font-medium text-gray-900">{{blog.topic.nama}}</span>
@@ -144,7 +144,7 @@
           </div>
 
           <div class="lg:hidden">
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>{{t "test.detailBlog.share"}}</h3>
+            <h3 class='text-lg font-semibold text-gray-900 mt-0 mb-4'>{{t "test.detailBlog.share"}}</h3>
             <div class='flex flex-wrap gap-2'>
             </div>
           </div>
@@ -159,7 +159,7 @@
 {{#if recentBlogs}}
   <section class='py-16 bg-gray-50'>
     <div class='max-w-7xl mx-auto px-6'>
-      <h2 class='text-3xl font-bold text-gray-900 mb-8'>{{t "test.detailBlog.relatedBlog"}}</h2>
+      <h2 class='text-3xl font-bold text-gray-900 mt-0 mb-8'>{{t "test.detailBlog.relatedBlog"}}</h2>
       <div class='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
         {{#each recentBlogs}}
         {{/each}}
