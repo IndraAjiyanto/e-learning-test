@@ -96,7 +96,7 @@
   x-init="hargaDisplays = hargaValues.map(h => new Intl.NumberFormat('id-ID').format(h)); dpDisplay = new Intl.NumberFormat('id-ID').format(dpValue); formValid.harga = Array(parseInt(bulan)).fill(true); formErrors.harga = Array(parseInt(bulan)).fill('')"
 >
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Installment</h2>
+    <h2 class='text-2xl font-semibold mt-0 mb-6 text-center text-gray-900'>Edit Installment</h2>
 
     <form
       action='/cicilan/{{cicilan.id}}?_method=PATCH'
