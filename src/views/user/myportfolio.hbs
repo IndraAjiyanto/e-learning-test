@@ -1,7 +1,7 @@
 <div class='pt-24 min-h-screen bg-white' x-data='portfolioApp()'>
   <div class='container mx-auto px-4 pb-16'>
     <div class='text-center mb-12'>
-      <h1 class='text-4xl font-bold text-gray-900 mt-0 mb-4 font-montserrat'>{{t "test.myPortfolio.tittle"}}</h1>
+      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.myPortfolio.tittle"}}</h1>
       <p class='text-gray-600 max-w-2xl mx-auto text-lg font-inter'>
         {{t "test.myPortfolio.description"}}
       </p>
@@ -14,7 +14,7 @@
         >
           <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
             <div class='flex items-center justify-between mb-3'>
-              <h4 class='text-sm font-semibold mt-0 mb-0 text-gray-700 font-montserrat'>{{t "test.myPortfolio.filterTittle"}}</h4>
+              <h4 class='text-sm font-semibold text-gray-700 font-montserrat'>{{t "test.myPortfolio.filterTittle"}}</h4>
               <button
                 @click='resetFilters()'
                 class='text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center'
@@ -55,7 +55,7 @@
           <!-- Kategori Filter -->
           <div class='mb-6'>
             <h3
-              class='text-base font-semibold text-gray-900 mt-0 mb-3 flex items-center font-montserrat'
+              class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
             >
               <i class='fas fa-tags text-gray-500 mr-2'></i>
               {{t "test.myPortfolio.categoryTittle"}}
@@ -83,7 +83,7 @@
           <!-- Jenis Kelas Filter -->
           <div class='mb-6'>
             <h3
-              class='text-base font-semibold text-gray-900 mt-0 mb-3 flex items-center'
+              class='text-base font-semibold text-gray-900 mb-3 flex items-center'
             >
               <i class='fas fa-graduation-cap text-gray-500 mr-2'></i>
               {{t "test.myPortfolio.programTypeTittle"}}
@@ -272,7 +272,7 @@
                 </div>
 
                 <h3
-                  class='text-lg font-semibold text-gray-900 mt-0 mb-0 leading-tight'
+                  class='text-lg font-semibold text-gray-900 leading-tight'
                   x-text="item.judul || 'No Title'"
                 ></h3>
 
@@ -316,7 +316,7 @@
           >
             <i class='fas fa-search text-gray-400 text-2xl'></i>
           </div>
-          <h3 class='text-xl font-semibold text-gray-900 mt-0 mb-2 font-montserrat'>{{t "test.myPortfolio.projectNotFound"}}</h3>
+          <h3 class='text-xl font-semibold text-gray-900 mb-2 font-montserrat'>{{t "test.myPortfolio.projectNotFound"}}</h3>
           <p class='text-gray-600 mb-6 font-inter'>{{t "test.myPortfolio.tryAdjusting"}}</p>
           <button
             @click='resetFilters()'
