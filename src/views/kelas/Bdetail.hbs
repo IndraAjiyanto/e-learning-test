@@ -74,7 +74,7 @@
               class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200'
             >
               <h3
-                class='font-montserrat text-3xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
+                class='font-montserrat text-3xl font-bold mt-0 mb-4 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
               >
                 {{kelas.nama_kelas}}
               </h3>
@@ -104,7 +104,7 @@
                         class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.method"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-montserrat text-sm font-bold text-gray-900 mt-0 mb-1'
                       >{{t "test.detailProgram.infoProgram.online"}}</h4>
                     </div>
                   </div>
@@ -126,7 +126,7 @@
                         class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.method"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-montserrat text-sm font-bold text-gray-900 mt-0 mb-1'
                       >{{t "test.detailProgram.infoProgram.offline"}}</h4>
                     </div>
                   </div>
@@ -153,11 +153,11 @@
                     >{{t "test.detailProgram.infoProgram.location"}}</p>
                     {{#if (eq kelas.metode 'online')}}
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-montserrat text-sm font-bold text-gray-900 mt-0 mb-1'
                       ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang kelas.lokasi lang}}</a></h4>
                     {{else}}
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-montserrat text-sm font-bold text-gray-900 mt-0 mb-1'
                         title='{{kelas.lokasi}}'
                       ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang kelas.lokasi lang}}</a></h4>
                     {{/if}}
@@ -182,7 +182,7 @@
                         class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.capacity"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-montserrat text-sm font-bold text-gray-900 mt-0 mb-1'
                       >{{kelas.kuota}} {{t "test.detailProgram.infoProgram.students"}}</h4>
                     </div>
                   </div>
@@ -210,7 +210,7 @@
                         class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.month"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-montserrat text-sm font-bold text-gray-900 mt-0 mb-1'
                       >{{kelas.bulan}} {{t "test.detailProgram.infoProgram.months"}}</h4>
                     </div>
                   </div>
@@ -233,7 +233,7 @@
                         class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.day"}}</p>
                       <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                        class='font-montserrat text-sm font-bold text-gray-900 mt-0 mb-1'
                       >{{kelas.hari}} {{t "test.detailProgram.infoProgram.days"}}</h4>
                     </div>
                   </div>
@@ -255,7 +255,7 @@
                       class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >{{t "test.detailProgram.infoProgram.startDate"}}</p>
                     <h4
-                      class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                      class='font-montserrat text-sm font-bold text-gray-900 mt-0 mb-1'
                     >{{#if kelas.tanggal_mulai}}{{formatTanggal kelas.tanggal_mulai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
                   </div>
                 </div>
@@ -276,7 +276,7 @@
                       class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >{{t "test.detailProgram.infoProgram.endDate"}}</p>
                     <h4
-                      class='font-montserrat text-sm font-bold text-gray-900 mb-1'
+                      class='font-montserrat text-sm font-bold text-gray-900 mt-0 mb-1'
                     >{{#if kelas.tanggal_selesai}}{{formatTanggal kelas.tanggal_selesai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
                   </div>
                 </div>
@@ -287,7 +287,7 @@
             <!-- Material Includes -->
             <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
               <h4
-                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-montserrat text-xl font-bold mt-0 mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-box-open text-gray-500'></i>
                 {{t "test.detailProgram.infoProgram.lessonsIncludes"}}
@@ -329,7 +329,7 @@
               class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'
             >
               <h4
-                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-montserrat text-xl font-bold mt-0 mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-lightbulb text-gray-500'></i>
                 {{t "test.detailProgram.infoProgram.whatYouLearn"}}
@@ -365,7 +365,7 @@
               class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'
             >
               <h4
-                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-montserrat text-xl font-bold mt-0 mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-user-check text-gray-500'></i>
                 {{t "test.detailProgram.infoProgram.requirement"}}
@@ -405,7 +405,7 @@
             <!-- Technologies -->
             <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
               <h4
-                class='font-montserrat text-xl font-bold mb-4 text-gray-900 flex items-center gap-2'
+                class='font-montserrat text-xl font-bold mt-0 mb-4 text-gray-900 flex items-center gap-2'
               >
                 <i class='fas fa-code text-gray-500'></i>
                 {{t "test.detailProgram.infoProgram.technology"}}
@@ -426,7 +426,7 @@
         <div x-show="activeTab === 'benefit'" x-transition>
           <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
             <h3
-              class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
+              class='font-montserrat text-3xl font-bold mt-0 mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
             >
               {{t "test.detailProgram.benefitProgram.tittle"}}
             </h3>
@@ -446,7 +446,7 @@
                     </div>
                     <div>
                       <h4
-                        class='font-semibold text-gray-900 text-lg mb-2'
+                        class='font-semibold text-gray-900 text-lg mt-0 mb-2'
                       >{{getByLang this.benefit ../lang}}</h4>
                       <p class='text-gray-700 leading-relaxed'>
                         {{getByLang this.isi ../lang}}
@@ -464,7 +464,7 @@
         <div x-show="activeTab === 'faq'" x-transition>
           <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
             <h3
-              class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
+              class='font-montserrat text-3xl font-bold mt-0 mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
             >
               {{t "test.detailProgram.faq.tittle"}}
             </h3>
@@ -504,7 +504,7 @@
         <div x-show="activeTab === 'bootcamp'" x-transition>
           <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
             <h3
-              class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent'
+              class='font-montserrat text-3xl font-bold mt-0 mb-6 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent'
             >
               {{t "test.detailProgram.flowProgram.tittle"}}
             </h3>
@@ -527,7 +527,7 @@
                     </div>
                     <div class='flex-1 pb-10'>
                       <h4
-                        class='font-montserrat text-xl font-bold text-gray-900 mb-2'
+                        class='font-montserrat text-xl font-bold text-gray-900 mt-0 mb-2'
                       >{{getByLang this.judul ../lang}}</h4>
                       <p class='font-inter text-gray-700 mb-3'>
                         {{getByLang this.isi ../lang}}
@@ -544,7 +544,7 @@
         <div x-show="activeTab === 'mentor'" x-transition>
           <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
             <h3
-              class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent'
+              class='font-montserrat text-3xl font-bold mt-0 mb-6 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent'
             >
               {{t "test.detailProgram.mentor.tittle"}}
             </h3>
@@ -566,7 +566,7 @@
                     />
                     <div class='text-center sm:text-left flex-1'>
                       <h4
-                        class='font-montserrat font-bold text-gray-800 text-lg'
+                        class='font-montserrat font-bold text-gray-800 text-lg mt-0 mb-0'
                       >{{nama}}</h4>
                       <p class='font-inter text-gray-600 mb-2'>{{getByLang posisi ../lang}}</p>
                       <div
@@ -850,7 +850,7 @@
                   x-transition
                   class='bg-white rounded-xl p-4 border-2 border-slate-200'
                 >
-                  <h4 class='font-semibold text-slate-700 mb-3 flex items-center gap-2'>
+                  <h4 class='font-semibold text-slate-700 mt-0 mb-3 flex items-center gap-2'>
                     <i class='fas fa-list-ul'></i>
                     {{t "test.detailProgram.installment.paymentSchedule"}}
                   </h4>
@@ -875,7 +875,7 @@
 
                   <!-- Monthly Installments -->
                   <div class='space-y-2'>
-                    <h5 class='font-medium text-slate-600 mb-2'>{{t "test.detailProgram.installment.monthlyInstallment"}}</h5>
+                    <h5 class='font-medium text-slate-600 mt-0 mb-2'>{{t "test.detailProgram.installment.monthlyInstallment"}}</h5>
                     <template x-for='(amount, index) in getCicilanByMonth(installmentMonths)?.harga || []' :key='index'>
                       <div class='flex justify-between items-center py-2 px-3 bg-slate-50 rounded-lg'>
                         <span class='text-sm font-medium text-slate-600' x-text='`{{t "test.detailProgram.infoProgram.month"}} ${index + 1}`'></span>
@@ -913,7 +913,7 @@
                 class='bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-6 border-2 border-emerald-200'
               >
                 <h4
-                  class='font-bold text-emerald-800 text-lg mb-4 flex items-center justify-center gap-2'
+                  class='font-bold text-emerald-800 text-lg mt-0 mb-4 flex items-center justify-center gap-2'
                 >
                   <i class='fas fa-check-circle'></i>
                   {{t "test.detailProgram.free.whatIncluded"}}
@@ -1008,7 +1008,7 @@
                 x-transition
               >
                 <h4
-                  class='font-bold text-blue-800 flex items-center gap-2 mb-3'
+                  class='font-bold text-blue-800 flex items-center gap-2 mt-0 mb-3'
                 >
                   <i class='fas fa-info-circle'></i>
                   {{t "test.detailProgram.fullPayment.fullPaymentIntruction"}}
@@ -1034,7 +1034,7 @@
                 class='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5'
               >
                 <h4
-                  class='font-bold text-blue-800 flex items-center gap-2 mb-3'
+                  class='font-bold text-blue-800 flex items-center gap-2 mt-0 mb-3'
                 >
                   <i class='fas fa-calendar-check'></i>
                   {{t "test.detailProgram.installment.installmentPaymentInstructions"}}
@@ -1074,7 +1074,7 @@
               class='bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-xl p-5'
             >
               <h4
-                class='font-bold text-emerald-800 flex items-center gap-2 mb-3'
+                class='font-bold text-emerald-800 flex items-center gap-2 mt-0 mb-3'
               >
                 <i class='fas fa-clipboard-check'></i>
                 {{t "test.detailProgram.free.freeProgramInstruction"}}
@@ -1527,7 +1527,7 @@
   <!-- Related Courses -->
   <div class='max-w-7xl mx-auto px-6 mt-16'>
     <h2
-      class='font-montserrat text-3xl font-bold mb-8 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent'
+      class='font-montserrat text-3xl font-bold mt-0 mb-8 text-slate-900 bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent'
     >{{t "test.detailProgram.otherProgram"}}</h2>
 
     <div
@@ -1586,7 +1586,7 @@
             </div>
 
             <h2
-              class='card-title text-gray-900 text-xl font-bold mb-3'
+              class='card-title text-gray-900 text-xl font-bold mt-0 mb-3'
             >{{nama_kelas}}</h2>
 
             <p class='text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed'>
