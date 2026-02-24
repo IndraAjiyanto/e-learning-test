@@ -161,6 +161,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       },
       image: {
         class: EditorTools.ImageTool,
+        tunes: {
+          "stretched": false,
+          "withBorder": false,
+          "withBackground": false
+        },
         config: {
           endpoints: {
             byFile: '/blog/upload-image',
@@ -409,6 +414,7 @@ function tagInput(){
 #editor img {
   max-width: 300px;
   margin: auto;
+  border-radius: 1rem;
 }
 
 #editor h4 {
