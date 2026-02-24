@@ -94,13 +94,6 @@ export class DashboardController {
     }
   }
 
-  @Get('blog-detail')
-  async getBlog(@Req() req: Request, @Res() res: Response) {
-    res.render('blog-detail-contoh', {
-      user: req.user,
-    });
-  }
-
   @Get('portofolio')
   async portfolio(@Req() req: Request, @Res() res: Response) {
     const portfolioList = await this.dashboardService.findPortfolio();

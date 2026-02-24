@@ -59,8 +59,8 @@
           <div class='flex gap-2 mt-4 overflow-x-auto pb-2'>
             {{#each blog.gambar}}
               <button
-                @click='currentSlide = @index'
-                :class='currentSlide === @index ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
+                @click='currentSlide = {{@index}}'
+                :class='currentSlide === {{@index}} ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
                 class='flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden transition-all hover:ring-gray-600'
               >
                 <img src='{{this}}' alt='Thumbnail {{@index}}' class='w-full h-full object-cover'/>
@@ -71,8 +71,8 @@
           <div class='flex justify-center gap-2 mt-4'>
             {{#each blog.gambar}}
               <button
-                @click='currentSlide = @index'
-                :class='currentSlide === @index ? "bg-gray-900 w-8" : "bg-gray-300 w-2"'
+                @click='currentSlide = {{@index}}'
+                :class='currentSlide === {{@index}} ? "bg-gray-900 w-8" : "bg-gray-300 w-2"'
                 class="h-2 rounded-full transition-all"
               ></button>
             {{/each}}

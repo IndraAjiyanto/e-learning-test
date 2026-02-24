@@ -31,6 +31,12 @@ const parser = edjsHTML({
   },
   header: (block) => {
     const level = block.data.level;
+    if(level === 1) return `<h1 class="mb-4 text-3xl leading-9 font-bold">${block.data.text}</h1>`;
+    if(level === 2) return `<h2 class="mb-4 text-2xl leading-8 font-bold">${block.data.text}</h2>`;
+    if(level === 3) return `<h3 class="mb-4 text-xl leading-7 font-bold">${block.data.text}</h3>`;
+    if(level === 4) return `<h4 class="mb-2 text-lg leading-7 font-semibold">${block.data.text}</h4>`;
+    if(level === 5) return `<h5 class="mb-2 text-base leading-6 font-medium">${block.data.text}</h5>`;
+    if(level === 6) return `<h6 class="mb-2 text-sm leading-5 font-medium">${block.data.text}</h6>`;
     return `<h${level} class="mb-4 text-4xl font-bold text-gray-900">${block.data.text}</h${level}>`;
   }
 });
