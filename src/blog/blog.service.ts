@@ -49,6 +49,30 @@ export class BlogService {
     });
   }
 
+async ChangeImgPathEditorJS(editorjs: string): Promise<string> {
+  const editorJson = JSON.parse(editorjs);
+
+  editorJson.blocks = editorJson.blocks.map((block: any) => {
+
+    if (block.type === 'image' && block?.data?.file?.url) {
+
+      const url: string = block.data.file.url;
+
+      if (url.includes('/asset/blog/temp/')) {
+
+        const filename = path.basename(url);
+
+        // 🔥 hanya ganti path di JSON
+        block.data.file.url = `/asset/blog/isi/${filename}`;
+      }
+    }
+
+    return block;
+  });
+
+  return JSON.stringify(editorJson);
+}
+
   async findOne(id: number) {
     const blog = await this.blogRepository.findOne({
       where: { id },

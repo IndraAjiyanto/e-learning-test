@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateBlogDto {
   @IsString()
@@ -8,6 +8,10 @@ export class CreateBlogDto {
   @IsString()
   @IsNotEmpty()
   isi: string;
+
+  @IsString()
+  @IsOptional()
+  isi_editorjs: string;
 
   @IsArray()
   tags: string[];

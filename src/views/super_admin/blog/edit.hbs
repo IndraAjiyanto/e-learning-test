@@ -19,18 +19,14 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
 
-  const htmlData = `{{{blog.isi}}}`;
-
-  const editorData = htmlToEditorjs(htmlData);
-  console.log(htmlToEditorjs);
+  const editorData = JSON.parse(`{{{blog.isi_editorjs}}}`);
 
   const editor = new EditorJS({
     holder: 'editor',
 
     data: {
-      blocks: editorData
+      blocks: editorData.blocks || []
     },
-
     placeholder: 'enter your content here...',
 
     tools: {
@@ -52,6 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       },
       image: {
         class: EditorTools.ImageTool,
+        inlineToolbar: true,
         config: {
           endpoints: {
             byFile: '/blog/upload-image',
@@ -343,9 +340,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 .codex-editor__redactor {
   padding-left: 0 !important;
-}
-
-.ce-paragraph {
-  text-align: left !important;
 }
 </style>

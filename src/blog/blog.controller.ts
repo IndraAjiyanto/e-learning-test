@@ -121,6 +121,8 @@ export class BlogController {
     @Req() req: Request,
   ) {
     try {
+createBlogDto.isi_editorjs = await this.blogService.ChangeImgPathEditorJS(createBlogDto.isi);
+
       const tempDir = path.join(process.cwd(), "public/asset/blog/temp");
 const finalDir = path.join(process.cwd(), "public/asset/blog/isi");
 
@@ -194,6 +196,7 @@ createBlogDto.isi = html;
   ) {
     try {
           const imageUrl = req.body.uploadedImageUrls?.[0];
+          console.log("Received image URL:", imageUrl);
     res.json({ success: 1, file:{ url: imageUrl }}); 
     } catch (error) {
       req.flash('error', error.message || 'Blog failed to create');
@@ -225,6 +228,7 @@ createBlogDto.isi = html;
   ) {
     try {
       if(updateBlogDto.isi) {
+        updateBlogDto.isi_editorjs = updateBlogDto.isi;
        const oldBlog = await this.blogService.findOne(id);
 
   const extractImages = (html: string) => {

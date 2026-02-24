@@ -20,6 +20,9 @@ export class Blog {
   @Column({type: 'text'})
   isi: string;
 
+  @Column({type: 'text'})
+  isi_editorjs: string;
+
   @Column()
   author: string;
 
