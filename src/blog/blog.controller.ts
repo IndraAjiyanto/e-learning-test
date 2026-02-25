@@ -190,17 +190,10 @@ createBlogDto.isi = html;
     @Req() req: Request,
   ) {
     try {
-
-
-
       const blog = await this.blogService.findOne(id);
-
       await this.blogService.ChangeImageEditorJS(blog.isi_editorjs, "/asset/blog/isi", "/asset/blog/temp")
-
-
       if(updateBlogDto.isi) {
         updateBlogDto.isi_editorjs =await this.blogService.ChangeImageEditorJS(updateBlogDto.isi, "/asset/blog/temp", "/asset/blog/isi", "/asset/blog/temp");
-
   updateBlogDto.isi = editorjsHTML.parse(JSON.parse(updateBlogDto.isi_editorjs));
 }
 

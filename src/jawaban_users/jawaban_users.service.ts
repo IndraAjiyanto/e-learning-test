@@ -150,12 +150,28 @@ export class JawabanUsersService {
     if (!minggu_sebelum) {
       throw new NotFoundException('minggu_sebelum not found');
     } else if (minggu_sebelum.akhir === true) {
+
+      const existingUserKelas = await this.userKelasRepository.findOne({
+        where: { kelas: { id: minggu_sebelum.kelas.id }, user: { id: userId } },
+      });
+      if (existingUserKelas) {
        await this.userKelasRepository.save({
+        id: existingUserKelas.id,
         kelas: { id: minggu_sebelum.kelas.id },
         user: { id: userId },
         progres: true,
         quiz: true
       });
+    }else{
+      await this.userKelasRepository.save({
+        kelas: { id: minggu_sebelum.kelas.id },
+        user: { id: userId },
+        progres: true,
+        quiz: true
+       });
+    }
+
+
     } else {
       const minggu = await this.mingguRepository.findOne({
         where: {
@@ -170,12 +186,26 @@ export class JawabanUsersService {
           });
           if(pertemuan_satu){
 
+            const existingProgresPertemuan = await this.progresPertemuanRepository.findOne({
+              where: { pertemuan: { id: pertemuan_satu.id }, user: { id: userId } },
+            });
+            if (existingProgresPertemuan) {
               await this.progresPertemuanRepository.save({
+                id: existingProgresPertemuan.id,
               user: { id: userId },
               pertemuan: pertemuan_satu,
               logbook: false,
               absen: true,
             });
+          }else{
+            await this.progresPertemuanRepository.save({
+              user: { id: userId },
+              pertemuan: pertemuan_satu,
+              logbook: false,
+              absen: true,
+             });
+          }
+
 
           }
         }

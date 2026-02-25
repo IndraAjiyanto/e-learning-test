@@ -52,12 +52,30 @@ export class MingguService {
       });
 if(userKelass.length > 0){
       for (const userKelas of userKelass) {
+        
+        const existingProgresMinggu = await this.progresMingguRepository.findOne({
+          where: {
+            minggu: { id: minggu.id },
+            user: { id: userKelas.user.id },
+          },
+        });
+        if(existingProgresMinggu){
+        await this.progresMingguRepository.save({
+          id: existingProgresMinggu.id,
+          minggu: minggu,
+          user: userKelas.user,
+          quiz: false,
+          proses: true,
+        });
+      }else{
         await this.progresMingguRepository.save({
           minggu: minggu,
           user: userKelas.user,
           quiz: false,
           proses: true,
         });
+      }
+
       }
       return minggu;
     }

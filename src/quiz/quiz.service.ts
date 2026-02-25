@@ -48,11 +48,28 @@ export class QuizService {
 
     if(progres_pertemuan_akhir.length > 0){
       for (const progres of progres_pertemuan_akhir) {
+
+        const existingProgresQuiz = await this.progresQuizRepository.findOne({
+          where: {
+            quiz: { id: newQuiz.id }, user: { id: progres.user.id }
+          }
+        });
+        if(existingProgresQuiz){
+        await this.progresQuizRepository.save({
+          id: existingProgresQuiz.id,
+          quiz: newQuiz,
+          user: progres.user,
+          proses: true
+        });
+      }else{
         await this.progresQuizRepository.save({
           quiz: newQuiz,
           user: progres.user,
           proses: true
         });
+      }
+
+
       }
     }
 }

@@ -68,12 +68,28 @@ export class PertemuansService {
       });
       if(progresMinggu.length > 0){
       for (const progres of progresMinggu) {
+
+        const existingProgresPertemuan = await this.progresPertemuanRepository.findOne({
+          where: { pertemuan: { id: new_pertemuan.id }, user: { id: progres.user.id } },
+        });
+        if(existingProgresPertemuan){
+        await this.progresPertemuanRepository.save({
+          id: existingProgresPertemuan.id,
+          logbook: false,
+          absen: true,
+          pertemuan: new_pertemuan,
+          user: progres.user,
+        });
+      }else{
         await this.progresPertemuanRepository.save({
           logbook: false,
           absen: true,
           pertemuan: new_pertemuan,
           user: progres.user,
         });
+      }
+
+
       }
     }
   }else{
