@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
+  UploadedFiles,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -121,52 +122,14 @@ export class BlogController {
     @Req() req: Request,
   ) {
     try {
-createBlogDto.isi_editorjs = await this.blogService.ChangeImgPathEditorJS(createBlogDto.isi);
 
-      const tempDir = path.join(process.cwd(), "public/asset/blog/temp");
-const finalDir = path.join(process.cwd(), "public/asset/blog/isi");
+      const editorjsData = await this.blogService.ChangeImageEditorJS(createBlogDto.isi, "/asset/blog/temp", "/asset/blog/isi", "/asset/blog/temp");
+
+createBlogDto.isi_editorjs = editorjsData;
 
 createBlogDto.gambar = req.body.uploadedImageUrls || [];
 
-let html = editorjsHTML.parse(JSON.parse(createBlogDto.isi));
-
-const $ = cheerio.load(html);
-const usedImages: string[] = [];
-
-$("img").each((_, el) => {
-  const src = $(el).attr("src");
-  if (src && src.includes("/asset/blog/temp/")) {
-    usedImages.push(src);
-  }
-});
-
-const tempFiles = fs.readdirSync(tempDir);
-
-tempFiles.forEach(file => {
-  const tempUrl = `/asset/blog/temp/${file}`;
-  const oldPath = path.join(tempDir, file);
-  const newPath = path.join(finalDir, file);
-
-  try {
-    if (usedImages.includes(tempUrl)) {
-
-      fs.renameSync(oldPath, newPath);
-
-      html = html.replaceAll(
-        `/asset/blog/temp/${file}`,
-        `/asset/blog/isi/${file}`
-      );
-
-    } else {
-
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
-      }
-
-    }
-  } catch (err) {
-  }
-});
+let html = editorjsHTML.parse(JSON.parse(editorjsData));
 
 createBlogDto.isi = html;
 
@@ -196,7 +159,6 @@ createBlogDto.isi = html;
   ) {
     try {
           const imageUrl = req.body.uploadedImageUrls?.[0];
-          console.log("Received image URL:", imageUrl);
     res.json({ success: 1, file:{ url: imageUrl }}); 
     } catch (error) {
       req.flash('error', error.message || 'Blog failed to create');
@@ -221,58 +183,25 @@ createBlogDto.isi = html;
     folder: 'nestjs/images/blog',
   })
   async update(
+        @UploadedFiles() newGambar: Express.Multer.File[],
     @Param('id') id: number,
     @Body() updateBlogDto: UpdateBlogDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
+
+
+
+      const blog = await this.blogService.findOne(id);
+
+      await this.blogService.ChangeImageEditorJS(blog.isi_editorjs, "/asset/blog/isi", "/asset/blog/temp")
+
+
       if(updateBlogDto.isi) {
-        updateBlogDto.isi_editorjs = updateBlogDto.isi;
-       const oldBlog = await this.blogService.findOne(id);
+        updateBlogDto.isi_editorjs =await this.blogService.ChangeImageEditorJS(updateBlogDto.isi, "/asset/blog/temp", "/asset/blog/isi", "/asset/blog/temp");
 
-  const extractImages = (html: string) => {
-    const $ = cheerio.load(html);
-    const arr: string[] = [];
-
-    $("img").each((_, el) => {
-      const src = $(el).attr("src");
-      if (src) arr.push(src);
-    });
-
-    return arr;
-  };
-
-  const oldImages = extractImages(oldBlog.isi);
-
-  let newHtml = editorjsHTML.parse(JSON.parse(updateBlogDto.isi));
-
-  const newImages = extractImages(newHtml);
-
-  const deletedImages = oldImages.filter(x => !newImages.includes(x));
-
-  deletedImages.forEach(url => {
-    const filePath = path.join(process.cwd(), "public", url);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-  });
-
-  newImages.forEach(url => {
-    if (url.includes("/asset/blog/temp/")) {
-
-      const filename = path.basename(url);
-
-      const oldPath = path.join(process.cwd(),"public/asset/blog/temp",filename);
-      const newPath = path.join(process.cwd(),"public/asset/blog/isi",filename);
-
-      if (fs.existsSync(oldPath)) fs.renameSync(oldPath, newPath);
-
-      newHtml = newHtml.replaceAll(
-        `/asset/blog/temp/${filename}`,
-        `/asset/blog/isi/${filename}`
-      );
-    }
-  });
-  updateBlogDto.isi = newHtml;
+  updateBlogDto.isi = editorjsHTML.parse(JSON.parse(updateBlogDto.isi_editorjs));
 }
 
       await this.blogService.update(id, updateBlogDto);

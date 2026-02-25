@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from 'src/entities/blog.entity';
 import { Not, Repository } from 'typeorm';
 import { KategoriBlog } from 'src/entities/kategori_blog.entity';
-import * as fs from 'fs/promises';
+import * as fs from 'fs';
 import * as path from 'path';
 import { Topic } from 'src/entities/topic.entity';
 
@@ -49,28 +49,65 @@ export class BlogService {
     });
   }
 
-async ChangeImgPathEditorJS(editorjs: string): Promise<string> {
-  const editorJson = JSON.parse(editorjs);
+  async ChangeImageEditorJS(isi: string, oldFolder: string, newFolder: string, deleteFileInFolder?: string): Promise<string> {
+const editorjsData = JSON.parse(isi);
 
-  editorJson.blocks = editorJson.blocks.map((block: any) => {
+const tempDir = path.join(process.cwd(), "public"+oldFolder);
+const finalDir = path.join(process.cwd(), "public"+newFolder);
 
-    if (block.type === 'image' && block?.data?.file?.url) {
+editorjsData.blocks.forEach((block: any) => {
+  if (block.type === "image" && block.data?.file?.url) {
+    const oldUrl = block.data.file.url;
 
-      const url: string = block.data.file.url;
+    if (oldUrl.startsWith(oldFolder+"/")) {
+      const fileName = oldUrl.split("/").pop();
 
-      if (url.includes('/asset/blog/temp/')) {
+      const oldPath = path.join(tempDir, fileName);
+      const newPath = path.join(finalDir, fileName);
 
-        const filename = path.basename(url);
-
-        // 🔥 hanya ganti path di JSON
-        block.data.file.url = `/asset/blog/isi/${filename}`;
+      if (fs.existsSync(oldPath)) {
+        fs.renameSync(oldPath, newPath);
       }
-    }
 
-    return block;
+      block.data.file.url = `${newFolder}/${fileName}`;
+    }
+  }
+});
+
+if (deleteFileInFolder) {
+  const deleteDir = path.join(process.cwd(), "public" + deleteFileInFolder);
+
+  if (fs.existsSync(deleteDir)) {
+    const files = fs.readdirSync(deleteDir);
+
+    files.forEach(file => {
+      const filePath = path.join(deleteDir, file);
+
+      if (fs.lstatSync(filePath).isFile()) {
+        fs.unlinkSync(filePath);
+      }
+    });
+  }
+}
+
+return JSON.stringify(editorjsData);
+  }
+
+async ChangeImgPath(isi: string, newFolder: string): Promise<string> {
+  const editorjsData = JSON.parse(isi);
+
+  editorjsData.blocks.forEach((block: any) => {
+    if (block.type === "image" && block.data?.file?.url) {
+
+      const oldUrl = block.data.file.url;
+
+      const filename = path.basename(oldUrl);
+
+      block.data.file.url = `${newFolder}/${filename}`;
+    }
   });
 
-  return JSON.stringify(editorJson);
+  return JSON.stringify(editorjsData);
 }
 
   async findOne(id: number) {
@@ -111,9 +148,8 @@ async ChangeImgPathEditorJS(editorjs: string): Promise<string> {
   try {
     const filePath = path.join(process.cwd(), 'public', url);
     
-    await fs.unlink(filePath);
+    await fs.promises.unlink(filePath);
   } catch (error) {
-    throw new NotFoundException('File not found');
   }
 }
 
@@ -145,6 +181,7 @@ async ChangeImgPathEditorJS(editorjs: string): Promise<string> {
 
     if (updateBlogDto.judul) blog.judul = updateBlogDto.judul;
     if (updateBlogDto.isi) blog.isi = updateBlogDto.isi;
+    if (updateBlogDto.isi_editorjs) blog.isi_editorjs = updateBlogDto.isi_editorjs;
     if (updateBlogDto.gambar) blog.gambar = updateBlogDto.gambar;
     if (updateBlogDto.author) blog.author = updateBlogDto.author;
 

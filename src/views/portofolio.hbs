@@ -52,7 +52,6 @@
             </div>
           </div>
 
-          <!-- Kategori Filter -->
           <div class='mb-6'>
             <h3
               class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
@@ -61,7 +60,6 @@
                 {{t "test.portfolio.categoryTittle"}}
             </h3>
 
-            <!-- Search Kategori -->
             <div class='mb-3'>
               <div class='relative'>
                 <input
@@ -97,7 +95,6 @@
             </div>
           </div>
 
-          <!-- Jenis Kelas Filter -->
           <div class='mb-6'>
             <h3
               class='text-base font-semibold text-gray-900 mb-3 flex items-center'
@@ -106,7 +103,6 @@
               {{t "test.portfolio.classTypeTittle"}}
             </h3>
 
-            <!-- Search Jenis Kelas -->
             <div class='mb-3'>
               <div class='relative'>
                 <input
@@ -142,7 +138,6 @@
             </div>
           </div>
 
-          <!-- Projects Count -->
           <div class='mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
             <div class='text-center'>
               <div
@@ -155,9 +150,7 @@
         </div>
       </div>
 
-      <!-- Portfolio Grid -->
       <div class='lg:col-span-3'>
-        <!-- Loading State -->
         <div
           x-show='loading'
           class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
@@ -176,7 +169,6 @@
           </template>
         </div>
 
-        <!-- Portfolio Items -->
         <div
           x-show='!loading'
           class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
@@ -202,7 +194,6 @@
             <div
               class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'
             >
-              <!-- Image Slider -->
               <div class='relative overflow-hidden rounded-t-xl'>
                 <div class='relative h-44 w-full'>
                   <template
@@ -218,7 +209,6 @@
                   </template>
                 </div>
 
-                <!-- Navigation Buttons (jika ada lebih dari 1 gambar) -->
                 <template
                   x-if='Array.isArray(item.gambar) && item.gambar.length > 1'
                 >
