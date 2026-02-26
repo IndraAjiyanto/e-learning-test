@@ -499,7 +499,8 @@ export class KelassService {
       )
       .leftJoinAndSelect(
         'pertemuan.logbook',
-        'logbook'
+        'logbook',
+        'logbook.userId = :userId',
       )
       .leftJoinAndSelect(
         'pertemuan.absen',
