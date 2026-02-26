@@ -22,6 +22,7 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('portfolios')
@@ -136,64 +137,22 @@ export class PortfoliosController {
     folder: 'portfolio',
   })
   async update(
-    @UploadedFiles() newGambar: Express.Multer.File[],
     @Param('portfolioId') portfolioId: number,
-    @Body() updatePortfolioDto: any,
+    @Body() updatePortfolioDto: UpdatePortfolioDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       const oldPortfolio = await this.portfoliosService.findOne(portfolioId);
-
-      const remainingOldImages = updatePortfolioDto.gambar || [];
-
-      const oldImagesArray = Array.isArray(remainingOldImages)
-        ? remainingOldImages
-        : [remainingOldImages];
-
-      const originalImages = oldPortfolio.gambar || [];
-      const deletedImages = originalImages.filter(
-        (url) => !oldImagesArray.includes(url),
-      );
-
-      if (deletedImages.length > 0) {
-        const deletePromises = deletedImages.map((url) =>
-          this.portfoliosService.deleteFile(url).catch((error) => {
-          }),
-        );
-        await Promise.allSettled(deletePromises);
-      }
-
-      let finalGambar = [...oldImagesArray];
-
-      if (newGambar && newGambar.length > 0) {
-        const newImagePaths = newGambar.map((file) => file.path);
-        finalGambar = [...finalGambar, ...newImagePaths];
-      }
-
-      if (finalGambar.length > 10) {
-        if (newGambar && newGambar.length > 0) {
-          const deleteNewImagesPromises = newGambar.map((file) =>
-            this.portfoliosService
-              .deleteFile(file.path)
-              .catch((err) => {
-              }),
-          );
-          await Promise.allSettled(deleteNewImagesPromises);
-        }
-
-        req.flash(
-          'error',
-          `Maximum 10 images allowed. You currently have ${oldImagesArray.length} images.`,
-        );
-        return res.redirect(`/portfolios/${portfolioId}/edit`);
-      }
+      updatePortfolioDto.gambar = updatePortfolioDto.gambar || [];
+      const combineImage = [...updatePortfolioDto.gambar || [], ...(req.body.uploadedImageUrls)];
+      const newImageUrls = await this.portfoliosService.deleteUnusedImages(oldPortfolio.gambar, combineImage);
 
       const updateData = {
         judul: updatePortfolioDto.judul,
         deskripsi: updatePortfolioDto.deskripsi,
         teknologi: updatePortfolioDto.teknologi,
-        gambar: finalGambar,
+        gambar: newImageUrls,
       };
 
       await this.portfoliosService.update(portfolioId, updateData);
@@ -201,14 +160,6 @@ export class PortfoliosController {
       req.flash('success', 'Portfolio successfully updated');
       return res.redirect(`/portfolios/${portfolioId}`);
     } catch (error) {
-
-      if (newGambar && newGambar.length > 0) {
-        const deleteNewImagesPromises = newGambar.map((file) =>
-          this.portfoliosService.deleteFile(file.path).catch((err) => {
-          }),
-        );
-        await Promise.allSettled(deleteNewImagesPromises);
-      }
 
       req.flash('error', error.message || 'Portfolio failed to update');
       return res.redirect(`/portfolios/${portfolioId}/edit`);

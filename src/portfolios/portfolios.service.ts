@@ -8,8 +8,9 @@ import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import * as fs from 'fs/promises';
+import * as ps from 'fs/promises';
 import * as path from 'path';
+import * as fs from "fs";
 
 @Injectable()
 export class PortfoliosService {
@@ -130,11 +131,32 @@ export class PortfoliosService {
     try {
       const filePath = path.join(process.cwd(), 'public', url);
 
-      await fs.unlink(filePath);
+      await ps.unlink(filePath);
     } catch (error) {}
   }
 
   async update(portfolioId: number, updatePortfolioDto: UpdatePortfolioDto) {
     await this.portfolioRepository.update(portfolioId, updatePortfolioDto);
   }
+
+async deleteUnusedImages(oldImage: string[], newImage: string[]) {
+  const publicDir = path.join(process.cwd(), "public");
+
+  const fileToDelete = oldImage.filter(
+    (oldPath) => !newImage.includes(oldPath)
+  );
+
+  await Promise.all(
+    fileToDelete.map(async (dbPath) => {
+      try {
+        const fullPath = path.join(publicDir, dbPath);
+        await ps.unlink(fullPath);
+
+      } catch (err) {
+      }
+    })
+  );
+
+  return newImage;
+}
 }
