@@ -36,7 +36,7 @@
                       <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">Saved</span>
                     </div>
                   </div>
-                  <input type="hidden" name="existing_images[]" :value="url">
+                  <input type="hidden" name="gambar[]" :value="url">
                   <button type="button" @click="existingImages.splice(index, 1)" 
                   class="w-12 h-12 bg-red-500 hover:bg-red-600 text-white rounded-xl flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,7 +61,7 @@
                   <div class="flex-1">
                     <input 
                       type="file" 
-                      :name="'new_images[]'"
+                      :name="'gambar'"
                       accept="image/jpeg,image/jpg,image/png"
                       @change="
                         file.error = '';

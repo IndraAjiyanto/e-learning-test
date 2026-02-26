@@ -180,10 +180,9 @@ createBlogDto.isi = html;
     maxHeight: 1080,
     maxSize: 3 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'nestjs/images/blog',
+    folder: 'blog',
   })
   async update(
-        @UploadedFiles() newGambar: Express.Multer.File[],
     @Param('id') id: number,
     @Body() updateBlogDto: UpdateBlogDto,
     @Res() res: Response,
@@ -191,11 +190,17 @@ createBlogDto.isi = html;
   ) {
     try {
       const blog = await this.blogService.findOne(id);
-      await this.blogService.ChangeImageEditorJS(blog.isi_editorjs, "/asset/blog/isi", "/asset/blog/temp")
       if(updateBlogDto.isi) {
-        updateBlogDto.isi_editorjs =await this.blogService.ChangeImageEditorJS(updateBlogDto.isi, "/asset/blog/temp", "/asset/blog/isi", "/asset/blog/temp");
+      await this.blogService.ChangeImageEditorJS(blog.isi_editorjs, "/asset/blog/isi", "/asset/blog/temp");
+        updateBlogDto.isi_editorjs = await this.blogService.ChangeImageEditorJS(updateBlogDto.isi, "/asset/blog/temp", "/asset/blog/isi", "/asset/blog/temp");
   updateBlogDto.isi = editorjsHTML.parse(JSON.parse(updateBlogDto.isi_editorjs));
 }
+
+      updateBlogDto.gambar = updateBlogDto.gambar || [];
+      const combineImage = [...updateBlogDto.gambar || [], ...(req.body.uploadedImageUrls) || []];
+      const newImageUrls = await this.blogService.deleteUnusedImages(blog.gambar, combineImage);
+
+      updateBlogDto.gambar = newImageUrls;
 
       await this.blogService.update(id, updateBlogDto);
       req.flash('success', 'Blog successfully updated');

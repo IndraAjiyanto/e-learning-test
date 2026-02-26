@@ -145,7 +145,7 @@ export class PortfoliosController {
     try {
       const oldPortfolio = await this.portfoliosService.findOne(portfolioId);
       updatePortfolioDto.gambar = updatePortfolioDto.gambar || [];
-      const combineImage = [...updatePortfolioDto.gambar || [], ...(req.body.uploadedImageUrls)];
+      const combineImage = [...updatePortfolioDto.gambar || [], ...(req.body.uploadedImageUrls) || []];
       const newImageUrls = await this.portfoliosService.deleteUnusedImages(oldPortfolio.gambar, combineImage);
 
       const updateData = {

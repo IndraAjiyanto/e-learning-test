@@ -59,7 +59,6 @@ editorjsData.blocks.forEach((block: any) => {
   if (block.type === "image" && block.data?.file?.url) {
     const oldUrl = block.data.file.url;
 
-    if (oldUrl.startsWith(oldFolder+"/")) {
       const fileName = oldUrl.split("/").pop();
 
       const oldPath = path.join(tempDir, fileName);
@@ -70,25 +69,24 @@ editorjsData.blocks.forEach((block: any) => {
       }
 
       block.data.file.url = `${newFolder}/${fileName}`;
-    }
   }
 });
 
-if (deleteFileInFolder) {
-  const deleteDir = path.join(process.cwd(), "public" + deleteFileInFolder);
+// if (deleteFileInFolder) {
+//   const deleteDir = path.join(process.cwd(), "public" + deleteFileInFolder);
 
-  if (fs.existsSync(deleteDir)) {
-    const files = fs.readdirSync(deleteDir);
+//   if (fs.existsSync(deleteDir)) {
+//     const files = fs.readdirSync(deleteDir);
 
-    files.forEach(file => {
-      const filePath = path.join(deleteDir, file);
+//     files.forEach(file => {
+//       const filePath = path.join(deleteDir, file);
 
-      if (fs.lstatSync(filePath).isFile()) {
-        fs.unlinkSync(filePath);
-      }
-    });
-  }
-}
+//       if (fs.lstatSync(filePath).isFile()) {
+//         fs.unlinkSync(filePath);
+//       }
+//     });
+//   }
+// }
 
 return JSON.stringify(editorjsData);
   }
@@ -153,6 +151,27 @@ async ChangeImgPath(isi: string, newFolder: string): Promise<string> {
   }
 }
 
+async deleteUnusedImages(oldImage: string[], newImage: string[]) {
+  const publicDir = path.join(process.cwd(), "public");
+
+  const fileToDelete = oldImage.filter(
+    (oldPath) => !newImage.includes(oldPath)
+  );
+
+  await Promise.all(
+    fileToDelete.map(async (dbPath) => {
+      try {
+        const fullPath = path.join(publicDir, dbPath);
+        await fs.promises.unlink(fullPath);
+
+      } catch (err) {
+      }
+    })
+  );
+
+  return newImage;
+}
+
   async update(id: number, updateBlogDto: UpdateBlogDto) {
     const blog = await this.findOne(id);
     if (!blog) {
@@ -184,6 +203,8 @@ async ChangeImgPath(isi: string, newFolder: string): Promise<string> {
     if (updateBlogDto.isi_editorjs) blog.isi_editorjs = updateBlogDto.isi_editorjs;
     if (updateBlogDto.gambar) blog.gambar = updateBlogDto.gambar;
     if (updateBlogDto.author) blog.author = updateBlogDto.author;
+    if (updateBlogDto.keyword) blog.keyword = updateBlogDto.keyword;
+    if (updateBlogDto.tags) blog.tags = updateBlogDto.tags;
 
     return await this.blogRepository.save(blog);
   }
