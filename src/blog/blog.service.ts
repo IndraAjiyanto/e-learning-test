@@ -72,21 +72,21 @@ editorjsData.blocks.forEach((block: any) => {
   }
 });
 
-// if (deleteFileInFolder) {
-//   const deleteDir = path.join(process.cwd(), "public" + deleteFileInFolder);
+if (deleteFileInFolder) {
+  const deleteDir = path.join(process.cwd(), "public" + deleteFileInFolder);
 
-//   if (fs.existsSync(deleteDir)) {
-//     const files = fs.readdirSync(deleteDir);
+  if (fs.existsSync(deleteDir)) {
+    const files = fs.readdirSync(deleteDir);
 
-//     files.forEach(file => {
-//       const filePath = path.join(deleteDir, file);
+    files.forEach(file => {
+      const filePath = path.join(deleteDir, file);
 
-//       if (fs.lstatSync(filePath).isFile()) {
-//         fs.unlinkSync(filePath);
-//       }
-//     });
-//   }
-// }
+      if (fs.lstatSync(filePath).isFile()) {
+        fs.unlinkSync(filePath);
+      }
+    });
+  }
+}
 
 return JSON.stringify(editorjsData);
   }
