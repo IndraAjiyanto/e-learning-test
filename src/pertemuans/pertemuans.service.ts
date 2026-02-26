@@ -50,6 +50,11 @@ export class PertemuansService {
   ) {}
 
   async create(createPertemuanDto: CreatePertemuanDto) {
+        if (createPertemuanDto.akhir_check === 'true') {
+      createPertemuanDto.akhir = true;
+    } else {
+      createPertemuanDto.akhir = false;
+    }
     const minggu = await this.mingguRepository.findOne({
       where: { id: createPertemuanDto.mingguId }, relations: ['kelas'],
     });

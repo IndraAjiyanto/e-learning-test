@@ -34,8 +34,7 @@ export class PertemuansController {
     @Req() req: Request,
   ) {
     try {
-      createPertemuanDto.pertemuan_ke =
-        await this.pertemuansService.noPertemuan(createPertemuanDto.mingguId);
+      createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(createPertemuanDto.mingguId);
       await this.pertemuansService.create(createPertemuanDto);
       req.flash('success', 'session succesfuly create');
       res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`);
