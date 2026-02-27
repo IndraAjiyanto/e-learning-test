@@ -71,7 +71,8 @@
       {{/if}}
 
       <!-- Register Form -->
-      <form action='/register' method='post' class='space-y-6'>
+      <form action='/register' method='post' class='space-y-6' x-data="{ loading: false }"
+  @submit="loading = true">
 
         <!-- Name -->
         <div>
@@ -239,10 +240,12 @@
 
         <!-- Submit Button -->
         <button
+          :disabled="loading"
           type='submit'
           class='w-full py-3 rounded-lg bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'
         >
-          {{t 'test.signUp.signUpButton'}}
+          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+          <span x-show="!loading">{{t 'test.signUp.signUpButton'}}</span>
         </button>
 
         <!-- Link to Login -->

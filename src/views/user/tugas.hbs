@@ -120,6 +120,8 @@
 
                     <div id="edit-form-{{this.id}}" class="mt-4 hidden">
                       <form 
+                            x-data="{ loading: false }"
+  @submit="loading = true"
                         action="/jawaban-tugass/{{../tugas.id}}/{{this.id}}?_method=PATCH" 
                         method="POST" 
                         class="space-y-4"
@@ -133,17 +135,19 @@
                           class="w-full px-4 py-3 border border-slate-300 rounded-xl bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-all duration-300 hover:bg-white"
                         >
                           <button 
+                            :disabled="loading"
                             type="submit" 
                             class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                           >
-                            Update
+                            <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+                            <span x-show="!loading">{{t "test.assigment.updateAnswer"}}</span>
                           </button>
                           <button 
                             type="button" 
                             onclick="toggleEditForm({{this.id}})"
                             class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors"
                           >
-                            Cancel
+                            {{t "test.assigment.cancel"}}
                           </button>
                       </form>
                     </div>
@@ -156,6 +160,8 @@
               {{t "test.assigment.spanSubmitYourAnswer"}}
             </p>
             <form 
+                  x-data="{ loading: false }"
+  @submit="loading = true"
               action="/jawaban-tugass/{{tugas.id}}/{{tugas.pertemuan.id}}" 
               method="POST" 
               class="space-y-4"
@@ -168,10 +174,12 @@
                 class="w-full px-4 py-3 border border-slate-300 rounded-xl bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-all duration-300 hover:bg-white"
               >
               <button 
+              :disabled="loading"
                 type="submit" 
                 class="w-full px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
               >
-                {{t "test.assigment.submitAnswer"}}
+              <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+              <span x-show="!loading">{{t "test.assigment.submitAnswer"}}</span>
               </button>
             </form>
               </div>

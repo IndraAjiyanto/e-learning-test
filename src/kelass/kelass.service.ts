@@ -479,7 +479,9 @@ export class KelassService {
       )
       .leftJoinAndSelect(
         'quiz.nilai',
-        'nilai'
+        'nilai',
+        'nilai.userId = :userId',
+        { userId },
       )
       .where('quiz.mingguId = :mingguId', { mingguId: mingguId })
       .orderBy('quiz.id', 'ASC')

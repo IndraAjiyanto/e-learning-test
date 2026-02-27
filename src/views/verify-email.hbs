@@ -150,14 +150,17 @@
       {{else}}
 
       <!-- Forgot Password Form -->
-      <form action='/users/send-verify-email?token={{user.verifikasiToken}}' method='post' class='space-y-6'>
+      <form action='/users/send-verify-email?token={{user.verifikasiToken}}' method='post' class='space-y-6' x-data="{ loading: false }"
+  @submit="loading = true">
 
         <!-- Submit Button -->
         <button
           type='submit'
+          :disabled="loading"
           class='w-full py-3 rounded-lg bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'
         >
-          {{t 'test.verify.sendButton'}}
+        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+        <span x-show="!loading">{{t 'test.verify.sendButton'}}</span>
         </button>
       </form>
       {{/if}}

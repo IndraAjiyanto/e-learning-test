@@ -22,8 +22,7 @@ export class AuthController {
     @Req() req: any,
   ) {
     if (req.user) {
-      const previous = req.headers.referer || '/dashboard';
-      return res.redirect(previous);
+      return res.redirect('/dashboard');
     }
     res.render('login');
   }
