@@ -3,7 +3,8 @@
     Edit Blog Post
   </h2>
 
-  <form method='POST' action='/blog/{{blog.id}}?_method=PATCH' enctype='multipart/form-data' class='space-y-6'>
+  <form method='POST' action='/blog/{{blog.id}}?_method=PATCH' x-data="{ loading: false }"
+  @submit="loading = true" enctype='multipart/form-data' class='space-y-6'>
     <!-- Menambahkan method spoofing untuk PUT/PATCH -->
 
     <div class='flex flex-col lg:flex-row gap-8 lg:gap-12'>
@@ -360,8 +361,9 @@
 
     <!-- Form Actions -->
     <div class='flex gap-2'>
-      <button type='submit' class='py-2 px-4 bg-gray-900 text-white font-semibold rounded-lg shadow hover:bg-gray-600 transition'>
-        Update
+      <button type='submit' :disabled='loading' class='py-2 px-4 bg-gray-900 text-white font-semibold rounded-lg shadow hover:bg-gray-600 transition'>
+        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+        <span x-show="!loading">Update</span>
       </button>
       <a href='/blog' class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'>
         Cancel

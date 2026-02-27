@@ -28,7 +28,7 @@
       if (field === "harga") {
         this.formData.harga[index] = value;
         const numValue = parseInt(value);
-        if (!value || isNaN(numValue) || numValue <= 0) {
+        if (!value || isNaN(numValue)) {
           this.formErrors.harga[index] = "Valid payment amount required";
           this.formValid.harga[index] = false;
         } else {
@@ -101,7 +101,8 @@
     <form
       action='/cicilan/{{cicilan.id}}?_method=PATCH'
       method='POST'
-      @submit='handleSubmit()'
+      x-data="{ loading: false }"
+      @submit='handleSubmit(); loading = true'
       class='space-y-6'
     >
 
@@ -243,9 +244,11 @@
       <div class='flex gap-3'>
         <button
           type='submit'
+          :disabled='loading'
           class='text-white px-6 py-2 rounded-lg shadow transition bg-gray-900 hover:bg-gray-600'
         >
-          Update
+        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+        <span x-show="!loading">Update</span>
         </button>
         <a
           href='/kelass/detail/kelas/admin/{{cicilan.kelas.id}}'
