@@ -117,7 +117,8 @@
       action='/benefit/{{benefit.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
-      @submit='if (!canSubmit()) { $event.preventDefault(); return false; }'
+      x-data="{ loading: false }"
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
     >
 
           <div class='space-y-2'>
@@ -404,11 +405,12 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          :disabled='!canSubmit()'
-          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          :disabled='!canSubmit() || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
-          Update
+          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+          <span x-show="!loading">Update</span>
         </button>
         <a
           href='/benefit'
