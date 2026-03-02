@@ -6,7 +6,9 @@
       method='POST'
       action='/absens/{{pertemuanId}}'
       class='space-y-6'
+      @submit="loading = true"
       x-data="{
+      loading: false,
       users: {{json users}},
       searchUser: '',
       showUserDropdown: false,
@@ -159,18 +161,22 @@
         ></textarea>
       </div>
 
-      <!-- Buttons -->
       <div class='flex gap-3'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='loading'
+          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600 '"
+          class=' text-white px-6 py-2 rounded-lg shadow transition'
         >
-          Create
+        <span x-show="!loading">Create</span>
+        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+          
         </button>
         <a
           href='/pertemuans/{{pertemuanId}}'
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
-        >
+        :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
           Cancel
         </a>
       </div>

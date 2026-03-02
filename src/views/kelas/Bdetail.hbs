@@ -1123,6 +1123,8 @@
                   enctype='multipart/form-data'
                   method='post'
                   class='space-y-4'
+                  x-data="{loading : false}"
+                  @submit="loading = true"
                 >
 
                   <!-- Full Payment Summary Badge -->
@@ -1256,12 +1258,13 @@
 
                   <button
                     type='submit'
-                    :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)'
-                    :class="((fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
+                    :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading'
+                    :class="(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
                     class='w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                   >
-                    <i class='fas fa-credit-card mr-2'></i>
-                    <span>{{t "test.detailProgram.fullPayment.buttonSubmitProof"}}</span>
+                          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+                    <i x-show="!loading" class='fas fa-credit-card mr-2'></i>
+                    <span x-show="!loading">{{t "test.detailProgram.fullPayment.buttonSubmitProof"}}</span>
                   </button>
                 </form>
 
@@ -1273,6 +1276,8 @@
                     enctype='multipart/form-data'
                     method='post'
                     class='space-y-4'
+                    x-data="{loading : false}"
+                    @submit="loading = true"
                   >
                     <!-- Installment Payment Summary Badge -->
                     <div
@@ -1408,12 +1413,13 @@
 
                     <button
                       type='submit'
-                      :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)'
-                      :class="((fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
+                      :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading'
+                      :class="(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
                       class='w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                     >
-                      <i class='fas fa-calendar-check mr-2'></i>
-                      <span x-text="`{{t "test.detailProgram.installment.buttonSubmitProof"}} (${cicilan.bulan} {{t "test.detailProgram.installment.months"}})`"></span>
+                      <i x-show="!loading" class='fas fa-calendar-check mr-2'></i>
+                      <span x-show="!loading">{{t "test.detailProgram.installment.buttonSubmitProof"}}</span>
+                      <span x-show="loading" class="loading loading-spinner loading-sm"></span>
                     </button>
                   </form>
                 </template>
@@ -1426,6 +1432,8 @@
                   enctype='multipart/form-data'
                   method='post'
                   class='space-y-4'
+                  x-data="{loading : false}"
+                  @submit="loading = true"
                 >
                   <!-- Free Registration Badge -->
                   <div
@@ -1499,12 +1507,13 @@
 
                   <button
                     type='submit'
-                    :disabled='(fileError) || (!isValidFile && fileInputTouched)'
-                    :class="((fileError) || (!isValidFile && fileInputTouched)) ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
+                    :disabled='(fileError) || (!isValidFile && fileInputTouched) || loading'
+                    :class="(fileError) || (!isValidFile && fileInputTouched) || loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
                     class='w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                   >
-                    <i class='fas fa-user-plus mr-2'></i>
-                    {{t "test.detailProgram.free.buttonSubmitRegistration"}}
+                  <i class='fas fa-user-plus mr-2'></i>
+                  <span x-show="!loading">{{t "test.detailProgram.free.buttonSubmitRegistration"}}</span>
+                  <span x-show="loading" class="loading loading-spinner loading-sm"></span>
                   </button>
                 </form>
               {{/if}}

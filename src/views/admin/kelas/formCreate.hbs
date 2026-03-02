@@ -32,6 +32,8 @@
       action='/kelass/{{kategori.id}}'
       class='grid grid-cols-1 lg:grid-cols-2 gap-8'
       enctype='multipart/form-data'
+      x-data="{loading:false}"
+      @submit="loading = true"
     >
 
       <!-- LEFT COLUMN -->
@@ -1217,16 +1219,19 @@
               <div class='flex space-x-4'>
           <button
             type='submit'
-            :disabled='coverHasFile && !coverValid'
-            :class="coverHasFile && !coverValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+            :disabled='coverHasFile && !coverValid || loading'
+            :class="coverHasFile && !coverValid || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
             class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
           >
-            Create
+            <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+            <span x-show="!loading">Create</span>
           </button>
           <a
             href='/kategoris/{{kategori.id}}'
-            class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
-          >
+            :disabled='loading'
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300 transition'
+        >
             Cancel
           </a>
         </div>

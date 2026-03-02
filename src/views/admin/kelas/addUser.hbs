@@ -43,7 +43,7 @@
           <p class="text-gray-600 text-sm mt-1">Select the student to add to this program</p>
         </div>
 
-        <form action="/kelass/tambahMurid/{{kelas.id}}" method="POST" class="space-y-4">
+        <form action="/kelass/tambahMurid/{{kelas.id}}" method="POST" class="space-y-4" x-data="{loading: false}" @submit="loading = true">
           <div>
             <div class="relative">
               <input type="hidden" name="userId" x-model="selected" required>
@@ -99,11 +99,12 @@
 
           <div class="flex justify-start space-x-3 pt-2">
             <button type="submit" 
-                    x-bind:disabled="selected === ''"
-                    x-bind:class="selected === '' ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+                    x-bind:disabled="selected === '' || loading"
+                    x-bind:class="selected === '' || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
                     class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
-              Add user
-            </button>
+                    <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+                    <span x-show="!loading">Add user</span>
+              </button>
             <button type="button"
                     @click="searchUser = ''; selectedName = ''; selected = ''; open = false"
                     class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
