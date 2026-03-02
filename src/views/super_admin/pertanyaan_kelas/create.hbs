@@ -76,7 +76,8 @@
       action='/pertanyaan-kelas/{{kelasId}}'
       method='post'
       class='space-y-6'
-      @submit.prevent="if (canSubmit) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+      x-data='{ loading: false }'
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
       <div class='space-y-4'>
@@ -315,15 +316,17 @@
         </div>
       </div>
 
-      <!-- Buttons -->
       <div class='flex gap-3'>
         <button
           type='submit'
-          :disabled='!canSubmit'
-          :class="canSubmit ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          :disabled='!canSubmit () || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='text-white px-6 py-2 rounded-lg shadow transition'
         >
-          Create
+          <span x-show='loading'><i
+              class='loading loading-spinner loading-sm'
+            ></i></span>
+          <span x-show='!loading'>Create</span>
         </button>
         <a
           href='/kelass/detail/kelas/admin/{{kelasId}}'

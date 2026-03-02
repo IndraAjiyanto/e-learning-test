@@ -61,7 +61,7 @@
       action='/paragraf/{{paragraf.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
-      x-data="{ loading: false }"
+      x-data='{ loading: false }'
       @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
     >
 
@@ -192,8 +192,10 @@
           :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
-        <span x-show='loading'><i class='fas fa-spinner fa-spin'></i></span>
-        <span x-show='!loading'>Update</span>
+          <span x-show='loading'><i
+              class='loading loading-spinner loading-sm'
+            ></i></span>
+          <span x-show='!loading'>Update</span>
         </button>
         <a
           href='/paragraf'
