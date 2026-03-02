@@ -106,7 +106,7 @@
       method='post'
       enctype='multipart/form-data'
       class='space-y-6'
-      x-data="{ loading: false }"
+      x-data='{ loading: false }'
       @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please upload a valid image before submitting.'); }"
     >
 
@@ -246,12 +246,16 @@
           :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
-          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-          <span x-show="!loading">Create</span>
+          <span
+            x-show='loading'
+            class='loading loading-spinner loading-sm'
+          ></span>
+          <span x-show='!loading'>Create</span>
         </button>
         <a
           href='/gambar-benefit'
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300 transition'
         >
           Cancel
         </a>
