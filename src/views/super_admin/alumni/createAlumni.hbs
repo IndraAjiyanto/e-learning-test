@@ -795,7 +795,7 @@
         <button
           type='submit'
           :disabled='!canSubmit() || loading'
-                    :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700 '"
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700 '"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           <span x-show="loading" class="loading loading-spinner loading-sm"></span>
@@ -803,7 +803,8 @@
         </button>
         <a
           href='/kategoris/{{kategoriId}}'
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : ' hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition flex items-center gap-2'
         >
           Cancel
         </a>
