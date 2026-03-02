@@ -1,4 +1,6 @@
-<div class='py-10'   x-data="{
+<div
+  class='py-10'
+  x-data="{
   icon: '',
   get computedClass() {
     const raw = (this.icon || '').toString().trim();
@@ -12,12 +14,20 @@
     if (!v.includes(' ')) return 'fa-solid fa-' + v;
     return v;
   }
-}">
+}"
+>
   <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Create Topic</h2>
 
-    <form action='/topic' method='post' class='space-y-6'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Create
+      Topic</h2>
+
+    <form
+      action='/topic'
+      method='post'
+      class='space-y-6'
+      x-data='{ loading: false }'
+      @submit='loading = true'
+    >
 
       <!-- Nama -->
       <div>
@@ -87,9 +97,15 @@
       <div class='flex gap-2'>
         <button
           type='submit'
-          class='py-2 px-4 bg-gray-900 text-white font-semibold rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='loading'
+          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='py-2 px-4 text-white font-semibold rounded-lg shadow transition'
         >
-          Create
+          <span
+            x-show='loading'
+            class='loading loading-spinner loading-sm'
+          ></span>
+          <span x-show='!loading'>Create</span>
         </button>
         <a
           href='/kategori-blog'

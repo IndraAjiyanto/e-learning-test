@@ -7,6 +7,7 @@
       method='post'
       class='space-y-6'
       x-data="{
+      loading: false,
         nama: `{{teknologi.nama}}`,
         svg: `{{teknologi.svg}}`,
         svgPreview: '',
@@ -58,7 +59,7 @@
           return this.success.nama && this.success.svg;
         }
       }"
-      @submit.prevent="if (canSubmit) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
       <!-- Nama Teknologi -->
@@ -158,11 +159,15 @@
       <div class='flex gap-3'>
         <button
           type='submit'
-          :disabled='!canSubmit'
-          :class="canSubmit ? 'bg-gray-900 hover:bg-gray-600' : 'bg-gray-400 cursor-not-allowed'"
+          :disabled='!canSubmit() || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='text-white px-6 py-2 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-gray-900 flex items-center gap-2'
         >
-          Update
+          <span
+            x-show='loading'
+            class='loading loading-spinner loading-sm'
+          ></span>
+          <span x-show='!loading'>Update</span>
         </button>
         <a
           href='/teknologi'
