@@ -9,7 +9,7 @@ import {
   Req,
   Res,
   UseInterceptors,
-  UploadedFiles,
+  Delete,
 } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
@@ -165,4 +165,29 @@ export class PortfoliosController {
       return res.redirect(`/portfolios/${portfolioId}/edit`);
     }
   }
+
+
+  @Roles('user')
+  @Delete(':portfolioId')
+  async remove(
+    @Param('portfolioId') portfolioId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      const portfolio = await this.portfoliosService.findOne(portfolioId);
+      if(portfolio){
+        for (const imageUrl of portfolio.gambar) {
+          await this.portfoliosService.deleteFile(imageUrl);
+        }
+      await this.portfoliosService.remove(portfolioId);
+    }
+      req.flash('success', 'Portfolio successfully deleted');
+      res.redirect(`/portfolios/myportfolio/${req.user?.id}`);
+    } catch (error) {
+      req.flash('error', error.message || 'Failed to delete portfolio');
+      res.redirect(`/portfolios/myportfolio/${req.user?.id}`);
+    }
+  }
+
 }

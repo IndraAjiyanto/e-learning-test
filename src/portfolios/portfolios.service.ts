@@ -159,4 +159,13 @@ async deleteUnusedImages(oldImage: string[], newImage: string[]) {
 
   return newImage;
 }
+
+async remove(portfolioId: number) {
+        const portfolio = await this.findOne(portfolioId);
+    if (!portfolio) {
+      throw new NotFoundException('Portfolio Not Found');
+    }
+    return await this.portfolioRepository.remove(portfolio);
+
+}
 }
