@@ -8,6 +8,7 @@
       enctype='multipart/form-data'
       class='space-y-6'
       x-data="{
+      loading: false,
         errorMessage: '',
         isValid: true,
         fileName: '',
@@ -73,7 +74,7 @@
           return this.isValid;
         }
       }"
-      @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please ensure all fields are valid before submitting.'); }"
+      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please ensure all fields are valid before submitting.'); }"
     >
 
       <div>
@@ -219,14 +220,18 @@
       <div class='flex space-x-4'>
         <button
           type='submit'
-          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition'
+          :disabled='!canSubmit() || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600 '"
+          class=' text-white px-6 py-2 rounded-lg shadow transition'
         >
-          Update Log Book
+        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+<span x-show="!loading">Update Log Book</span>
         </button>
         <a
           href='/pertemuans/{{logbook_mentor.pertemuan.id}}'
-          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
-        >
+        :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
           Cancel
         </a>
       </div>

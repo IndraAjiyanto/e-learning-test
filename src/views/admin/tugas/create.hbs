@@ -10,6 +10,7 @@
       enctype='multipart/form-data'
       class='space-y-6'
       x-data="{
+      loading: false,
         errorMessage: '',
         isValid: true,
         fileName: '',
@@ -62,7 +63,7 @@
           return false;
         }
       }"
-      @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please select a valid file before submitting.'); }"
+      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please select a valid file before submitting.'); }"
     >
 
       <!-- Assignment Title -->
@@ -148,11 +149,12 @@
       <div class='flex justify-start gap-3 pt-4'>
         <button
           type='submit'
-          :disabled='!canSubmit()'
-          :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          :disabled='!canSubmit() || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
-          Create Assignment
+          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+          <span x-show='!loading'>Create Assignment</span>
         </button>
         <a
           href='/pertemuans/{{pertemuanId}}'

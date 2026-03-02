@@ -9,6 +9,7 @@
         enctype='multipart/form-data'
         class='space-y-6'
         x-data="{
+        loading: false,
         errorMessage: '',
         isValid: true,
         fileName: '',
@@ -56,7 +57,7 @@
           return false;
         }
       }"
-        @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please select a valid PDF file before submitting.'); }"
+        @submit.prevent="if(canSubmit()) { loading = true;  $el.submit(); } else { alert('Please select a valid PDF file before submitting.'); }"
       >
 
         <div>
@@ -139,16 +140,18 @@
         <div class='flex gap-3'>
           <button
             type='submit'
-            :disabled='!canSubmit()'
-            :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+            :disabled='!canSubmit() || loading'
+            :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
             class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
           >
-            Create PDF
+            <span x-show='loading' class="loading loading-spinner loading-sm"></span>
+            <span x-show='!loading'>Create PDF</span>
           </button>
           <a
             href='/pertemuans/{{pertemuanId}}'
-            class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
-          >
+        :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
             Cancel
           </a>
         </div>
@@ -181,6 +184,7 @@
         enctype='multipart/form-data'
         class='space-y-6'
         x-data="{
+        loading: false,
         errorMessage: '',
         isValid: true,
         fileName: '',
@@ -240,7 +244,7 @@
           return false;
         }
       }"
-        @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please select a valid PPT/PPTX file before submitting.'); }"
+        @submit.prevent="if(canSubmit()) { loading = true;  $el.submit(); } else { alert('Please select a valid PPT/PPTX file before submitting.'); }"
       >
 
         <div>
@@ -324,16 +328,18 @@
         <div class='flex gap-3'>
           <button
             type='submit'
-            :disabled='!canSubmit()'
-            :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+            :disabled='!canSubmit() || loading'
+            :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
             class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
           >
-            Create PPT
+            <span x-show='loading' class="loading loading-spinner loading-sm"></span>
+            <span x-show='!loading'>Create PPT</span>
           </button>
           <a
             href='/pertemuans/{{pertemuanId}}'
-            class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
-          >
+        :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
             Cancel
           </a>
         </div>
@@ -365,6 +371,7 @@
         method='POST'
         class='space-y-6'
         x-data="{
+        loading: false,
         errorMessage: '',
         isValid: false,
         videoUrl: '',
@@ -395,7 +402,7 @@ if (!urlPattern.test(value)) {
           return this.hasInput && this.isValid;
         }
       }"
-        @submit.prevent="if(canSubmit()) { $el.submit(); } else { alert('Please enter a valid YouTube URL before submitting.'); }"
+        @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please enter a valid YouTube URL before submitting.'); }"
       >
 
         <div>
@@ -462,16 +469,18 @@ if (!urlPattern.test(value)) {
         <div class='flex gap-3'>
           <button
             type='submit'
-            :disabled='!canSubmit()'
-            :class="!canSubmit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+            :disabled='!canSubmit() || loading'
+            :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
             class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
           >
-            Create Video
+            <span x-show='loading' class="loading loading-spinner loading-sm"></span>
+            <span x-show='!loading'>Create Video</span>
           </button>
           <a
             href='/pertemuans/{{pertemuanId}}'
-            class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition flex items-center gap-2'
-          >
+          :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
             Cancel
           </a>
         </div>

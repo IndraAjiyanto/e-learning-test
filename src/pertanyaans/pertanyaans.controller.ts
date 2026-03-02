@@ -40,7 +40,7 @@ export class PertanyaansController {
   @Roles('admin')
   @Post(':quizId')
     @UseInterceptors(
-      FileInterceptor('profile', multerConfigMemoryOnly),
+      FileInterceptor('gambar', multerConfigMemoryOnly),
       ValidateImageInterceptor,
     )
     @ValidateImage({
