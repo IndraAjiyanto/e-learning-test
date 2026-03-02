@@ -79,13 +79,11 @@
       @submit.prevent="if (canSubmit) { $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
     >
 
-      <!-- Pertanyaan per Bahasa -->
       <div class='space-y-4'>
         <label class='block text-sm font-semibold text-gray-700 mb-1'>
           Question
         </label>
         <div class='grid grid-cols-1 gap-4'>
-          <!-- ID -->
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>ID</label>
             <textarea
