@@ -17,10 +17,10 @@
   <div class='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8'>
     {{#each value}}
       <div
-        class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
+        class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
       >
         <div
-          class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
+          class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16  rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
         >
           <i
             class='{{computeIcon icon}}
@@ -28,10 +28,10 @@
           ></i>
         </div>
         <h3
-          class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
+          class='text-lg sm:text-xl lg:text-2xl font-bold text-white 0 mb-3 sm:mb-4 font-montserrat'
         >{{getByLang title ../lang}}</h3>
         <p
-          class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
+          class='text-sm sm:text-base text-white leading-relaxed font-inter'
         >
           {{getByLang description ../lang}}
         </p>

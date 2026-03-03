@@ -15,7 +15,7 @@
           </div>
           <!-- CEO Card - Special Design -->
           <div
-            class='bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-300 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 mb-6 sm:mb-8 transition-all duration-300 hover:shadow-xl'
+            class='bg-gradient-to-br from-primary via-secondary to-gray-900  border-2 border-slate-300 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 mb-6 sm:mb-8 transition-all duration-300 hover:shadow-xl'
             x-data='{ educationOpen: false, achievementOpen: false, portfolioOpen: false }'
           >
             <div class='flex flex-col md:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6'>
@@ -31,7 +31,7 @@
                   class='flex items-center justify-center md:justify-start gap-2 mb-2'
                 >
                   <h3
-                    class='text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 font-montserrat'
+                    class='text-xl sm:text-2xl lg:text-3xl font-bold text-white font-montserrat'
                   >
                     {{#if teamLead.[0]}}
                       {{teamLead.[0].nama}}
@@ -42,7 +42,7 @@
 
                 </div>
                 <p
-                  class='text-slate-600 font-semibold mb-2 sm:mb-3 text-base sm:text-lg font-inter'
+                  class='text-white font-semibold mb-2 sm:mb-3 text-base sm:text-lg font-inter'
                 >
                   {{#if teamLead.[0]}}
                     {{getByLang teamLead.[0].posisi lang}}
@@ -53,16 +53,16 @@
 
                   {{#if teamLead.[0]}}
                                   <p
-                  class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'
+                  class='text-white text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'
                 >
                     {{getByLang teamLead.[0].deskripsi lang}}
                 </p>
 
                   {{else}}
-                  <p class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
+                  <p class='text-white text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
                     Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including notable names such as Pertamina, Biofarma, Angkasa Pura II, and Bank DBS Indonesia.
                     </p>
-                    <p class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
+                    <p class='text-white text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
                     His deep expertise in technology and data analytics, combined with his experience serving major clients, serves as the core foundation for his vision to build an Edutech company. His goal is to bridge the gap and democratize technical up-skilling, leveraging technology to create flexible, scalable, and high-quality learning solutions that can significantly enhance the competitiveness of digital talent across Asia. His passion for continuous learning and commitment to achieving client business objectives now extends to a mission of elevating the competence of the wider community.
                     </p>
                   {{/if}}
@@ -297,7 +297,7 @@
           >
             {{#each team}}
               <div
-                class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 '
+                class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 '
               >
                 <div
                   class='w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full flex items-center justify-center mb-3 sm:mb-4 mx-auto ring-4 ring-slate-300'
@@ -309,13 +309,13 @@
                 </div>
                 <div class='text-center'>
                   <h3
-                    class='text-base sm:text-lg lg:text-xl font-bold text-slate-800 mb-1 sm:mb-2'
+                    class='text-base sm:text-lg lg:text-xl font-bold text-white mb-1 sm:mb-2'
                   >{{nama}}</h3>
                   <p
-                    class='text-slate-600 font-medium mb-2 sm:mb-3 text-sm sm:text-base'
+                    class='text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base'
                   >{{getByLang posisi ../lang}}</p>
                   <p
-                    class='text-slate-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4'
+                    class='text-white text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4'
                   >
                     {{getByLang deskripsi ../lang}}
                   </p>
@@ -413,20 +413,20 @@
 
           </div>
           <div
-            class='mt-8 sm:mt-10 lg:mt-12 bg-gradient-to-br from-slate-50 to-slate-100 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-slate-200'
+            class='mt-8 sm:mt-10 lg:mt-12 bg-gradient-to-br from-primary via-secondary to-gray-900 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-slate-200 text-white'
           >
             <h3
-              class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 text-center'
+              class='text-lg sm:text-xl lg:text-2xl font-bold mb-3 sm:mb-4 text-center'
             >{{t 'test.about.team.joinOurTeam'}}</h3>
             <p
-              class='text-sm sm:text-base text-slate-600 text-center mb-4 sm:mb-6'
+              class='text-sm sm:text-base text-center mb-4 sm:mb-6'
             >
               {{t 'test.about.team.joinDescription'}}
             </p>
             <div class='text-center'>
               <a
                 href='{{social.[0].link_form}}' target="_blank"
-                class='inline-flex items-center space-x-2 bg-gradient-to-r from-slate-600 to-slate-800 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg hover:from-slate-700 hover:to-slate-900 transition-all duration-200 text-sm sm:text-base'
+                class='btn inline-flex items-center space-x-2 text-gray-800 hover:text-slate-900 bg-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg  transition-all duration-200 text-sm sm:text-base hover:bg-slate-50 hover:shadow-lg transform hover:-translate-y-1'
               >
                 <i class='fas fa-briefcase text-sm'></i>
                 <span>{{t 'test.about.team.buttonJob'}}</span>

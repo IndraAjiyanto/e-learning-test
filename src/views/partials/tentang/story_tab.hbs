@@ -77,22 +77,22 @@
     <div class='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6'>
       {{#each commitment}}
         <div
-          class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
+          class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1'
         >
           <div
-            class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'
+            class='w-10 h-10 sm:w-12 sm:h-12 flex bg-transparent items-center justify-center flex-shrink-0'
           >
             <i
               class='{{{computeIcon this.icon}}}
-                text-white text-sm sm:text-base'
+                text-white text-2xl sm:text-3xl'
             ></i>
           </div>
           <div>
             <h4
-              class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'
+              class='font-semibold text-sm sm:text-base text-white mb-1 sm:mb-2 font-montserrat'
             >{{getByLang judul ../lang}}</h4>
             <p
-              class='text-slate-600 text-xs sm:text-sm font-inter'
+              class='text-white text-xs sm:text-sm font-inter'
             >{{getByLang deskripsi ../lang}}</p>
           </div>
         </div>
