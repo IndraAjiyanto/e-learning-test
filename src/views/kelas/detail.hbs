@@ -55,7 +55,7 @@
             </a>
             <a
               href="/kelass/kelas/detail/{{kelas.id}}"
-              class="btn bg-gradient-to-r from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
               <i class="fa-solid fa-circle-info"></i>
               {{t "test.startLearning.detailProgram"}}
@@ -310,7 +310,7 @@
                                   <template x-if="tugas.jawaban_tugas.length <= 0 ">
                                     <a 
                                       :href="`/jawaban-tugass/${pertemuan.id}/${tugas.id}`"
-                                      class="group flex items-center justify-center px-5 py-2.5 text-center bg-blue-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-blue-500 w-full transform transition-all duration-300 text-sm"
+                                      class="btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-blue-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-blue-500 w-full transform transition-all duration-300 text-sm"
                                     >
                                       <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -321,7 +321,7 @@
                                   <template x-if="tugas.jawaban_tugas[0].proses === 'acc'">
                                     <a 
                                       :href="`/jawaban-tugass/${pertemuan.id}/${tugas.id}`"
-                                      class="group flex items-center justify-center px-5 py-2.5 text-center bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-emerald-500 hover:to-emerald-600 w-full transform transition-all duration-300 text-sm"
+                                      class="btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-emerald-500 hover:to-emerald-600 w-full transform transition-all duration-300 text-sm"
                                     >
                                       <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -332,7 +332,7 @@
                                   <template x-if="tugas.jawaban_tugas[0].proses === 'proces'">
                                     <a 
                                       :href="`/jawaban-tugass/${pertemuan.id}/${tugas.id}`"
-                                      class="group flex items-center justify-center px-5 py-2.5 text-center bg-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-yellow-500 w-full transform transition-all duration-300 text-sm"
+                                      class="btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-yellow-500 w-full transform transition-all duration-300 text-sm"
                                     >
                                       <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
@@ -343,7 +343,7 @@
                                   <template x-if="tugas.jawaban_tugas[0].proses === 'rejected'">
                                     <a 
                                       :href="`/jawaban-tugass/${pertemuan.id}/${tugas.id}`"
-                                      class="group flex items-center justify-center px-5 py-2.5 text-center bg-red-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-red-500 w-full transform transition-all duration-300 text-sm"
+                                      class="btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-red-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-red-500 w-full transform transition-all duration-300 text-sm"
                                     >
                                       <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
@@ -359,7 +359,7 @@
                             <template x-if="pertemuan.logbook?.[0]?.proses === 'acc'">
                               <div class="mt-3">
                                 <a :href="`/logbook/${pertemuan.logbook[0].id}`"
-                                  class="group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-sm">
+                                  class="btn border-0 group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-sm">
                                   <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                   </svg>
@@ -370,7 +370,7 @@
                             <template x-if="pertemuan.logbook?.[0]?.proses === 'rejected'">
                               <div class="mt-3">
                                 <a :href="`/logbook/formEdit/${pertemuan.logbook[0].id}`"
-                                  class="group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-sm">
+                                  class="btn border-0 group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-sm">
                                   <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                                   </svg>
@@ -381,7 +381,7 @@
                             <template x-if="pertemuan.logbook?.[0]?.proses === 'proces'">
                               <div class="mt-3">
                                 <a :href="`/logbook/${pertemuan.logbook[0].id}`"
-                                  class="group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-sm">
+                                  class="btn border-0 group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-sm">
                                   <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                   </svg>
@@ -392,7 +392,7 @@
                             <template x-if="!pertemuan.logbook?.[0] || (pertemuan.logbook?.[0]?.proses !== 'acc' && pertemuan.logbook?.[0]?.proses !== 'rejected' && pertemuan.logbook?.[0]?.proses !== 'proces')">
                               <div class="mt-3">
                                 <a :href="`/logbook/formCreate/${pertemuan.id}/{{kelas.id}}`"
-                                  class="group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-slate-700 to-slate-800 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-slate-600 hover:to-slate-700 transition-all duration-300 text-sm">
+                                  class="btn border-0group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-slate-700 to-slate-800 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-slate-600 hover:to-slate-700 transition-all duration-300 text-sm">
                                   <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                   </svg>
@@ -416,7 +416,7 @@
                             </div>
 
                             <a :href="`/absens/form/${pertemuan.id}`" 
-                              class="group flex items-center justify-center w-full mb-4 px-4 py-2.5 bg-gradient-to-r from-slate-700 to-slate-800 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-slate-600 hover:to-slate-700 transition-all duration-300 text-sm">
+                              class="btn border-0 group flex items-center justify-center w-full mb-4 px-4 py-2.5 bg-gradient-to-r from-slate-700 to-slate-800 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-slate-600 hover:to-slate-700 transition-all duration-300 text-sm">
                               <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                               </svg>
@@ -496,7 +496,7 @@
 
 
                               <a :href="`/quiz/form/${quiz.id}`" 
-                                 class="group flex items-center justify-center w-full text-center px-5 py-2.5 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-slate-600 hover:to-slate-700 transform transition-all duration-300 text-sm">
+                                 class="btn border-0 group flex items-center justify-center w-full text-center px-5 py-2.5 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-slate-600 hover:to-slate-700 transform transition-all duration-300 text-sm">
                                 <svg class="w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                 </svg>
@@ -574,7 +574,7 @@
           <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
             {{#if portfolio}}
               <a href="/portfolios/{{ portfolio.id}}" 
-                 class="group flex items-center justify-center flex-1 px-6 py-4 text-center bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 hover:from-green-600 hover:to-green-700 transition-all duration-300">
+                 class="btn border-0 group flex items-center justify-center flex-1 px-6 py-4 text-center bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 hover:from-green-600 hover:to-green-700 transition-all duration-300">
                 <svg class="w-5 h-5 mr-2 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                 </svg>
@@ -582,7 +582,7 @@
               </a>
             {{else}}
               <a href="/portfolios/formCreate/{{kelas.id}}" 
-                 class="group flex items-center justify-center flex-1 px-6 py-4 text-center bg-gray-800 border-2 border-slate-300 text-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 hover:border-slate-400 hover:bg-gray-700 transition-all duration-300">
+                 class="btn group flex items-center justify-center flex-1 px-6 py-4 text-center bg-gray-800 border-2 border-slate-300 text-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 hover:border-slate-400 hover:bg-gray-700 transition-all duration-300">
                 <svg class="w-5 h-5 mr-2 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                 </svg>

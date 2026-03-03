@@ -5,7 +5,7 @@
       <!-- Back Button -->
       <div class="flex justify-start mb-8">
         <a href="/kelass/{{portfolio.kelas.id}}" 
-           class="inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+           class="btn bg-white inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
@@ -154,13 +154,13 @@
       <!-- Action Buttons -->
       <div class="flex flex-col sm:flex-row gap-4 pt-12 mt-12 border-t border-slate-200">
         <a href="/portfolios/formEdit/{{portfolio.id}}"
-          class="bg-gradient-to-r from-slate-700 to-slate-900 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-800 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 text-center flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+          class="btn text-white rounded-xl shadow-lg hover:shadow-xl bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary  transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 text-center flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
           {{t "test.myPortfolio.detailPortfolio.editPortfolio"}}
         </a>
         <form action="/portfolios/{{portfolio.id}}?_method=DELETE" method="POST" class="flex-1">
           <button             type="button"
             onclick="confirmDelete(this)"
-            class="w-full bg-gradient-to-r from-red-600 to-red-800 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:from-red-500 hover:to-red-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 text-center flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+            class="btn w-full bg-gradient-to-r from-red-600 to-red-800 text-white rounded-xl shadow-lg hover:shadow-xl hover:from-red-500 hover:to-red-700 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 text-center flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
             {{t "test.myPortfolio.detailPortfolio.deletePortfolio"}}
           </button>
         </form>

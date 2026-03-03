@@ -56,10 +56,14 @@ export class JawabanTugassService {
     }
 
   async findTugas(tugasId: number) {
-    return await this.tugasRepository.findOne({
+    const tugas = await this.tugasRepository.findOne({
       where: { id: tugasId },
       relations: ['pertemuan', 'pertemuan.minggu', 'pertemuan.minggu.kelas'],
     });
+    if (!tugas) {
+      throw new NotFoundException('Tugas Not Found');
+    }
+    return tugas;
   }
 
   async findJawabanTugas(userId: number, tugasId: number) {

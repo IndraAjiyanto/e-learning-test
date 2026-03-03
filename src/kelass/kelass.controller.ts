@@ -614,11 +614,11 @@ export class KelassController {
       }
 
       await this.kelassService.update(kelasId, updateKelassDto);
-      req.flash('success', 'Successfully update kelas');
+      req.flash('success', 'Successfully update program');
 
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
-      req.flash('error', error.message || 'failed update kelas');
+      req.flash('error', error.message || 'failed update program');
             res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
 
     }
@@ -634,10 +634,10 @@ export class KelassController {
   ) {
     try {
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
-      req.flash('success', 'class successfuly switch launch');
+      req.flash('success', 'program successfuly switch launch');
       res.redirect('/kelass');
     } catch (error) {
-      req.flash('error', error.message || 'class failed to launch');
+      req.flash('error', error.message || 'program failed to launch');
       res.redirect('/kelass');
     }
   }
@@ -652,11 +652,11 @@ export class KelassController {
   ) {
     try {
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
-      req.flash('success', 'class successfuly switch status');
+      req.flash('success', 'program successfuly switch status');
             res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
 
     } catch (error) {
-      req.flash('error', error.message || 'class failed to switch status');
+      req.flash('error', error.message || 'program failed to switch status');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
@@ -677,10 +677,10 @@ async remove(
     }
     await this.kelassService.deleteFile(kelas.gambar);
     await this.kelassService.remove(kelasId);
-    req.flash('success', 'Class successfully removed');
+    req.flash('success', 'Program successfully removed');
     return res.redirect(previous || '/kelass');
   } catch (error) {
-    req.flash('error', error.message || 'Class failed removed');
+    req.flash('error', error.message || 'Failed to remove program');
     return res.redirect(previous || '/kelass');
   }
 }
@@ -695,10 +695,10 @@ async remove(
   ) {
     try {
       await this.kelassService.removeUserKelas(userId, kelasId);
-      req.flash('success', 'class successfuly delete');
+      req.flash('success', 'User successfully removed from program');
       res.redirect(`/kelass/addUser/${kelasId}`);
     } catch (error) {
-      req.flash('error', error.message || 'class unsuccess delete');
+      req.flash('error', error.message || 'Failed to remove user from program');
       res.redirect(`/kelass/addUser/${kelasId}`);
     }
   }

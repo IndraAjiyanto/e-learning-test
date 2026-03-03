@@ -803,7 +803,7 @@
                 <div
                   x-show="installmentMonths > 0"
                   x-transition
-                  class='bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl p-6 text-white'
+                  class='bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-xl p-6 text-white'
                 >
                   <div class='flex items-center justify-between mb-2'>
                     <p class='text-sm text-slate-300'>{{t "test.detailProgram.installment.downPayment"}}</p>
@@ -972,7 +972,7 @@
           {{#if kelas.check_paid}}
             {{#if (check daftar kelas.kuota)}}
               <div
-                class='bg-gradient-to-br from-slate-800 to-slate-900 text-white p-6 rounded-2xl shadow-lg'
+                class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white p-6 rounded-2xl shadow-lg'
               >
                 <p class='text-xs text-slate-300 mb-2'>{{t "test.detailProgram.accountNumber"}}</p>
                 <div class='flex items-center justify-between'>
@@ -1108,7 +1108,7 @@
           {{#if check_user}}
             <a
               href='/kelass/{{kelas.id}}'
-              class='block w-full text-center  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold '
+              class='btn text-base w-full text-center  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold '
             >
               <i class='fas fa-play-circle mr-2'></i>
               {{t "test.detailProgram.continueLearning"}}
@@ -1260,7 +1260,7 @@
                     type='submit'
                     :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading'
                     :class="(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
-                    class='w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
+                    class='btn text-base w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                   >
                           <span x-show="loading" class="loading loading-spinner loading-sm"></span>
                     <i x-show="!loading" class='fas fa-credit-card mr-2'></i>
@@ -1415,7 +1415,7 @@
                       type='submit'
                       :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading'
                       :class="(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
-                      class='w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
+                      class='btn text-base w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                     >
                       <i x-show="!loading" class='fas fa-calendar-check mr-2'></i>
                       <span x-show="!loading">{{t "test.detailProgram.installment.buttonSubmitProof"}}</span>
@@ -1509,7 +1509,7 @@
                     type='submit'
                     :disabled='(fileError) || (!isValidFile && fileInputTouched) || loading'
                     :class="(fileError) || (!isValidFile && fileInputTouched) || loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
-                    class='w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
+                    class='btn text-base w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                   >
                   <i class='fas fa-user-plus mr-2'></i>
                   <span x-show="!loading">{{t "test.detailProgram.free.buttonSubmitRegistration"}}</span>
@@ -1523,7 +1523,7 @@
         {{else}}
           <a
             href='/login'
-            class='block w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white py-4 px-6 rounded-xl font-semibold  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center'
+            class='btn text-base w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white  rounded-xl font-semibold  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center'
           >
             <i class='fas fa-sign-in-alt mr-2'></i>
             {{t "test.detailProgram.loginToEnroll"}}

@@ -99,6 +99,7 @@ export class JawabanTugassController {
     @Req() req: Request,
   ) {
     try {
+      const tugas = await this.jawabanTugassService.findTugas(tugasId);
       if(!updateJawabanTugassDto.proses){
       updateJawabanTugassDto.proses = 'proces';
       }
@@ -106,11 +107,23 @@ export class JawabanTugassController {
       if(updateJawabanTugassDto.komentar){
       await this.jawabanTugassService.createKomentar(updateJawabanTugassDto.komentar, jawaban_tugasId);
       }
+      if(req.user?.role.includes('admin')){
+        req.flash('success', 'Update answer successfuly');
+        res.redirect(`/jawaban-tugass/${tugasId}`);
+      }else if(req.user?.role.includes('user')){
       req.flash('success', 'Update answer successfuly');
-      res.redirect(`/jawaban-tugass/${tugasId}`);
+      res.redirect(`/jawaban-tugass/${tugas.pertemuan.id}/${tugas.id}`);
+      }
+
     } catch (error) {
+      const tugas = await this.jawabanTugassService.findTugas(tugasId);
+      if(req.user?.role.includes('admin')){
+        req.flash('error', error.message || 'Update answer unsuccessfully');
+        res.redirect(`/jawaban-tugass/${tugasId}`);
+      }else if(req.user?.role.includes('user')){
             req.flash('error', error.message || 'Update answer unsuccessfully');
-      res.redirect(`/jawaban-tugass/${tugasId}`);
+      res.redirect(`/jawaban-tugass/${tugas.pertemuan.id}/${tugas.id}`);
+      }
     }
   }
 }

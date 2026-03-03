@@ -79,7 +79,7 @@
                             <button 
                                 type="button"
                                 @click="prevQuestion()"
-                                class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="btn bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 :disabled="currentQuestion === 0"
                             >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,7 +90,7 @@
                             <button 
                                 type="button"
                                 @click="nextQuestion()"
-                                class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="btn  bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 :disabled="currentQuestion === {{pertanyaan.length}} - 1"
                             >
                                 {{t "test.quiz.start.next"}}
@@ -153,7 +153,7 @@
                     <div class="flex justify-end p-6 border-t border-slate-200 bg-slate-50">
                         <button 
                             type='button'  onclick="confirmAction(this, 'Are you sure you want to submit your answers?')"
-                            class="group px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-lg hover:shadow-xl hover:from-slate-800 hover:to-slate-900 hover:scale-105 transition-all duration-300 font-semibold text-lg"
+                            class="btn border-0 group  bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-lg hover:shadow-xl hover:from-slate-800 hover:to-slate-900 hover:scale-105 transition-all duration-300 font-semibold text-lg"
                         >
                             <span class="flex items-center gap-2">
                                 {{t "test.quiz.start.submitAnswers"}}
@@ -176,19 +176,15 @@
             answeredQuestions: [],
             
             init() {
-                console.log('Quiz initialized');
-                // Detect radio button changes untuk update status
                 this.$el.addEventListener('change', (e) => {
                     if (e.target.type === 'radio') {
                         this.updateAnsweredStatus();
                     }
                 });
-                // Initial check
                 this.updateAnsweredStatus();
             },
             
             updateAnsweredStatus() {
-                // Update array pertanyaan yang sudah dijawab
                 const questionIds = [{{#each pertanyaan}}{{#unless @first}},{{/unless}}{{id}}{{/each}}];
                 this.answeredQuestions = questionIds.map((qId, index) => {
                     const input = this.$el.querySelector(`input[name="q-${qId}"]:checked`);
@@ -197,7 +193,6 @@
             },
             
             get answeredCount() {
-                // Hitung berapa pertanyaan yang sudah dijawab
                 return this.answeredQuestions.filter(answered => answered).length;
             },
             
@@ -214,7 +209,6 @@
             },
             
             isAnswered(index) {
-                // Cek dari array answeredQuestions
                 return this.answeredQuestions[index] || false;
             }
         }
