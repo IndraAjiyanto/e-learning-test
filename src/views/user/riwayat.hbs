@@ -14,10 +14,9 @@
       </p>
     </div>
 
-    <!-- Main Tabs: Full Payment, Registration & Installment -->
     <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 px-4">
       <button @click="mainTab = 'pembayaran'; statusTab = 'all'"
-        :class="mainTab === 'pembayaran' ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
+        :class="mainTab === 'pembayaran' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900  text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
         class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
         <i class="fas fa-credit-card"></i>
         <span>{{t "test.historyPayment.tabFullPayment"}}</span>
@@ -36,10 +35,9 @@
       </button>
     </div>
 
-    <!-- Status Filter Tabs -->
     <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-12 px-4">
       <button @click="statusTab = 'all'"
-        :class="statusTab === 'all' ? 'bg-gradient-to-r from-slate-500 to-slate-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
+        :class="statusTab === 'all' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
         class="px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-base">
         <i class="fas fa-list text-xs md:text-sm"></i>
         <span class="hidden sm:inline">{{t "test.historyPayment.allStatus"}}</span>
@@ -68,7 +66,6 @@
       </button>
     </div>
 
-    <!-- Pembayaran Content -->
     <div x-show="mainTab === 'pembayaran'" x-transition>
       {{#if pembayaran.length}}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
@@ -110,7 +107,7 @@
 
               <div class="p-4 md:p-6 lg:p-8 space-y-4 md:space-y-6">
                 <div class="space-y-2 md:space-y-3">
-                  <div class="bg-slate-600 text-white px-3 py-1 rounded-lg inline-flex items-center gap-2 text-xs font-semibold mb-2">
+                  <div class="bg-secondary text-white px-3 py-1 rounded-lg inline-flex items-center gap-2 text-xs font-semibold mb-2">
                     <i class="fas fa-credit-card"></i>
                     <span>{{ t "test.historyPayment.fullPayment.fullPayment"}}</span>
                   </div>
@@ -175,7 +172,7 @@
                 <div class="flex flex-col sm:flex-row gap-2 md:gap-3 pt-4 md:pt-6">
                   <button 
                     @click="open = true; imageSrc = '{{this.file}}'" 
-                    class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-gradient-to-r from-slate-600 to-slate-800 text-white font-semibold text-xs md:text-sm hover:from-slate-700 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                    class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                     <i class="fas fa-eye"></i>
                     <span>{{t "test.historyPayment.fullPayment.viewProof"}}</span>
                   </button>
@@ -203,7 +200,6 @@
       {{/if}}
     </div>
 
-    <!-- Cicilan Content -->
     <div x-show="mainTab === 'cicilan'" x-transition>
       {{#if cicilan.length}}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
@@ -344,7 +340,6 @@
       {{/if}}
     </div>
 
-    <!-- Pendaftaran Content -->
     <div x-show="mainTab === 'pendaftaran'" x-transition>
       {{#if pendaftaran.length}}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
@@ -501,7 +496,7 @@
       x-transition:leave-start="opacity-100 transform scale-100"
       x-transition:leave-end="opacity-0 transform scale-95">
       
-      <div class="bg-gradient-to-r from-slate-600 to-slate-800 p-4 md:p-6 flex items-center justify-between">
+      <div class="bg-gradient-to-br from-primary via-secondary to-gray-900 p-4 md:p-6 flex items-center justify-between">
         <h3 class="text-base md:text-xl font-bold text-white flex items-center gap-2 font-montserrat">
           <i class="fas fa-image text-sm md:text-base"></i>
           <span>{{t "test.historyPayment.paymentProof"}}</span>
