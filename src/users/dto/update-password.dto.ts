@@ -6,4 +6,7 @@ export class UpdatePasswordDto {
 
   @IsString()
   password_baru: string;
+
+  @IsString()
+  confirm_password: string;
 }

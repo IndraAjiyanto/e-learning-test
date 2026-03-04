@@ -89,6 +89,9 @@ export class UsersService {
   }
 
   async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
+    if(updatePaaswordDto.password_baru !== updatePaaswordDto.confirm_password){
+      throw new BadRequestException('confirm password wrong')
+    }
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');

@@ -25,7 +25,7 @@
                             @click="currentQuestion = {{@index}}"
                             class="w-full text-left p-3 rounded-xl border transition-all duration-200 flex items-center gap-3"
                             :class="{
-                                'border-slate-700 bg-slate-700 text-white': currentQuestion === {{@index}},
+                                ' bg-secondary text-white': currentQuestion === {{@index}},
                                 'border-slate-200 hover:border-slate-300 hover:bg-slate-50': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
                                 'border-green-200 bg-green-50 text-green-800': currentQuestion !== {{@index}} && isAnswered({{@index}})
                             }"
@@ -33,7 +33,7 @@
                             <div class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium"
                                 :class="{
                                     'bg-white text-slate-900': currentQuestion === {{@index}},
-                                    'bg-slate-600 text-white': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
+                                    'bg-secondary text-white': currentQuestion !== {{@index}} && !isAnswered({{@index}}),
                                     'bg-green-500 text-white': currentQuestion !== {{@index}} && isAnswered({{@index}})
                                 }">
                                 <span>{{addOne @index}}</span>
@@ -79,7 +79,7 @@
                             <button 
                                 type="button"
                                 @click="prevQuestion()"
-                                class="btn bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 :disabled="currentQuestion === 0"
                             >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,7 +90,7 @@
                             <button 
                                 type="button"
                                 @click="nextQuestion()"
-                                class="btn  bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="btn  bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 :disabled="currentQuestion === {{pertanyaan.length}} - 1"
                             >
                                 {{t "test.quiz.start.next"}}
@@ -106,7 +106,7 @@
                         {{#each pertanyaan}}
                         <div x-show="currentQuestion === {{@index}}">
                             <div class="flex items-start gap-4 mb-6">
-                                <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                <div class="flex-shrink-0 w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-semibold">
                                     {{addOne @index}}
                                 </div>
                                 <div class="flex-1 space-y-4">
@@ -153,7 +153,7 @@
                     <div class="flex justify-end p-6 border-t border-slate-200 bg-slate-50">
                         <button 
                             type='button'  onclick="confirmAction(this, 'Are you sure you want to submit your answers?')"
-                            class="btn border-0 group  bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl shadow-lg hover:shadow-xl hover:from-slate-800 hover:to-slate-900 hover:scale-105 transition-all duration-300 font-semibold text-lg"
+                            class="btn border-0 group  bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold text-lg"
                         >
                             <span class="flex items-center gap-2">
                                 {{t "test.quiz.start.submitAnswers"}}
