@@ -8,12 +8,12 @@
       >{{t 'test.myPortfolio.createPortfolio.createYourPortfolio'}}</h2>
 
       <form
-      id="portfolioForm"
+        id='portfolioForm'
         method='POST'
         action='/portfolios/create/{{kelasId}}'
         enctype='multipart/form-data'
-            x-data='{ loading: false }'
-    @submit='loading = true'
+        x-data='{ loading: false }'
+        @submit='loading = true'
       >
         <div class='grid grid-cols-1 lg:grid-cols-2 gap-8'>
 
@@ -66,57 +66,71 @@
 
             <input type='hidden' name='content' id='content' />
 
- <script>
-document.addEventListener('DOMContentLoaded', async () => {
-  const editor = new EditorJS({
-    holder: 'editor',
-    placeholder: 'enter your content here...',
-    tools: {
-      header: {
-        class: EditorTools.Header,
-        inlineToolbar: ['link']
-      },
-      paragraph: {
-        class: EditorTools.Paragraph,
-        inlineToolbar: true,
-      },
-      list: {
-        class: EditorTools.List,
-        inlineToolbar: true
-      },
-      marker: {
-        class: EditorTools.Marker,
-        shortcut: 'CMD+SHIFT+M'
-      },
-      image: {
-        class: EditorTools.ImageTool,
-        tunes: {
-          "stretched": false,
-          "withBorder": false,
-          "withBackground": false
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+
+    const editor = new EditorJS({
+      holder: "editor",
+      placeholder: "enter your content here...",
+
+      tools: {
+        header: {
+          class: EditorTools.Header,
+          inlineToolbar: ["link"]
         },
-        config: {
-          endpoints: {
-            byFile: '/portfolios/upload-image',
-            byUrl: '/portfolios/fetch-image'
+
+        paragraph: {
+          class: EditorTools.Paragraph,
+          inlineToolbar: true
+        },
+
+        list: {
+          class: EditorTools.List,
+          inlineToolbar: true
+        },
+
+        marker: {
+          class: EditorTools.Marker,
+          shortcut: "CMD+SHIFT+M"
+        },
+
+        image: {
+          class: EditorTools.ImageTool,
+          tunes: {
+            stretched: false,
+            withBorder: false,
+            withBackground: false
+          },
+          config: {
+            endpoints: {
+              byFile: "/portfolios/upload-image",
+              byUrl: "/portfolios/fetch-image"
+            }
+          }
+        },
+
+        linkTool: {
+          class: EditorTools.LinkTool,
+          config: {
+            endpoint: "/portfolios/fetch-link"
           }
         }
-      },
-      linkTool: {
-        class: EditorTools.LinkTool,
-        config: { endpoint: '/portfolios/fetch-link' }
       }
-    }
-  });
+    });
 
-  const form = document.getElementById('portfolioForm');
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const output = await editor.save();
-    document.getElementById('content').value = JSON.stringify(output);
-    form.submit();
+    const form = document.getElementById("portfolioForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const output = await editor.save();
+
+      document.getElementById("content").value = JSON.stringify(output);
+
+      form.submit();
+    });
+
   });
-});
 </script>
 
           </div>

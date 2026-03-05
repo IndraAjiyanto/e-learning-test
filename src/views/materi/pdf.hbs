@@ -5,7 +5,7 @@
 
   <div class='mb-8'>
     <a
-      href='/kelass/{{pertemuan.minggu.kelas.id}}' 
+      href='/kelass/{{pertemuan.minggu.kelas.id}}'
       class='btn bg-white inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
     >
       <svg
@@ -21,7 +21,7 @@
           d='M15 19l-7-7 7-7'
         ></path>
       </svg>
-      {{t "test.material.pdf.backToProgram"}}
+      {{t 'test.material.pdf.backToProgram'}}
     </a>
   </div>
 
@@ -33,11 +33,11 @@
       >
         <!-- PDF Viewer ketika sudah dipilih -->
         <div x-show='pdfSrc'>
-<iframe
-  class='h-[600px] w-full'
-  x-bind:src="pdfSrc"
-  type="application/pdf"
-></iframe>
+          <iframe
+            class='h-[600px] w-full'
+            x-bind:src='pdfSrc'
+            type='application/pdf'
+          ></iframe>
         </div>
 
         <!-- Tampilan default ketika belum ada PDF yang dipilih -->
@@ -64,8 +64,12 @@
                 />
               </svg>
             </div>
-            <p class='text-slate-600 text-lg font-semibold mb-2'>{{t "test.material.pdf.noPDFSelected"}}</p>
-            <p class='text-slate-400 text-sm'>{{t "test.material.pdf.selectPDFInstruction"}}</p>
+            <p class='text-slate-600 text-lg font-semibold mb-2'>{{t
+                'test.material.pdf.noPDFSelected'
+              }}</p>
+            <p class='text-slate-400 text-sm'>{{t
+                'test.material.pdf.selectPDFInstruction'
+              }}</p>
           </div>
         </div>
       </div>
@@ -73,7 +77,9 @@
       <div class='mt-6'>
         <h1
           class='text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent font-montserrat'
-          x-text="materiJudul || '{{t "test.material.pdf.selectPDFInstruction"}}'"
+          x-text="materiJudul || '{{t
+            "test.material.pdf.selectPDFInstruction"
+          }}'"
         ></h1>
 
       </div>
@@ -102,7 +108,7 @@
               />
             </svg>
           </div>
-          {{t "test.material.pdf.materiProgram"}}
+          {{t 'test.material.pdf.materiProgram'}}
         </h2>
       </div>
 
@@ -165,8 +171,12 @@
                 />
               </svg>
             </div>
-            <p class='text-slate-500 text-sm font-medium'>{{t "test.material.pdf.noMateriAvailable"}}</p>
-            <p class='text-slate-400 text-xs mt-1'>{{t "test.material.pdf.spanNoMateriAvailable"}}</p>
+            <p class='text-slate-500 text-sm font-medium'>{{t
+                'test.material.pdf.noMateriAvailable'
+              }}</p>
+            <p class='text-slate-400 text-xs mt-1'>{{t
+                'test.material.pdf.spanNoMateriAvailable'
+              }}</p>
           </div>
         {{/if}}
       </div>
@@ -178,13 +188,13 @@
 <script>
   function downloadPDF(url, filename) {
     fetch(url)
-      .then(response => response.blob())
-      .then(blob => {
+      .then((response) => response.blob())
+      .then((blob) => {
         const objectUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
 
+        const link = document.createElement("a");
         link.href = objectUrl;
-        link.download = filename || 'download.pdf';
+        link.download = filename || "download.pdf";
 
         document.body.appendChild(link);
         link.click();
@@ -192,9 +202,11 @@
 
         URL.revokeObjectURL(objectUrl);
       })
-      .catch(error => {
-        console.error('Download failed:', error);
-        window.open(url, '_blank');
+      .catch((error) => {
+        console.error("Download failed:", error);
+
+        // fallback: open file in new tab
+        window.open(url, "_blank");
       });
   }
 </script>

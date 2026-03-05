@@ -342,39 +342,135 @@
 ></script>
 
 <script>
-  function logbookApp() { return { // ====================== // State //
-  ====================== allLogbooksRaw:
-  {{{json logbook}}}, allLogbooks: [], searchInput: '', search: '', currentPage:
-  1, itemsPerPage: 10, searchTimeout: null, // ====================== // Methods
-  // ====================== debounceSearch() { clearTimeout(this.searchTimeout);
-  this.searchTimeout = setTimeout(() => { this.search = this.searchInput;
-  this.currentPage = 1; }, 500); }, get filteredLogbooks() { let filtered =
-  this.allLogbooksRaw; if (this.search) { const s = this.search.toLowerCase();
-  filtered = filtered.filter(log => (log.kegiatan ||
-  '').toLowerCase().includes(s) || (log.rincian_kegiatan ||
-  '').toLowerCase().includes(s) || (log.kendala || '').toLowerCase().includes(s)
-  || (log.pertemuan?.minggu?.kelas?.nama_kelas || '').toLowerCase().includes(s)
-  ); } return filtered; }, get totalPages() { return
-  Math.ceil(this.filteredLogbooks.length / this.itemsPerPage); }, get
-  paginatedLogbooks() { const start = (this.currentPage - 1) *
-  this.itemsPerPage; return this.filteredLogbooks.slice(start, start +
-  this.itemsPerPage); }, resetFilters() { this.searchInput = ''; this.search =
-  ''; this.currentPage = 1; }, hasActiveFilters() { return this.search; },
-  formatDate(date) { if (!date) return '-'; return new
-  Date(date).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day:
-  'numeric', hour: '2-digit', minute: '2-digit' }); }, async exportToExcel() {
-  try { const dataToExport = this.filteredLogbooks.map((log, index) => ({ No:
-  index + 1, Activity: log.kegiatan || '-', 'Activity Details':
-  log.rincian_kegiatan || '-', Issues: log.kendala || '-', Class:
-  log.pertemuan?.minggu?.kelas?.nama_kelas || '-', Status: log.proses === 'acc'
-  ? 'Approved' : log.proses === 'proces' ? 'Process' : 'Rejected', Date:
-  this.formatDate(log.createdAt), Documentation: log.dokumentasi || '-' }));
-  const wb = XLSX.utils.book_new(); const ws =
-  XLSX.utils.json_to_sheet(dataToExport); ws['!cols'] = [ { wch: 5 }, { wch: 30
-  }, { wch: 50 }, { wch: 40 }, { wch: 25 }, { wch: 12 }, { wch: 20 }, { wch: 60
-  } ]; XLSX.utils.book_append_sheet(wb, ws, 'Logbook'); XLSX.writeFile(wb,
-  `Logbook_${new Date().toISOString().slice(0, 10)}.xlsx`); } catch (err) {
-  alert('Failed to export data to Excel'); console.error(err); } },
-  confirmDelete(event) { if (confirm('Are you sure you want to delete this
-  logbook?')) { event.target.closest('form').submit(); } } }; }
+  function logbookApp() {
+    return {
+      // ======================
+      // State
+      // ======================
+      allLogbooksRaw: {{{json logbook}}},
+      allLogbooks: [],
+      searchInput: "",
+      search: "",
+      currentPage: 1,
+      itemsPerPage: 10,
+      searchTimeout: null,
+
+      // ======================
+      // Methods
+      // ======================
+
+      debounceSearch() {
+        clearTimeout(this.searchTimeout);
+
+        this.searchTimeout = setTimeout(() => {
+          this.search = this.searchInput;
+          this.currentPage = 1;
+        }, 500);
+      },
+
+      get filteredLogbooks() {
+        let filtered = this.allLogbooksRaw;
+
+        if (this.search) {
+          const s = this.search.toLowerCase();
+
+          filtered = filtered.filter((log) =>
+            (log.kegiatan || "").toLowerCase().includes(s) ||
+            (log.rincian_kegiatan || "").toLowerCase().includes(s) ||
+            (log.kendala || "").toLowerCase().includes(s) ||
+            (log.pertemuan?.minggu?.kelas?.nama_kelas || "")
+              .toLowerCase()
+              .includes(s)
+          );
+        }
+
+        return filtered;
+      },
+
+      get totalPages() {
+        return Math.ceil(this.filteredLogbooks.length / this.itemsPerPage);
+      },
+
+      get paginatedLogbooks() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+
+        return this.filteredLogbooks.slice(
+          start,
+          start + this.itemsPerPage
+        );
+      },
+
+      resetFilters() {
+        this.searchInput = "";
+        this.search = "";
+        this.currentPage = 1;
+      },
+
+      hasActiveFilters() {
+        return this.search;
+      },
+
+      formatDate(date) {
+        if (!date) return "-";
+
+        return new Date(date).toLocaleDateString("id-ID", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
+
+      async exportToExcel() {
+        try {
+          const dataToExport = this.filteredLogbooks.map((log, index) => ({
+            No: index + 1,
+            Activity: log.kegiatan || "-",
+            "Activity Details": log.rincian_kegiatan || "-",
+            Issues: log.kendala || "-",
+            Class: log.pertemuan?.minggu?.kelas?.nama_kelas || "-",
+            Status:
+              log.proses === "acc"
+                ? "Approved"
+                : log.proses === "proces"
+                ? "Process"
+                : "Rejected",
+            Date: this.formatDate(log.createdAt),
+            Documentation: log.dokumentasi || "-",
+          }));
+
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+          ws["!cols"] = [
+            { wch: 5 },
+            { wch: 30 },
+            { wch: 50 },
+            { wch: 40 },
+            { wch: 25 },
+            { wch: 12 },
+            { wch: 20 },
+            { wch: 60 },
+          ];
+
+          XLSX.utils.book_append_sheet(wb, ws, "Logbook");
+
+          XLSX.writeFile(
+            wb,
+            `Logbook_${new Date().toISOString().slice(0, 10)}.xlsx`
+          );
+        } catch (err) {
+          alert("Failed to export data to Excel");
+          console.error(err);
+        }
+      },
+
+      confirmDelete(event) {
+        if (confirm("Are you sure you want to delete this logbook?")) {
+          event.target.closest("form").submit();
+        }
+      },
+    };
+  }
 </script>

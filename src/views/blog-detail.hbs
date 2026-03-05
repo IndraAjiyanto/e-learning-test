@@ -2,56 +2,87 @@
   <div class='max-w-7xl mx-auto px-6'>
 
     <a
-      href="/dashboard/blog"
-      class="btn bg-white inline-flex items-center gap-3 px-6 py-3 mb-6 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+      href='/dashboard/blog'
+      class='btn bg-white inline-flex items-center gap-3 px-6 py-3 mb-6 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
     >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M15 19l-7-7 7-7" />
+      <svg
+        class='w-5 h-5'
+        fill='none'
+        stroke='currentColor'
+        viewBox='0 0 24 24'
+      >
+        <path
+          stroke-linecap='round'
+          stroke-linejoin='round'
+          stroke-width='2'
+          d='M15 19l-7-7 7-7'
+        />
       </svg>
-      <p class="pr-2">
-        {{t "test.detailBlog.backToBlog"}}
+      <p class='pr-2'>
+        {{t 'test.detailBlog.backToBlog'}}
       </p>
     </a>
 
-    <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
-      <div class="lg:w-2/3">
-        <div x-data='{ currentSlide: 0, totalSlides: {{blog.gambar.length}} }' class='relative mb-12'>
-          <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+    <div class='flex flex-col lg:flex-row gap-8 lg:gap-12'>
+      <div class='lg:w-2/3'>
+        <div
+          x-data='{ currentSlide: 0, totalSlides: {{blog.gambar.length}} }'
+          class='relative mb-12'
+        >
+          <div class='relative rounded-2xl overflow-hidden shadow-2xl'>
             {{#each blog.gambar}}
               <div
-                x-show="currentSlide === {{@index}}"
-                x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 transform translate-x-full"
-                x-transition:enter-end="opacity-100 transform translate-x-0"
-                x-transition:leave="transition ease-in duration-300"
-                x-transition:leave-start="opacity-100 transform translate-x-0"
-                x-transition:leave-end="opacity-0 transform -translate-x-full"
-                class="w-full"
+                x-show='currentSlide === {{@index}}'
+                x-transition:enter='transition ease-out duration-300'
+                x-transition:enter-start='opacity-0 transform translate-x-full'
+                x-transition:enter-end='opacity-100 transform translate-x-0'
+                x-transition:leave='transition ease-in duration-300'
+                x-transition:leave-start='opacity-100 transform translate-x-0'
+                x-transition:leave-end='opacity-0 transform -translate-x-full'
+                class='w-full'
               >
                 <img
-                  src="{{this}}"
-                  alt="Blog image {{@index}}"
-                  class="w-full h-auto object-contain"
+                  src='{{this}}'
+                  alt='Blog image {{@index}}'
+                  class='w-full h-auto object-contain'
                 />
               </div>
             {{/each}}
-      
-            
+
             <button
-              @click="currentSlide = currentSlide > 0 ? currentSlide - 1 : totalSlides - 1"
-              class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition"
+              @click='currentSlide = currentSlide > 0 ? currentSlide - 1 : totalSlides - 1'
+              class='absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition'
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              <svg
+                class='w-6 h-6'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  stroke-width='2'
+                  d='M15 19l-7-7 7-7'
+                />
               </svg>
             </button>
             <button
-              @click="currentSlide = currentSlide < totalSlides - 1 ? currentSlide + 1 : 0"
-              class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition"
+              @click='currentSlide = currentSlide < totalSlides - 1 ? currentSlide + 1 : 0'
+              class='absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition'
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <svg
+                class='w-6 h-6'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  stroke-width='2'
+                  d='M9 5l7 7-7 7'
+                />
               </svg>
             </button>
           </div>
@@ -63,7 +94,11 @@
                 :class='currentSlide === {{@index}} ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
                 class='flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden transition-all hover:ring-gray-600'
               >
-                <img src='{{this}}' alt='Thumbnail {{@index}}' class='w-full h-full object-cover'/>
+                <img
+                  src='{{this}}'
+                  alt='Thumbnail {{@index}}'
+                  class='w-full h-full object-cover'
+                />
               </button>
             {{/each}}
           </div>
@@ -73,82 +108,111 @@
               <button
                 @click='currentSlide = {{@index}}'
                 :class='currentSlide === {{@index}} ? "bg-gray-900 w-8" : "bg-gray-300 w-2"'
-                class="h-2 rounded-full transition-all"
+                class='h-2 rounded-full transition-all'
               ></button>
             {{/each}}
           </div>
         </div>
 
         <div class='max-w-none bg-white p-10 rounded-lg shadow-xl'>
-{{{blog.isi}}}
+          {{{blog.isi}}}
         </div>
 
-  
       </div>
-      <div class="lg:w-1/3 rounded-lg shadow-xl bg-white p-6">
-        <div class="lg:sticky lg:top-24 space-y-6">
-          <div class="flex flex-col gap-2">
-            <h1 class="text-xl font-bold text-gray-900">
+      <div class='lg:w-1/3 rounded-lg shadow-xl bg-white p-6'>
+        <div class='lg:sticky lg:top-24 space-y-6'>
+          <div class='flex flex-col gap-2'>
+            <h1 class='text-xl font-bold text-gray-900'>
               {{blog.judul}}
             </h1>
 
             <div
-              class="inline-flex w-fit max-w-full items-center gap-2
-                     bg-gradient-to-br from-primary via-secondary to-gray-900
-                     text-white px-4 py-2 rounded-full text-xs"
+              class='inline-flex w-fit max-w-full items-center gap-2 bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-4 py-2 rounded-full text-xs'
             >
-              <i class="{{computeIcon blog.kategori_blog.icon}}"></i>
-              <span class="font-semibold whitespace-nowrap md:whitespace-normal">
+              <i class='{{computeIcon blog.kategori_blog.icon}}'></i>
+              <span
+                class='font-semibold whitespace-nowrap md:whitespace-normal'
+              >
                 {{blog.kategori_blog.nama}}
               </span>
             </div>
           </div>
 
-          <div class="space-y-4 border-t border-b border-gray-200 py-6">
+          <div class='space-y-4 border-t border-b border-gray-200 py-6'>
             <div class='flex items-center gap-3'>
-              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12a4 4 0 100-8 4 4 0 000 8zm6 8H6a6 6 0 0112 0z" />
+              <svg
+                class='w-5 h-5 text-gray-500'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  stroke-width='2'
+                  d='M12 12a4 4 0 100-8 4 4 0 000 8zm6 8H6a6 6 0 0112 0z'
+                />
               </svg>
               <div>
-                <p class="text-sm text-gray-500">{{t "test.detailBlog.author"}}</p>
-                <span class="font-medium text-gray-900">{{blog.author}}</span>
+                <p class='text-sm text-gray-500'>{{t
+                    'test.detailBlog.author'
+                  }}</p>
+                <span class='font-medium text-gray-900'>{{blog.author}}</span>
               </div>
             </div>
-            
+
             <div class='flex items-center gap-3'>
-              <svg class='w-5 h-5 text-gray-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+              <svg
+                class='w-5 h-5 text-gray-500'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  stroke-width='2'
+                  d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
+                />
               </svg>
               <div>
-                <p class="text-sm text-gray-500">{{t "test.detailBlog.published"}}</p>
-                <time class="font-medium text-gray-900">{{formatDate blog.updatedAt}}</time>
+                <p class='text-sm text-gray-500'>{{t
+                    'test.detailBlog.published'
+                  }}</p>
+                <time class='font-medium text-gray-900'>{{formatDate
+                    blog.updatedAt
+                  }}</time>
               </div>
             </div>
           </div>
 
-            <h4 class="font-semibold text-gray-900 text-lg">{{t "test.detailBlog.informationBlog"}}</h4>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-600">{{t "test.detailBlog.topic"}}</span>
-              <span class="font-medium text-gray-900">{{blog.topic.nama}}</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-600">{{t "test.detailBlog.keyword"}}</span>
-              <span class="font-medium text-gray-900">{{blog.keyword}}</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-600">{{t "test.detailBlog.tags"}}</span>
-              
-                <span class="font-medium text-gray-900">{{#each blog.tags}}{{this}} {{/each}}</span>
-            </div>
+          <h4 class='font-semibold text-gray-900 text-lg'>{{t
+              'test.detailBlog.informationBlog'
+            }}</h4>
+          <div class='flex justify-between items-center'>
+            <span class='text-gray-600'>{{t 'test.detailBlog.topic'}}</span>
+            <span class='font-medium text-gray-900'>{{blog.topic.nama}}</span>
+          </div>
+          <div class='flex justify-between items-center'>
+            <span class='text-gray-600'>{{t 'test.detailBlog.keyword'}}</span>
+            <span class='font-medium text-gray-900'>{{blog.keyword}}</span>
+          </div>
+          <div class='flex justify-between items-center'>
+            <span class='text-gray-600'>{{t 'test.detailBlog.tags'}}</span>
 
-          <div class="lg:hidden">
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>{{t "test.detailBlog.share"}}</h3>
+            <span class='font-medium text-gray-900'>{{#each blog.tags}}{{this}}
+              {{/each}}</span>
+          </div>
+
+          <div class='lg:hidden'>
+            <h3 class='text-lg font-semibold text-gray-900 mb-4'>{{t
+                'test.detailBlog.share'
+              }}</h3>
             <div class='flex flex-wrap gap-2'>
             </div>
           </div>
         </div>
       </div>
-
 
     </div>
   </div>
@@ -157,14 +221,18 @@
 {{#if recentBlogs}}
   <section class='py-16 bg-gray-50'>
     <div class='max-w-7xl mx-auto px-6'>
-      <h2 class='text-3xl font-bold text-gray-900 mt-0 mb-8'>{{t "test.detailBlog.relatedBlog"}}</h2>
+      <h2 class='text-3xl font-bold text-gray-900 mt-0 mb-8'>{{t
+          'test.detailBlog.relatedBlog'
+        }}</h2>
       <div class='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
-        {{#each recentBlogs}}
-        {{/each}}
+        {{#each recentBlogs}}{{/each}}
       </div>
       <div class='text-center mt-12'>
-        <a href='/dashboard/blog' class='inline-flex items-center gap-2 font-semibold btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 border-0 shadow-lg hover:shadow-xl transition-xall duration-300 transform hover:-translate-y-1'>
-          {{t "test.detailBlog.buttonViewAllBlog"}}
+        <a
+          href='/dashboard/blog'
+          class='inline-flex items-center gap-2 font-semibold btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 border-0 shadow-lg hover:shadow-xl transition-xall duration-300 transform hover:-translate-y-1'
+        >
+          {{t 'test.detailBlog.buttonViewAllBlog'}}
         </a>
       </div>
     </div>
@@ -173,33 +241,47 @@
 
 <script>
   const shareData = (platform, blog) => {
+
     const url = window.location.href;
     const title = blog.judul;
     const description = blog.isi || "";
     const image = blog.gambar?.[0] || "";
-    
-    switch(platform) {
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+
+    switch (platform) {
+
+      case "facebook":
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+          "_blank"
+        );
         break;
-        
-      case 'twitter':
+
+      case "twitter":
         window.open(
           `https://twitter.com/intent/tweet?text=${encodeURIComponent(title + " - " + description)}&url=${encodeURIComponent(url)}`,
-          '_blank'
+          "_blank"
         );
         break;
-        
-      case 'whatsapp':
+
+      case "whatsapp":
         window.open(
           `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`,
-          '_blank'
+          "_blank"
         );
         break;
-        
-      case 'copy':
+
+      case "copy":
         const textToCopy = `${url}`;
-        navigator.clipboard.writeText(textToCopy).then(() => alert('Link copied with title!'));
+
+        navigator.clipboard
+          .writeText(textToCopy)
+          .then(() => {
+            alert("Link copied with title!");
+          })
+          .catch(() => {
+            alert("Failed to copy link");
+          });
+
         break;
     }
   };

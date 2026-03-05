@@ -5,11 +5,11 @@
     <div class='bg-white rounded-2xl shadow-2xl p-10 border border-slate-200'>
       <h2
         class='text-4xl font-bold text-gray-900 mb-10 text-center font-montserrat'
-      >{{t "test.logbook.editLogBook.logbookForm"}}</h2>
+      >{{t 'test.logbook.editLogBook.logbookForm'}}</h2>
 
       <form
-      x-data="{ loading: false }"
-  @submit="loading = true"
+        x-data='{ loading: false }'
+        @submit='loading = true'
         action='/logbook/{{logbook.id}}?_method=PATCH'
         method='POST'
         enctype='multipart/form-data'
@@ -23,13 +23,15 @@
               <label
                 for='kegiatan'
                 class='block text-lg font-semibold text-gray-700 mb-3'
-              >{{t "test.logbook.editLogBook.activity"}}</label>
+              >{{t 'test.logbook.editLogBook.activity'}}</label>
               <input
                 type='text'
                 id='kegiatan'
                 name='kegiatan'
                 required
-                placeholder='{{t "test.logbook.editLogBook.placeholderActivity"}}'
+                placeholder='{{t
+                  "test.logbook.editLogBook.placeholderActivity"
+                }}'
                 value='{{logbook.kegiatan}}'
                 class='w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white'
               />
@@ -40,12 +42,14 @@
               <label
                 for='rincian_kegiatan'
                 class='block text-lg font-semibold text-gray-700 mb-3'
-              >{{t "test.logbook.editLogBook.activityDetails"}}</label>
+              >{{t 'test.logbook.editLogBook.activityDetails'}}</label>
               <textarea
                 name='rincian_kegiatan'
                 id='rincian_kegiatan'
                 required
-                placeholder='{{t "test.logbook.editLogBook.placeholderActivityDetails"}}'
+                placeholder='{{t
+                  "test.logbook.editLogBook.placeholderActivityDetails"
+                }}'
                 rows='6'
                 class='w-full text-gray-700 bg-white/70 border border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 hover:bg-white resize-none'
               >{{logbook.rincian_kegiatan}}</textarea>
@@ -59,13 +63,15 @@
               <label
                 for='kendala'
                 class='block text-lg font-semibold text-gray-700 mb-3'
-              >{{t "test.logbook.editLogBook.obstacles"}}</label>
+              >{{t 'test.logbook.editLogBook.obstacles'}}</label>
               <input
                 type='text'
                 id='kendala'
                 name='kendala'
                 required
-                placeholder='{{t "test.logbook.editLogBook.placeholderObstacles"}}'
+                placeholder='{{t
+                  "test.logbook.editLogBook.placeholderObstacles"
+                }}'
                 value='{{logbook.kendala}}'
                 class='w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white'
               />
@@ -80,7 +86,7 @@
                 for='dokumentasi'
                 class='block text-lg font-semibold text-gray-700 mb-3'
               >
-                {{t "test.logbook.editLogBook.photoDocumentation"}}
+                {{t 'test.logbook.editLogBook.photoDocumentation'}}
               </label>
               <input
                 type='file'
@@ -131,25 +137,29 @@
                 <div
                   class='text-sm text-slate-500 bg-slate-50 px-4 py-2 rounded-lg border border-slate-200'
                 >
-                  <p>{{t "test.logbook.editLogBook.spanEditPhotoDocumentation"}}</p>
+                  <p>{{t
+                      'test.logbook.editLogBook.spanEditPhotoDocumentation'
+                    }}</p>
                 </div>
               {{/if}}
             </div>
 
             <div>
-                                       <label
+              <label
                 for='dokumentasi_lain'
                 class='block text-lg font-semibold text-gray-700 mb-3'
               >
-                {{t "test.logbook.createLogBook.linkDocumentation"}}
+                {{t 'test.logbook.createLogBook.linkDocumentation'}}
               </label>
-              
+
               <input
                 type='text'
                 id='dokumentasi_lain'
                 name='dokumentasi_lain'
                 required
-                placeholder='{{t "test.logbook.editLogBook.placeholderLinkDocumentation"}}'
+                placeholder='{{t
+                  "test.logbook.editLogBook.placeholderLinkDocumentation"
+                }}'
                 value='{{logbook.dokumentasi_lain}}'
                 class='w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white'
               />
@@ -162,19 +172,24 @@
           class='flex items-center gap-4 pt-10 mt-8 border-t border-slate-200'
         >
           <button
-          :disabled="loading"
+            :disabled='loading'
             type='submit'
             class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
           >
-          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-          <span x-show="!loading">{{t "test.logbook.editLogBook.updateLogbook"}}</span>
+            <span
+              x-show='loading'
+              class='loading loading-spinner loading-sm'
+            ></span>
+            <span x-show='!loading'>{{t
+                'test.logbook.editLogBook.updateLogbook'
+              }}</span>
           </button>
           <a
             href='/kelass/{{logbook.pertemuan.minggu.kelas.id}}'
-            :disabled="loading"
+            :disabled='loading'
             class='px-8 py-4 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
           >
-            {{t "test.logbook.editLogBook.cancel"}}
+            {{t 'test.logbook.editLogBook.cancel'}}
           </a>
         </div>
       </form>
