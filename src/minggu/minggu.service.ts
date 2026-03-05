@@ -39,7 +39,7 @@ export class MingguService {
     if (!kelas) {
       throw new NotFoundException('kelas Not Found');
     }
-    if(createMingguDto.minggu_ke === 1){
+    if (createMingguDto.minggu_ke === 1) {
       const data = await this.mingguRepository.create({
         ...createMingguDto,
         kelas: kelas,
@@ -50,75 +50,76 @@ export class MingguService {
         where: { kelas: { id: kelas.id }, progres: false },
         relations: ['user'],
       });
-if(userKelass.length > 0){
-      for (const userKelas of userKelass) {
-        
-        const existingProgresMinggu = await this.progresMingguRepository.findOne({
-          where: {
-            minggu: { id: minggu.id },
-            user: { id: userKelas.user.id },
-          },
-        });
-        if(existingProgresMinggu){
-        await this.progresMingguRepository.save({
-          id: existingProgresMinggu.id,
-          minggu: minggu,
-          user: userKelas.user,
-          quiz: false,
-          proses: true,
-        });
-      }else{
-        await this.progresMingguRepository.save({
-          minggu: minggu,
-          user: userKelas.user,
-          quiz: false,
-          proses: true,
-        });
-      }
-
-      }
-      return minggu;
-    }
-    }else{
-
-    const minggu = await this.mingguRepository.findOne({
-      where: {
-        minggu_ke: createMingguDto.minggu_ke - 1,
-        kelas: { id: kelas.id },
-      }, relations: ['progres_minggu'],
-    });
-
-    if(!minggu){
-      throw new NotFoundException('minggu sebelumnya harus dibuat terlebih dahulu');
-    }else if (!minggu.akhir) {
-      if (createMingguDto.akhir_check === 'true') {
-        createMingguDto.akhir = true;
-      }
-      const data = await this.mingguRepository.create({
-        ...createMingguDto,
-        kelas: kelas,
-      });
-      const newMinggu = await this.mingguRepository.save(data);
-
-      if(minggu.progres_minggu.length > 0){
-        const progresMinggu = await this.progresMingguRepository.find({
-          where: { minggu: { id: minggu.id }, proses: true , quiz: true },
-          relations: ['user'],
-        });
-
-      if(progresMinggu.length > 0){
-        for (const progres of progresMinggu) {
-          await this.progresMingguRepository.save({
-            minggu: newMinggu,
-            user: progres.user,
-            quiz: false,
-            proses: true,
-          });
+      if (userKelass.length > 0) {
+        for (const userKelas of userKelass) {
+          const existingProgresMinggu =
+            await this.progresMingguRepository.findOne({
+              where: {
+                minggu: { id: minggu.id },
+                user: { id: userKelas.user.id },
+              },
+            });
+          if (existingProgresMinggu) {
+            await this.progresMingguRepository.save({
+              id: existingProgresMinggu.id,
+              minggu: minggu,
+              user: userKelas.user,
+              quiz: false,
+              proses: true,
+            });
+          } else {
+            await this.progresMingguRepository.save({
+              minggu: minggu,
+              user: userKelas.user,
+              quiz: false,
+              proses: true,
+            });
+          }
         }
+        return minggu;
       }
-    }
-    return newMinggu;
-    }
+    } else {
+      const minggu = await this.mingguRepository.findOne({
+        where: {
+          minggu_ke: createMingguDto.minggu_ke - 1,
+          kelas: { id: kelas.id },
+        },
+        relations: ['progres_minggu'],
+      });
+
+      if (!minggu) {
+        throw new NotFoundException(
+          'minggu sebelumnya harus dibuat terlebih dahulu',
+        );
+      } else if (!minggu.akhir) {
+        if (createMingguDto.akhir_check === 'true') {
+          createMingguDto.akhir = true;
+        }
+        const data = await this.mingguRepository.create({
+          ...createMingguDto,
+          kelas: kelas,
+        });
+        const newMinggu = await this.mingguRepository.save(data);
+
+        if (minggu.progres_minggu.length > 0) {
+          const progresMinggu = await this.progresMingguRepository.find({
+            where: { minggu: { id: minggu.id }, proses: true, quiz: true },
+            relations: ['user'],
+          });
+
+          if (progresMinggu.length > 0) {
+            for (const progres of progresMinggu) {
+              await this.progresMingguRepository.save({
+                minggu: newMinggu,
+                user: progres.user,
+                quiz: false,
+                proses: true,
+              });
+            }
+          }
+        }
+        return newMinggu;
+      }
     }
   }
 
@@ -142,7 +143,7 @@ if(userKelass.length > 0){
   async findOne(mingguId: number) {
     return await this.mingguRepository.findOne({
       where: { id: mingguId },
-      relations: [ 'kelas'],
+      relations: ['kelas'],
     });
   }
 
@@ -154,12 +155,14 @@ if(userKelass.length > 0){
   }
 
   async findQuiz(mingguId: number) {
-    return await this.quizRepository.find({where: {minggu: {id: mingguId}}});
+    return await this.quizRepository.find({
+      where: { minggu: { id: mingguId } },
+    });
   }
 
   async findPertemuanAkhir(mingguId: number) {
     return await this.pertemuanRepository.findOne({
-      where: { minggu: { id: mingguId }, akhir: true},
+      where: { minggu: { id: mingguId }, akhir: true },
     });
   }
 

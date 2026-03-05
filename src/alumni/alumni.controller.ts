@@ -19,9 +19,7 @@ import { UpdateAlumnusDto } from './dto/update-alumnus.dto';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  multerConfigMemoryOnly,
-} from 'src/common/config/multer.config';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
@@ -68,7 +66,7 @@ export class AlumniController {
     }
   }
 
-    @Roles('super_admin')
+  @Roles('super_admin')
   @Post('create/:kategoriId')
   @UseInterceptors(
     FileInterceptor('profile', multerConfigMemoryOnly),
@@ -118,7 +116,11 @@ export class AlumniController {
     @Req() req: Request,
   ) {
     const kelas = await this.alumniService.findKelasByKategori(kategoriId);
-    res.render('super_admin/alumni/createAlumni', { user: req.user, kategoriId, kelas });
+    res.render('super_admin/alumni/createAlumni', {
+      user: req.user,
+      kategoriId,
+      kelas,
+    });
   }
 
   @Roles('super_admin')

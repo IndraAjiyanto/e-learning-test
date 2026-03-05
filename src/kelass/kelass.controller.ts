@@ -29,9 +29,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('kelass')
 export class KelassController {
-  constructor(
-    private readonly kelassService: KelassService,
-  ) {}
+  constructor(private readonly kelassService: KelassService) {}
 
   @Roles('admin', 'super_admin')
   @Post()
@@ -217,8 +215,12 @@ export class KelassController {
 
   @Roles('super_admin')
   @Get('/formCreate/:kategoriId')
-    async formCreateKelas(@Res() res: Response, @Req() req: Request, @Param('kategoriId') kategoriId: number) {
-      const kategori = await this.kelassService.findOneKategori(kategoriId);
+  async formCreateKelas(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param('kategoriId') kategoriId: number,
+  ) {
+    const kategori = await this.kelassService.findOneKategori(kategoriId);
     const jenis_kelas = await this.kelassService.findJenisKelas();
     const teknologi = await this.kelassService.findTeknologi();
     const mentoring = await this.kelassService.findMentoring();
@@ -228,7 +230,7 @@ export class KelassController {
       teknologi,
       mentoring,
       kategori,
-      kategoriId
+      kategoriId,
     });
   }
 
@@ -287,7 +289,7 @@ export class KelassController {
   @Get('/logbookUser/:kelasId')
   async getLogbookUser(
     @Param('kelasId') kelasId: number,
-    @Res() res: Response, 
+    @Res() res: Response,
   ) {
     const logbookUser = await this.kelassService.findLogBookUser(kelasId);
     res.json(logbookUser);
@@ -305,30 +307,21 @@ export class KelassController {
 
   @Roles('admin')
   @Get('/minggu/:kelasId')
-  async getMinggu(
-    @Param('kelasId') kelasId: number,
-    @Res() res: Response,
-  ) {
+  async getMinggu(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const minggu = await this.kelassService.findMingguKelas(kelasId);
     res.json(minggu);
   }
 
   @Roles('super_admin', 'admin')
   @Get('/userKelas/:kelasId')
-  async getUserKelas(
-    @Param('kelasId') kelasId: number,
-    @Res() res: Response,
-  ) {
+  async getUserKelas(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const user_kelas = await this.kelassService.findUserKelas(kelasId);
     res.json(user_kelas);
   }
 
   @Roles('super_admin')
-    @Get('/installment/:kelasId')
-  async getCicilan(
-    @Param('kelasId') kelasId: number,
-    @Res() res: Response,
-  ) {
+  @Get('/installment/:kelasId')
+  async getCicilan(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
     res.json(cicilan);
   }
@@ -349,7 +342,8 @@ export class KelassController {
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
   ) {
-    const paymentInstallment = await this.kelassService.findPaymentInstallmentKelas(kelasId);
+    const paymentInstallment =
+      await this.kelassService.findPaymentInstallmentKelas(kelasId);
     res.json(paymentInstallment);
   }
 
@@ -376,30 +370,21 @@ export class KelassController {
 
   @Roles('super_admin')
   @Get('/flow/:kelasId')
-  async getAlurKelas(
-    @Param('kelasId') kelasId: number,
-    @Res() res: Response,
-  ) {
+  async getAlurKelas(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
     res.json(alur_kelas);
   }
 
-@Roles('super_admin')
+  @Roles('super_admin')
   @Get('/payment/:kelasId')
-  async getPembayaran(
-    @Param('kelasId') kelasId: number,
-    @Res() res: Response,
-  ) {
+  async getPembayaran(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const pembayaran = await this.kelassService.findPembayaranKelas(kelasId);
     res.json(pembayaran);
   }
 
   @Roles('super_admin')
   @Get('/alumni/:kelasId')
-  async getAlumni(
-    @Param('kelasId') kelasId: number,
-    @Res() res: Response,
-  ) {
+  async getAlumni(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const alumni = await this.kelassService.findAlumniKelas(kelasId);
     res.json(alumni);
   }
@@ -414,7 +399,8 @@ export class KelassController {
   ) {
     if (req.user!.role === 'admin') {
       const kelas = await this.kelassService.findOneKelasAdmin(kelasId);
-      const mingguTerakhir = await this.kelassService.findMingguTerakhir(kelasId);
+      const mingguTerakhir =
+        await this.kelassService.findMingguTerakhir(kelasId);
       res.render('admin/kelas/detail', {
         user: req.user,
         kelas,
@@ -489,7 +475,7 @@ export class KelassController {
   ) {
     let isUserInKelas = false;
     if (!req.user) {
-    const kelas = await this.kelassService.findOneKelasUser(id);
+      const kelas = await this.kelassService.findOneKelasUser(id);
       const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
       const alur_kelas = await this.kelassService.findAlurKelas(id);
       const mentor = await this.kelassService.findMentorKelas(id);
@@ -512,7 +498,7 @@ export class KelassController {
         user_kelas,
       });
     } else {
-    const kelas = await this.kelassService.findOneKelasUserLaunch(id);
+      const kelas = await this.kelassService.findOneKelasUserLaunch(id);
       for (const u of kelas.user_kelas) {
         if (u.user.id === req.user.id) {
           isUserInKelas = true;
@@ -524,8 +510,14 @@ export class KelassController {
           id,
           req.user.id,
         );
-        const user_kelas = await this.kelassService.findOneUserKelas(req.user.id, kelas.id);
-        const portfolio = await this.kelassService.findOnePortfolio(req.user.id, kelas.id);
+        const user_kelas = await this.kelassService.findOneUserKelas(
+          req.user.id,
+          kelas.id,
+        );
+        const portfolio = await this.kelassService.findOnePortfolio(
+          req.user.id,
+          kelas.id,
+        );
         res.render('kelas/detail', {
           user_kelas,
           portfolio,
@@ -534,7 +526,7 @@ export class KelassController {
           minggu: mingguUpdated,
         });
       } else {
-    const kelas = await this.kelassService.findOneKelasUser(id);
+        const kelas = await this.kelassService.findOneKelasUser(id);
         const pertanyaan_kelas =
           await this.kelassService.findPertanyaanKelas(id);
         const alur_kelas = await this.kelassService.findAlurKelas(id);
@@ -619,8 +611,7 @@ export class KelassController {
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'failed update program');
-            res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -653,37 +644,36 @@ export class KelassController {
     try {
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
       req.flash('success', 'program successfuly switch status');
-            res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
-
+      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'program failed to switch status');
       res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
     }
   }
 
- @Roles('admin', 'super_admin')
-@Delete(':kelasId') 
-async remove(
-  @Param('kelasId') kelasId: number,
-  @Body('previous') previous: string,
-  @Res() res: Response,
-  @Req() req: Request,
-) {
-  try {
-    const kelas = await this.kelassService.findOne(kelasId);
-    if (!kelas) {
-      req.flash('error', 'Program not found');
+  @Roles('admin', 'super_admin')
+  @Delete(':kelasId')
+  async remove(
+    @Param('kelasId') kelasId: number,
+    @Body('previous') previous: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      const kelas = await this.kelassService.findOne(kelasId);
+      if (!kelas) {
+        req.flash('error', 'Program not found');
+        return res.redirect(previous || '/kelass');
+      }
+      await this.kelassService.deleteFile(kelas.gambar);
+      await this.kelassService.remove(kelasId);
+      req.flash('success', 'Program successfully removed');
+      return res.redirect(previous || '/kelass');
+    } catch (error) {
+      req.flash('error', error.message || 'Failed to remove program');
       return res.redirect(previous || '/kelass');
     }
-    await this.kelassService.deleteFile(kelas.gambar);
-    await this.kelassService.remove(kelasId);
-    req.flash('success', 'Program successfully removed');
-    return res.redirect(previous || '/kelass');
-  } catch (error) {
-    req.flash('error', error.message || 'Failed to remove program');
-    return res.redirect(previous || '/kelass');
   }
-}
 
   @Roles('admin', 'super_admin')
   @Delete(':userId/kelas/:kelasId')
@@ -720,7 +710,11 @@ async remove(
 
   @Roles('user')
   @Get('quiz/:mingguId')
-  async getQuiz(@Res() res: Response, @Param('mingguId') mingguId: number, @Req() req: Request) {
+  async getQuiz(
+    @Res() res: Response,
+    @Param('mingguId') mingguId: number,
+    @Req() req: Request,
+  ) {
     const user = req.user;
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized' });

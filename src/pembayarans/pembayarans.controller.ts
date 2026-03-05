@@ -29,7 +29,7 @@ export class PembayaransController {
   @Roles('user')
   @Post(':userId/:kelasId')
   @UseInterceptors(
-    FileInterceptor('file',multerConfigMemoryOnly),
+    FileInterceptor('file', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -52,9 +52,7 @@ export class PembayaransController {
       const pembayaran =
         await this.pembayaransService.create(createPembayaranDto);
       if (pembayaran == false) {
-        await this.pembayaransService.deleteFile(
-          createPembayaranDto.file,
-        );
+        await this.pembayaransService.deleteFile(createPembayaranDto.file);
         req.flash(
           'info',
           'You have already submitted the payment proof, please wait for further information from the admin.',
@@ -101,9 +99,7 @@ export class PembayaransController {
       const pembayaran =
         await this.pembayaransService.create(createPembayaranDto);
       if (pembayaran == false) {
-        await this.pembayaransService.deleteFile(
-          createPembayaranDto.file,
-        );
+        await this.pembayaransService.deleteFile(createPembayaranDto.file);
         req.flash(
           'info',
           'You have already submitted the payment proof, please wait for further information from the admin.',
@@ -161,7 +157,7 @@ export class PembayaransController {
       user: req.user,
       pembayaran,
       pendaftaran,
-      cicilan
+      cicilan,
     });
   }
 
@@ -197,13 +193,11 @@ export class PembayaransController {
         updatePembayaranDto.proses = 'acc';
         await this.pembayaransService.update(pembayaranId, updatePembayaranDto);
         try {
-                  await this.pembayaransService.addUserToKelas(
-          pembayaran['user']['id'],
-          pembayaran['kelas']['id'],
-        );
-        } catch (error) {
-          
-        }
+          await this.pembayaransService.addUserToKelas(
+            pembayaran['user']['id'],
+            pembayaran['kelas']['id'],
+          );
+        } catch (error) {}
 
         req.flash('success', 'proces successfully change acc');
         res.redirect(`/kelass/detail/kelas/admin/${pembayaran['kelas']['id']}`);
@@ -215,20 +209,17 @@ export class PembayaransController {
         await this.pembayaransService.update(pembayaranId, updatePembayaranDto);
         try {
           await this.pembayaransService.removeUserKelas(
-          pembayaran['user']['id'],
-          pembayaran['kelas']['id'],
-        );
-        } catch (error) {
-          
-        }
+            pembayaran['user']['id'],
+            pembayaran['kelas']['id'],
+          );
+        } catch (error) {}
         req.flash('success', 'proces successfully change rejected');
-                res.redirect(`/kelass/detail/kelas/admin/${pembayaran['kelas']['id']}`);
-
+        res.redirect(`/kelass/detail/kelas/admin/${pembayaran['kelas']['id']}`);
       }
     } catch (error) {
       const pembayaran = await this.pembayaransService.findOne(pembayaranId);
       req.flash('error', error.message || 'Payment proof submission failed');
-        res.redirect(`/kelass/detail/kelas/admin/${pembayaran['kelas']['id']}`);
-      }
+      res.redirect(`/kelass/detail/kelas/admin/${pembayaran['kelas']['id']}`);
+    }
   }
 }

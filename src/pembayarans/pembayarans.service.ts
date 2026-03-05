@@ -142,58 +142,55 @@ export class PembayaransService {
         where: { kelas: { id: kelasId }, akhir: true },
       });
       if (minggu) {
-
-        const existingProgresMinggu = await this.progresMingguRepository.findOne({
-          where: {
-            minggu: { id: minggu.id },
-            user: { id: userId },
-          },
-        });
-        if(existingProgresMinggu){
-        await this.progresMingguRepository.save({
-          id: existingProgresMinggu.id,
-          minggu: minggu,
-          user: user,
-          proses: true,
-          quiz: false,
-        });
-      }else{
-        await this.progresMingguRepository.save({
-          minggu: minggu,
-          user: user,
-          proses: true,
-          quiz: false,
-         });
-      }
-
+        const existingProgresMinggu =
+          await this.progresMingguRepository.findOne({
+            where: {
+              minggu: { id: minggu.id },
+              user: { id: userId },
+            },
+          });
+        if (existingProgresMinggu) {
+          await this.progresMingguRepository.save({
+            id: existingProgresMinggu.id,
+            minggu: minggu,
+            user: user,
+            proses: true,
+            quiz: false,
+          });
+        } else {
+          await this.progresMingguRepository.save({
+            minggu: minggu,
+            user: user,
+            proses: true,
+            quiz: false,
+          });
+        }
 
         const pertemuan = await this.pertemuanRepository.findOne({
           where: { minggu: { id: minggu.id }, pertemuan_ke: 1 },
           relations: [],
         });
         if (pertemuan) {
-
-          const existingProgresPertemuan = await this.progresPertemuanRepository.findOne({
-            where: { pertemuan: { id: pertemuan.id }, user: { id: userId } },
-          });
+          const existingProgresPertemuan =
+            await this.progresPertemuanRepository.findOne({
+              where: { pertemuan: { id: pertemuan.id }, user: { id: userId } },
+            });
           if (existingProgresPertemuan) {
-          await this.progresPertemuanRepository.save({
-            id: existingProgresPertemuan.id,
-            pertemuan: pertemuan,
-            user: user,
-            absen: true,
-            logbook: false,
-          });
-        } else {
-          await this.progresPertemuanRepository.save({
-            pertemuan: pertemuan,
-            user: user,
+            await this.progresPertemuanRepository.save({
+              id: existingProgresPertemuan.id,
+              pertemuan: pertemuan,
+              user: user,
               absen: true,
               logbook: false,
-           });
-        }
-
-
+            });
+          } else {
+            await this.progresPertemuanRepository.save({
+              pertemuan: pertemuan,
+              user: user,
+              absen: true,
+              logbook: false,
+            });
+          }
         }
       } else if (minggu_akhir) {
         const progresMingguAkhir = await this.progresMingguRepository.findOne({

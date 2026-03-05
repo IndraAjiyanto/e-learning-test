@@ -393,7 +393,7 @@
           @click='closeModal()'
           :disabled='loading'
           :class="loading ? 'bg-slate-100 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-700'"
-          class='px-6 py-3 rounded-xl border-2 border-slate-300 hover:border-slate-400 transition-all duration-300 font-semibold'
+          class='btn bg-white px-6 py-3 rounded-xl border-2 border-slate-300 hover:border-slate-400 transition-all duration-300 font-semibold transform hover:-translate-y-1'
         >
           {{t 'test.profile.cancel'}}
         </button>
@@ -401,8 +401,8 @@
         <button
           @click='$refs.profileForm.submit(); loading = true;'
           :disabled='validationError !== "" || loading'
-          :class="validationError !== '' || loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:from-slate-500 hover:to-slate-700 transform hover:-translate-y-1'"
-          class='px-6 py-3 rounded-xl bg-gradient-to-r from-slate-600 to-slate-800 text-white shadow-lg transition-all duration-300 font-semibold'
+          :class="validationError !== '' || loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
+          class='btn px-6 py-3 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 text-white shadow-lg transition-all duration-300 font-semibold'
         >
           <span
             x-show='loading'
@@ -416,33 +416,108 @@
 </div>
 
 <script>
-  function profilePreview() { return { // ========================= // State //
-  ========================= previewUrl: "", open: false, validationError: "",
-  imageInfo: "", // ========================= // Handle File Upload //
-  ========================= handleFileUpload(event) { const file =
-  event.target.files[0]; if (!file) return; // Reset state this.previewUrl = "";
-  this.validationError = ""; this.imageInfo = ""; // Allowed file types const
-  allowedTypes = ["image/jpeg", "image/jpg", "image/png"]; if
-  (!allowedTypes.includes(file.type)) { this.validationError = "File type not
-  allowed! Please upload JPG, JPEG, or PNG image only."; this.open = true;
-  return; } // File size validation (max 5MB) const maxSize = 5 * 1024 * 1024;
-  const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2); if (file.size >
-  maxSize) { this.validationError = `File size too large! Maximum 5MB allowed.
-  Your file: ${fileSizeMB}MB`; this.open = true; return; } // Validate image
-  dimensions const img = new Image(); const objectUrl =
-  URL.createObjectURL(file); img.onload = () => { const { width, height } = img;
-  this.previewUrl = objectUrl; this.open = true; if (width < 300 || width > 2000
-  || height < 300 || height > 2000) { this.validationError = `Image dimensions
-  must be between 300x300 and 2000x2000 pixels. Your image:
-  ${width}x${height}px`; this.imageInfo = `${width}x${height}px •
-  ${fileSizeMB}MB`; } else { this.validationError = ""; this.imageInfo =
-  `${width}x${height}px • ${fileSizeMB}MB • Ready to upload ✓`; } }; img.onerror
-  = () => { this.previewUrl = ""; this.validationError = "Failed to load image.
-  Please try another file or ensure the file is not corrupted."; this.open =
-  true; URL.revokeObjectURL(objectUrl); }; img.src = objectUrl; }, //
-  ========================= // Close Modal // =========================
-  closeModal() { this.open = false; if (this.previewUrl) {
-  URL.revokeObjectURL(this.previewUrl); } this.previewUrl = "";
-  this.validationError = ""; this.imageInfo = ""; if (this.$refs.fileInput) {
-  this.$refs.fileInput.value = null; } }, }; }
+function profilePreview() {
+  return {
+
+    // =========================
+    // State
+    // =========================
+    previewUrl: "",
+    open: false,
+    validationError: "",
+    imageInfo: "",
+
+    // =========================
+    // Handle File Upload
+    // =========================
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Reset state
+      this.previewUrl = "";
+      this.validationError = "";
+      this.imageInfo = "";
+
+      // =========================
+      // File type validation
+      // =========================
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+      if (!allowedTypes.includes(file.type)) {
+        this.validationError =
+          "File type not allowed! Please upload JPG, JPEG, or PNG image only.";
+        this.open = true;
+        return;
+      }
+
+      // =========================
+      // File size validation (max 5MB)
+      // =========================
+      const maxSize = 5 * 1024 * 1024;
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+
+      if (file.size > maxSize) {
+        this.validationError = `File size too large! Maximum 5MB allowed. Your file: ${fileSizeMB}MB`;
+        this.open = true;
+        return;
+      }
+
+      // =========================
+      // Validate image dimensions
+      // =========================
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      img.onload = () => {
+        const { width, height } = img;
+
+        this.previewUrl = objectUrl;
+        this.open = true;
+
+        if (
+          width < 300 ||
+          width > 2000 ||
+          height < 300 ||
+          height > 2000
+        ) {
+          this.validationError = `Image dimensions must be between 300x300 and 2000x2000 pixels. Your image: ${width}x${height}px`;
+          this.imageInfo = `${width}x${height}px • ${fileSizeMB}MB`;
+        } else {
+          this.validationError = "";
+          this.imageInfo = `${width}x${height}px • ${fileSizeMB}MB • Ready to upload ✓`;
+        }
+      };
+
+      img.onerror = () => {
+        this.previewUrl = "";
+        this.validationError =
+          "Failed to load image. Please try another file or ensure the file is not corrupted.";
+        this.open = true;
+        URL.revokeObjectURL(objectUrl);
+      };
+
+      img.src = objectUrl;
+    },
+
+    // =========================
+    // Close Modal
+    // =========================
+    closeModal() {
+      this.open = false;
+
+      if (this.previewUrl) {
+        URL.revokeObjectURL(this.previewUrl);
+      }
+
+      this.previewUrl = "";
+      this.validationError = "";
+      this.imageInfo = "";
+
+      if (this.$refs.fileInput) {
+        this.$refs.fileInput.value = null;
+      }
+    },
+  };
+}
 </script>

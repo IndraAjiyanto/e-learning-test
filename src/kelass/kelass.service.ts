@@ -163,9 +163,7 @@ export class KelassService {
     });
 
     if (!newMentorUser) {
-      throw new NotFoundException(
-        `Mentor not Found`
-      );
+      throw new NotFoundException(`Mentor not Found`);
     }
 
     const existingMentoring = await this.mentoringRepository.findOne({
@@ -240,55 +238,55 @@ export class KelassService {
           where: { kelas: { id: kelasId }, akhir: true },
         });
         if (minggu) {
-
-          const existingProgresMinggu = await this.progresMingguRepository.findOne({
-            where: { minggu: { id: minggu.id }, user: { id: userId } },
-          });
+          const existingProgresMinggu =
+            await this.progresMingguRepository.findOne({
+              where: { minggu: { id: minggu.id }, user: { id: userId } },
+            });
           if (existingProgresMinggu) {
-          await this.progresMingguRepository.save({
-            id: existingProgresMinggu.id,
-            minggu: minggu,
-            user: user,
-            proses: true,
-            quiz: false,
-          });
-        } else {
-          await this.progresMingguRepository.save({
-            minggu: minggu,
-            user: user,
-            proses: true,
-            quiz: false,
-          });
-        }
-
+            await this.progresMingguRepository.save({
+              id: existingProgresMinggu.id,
+              minggu: minggu,
+              user: user,
+              proses: true,
+              quiz: false,
+            });
+          } else {
+            await this.progresMingguRepository.save({
+              minggu: minggu,
+              user: user,
+              proses: true,
+              quiz: false,
+            });
+          }
 
           const pertemuan = await this.pertemuanRepository.findOne({
             where: { minggu: { id: minggu.id }, pertemuan_ke: 1 },
             relations: [],
           });
           if (pertemuan) {
-
-            const existingProgresPertemuan = await this.progresPertemuanRepository.findOne({
-              where: { pertemuan: { id: pertemuan.id }, user: { id: userId } },
-            });
-            if(existingProgresPertemuan) {
-            await this.progresPertemuanRepository.save({
-              id: existingProgresPertemuan.id,
-              pertemuan: pertemuan,
-              user: user,
-              absen: true,
-              logbook: false,
-            });
-          } else {
-            await this.progresPertemuanRepository.save({
-              pertemuan: pertemuan,
-              user: user,
-              absen: true,
-              logbook: false,
+            const existingProgresPertemuan =
+              await this.progresPertemuanRepository.findOne({
+                where: {
+                  pertemuan: { id: pertemuan.id },
+                  user: { id: userId },
+                },
               });
-          }
-
-
+            if (existingProgresPertemuan) {
+              await this.progresPertemuanRepository.save({
+                id: existingProgresPertemuan.id,
+                pertemuan: pertemuan,
+                user: user,
+                absen: true,
+                logbook: false,
+              });
+            } else {
+              await this.progresPertemuanRepository.save({
+                pertemuan: pertemuan,
+                user: user,
+                absen: true,
+                logbook: false,
+              });
+            }
           }
         } else if (minggu_akhir) {
           const progresMingguAkhir = await this.progresMingguRepository.findOne(
@@ -338,54 +336,55 @@ export class KelassService {
           where: { kelas: { id: kelasId }, akhir: true },
         });
         if (minggu) {
-
-          const existingProgresMinggu = await this.progresMingguRepository.findOne({
-            where: { minggu: { id: minggu.id }, user: { id: userId } },
-          });
+          const existingProgresMinggu =
+            await this.progresMingguRepository.findOne({
+              where: { minggu: { id: minggu.id }, user: { id: userId } },
+            });
           if (existingProgresMinggu) {
-          await this.progresMingguRepository.save({
-            id: existingProgresMinggu.id,
-            minggu: minggu,
-            user: user,
-            proses: true,
-            quiz: false,
-          });
-        } else {
-          await this.progresMingguRepository.save({
-            minggu: minggu,
-            user: user,
-            proses: true,
-            quiz: false,
-          });
-        }
-
+            await this.progresMingguRepository.save({
+              id: existingProgresMinggu.id,
+              minggu: minggu,
+              user: user,
+              proses: true,
+              quiz: false,
+            });
+          } else {
+            await this.progresMingguRepository.save({
+              minggu: minggu,
+              user: user,
+              proses: true,
+              quiz: false,
+            });
+          }
 
           const pertemuan = await this.pertemuanRepository.findOne({
             where: { minggu: { id: minggu.id }, pertemuan_ke: 1 },
             relations: [],
           });
           if (pertemuan) {
-
-            const existingProgresPertemuan = await this.progresPertemuanRepository.findOne({
-              where: { pertemuan: { id: pertemuan.id }, user: { id: userId } },
-            });
-            if(existingProgresPertemuan) {
-            await this.progresPertemuanRepository.save({
-              id: existingProgresPertemuan.id,
-              pertemuan: pertemuan,
-              user: user,
-              absen: true,
-              logbook: false,
-            });
-          } else {
-            await this.progresPertemuanRepository.save({
-              pertemuan: pertemuan,
-              user: user,
-              absen: true,
-              logbook: false,
+            const existingProgresPertemuan =
+              await this.progresPertemuanRepository.findOne({
+                where: {
+                  pertemuan: { id: pertemuan.id },
+                  user: { id: userId },
+                },
               });
-          }
-
+            if (existingProgresPertemuan) {
+              await this.progresPertemuanRepository.save({
+                id: existingProgresPertemuan.id,
+                pertemuan: pertemuan,
+                user: user,
+                absen: true,
+                logbook: false,
+              });
+            } else {
+              await this.progresPertemuanRepository.save({
+                pertemuan: pertemuan,
+                user: user,
+                absen: true,
+                logbook: false,
+              });
+            }
           }
         } else if (minggu_akhir) {
           const progresMingguAkhir = await this.progresMingguRepository.findOne(
@@ -463,7 +462,6 @@ export class KelassService {
     });
   }
 
-
   async findQuiz(mingguId: number, userId: number) {
     return await this.quizRepository
       .createQueryBuilder('quiz')
@@ -473,24 +471,16 @@ export class KelassService {
         'progres_quiz.userId = :userId',
         { userId },
       )
-      .leftJoinAndSelect(
-        'quiz.pertanyaan',
-        'pertanyaan'
-      )
-      .leftJoinAndSelect(
-        'quiz.nilai',
-        'nilai',
-        'nilai.userId = :userId',
-        { userId },
-      )
+      .leftJoinAndSelect('quiz.pertanyaan', 'pertanyaan')
+      .leftJoinAndSelect('quiz.nilai', 'nilai', 'nilai.userId = :userId', {
+        userId,
+      })
       .where('quiz.mingguId = :mingguId', { mingguId: mingguId })
       .orderBy('quiz.id', 'ASC')
       .getMany();
   }
 
-
   async findPertemuan(mingguId: number, userId: number) {
-
     return await this.pertemuanRepository
       .createQueryBuilder('pertemuan')
       .leftJoinAndSelect(
@@ -504,16 +494,10 @@ export class KelassService {
         'logbook',
         'logbook.userId = :userId',
       )
-      .leftJoinAndSelect(
-        'pertemuan.absen',
-        'absen',
-        'absen.userId = :userId',
-        { userId },
-      )
-      .leftJoinAndSelect(
-        'pertemuan.tugas',
-        'tugas'
-      )
+      .leftJoinAndSelect('pertemuan.absen', 'absen', 'absen.userId = :userId', {
+        userId,
+      })
+      .leftJoinAndSelect('pertemuan.tugas', 'tugas')
       .leftJoinAndSelect(
         'tugas.jawaban_tugas',
         'jawaban_tugas',
@@ -732,7 +716,6 @@ export class KelassService {
     });
   }
 
-
   async findOneKelas(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
       where: { id: kelasId },
@@ -766,7 +749,6 @@ export class KelassService {
       where: { user: { id: userId }, kelas: { id: kelasId } },
     });
   }
-
 
   async findOneKelasUserLaunch(kelasId: number) {
     const kelas = await this.kelasRepository.findOne({
@@ -838,7 +820,8 @@ export class KelassService {
 
   async findCicilanKelas(kelasId: number) {
     return await this.cicilanRepository.find({
-      where: { kelas: { id: kelasId } }, order: { bulan: 'ASC' },
+      where: { kelas: { id: kelasId } },
+      order: { bulan: 'ASC' },
     });
   }
 
@@ -951,17 +934,15 @@ export class KelassService {
     return await this.userKelasRepository.remove(user_kelas);
   }
 
-    async deleteFile(url: string) {
+  async deleteFile(url: string) {
     if (!url) return;
-  
+
     try {
       const filePath = path.join(process.cwd(), 'public', url);
-      
+
       await fs.unlink(filePath);
     } catch (error) {
       throw new BadRequestException('Failed to delete file: ' + error.message);
     }
   }
-
 }
-
