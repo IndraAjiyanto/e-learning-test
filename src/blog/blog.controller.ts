@@ -17,13 +17,16 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Request, Response } from 'express';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { multerConfigMemory, multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import {
+  multerConfigMemory,
+  multerConfigMemoryOnly,
+} from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import * as cheerio from 'cheerio';
-import editorjsHTML from "src/common/public/js/edjs";
+import editorjsHTML from 'src/common/public/js/edjs';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -32,11 +35,14 @@ export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
   @Get('detail/:id')
-  async viewBlogDetail(@Param('id') id: number, @Res() res: Response, @Req() req: Request) {
+  async viewBlogDetail(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     const blog = await this.blogService.findOne(id);
-    res.render('blog-detail', {blog, user: req.user});
+    res.render('blog-detail', { blog, user: req.user });
   }
-
 
   @Roles('super_admin')
   @Get('')
@@ -58,7 +64,7 @@ export class BlogController {
       user: req.user,
       categories,
       topics,
-      notSidebar
+      notSidebar,
     });
   }
 
@@ -70,11 +76,11 @@ export class BlogController {
     @Param('id') id: number,
   ) {
     const blog = await this.blogService.findOne(id);
-    const notSidebar = true;  
+    const notSidebar = true;
     res.render('super_admin/blog/detail', {
       user: req.user,
       blog,
-      notSidebar
+      notSidebar,
     });
   }
 
@@ -94,7 +100,7 @@ export class BlogController {
       blog,
       categories,
       topics,
-      notSidebar
+      notSidebar,
     });
   }
 
@@ -119,16 +125,20 @@ export class BlogController {
     @Req() req: Request,
   ) {
     try {
+      const editorjsData = await this.blogService.ChangeImageEditorJS(
+        createBlogDto.isi,
+        '/asset/blog/temp',
+        '/asset/blog/isi',
+        '/asset/blog/temp',
+      );
 
-      const editorjsData = await this.blogService.ChangeImageEditorJS(createBlogDto.isi, "/asset/blog/temp", "/asset/blog/isi", "/asset/blog/temp");
+      createBlogDto.isi_editorjs = editorjsData;
 
-createBlogDto.isi_editorjs = editorjsData;
+      createBlogDto.gambar = req.body.uploadedImageUrls || [];
 
-createBlogDto.gambar = req.body.uploadedImageUrls || [];
+      let html = editorjsHTML.parse(JSON.parse(editorjsData));
 
-let html = editorjsHTML.parse(JSON.parse(editorjsData));
-
-createBlogDto.isi = html;
+      createBlogDto.isi = html;
 
       await this.blogService.create(createBlogDto);
       req.flash('success', 'Blog successfully created');
@@ -150,19 +160,15 @@ createBlogDto.isi = html;
     folder: 'blog/temp',
     skipTransformation: true,
   })
-    async uploadImage(
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
+  async uploadImage(@Res() res: Response, @Req() req: Request) {
     try {
-          const imageUrl = req.body.uploadedImageUrls?.[0];
-    res.json({ success: 1, file:{ url: imageUrl }}); 
+      const imageUrl = req.body.uploadedImageUrls?.[0];
+      res.json({ success: 1, file: { url: imageUrl } });
     } catch (error) {
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }
   }
-
 
   @Roles('super_admin')
   @Patch(':id')
@@ -187,15 +193,32 @@ createBlogDto.isi = html;
   ) {
     try {
       const blog = await this.blogService.findOne(id);
-      if(updateBlogDto.isi) {
-      await this.blogService.ChangeImageEditorJS(blog.isi_editorjs, "/asset/blog/isi", "/asset/blog/temp");
-        updateBlogDto.isi_editorjs = await this.blogService.ChangeImageEditorJS(updateBlogDto.isi, "/asset/blog/temp", "/asset/blog/isi", "/asset/blog/temp");
-  updateBlogDto.isi = editorjsHTML.parse(JSON.parse(updateBlogDto.isi_editorjs));
-}
+      if (updateBlogDto.isi) {
+        await this.blogService.ChangeImageEditorJS(
+          blog.isi_editorjs,
+          '/asset/blog/isi',
+          '/asset/blog/temp',
+        );
+        updateBlogDto.isi_editorjs = await this.blogService.ChangeImageEditorJS(
+          updateBlogDto.isi,
+          '/asset/blog/temp',
+          '/asset/blog/isi',
+          '/asset/blog/temp',
+        );
+        updateBlogDto.isi = editorjsHTML.parse(
+          JSON.parse(updateBlogDto.isi_editorjs),
+        );
+      }
 
       updateBlogDto.gambar = updateBlogDto.gambar || [];
-      const combineImage = [...updateBlogDto.gambar || [], ...(req.body.uploadedImageUrls) || []];
-      const newImageUrls = await this.blogService.deleteUnusedImages(blog.gambar, combineImage);
+      const combineImage = [
+        ...(updateBlogDto.gambar || []),
+        ...(req.body.uploadedImageUrls || []),
+      ];
+      const newImageUrls = await this.blogService.deleteUnusedImages(
+        blog.gambar,
+        combineImage,
+      );
 
       updateBlogDto.gambar = newImageUrls;
 
@@ -226,17 +249,17 @@ createBlogDto.isi = html;
           await this.blogService.deleteFile(url);
         }
       }
-if (blog.isi) {
-  const $ = cheerio.load(blog.isi);
-  const imgUrls = $('img')
-    .toArray()                
-    .map(img => $(img).attr('src')) 
-    .filter(src => !!src); 
+      if (blog.isi) {
+        const $ = cheerio.load(blog.isi);
+        const imgUrls = $('img')
+          .toArray()
+          .map((img) => $(img).attr('src'))
+          .filter((src) => !!src);
 
-  await Promise.all(
-    imgUrls.map(url => this.blogService.deleteFile(url!))
-  );
-}
+        await Promise.all(
+          imgUrls.map((url) => this.blogService.deleteFile(url!)),
+        );
+      }
 
       await this.blogService.remove(id);
       req.flash('success', 'Blog successfully removed');

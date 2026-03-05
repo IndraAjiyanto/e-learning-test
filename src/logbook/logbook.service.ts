@@ -201,26 +201,24 @@ export class LogbookService {
             },
           });
           if (quiz) {
-
-            const existingProgresQuiz = await this.progresQuizRepository.findOne({
-              where: { quiz: { id: quiz.id }, user: { id: logbook.user.id } },
-            });
+            const existingProgresQuiz =
+              await this.progresQuizRepository.findOne({
+                where: { quiz: { id: quiz.id }, user: { id: logbook.user.id } },
+              });
             if (existingProgresQuiz) {
-            await this.progresQuizRepository.save({
-              id: existingProgresQuiz.id,
-              quiz: { id: quiz.id },
-              user: { id: logbook.user.id },
-              proses: true,
-            });
-          } else {
-            await this.progresQuizRepository.save({
-              quiz: { id: quiz.id },
-              user: { id: logbook.user.id },
-              proses: true,
-            });
-          }
-
-
+              await this.progresQuizRepository.save({
+                id: existingProgresQuiz.id,
+                quiz: { id: quiz.id },
+                user: { id: logbook.user.id },
+                proses: true,
+              });
+            } else {
+              await this.progresQuizRepository.save({
+                quiz: { id: quiz.id },
+                user: { id: logbook.user.id },
+                proses: true,
+              });
+            }
           }
         } else {
           const pertemuan_selanjutnya = await this.pertemuanRepository.findOne({
@@ -231,31 +229,29 @@ export class LogbookService {
           });
 
           if (pertemuan_selanjutnya) {
-
-            const existingProgresPertemuan = await this.progresPertemuanRepository.findOne({
-              where: {
-                user: { id: logbook.user.id },
+            const existingProgresPertemuan =
+              await this.progresPertemuanRepository.findOne({
+                where: {
+                  user: { id: logbook.user.id },
+                  pertemuan: { id: pertemuan_selanjutnya.id },
+                },
+              });
+            if (existingProgresPertemuan) {
+              await this.progresPertemuanRepository.save({
+                id: existingProgresPertemuan.id,
                 pertemuan: { id: pertemuan_selanjutnya.id },
-              },
-            });
-            if(existingProgresPertemuan){
-            await this.progresPertemuanRepository.save({
-              id: existingProgresPertemuan.id,
-              pertemuan: { id: pertemuan_selanjutnya.id },
-              user: { id: logbook.user.id },
-              absen: true,
-              logbook: false,
-            });
-          }else{
-            await this.progresPertemuanRepository.save({
-              pertemuan: { id: pertemuan_selanjutnya.id },
-              user: { id: logbook.user.id },
-              absen: true,
-              logbook: false,
-             });
-          }
-
-
+                user: { id: logbook.user.id },
+                absen: true,
+                logbook: false,
+              });
+            } else {
+              await this.progresPertemuanRepository.save({
+                pertemuan: { id: pertemuan_selanjutnya.id },
+                user: { id: logbook.user.id },
+                absen: true,
+                logbook: false,
+              });
+            }
           }
         }
       }

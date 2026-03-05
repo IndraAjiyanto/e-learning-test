@@ -29,10 +29,10 @@ import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 export class LogbookController {
   constructor(private readonly logbookService: LogbookService) {}
 
-  @Roles('user','admin')
+  @Roles('user', 'admin')
   @Post(':pertemuanId')
   @UseInterceptors(
-    FileInterceptor('dokumentasi',multerConfigMemoryOnly ),
+    FileInterceptor('dokumentasi', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -53,7 +53,7 @@ export class LogbookController {
 
       createLogbookDto.dokumentasi = req.body.uploadedImageUrls[0];
       if (req.user?.role === 'user') {
-      createLogbookDto.userId = req.user!.id;
+        createLogbookDto.userId = req.user!.id;
         createLogbookDto.proses = 'proces';
       } else if (req.user?.role === 'admin') {
         createLogbookDto.proses = 'acc';
@@ -72,7 +72,7 @@ export class LogbookController {
       const errorMessage = error.message || 'Failed to add log book';
       req.flash('error', errorMessage);
       if (req.user?.role === 'admin') {
-                res.redirect(`/pertemuans/${pertemuanId}`);
+        res.redirect(`/pertemuans/${pertemuanId}`);
       } else if (req.user?.role === 'user') {
         res.redirect(`/kelass/${pertemuan.minggu.kelas.id}`);
       }
@@ -81,9 +81,16 @@ export class LogbookController {
 
   @Roles('user')
   @Get('user/:kelasId')
-  async findLogBook(@Req() req: Request, @Res() res: Response, @Param('kelasId') kelasId: number) {
-      const logbook = await this.logbookService.findLogBook(req.user!.id, kelasId);
-      res.render('user/logbook/index', { user: req.user, logbook, kelasId });
+  async findLogBook(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('kelasId') kelasId: number,
+  ) {
+    const logbook = await this.logbookService.findLogBook(
+      req.user!.id,
+      kelasId,
+    );
+    res.render('user/logbook/index', { user: req.user, logbook, kelasId });
   }
 
   @Roles('user')

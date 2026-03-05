@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import {Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
@@ -95,7 +95,13 @@ export class DashboardService {
     return await this.kelasRepository.find({
       where: { launch: true },
       order: { id: 'DESC' },
-      relations: ['kategori', 'jenis_kelas', 'user_kelas', 'mentoring', 'mentoring.user'],
+      relations: [
+        'kategori',
+        'jenis_kelas',
+        'user_kelas',
+        'mentoring',
+        'mentoring.user',
+      ],
     });
   }
 
@@ -121,7 +127,7 @@ export class DashboardService {
         'kategori',
         'jenis_kelas',
         'mentoring',
-        'mentoring.user'
+        'mentoring.user',
       ],
     });
   }
@@ -174,24 +180,14 @@ export class DashboardService {
 
   async findPortfolio() {
     return await this.portfolioRepository.find({
-      relations: [
-        'kelas',
-        'kelas.kategori',
-        'kelas.jenis_kelas',
-        'user',
-      ],
+      relations: ['kelas', 'kelas.kategori', 'kelas.jenis_kelas', 'user'],
     });
   }
 
   async findOnePortfolio(portfolioId: number) {
     return await this.portfolioRepository.findOne({
       where: { id: portfolioId },
-      relations: [
-        'kelas',
-        'kelas.kategori',
-        'kelas.teknologi',
-        'user',
-      ],
+      relations: ['kelas', 'kelas.kategori', 'kelas.teknologi', 'user'],
     });
   }
 
@@ -222,12 +218,17 @@ export class DashboardService {
     return await this.socialRepository.find();
   }
 
-  async findSpecialProgram(){
-    return await this.kategoriRepository.find({where: {type: 'Special Program'}})
+  async findSpecialProgram() {
+    return await this.kategoriRepository.find({
+      where: { type: 'Special Program' },
+    });
   }
 
-  async findOneKategori(kategoriName: string){
-    return await this.kategoriRepository.findOne({where: {nama_kategori: kategoriName}, relations: ['kelas','alumni','pertanyaan_umum']})
+  async findOneKategori(kategoriName: string) {
+    return await this.kategoriRepository.findOne({
+      where: { nama_kategori: kategoriName },
+      relations: ['kelas', 'alumni', 'pertanyaan_umum'],
+    });
   }
 
   async findKategori() {

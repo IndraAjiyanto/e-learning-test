@@ -9,7 +9,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Topic } from 'src/entities/topic.entity';
 
-
 @Injectable()
 export class BlogService {
   constructor(
@@ -49,64 +48,68 @@ export class BlogService {
     });
   }
 
-  async ChangeImageEditorJS(isi: string, oldFolder: string, newFolder: string, deleteFileInFolder?: string): Promise<string> {
-const editorjsData = JSON.parse(isi);
+  async ChangeImageEditorJS(
+    isi: string,
+    oldFolder: string,
+    newFolder: string,
+    deleteFileInFolder?: string,
+  ): Promise<string> {
+    const editorjsData = JSON.parse(isi);
 
-const tempDir = path.join(process.cwd(), "public"+oldFolder);
-const finalDir = path.join(process.cwd(), "public"+newFolder);
+    const tempDir = path.join(process.cwd(), 'public' + oldFolder);
+    const finalDir = path.join(process.cwd(), 'public' + newFolder);
 
-editorjsData.blocks.forEach((block: any) => {
-  if (block.type === "image" && block.data?.file?.url) {
-    const oldUrl = block.data.file.url;
+    editorjsData.blocks.forEach((block: any) => {
+      if (block.type === 'image' && block.data?.file?.url) {
+        const oldUrl = block.data.file.url;
 
-      const fileName = oldUrl.split("/").pop();
+        const fileName = oldUrl.split('/').pop();
 
-      const oldPath = path.join(tempDir, fileName);
-      const newPath = path.join(finalDir, fileName);
+        const oldPath = path.join(tempDir, fileName);
+        const newPath = path.join(finalDir, fileName);
 
-      if (fs.existsSync(oldPath)) {
-        fs.renameSync(oldPath, newPath);
-      }
+        if (fs.existsSync(oldPath)) {
+          fs.renameSync(oldPath, newPath);
+        }
 
-      block.data.file.url = `${newFolder}/${fileName}`;
-  }
-});
-
-if (deleteFileInFolder) {
-  const deleteDir = path.join(process.cwd(), "public" + deleteFileInFolder);
-
-  if (fs.existsSync(deleteDir)) {
-    const files = fs.readdirSync(deleteDir);
-
-    files.forEach(file => {
-      const filePath = path.join(deleteDir, file);
-
-      if (fs.lstatSync(filePath).isFile()) {
-        fs.unlinkSync(filePath);
+        block.data.file.url = `${newFolder}/${fileName}`;
       }
     });
-  }
-}
 
-return JSON.stringify(editorjsData);
-  }
+    if (deleteFileInFolder) {
+      const deleteDir = path.join(process.cwd(), 'public' + deleteFileInFolder);
 
-async ChangeImgPath(isi: string, newFolder: string): Promise<string> {
-  const editorjsData = JSON.parse(isi);
+      if (fs.existsSync(deleteDir)) {
+        const files = fs.readdirSync(deleteDir);
 
-  editorjsData.blocks.forEach((block: any) => {
-    if (block.type === "image" && block.data?.file?.url) {
+        files.forEach((file) => {
+          const filePath = path.join(deleteDir, file);
 
-      const oldUrl = block.data.file.url;
-
-      const filename = path.basename(oldUrl);
-
-      block.data.file.url = `${newFolder}/${filename}`;
+          if (fs.lstatSync(filePath).isFile()) {
+            fs.unlinkSync(filePath);
+          }
+        });
+      }
     }
-  });
 
-  return JSON.stringify(editorjsData);
-}
+    return JSON.stringify(editorjsData);
+  }
+
+  async ChangeImgPath(isi: string, newFolder: string): Promise<string> {
+    const editorjsData = JSON.parse(isi);
+
+    editorjsData.blocks.forEach((block: any) => {
+      if (block.type === 'image' && block.data?.file?.url) {
+        const oldUrl = block.data.file.url;
+
+        const filename = path.basename(oldUrl);
+
+        block.data.file.url = `${newFolder}/${filename}`;
+      }
+    });
+
+    return JSON.stringify(editorjsData);
+  }
 
   async findOne(id: number) {
     const blog = await this.blogRepository.findOne({
@@ -141,36 +144,33 @@ async ChangeImgPath(isi: string, newFolder: string): Promise<string> {
   }
 
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.promises.unlink(filePath);
-  } catch (error) {
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.promises.unlink(filePath);
+    } catch (error) {}
   }
-}
 
-async deleteUnusedImages(oldImage: string[], newImage: string[]) {
-  const publicDir = path.join(process.cwd(), "public");
+  async deleteUnusedImages(oldImage: string[], newImage: string[]) {
+    const publicDir = path.join(process.cwd(), 'public');
 
-  const fileToDelete = oldImage.filter(
-    (oldPath) => !newImage.includes(oldPath)
-  );
+    const fileToDelete = oldImage.filter(
+      (oldPath) => !newImage.includes(oldPath),
+    );
 
-  await Promise.all(
-    fileToDelete.map(async (dbPath) => {
-      try {
-        const fullPath = path.join(publicDir, dbPath);
-        await fs.promises.unlink(fullPath);
+    await Promise.all(
+      fileToDelete.map(async (dbPath) => {
+        try {
+          const fullPath = path.join(publicDir, dbPath);
+          await fs.promises.unlink(fullPath);
+        } catch (err) {}
+      }),
+    );
 
-      } catch (err) {
-      }
-    })
-  );
-
-  return newImage;
-}
+    return newImage;
+  }
 
   async update(id: number, updateBlogDto: UpdateBlogDto) {
     const blog = await this.findOne(id);
@@ -200,7 +200,8 @@ async deleteUnusedImages(oldImage: string[], newImage: string[]) {
 
     if (updateBlogDto.judul) blog.judul = updateBlogDto.judul;
     if (updateBlogDto.isi) blog.isi = updateBlogDto.isi;
-    if (updateBlogDto.isi_editorjs) blog.isi_editorjs = updateBlogDto.isi_editorjs;
+    if (updateBlogDto.isi_editorjs)
+      blog.isi_editorjs = updateBlogDto.isi_editorjs;
     if (updateBlogDto.gambar) blog.gambar = updateBlogDto.gambar;
     if (updateBlogDto.author) blog.author = updateBlogDto.author;
     if (updateBlogDto.keyword) blog.keyword = updateBlogDto.keyword;

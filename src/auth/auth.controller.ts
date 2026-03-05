@@ -17,10 +17,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('login')
-  async getLogin(
-    @Res() res: Response,
-    @Req() req: any,
-  ) {
+  async getLogin(@Res() res: Response, @Req() req: any) {
     if (req.user) {
       return res.redirect('/dashboard');
     }
@@ -70,16 +67,16 @@ export class AuthController {
         body.password,
       );
 
-      if(user!.isVerified === false) {
-          res.redirect('/users/send-verify-email?token='+ user!.verifikasiToken);
-      }else{
-      req.login(user, (err) => {
-        if (err) {
-          req.flash('error', 'Terjadi kesalahan saat login');
-          return res.redirect('/login');
-        }
-        res.redirect('/dashboard');
-      });
+      if (user!.isVerified === false) {
+        res.redirect('/users/send-verify-email?token=' + user!.verifikasiToken);
+      } else {
+        req.login(user, (err) => {
+          if (err) {
+            req.flash('error', 'Terjadi kesalahan saat login');
+            return res.redirect('/login');
+          }
+          res.redirect('/dashboard');
+        });
       }
     } catch (error) {
       req.flash('error', error.message || 'Email atau password salah');

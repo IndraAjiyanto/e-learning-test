@@ -81,7 +81,7 @@ export class KategorisController {
     @Res() res: Response,
   ) {
     const kategori = await this.kategorisService.findOneKategori(kategoriName);
-        const benefit_category = await this.kategorisService.findBenefitByKategori(
+    const benefit_category = await this.kategorisService.findBenefitByKategori(
       kategori.id,
     );
     const flow_category = await this.kategorisService.findFlowByKategori(
@@ -93,7 +93,9 @@ export class KategorisController {
     const pertanyaan_umum = await this.kategorisService.findFaqByKategori(
       kategori.id,
     );
-    const alumni = await this.kategorisService.findAlumniByKategori(kategori.id);
+    const alumni = await this.kategorisService.findAlumniByKategori(
+      kategori.id,
+    );
     const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
     if (kategori?.type === 'Special Program') {
       res.render('special_program', {
@@ -114,12 +116,11 @@ export class KategorisController {
   @Roles('super_admin')
   @Get('benefit/:kategoriId')
   async findBenefitByKategori(
-    @Param('kategoriId') kategoriId: number,  
+    @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
   ) {
-    const benefit_category = await this.kategorisService.findBenefitByKategori(
-      kategoriId,
-    );
+    const benefit_category =
+      await this.kategorisService.findBenefitByKategori(kategoriId);
     res.json(benefit_category);
   }
 
@@ -129,12 +130,10 @@ export class KategorisController {
     @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
   ) {
-    const flow_category = await this.kategorisService.findFlowByKategori(
-      kategoriId,
-    );
+    const flow_category =
+      await this.kategorisService.findFlowByKategori(kategoriId);
     res.json(flow_category);
   }
-
 
   @Roles('super_admin')
   @Get('superiority/:kategoriId')
@@ -142,9 +141,8 @@ export class KategorisController {
     @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
   ) {
-    const superiority = await this.kategorisService.findSuperiorityByKategori(
-      kategoriId,
-    );
+    const superiority =
+      await this.kategorisService.findSuperiorityByKategori(kategoriId);
     res.json(superiority);
   }
 
@@ -154,9 +152,8 @@ export class KategorisController {
     @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
   ) {
-    const pertanyaan_umum = await this.kategorisService.findFaqByKategori(
-      kategoriId,
-    );
+    const pertanyaan_umum =
+      await this.kategorisService.findFaqByKategori(kategoriId);
     res.json(pertanyaan_umum);
   }
 
@@ -166,7 +163,8 @@ export class KategorisController {
     @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
   ) {
-    const kelas = await this.kategorisService.findKelasByKategoriAll(kategoriId);
+    const kelas =
+      await this.kategorisService.findKelasByKategoriAll(kategoriId);
     res.json(kelas);
   }
 
@@ -192,7 +190,6 @@ export class KategorisController {
     res.render('super_admin/kategori/detail', {
       user: req.user,
       kategori,
-
     });
   }
 

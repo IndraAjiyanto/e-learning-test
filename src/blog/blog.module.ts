@@ -8,7 +8,10 @@ import { CommonModule } from 'src/common/common.module';
 import { Topic } from 'src/entities/topic.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Blog, KategoriBlog, Topic]), CommonModule],
+  imports: [
+    TypeOrmModule.forFeature([Blog, KategoriBlog, Topic]),
+    CommonModule,
+  ],
   controllers: [BlogController],
   providers: [BlogService],
 })

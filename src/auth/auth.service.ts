@@ -29,33 +29,31 @@ export class AuthService {
       createUserDto.password,
       createUserDto.confirm_password,
     );
-        const resetToken = crypto.randomBytes(32).toString('hex');
-    
-        const hashedToken = crypto
-          .createHash('sha256')
-          .update(resetToken)
-          .digest('hex');
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
     createUserDto.verifikasiToken = hashedToken;
     createUserDto.verifikasiTokenExpires = new Date(Date.now() + 60000);
 
     if (!isMatch) {
       try {
-      const user = await this.userService.create(createUserDto);
-      await this.emailService.sendVerificationEmail(
-        createUserDto.email,
-        resetToken,
-        createUserDto.username,
-      );
-      return user
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-
+        const user = await this.userService.create(createUserDto);
+        await this.emailService.sendVerificationEmail(
+          createUserDto.email,
+          resetToken,
+          createUserDto.username,
+        );
+        return user;
+      } catch (error) {
+        throw new BadRequestException(error.message);
+      }
     } else {
       throw new BadRequestException('Password no match');
     }
   }
-  
 
   async findAllKelas() {
     return await this.kelasService.findAllLaunch();

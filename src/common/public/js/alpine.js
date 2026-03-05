@@ -12,4 +12,3 @@ Alpine.store('ui', {
   },
 });
 Alpine.start();
-

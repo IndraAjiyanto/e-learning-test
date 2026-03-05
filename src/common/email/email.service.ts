@@ -17,13 +17,17 @@ export class EmailService {
     });
   }
 
-  async sendVerificationEmail(to: string, verificationToken: string, username: string) {
+  async sendVerificationEmail(
+    to: string,
+    verificationToken: string,
+    username: string,
+  ) {
     const verificationUrl = `${process.env.APP_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}&email=${to}`;
     const mailOptions = {
       from: `"${process.env.MAIL_FROM_NAME || 'Kesatria Academy'}" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
       to,
       subject: 'Email Verification - Kesatria Academy',
-html: `
+      html: `
 <!DOCTYPE html>
 <html>
 <head>

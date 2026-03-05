@@ -1,8 +1,4 @@
-import {
-  IsArray,
-  IsEnum,
-
-} from 'class-validator';
+import { IsArray, IsEnum } from 'class-validator';
 import { No } from 'src/entities/benefit.entity';
 
 export class CreateBenefitDto {

@@ -41,11 +41,10 @@ export class UploadService {
     folder: string,
     skipTransformation = false,
   ): Promise<string> {
-
     const uploadOptions: any = {
       folder,
       resource_type: 'auto',
-      timeout: 60000, 
+      timeout: 60000,
     };
 
     if (!skipTransformation) {

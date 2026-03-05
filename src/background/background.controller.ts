@@ -17,7 +17,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response, Request } from 'express';
 
-  @UseGuards(AuthenticatedGuard)
+@UseGuards(AuthenticatedGuard)
 @Controller('background')
 export class BackgroundController {
   constructor(private readonly backgroundService: BackgroundService) {}

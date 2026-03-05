@@ -57,7 +57,7 @@ import { KategoriBlog } from 'src/entities/kategori_blog.entity';
       Faq,
       OurExperience,
       Blog,
-      KategoriBlog
+      KategoriBlog,
     ]),
     TranslationModule, // Import TranslationModule
   ],

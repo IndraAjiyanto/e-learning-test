@@ -21,9 +21,7 @@ export class CicilanService {
     });
 
     if (!kelas) {
-      throw new NotFoundException(
-        `Program not found`,
-      );
+      throw new NotFoundException(`Program not found`);
     }
 
     const cicilan = this.cicilanRepository.create({
@@ -71,9 +69,7 @@ export class CicilanService {
       });
 
       if (!kelas) {
-        throw new NotFoundException(
-          `Program not found`,
-        );
+        throw new NotFoundException(`Program not found`);
       }
 
       cicilan.kelas = kelas;

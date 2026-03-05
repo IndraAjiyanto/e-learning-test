@@ -51,11 +51,11 @@ export class DashboardController {
           benefit_3,
           tentang,
           social,
-          our_experience
+          our_experience,
         });
       }
     } else {
-        const our_experience = await this.dashboardService.findOurExperience();
+      const our_experience = await this.dashboardService.findOurExperience();
       const special_program = await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
       const gambar_benefit_1 = await this.dashboardService.findGambar1();
@@ -70,7 +70,7 @@ export class DashboardController {
       const benefit_2 = await this.dashboardService.findBenefit2();
       const benefit_3 = await this.dashboardService.findBenefit3();
       const tentang = await this.dashboardService.findTentang();
-        const social = await this.dashboardService.findSocial();
+      const social = await this.dashboardService.findSocial();
       res.render('dashboard', {
         special_program,
         user: req.user,
@@ -89,7 +89,7 @@ export class DashboardController {
         benefit_3,
         tentang,
         social,
-        our_experience
+        our_experience,
       });
     }
   }
@@ -130,7 +130,6 @@ export class DashboardController {
     });
   }
 
-
   @Get('blog')
   async blog(@Req() req: Request, @Res() res: Response) {
     const blog = await this.dashboardService.findBlog();
@@ -141,8 +140,6 @@ export class DashboardController {
       kategori_blog,
     });
   }
-
-
 
   @Get('about')
   async about(@Req() req: Request, @Res() res: Response) {

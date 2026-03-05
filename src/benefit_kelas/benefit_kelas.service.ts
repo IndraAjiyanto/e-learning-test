@@ -79,5 +79,4 @@ export class BenefitKelasService {
     }
     return await this.benefitKelasRepository.remove(benefit_kelas);
   }
-
 }

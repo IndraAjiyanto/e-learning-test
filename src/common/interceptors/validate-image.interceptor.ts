@@ -103,7 +103,6 @@ export class ValidateImageInterceptor implements NestInterceptor {
             .replace(/\\/g, '/')
             .replace('/public', '');
           uploadResults.push(relativePath);
-          
         } else if (file.buffer) {
           const uploadDir = path.join(
             process.cwd(),

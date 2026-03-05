@@ -73,7 +73,6 @@ export class ValidateFileOnlyInterceptor implements NestInterceptor {
           }
         }
       }
-
     } catch (err) {
       throw new BadRequestException(err.message);
     }

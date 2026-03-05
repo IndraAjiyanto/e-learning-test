@@ -39,11 +39,11 @@ export class CreateKelassDto {
   @IsOptional()
   hari: number;
 
-    @IsDateString()
-    tanggal_mulai: Date;
+  @IsDateString()
+  tanggal_mulai: Date;
 
-    @IsDateString()
-    tanggal_selesai: Date;
+  @IsDateString()
+  tanggal_selesai: Date;
 
   @IsInt()
   @IsOptional()
