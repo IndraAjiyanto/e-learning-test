@@ -43,11 +43,11 @@ export class VisiController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-      const visi = await this.visiService.findAll();
-      res.render('super_admin/visi/index', {
-        user: req.user,
-        visi ,
-      });
+    const visi = await this.visiService.findAll();
+    res.render('super_admin/visi/index', {
+      user: req.user,
+      visi,
+    });
   }
 
   @Roles('super_admin')

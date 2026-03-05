@@ -25,9 +25,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  multerConfigMemoryOnly,
-} from 'src/common/config/multer.config';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
@@ -44,15 +42,19 @@ export class UsersController {
   // ============================================
 
   @Get('forgot-password')
-  async forgotPasswordPage(@Res() res: Response, @Req() req: Request, @Query('token') token: string) {
-    if(token === undefined){
-    return res.render('forgot-password');
+  async forgotPasswordPage(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('token') token: string,
+  ) {
+    if (token === undefined) {
+      return res.render('forgot-password');
     }
     const user = await this.usersService.findUserByTokenPassword(token);
-    if(user.isVerified){
-    const remainingMs = await this.usersService.tokenPasswordExpired(token);
-    return res.render('forgot-password', { remainingMs: remainingMs });
-    }else{
+    if (user.isVerified) {
+      const remainingMs = await this.usersService.tokenPasswordExpired(token);
+      return res.render('forgot-password', { remainingMs: remainingMs });
+    } else {
       req.flash('error', 'Please verify your email first');
       res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
     }
@@ -72,7 +74,9 @@ export class UsersController {
       );
       res.redirect('/users/forgot-password?token=' + token);
     } catch (error) {
-      const user = await this.usersService.findUserByEmail(forgotPasswordDto.email);
+      const user = await this.usersService.findUserByEmail(
+        forgotPasswordDto.email,
+      );
       req.flash(
         'error',
         error.message || 'Failed to process password reset request',
@@ -93,12 +97,14 @@ export class UsersController {
       return res.render('reset-password', { token });
     } catch (error) {
       const token = await this.usersService.findUserByEmail(email);
-            req.flash('error', 'Invalid or missing reset token');
-      return res.redirect('/users/forgot-password?token=' + token.resetPasswordToken);
+      req.flash('error', 'Invalid or missing reset token');
+      return res.redirect(
+        '/users/forgot-password?token=' + token.resetPasswordToken,
+      );
     }
   }
 
-    @Post('reset-password')
+  @Post('reset-password')
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
     @Res() res: Response,
@@ -117,18 +123,20 @@ export class UsersController {
     }
   }
 
-    // ============================================
+  // ============================================
   // PUBLIC ROUTES - Verify account (No Auth Required)
   // ============================================
 
-
-
   @Post('send-verify-email')
-  async sendVerifyEmailPage(@Res() res: Response, @Req() req: Request, @Query('token') token: string) {
+  async sendVerifyEmailPage(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('token') token: string,
+  ) {
     try {
-    const user = await this.usersService.sendVerificationEmail(token);
-    req.flash('success', 'Verification email sent successfully');
-    res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
+      const user = await this.usersService.sendVerificationEmail(token);
+      req.flash('success', 'Verification email sent successfully');
+      res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
     } catch (error) {
       req.flash('error', error.message || 'Failed to send verification email');
       res.redirect('/users/send-verify-email');
@@ -142,9 +150,12 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
-    const remainingMs = await this.usersService.tokenExpired(token);
-    const user = await this.usersService.findUserByToken(token);
-    return res.render('verify-email', {remainingMs: remainingMs, user: user});
+      const remainingMs = await this.usersService.tokenExpired(token);
+      const user = await this.usersService.findUserByToken(token);
+      return res.render('verify-email', {
+        remainingMs: remainingMs,
+        user: user,
+      });
     } catch (error) {
       req.flash('error', error.message || 'Failed to send verification email');
       return res.render('verify-email');
@@ -363,7 +374,6 @@ export class UsersController {
     @Req() req: Request,
   ) {
     try {
-
       const user = await this.usersService.findOne(userId);
       if (profile) {
         if (user.profile) {
@@ -401,7 +411,7 @@ export class UsersController {
         req.flash('error', 'User not found');
         res.redirect('/users');
       }
-      if(user.profile){
+      if (user.profile) {
         await this.usersService.deleteFile(user.profile);
       }
 

@@ -19,7 +19,7 @@ import { CommonModule } from 'src/common/common.module';
     JawabansModule,
     JawabanUsersModule,
     QuizModule,
-    CommonModule
+    CommonModule,
   ],
   controllers: [PertanyaansController],
   providers: [PertanyaansService],

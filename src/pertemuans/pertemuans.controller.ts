@@ -34,7 +34,8 @@ export class PertemuansController {
     @Req() req: Request,
   ) {
     try {
-      createPertemuanDto.pertemuan_ke = await this.pertemuansService.noPertemuan(createPertemuanDto.mingguId);
+      createPertemuanDto.pertemuan_ke =
+        await this.pertemuansService.noPertemuan(createPertemuanDto.mingguId);
       await this.pertemuansService.create(createPertemuanDto);
       req.flash('success', 'session succesfuly create');
       res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`);
@@ -113,7 +114,8 @@ export class PertemuansController {
     @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
-    const logbook_mentor = await this.pertemuansService.findLogBookMentor(pertemuanId);
+    const logbook_mentor =
+      await this.pertemuansService.findLogBookMentor(pertemuanId);
     res.json(logbook_mentor);
   }
 
@@ -121,12 +123,15 @@ export class PertemuansController {
   @Get('absen/:pertemuanId')
   async getAbsen(
     @Param('pertemuanId') pertemuanId: number,
-    @Res() res: Response, 
+    @Res() res: Response,
   ) {
     const pertemuan = await this.pertemuansService.findOne(pertemuanId);
-    const absen = await this.pertemuansService.findMuridInKelas(pertemuan.minggu.kelas.id, pertemuanId);
+    const absen = await this.pertemuansService.findMuridInKelas(
+      pertemuan.minggu.kelas.id,
+      pertemuanId,
+    );
     res.json(absen);
-  } 
+  }
 
   @Roles('admin')
   @Get('tugas/:pertemuanId')
@@ -157,7 +162,6 @@ export class PertemuansController {
     const materiVideo = await this.materisService.findMateriVideo(pertemuanId);
     res.json(materiVideo);
   }
-
 
   @Roles('admin')
   @Get('ppt/:pertemuanId')

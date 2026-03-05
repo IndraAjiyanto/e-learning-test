@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  Req,
+} from '@nestjs/common';
 import { TranslationService } from './translation.service';
 import { CreateTranslationDto } from './dto/create-translation.dto';
 import { UpdateTranslationDto } from './dto/update-translation.dto';
@@ -9,7 +19,11 @@ export class TranslationController {
   constructor(private readonly translationService: TranslationService) {}
 
   @Post()
-  async setLang(@Body('lang') lang: string, @Res() res: Response, @Req() req: Request) {
+  async setLang(
+    @Body('lang') lang: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     const allowed = ['id', 'en', 'ja'];
     const selected = allowed.includes(lang) ? lang : 'id';
 
@@ -18,13 +32,11 @@ export class TranslationController {
       secure: true,
       sameSite: 'lax',
       path: '/',
-      maxAge: 1000 * 60 * 60 * 24 * 30 
+      maxAge: 1000 * 60 * 60 * 24 * 30,
     });
 
-      const backUrl = req.headers.referer || '/';
+    const backUrl = req.headers.referer || '/';
 
-  return res.redirect(backUrl);
-
-  }
-
+    return res.redirect(backUrl);
+  }
 }

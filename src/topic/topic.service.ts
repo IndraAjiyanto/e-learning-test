@@ -7,11 +7,11 @@ import { Topic } from 'src/entities/topic.entity';
 
 @Injectable()
 export class TopicService {
-    constructor(
-      @InjectRepository(Topic)
-      private topicRepository: Repository<Topic>,
-    ) {}
-    
+  constructor(
+    @InjectRepository(Topic)
+    private topicRepository: Repository<Topic>,
+  ) {}
+
   async create(createTopicDto: CreateTopicDto) {
     const topic = this.topicRepository.create(createTopicDto);
     return await this.topicRepository.save(topic);

@@ -5,7 +5,6 @@ export class CreateTentangDto {
   @IsArray()
   judul: string[];
 
-
   @IsNotEmpty()
   @IsArray()
   text: string[];

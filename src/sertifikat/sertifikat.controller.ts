@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Res,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Param, Res, Req } from '@nestjs/common';
 import { SertifikatService } from './sertifikat.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';

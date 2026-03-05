@@ -27,12 +27,13 @@ export class QuizService {
     @InjectRepository(ProgresQuiz)
     private readonly progresQuizRepository: Repository<ProgresQuiz>,
     @InjectRepository(ProgresPertemuan)
-    private readonly progresPertemuanRepository: Repository<ProgresPertemuan>
+    private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
   ) {}
 
   async create(createQuizDto: CreateQuizDto) {
     const minggu = await this.mingguRepository.findOne({
-      where: { id: createQuizDto.mingguId }, relations: ['pertemuan']
+      where: { id: createQuizDto.mingguId },
+      relations: ['pertemuan'],
     });
     if (!minggu) {
       throw new Error('Minggu not found');
@@ -43,36 +44,39 @@ export class QuizService {
     });
     const newQuiz = await this.quizRepository.save(quiz);
     const progres_pertemuan_akhir = await this.progresPertemuanRepository.find({
-      where: { pertemuan: { akhir: true, minggu: { id: minggu.id } }, absen: true, logbook: true }, relations: ['user']
+      where: {
+        pertemuan: { akhir: true, minggu: { id: minggu.id } },
+        absen: true,
+        logbook: true,
+      },
+      relations: ['user'],
     });
 
-    if(progres_pertemuan_akhir.length > 0){
+    if (progres_pertemuan_akhir.length > 0) {
       for (const progres of progres_pertemuan_akhir) {
-
         const existingProgresQuiz = await this.progresQuizRepository.findOne({
           where: {
-            quiz: { id: newQuiz.id }, user: { id: progres.user.id }
-          }
+            quiz: { id: newQuiz.id },
+            user: { id: progres.user.id },
+          },
         });
-        if(existingProgresQuiz){
-        await this.progresQuizRepository.save({
-          id: existingProgresQuiz.id,
-          quiz: newQuiz,
-          user: progres.user,
-          proses: true
-        });
-      }else{
-        await this.progresQuizRepository.save({
-          quiz: newQuiz,
-          user: progres.user,
-          proses: true
-        });
-      }
-
-
+        if (existingProgresQuiz) {
+          await this.progresQuizRepository.save({
+            id: existingProgresQuiz.id,
+            quiz: newQuiz,
+            user: progres.user,
+            proses: true,
+          });
+        } else {
+          await this.progresQuizRepository.save({
+            quiz: newQuiz,
+            user: progres.user,
+            proses: true,
+          });
+        }
       }
     }
-}
+  }
 
   async findNilai(quizId: number) {
     const quiz = await this.findOne(quizId);
@@ -88,10 +92,7 @@ export class QuizService {
   async findOne(quizId: number) {
     return await this.quizRepository.findOne({
       where: { id: quizId },
-      relations: [
-        'minggu',
-        'minggu.kelas',
-      ],
+      relations: ['minggu', 'minggu.kelas'],
     });
   }
 

@@ -10,7 +10,7 @@ import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
 import * as ps from 'fs/promises';
 import * as path from 'path';
-import * as fs from "fs";
+import * as fs from 'fs';
 
 @Injectable()
 export class PortfoliosService {
@@ -135,79 +135,81 @@ export class PortfoliosService {
     } catch (error) {}
   }
 
-    async ChangeImageEditorJS(isi: string, oldFolder: string, newFolder: string, deleteFileInFolder?: string): Promise<string> {
-  const editorjsData = JSON.parse(isi);
-  
-  const tempDir = path.join(process.cwd(), "public"+oldFolder);
-  const finalDir = path.join(process.cwd(), "public"+newFolder);
-  
-  editorjsData.blocks.forEach((block: any) => {
-    if (block.type === "image" && block.data?.file?.url) {
-      const oldUrl = block.data.file.url;
-  
-        const fileName = oldUrl.split("/").pop();
-  
+  async ChangeImageEditorJS(
+    isi: string,
+    oldFolder: string,
+    newFolder: string,
+    deleteFileInFolder?: string,
+  ): Promise<string> {
+    const editorjsData = JSON.parse(isi);
+
+    const tempDir = path.join(process.cwd(), 'public' + oldFolder);
+    const finalDir = path.join(process.cwd(), 'public' + newFolder);
+
+    editorjsData.blocks.forEach((block: any) => {
+      if (block.type === 'image' && block.data?.file?.url) {
+        const oldUrl = block.data.file.url;
+
+        const fileName = oldUrl.split('/').pop();
+
         const oldPath = path.join(tempDir, fileName);
         const newPath = path.join(finalDir, fileName);
-  
+
         if (fs.existsSync(oldPath)) {
           fs.renameSync(oldPath, newPath);
         }
-  
+
         block.data.file.url = `${newFolder}/${fileName}`;
+      }
+    });
+
+    if (deleteFileInFolder) {
+      const deleteDir = path.join(process.cwd(), 'public' + deleteFileInFolder);
+
+      if (fs.existsSync(deleteDir)) {
+        const files = fs.readdirSync(deleteDir);
+
+        files.forEach((file) => {
+          const filePath = path.join(deleteDir, file);
+
+          if (fs.lstatSync(filePath).isFile()) {
+            fs.unlinkSync(filePath);
+          }
+        });
+      }
     }
-  });
-  
-  if (deleteFileInFolder) {
-    const deleteDir = path.join(process.cwd(), "public" + deleteFileInFolder);
-  
-    if (fs.existsSync(deleteDir)) {
-      const files = fs.readdirSync(deleteDir);
-  
-      files.forEach(file => {
-        const filePath = path.join(deleteDir, file);
-  
-        if (fs.lstatSync(filePath).isFile()) {
-          fs.unlinkSync(filePath);
-        }
-      });
-    }
+
+    return JSON.stringify(editorjsData);
   }
-  
-  return JSON.stringify(editorjsData);
-    }
 
   async update(portfolioId: number, updatePortfolioDto: UpdatePortfolioDto) {
     await this.portfolioRepository.update(portfolioId, updatePortfolioDto);
   }
 
-async deleteUnusedImages(oldImage: string[], newImage: string[]) {
-  const publicDir = path.join(process.cwd(), "public");
+  async deleteUnusedImages(oldImage: string[], newImage: string[]) {
+    const publicDir = path.join(process.cwd(), 'public');
 
-  const fileToDelete = oldImage.filter(
-    (oldPath) => !newImage.includes(oldPath)
-  );
+    const fileToDelete = oldImage.filter(
+      (oldPath) => !newImage.includes(oldPath),
+    );
 
-  await Promise.all(
-    fileToDelete.map(async (dbPath) => {
-      try {
-        const fullPath = path.join(publicDir, dbPath);
-        await ps.unlink(fullPath);
+    await Promise.all(
+      fileToDelete.map(async (dbPath) => {
+        try {
+          const fullPath = path.join(publicDir, dbPath);
+          await ps.unlink(fullPath);
+        } catch (err) {}
+      }),
+    );
 
-      } catch (err) {
-      }
-    })
-  );
+    return newImage;
+  }
 
-  return newImage;
-}
-
-async remove(portfolioId: number) {
-        const portfolio = await this.findOne(portfolioId);
+  async remove(portfolioId: number) {
+    const portfolio = await this.findOne(portfolioId);
     if (!portfolio) {
       throw new NotFoundException('Portfolio Not Found');
     }
     return await this.portfolioRepository.remove(portfolio);
-
-}
+  }
 }

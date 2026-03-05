@@ -61,7 +61,12 @@ export class QuizController {
     const quiz = await this.quizService.findOne(quizId);
     const nilai = await this.quizService.findNilai(quizId);
     const pertanyaan = await this.quizService.findPertanyaan(quizId);
-    res.render('admin/quiz/detail', { user: req.user, quiz, nilai, pertanyaan });
+    res.render('admin/quiz/detail', {
+      user: req.user,
+      quiz,
+      nilai,
+      pertanyaan,
+    });
   }
 
   @Roles('admin')

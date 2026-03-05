@@ -26,7 +26,7 @@ import { Tugas } from 'src/entities/tugas.entity';
       Logbook,
       ProgresPertemuan,
       ProgresMinggu,
-      Tugas
+      Tugas,
     ]),
     MaterisModule,
   ],

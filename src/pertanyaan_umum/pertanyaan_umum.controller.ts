@@ -31,13 +31,12 @@ export class PertanyaanUmumController {
       createPertanyaanUmumDto.kategoriId = kategoriId;
       await this.pertanyaanUmumService.create(createPertanyaanUmumDto);
       req.flash('success', 'FAQ successfully created');
-      res.redirect('/kategoris/'+kategoriId);
+      res.redirect('/kategoris/' + kategoriId);
     } catch (error) {
       req.flash('error', error.message || 'FAQ failed to created');
-      res.redirect('/kategoris/'+kategoriId);
+      res.redirect('/kategoris/' + kategoriId);
     }
   }
-
 
   @Roles('super_admin')
   @Get('formCreate/:kategoriId')
@@ -82,10 +81,10 @@ export class PertanyaanUmumController {
         updatePertanyaanUmumDto,
       );
       req.flash('success', 'FAQ successfully updated');
-      res.redirect('/kategoris/'+kategoriId);
+      res.redirect('/kategoris/' + kategoriId);
     } catch (error) {
       req.flash('error', error.message || 'FAQ failed to update');
-      res.redirect('/kategoris/'+kategoriId);
+      res.redirect('/kategoris/' + kategoriId);
     }
   }
 
@@ -100,10 +99,10 @@ export class PertanyaanUmumController {
     try {
       await this.pertanyaanUmumService.remove(pertanyaan_umumId);
       req.flash('success', 'FAQ successfully deleted');
-      res.redirect('/kategoris/'+kategoriId);
+      res.redirect('/kategoris/' + kategoriId);
     } catch (error) {
       req.flash('error', error.message || 'FAQ failed to delete');
-      res.redirect('/kategoris/'+kategoriId);
+      res.redirect('/kategoris/' + kategoriId);
     }
   }
 }

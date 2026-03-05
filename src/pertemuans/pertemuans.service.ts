@@ -46,22 +46,22 @@ export class PertemuansService {
 
     @InjectRepository(Tugas)
     private readonly tugasRepository: Repository<Tugas>,
-
   ) {}
 
   async create(createPertemuanDto: CreatePertemuanDto) {
-        if (createPertemuanDto.akhir_check === 'true') {
+    if (createPertemuanDto.akhir_check === 'true') {
       createPertemuanDto.akhir = true;
     } else {
       createPertemuanDto.akhir = false;
     }
     const minggu = await this.mingguRepository.findOne({
-      where: { id: createPertemuanDto.mingguId }, relations: ['kelas'],
+      where: { id: createPertemuanDto.mingguId },
+      relations: ['kelas'],
     });
     if (!minggu) {
       throw new NotFoundException('minggu ini tidak ada');
     }
-    if(createPertemuanDto.pertemuan_ke === 1){
+    if (createPertemuanDto.pertemuan_ke === 1) {
       const data = await this.pertemuanRepository.create({
         ...createPertemuanDto,
         minggu: minggu,
@@ -71,71 +71,75 @@ export class PertemuansService {
         where: { minggu: { id: minggu.id }, proses: true },
         relations: ['user'],
       });
-      if(progresMinggu.length > 0){
-      for (const progres of progresMinggu) {
-
-        const existingProgresPertemuan = await this.progresPertemuanRepository.findOne({
-          where: { pertemuan: { id: new_pertemuan.id }, user: { id: progres.user.id } },
-        });
-        if(existingProgresPertemuan){
-        await this.progresPertemuanRepository.save({
-          id: existingProgresPertemuan.id,
-          logbook: false,
-          absen: true,
-          pertemuan: new_pertemuan,
-          user: progres.user,
-        });
-      }else{
-        await this.progresPertemuanRepository.save({
-          logbook: false,
-          absen: true,
-          pertemuan: new_pertemuan,
-          user: progres.user,
-        });
+      if (progresMinggu.length > 0) {
+        for (const progres of progresMinggu) {
+          const existingProgresPertemuan =
+            await this.progresPertemuanRepository.findOne({
+              where: {
+                pertemuan: { id: new_pertemuan.id },
+                user: { id: progres.user.id },
+              },
+            });
+          if (existingProgresPertemuan) {
+            await this.progresPertemuanRepository.save({
+              id: existingProgresPertemuan.id,
+              logbook: false,
+              absen: true,
+              pertemuan: new_pertemuan,
+              user: progres.user,
+            });
+          } else {
+            await this.progresPertemuanRepository.save({
+              logbook: false,
+              absen: true,
+              pertemuan: new_pertemuan,
+              user: progres.user,
+            });
+          }
+        }
       }
-
-
-      }
-    }
-  }else{
-
-
-    const pertemuan = await this.pertemuanRepository.findOne({
-      where: {
-        pertemuan_ke: createPertemuanDto.pertemuan_ke - 1,
-        minggu: { id: minggu.id },
-      },
-    });
-
-    if(!pertemuan){
-      throw new NotFoundException('pertemuan sebelumnya harus dibuat terlebih dahulu');
-    }else if (!pertemuan.akhir) {
-      if (createPertemuanDto.akhir_check === 'true') {
-        createPertemuanDto.akhir = true;
-      }
-      const user = await this.pertemuanRepository.create({
-        ...createPertemuanDto,
-        minggu: minggu,
+    } else {
+      const pertemuan = await this.pertemuanRepository.findOne({
+        where: {
+          pertemuan_ke: createPertemuanDto.pertemuan_ke - 1,
+          minggu: { id: minggu.id },
+        },
       });
-      const new_pertemuan = await this.pertemuanRepository.save(user);
-      const progresPertemuan = await this.progresPertemuanRepository.find({
-        where: { pertemuan: { id: pertemuan.id }, absen: true, logbook: true },
-        relations: ['user'],
-      });
-      if(progresPertemuan.length > 0){
-      for (const progres of progresPertemuan) {
-        await this.progresPertemuanRepository.save({
-          absen: true,
-          logbook: false,
-          pertemuan: new_pertemuan,
-          user: progres.user,
-        });
-      }
 
-    }
+      if (!pertemuan) {
+        throw new NotFoundException(
+          'pertemuan sebelumnya harus dibuat terlebih dahulu',
+        );
+      } else if (!pertemuan.akhir) {
+        if (createPertemuanDto.akhir_check === 'true') {
+          createPertemuanDto.akhir = true;
+        }
+        const user = await this.pertemuanRepository.create({
+          ...createPertemuanDto,
+          minggu: minggu,
+        });
+        const new_pertemuan = await this.pertemuanRepository.save(user);
+        const progresPertemuan = await this.progresPertemuanRepository.find({
+          where: {
+            pertemuan: { id: pertemuan.id },
+            absen: true,
+            logbook: true,
+          },
+          relations: ['user'],
+        });
+        if (progresPertemuan.length > 0) {
+          for (const progres of progresPertemuan) {
+            await this.progresPertemuanRepository.save({
+              absen: true,
+              logbook: false,
+              pertemuan: new_pertemuan,
+              user: progres.user,
+            });
+          }
+        }
+      }
     }
   }
-}
 
   async findAllKelas() {
     return await this.kelasRepository.find();
@@ -201,7 +205,7 @@ export class PertemuansService {
 
   async findTugas(pertemuanId: number) {
     return await this.tugasRepository.find({
-      where: { pertemuan : { id: pertemuanId } },
+      where: { pertemuan: { id: pertemuanId } },
     });
   }
 

@@ -58,14 +58,14 @@ async function bootstrap() {
         multiply: (a: number, b: number) => a * b,
         divide: (a: number, b: number) => (b !== 0 ? a / b : 0),
         subtract: (a: number, b: number) => a - b,
-        
+
         // Helper untuk array
         isArray: (value: any) => Array.isArray(value),
-        array: function(...args: any[]) {
+        array: function (...args: any[]) {
           return args.slice(0, -1);
         },
         lookup: (str: any[], index: number) => str[index],
-        
+
         // Helper untuk string
         substring: (str: string, start: number, end: number) => {
           if (str && typeof str === 'string') {
@@ -84,7 +84,7 @@ async function bootstrap() {
           const escaped = Handlebars.escapeExpression(text);
           return new Handlebars.SafeString(escaped.replace(/\n/g, '<br>'));
         },
-        
+
         // Helper untuk tanggal dan waktu
         formDate: (date: Date) => new Date(date).toISOString().split('T')[0],
         formatDate: (date: Date) => {
@@ -122,9 +122,13 @@ async function bootstrap() {
         },
         formatTime: (waktu: string) => waktu.slice(0, 5),
         formatMinutes: (ms: number) => Math.floor(ms / 60000),
-        
+
         // Helper untuk logika bisnis
-        isNowBetween: (tanggal: string, waktu_awal: string, waktu_akhir: string) => {
+        isNowBetween: (
+          tanggal: string,
+          waktu_awal: string,
+          waktu_akhir: string,
+        ) => {
           const now = new Date();
           const start = new Date(`${tanggal}T${waktu_awal}`);
           const end = new Date(`${tanggal}T${waktu_akhir}`);
@@ -134,13 +138,15 @@ async function bootstrap() {
           if (!absenList || !Array.isArray(absenList)) {
             return false;
           }
-          return absenList.some((absen) => absen.user && absen.user.id === userId);
+          return absenList.some(
+            (absen) => absen.user && absen.user.id === userId,
+          );
         },
         roles: (userRole: string, ...roles: string[]) => {
           const allowedRoles = roles.slice(0, -1);
           return allowedRoles.includes(userRole);
         },
-        
+
         hasRole: (user: any, role: string, options: any) => {
           if (user && user.role === role) {
             return options.fn(this);
@@ -153,7 +159,7 @@ async function bootstrap() {
           }
           return options.inverse(this);
         },
-        
+
         formatRupiah: (angka: number) => {
           if (angka == null || angka === undefined) {
             return 'Not set';
@@ -164,15 +170,16 @@ async function bootstrap() {
             minimumFractionDigits: 0,
           });
         },
-        
+
         computeIcon: (iconValue: string) => {
           const raw = (iconValue || '').toString().trim();
           if (!raw) return 'fa-solid fa-circle-question';
 
           const v = raw;
           const hasFaPrefix =
-            /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) ||
-            v.split(/\s+/).some((s: string) => /^fa-/i.test(s));
+            /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(
+              v,
+            ) || v.split(/\s+/).some((s: string) => /^fa-/i.test(s));
 
           if (hasFaPrefix) {
             if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
@@ -182,7 +189,7 @@ async function bootstrap() {
           if (!v.includes(' ')) return 'fa-solid fa-' + v;
           return v;
         },
-        
+
         json: (context: any) => JSON.stringify(context),
         t: (key: string) => {
           try {
@@ -190,8 +197,7 @@ async function bootstrap() {
             if (i18n) {
               return i18n.t(key);
             }
-          } catch (e) {
-          }
+          } catch (e) {}
           return key;
         },
         isJSON: (str: string) => {
@@ -223,7 +229,7 @@ async function bootstrap() {
             return jsonStr;
           }
         },
-        
+
         default: (value: any, defaultValue: any) => value || defaultValue,
         getByLang: (obj: any, lang: string) => {
           if (!obj || typeof obj !== 'object') return '';
@@ -246,9 +252,9 @@ async function bootstrap() {
       cookie: { maxAge: 3600000 },
     }),
   );
-  
+
   app.use(flash());
-  
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');

@@ -10,8 +10,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './data-source';
 import { AuthModule } from './auth/auth.module';
-// import { ServeStaticModule } from '@nestjs/serve-static';
-// import { join } from 'path';
 import { BiodatasModule } from './biodatas/biodatas.module';
 import { PortfoliosModule } from './portfolios/portfolios.module';
 import { KategorisModule } from './kategoris/kategoris.module';
@@ -60,7 +58,12 @@ import { BenefitCategoryModule } from './benefit_category/benefit_category.modul
 import { FlowCategoryModule } from './flow_category/flow_category.module';
 import { FaqModule } from './faq/faq.module';
 import { SuperiorityModule } from './superiority/superiority.module';
-import { AcceptLanguageResolver, CookieResolver, I18nMiddleware, I18nModule } from 'nestjs-i18n';
+import {
+  AcceptLanguageResolver,
+  CookieResolver,
+  I18nMiddleware,
+  I18nModule,
+} from 'nestjs-i18n';
 import { OurExperienceModule } from './our_experience/our_experience.module';
 import { TopicModule } from './topic/topic.module';
 import path from 'path';
@@ -70,7 +73,7 @@ import path from 'path';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-        I18nModule.forRoot({
+    I18nModule.forRoot({
       fallbackLanguage: 'id',
       loaderOptions: {
         path: path.join(__dirname, '/i18n/'),
@@ -140,13 +143,13 @@ import path from 'path';
     FaqModule,
     SuperiorityModule,
     OurExperienceModule,
-    TopicModule
+    TopicModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
-    configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer) {
     consumer.apply(I18nMiddleware).forRoutes('*');
   }
 }

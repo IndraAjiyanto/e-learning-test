@@ -186,11 +186,23 @@ export class PortfoliosController {
     try {
       const oldPortfolio = await this.portfoliosService.findOne(portfolioId);
 
-      if(updatePortfolioDto.content) {
-      await this.portfoliosService.ChangeImageEditorJS(oldPortfolio.content, "/asset/portfolio/isi", "/asset/portfolio/temp");
-        updatePortfolioDto.content = await this.portfoliosService.ChangeImageEditorJS(updatePortfolioDto.content, "/asset/portfolio/temp", "/asset/portfolio/isi", "/asset/portfolio/temp");
-  updatePortfolioDto.content_html = editorjsHTML.parse(JSON.parse(updatePortfolioDto.content));
-}
+      if (updatePortfolioDto.content) {
+        await this.portfoliosService.ChangeImageEditorJS(
+          oldPortfolio.content,
+          '/asset/portfolio/isi',
+          '/asset/portfolio/temp',
+        );
+        updatePortfolioDto.content =
+          await this.portfoliosService.ChangeImageEditorJS(
+            updatePortfolioDto.content,
+            '/asset/portfolio/temp',
+            '/asset/portfolio/isi',
+            '/asset/portfolio/temp',
+          );
+        updatePortfolioDto.content_html = editorjsHTML.parse(
+          JSON.parse(updatePortfolioDto.content),
+        );
+      }
 
       updatePortfolioDto.gambar = updatePortfolioDto.gambar || [];
       const combineImage = [

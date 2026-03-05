@@ -39,15 +39,15 @@ export class PertanyaansController {
 
   @Roles('admin')
   @Post(':quizId')
-    @UseInterceptors(
-      FileInterceptor('gambar', multerConfigMemoryOnly),
-      ValidateImageInterceptor,
-    )
-    @ValidateImage({
-      maxSize: 5 * 1024 * 1024,
-      allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-      folder: 'quiz_question',
-    })
+  @UseInterceptors(
+    FileInterceptor('gambar', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'quiz_question',
+  })
   async create(
     @Res() res: Response,
     @Req() req: Request,
@@ -56,7 +56,7 @@ export class PertanyaansController {
   ) {
     try {
       createPertanyaanDto.quizId = quizId;
-        createPertanyaanDto.gambar = req.body.uploadedImageUrls?.[0];
+      createPertanyaanDto.gambar = req.body.uploadedImageUrls?.[0];
 
       const pertanyaan =
         await this.pertanyaansService.create(createPertanyaanDto);
@@ -145,15 +145,15 @@ export class PertanyaansController {
 
   @Roles('admin')
   @Patch(':pertanyaanId/:quizId')
-      @UseInterceptors(
-      FileInterceptor('profile', multerConfigMemoryOnly),
-      ValidateImageInterceptor,
-    )
-    @ValidateImage({
-      maxSize: 5 * 1024 * 1024,
-      allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-      folder: 'quiz_question',
-    })
+  @UseInterceptors(
+    FileInterceptor('profile', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    maxSize: 5 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'quiz_question',
+  })
   async update(
     @Param('pertanyaanId') pertanyaanId: number,
     @Param('quizId') quizId: number,

@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Res,
+  Req,
+} from '@nestjs/common';
 import { TopicService } from './topic.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
@@ -8,7 +19,6 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 @Controller('topic')
 @UseGuards(AuthenticatedGuard)
 @Roles('super_admin')
-
 export class TopicController {
   constructor(private readonly topicService: TopicService) {}
 
@@ -26,25 +36,30 @@ export class TopicController {
 
   @Get('formCreate')
   async formCreate(@Res() res, @Req() req) {
-    res.render('super_admin/topic/create', {  user: req.user });
+    res.render('super_admin/topic/create', { user: req.user });
   }
 
   @Get()
-  async findAll(@Res() res, @Req() req, ) {
+  async findAll(@Res() res, @Req() req) {
     const topic = await this.topicService.findAll();
     res.render('super_admin/topic/index', { topic, user: req.user });
   }
 
   @Get('formEdit/:id')
-  async findOne(@Param('id') id: number,@Res() res, @Req() req) {
+  async findOne(@Param('id') id: number, @Res() res, @Req() req) {
     const topic = await this.topicService.findOne(id);
     res.render('super_admin/topic/edit', { topic, user: req.user });
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateTopicDto: UpdateTopicDto, @Res() res, @Req() req) {
+  async update(
+    @Param('id') id: number,
+    @Body() updateTopicDto: UpdateTopicDto,
+    @Res() res,
+    @Req() req,
+  ) {
     try {
-    await this.topicService.update(id, updateTopicDto);
+      await this.topicService.update(id, updateTopicDto);
       req.flash('success', 'Topic updated successfully');
       res.redirect('/topic');
     } catch (error) {
