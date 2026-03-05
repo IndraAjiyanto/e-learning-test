@@ -3,23 +3,21 @@
 >
   <div class='w-full max-w-4xl flex items-center justify-center'>
     <div
-      class="w-full max-w-lg mx-auto 
-            bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl
-            p-8 "
+      class='w-full max-w-lg mx-auto bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl p-8'
     >
 
       <!-- Logo -->
       <div class='flex items-center justify-center mb-6'>
-        <i class="fa-solid fa-envelope text-5xl" style="color: #ffffff;"></i>
+        <i class='fa-solid fa-envelope text-5xl' style='color: #ffffff;'></i>
       </div>
 
       <!-- Title -->
       <div class='text-center mb-6'>
         <h1
           class='text-2xl whitespace-nowrap font-bold text-white mt-2 font-montserrat'
-        >{{t "test.verify.verifyEmail"}}</h1>
-        <p class='text-gray-400 text-sm mt-2 font-inter'>
-          {{t "test.verify.description"}}
+        >{{t 'test.verify.verifyEmail'}}</h1>
+        <p class='text-gray-400 text-sm mt-2'>
+          {{t 'test.verify.description'}}
         </p>
       </div>
 
@@ -122,51 +120,50 @@
       {{/if}}
 
       {{#if remainingMs}}
-            <div class="my-countdown simply-countdown"></div>
+        <div class='my-countdown simply-countdown'></div>
 
-<script>
-  const remainingMs = {{ remainingMs }};
-  const target = new Date(Date.now() + remainingMs);
-
-  simplyCountdown('.my-countdown', {
-    year: target.getFullYear(),
-    month: target.getMonth() + 1,
-    day: target.getDate(),
-    hours: target.getHours(),
-    minutes: target.getMinutes(),
-    seconds: target.getSeconds(),
-
-    words: {
-      days: { root: `{{t "test.verify.day"}}`, lambda: (root, n) => root },
-      hours: { root: `{{t "test.verify.hour"}}`, lambda: (root, n) => root },
-      minutes: { root: `{{t "test.verify.minute"}}`, lambda: (root, n) => root },
-      seconds: { root: `{{t "test.verify.second"}}`, lambda: (root, n) => root }
-    },
-
-    onEnd: () => location.reload()
-  });
-</script>
+        <script>
+          const remainingMs =
+          {{remainingMs}}; const target = new Date(Date.now() + remainingMs);
+          simplyCountdown('.my-countdown', { year: target.getFullYear(), month:
+          target.getMonth() + 1, day: target.getDate(), hours:
+          target.getHours(), minutes: target.getMinutes(), seconds:
+          target.getSeconds(), words: { days: { root: `{{t 'test.verify.day'}}`,
+          lambda: (root, n) => root }, hours: { root: `{{t
+            'test.verify.hour'
+          }}`, lambda: (root, n) => root }, minutes: { root: `{{t
+            'test.verify.minute'
+          }}`, lambda: (root, n) => root }, seconds: { root: `{{t
+            'test.verify.second'
+          }}`, lambda: (root, n) => root } }, onEnd: () => location.reload() });
+        </script>
 
       {{else}}
 
-      <!-- Forgot Password Form -->
-      <form action='/users/send-verify-email?token={{user.verifikasiToken}}' method='post' class='space-y-6' x-data="{ loading: false }"
-  @submit="loading = true">
-
-        <!-- Submit Button -->
-        <button
-          type='submit'
-          :disabled="loading"
-          class='btn border-0 text-base w-full py-3 rounded-lg bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'
+        <!-- Forgot Password Form -->
+        <form
+          action='/users/send-verify-email?token={{user.verifikasiToken}}'
+          method='post'
+          class='space-y-6'
+          x-data='{ loading: false }'
+          @submit='loading = true'
         >
-        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-        <span x-show="!loading">{{t 'test.verify.sendButton'}}</span>
-        </button>
-      </form>
+
+          <!-- Submit Button -->
+          <button
+            type='submit'
+            :disabled='loading'
+            class='btn border-0 text-base w-full py-3 rounded-lg bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'
+          >
+            <span
+              x-show='loading'
+              class='loading loading-spinner loading-sm'
+            ></span>
+            <span x-show='!loading'>{{t 'test.verify.sendButton'}}</span>
+          </button>
+        </form>
       {{/if}}
 
-
- 
     </div>
   </div>
 </div>

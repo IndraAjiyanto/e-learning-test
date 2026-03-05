@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreatePortfolioDto {
   @IsArray()
@@ -12,6 +12,14 @@ export class CreatePortfolioDto {
 
   @IsString()
   link: string;
+
+  @IsString()
+  @IsNotEmpty()
+  content: string;
+
+  @IsString()
+  @IsOptional()
+  content_html: string;
 
   @IsArray()
   teknologi: string[];

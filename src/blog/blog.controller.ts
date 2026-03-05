@@ -10,7 +10,6 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
-  UploadedFiles,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -24,8 +23,6 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 import * as cheerio from 'cheerio';
-import * as fs from "fs";
-import * as path from "path";
 import editorjsHTML from "src/common/public/js/edjs";
 
 @UseFilters(FileUploadExceptionFilter)

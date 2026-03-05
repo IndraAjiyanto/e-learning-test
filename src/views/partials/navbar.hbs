@@ -241,15 +241,11 @@
                   >
                     <img :src='kat.icon' class='w-6 h-6' alt='' />
                   </div>
-                  <div class='flex-1  ml-2 md:ml-0'>
-                    <p
-                      class='font-semibold'
-                      x-text='kat.nama_kategori'
-                    ></p>
+                  <div class='flex-1 ml-2 md:ml-0'>
+                    <p class='font-semibold' x-text='kat.nama_kategori'></p>
                     <p
                       class='text-xs mt-0.5'
-                                                x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
-
+                      x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
                     ></p>
                   </div>
                 </a>
@@ -285,7 +281,7 @@
                           x-text='kat.nama_kategori'
                         ></p>
                         <p
-                          class='text-xs text-gray-600 mt-1 font-inter'
+                          class='text-xs text-gray-600 mt-1'
                           x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
                         ></p>
                       </div>
@@ -643,15 +639,11 @@
                   >
                     <img :src='kat.icon' class='w-6 h-6' alt='' />
                   </div>
-                  <div class='flex-1  ml-2 md:ml-0'>
-                    <p
-                      class='font-semibold'
-                      x-text='kat.nama_kategori'
-                    ></p>
+                  <div class='flex-1 ml-2 md:ml-0'>
+                    <p class='font-semibold' x-text='kat.nama_kategori'></p>
                     <p
                       class='text-xs mt-0.5'
-                                                x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
-
+                      x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
                     ></p>
                   </div>
                 </a>
@@ -687,7 +679,7 @@
                           x-text='kat.nama_kategori'
                         ></p>
                         <p
-                          class='text-xs text-gray-600 mt-1 font-inter'
+                          class='text-xs text-gray-600 mt-1'
                           x-text='truncate(getByLang(kat.deskripsi,lang), 100)'
                         ></p>
                       </div>
@@ -707,7 +699,7 @@
             class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors md:ml-4'
           >{{t 'test.navbar.portfolio'}}</a>
 
-                    <a
+          <a
             href='/dashboard/blog'
             @click="setActive('/dashboard/blog')"
             :class="isActive('/dashboard/blog') 
@@ -734,92 +726,92 @@
             class='block px-4 py-2 text-sm font-semibold border-2 border-white hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors md:ml-4'
           >{{t 'test.navbar.login'}}</a>
 
-
-
         {{/if}}
-          <div
-            class='relative md:ml-4 mt-2 md:mt-0'
-            x-data="{ langOpen: false, currentLang: '{{lang}}' }"
+        <div
+          class='relative md:ml-4 mt-2 md:mt-0'
+          x-data="{ langOpen: false, currentLang: '{{lang}}' }"
+        >
+          <button
+            @click='langOpen = !langOpen'
+            @click.away='langOpen = false'
+            class='flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-colors bg-transparent text-white hover:bg-white/10'
           >
-            <button
-              @click='langOpen = !langOpen'
-              @click.away='langOpen = false'
-              class='flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-colors bg-transparent text-white hover:bg-white/10'
+            <span
+              :class="currentLang === 'id' ? 'fi fi-id' : currentLang === 'en' ? 'fi fi-gb' : 'fi fi-jp'"
+              class='text-lg'
+            ></span>
+            <span
+              x-text='currentLang === "id" ? "ID" : currentLang === "en" ? "EN" : "JP"'
+            ></span>
+            <svg
+              fill='currentColor'
+              viewBox='0 0 20 20'
+              :class="{'rotate-180': langOpen, 'rotate-0': !langOpen}"
+              class='w-4 h-4 transition-transform duration-200'
             >
-              <span
-                :class="currentLang === 'id' ? 'fi fi-id' : currentLang === 'en' ? 'fi fi-gb' : 'fi fi-jp'"
-                class='text-lg'
-              ></span>
-              <span x-text='currentLang === "id" ? "ID" : currentLang === "en" ? "EN" : "JP"'></span>
-              <svg
-                fill='currentColor'
-                viewBox='0 0 20 20'
-                :class="{'rotate-180': langOpen, 'rotate-0': !langOpen}"
-                class='w-4 h-4 transition-transform duration-200'
-              >
-                <path
-                  fill-rule='evenodd'
-                  d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-                  clip-rule='evenodd'
-                ></path>
-              </svg>
-            </button>
+              <path
+                fill-rule='evenodd'
+                d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
+                clip-rule='evenodd'
+              ></path>
+            </svg>
+          </button>
 
-            <!-- Dropdown -->
-            <div
-              x-show='langOpen'
-              @click.away='langOpen = false'
-              x-transition:enter='transition ease-out duration-100'
-              x-transition:enter-start='transform opacity-0 scale-95'
-              x-transition:enter-end='transform opacity-100 scale-100'
-              class='absolute md:right-0 w-32 mt-2 rounded-lg shadow-lg z-[100] bg-white overflow-hidden'
+          <!-- Dropdown -->
+          <div
+            x-show='langOpen'
+            @click.away='langOpen = false'
+            x-transition:enter='transition ease-out duration-100'
+            x-transition:enter-start='transform opacity-0 scale-95'
+            x-transition:enter-end='transform opacity-100 scale-100'
+            class='absolute md:right-0 w-32 mt-2 rounded-lg shadow-lg z-[100] bg-white overflow-hidden'
+          >
+            <form
+              action='/translation'
+              method='post'
+              @submit='currentLang = "en"; langOpen = false'
             >
-              <form
-                action='/translation'
-                method='post'
-                @submit='currentLang = "en"; langOpen = false'
+              <input type='text' value='en' name='lang' hidden />
+              <button
+                type='submit'
+                class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
               >
-                <input type='text' value='en' name='lang' hidden />
-                <button
-                  type='submit'
-                  class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
-                >
-                  <span class='fi fi-gb'></span>
-                  <span class='text-sm font-medium'>EN</span>
-                </button>
-              </form>
+                <span class='fi fi-gb'></span>
+                <span class='text-sm font-medium'>EN</span>
+              </button>
+            </form>
 
-              <form
-                action='/translation'
-                method='post'
-                @submit='currentLang = "id"; langOpen = false'
+            <form
+              action='/translation'
+              method='post'
+              @submit='currentLang = "id"; langOpen = false'
+            >
+              <input type='text' value='id' name='lang' hidden />
+              <button
+                type='submit'
+                class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
               >
-                <input type='text' value='id' name='lang' hidden />
-                <button
-                  type='submit'
-                  class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
-                >
-                  <span class='fi fi-id'></span>
-                  <span class='text-sm font-medium'>ID</span>
-                </button>
-              </form>
+                <span class='fi fi-id'></span>
+                <span class='text-sm font-medium'>ID</span>
+              </button>
+            </form>
 
-              <form
-                action='/translation'
-                method='post'
-                @submit='currentLang = "ja"; langOpen = false'
+            <form
+              action='/translation'
+              method='post'
+              @submit='currentLang = "ja"; langOpen = false'
+            >
+              <input type='text' value='ja' name='lang' hidden />
+              <button
+                type='submit'
+                class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
               >
-                <input type='text' value='ja' name='lang' hidden />
-                <button
-                  type='submit'
-                  class='flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-100 transition-colors text-gray-900'
-                >
-                  <span class='fi fi-jp'></span>
-                  <span class='text-sm font-medium'>JP</span>
-                </button>
-              </form>
-            </div>
+                <span class='fi fi-jp'></span>
+                <span class='text-sm font-medium'>JP</span>
+              </button>
+            </form>
           </div>
+        </div>
       </div>
     </nav>
   </div>

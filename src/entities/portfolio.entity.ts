@@ -21,6 +21,12 @@ export class Portfolio {
   @Column()
   judul: string;
 
+  @Column({type: 'text'})
+  content: string;
+
+  @Column({type: 'text'})
+  content_html: string;
+
   @Column()
   deskripsi: string;
 

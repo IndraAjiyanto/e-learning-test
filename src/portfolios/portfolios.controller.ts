@@ -10,27 +10,52 @@ import {
   Res,
   UseInterceptors,
   Delete,
+  UseFilters,
 } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
-import {
-  multerConfigMemoryOnly,
-} from 'src/common/config/multer.config';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import editorjsHTML from 'src/common/public/js/edjs';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
+import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
+import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
 @UseGuards(AuthenticatedGuard)
+@UseFilters(FileUploadExceptionFilter)
+@UseInterceptors(MulterErrorInterceptor)
 @Controller('portfolios')
 export class PortfoliosController {
   constructor(private readonly portfoliosService: PortfoliosService) {}
 
   @Roles('user')
-  @Post(':kelasId')
+  @Post('upload-image')
+  @UseInterceptors(
+    FileInterceptor('image', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+    folder: 'portfolio/temp',
+    skipTransformation: true,
+  })
+  async uploadImage(@Res() res: Response, @Req() req: Request) {
+    try {
+      const imageUrl = req.body.uploadedImageUrls?.[0];
+      res.json({ success: 1, file: { url: imageUrl } });
+    } catch (error) {
+      req.flash('error', error.message || 'Portfolio failed to create');
+      res.redirect('/portfolios');
+    }
+  }
+
+  @Roles('user')
+  @Post('create/:kelasId')
   @UseInterceptors(
     FilesInterceptor('gambar', 100, multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -49,6 +74,19 @@ export class PortfoliosController {
     @Req() req: Request,
   ) {
     try {
+      const editorjsData = await this.portfoliosService.ChangeImageEditorJS(
+        createPortfolioDto.content,
+        '/asset/portfolio/temp',
+        '/asset/portfolio/isi',
+        '/asset/portfolio/temp',
+      );
+
+      createPortfolioDto.content = editorjsData;
+
+      let html = editorjsHTML.parse(JSON.parse(editorjsData));
+
+      createPortfolioDto.content_html = html;
+
       createPortfolioDto.kelasId = kelasId;
       createPortfolioDto.gambar = req.body.uploadedImageUrls;
       if (req.user) {
@@ -128,8 +166,11 @@ export class PortfoliosController {
 
   @Roles('user')
   @Patch(':portfolioId')
-  @UseInterceptors(FilesInterceptor('gambar', 10, multerConfigMemoryOnly), ValidateImageInterceptor)
-    @ValidateImage({
+  @UseInterceptors(
+    FilesInterceptor('gambar', 10, multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
     minWidth: 1900,
     maxWidth: 1920,
     minHeight: 1000,
@@ -144,15 +185,30 @@ export class PortfoliosController {
   ) {
     try {
       const oldPortfolio = await this.portfoliosService.findOne(portfolioId);
+
+      if(updatePortfolioDto.content) {
+      await this.portfoliosService.ChangeImageEditorJS(oldPortfolio.content, "/asset/portfolio/isi", "/asset/portfolio/temp");
+        updatePortfolioDto.content = await this.portfoliosService.ChangeImageEditorJS(updatePortfolioDto.content, "/asset/portfolio/temp", "/asset/portfolio/isi", "/asset/portfolio/temp");
+  updatePortfolioDto.content_html = editorjsHTML.parse(JSON.parse(updatePortfolioDto.content));
+}
+
       updatePortfolioDto.gambar = updatePortfolioDto.gambar || [];
-      const combineImage = [...updatePortfolioDto.gambar || [], ...(req.body.uploadedImageUrls) || []];
-      const newImageUrls = await this.portfoliosService.deleteUnusedImages(oldPortfolio.gambar, combineImage);
+      const combineImage = [
+        ...(updatePortfolioDto.gambar || []),
+        ...(req.body.uploadedImageUrls || []),
+      ];
+      const newImageUrls = await this.portfoliosService.deleteUnusedImages(
+        oldPortfolio.gambar,
+        combineImage,
+      );
 
       const updateData = {
         judul: updatePortfolioDto.judul,
         deskripsi: updatePortfolioDto.deskripsi,
         teknologi: updatePortfolioDto.teknologi,
         gambar: newImageUrls,
+        content: updatePortfolioDto.content,
+        content_html: updatePortfolioDto.content_html,
       };
 
       await this.portfoliosService.update(portfolioId, updateData);
@@ -160,12 +216,10 @@ export class PortfoliosController {
       req.flash('success', 'Portfolio successfully updated');
       return res.redirect(`/portfolios/${portfolioId}`);
     } catch (error) {
-
       req.flash('error', error.message || 'Portfolio failed to update');
       return res.redirect(`/portfolios/${portfolioId}/edit`);
     }
   }
-
 
   @Roles('user')
   @Delete(':portfolioId')
@@ -176,12 +230,12 @@ export class PortfoliosController {
   ) {
     try {
       const portfolio = await this.portfoliosService.findOne(portfolioId);
-      if(portfolio){
+      if (portfolio) {
         for (const imageUrl of portfolio.gambar) {
           await this.portfoliosService.deleteFile(imageUrl);
         }
-      await this.portfoliosService.remove(portfolioId);
-    }
+        await this.portfoliosService.remove(portfolioId);
+      }
       req.flash('success', 'Portfolio successfully deleted');
       res.redirect(`/portfolios/myportfolio/${req.user?.id}`);
     } catch (error) {
@@ -189,5 +243,4 @@ export class PortfoliosController {
       res.redirect(`/portfolios/myportfolio/${req.user?.id}`);
     }
   }
-
 }

@@ -10,7 +10,7 @@
               class='text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
             >{{t 'test.about.team.tittle'}}</h1>
             <p
-              class='text-base sm:text-lg lg:text-xl text-slate-600 font-inter'
+              class='text-base sm:text-lg lg:text-xl text-slate-600 '
             >{{t 'test.about.team.description'}}</p>
           </div>
           <!-- CEO Card - Special Design -->
@@ -42,7 +42,7 @@
 
                 </div>
                 <p
-                  class='text-white font-semibold mb-2 sm:mb-3 text-base sm:text-lg font-inter'
+                  class='text-white font-semibold mb-2 sm:mb-3 text-base sm:text-lg '
                 >
                   {{#if teamLead.[0]}}
                     {{getByLang teamLead.[0].posisi lang}}
@@ -53,16 +53,16 @@
 
                   {{#if teamLead.[0]}}
                                   <p
-                  class='text-white text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'
+                  class='text-white text-sm sm:text-base leading-relaxed mb-3 sm:mb-4  text-justify'
                 >
                     {{getByLang teamLead.[0].deskripsi lang}}
                 </p>
 
                   {{else}}
-                  <p class='text-white text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
+                  <p class='text-white text-sm sm:text-base leading-relaxed mb-3 sm:mb-4  text-justify'>
                     Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including notable names such as Pertamina, Biofarma, Angkasa Pura II, and Bank DBS Indonesia.
                     </p>
-                    <p class='text-white text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
+                    <p class='text-white text-sm sm:text-base leading-relaxed mb-3 sm:mb-4  text-justify'>
                     His deep expertise in technology and data analytics, combined with his experience serving major clients, serves as the core foundation for his vision to build an Edutech company. His goal is to bridge the gap and democratize technical up-skilling, leveraging technology to create flexible, scalable, and high-quality learning solutions that can significantly enhance the competitiveness of digital talent across Asia. His passion for continuous learning and commitment to achieving client business objectives now extends to a mission of elevating the competence of the wider community.
                     </p>
                   {{/if}}

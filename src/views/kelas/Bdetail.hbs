@@ -79,7 +79,7 @@
                 {{kelas.nama_kelas}}
               </h3>
               <p
-                class='font-inter text-justify text-gray-700 leading-relaxed text-lg'
+                class=' text-justify text-gray-700 leading-relaxed text-lg'
               >
                 {{getByLang kelas.deskripsi lang}}
               </p>
@@ -101,7 +101,7 @@
                     </div>
                     <div class='flex-1'>
                       <p
-                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.method"}}</p>
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
@@ -123,7 +123,7 @@
                     </div>
                     <div class='flex-1'>
                       <p
-                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.method"}}</p>
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
@@ -149,7 +149,7 @@
                   </div>
                   <div class='flex-1'>
                     <p
-                      class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                      class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >{{t "test.detailProgram.infoProgram.location"}}</p>
                     {{#if (eq kelas.metode 'online')}}
                       <h4
@@ -179,7 +179,7 @@
                     </div>
                     <div class='flex-1'>
                       <p
-                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.capacity"}}</p>
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
@@ -207,7 +207,7 @@
                     </div>
                     <div class='flex-1'>
                       <p
-                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.month"}}</p>
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
@@ -230,7 +230,7 @@
                     </div>
                     <div class='flex-1'>
                       <p
-                        class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                       >{{t "test.detailProgram.infoProgram.day"}}</p>
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
@@ -252,7 +252,7 @@
                   </div>
                   <div class='flex-1'>
                     <p
-                      class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                      class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >{{t "test.detailProgram.infoProgram.startDate"}}</p>
                     <h4
                       class='font-montserrat text-sm font-bold text-gray-900 mb-1'
@@ -273,7 +273,7 @@
                   </div>
                   <div class='flex-1'>
                     <p
-                      class='font-inter text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
+                      class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >{{t "test.detailProgram.infoProgram.endDate"}}</p>
                     <h4
                       class='font-montserrat text-sm font-bold text-gray-900 mb-1'
@@ -295,7 +295,7 @@
               <ul class='ml-8 space-y-3'>
                 {{#if (eq lang 'id')}}
                 {{#each kelas.materi_id}}
-                  <li class='flex items-center gap-3 font-inter text-gray-700'>
+                  <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs  text-gray-500 flex-shrink-0'
                     ></i>
@@ -304,7 +304,7 @@
                   {{/each}}
                 {{else if (eq lang 'en')}}
                 {{#each kelas.materi_en}}
-                  <li class='flex items-center gap-3 font-inter text-gray-700'>
+                  <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
                     ></i>
@@ -313,7 +313,7 @@
                 {{/each}}
                 {{else if (eq lang 'ja')}}
                 {{#each kelas.materi_ja}}
-                  <li class='flex items-center gap-3 font-inter text-gray-700'>
+                  <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
                     ></i>
@@ -337,21 +337,21 @@
               <ul class='ml-8 space-y-3'>
                 {{#if (eq lang 'id')}}
                 {{#each kelas.target_pembelajaran_id}}
-                  <li class='flex items-center gap-3 font-inter text-gray-700'>
+                  <li class='flex items-center gap-3  text-gray-700'>
                     <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
                     <span>{{this}}</span>
                   </li>
                   {{/each}}
                 {{else if (eq lang 'en')}}
                 {{#each kelas.target_pembelajaran_en}}
-                  <li class='flex items-center gap-3 font-inter text-gray-700'>
+                  <li class='flex items-center gap-3  text-gray-700'>
                     <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
                     <span>{{this}}</span>
                   </li>
                 {{/each}}
                 {{else if (eq lang 'ja')}}
                 {{#each kelas.target_pembelajaran_ja}}
-                  <li class='flex items-center gap-3 font-inter text-gray-700'>
+                  <li class='flex items-center gap-3  text-gray-700'>
                     <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
                     <span>{{this}}</span>
                   </li>
@@ -373,7 +373,7 @@
               <ul class='ml-8 space-y-3'>
                 {{#if (eq lang 'id')}}
                 {{#each kelas.kriteria_id}}
-                  <li class='flex items-center gap-3 font-inter text-gray-700'>
+                  <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
                     ></i>
@@ -382,7 +382,7 @@
                 {{/each}}
                 {{else if (eq lang 'en')}}
                 {{#each kelas.kriteria_en}}
-                  <li class='flex items-center gap-3 font-inter text-gray-700'>
+                  <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
                     ></i>
@@ -391,7 +391,7 @@
                 {{/each}}
                 {{else if (eq lang 'ja')}}
                 {{#each kelas.kriteria_ja}}
-                  <li class='flex items-center gap-3 font-inter text-gray-700'>
+                  <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
                     ></i>
@@ -486,7 +486,7 @@
       </button>
 
       <div
-        class='font-inter px-5 pb-5 text-gray-700'
+        class=' px-5 pb-5 text-gray-700'
         x-show='openFaq === {{this.id}}'
         x-transition
       >
@@ -529,7 +529,7 @@
                       <h4
                         class='font-montserrat text-xl font-bold text-gray-900 mb-2'
                       >{{getByLang this.judul ../lang}}</h4>
-                      <p class='font-inter text-gray-700 mb-3'>
+                      <p class=' text-gray-700 mb-3'>
                         {{getByLang this.isi ../lang}}
                       </p>
                     </div>
@@ -568,7 +568,7 @@
                       <h4
                         class='font-montserrat font-bold text-gray-800 text-lg'
                       >{{nama}}</h4>
-                      <p class='font-inter text-gray-600 mb-2'>{{getByLang posisi ../lang}}</p>
+                      <p class=' text-gray-600 mb-2'>{{getByLang posisi ../lang}}</p>
                       <div
                         class='flex justify-center sm:justify-start gap-2 mb-3 flex-wrap'
                       >

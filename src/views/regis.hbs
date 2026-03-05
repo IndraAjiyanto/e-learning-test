@@ -3,21 +3,16 @@
 >
 
   <div class='w-full max-w-5xl flex items-center justify-center'>
-   <div
-       class="w-full max-w-lg mx-auto 
-            bg-white/5 
-            backdrop-blur-xl 
-            border border-white/20
-            shadow-2xl 
-            rounded-3xl 
-            p-8"
+    <div
+      class='w-full max-w-lg mx-auto bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl p-8'
     >
-
 
       <!-- Title -->
       <div class='text-center mb-6'>
-        <h1 class='text-4xl font-bold text-white mt-2 font-montserrat'>{{t 'test.signUp.tittle'}}</h1>
-        <p class='text-gray-400 text-lg mt-2 font-inter'>
+        <h1 class='text-4xl font-bold text-white mt-2 font-montserrat'>{{t
+            'test.signUp.tittle'
+          }}</h1>
+        <p class='text-gray-400 text-lg mt-2'>
           {{t 'test.signUp.description'}}
         </p>
       </div>
@@ -71,12 +66,19 @@
       {{/if}}
 
       <!-- Register Form -->
-      <form action='/register' method='post' class='space-y-6' x-data="{ loading: false }"
-  @submit="loading = true">
+      <form
+        action='/register'
+        method='post'
+        class='space-y-6'
+        x-data='{ loading: false }'
+        @submit='loading = true'
+      >
 
         <!-- Name -->
         <div>
-          <label class='block text-gray-200 mb-2'>{{t 'test.signUp.username'}}</label>
+          <label class='block text-gray-200 mb-2'>{{t
+              'test.signUp.username'
+            }}</label>
           <input
             type='text'
             name='username'
@@ -88,7 +90,9 @@
 
         <!-- Email -->
         <div>
-          <label class='block text-gray-200 mb-2'>{{t 'test.signUp.email'}}</label>
+          <label class='block text-gray-200 mb-2'>{{t
+              'test.signUp.email'
+            }}</label>
           <input
             type='email'
             name='email'
@@ -100,7 +104,9 @@
 
         <!-- Password -->
         <div x-data='{ show: false }'>
-          <label class='block text-gray-200 mb-2'>{{t 'test.signUp.password'}}</label>
+          <label class='block text-gray-200 mb-2'>{{t
+              'test.signUp.password'
+            }}</label>
           <div class='relative'>
             <input
               :type="show ? 'text' : 'password'"
@@ -170,7 +176,9 @@
 
         <!-- Confirm Password -->
         <div x-data='{ show: false }'>
-          <label class='block text-gray-200 mb-2'>{{t 'test.signUp.confirmPassword'}}</label>
+          <label class='block text-gray-200 mb-2'>{{t
+              'test.signUp.confirmPassword'
+            }}</label>
           <div class='relative'>
             <input
               :type="show ? 'text' : 'password'"
@@ -240,12 +248,15 @@
 
         <!-- Submit Button -->
         <button
-          :disabled="loading"
+          :disabled='loading'
           type='submit'
           class='btn border-0 w-full py-3 rounded-lg bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl text-base'
         >
-          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-          <span x-show="!loading">{{t 'test.signUp.signUpButton'}}</span>
+          <span
+            x-show='loading'
+            class='loading loading-spinner loading-sm'
+          ></span>
+          <span x-show='!loading'>{{t 'test.signUp.signUpButton'}}</span>
         </button>
 
         <!-- Link to Login -->

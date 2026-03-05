@@ -16,7 +16,7 @@
       <!-- Header -->
       <div class="text-center mb-12">
         <h1 class="text-5xl font-bold text-gray-900 mb-4 font-montserrat">{{portfolio.judul}}</h1>
-        <p class="text-lg text-gray-600 max-w-3xl mx-auto font-inter">{{t "test.myPortfolio.detailPortfolio.description"}}</p>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto ">{{t "test.myPortfolio.detailPortfolio.description"}}</p>
       </div>
 
       <!-- Project Gallery - Full Width -->
@@ -33,7 +33,7 @@
             <div class="flex items-center gap-3 mb-6">
               <h3 class="text-2xl font-bold text-gray-900 font-montserrat">{{t "test.myPortfolio.detailPortfolio.projectDescription"}}</h3>
             </div>
-            <p class="text-gray-700 leading-relaxed text-lg font-inter">
+            <p class="text-gray-700 leading-relaxed text-lg ">
               {{portfolio.deskripsi}}
             </p>
           </div>
@@ -72,6 +72,15 @@
                 </span>
               {{/each}}
             </div>
+          </div>
+
+                    <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-8 border border-slate-200 shadow-lg">
+            <div class="flex items-center gap-3 mb-6">
+              <h3 class="text-2xl font-bold text-gray-900 font-montserrat">{{t "test.myPortfolio.detailPortfolio.projectContent"}}</h3>
+            </div>
+            <p class="text-gray-700 leading-relaxed text-lg ">
+              {{{portfolio.content_html}}}
+            </p>
           </div>
 
         </div>
