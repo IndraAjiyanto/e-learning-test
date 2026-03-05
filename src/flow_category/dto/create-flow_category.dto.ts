@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsArray } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsArray } from 'class-validator';
 
 export class CreateFlowCategoryDto {
   @IsNotEmpty()

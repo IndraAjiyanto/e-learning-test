@@ -66,7 +66,7 @@ import { Portfolio } from 'src/entities/portfolio.entity';
       AlurKelas,
       Cicilan,
       Alumni,
-      Portfolio
+      Portfolio,
     ]),
     PertanyaansModule,
     JawabanUsersModule,

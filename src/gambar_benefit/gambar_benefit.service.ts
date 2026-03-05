@@ -38,16 +38,16 @@ export class GambarBenefitService {
   }
 
   async deleteFile(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', url);
-    
-    await fs.unlink(filePath);
-  } catch (error) {
-    throw new NotFoundException('File not found');
+    try {
+      const filePath = path.join(process.cwd(), 'public', url);
+
+      await fs.unlink(filePath);
+    } catch (error) {
+      throw new NotFoundException('File not found');
+    }
   }
-}
 
   async update(
     gambarBenefitId: number,

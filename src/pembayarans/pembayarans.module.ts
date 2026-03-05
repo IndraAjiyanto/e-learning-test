@@ -26,7 +26,7 @@ import { Pertemuan } from 'src/entities/pertemuan.entity';
       ProgresMinggu,
       ProgresPertemuan,
       Minggu,
-      Pertemuan
+      Pertemuan,
     ]),
     CommonModule,
   ],

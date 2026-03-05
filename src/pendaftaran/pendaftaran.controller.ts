@@ -52,9 +52,7 @@ export class PendaftaranController {
       const pendaftaran =
         await this.pendaftaranService.create(createPendaftaranDto);
       if (pendaftaran == false) {
-        await this.pendaftaranService.deleteFile(
-          createPendaftaranDto.file,
-        );
+        await this.pendaftaranService.deleteFile(createPendaftaranDto.file);
         req.flash(
           'info',
           'you have already submitted the registration proof, please wait for further information from the admin',
@@ -103,16 +101,16 @@ export class PendaftaranController {
           updatePendaftaranDto,
         );
         try {
-              await this.pendaftaranService.addUserToKelas(
-          pendaftaran['user']['id'],
-          pendaftaran['kelas']['id'],
-        );
-        } catch (error) {
-          
-        }
-    
+          await this.pendaftaranService.addUserToKelas(
+            pendaftaran['user']['id'],
+            pendaftaran['kelas']['id'],
+          );
+        } catch (error) {}
+
         req.flash('success', 'proces successfully change acc');
-        res.redirect(`/kelass/detail/kelas/admin/${pendaftaran['kelas']['id']}`);
+        res.redirect(
+          `/kelass/detail/kelas/admin/${pendaftaran['kelas']['id']}`,
+        );
       } else if (proses === 'rejected') {
         updatePendaftaranDto.file = pendaftaran['file'];
         updatePendaftaranDto.userId = pendaftaran['user']['id'];
@@ -122,16 +120,16 @@ export class PendaftaranController {
           pendaftaranId,
           updatePendaftaranDto,
         );
-          try {
-            await this.pendaftaranService.removeUserKelas(
-              pendaftaran['user']['id'],
-              pendaftaran['kelas']['id'],
-            );
-          } catch (error) {
-            
-          }
+        try {
+          await this.pendaftaranService.removeUserKelas(
+            pendaftaran['user']['id'],
+            pendaftaran['kelas']['id'],
+          );
+        } catch (error) {}
         req.flash('success', 'proces successfully change rejected');
-        res.redirect(`/kelass/detail/kelas/admin/${[pendaftaran]['kelas']['id']}`);
+        res.redirect(
+          `/kelass/detail/kelas/admin/${[pendaftaran]['kelas']['id']}`,
+        );
       }
     } catch (error) {
       const pendaftaran = await this.pendaftaranService.findOne(pendaftaranId);

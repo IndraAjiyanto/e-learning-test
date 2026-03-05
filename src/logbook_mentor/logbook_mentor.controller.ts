@@ -58,7 +58,6 @@ export class LogbookMentorController {
     }
   }
 
-
   @Roles('admin')
   @Get(':logbook_mentorId')
   async findOne(

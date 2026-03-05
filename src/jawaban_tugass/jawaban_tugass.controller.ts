@@ -89,7 +89,7 @@ export class JawabanTugassController {
     });
   }
 
-  @Roles('admin','user')
+  @Roles('admin', 'user')
   @Patch(':tugasId/:jawaban_tugasId')
   async update(
     @Param('jawaban_tugasId') jawaban_tugasId: number,
@@ -100,29 +100,34 @@ export class JawabanTugassController {
   ) {
     try {
       const tugas = await this.jawabanTugassService.findTugas(tugasId);
-      if(!updateJawabanTugassDto.proses){
-      updateJawabanTugassDto.proses = 'proces';
+      if (!updateJawabanTugassDto.proses) {
+        updateJawabanTugassDto.proses = 'proces';
       }
-      await this.jawabanTugassService.update(jawaban_tugasId, updateJawabanTugassDto);
-      if(updateJawabanTugassDto.komentar){
-      await this.jawabanTugassService.createKomentar(updateJawabanTugassDto.komentar, jawaban_tugasId);
+      await this.jawabanTugassService.update(
+        jawaban_tugasId,
+        updateJawabanTugassDto,
+      );
+      if (updateJawabanTugassDto.komentar) {
+        await this.jawabanTugassService.createKomentar(
+          updateJawabanTugassDto.komentar,
+          jawaban_tugasId,
+        );
       }
-      if(req.user?.role.includes('admin')){
+      if (req.user?.role.includes('admin')) {
         req.flash('success', 'Update answer successfuly');
         res.redirect(`/jawaban-tugass/${tugasId}`);
-      }else if(req.user?.role.includes('user')){
-      req.flash('success', 'Update answer successfuly');
-      res.redirect(`/jawaban-tugass/${tugas.pertemuan.id}/${tugas.id}`);
+      } else if (req.user?.role.includes('user')) {
+        req.flash('success', 'Update answer successfuly');
+        res.redirect(`/jawaban-tugass/${tugas.pertemuan.id}/${tugas.id}`);
       }
-
     } catch (error) {
       const tugas = await this.jawabanTugassService.findTugas(tugasId);
-      if(req.user?.role.includes('admin')){
+      if (req.user?.role.includes('admin')) {
         req.flash('error', error.message || 'Update answer unsuccessfully');
         res.redirect(`/jawaban-tugass/${tugasId}`);
-      }else if(req.user?.role.includes('user')){
-            req.flash('error', error.message || 'Update answer unsuccessfully');
-      res.redirect(`/jawaban-tugass/${tugas.pertemuan.id}/${tugas.id}`);
+      } else if (req.user?.role.includes('user')) {
+        req.flash('error', error.message || 'Update answer unsuccessfully');
+        res.redirect(`/jawaban-tugass/${tugas.pertemuan.id}/${tugas.id}`);
       }
     }
   }

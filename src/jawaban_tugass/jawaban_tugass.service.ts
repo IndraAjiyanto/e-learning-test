@@ -41,19 +41,19 @@ export class JawabanTugassService {
     return await this.jawabanTugasRepository.save(jawaban_tugas);
   }
 
-    async createKomentar(komentarText: string, jawaban_tugasId: number) {
-      const jawaban_tugas = await this.jawabanTugasRepository.findOne({
-        where: { id: jawaban_tugasId },
-      });
-      if (!jawaban_tugas) {
-        throw new NotFoundException('answer not found');
-      }
-      const komentar = await this.komentarRepository.create({
-        komentar: komentarText,
-        jawaban_tugas: jawaban_tugas,
-      });
-      return await this.komentarRepository.save(komentar);
+  async createKomentar(komentarText: string, jawaban_tugasId: number) {
+    const jawaban_tugas = await this.jawabanTugasRepository.findOne({
+      where: { id: jawaban_tugasId },
+    });
+    if (!jawaban_tugas) {
+      throw new NotFoundException('answer not found');
     }
+    const komentar = await this.komentarRepository.create({
+      komentar: komentarText,
+      jawaban_tugas: jawaban_tugas,
+    });
+    return await this.komentarRepository.save(komentar);
+  }
 
   async findTugas(tugasId: number) {
     const tugas = await this.tugasRepository.findOne({
@@ -101,15 +101,15 @@ export class JawabanTugassService {
   }
 
   async update(id: number, updateJawabanTugassDto: UpdateJawabanTugassDto) {
-        const jawaban_tugas = await this.findOne(id);
+    const jawaban_tugas = await this.findOne(id);
     if (!jawaban_tugas) {
       throw new NotFoundException('answer not found');
     }
-    if(updateJawabanTugassDto.proses){
-    jawaban_tugas.proses = updateJawabanTugassDto.proses;
+    if (updateJawabanTugassDto.proses) {
+      jawaban_tugas.proses = updateJawabanTugassDto.proses;
     }
-    if(updateJawabanTugassDto.file){
-    jawaban_tugas.file = updateJawabanTugassDto.file;
+    if (updateJawabanTugassDto.file) {
+      jawaban_tugas.file = updateJawabanTugassDto.file;
     }
     return await this.jawabanTugasRepository.save(jawaban_tugas);
   }

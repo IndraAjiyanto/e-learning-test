@@ -14,7 +14,20 @@ import { FlowCategory } from 'src/entities/flow_category.entity';
 import { Superiority } from 'src/entities/superiority.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Kategori, Superiority, AlurKelas, BenefitCategory, Kelas, JenisKelas, Alumni, PertanyaanUmum, FlowCategory]), CommonModule],
+  imports: [
+    TypeOrmModule.forFeature([
+      Kategori,
+      Superiority,
+      AlurKelas,
+      BenefitCategory,
+      Kelas,
+      JenisKelas,
+      Alumni,
+      PertanyaanUmum,
+      FlowCategory,
+    ]),
+    CommonModule,
+  ],
   controllers: [KategorisController],
   providers: [KategorisService],
   exports: [KategorisService],

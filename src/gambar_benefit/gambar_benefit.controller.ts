@@ -19,9 +19,7 @@ import { UpdateGambarBenefitDto } from './dto/update-gambar_benefit.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  multerConfigMemoryOnly,
-} from 'src/common/config/multer.config';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
@@ -99,9 +97,7 @@ export class GambarBenefitController {
   @Roles('super_admin')
   @Patch(':id')
   @UseInterceptors(
-    FileInterceptor(
-      'gambar', multerConfigMemoryOnly
-    ),
+    FileInterceptor('gambar', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -123,9 +119,7 @@ export class GambarBenefitController {
     try {
       const gambar_benefit = await this.gambarBenefitService.findOne(+id);
       if (gambar) {
-        await this.gambarBenefitService.deleteFile(
-          gambar_benefit.gambar,
-        );
+        await this.gambarBenefitService.deleteFile(gambar_benefit.gambar);
         updateGambarBenefitDto.gambar = req.body.uploadedImageUrls?.[0];
       }
       await this.gambarBenefitService.update(+id, updateGambarBenefitDto);

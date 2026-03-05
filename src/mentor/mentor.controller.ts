@@ -31,10 +31,9 @@ export class MentorController {
   @Post(':kelasId')
   @UseInterceptors(
     FileFieldsInterceptor(
-      [
-        { name: 'profile', maxCount: 1 },
-      ],
-      multerConfigMemoryOnly),
+      [{ name: 'profile', maxCount: 1 }],
+      multerConfigMemoryOnly,
+    ),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -121,9 +120,7 @@ export class MentorController {
   @Patch(':kelasId/:mentorId')
   @UseInterceptors(
     FileFieldsInterceptor(
-      [
-        { name: 'profile', maxCount: 1 },
-      ],
+      [{ name: 'profile', maxCount: 1 }],
       multerConfigMemoryOnly,
     ),
     ValidateImageInterceptor,

@@ -13,7 +13,8 @@ export class ExperienceService {
   ) {}
 
   async create(createExperienceDto: CreateExperienceDto): Promise<Experience> {
-    const experience = await this.experienceRepository.create(createExperienceDto);
+    const experience =
+      await this.experienceRepository.create(createExperienceDto);
     return await this.experienceRepository.save(experience);
   }
 

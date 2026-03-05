@@ -11,7 +11,17 @@ import { UserKelas } from 'src/entities/user_kelas.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Minggu, Kelas, User, Pertemuan, ProgresMinggu, UserKelas, Quiz])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Minggu,
+      Kelas,
+      User,
+      Pertemuan,
+      ProgresMinggu,
+      UserKelas,
+      Quiz,
+    ]),
+  ],
   controllers: [MingguController],
   providers: [MingguService],
   exports: [MingguService],

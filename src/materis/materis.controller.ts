@@ -32,16 +32,12 @@ import { ValidateFile } from 'src/common/decorators/validate-file.decorator';
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('materis')
 export class MaterisController {
-  constructor(
-    private readonly materisService: MaterisService,
-  ) {}
+  constructor(private readonly materisService: MaterisService) {}
 
   @Roles('admin')
   @Post('pdf/:pertemuanId')
   @UseInterceptors(
-    FileInterceptor(
-      'file', multerConfigMemoryOnly,
-    ),
+    FileInterceptor('file', multerConfigMemoryOnly),
     ValidateFileInterceptor,
   )
   @ValidateFile({
@@ -70,42 +66,43 @@ export class MaterisController {
     }
   }
 
-@Roles('admin')
-@Post('ppt/:pertemuanId')
-@UseInterceptors(
-  FileInterceptor(
-    'file', multerConfigMemoryOnly,
-  ),
-  ValidateFileInterceptor,
-)
-@ValidateFile({
-  maxSize: 50 * 1024 * 1024,
-  allowedTypes: ['application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
-  fileExtensions: ['.ppt', '.pptx'],
-  folder: 'materi/ppt',
-  resourceType: 'raw',
-})
-async createPpt(
-  @Body() createMaterisDto: CreateMaterisDto,
-  @UploadedFile() file: Express.Multer.File,
-  @Res() res: Response,
-  @Param('pertemuanId') pertemuanId: number,
-  @Req() req: Request,
-) {
-  try {
-    createMaterisDto.file = req.body.uploadedFileUrls?.[0];
-    createMaterisDto.pertemuanId = pertemuanId;
-    createMaterisDto.jenis_file = 'ppt';
-    
-    await this.materisService.create(createMaterisDto);
-    req.flash('success', 'Successfully created PPT material');
-    res.redirect(`/pertemuans/${pertemuanId}`);
-  } catch (error) {
-    console.error('Error creating PPT material:', error);
-    req.flash('error', error.message || 'Failed to create PPT material');
-    res.redirect(`/pertemuans/${pertemuanId}`);
+  @Roles('admin')
+  @Post('ppt/:pertemuanId')
+  @UseInterceptors(
+    FileInterceptor('file', multerConfigMemoryOnly),
+    ValidateFileInterceptor,
+  )
+  @ValidateFile({
+    maxSize: 50 * 1024 * 1024,
+    allowedTypes: [
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ],
+    fileExtensions: ['.ppt', '.pptx'],
+    folder: 'materi/ppt',
+    resourceType: 'raw',
+  })
+  async createPpt(
+    @Body() createMaterisDto: CreateMaterisDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+    @Param('pertemuanId') pertemuanId: number,
+    @Req() req: Request,
+  ) {
+    try {
+      createMaterisDto.file = req.body.uploadedFileUrls?.[0];
+      createMaterisDto.pertemuanId = pertemuanId;
+      createMaterisDto.jenis_file = 'ppt';
+
+      await this.materisService.create(createMaterisDto);
+      req.flash('success', 'Successfully created PPT material');
+      res.redirect(`/pertemuans/${pertemuanId}`);
+    } catch (error) {
+      console.error('Error creating PPT material:', error);
+      req.flash('error', error.message || 'Failed to create PPT material');
+      res.redirect(`/pertemuans/${pertemuanId}`);
+    }
   }
-}
 
   @Roles('admin')
   @Post('video/:pertemuanId')
@@ -197,9 +194,7 @@ async createPpt(
   @Roles('admin')
   @Patch('pdf/:id')
   @UseInterceptors(
-    FileInterceptor(
-      'file', multerConfigMemoryOnly,
-    ),
+    FileInterceptor('file', multerConfigMemoryOnly),
     ValidateFileInterceptor,
   )
   @ValidateFile({
@@ -227,10 +222,7 @@ async createPpt(
   @Roles('admin')
   @Patch('ppt/:id')
   @UseInterceptors(
-    FileInterceptor(
-      'file',
-      multerConfigMemoryOnly,
-    ),
+    FileInterceptor('file', multerConfigMemoryOnly),
     ValidateFileInterceptor,
   )
   @ValidateFile({
@@ -240,8 +232,7 @@ async createPpt(
       'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     ],
     fileExtensions: ['.ppt', '.pptx'],
-  folder: 'materi/ppt',
-
+    folder: 'materi/ppt',
   })
   async updatePpt(
     @Param('id') id: number,

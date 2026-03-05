@@ -27,7 +27,7 @@ import { Pertemuan } from 'src/entities/pertemuan.entity';
       Minggu,
       UserKelas,
       ProgresPertemuan,
-      Pertemuan
+      Pertemuan,
     ]),
   ],
   controllers: [JawabanUsersController],

@@ -17,7 +17,6 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response, Request } from 'express';
 
-
 @UseGuards(AuthenticatedGuard)
 @Controller('experience')
 export class ExperienceController {

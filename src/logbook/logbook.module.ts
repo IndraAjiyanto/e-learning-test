@@ -22,7 +22,7 @@ import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
       Pertemuan,
       LogbookMentor,
       Quiz,
-      ProgresQuiz
+      ProgresQuiz,
     ]),
     CommonModule,
   ],

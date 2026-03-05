@@ -38,5 +38,4 @@ export class KomentarService {
     jawaban_tugas.proses = proses;
     return await this.jawabanTugasRepository.save(jawaban_tugas);
   }
-
 }
