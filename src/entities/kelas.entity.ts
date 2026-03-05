@@ -39,7 +39,7 @@ export class Kelas {
   @Column()
   nama_kelas: string;
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   deskripsi: string[];
 
   @Column()
@@ -57,19 +57,19 @@ export class Kelas {
   @Column({ nullable: true })
   link_lokasi: string;
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   lokasi: string[];
 
   @Column({ type: 'enum', enum: ['online', 'offline'] })
   metode: Metode;
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   kriteria_id: string[];
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   kriteria_en: string[];
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   kriteria_ja: string[];
 
   @Column({ default: false })
@@ -94,22 +94,22 @@ export class Kelas {
   })
   proses: Proses;
 
-  @Column('jsonb', {nullable: true})
+  @Column('jsonb', { nullable: true })
   materi_id: string[];
 
-  @Column('jsonb', {nullable: true})
+  @Column('jsonb', { nullable: true })
   materi_en: string[];
 
-  @Column('jsonb', {nullable: true})
+  @Column('jsonb', { nullable: true })
   materi_ja: string[];
 
-  @Column('jsonb', {nullable: true})
+  @Column('jsonb', { nullable: true })
   target_pembelajaran_id: string[];
 
-  @Column('jsonb', {nullable: true})
+  @Column('jsonb', { nullable: true })
   target_pembelajaran_en: string[];
-  
-  @Column('jsonb', {nullable: true})
+
+  @Column('jsonb', { nullable: true })
   target_pembelajaran_ja: string[];
 
   @Column({ nullable: true })

@@ -5,7 +5,6 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -47,7 +46,7 @@ export class Kategori {
 
   @Column({ nullable: true, type: 'jsonb' })
   info_en: string[];
-  
+
   @Column({ nullable: true, type: 'jsonb' })
   info_ja: string[];
 
@@ -86,9 +85,9 @@ export class Kategori {
   @Exclude()
   flow_category: FlowCategory[];
 
-    @OneToMany(() => Superiority, (superiority) => superiority.kategori)
-    @Exclude()
-    superiority: Superiority[];
+  @OneToMany(() => Superiority, (superiority) => superiority.kategori)
+  @Exclude()
+  superiority: Superiority[];
 
   @ManyToMany(() => JenisKelas, (jenisKelas) => jenisKelas.kategoris)
   @JoinTable()

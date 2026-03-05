@@ -1,18 +1,24 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Kategori } from "./kategori.entity";
-import { Exclude } from "class-transformer";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Kategori } from './kategori.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Superiority {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column('jsonb', { nullable: true })
-    title: string[];
+  @Column('jsonb', { nullable: true })
+  title: string[];
 
-    @Column('jsonb', { nullable: true })
-    description: string[];
-
+  @Column('jsonb', { nullable: true })
+  description: string[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -20,9 +26,9 @@ export class Superiority {
   @UpdateDateColumn()
   updatedAt: Date;
 
-          @ManyToOne(() => Kategori, (kategori) => kategori.superiority, {
-            onDelete: 'CASCADE',
-          })
-          @Exclude()
-          kategori: Kategori;
+  @ManyToOne(() => Kategori, (kategori) => kategori.superiority, {
+    onDelete: 'CASCADE',
+  })
+  @Exclude()
+  kategori: Kategori;
 }

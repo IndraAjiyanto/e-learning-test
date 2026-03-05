@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -12,7 +11,7 @@ export class Visi {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb',{nullable:true})
+  @Column('jsonb', { nullable: true })
   visi: string[];
 
   @CreateDateColumn()

@@ -1,14 +1,11 @@
-import { IsString } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Kategori } from './kategori.entity';
 import { Kelas } from './kelas.entity';
 import { Exclude } from 'class-transformer';
 
@@ -20,10 +17,10 @@ export class AlurKelas {
   @Column()
   alur_ke: number;
 
-  @Column('jsonb', { nullable: true  })
+  @Column('jsonb', { nullable: true })
   judul: string[];
 
-  @Column('jsonb', { nullable: true  })
+  @Column('jsonb', { nullable: true })
   isi: string[];
 
   @CreateDateColumn()

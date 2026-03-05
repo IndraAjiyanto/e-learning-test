@@ -4,7 +4,6 @@ import {
   Entity,
   ManyToMany,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -17,13 +16,13 @@ export class JenisKelas {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   nama_jenis_kelas: string;
 
   @Column()
   icon: string;
 
-  @Column('jsonb',{nullable: true} )
+  @Column('jsonb', { nullable: true })
   deskripsi: string[];
 
   @OneToMany(() => Kelas, (kelas) => kelas.jenis_kelas)

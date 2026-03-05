@@ -28,9 +28,9 @@ export class Topic {
   @UpdateDateColumn()
   updatedAt: Date;
 
-    @OneToMany(() => Blog, (blog) => blog.kategori_blog, {
-      cascade: true,
-      onDelete: 'CASCADE',
-    })
-    blog: Blog[];
+  @OneToMany(() => Blog, (blog) => blog.kategori_blog, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  blog: Blog[];
 }

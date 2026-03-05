@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,16 +17,16 @@ export class Alumni {
   @Column()
   profile: string;
 
-  @Column('jsonb', {nullable: true})
+  @Column('jsonb', { nullable: true })
   nama: string[];
 
-  @Column('jsonb', {nullable: true})
+  @Column('jsonb', { nullable: true })
   pesan: string[];
 
-  @Column('jsonb', {nullable: true})
+  @Column('jsonb', { nullable: true })
   alumni: string[];
 
-  @Column('jsonb', {nullable: true})
+  @Column('jsonb', { nullable: true })
   posisi_sekarang: string[];
 
   @ManyToOne(() => Kelas, (kelas) => kelas.alumni, { onDelete: 'CASCADE' })

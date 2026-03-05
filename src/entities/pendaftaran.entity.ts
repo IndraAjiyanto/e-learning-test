@@ -38,6 +38,6 @@ export class Pendaftaran {
   user: User;
 
   @ManyToOne(() => Kelas, (kelas) => kelas.pendaftaran, { onDelete: 'CASCADE' })
-  @Exclude()    
+  @Exclude()
   kelas: Kelas;
 }

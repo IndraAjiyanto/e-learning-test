@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -21,16 +20,16 @@ export class Team {
   @Column()
   team_ke: number;
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   posisi: string[];
 
   @Column()
   linkedin: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   instagram: string;
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   deskripsi: string[];
 
   @CreateDateColumn()

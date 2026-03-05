@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -15,10 +14,10 @@ export class PertanyaanKelas {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   pertanyaan: string[];
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   jawaban: string[];
 
   @CreateDateColumn()

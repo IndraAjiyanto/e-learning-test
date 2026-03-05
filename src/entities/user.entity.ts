@@ -6,15 +6,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  ManyToMany,
-  JoinTable,
   BeforeUpdate,
   OneToOne,
-  JoinColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Absen } from './absen.entity';
-import { Kelas } from './kelas.entity';
 import { Biodata } from './biodata.entity';
 import { Portfolio } from './portfolio.entity';
 import { Pembayaran } from './pembayaran.entity';
@@ -119,7 +115,6 @@ export class User {
   })
   @Exclude()
   portfolio: Portfolio[];
-
 
   @OneToMany(() => Pembayaran, (pembayaran) => pembayaran.user, {
     cascade: true,

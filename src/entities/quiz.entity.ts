@@ -41,7 +41,6 @@ export class Quiz {
     cascade: true,
     onDelete: 'CASCADE',
   })
-
   @Exclude()
   nilai: Nilai[];
 

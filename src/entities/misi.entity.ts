@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -13,12 +12,12 @@ export class Misi {
   id: number;
 
   @Column()
-  misi_ke: number
+  misi_ke: number;
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   content: string[];
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   isi: string[];
 
   @CreateDateColumn()

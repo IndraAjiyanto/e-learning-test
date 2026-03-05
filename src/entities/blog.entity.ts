@@ -17,10 +17,10 @@ export class Blog {
   @Column()
   judul: string;
 
-  @Column({type: 'text'})
+  @Column({ type: 'text' })
   isi: string;
 
-  @Column({type: 'text'})
+  @Column({ type: 'text' })
   isi_editorjs: string;
 
   @Column()

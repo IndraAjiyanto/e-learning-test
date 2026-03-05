@@ -4,7 +4,6 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -16,10 +15,10 @@ export class BenefitKelas {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   benefit: string[];
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   isi: string[];
 
   @Column()

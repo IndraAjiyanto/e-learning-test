@@ -6,7 +6,6 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
 } from 'typeorm';
 import { Absen } from './absen.entity';
 import { Materi } from './materi.entity';

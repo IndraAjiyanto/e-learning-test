@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -12,10 +11,10 @@ export class Award {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   content: string[];
 
-  @Column('jsonb',{nullable: true})
+  @Column('jsonb', { nullable: true })
   isi: string[];
 
   @Column()

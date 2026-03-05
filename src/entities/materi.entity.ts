@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany,
 } from 'typeorm';
 import { Pertemuan } from './pertemuan.entity';
 import { Exclude } from 'class-transformer';

@@ -47,7 +47,7 @@ export class JawabanTugas {
   })
   @Exclude()
   komentar: Komentar[];
-  
+
   @ManyToOne(() => User, (user) => user.jawaban_tugas, { onDelete: 'CASCADE' })
   @Exclude()
   user: User;
