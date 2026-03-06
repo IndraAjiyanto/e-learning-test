@@ -68,10 +68,10 @@ export class PertanyaansController {
         });
       }
 
-      req.flash('success', 'Berhasil membuat pertanyaan beserta jawabannya');
+      req.flash('success', 'success create question');
       return res.redirect(`/quiz/${quizId}`);
     } catch (err) {
-      req.flash('error', err.message || 'Gagal membuat pertanyaan');
+      req.flash('error', err.message || 'unsuccess create question');
       return res.redirect(`/quiz/${quizId}`);
     }
   }
