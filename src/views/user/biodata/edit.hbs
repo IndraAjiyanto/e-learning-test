@@ -76,7 +76,9 @@
                   :class="selectedPendidikan ? 'text-gray-700' : 'text-gray-400'"
                   class="w-full border border-slate-300 rounded-xl px-5 py-4 bg-white hover:bg-white transition-all duration-300 text-left flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400"
                 >
-                  <span x-text="selectedPendidikan || 'Select education level'"></span>
+                                    <span
+                    x-text="if(selectedPendidikan == 'Junior High School') { return '{{t 'test.profile.editBiodata.juniorHighSchool'}}'; } else if(selectedPendidikan == 'Senior High School') { return '{{t 'test.profile.editBiodata.seniorHighSchool'}}'; } else if(selectedPendidikan == 'Diploma (D3/D4)') { return '{{t 'test.profile.editBiodata.diploma'}}'; } else if(selectedPendidikan == 'Bachelor Degree (S1)') { return '{{t 'test.profile.editBiodata.bachelorDegree'}}'; } else { return '{{t 'test.profile.editBiodata.placeholderEducation'}}'; }"
+                  ></span>
                   <svg 
                     viewBox="0 0 20 20" 
                     fill="currentColor" 

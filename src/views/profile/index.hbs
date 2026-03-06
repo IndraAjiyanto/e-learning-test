@@ -209,9 +209,11 @@
                     <p class='text-sm text-slate-500 font-medium'>{{t
                         'test.profile.gender'
                       }}</p>
-                    <p
-                      class='text-lg text-slate-800 font-semibold'
-                    >{{user.biodata.jenis_kelamin}}</p>
+                    <p class='text-lg text-slate-800 font-semibold'>{{#if
+                        (eq user.biodata.jenis_kelamin 'Laki laki')
+                      }}{{t 'test.profile.male'}}{{else if
+                          (eq user.biodata.jenis_kelamin 'Perempuan')
+                        }}{{t 'test.profile.female'}}{{/if}}</p>
                   </div>
                 </div>
               </div>
@@ -267,7 +269,11 @@
                     }}</p>
                   <p
                     class='text-base text-slate-800 font-semibold'
-                  >{{user.biodata.pendidikan}}</p>
+                  >{{#if (eq user.biodata.pendidikan "Junior High School")}}{{t 'test.profile.juniorHighSchool'}}
+                  {{else if (eq user.biodata.pendidikan "Senior High School")}}{{t 'test.profile.seniorHighSchool'}}
+                  {{else if (eq user.biodata.pendidikan "Diploma (D3/D4)")}}{{t 'test.profile.diploma'}}
+                  {{else if (eq user.biodata.pendidikan "Bachelor Degree (S1)")}}{{t 'test.profile.bachelorDegree'}}
+                  {{/if}}</p>
                 </div>
 
                 <!-- Study Program -->
@@ -487,8 +493,7 @@
             this.imageInfo = `${width}x${height}px • ${fileSizeMB}MB`;
           } else {
             this.validationError = "";
-            this.imageInfo =
-              `${width}x${height}px • ${fileSizeMB}MB • Ready to upload ✓`;
+            this.imageInfo = `${width}x${height}px • ${fileSizeMB}MB • Ready to upload ✓`;
           }
         };
 
