@@ -143,29 +143,31 @@ export class PortfoliosController {
   }
 
   @Roles('user')
-  @Get(':portofolioId')
+  @Get(':portofolioId/:kelasId')
   async findOne(
     @Param('portofolioId') portofolioId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const portfolio = await this.portfoliosService.findOne(portofolioId);
-    res.render('user/portofolio/detail', { user: req.user, portfolio });
+    res.render('user/portofolio/detail', { user: req.user, portfolio, kelasId });
   }
 
   @Roles('user')
-  @Get('formEdit/:portfolioId')
+  @Get('formEdit/:portfolioId/:kelasId')
   async formEdit(
     @Param('portfolioId') portfolioId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const portfolio = await this.portfoliosService.findOne(portfolioId);
-    res.render('user/portofolio/edit', { user: req.user, portfolio });
+    res.render('user/portofolio/edit', { user: req.user, portfolio, kelasId });
   }
 
   @Roles('user')
-  @Patch(':portfolioId')
+  @Patch(':portfolioId/:kelasId')
   @UseInterceptors(
     FilesInterceptor('gambar', 10, multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -179,6 +181,7 @@ export class PortfoliosController {
   })
   async update(
     @Param('portfolioId') portfolioId: number,
+    @Param('kelasId') kelasId: number,
     @Body() updatePortfolioDto: UpdatePortfolioDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -226,17 +229,18 @@ export class PortfoliosController {
       await this.portfoliosService.update(portfolioId, updateData);
 
       req.flash('success', 'Portfolio successfully updated');
-      return res.redirect(`/portfolios/${portfolioId}`);
+      return res.redirect(`/portfolios/${portfolioId}/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Portfolio failed to update');
-      return res.redirect(`/portfolios/${portfolioId}/edit`);
+      return res.redirect(`/portfolios/${portfolioId}/${kelasId}`);
     }
   }
 
   @Roles('user')
-  @Delete(':portfolioId')
+  @Delete(':portfolioId/:kelasId')
   async remove(
     @Param('portfolioId') portfolioId: number,
+    @Param('kelasId') kelasId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -249,10 +253,10 @@ export class PortfoliosController {
         await this.portfoliosService.remove(portfolioId);
       }
       req.flash('success', 'Portfolio successfully deleted');
-      res.redirect(`/portfolios/myportfolio/${req.user?.id}`);
+      res.redirect(`/kelass/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Failed to delete portfolio');
-      res.redirect(`/portfolios/myportfolio/${req.user?.id}`);
+      res.redirect(`/kelass/${kelasId}`);
     }
   }
 }
