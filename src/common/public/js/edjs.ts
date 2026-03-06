@@ -14,7 +14,7 @@ const parser = edjsHTML({
     return `
     <div class="my-4 flex justify-center ${classList.join(' ')}">
               <div class="flex justify-center mb-12">
-            <div class="relative rounded-2xl overflow-hidden max-w-[600px] flex justify-center items-center">
+            <div class="relative rounded-2xl overflow-hidden max-w-[400px] flex justify-center items-center">
       <img 
         src="${file.url}" 
         alt="${caption || 'Image'}"
