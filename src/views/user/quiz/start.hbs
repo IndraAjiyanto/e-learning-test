@@ -1,4 +1,5 @@
 <div class="max-w-7xl mx-auto px-4 pt-28">
+
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-50 to-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-8">
         <h2 class="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-2 font-montserrat">
@@ -9,15 +10,52 @@
         </p>
     </div>
 
+
+
     <!-- Form untuk submit -->
-    <form method="POST" action="/jawaban-users/{{quizId}}" x-data="quiz()" x-init="init()">
+    <form method="POST" action="/jawaban-users/{{quizId}}" x-data="quiz()" x-init="init()" id="formSubmit">
         <!-- Main Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
             <!-- Sidebar - Question List -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sticky top-6">
+
+                <div class="flex flex-row gap-8">
+
                     <h3 class="text-lg font-semibold text-slate-900 mb-4 font-montserrat">{{t "test.quiz.start.questionList"}}</h3>
+
+                                       <div id="countdownExample">
+    <div class="values"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+const form = document.querySelector('#formSubmit');
+
+    const timer = new easytimer.Timer();
+
+    timer.start({ countdown: true, startValues: { seconds: {{remainingTime}} } });
+
+    function updateTimer() {
+        document.querySelector('#countdownExample .values').innerHTML =
+            timer.getTimeValues().toString();
+    }
+
+    updateTimer();
+
+    timer.addEventListener('secondsUpdated', updateTimer);
+
+timer.addEventListener('targetAchieved', function () {
+    clearQuizStorage();
+    form.submit();
+});
+
+});
+</script>
+                    </div>
+
                     <div class="space-y-2 max-h-[600px] overflow-y-auto">
                         {{#each pertanyaan}}
                         <button 
@@ -105,6 +143,7 @@
                     <div class="p-6">
                         {{#each pertanyaan}}
                         <div x-show="currentQuestion === {{@index}}">
+                            <input type="hidden" name="q-{{id}}" value="">
                             <div class="flex items-start gap-4 mb-6">
                                 <div class="flex-shrink-0 w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-semibold">
                                     {{addOne @index}}
@@ -137,7 +176,6 @@
                                         name="q-{{../id}}"
                                         value="{{id}}"
                                         class="w-5 h-5 radio border-gray-700 checked:text-gray-700 checked:bg-white"
-                                        required
                                     >
                                     <span class="ml-4 text-slate-800 font-medium group-hover/option:text-slate-900 transition-colors">
                                         {{jawaban}}
@@ -170,6 +208,55 @@
         </div>
     </form>
 </div>
+
+
+<script>
+document.addEventListener("change", function(e){
+
+    if(e.target.type === "radio"){
+
+        const name = e.target.name;   // contoh: q-1
+        const value = e.target.value; // id jawaban
+
+        localStorage.setItem(name, value);
+
+    }
+
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.querySelector('#formSubmit');
+    const radios = document.querySelectorAll("input[type='radio']");
+
+    radios.forEach(radio => {
+
+        const savedValue = localStorage.getItem(radio.name);
+
+        if(savedValue && savedValue === radio.value){
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+    });
+
+    function clearQuizStorage(){
+        Object.keys(localStorage)
+        .filter(key => key.startsWith("q-"))
+        .forEach(key => localStorage.removeItem(key));
+    }
+
+    // saat submit biasa
+    form.addEventListener("submit", clearQuizStorage);
+
+    // kalau submit via timer
+    window.clearQuizStorage = clearQuizStorage;
+
+});
+</script>
+
 
 <script>
     function quiz() {
@@ -216,3 +303,4 @@
         }
     }
 </script>
+

@@ -80,6 +80,9 @@
       actions: "flex gap-4 justify-center"
     }
   }).then((result) => {
+                if (typeof clearQuizStorage === "function") {
+                clearQuizStorage();
+            }
     if (result.isConfirmed) form.submit();
   });
 }

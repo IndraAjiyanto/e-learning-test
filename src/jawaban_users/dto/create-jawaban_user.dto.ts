@@ -1,9 +1,10 @@
-import { ValidateNested, IsArray, IsInt } from 'class-validator';
+import { ValidateNested, IsArray, IsInt, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class JawabanUserDto {
+  @IsOptional()
   @IsInt()
-  jawabanId: number;
+  jawabanId?: number | null;
 
   @IsInt()
   pertanyaanId: number;

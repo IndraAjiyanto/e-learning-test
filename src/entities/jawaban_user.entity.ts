@@ -17,9 +17,10 @@ export class JawabanUser {
 
   @ManyToOne(() => Jawaban, (jawaban) => jawaban.jawaban_user, {
     onDelete: 'CASCADE',
+    nullable: true
   })
   @Exclude()
-  jawaban: Jawaban;
+  jawaban: Jawaban | null;
 
   @ManyToOne(() => User, (user) => user.jawaban_user, { onDelete: 'CASCADE' })
   @Exclude()

@@ -46,9 +46,7 @@ export class JawabanUsersService {
       const pertanyaan = await this.pertanyaanRepository.findOne({
         where: { id: j.pertanyaanId },
       });
-      const jawaban = await this.jawabanRepository.findOne({
-        where: { id: j.jawabanId },
-      });
+
       const user = await this.userRepository.findOne({
         where: { id: j.userId },
       });
@@ -57,14 +55,15 @@ export class JawabanUsersService {
         throw new NotFoundException(
           `Pertanyaan id ${j.pertanyaanId} tidak ditemukan`,
         );
-      if (!jawaban)
-        throw new NotFoundException(
-          `Jawaban id ${j.jawabanId} tidak ditemukan`,
-        );
+
       if (!user)
         throw new NotFoundException(`User id ${j.userId} tidak ditemukan`);
 
-      const jawabanUser = await this.jawabanUserRepository.create({
+      const jawaban = j.jawabanId
+        ? await this.jawabanRepository.findOne({ where: { id: j.jawabanId } })
+        : null;
+
+      const jawabanUser = this.jawabanUserRepository.create({
         pertanyaan,
         jawaban,
         user,
@@ -251,7 +250,7 @@ export class JawabanUsersService {
     const nilaiPerSoal = 100 / jumlahSoal;
 
     const totalNilai = jawaban.reduce((sum, j) => {
-      if (j.jawaban.jawaban_benar) {
+      if (j.jawaban !== null && j.jawaban.jawaban_benar) {
         return sum + nilaiPerSoal;
       }
       return sum;

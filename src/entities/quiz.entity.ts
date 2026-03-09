@@ -24,6 +24,9 @@ export class Quiz {
   @Column()
   nilai_minimal: number;
 
+  @Column({ type: 'int' })
+  durasi: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

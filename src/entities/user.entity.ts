@@ -70,6 +70,9 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   verifikasiTokenExpires: Date | null;
 
+  @Column({ type: 'timestamp', nullable: true})
+  countdownQuiz: Date | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

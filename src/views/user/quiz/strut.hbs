@@ -1,0 +1,23 @@
+<div class="bg-slate-800" id="surveyContainer"></div>
+
+<script>
+
+const surveyData = {{{survey}}};
+
+const survey = new Survey.Model(surveyData);
+
+survey.onComplete.add(function(sender) {
+
+  fetch('/quiz/submit', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(sender.data)
+  });
+
+});
+
+survey.render("surveyContainer");
+
+</script>

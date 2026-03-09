@@ -30,9 +30,25 @@ export class JawabanUsersController {
       const jawabanUser = Object.entries(createJawabanUserDto).map(
         ([key, value]) => {
           const pertanyaanId = Number(key.replace('q-', ''));
+
+          // cek kalau value array, ambil yang terakhir
+          let jawabanId: number | null = null;
+          if (Array.isArray(value)) {
+            // filter value kosong dan ambil terakhir
+            const filtered = value.filter((v) => v !== '');
+            jawabanId = filtered.length
+              ? Number(filtered[filtered.length - 1])
+              : null;
+          } else if (value !== '') {
+            jawabanId = Number(value);
+          }
+
+          console.log(
+            `Pertanyaan ID: ${pertanyaanId}, Jawaban ID: ${jawabanId}`,
+          );
           return {
             pertanyaanId,
-            jawabanId: Number(value),
+            jawabanId,
             userId: req.user!.id,
           };
         },
@@ -41,10 +57,10 @@ export class JawabanUsersController {
       await this.jawabanUsersService.create({ jawabanUser });
       await this.jawabanUsersService.nilaiCreate({ jawabanUser });
 
-      req.flash('success', 'berhasil menjawab pertanyaan');
+      req.flash('success', 'Success complete quiz');
       res.redirect(`/quiz/form/${quizId}`);
     } catch (error) {
-      req.flash('error', error.message || 'gagal menjawab pertanyaan');
+      req.flash('error', error.message || 'unsuccess complete quiz');
       res.redirect(`/quiz/form/${quizId}`);
     }
   }

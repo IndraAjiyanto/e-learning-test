@@ -9,4 +9,7 @@ export class CreateQuizDto {
 
   @IsInt()
   mingguId: number;
+
+  @IsInt()
+  durasi: number;
 }

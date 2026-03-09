@@ -106,6 +106,31 @@ export class QuizService {
     });
   }
 
+  async getRemainingTime(userId: number, quizId: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+    const quiz = await this.findOne(quizId);
+    if (!quiz) {
+      throw new NotFoundException('quiz not found');
+    }
+const now = Date.now();
+const durationMs = quiz.durasi * 60000;
+
+let startTime = user.countdownQuiz?.getTime();
+
+if (!startTime || now - startTime > durationMs) {
+  startTime = now;
+  user.countdownQuiz = new Date(startTime);
+  await this.userRepository.save(user);
+}
+
+const remainingMs = durationMs - (now - startTime);
+const remainingSecond = Math.ceil(remainingMs / 1000);
+    return remainingSecond;
+  }
+
   async findPertanyaan(quizId: number) {
     return await this.pertanyaanRepository.find({
       where: {

@@ -26,7 +26,7 @@ export class PertanyaansService {
       where: { id: createPertanyaanDto.quizId },
     });
     if (!quiz) {
-      throw new NotFoundException('quiz ini tidak ada');
+      throw new NotFoundException('Quiz not found');
     }
     const pertanyaan = await this.pertanyaanRepository.create({
       pertanyaan_soal: createPertanyaanDto.pertanyaan_soal,
@@ -49,7 +49,7 @@ export class PertanyaansService {
       relations: ['jawaban', 'quiz'],
     });
     if (!pertanyaan) {
-      throw new NotFoundException('Pertanyaan tidak ditemukan');
+      throw new NotFoundException('Question not found');
     }
     return pertanyaan;
   }
@@ -57,7 +57,7 @@ export class PertanyaansService {
   async update(pertanyaanId: number, updatePertanyaanDto: UpdatePertanyaanDto) {
     const pertanyaan = await this.findOne(pertanyaanId);
     if (!pertanyaan) {
-      throw new NotFoundException('Pertanyaan tidak ditemukan');
+      throw new NotFoundException('Question not found');
     }
 
     pertanyaan.pertanyaan_soal = updatePertanyaanDto.pertanyaan_soal;
@@ -69,7 +69,7 @@ export class PertanyaansService {
     });
 
     if (!jawabanLama || jawabanLama.length === 0) {
-      throw new NotFoundException('Jawaban tidak ditemukan');
+      throw new NotFoundException('Answer not found');
     }
 
     await this.jawabanRepository.remove(jawabanLama);
@@ -77,7 +77,7 @@ export class PertanyaansService {
     const jawabanBaru = updatePertanyaanDto.pilihan.map((pilihan, index) => {
       return this.jawabanRepository.create({
         jawaban: pilihan,
-        jawaban_benar: Number(updatePertanyaanDto.jawaban) === index, // true kalau index sesuai jawaban benar
+        jawaban_benar: Number(updatePertanyaanDto.jawaban) === index,
         pertanyaan: pertanyaan,
       });
     });
@@ -91,10 +91,10 @@ export class PertanyaansService {
       where: { pertanyaan: { id: pertanyaanId } },
     });
     if (!jawaban) {
-      throw new NotFoundException('jawaban tidak ditemukan');
+      throw new NotFoundException('Answer not found');
     }
     if (!pertanyaan) {
-      throw new NotFoundException('pertanyaan tidak ditemukan');
+      throw new NotFoundException('Question not found');
     }
     await this.jawabanRepository.remove(jawaban);
     await this.pertanyaanRepository.remove(pertanyaan);

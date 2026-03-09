@@ -101,7 +101,8 @@ export class QuizController {
     @Req() req: Request,
   ) {
     const pertanyaan = await this.quizService.findPertanyaan(quizId);
-    res.render('user/quiz/start', { user: req.user, quizId, pertanyaan });
+    const remainingTime = await this.quizService.getRemainingTime(req.user!.id, quizId);
+    res.render('user/quiz/start', { user: req.user, quizId, pertanyaan, remainingTime });
   }
 
   @Roles('admin')
