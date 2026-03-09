@@ -55,7 +55,7 @@
   </a>
 
   <!-- Tombol Delete -->
-  <form action="/pertanyaans/{{this.id}}/{{../quiz.id}}?_method=DELETE" method="post">
+  <form action="/quiz/{{quiz.id}}/{{quiz.minggu.id}}?_method=DELETE" method="post">
     <button type="button" 
             onclick="confirmDelete(this)"
             class="p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm"
