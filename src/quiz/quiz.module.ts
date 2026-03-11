@@ -9,6 +9,7 @@ import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { JawabanUser } from 'src/entities/jawaban_user.entity';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
       Pertanyaan,
       ProgresQuiz,
       ProgresPertemuan,
+      JawabanUser,
     ]),
   ],
   controllers: [QuizController],

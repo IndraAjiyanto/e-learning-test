@@ -10,6 +10,7 @@ import { User } from 'src/entities/user.entity';
 import { Pertanyaan } from 'src/entities/pertanyaan.entity';
 import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { JawabanUser } from 'src/entities/jawaban_user.entity';
 
 @Injectable()
 export class QuizService {
@@ -28,6 +29,8 @@ export class QuizService {
     private readonly progresQuizRepository: Repository<ProgresQuiz>,
     @InjectRepository(ProgresPertemuan)
     private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
+    @InjectRepository(JawabanUser)
+    private readonly jawabanUserRepository: Repository<JawabanUser>,
   ) {}
 
   async create(createQuizDto: CreateQuizDto) {
@@ -96,6 +99,30 @@ export class QuizService {
     });
   }
 
+  async checkStartQuestion(userId: number, quizId: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+
+    const quiz = await this.findOne(quizId);
+    if (!quiz) {
+      throw new NotFoundException('quiz not found');
+    }
+    if(user.countdownQuiz !== null) {
+
+    const startTime = user.countdownQuiz.getTime();
+    const durasi = quiz.durasi * 60000;
+
+    if(startTime + durasi <= Date.now() && user.quizStart === true) {
+      return true;
+    }else{
+      return false;
+    }
+    }
+
+  }
+
   async findNilaiUser(userId: number, quziId: number) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
@@ -115,6 +142,8 @@ export class QuizService {
     if (!quiz) {
       throw new NotFoundException('quiz not found');
     }
+
+    if(user.quizStart){
 const now = Date.now();
 const durationMs = quiz.durasi * 60000;
 
@@ -129,6 +158,18 @@ if (!startTime || now - startTime > durationMs) {
 const remainingMs = durationMs - (now - startTime);
 const remainingSecond = Math.ceil(remainingMs / 1000);
     return remainingSecond;
+    }else{
+
+      user.countdownQuiz = new Date();
+      user.quizStart = true;
+
+      await this.userRepository.save(user)
+
+      return quiz.durasi * 60;
+
+    }
+
+
   }
 
   async findPertanyaan(quizId: number) {

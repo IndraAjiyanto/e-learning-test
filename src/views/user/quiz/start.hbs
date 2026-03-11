@@ -15,18 +15,36 @@
     <!-- Form untuk submit -->
     <form method="POST" action="/jawaban-users/{{quizId}}" x-data="quiz()" x-init="init()" id="formSubmit">
         <!-- Main Layout -->
+{{#if check}}
+<script>
+window.addEventListener("load", function(){
+
+
+    showTimeOverAlert(
+        "#formSubmit",
+        "Quiz time is over, submitting your answers.",
+        "Time's Up!"
+    );
+
+});
+</script>
+{{/if}}
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
             <!-- Sidebar - Question List -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sticky top-6">
 
-                <div class="flex flex-row gap-8">
+                <div class="flex items-center justify-between mb-4">
 
-                    <h3 class="text-lg font-semibold text-slate-900 mb-4 font-montserrat">{{t "test.quiz.start.questionList"}}</h3>
-
+                    <h3 class="text-lg font-semibold text-slate-900 font-montserrat">{{t "test.quiz.start.questionList"}}</h3>
+{{#if check}}
+        <span class="text-red-500 font-semibold">
+            {{t "test.quiz.start.timeIsOver"}}
+        </span>
+{{else}}
                                        <div id="countdownExample">
-    <div class="values"></div>
+    <div class="values font-semibold text-slate-700"></div>
 </div>
 
 <script>
@@ -36,7 +54,7 @@ const form = document.querySelector('#formSubmit');
 
     const timer = new easytimer.Timer();
 
-    timer.start({ countdown: true, startValues: { seconds: {{remainingTime}} } });
+    timer.start({ countdown: true, startValues: { seconds: {{remainingTime}}  } });
 
     function updateTimer() {
         document.querySelector('#countdownExample .values').innerHTML =
@@ -54,6 +72,7 @@ timer.addEventListener('targetAchieved', function () {
 
 });
 </script>
+{{/if}}
                     </div>
 
                     <div class="space-y-2 max-h-[600px] overflow-y-auto">
@@ -175,6 +194,7 @@ timer.addEventListener('targetAchieved', function () {
                                         type="radio" 
                                         name="q-{{../id}}"
                                         value="{{id}}"
+                                        
                                         class="w-5 h-5 radio border-gray-700 checked:text-gray-700 checked:bg-white"
                                     >
                                     <span class="ml-4 text-slate-800 font-medium group-hover/option:text-slate-900 transition-colors">
@@ -211,14 +231,61 @@ timer.addEventListener('targetAchieved', function () {
 
 
 <script>
+let saveTimeout;
+
 document.addEventListener("change", function(e){
 
     if(e.target.type === "radio"){
 
-        const name = e.target.name;   // contoh: q-1
-        const value = e.target.value; // id jawaban
+        const radio = e.target;
+        const name = radio.name;
+        const value = Number(radio.value);
 
+        const questionId = Number(name.replace("q-", ""));
+
+        // simpan ke localStorage dulu
         localStorage.setItem(name, value);
+
+        // hentikan timer sebelumnya
+        clearTimeout(saveTimeout);
+
+        // tunggu user berhenti klik
+        saveTimeout = setTimeout(async () => {
+
+            try {
+
+                const response = await fetch("/jawaban-users/chose-answer", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: {{user.id}},
+                        pertanyaanId: questionId,
+                        jawabanId: value
+                    })
+                });
+
+                if(!response.ok){
+                    throw new Error("Server error");
+                }
+
+            } catch(err){
+
+                console.error("Autosave gagal", err);
+
+                // kosongkan pertanyaan
+       document.querySelectorAll(`input[name="${name}"]`)
+.forEach(r => {
+    r.checked = false;
+    r.dispatchEvent(new Event('change', { bubbles: true }));
+});
+
+                localStorage.removeItem(name);
+
+            }
+
+        }, 700); // jeda 700ms
 
     }
 

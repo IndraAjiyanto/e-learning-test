@@ -11,12 +11,23 @@ import { JawabanUsersService } from './jawaban_users.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
-import { CreateJawabanUserDto } from './dto/create-jawaban_user.dto';
+import { CreateJawabanUserDto, JawabanUserDto } from './dto/create-jawaban_user.dto';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('jawaban-users')
 export class JawabanUsersController {
   constructor(private readonly jawabanUsersService: JawabanUsersService) {}
+
+    @Roles('user')
+  @Post('chose-answer')
+  async choseAnswer(@Body() jawabanUserDto: JawabanUserDto) {
+    try {
+    await this.jawabanUsersService.createAnswer(jawabanUserDto);
+      
+    } catch (error) {
+      console.log("error" + error);
+    }
+  }
 
   @Roles('user')
   @Post(':quizId')
@@ -27,35 +38,9 @@ export class JawabanUsersController {
     @Body() createJawabanUserDto: CreateJawabanUserDto,
   ) {
     try {
-      const jawabanUser = Object.entries(createJawabanUserDto).map(
-        ([key, value]) => {
-          const pertanyaanId = Number(key.replace('q-', ''));
-
-          // cek kalau value array, ambil yang terakhir
-          let jawabanId: number | null = null;
-          if (Array.isArray(value)) {
-            // filter value kosong dan ambil terakhir
-            const filtered = value.filter((v) => v !== '');
-            jawabanId = filtered.length
-              ? Number(filtered[filtered.length - 1])
-              : null;
-          } else if (value !== '') {
-            jawabanId = Number(value);
-          }
-
-          console.log(
-            `Pertanyaan ID: ${pertanyaanId}, Jawaban ID: ${jawabanId}`,
-          );
-          return {
-            pertanyaanId,
-            jawabanId,
-            userId: req.user!.id,
-          };
-        },
-      );
-
-      await this.jawabanUsersService.create({ jawabanUser });
-      await this.jawabanUsersService.nilaiCreate({ jawabanUser });
+      const jawabanUser = await this.jawabanUsersService.searchAnswerUser(quizId, req.user!.id);
+      await this.jawabanUsersService.nilaiCreate(jawabanUser, quizId, req.user!.id);
+      await this.jawabanUsersService.deleteAnswerUser(req.user!.id, quizId);
 
       req.flash('success', 'Success complete quiz');
       res.redirect(`/quiz/form/${quizId}`);
@@ -64,4 +49,7 @@ export class JawabanUsersController {
       res.redirect(`/quiz/form/${quizId}`);
     }
   }
+
+
+
 }

@@ -100,9 +100,31 @@ export class QuizController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const check = await this.quizService.checkStartQuestion(
+      req.user!.id,
+      quizId,
+    );
     const pertanyaan = await this.quizService.findPertanyaan(quizId);
-    const remainingTime = await this.quizService.getRemainingTime(req.user!.id, quizId);
-    res.render('user/quiz/start', { user: req.user, quizId, pertanyaan, remainingTime });
+    if (check) {
+      res.render('user/quiz/start', {
+        user: req.user,
+        quizId,
+        pertanyaan,
+        check,
+      });
+    } else {
+      const remainingTime = await this.quizService.getRemainingTime(
+        req.user!.id,
+        quizId,
+      );
+      res.render('user/quiz/start', {
+        user: req.user,
+        quizId,
+        pertanyaan,
+        remainingTime,
+        check,
+      });
+    }
   }
 
   @Roles('admin')

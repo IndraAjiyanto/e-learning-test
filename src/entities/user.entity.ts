@@ -73,6 +73,9 @@ export class User {
   @Column({ type: 'timestamp', nullable: true})
   countdownQuiz: Date | null;
 
+  @Column({default: false, nullable: true})
+  quizStart: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

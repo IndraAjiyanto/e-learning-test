@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateJawabanUserDto } from './dto/create-jawaban_user.dto';
+import { CreateJawabanUserDto, JawabanUserDto } from './dto/create-jawaban_user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JawabanUser } from 'src/entities/jawaban_user.entity';
 import { In, Repository } from 'typeorm';
@@ -75,14 +75,81 @@ export class JawabanUsersService {
     return await this.jawabanUserRepository.save(jawabanToInsert);
   }
 
-  async nilaiCreate(createJawabanUserDto: CreateJawabanUserDto) {
-    const jawabanUser = createJawabanUserDto.jawabanUser;
+  async searchAnswerUser(quizId: number, userId: number) {
+    return await this.jawabanUserRepository.find({
+      where: { pertanyaan: { quiz: { id: quizId } }, user: { id: userId } },
+      relations: ['jawaban','user'],
+    });
+  }
 
-    const jawabanIds = jawabanUser.map((j) => j.jawabanId);
 
+  async createAnswer(jawabanUserDto: JawabanUserDto) {
+    const userIsAnswered = await this.jawabanUserRepository.findOne({
+      where: {
+        user: { id: jawabanUserDto.userId },
+        pertanyaan: { id: jawabanUserDto.pertanyaanId },
+      },
+    });
+
+    if (userIsAnswered) {
+      if(jawabanUserDto.jawabanId !== null) {
+      const jawaban = await this.jawabanRepository.findOne({ where: { id: jawabanUserDto.jawabanId } });
+      userIsAnswered.jawaban = jawaban
+      await this.jawabanUserRepository.save(userIsAnswered);
+      }
+
+    } else {
+      const pertanyaan = await this.pertanyaanRepository.findOne({
+        where: { id: jawabanUserDto.pertanyaanId },
+      });
+
+      if (!pertanyaan) {
+  throw new NotFoundException('Question not found');
+}
+
+      const user = await this.userRepository.findOne({
+        where: { id: jawabanUserDto.userId },
+      });
+
+if (!user) {
+  throw new NotFoundException('User not found');
+}
+      const jawaban = jawabanUserDto.jawabanId
+        ? await this.jawabanRepository.findOne({ where: { id: jawabanUserDto.jawabanId } })
+        : null;
+
+      const jawabanUser = this.jawabanUserRepository.create({
+        pertanyaan,
+        jawaban,
+        user,
+      });
+
+      await this.jawabanUserRepository.save(jawabanUser);
+    }
+
+  }
+
+  async nilaiCreate(JawabanUser: JawabanUser[], quizId: number, userId: number) {
+    if(JawabanUser.length === 0) {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+          user.quizStart = false;
+    await this.userRepository.save(user);
+
+      await this.nilaiRepository.save({
+        user: { id: userId },
+        quiz: { id: quizId },
+        nilai: 0,
+      });
+    }else{
+
+    const jawabanIds = JawabanUser.map((j) => j.jawaban?.id).filter((id): id is number => id !== undefined && id !== null);
     const jawabanBenar = await this.jawabanRepository.findBy({
       id: In(jawabanIds),
     });
+
 
     let benar = 0;
     jawabanBenar.forEach((j) => {
@@ -91,26 +158,20 @@ export class JawabanUsersService {
       }
     });
 
-    const totalSoal = jawabanUser.length;
+    const pertanyaan = await this.pertanyaanRepository.find({where: { quiz: { id: quizId } }});
+    const totalSoal = pertanyaan.length;
     const nilai = Math.round((benar / totalSoal) * 100);
 
-    const userId = jawabanUser[0].userId;
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
     }
 
-    const quizId = await this.pertanyaanRepository
-      .findOne({
-        where: { id: jawabanUser[0].pertanyaanId },
-        relations: ['quiz'],
-      })
-      .then((p) => p?.quiz.id);
-
     const quiz = await this.quizRepository.findOne({
       where: { id: quizId },
       relations: ['minggu'],
     });
+
     if (!quiz) {
       throw new NotFoundException('quiz not found');
     }
@@ -120,11 +181,16 @@ export class JawabanUsersService {
       await this.updateProgresMinggu(quiz.minggu.id, userId);
     }
 
+    user.quizStart = false;
+    await this.userRepository.save(user);
+
     await this.nilaiRepository.save({
       user: user,
       quiz: quiz,
       nilai,
     });
+    }
+
   }
 
   async updateProgresMinggu(mingguId: number, userId: number) {
@@ -257,5 +323,20 @@ export class JawabanUsersService {
     }, 0);
 
     return totalNilai;
+  }
+
+  async deleteAnswerUser(userId:number, quizId:number){
+const pertanyaan = await this.pertanyaanRepository.find({
+  where: { quiz: { id: quizId } },
+  select: ["id"]
+});
+
+const ids = pertanyaan.map(p => p.id);
+
+await this.jawabanUserRepository.delete({
+  user: { id: userId },
+  pertanyaan: { id: In(ids) }
+});
+
   }
 }
