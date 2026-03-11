@@ -44,11 +44,10 @@
         <template x-if='pptFile'>
           <div class='relative h-[600px] bg-white'>
             <!-- Iframe untuk tampilkan PPT langsung -->
-            <iframe
-              x-bind:src='pptFile'
-              class='w-full h-full border-none'
-              frameborder='0'
-            ></iframe>
+<iframe
+  :src="'https://docs.google.com/gview?url=' + encodeURIComponent(pptFile) + '&embedded=true'"
+  class="w-full h-full border-none"
+></iframe>
           </div>
         </template>
 
