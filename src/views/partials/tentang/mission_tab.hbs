@@ -13,17 +13,20 @@
 
   <!-- Vision Card -->
   <div
-    class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-slate-200 transition-all duration-300 hover:shadow-lg mb-6 sm:mb-8'
+    class='bg-gradient-to-br from-slate-50 to-slate-100 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-slate-200 transition-all duration-300 hover:shadow-lg mb-6 sm:mb-8'
   >
     <div class='flex items-start gap-4 sm:gap-6'>
-
-        <i class='fas fa-eye text-white text-lg sm:text-xl lg:text-2xl mt-1'></i>
+      <div
+        class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0'
+      >
+        <i class='fas fa-eye text-white text-lg sm:text-xl lg:text-2xl'></i>
+      </div>
       <div class='flex-1'>
         <h3
-          class='text-lg sm:text-xl lg:text-2xl font-bold text-white mb-3 sm:mb-4 font-montserrat'
+          class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
         >{{t 'test.about.visiMisi.visi'}}</h3>
         <p
-          class='text-sm sm:text-base text-white leading-relaxed '
+          class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
         >
           {{#if visi.length}}
             {{getByLang visi.[0].visi lang}}
@@ -39,25 +42,29 @@
 
   <!-- Mission Card -->
   <div
-    class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-slate-200 transition-all duration-300 hover:shadow-lg'
+    class='bg-gradient-to-br from-slate-50 to-slate-100 p-5 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-slate-200 transition-all duration-300 hover:shadow-lg'
   >
     <div class='flex items-start gap-4 sm:gap-6'>
+      <div
+        class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0'
+      >
         <i
-          class='fas fa-bullseye text-white text-lg sm:text-xl lg:text-2xl mt-1'
+          class='fas fa-bullseye text-white text-lg sm:text-xl lg:text-2xl'
         ></i>
+      </div>
       <div class='flex-1'>
         <h3
-          class='text-lg sm:text-xl lg:text-2xl font-bold text-white mb-3 sm:mb-4 font-montserrat'
+          class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
         >{{t 'test.about.visiMisi.misi'}}</h3>
         <ul class='space-y-3 sm:space-y-4'>
           {{#if misi.length}}
             {{#each misi}}
               <li class='flex items-start space-x-3'>
                 <i
-                  class='fas fa-check-circle text-white mt-1 flex-shrink-0'
+                  class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
                 ></i>
                 <p
-                  class='text-sm sm:text-base text-white leading-relaxed '
+                  class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
                 >
                   <strong>{{getByLang content ../lang}}:</strong>
                   {{getByLang isi ../lang}}
@@ -71,7 +78,7 @@
                 class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
               ></i>
               <p
-                class='text-sm sm:text-base text-slate-700 leading-relaxed '
+                class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
               >
                 <strong>To Become a Leading Provide</strong>
                 of digital education that continuously innovates in line with
@@ -83,7 +90,7 @@
                 class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
               ></i>
               <p
-                class='text-sm sm:text-base text-slate-700 leading-relaxed '
+                class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
               >
                 <strong>To Develop Exceptional Human Resources</strong>
                 equipped with both technical expertise and soft skills that meet
@@ -95,7 +102,7 @@
                 class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
               ></i>
               <p
-                class='text-sm sm:text-base text-slate-700 leading-relaxed '
+                class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
               >
                 <strong>To Prepare Job-Ready Graduates</strong>
                 through practical learning programs and professional mentoring.
@@ -106,7 +113,7 @@
                 class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
               ></i>
               <p
-                class='text-sm sm:text-base text-slate-700 leading-relaxed '
+                class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
               >
                 <strong>To Build a Globally Competitive Generation</strong>
                 with internationally recognized digital competencies.
@@ -117,7 +124,7 @@
                 class='fas fa-check-circle text-slate-600 mt-1 flex-shrink-0'
               ></i>
               <p
-                class='text-sm sm:text-base text-slate-700 leading-relaxed '
+                class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
               >
                 <strong>To Accelerate Digital Transformation</strong>
                 by cultivating impactful and valuable talents.
