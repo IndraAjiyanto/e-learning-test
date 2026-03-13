@@ -40,8 +40,33 @@ export class BlogController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+
     const blog = await this.blogService.findOne(id);
     res.render('blog-detail', { blog, user: req.user });
+
+  }
+
+  @Post('view/:id')
+  async incrementViews(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    await this.blogService.incrementViews(id);
+    return res.json({ success: true });
+  }
+
+  @Get('like/:id')
+  async likeBlog(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if(req.user){
+    await this.blogService.incrementLikes(id);
+    }else{
+      res.redirect('login')
+    }
   }
 
   @Roles('super_admin')

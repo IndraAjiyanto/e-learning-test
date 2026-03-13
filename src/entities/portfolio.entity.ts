@@ -33,6 +33,12 @@ export class Portfolio {
   @Column()
   link: string;
 
+  @Column({ default: 0 })
+  views: number;
+
+  @Column({ default: 0 })
+  likes: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

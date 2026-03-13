@@ -79,6 +79,48 @@ export class DashboardService {
     private readonly kategoriBlogRepository: Repository<KategoriBlog>,
   ) {}
 
+async findBlogTrending() {
+  return await this.blogRepository
+    .createQueryBuilder('blog')
+    .orderBy('blog.views + blog.likes', 'DESC')
+    .getOne();
+}
+
+async findKategoriTrending() {
+  const kategoriTrending = await this.kategoriBlogRepository
+    .createQueryBuilder('kategori')
+    .leftJoin('kategori.blog', 'blog')
+    .addSelect('SUM((blog.views * 1) + (blog.likes * 2))', 'score')
+    .groupBy('kategori.id')
+    .orderBy('score', 'DESC')
+    .take(2)
+    .getRawMany();
+
+  const result = await Promise.all(
+    kategoriTrending.map(async (kategori) => {
+      const topBlog = await this.blogRepository
+        .createQueryBuilder('blog')
+        .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
+        .where('kategori_blog.id = :id', { id: kategori.kategori_id }) // ← pakai kategori_id
+        .orderBy('(blog.views * 1) + (blog.likes * 2)', 'DESC')
+        .getOne();
+
+      return {
+        id: kategori.kategori_id,
+        nama: kategori.kategori_nama,
+        icon: kategori.kategori_icon,
+        deskripsi: kategori.kategori_deskripsi,
+        createdAt: kategori.kategori_createdAt,
+        updatedAt: kategori.kategori_updatedAt,
+        score: kategori.score,
+        blog: topBlog,
+      };
+    })
+  );
+
+  return result;
+}
+
   async findBlogCategory() {
     return await this.kategoriBlogRepository.find({
       order: { nama: 'ASC' },
@@ -171,12 +213,14 @@ export class DashboardService {
     });
   }
 
-  async findBlog() {
-    return await this.blogRepository.find({
-      order: { id: 'DESC' },
-      relations: ['kategori_blog'],
-    });
-  }
+async findBlog() {
+  return await this.blogRepository
+    .createQueryBuilder('blog')
+    .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
+    .orderBy('(blog.views * 1) + (blog.likes * 2)', 'DESC') 
+    .addOrderBy('blog.createdAt', 'DESC')
+    .getMany();
+}
 
   async findPortfolio() {
     return await this.portfolioRepository.find({

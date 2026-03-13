@@ -6,10 +6,11 @@ import { Blog } from 'src/entities/blog.entity';
 import { KategoriBlog } from 'src/entities/kategori_blog.entity';
 import { CommonModule } from 'src/common/common.module';
 import { Topic } from 'src/entities/topic.entity';
+import { User } from 'src/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Blog, KategoriBlog, Topic]),
+    TypeOrmModule.forFeature([Blog, KategoriBlog, Topic, User]),
     CommonModule,
   ],
   controllers: [BlogController],

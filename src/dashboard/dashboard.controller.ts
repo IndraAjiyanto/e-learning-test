@@ -132,13 +132,29 @@ export class DashboardController {
 
   @Get('blog')
   async blog(@Req() req: Request, @Res() res: Response) {
-    const blog = await this.dashboardService.findBlog();
-    const kategori_blog = await this.dashboardService.findBlogCategory();
-    res.render('blog', {
-      user: req.user,
-      blog,
-      kategori_blog,
-    });
+    const blog_tranding = await this.dashboardService.findBlogTrending();
+    const kategori_tranding = await this.dashboardService.findKategoriTrending();
+    if (blog_tranding !== null) {
+      const blog = await this.dashboardService.findBlog();
+      const kategori_blog = await this.dashboardService.findBlogCategory();
+      res.render('blog', {
+        user: req.user,
+        blog,
+        kategori_blog,
+        blog_tranding,
+        kategori_tranding
+      });
+    } else {
+      const blog = await this.dashboardService.findBlog();
+      const kategori_blog = await this.dashboardService.findBlogCategory();
+      res.render('blog', {
+        user: req.user,
+        blog,
+        kategori_blog,
+        blog_tranding,
+        kategori_tranding
+      });
+    }
   }
 
   @Get('about')

@@ -8,6 +8,7 @@ import { KategoriBlog } from 'src/entities/kategori_blog.entity';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Topic } from 'src/entities/topic.entity';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class BlogService {
@@ -18,6 +19,8 @@ export class BlogService {
     private readonly kategoriBlogRepository: Repository<KategoriBlog>,
     @InjectRepository(Topic)
     private readonly topicRepository: Repository<Topic>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(createBlogDto: CreateBlogDto) {
@@ -120,6 +123,15 @@ export class BlogService {
       throw new NotFoundException('Blog not found');
     }
     return blog;
+  }
+
+  async incrementViews(id: number) {
+    await this.blogRepository.increment({ id }, 'views', 1);
+
+  }
+
+  async incrementLikes(id: number) {
+    await this.blogRepository.increment({ id }, 'likes', 1);
   }
 
   async getAllCategories() {

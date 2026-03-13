@@ -1,113 +1,100 @@
-<div class='pt-24 min-h-screen bg-white' x-data='blogApp()'>
-  <div class='container mx-auto px-4 pb-16'>
-    <div class='text-center mb-12'>
-      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.blog.tittle"}}</h1>
-      <p class='text-gray-600 max-w-2xl mx-auto text-lg '>
-        {{t "test.blog.description"}}
-      </p>
-    </div>
+<div class='pt-24 min-h-screen bg-gray-50 ' x-data='blogApp()'>
+  <div class='container mx-auto max-w-7xl px-6  pb-16'>
 
-    <div class='grid grid-cols-1 lg:grid-cols-4 gap-8'>
-      <div class='lg:col-span-1'>
-        <div
-          class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6'
-        >
-          <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-            <div class='flex items-center justify-between mb-3'>
-              <h4 class='text-sm font-semibold text-gray-700 font-montserrat'>{{t "test.blog.filterTittle"}}</h4>
-              <button
-                @click='resetFilters()'
-                class='text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center'
-              >
-                <i class='fas fa-undo-alt mr-1 text-xs'></i>
-                {{t "test.blog.resetFilters"}}
-              </button>
-            </div>
-            <div class='space-y-2'>
-              <template
-                x-if="selectedKategori === ''"
-              >
-                <div
-                  class='text-xs text-gray-500 text-center py-2 bg-white rounded border border-gray-200'
-                >
-                  {{t "test.blog.noFilters"}}
-                </div>
-              </template>
+    <!-- Header dengan featured story -->
+    <div class="mb-8">
 
-              <template x-if="selectedKategori !== ''">
-                <span
-                  class='block px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-medium border'
-                >
-                  <span x-text='selectedKategori'></span>
-                </span>
-              </template>
-            </div>
-          </div>
-
-          <div class='mb-6'>
-            <h3
-              class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
-            >
-              <i class='fas fa-tags text-gray-500 mr-2'></i>
-                {{t "test.blog.categoryTittle"}}
-            </h3>
-
-            <div class='mb-3'>
-              <div class='relative'>
-                <input
-                  type='text'
-                  x-model='searchKategoriQuery'
-                  @input='filterKategori()'
-                  placeholder='{{t "test.blog.searchCategoryPlaceholder"}}'
-                  class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
-                />
-                <i
-                  class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-                ></i>
-              </div>
-            </div>
-
-            <div class='space-y-2 max-h-64 overflow-y-auto'>
-              <button
-                @click="selectKategori('')"
-                :class="selectedKategoriId === '' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
-                class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
-              >
-                <span class='text-sm text-left'>{{t "test.blog.allCategory"}}</span>
-              </button>
-              <template x-for='kategori in filteredKategoriList' :key='kategori.id'>
-                <button
-                  @click='selectKategori(kategori.id)'
-                  :class="selectedKategoriId == kategori.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700'"
-                  class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
-                >
-                  <span class='text-sm' x-text='kategori.nama'></span>
-                </button>
-              </template>
-            </div>
-          </div>
-
-          <div class='mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-            <div class='text-center'>
-              <div
-                class='text-2xl font-bold text-gray-900'
-                x-text='totalItems'
-              ></div>
-              <div class='text-sm text-gray-600'>{{t "test.blog.projectAvailable"}}</div>
-            </div>
-          </div>
+      <!-- Header Navigation -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-6">
+          <h1 class="text-3xl font-bold text-gray-900 font-montserrat">Blog</h1>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="relative hidden lg:block">
+          <input type="text" placeholder="Cari artikel..." 
+            class="w-64 pl-10 pr-4 py-2 border bg-white border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
         </div>
       </div>
 
-      <div class='lg:col-span-3'>
-        <div
-          x-show='loading'
-          class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+      <!-- Kategori Horizontal dengan icon -->
+      <div class="flex items-center space-x-4 overflow-x-auto pb-4 scrollbar-hide border-b border-gray-200">
+        <button
+          @click="selectKategori('')"
+          :class="selectedKategoriId === '' ? 'text-gray-900 font-semibold border-b-2 border-gray-900' : 'text-gray-600 hover:text-gray-900'"
+          class="pb-2 text-sm whitespace-nowrap transition-all duration-200 flex items-center space-x-2"
         >
+          <i class="fas fa-home"></i>
+          <span>Semua</span>
+        </button>
+        <template x-for='kategori in allKategori' :key='kategori.id'>
+          <button
+            @click='selectKategori(kategori.id)'
+            :class="selectedKategoriId == kategori.id ? 'text-gray-900 font-semibold border-b-2 border-gray-900' : 'text-gray-600 hover:text-gray-900'"
+            class="pb-2 text-sm whitespace-nowrap transition-all duration-200 flex items-center space-x-2"
+          >
+            <i :class="computeIcon(kategori.icon)"></i>
+            <span x-text='kategori.nama'></span>
+            <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-xs" x-text="getKategoriCount(kategori.id)"></span>
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <!-- Featured Stories Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Main Featured -->
+      <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden group cursor-pointer">
+
+        <div class="relative h-80">
+                  <a   href="/blog/detail/{{blog_tranding.id}}"
+                  @click="viewBlog({{blog_tranding.id}})" >
+          <img src="{{blog_tranding.gambar.[0]}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-6 text-white">
+            <span class="bg-red-600 text-xs px-3 py-1 rounded-full mb-3 inline-block">Trending</span>
+            <h2 class="text-3xl font-bold mb-2">{{blog_tranding.judul}}</h2>
+            <p class="text-gray-200 mb-4">Menteri Keuangan menjelaskan detail paket stimulus ekonomi untuk mendorong pertumbuhan...</p>
+            <div class="flex items-center space-x-4 text-sm">
+              <span class="flex items-center"><i class="far fa-eye mr-2"></i> {{blog_tranding.views}}</span>
+            </div>
+          </div>
+        </a>
+
+        </div>
+      </div>
+
+      <!-- Side Featured -->
+      <div class="space-y-4">
+
+        {{#each kategori_tranding}}
+        <div class="bg-white rounded-xl shadow-lg p-4 flex space-x-4 group cursor-pointer">
+          <img src="{{this.blog.gambar.[0]}}" class="w-20 h-20 object-cover rounded-lg">
+          <div>
+            <i class="{{computeIcon this.icon}}"></i>
+            <span class="text-xs text-blue-600 font-semibold">{{this.nama}}</span>
+            <h3 class="font-semibold group-hover:text-blue-600">
+              <a href="/blog/detail/{{this.blog.id}}"
+                  @click="viewBlog({{this.blog.id}})">{{this.blog.judul}}</a></h3>
+            <div class="flex items-center space-x-2 text-xs text-gray-500 mt-2">
+              <span><i class="far fa-eye"></i> {{this.blog.views}}</span>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class='grid grid-cols-1 lg:grid-cols-4 gap-8'>
+
+      <!-- Content Area -->
+      <div class='lg:col-span-4'>
+        <!-- Loading State -->
+        <div x-show='loading' class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           <template x-for='i in 6' :key='i'>
-            <div
-              class='bg-white border border-gray-200 rounded-xl shadow-lg animate-pulse'
-            >
+            <div class='bg-white border border-gray-200 rounded-xl shadow-lg animate-pulse'>
               <div class='h-44 bg-gray-200 rounded-t-xl'></div>
               <div class='p-6 space-y-4'>
                 <div class='h-4 bg-gray-200 rounded w-3/4'></div>
@@ -118,35 +105,29 @@
           </template>
         </div>
 
-        <div
-          x-show='!loading'
-          class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-        >
+        <!-- Blog Grid -->
+        <div x-show='!loading' class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           <template
             x-for='item in blogItems'
             :key='item.id'
-            x-data='{ currentSlide: 0, autoSlide: null }'
+            x-data='{ currentSlide: 0, autoSlide: null, isLiked: false, likes: item.likes || 0 }'
             x-init="
-                            // Handle multiple images
-                            const images = Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'];
-                            // Auto slide jika ada lebih dari 1 gambar
-                            if (images.length > 1) {
-                                autoSlide = setInterval(() => { 
-                                    currentSlide = (currentSlide + 1) % images.length 
-                                }, 3000);
-                            }
-                        "
+              const images = Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://picsum.photos/400/300?random=' + item.id];
+              if (images.length > 1) {
+                autoSlide = setInterval(() => { 
+                  currentSlide = (currentSlide + 1) % images.length 
+                }, 3000);
+              }
+            "
             @mouseenter='if (autoSlide) clearInterval(autoSlide)'
             @mouseleave='if (Array.isArray(item.gambar) && item.gambar.length > 1) autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1) }, 3000)'
           >
-
-            <div
-              class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'
-            >
+            <div class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+              <!-- Image Container -->
               <div class='relative overflow-hidden rounded-t-xl'>
                 <div class='relative h-44 w-full'>
                   <template
-                    x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'])"
+                    x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://picsum.photos/400/300?random=' + item.id])"
                     :key='index'
                   >
                     <img
@@ -158,65 +139,39 @@
                   </template>
                 </div>
 
-                <template
-                  x-if='Array.isArray(item.gambar) && item.gambar.length > 1'
-                >
+                <!-- Slide Controls -->
+                <template x-if='Array.isArray(item.gambar) && item.gambar.length > 1'>
                   <div>
                     <button
                       @click='currentSlide = currentSlide === 0 ? (Array.isArray(item.gambar) ? item.gambar.length : 1) - 1 : currentSlide - 1'
                       class='absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
                     >
-                      <svg
-                        class='w-4 h-4'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                      >
-                        <path
-                          stroke-linecap='round'
-                          stroke-linejoin='round'
-                          stroke-width='2'
-                          d='M15 19l-7-7 7-7'
-                        ></path>
+                      <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 19l-7-7 7-7'></path>
                       </svg>
                     </button>
                     <button
                       @click='currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1)'
                       class='absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
                     >
-                      <svg
-                        class='w-4 h-4'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                      >
-                        <path
-                          stroke-linecap='round'
-                          stroke-linejoin='round'
-                          stroke-width='2'
-                          d='M9 5l7 7-7 7'
-                        ></path>
+                      <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7'></path>
                       </svg>
                     </button>
                   </div>
                 </template>
 
-                <div
-                  class='absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md'
-                >
+                <!-- Author Badge -->
+                <div class='absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md flex items-center'>
+                  {{!-- <img :src="'https://i.pravatar.cc/20?img=' + item.authorId" class="w-4 h-4 rounded-full mr-1"> --}}
                   <span x-text="item.author"></span>
                 </div>
 
-                <template
-                  x-if='Array.isArray(item.gambar) && item.gambar.length > 1'
-                >
-                  <div
-                    class='absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2'
-                  >
-                    <template
-                      x-for='(image, index) in item.gambar'
-                      :key='index'
-                    >
+
+                <!-- Slide Indicators -->
+                <template x-if='Array.isArray(item.gambar) && item.gambar.length > 1'>
+                  <div class='absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2'>
+                    <template x-for='(image, index) in item.gambar' :key='index'>
                       <button
                         @click='currentSlide = index'
                         class='w-2 h-2 rounded-full transition-all duration-200'
@@ -227,58 +182,76 @@
                 </template>
               </div>
 
-              <div class='p-6 space-y-4'>
-                <div class='flex flex-wrap gap-1'>
+              <!-- Content -->
+              <div class='p-4'>
+                <!-- Category and Date -->
+                <div class='flex items-center justify-between mb-2'>
                   <span
-                    class='badge bg-gradient-to-br from-primary via-secondary to-gray-900  text-white px-3 py-1 text-xs font-semibold rounded-full'
+                    class='badge bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-2 py-0.5 text-xs font-semibold rounded-full'
                     x-text="getCategoryName(item) || 'No Type'"
                   >
                   </span>
                 </div>
 
-                <h3
-                  class='text-lg font-semibold text-gray-900 leading-tight'
-                  x-text="item.judul || 'No Title'"
-                ></h3>
+                <!-- Title -->
+                <h3 class='text-base font-semibold text-gray-900 leading-tight hover:text-gray-700 transition-colors line-clamp-2 mb-2' x-text="item.judul || 'No Title'"></h3>
+                
+                <!-- Excerpt -->
+                <p class="text-xs text-gray-600 line-clamp-2 mb-3" x-text="item.excerpt"></p>
 
+                <!-- Stats -->
+                <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                  <div class="flex items-center space-x-3">
+                    <span class="flex items-center">
+                      <i class="far fa-heart mr-1" :class="{'fas text-red-500': isLiked}"></i>
+                      <span x-text="item.likes"></span>
+                    </span>
 
-                <div class='mt-6'>
-                  <a
-                    :href="'/blog/detail/' + item.id"
-                    class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
-                  >
-                    {{t "test.blog.detailButton"}}
-                  </a>
+                  </div>
+                  <span class="flex items-center">
+                    <i class="far fa-eye mr-1"></i>
+                    <span x-text="item.views"></span>
+                  </span>
                 </div>
+
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-1 mb-3">
+                  <template x-for="tag in item.tags" :key="tag">
+                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full" x-text="tag"></span>
+                  </template>
+                </div>
+
+                <!-- Detail Button -->
+                <a
+                  :href="'/blog/detail/' + item.id"
+                  @click="viewBlog(item.id)"
+                  class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-sm px-4 py-2 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 rounded-lg flex items-center justify-center'
+                >
+                  <span>Baca Selengkapnya</span>
+                  <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                </a>
               </div>
             </div>
           </template>
         </div>
 
-        <div
-          x-show='!loading && blogItems.length === 0'
-          class='text-center py-12'
-        >
-          <div
-            class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'
-          >
+        <!-- No Results -->
+        <div x-show='!loading && blogItems.length === 0' class='text-center py-12'>
+          <div class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
             <i class='fas fa-search text-gray-400 text-2xl'></i>
           </div>
           <h3 class='text-xl font-semibold text-gray-900 mb-2 font-montserrat'>{{t "test.blog.blogNotFound"}}</h3>
-          <p class='text-gray-600 mb-6 '>{{t "test.blog.tryAdjusting"}}</p>
+          <p class='text-gray-600 mb-6'>{{t "test.blog.tryAdjusting"}}</p>
           <button
             @click='resetFilters()'
-            class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white px-6 py-3 rounded-lg  transition-all duration-300'
+            class='bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white px-6 py-3 rounded-lg transition-all duration-300'
           >
             {{t "test.blog.resetAllFilters"}}
           </button>
         </div>
-        </div>
 
-        <div
-          class='flex justify-center items-center gap-4 mt-12'
-          x-show='!loading && totalPages > 1'
-        >
+        <!-- Pagination -->
+        <div class='flex justify-center items-center gap-4 mt-12' x-show='!loading && totalPages > 1'>
           <button
             @click='changePage(Math.max(1, currentPage - 1))'
             :disabled='currentPage === 1 || loading'
@@ -306,7 +279,6 @@
           </button>
         </div>
       </div>
-      </div>
     </div>
   </div>
 </div>
@@ -314,7 +286,7 @@
 <script>
   function blogApp() {
     return {
-      allBlog: {{#if blog}}{{{json blog}}}{{else}}[]{{/if}},
+      allBlog: {{{json blog}}},
       displayedBlog: [],
       allKategori: {{{json kategori_blog}}},
       filteredKategoriList: [],
@@ -322,22 +294,17 @@
       selectedKategoriId: '',
       searchKategoriQuery: '',
       currentPage: 1,
-      itemsPerPage: 6,
+      itemsPerPage: 9,
       totalPages: 1,
       loading: false,
-      lang: '{{lang}}',
+      lang: 'id',
 
       init() {
-        this.allKategori = this.allKategori.sort((a, b) =>
-          a.nama.localeCompare(b.nama)
-        );
-        this.filteredKategoriList = [...this.allKategori];
         this.filterAndPaginate();
       },
 
-      getByLang(obj, lang) {
-        if (!obj || typeof obj !== 'object') return '';
-        return obj[lang] || obj.id || obj.en || '';
+      getKategoriCount(kategoriId) {
+        return this.allBlog.filter(item => item.kategori_blog?.id == kategoriId).length;
       },
 
       filterKategori() {
@@ -386,6 +353,17 @@
         return filtered.length;
       },
 
+viewBlog(id) {
+  fetch('/blog/view/' + id, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(res => res.json())
+  .catch(err => console.error('Error view blog:', err));
+},
+
       selectKategori(kategoriId) {
         this.selectedKategoriId = kategoriId;
         this.currentPage = 1;
@@ -413,11 +391,57 @@
         this.filterAndPaginate();
       },
 
+              computeIcon(iconValue) {
+      const raw = (iconValue || '').toString().trim();
+      if (!raw) return 'fa-solid fa-circle-question';
+      if (/^fa-/.test(raw)) return 'fa-solid ' + raw;
+      return raw;
+    },
+
       getCategoryName(item) {
         if (item.kategori_blog?.nama)
           return item.kategori_blog.nama;
         return null;
-      },
-  }
+      }
+    }
   }
 </script>
+
+<!-- Styles -->
+<style>
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.badge {
+  display: inline-block;
+}
+</style>
