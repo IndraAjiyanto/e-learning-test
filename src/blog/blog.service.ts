@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Topic } from 'src/entities/topic.entity';
 import { User } from 'src/entities/user.entity';
+import { Likes } from 'src/entities/likes.entity';
 
 @Injectable()
 export class BlogService {
@@ -21,6 +22,8 @@ export class BlogService {
     private readonly topicRepository: Repository<Topic>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Likes)
+    private readonly likeRepository: Repository<Likes>,
   ) {}
 
   async create(createBlogDto: CreateBlogDto) {
@@ -127,11 +130,40 @@ export class BlogService {
 
   async incrementViews(id: number) {
     await this.blogRepository.increment({ id }, 'views', 1);
-
   }
 
-  async incrementLikes(id: number) {
-    await this.blogRepository.increment({ id }, 'likes', 1);
+  async incrementLikes(id: number, userId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    const blog = await this.blogRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!blog) {
+      throw new NotFoundException('Blog not found');
+    }
+
+    const like = await this.likeRepository.findOne({
+      where: { user: user, blog: blog },
+    });
+
+    if (like) {
+      console.log("masuk like")
+      await this.likeRepository.remove(like);
+      console.log("berhasil menghapus")
+    } else {
+      console.log("masuk tidak ada like")
+      await this.likeRepository.create({
+        user: user,
+        blog: blog,
+      });
+      console.log("berhasil membuat")
+    }
   }
 
   async getAllCategories() {
@@ -217,6 +249,7 @@ export class BlogService {
     if (updateBlogDto.gambar) blog.gambar = updateBlogDto.gambar;
     if (updateBlogDto.author) blog.author = updateBlogDto.author;
     if (updateBlogDto.keyword) blog.keyword = updateBlogDto.keyword;
+    if (updateBlogDto.description) blog.description = updateBlogDto.description;
     if (updateBlogDto.tags) blog.tags = updateBlogDto.tags;
 
     return await this.blogRepository.save(blog);

@@ -55,7 +55,7 @@
           <div class="absolute bottom-0 left-0 p-6 text-white">
             <span class="bg-red-600 text-xs px-3 py-1 rounded-full mb-3 inline-block">Trending</span>
             <h2 class="text-3xl font-bold mb-2">{{blog_tranding.judul}}</h2>
-            <p class="text-gray-200 mb-4">Menteri Keuangan menjelaskan detail paket stimulus ekonomi untuk mendorong pertumbuhan...</p>
+            <p class="text-gray-200 mb-4">{{blog_tranding.description}}</p>
             <div class="flex items-center space-x-4 text-sm">
               <span class="flex items-center"><i class="far fa-eye mr-2"></i> {{blog_tranding.views}}</span>
             </div>
@@ -77,6 +77,7 @@
             <h3 class="font-semibold group-hover:text-blue-600">
               <a href="/blog/detail/{{this.blog.id}}"
                   @click="viewBlog({{this.blog.id}})">{{this.blog.judul}}</a></h3>
+                                  <p class="text-xs text-gray-600 line-clamp-2 mb-3 text-justify" >{{this.blog.description}}</p>
             <div class="flex items-center space-x-2 text-xs text-gray-500 mt-2">
               <span><i class="far fa-eye"></i> {{this.blog.views}}</span>
             </div>
@@ -197,7 +198,7 @@
                 <h3 class='text-base font-semibold text-gray-900 leading-tight hover:text-gray-700 transition-colors line-clamp-2 mb-2' x-text="item.judul || 'No Title'"></h3>
                 
                 <!-- Excerpt -->
-                <p class="text-xs text-gray-600 line-clamp-2 mb-3" x-text="item.excerpt"></p>
+                <p class="text-xs text-gray-600 line-clamp-2 mb-3 text-justify" x-text="item.description"></p>
 
                 <!-- Stats -->
                 <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
@@ -363,6 +364,7 @@ viewBlog(id) {
   .then(res => res.json())
   .catch(err => console.error('Error view blog:', err));
 },
+
 
       selectKategori(kategoriId) {
         this.selectedKategoriId = kategoriId;

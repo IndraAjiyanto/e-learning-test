@@ -82,7 +82,12 @@ export class DashboardService {
 async findBlogTrending() {
   return await this.blogRepository
     .createQueryBuilder('blog')
-    .orderBy('blog.views + blog.likes', 'DESC')
+    .loadRelationCountAndMap('blog.likesCount', 'blog.likes') // ← 'likes' bukan 'like'
+    .addSelect(
+      '(blog.views + (SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id))',
+      'score'
+    )
+    .orderBy('score', 'DESC')
     .getOne();
 }
 
@@ -90,7 +95,13 @@ async findKategoriTrending() {
   const kategoriTrending = await this.kategoriBlogRepository
     .createQueryBuilder('kategori')
     .leftJoin('kategori.blog', 'blog')
-    .addSelect('SUM((blog.views * 1) + (blog.likes * 2))', 'score')
+    .addSelect(
+      `SUM(
+        (blog.views * 1) + 
+        ((SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id) * 2)
+      )`,
+      'score'
+    )
     .groupBy('kategori.id')
     .orderBy('score', 'DESC')
     .take(2)
@@ -101,8 +112,12 @@ async findKategoriTrending() {
       const topBlog = await this.blogRepository
         .createQueryBuilder('blog')
         .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
-        .where('kategori_blog.id = :id', { id: kategori.kategori_id }) // ← pakai kategori_id
-        .orderBy('(blog.views * 1) + (blog.likes * 2)', 'DESC')
+        .loadRelationCountAndMap('blog.likesCount', 'blog.likes') // ← 'likes' bukan 'like'
+        .where('kategori_blog.id = :id', { id: kategori.kategori_id })
+        .orderBy(
+          '(blog.views + (SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id))',
+          'DESC'
+        )
         .getOne();
 
       return {
@@ -217,7 +232,10 @@ async findBlog() {
   return await this.blogRepository
     .createQueryBuilder('blog')
     .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
-    .orderBy('(blog.views * 1) + (blog.likes * 2)', 'DESC') 
+    .orderBy(
+      '(blog.views * 1) + ((SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id) * 2)',
+      'DESC'
+    )
     .addOrderBy('blog.createdAt', 'DESC')
     .getMany();
 }

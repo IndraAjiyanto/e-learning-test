@@ -3,11 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { KategoriBlog } from './kategori_blog.entity';
 import { Topic } from './topic.entity';
+import { Exclude } from 'class-transformer';
+import { Likes } from './likes.entity';
 
 @Entity()
 export class Blog {
@@ -32,14 +35,14 @@ export class Blog {
   @Column()
   keyword: string;
 
+  @Column()
+  description: string;
+
   @Column('jsonb')
   gambar: string[];
 
   @Column({ default: 0 })
   views: number;
-
-  @Column({ default: 0 })
-  likes: number;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -47,13 +50,19 @@ export class Blog {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @OneToMany(() => Likes, (likes) => likes.blog)
+  @Exclude()
+  likes: Likes[];
+
   @ManyToOne(() => KategoriBlog, (kategori_blog) => kategori_blog.blog, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   kategori_blog: KategoriBlog;
 
   @ManyToOne(() => Topic, (topic) => topic.blog, {
     onDelete: 'CASCADE',
   })
+  @Exclude()
   topic: Topic;
 }

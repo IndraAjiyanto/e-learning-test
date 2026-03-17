@@ -27,6 +27,10 @@ export class CreateBlogDto {
 
   @IsString()
   @IsNotEmpty()
+  description: string;
+
+  @IsString()
+  @IsNotEmpty()
   author: string;
 
   @IsArray()

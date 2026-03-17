@@ -56,14 +56,19 @@ export class BlogController {
     return res.json({ success: true });
   }
 
-  @Get('like/:id')
+  @Roles('user', 'admin', 'super_admin')
+  @Post('like/:id')
   async likeBlog(
     @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    console.log("masuk endpoint")
     if(req.user){
-    await this.blogService.incrementLikes(id);
+      console.log("masuk ada user")
+    await this.blogService.incrementLikes(id, req.user.id);
+    console.log("sukses")
+    return res.json({ success: true });
     }else{
       res.redirect('login')
     }

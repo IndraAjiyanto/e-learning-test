@@ -28,6 +28,7 @@ import { ProgresQuiz } from './progres_quiz.entity';
 import { Mentoring } from './mentoring.entity';
 import { Pendaftaran } from './pendaftaran.entity';
 import { Exclude } from 'class-transformer';
+import { Likes } from './likes.entity';
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
 
@@ -70,10 +71,10 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   verifikasiTokenExpires: Date | null;
 
-  @Column({ type: 'timestamp', nullable: true})
+  @Column({ type: 'timestamp', nullable: true })
   countdownQuiz: Date | null;
 
-  @Column({default: false, nullable: true})
+  @Column({ default: false, nullable: true })
   quizStart: boolean;
 
   @CreateDateColumn()
@@ -100,6 +101,10 @@ export class User {
   })
   @Exclude()
   absen: Absen[];
+
+  @OneToMany(() => Likes, (likes) => likes.user)
+  @Exclude()
+  likes: Likes[];
 
   @OneToMany(() => Logbook, (logbook) => logbook.user, {
     cascade: true,
