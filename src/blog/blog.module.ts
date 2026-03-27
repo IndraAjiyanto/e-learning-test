@@ -8,10 +8,11 @@ import { CommonModule } from 'src/common/common.module';
 import { Topic } from 'src/entities/topic.entity';
 import { User } from 'src/entities/user.entity';
 import { Likes } from 'src/entities/likes.entity';
+import { Coment } from 'src/entities/coment.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Blog, KategoriBlog, Topic, User, Likes]),
+    TypeOrmModule.forFeature([Blog, KategoriBlog, Topic, User, Likes, Coment]),
     CommonModule,
   ],
   controllers: [BlogController],

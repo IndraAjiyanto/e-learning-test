@@ -10,6 +10,7 @@ import * as path from 'path';
 import { Topic } from 'src/entities/topic.entity';
 import { User } from 'src/entities/user.entity';
 import { Likes } from 'src/entities/likes.entity';
+import { Coment } from 'src/entities/coment.entity';
 
 @Injectable()
 export class BlogService {
@@ -24,6 +25,8 @@ export class BlogService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Likes)
     private readonly likeRepository: Repository<Likes>,
+    @InjectRepository(Coment)
+    private readonly comentRepository: Repository<Coment>,
   ) {}
 
   async create(createBlogDto: CreateBlogDto) {
@@ -120,12 +123,33 @@ export class BlogService {
   async findOne(id: number) {
     const blog = await this.blogRepository.findOne({
       where: { id },
-      relations: ['kategori_blog', 'topic', 'likes', 'coment', 'coment.user'],
+      relations: ['kategori_blog', 'topic', 'likes', 'coment','coment.user'],
     });
     if (!blog) {
       throw new NotFoundException('Blog not found');
     }
     return blog;
+  }
+
+  async addComment(blogId: number, userId: number, content: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    const blog = await this.blogRepository.findOne({
+      where: { id: blogId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!blog) {
+      throw new NotFoundException('Blog not found');
+    }
+    const comment = this.comentRepository.create({
+      content,
+      user,
+      blog,
+    });
+    return await this.comentRepository.save(comment);
   }
 
   async incrementViews(id: number) {

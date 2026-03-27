@@ -77,6 +77,20 @@ export class BlogController {
     }
   }
 
+  @Post('comment/:id')
+  async commentBlog(
+    @Param('id') id: number,
+    @Body('content') content: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    await this.blogService.addComment(id, req.user.id, content);
+     return res.json({ success: true });
+  }
+
   @Roles('super_admin')
   @Get('')
   async findAll(@Res() res: Response, @Req() req: Request) {
