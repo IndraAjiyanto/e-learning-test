@@ -40,9 +40,14 @@ export class BlogController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-
+    if(req.user){
+      const userLike = await this.blogService.userLike(req.user.id, id)
+          const blog = await this.blogService.findOne(id);
+    res.render('blog-detail', { blog, user: req.user, userLike });
+    }else{
     const blog = await this.blogService.findOne(id);
     res.render('blog-detail', { blog, user: req.user });
+    }
 
   }
 
@@ -56,21 +61,19 @@ export class BlogController {
     return res.json({ success: true });
   }
 
-  @Roles('user', 'admin', 'super_admin')
   @Post('like/:id')
   async likeBlog(
     @Param('id') id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    console.log("masuk endpoint")
     if(req.user){
-      console.log("masuk ada user")
     await this.blogService.incrementLikes(id, req.user.id);
-    console.log("sukses")
-    return res.json({ success: true });
+    const userLike = await this.blogService.userLike(req.user.id, id);
+    const countLike = await this.blogService.countLikes(id);
+    return res.json({ userLike: userLike.length, countLike: countLike });
     }else{
-      res.redirect('login')
+      return res.status(401).json({ message: 'Unauthorized' });
     }
   }
 

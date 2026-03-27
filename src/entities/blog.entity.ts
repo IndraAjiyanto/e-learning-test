@@ -11,6 +11,7 @@ import { KategoriBlog } from './kategori_blog.entity';
 import { Topic } from './topic.entity';
 import { Exclude } from 'class-transformer';
 import { Likes } from './likes.entity';
+import { Coment } from './coment.entity';
 
 @Entity()
 export class Blog {
@@ -53,6 +54,10 @@ export class Blog {
   @OneToMany(() => Likes, (likes) => likes.blog)
   @Exclude()
   likes: Likes[];
+
+    @OneToMany(() => Coment, (coment) => coment.blog)
+    @Exclude()
+    coment: Coment[];
 
   @ManyToOne(() => KategoriBlog, (kategori_blog) => kategori_blog.blog, {
     onDelete: 'CASCADE',

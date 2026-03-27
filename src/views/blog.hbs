@@ -57,8 +57,10 @@
             <h2 class="text-3xl font-bold mb-2">{{blog_tranding.judul}}</h2>
             <p class="text-gray-200 mb-4">{{blog_tranding.description}}</p>
             <div class="flex items-center space-x-4 text-sm">
+                    <span class="flex items-center space-x-4 text-sm"><i class="far fa-heart mr-2" :class="{'fas text-red-500': {{blog_tranding.isLiked}} }"></i>{{blog_tranding.likesCount}}</span>
               <span class="flex items-center"><i class="far fa-eye mr-2"></i> {{blog_tranding.views}}</span>
             </div>
+            </span>
           </div>
         </a>
 
@@ -79,6 +81,7 @@
                   @click="viewBlog({{this.blog.id}})">{{this.blog.judul}}</a></h3>
                                   <p class="text-xs text-gray-600 line-clamp-2 mb-3 text-justify" >{{this.blog.description}}</p>
             <div class="flex items-center space-x-2 text-xs text-gray-500 mt-2">
+              <span><i class="far fa-heart mr-1" :class="{'fas text-red-500': {{this.blog.isLiked}} }"></i>{{this.blog.likesCount}}</span>
               <span><i class="far fa-eye"></i> {{this.blog.views}}</span>
             </div>
           </div>
@@ -111,32 +114,20 @@
           <template
             x-for='item in blogItems'
             :key='item.id'
-            x-data='{ currentSlide: 0, autoSlide: null, isLiked: false, likes: item.likes || 0 }'
-            x-init="
-              const images = Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://picsum.photos/400/300?random=' + item.id];
-              if (images.length > 1) {
-                autoSlide = setInterval(() => { 
-                  currentSlide = (currentSlide + 1) % images.length 
-                }, 3000);
-              }
-            "
-            @mouseenter='if (autoSlide) clearInterval(autoSlide)'
-            @mouseleave='if (Array.isArray(item.gambar) && item.gambar.length > 1) autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1) }, 3000)'
           >
-            <div class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+            <div  x-init="initCard(item)" class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
               <!-- Image Container -->
               <div class='relative overflow-hidden rounded-t-xl'>
                 <div class='relative h-44 w-full'>
                   <template
-                    x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://picsum.photos/400/300?random=' + item.id])"
-                    :key='index'
+       x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar])"
+      :key='index'
                   >
-                    <img
-                      :src='image'
-                      :alt="item.judul + ' - Image ' + (index + 1)"
-                      class='absolute inset-0 w-full h-44 object-cover transition-opacity duration-500'
-                      :class="{ 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }"
-                    />
+      <img
+        :src='image'
+        class='absolute inset-0 w-full h-44 object-cover transition-opacity duration-500'
+        :class="{ 'opacity-100': getSlide(item.id) === index, 'opacity-0': getSlide(item.id) !== index }"
+      />
                   </template>
                 </div>
 
@@ -144,7 +135,7 @@
                 <template x-if='Array.isArray(item.gambar) && item.gambar.length > 1'>
                   <div>
                     <button
-                      @click='currentSlide = currentSlide === 0 ? (Array.isArray(item.gambar) ? item.gambar.length : 1) - 1 : currentSlide - 1'
+                      @click='prevSlide(item)'
                       class='absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
                     >
                       <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -152,7 +143,7 @@
                       </svg>
                     </button>
                     <button
-                      @click='currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1)'
+                      @click='nextSlide(item)'
                       class='absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
                     >
                       <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -204,8 +195,8 @@
                 <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
                   <div class="flex items-center space-x-3">
                     <span class="flex items-center">
-                      <i class="far fa-heart mr-1" :class="{'fas text-red-500': isLiked}"></i>
-                      <span x-text="item.likes"></span>
+                      <i class="far fa-heart mr-1" :class="{'fas text-red-500': isLiked(item)}"></i>
+                      <span x-text="item.likes.length"></span>
                     </span>
 
                   </div>
@@ -299,10 +290,46 @@
       totalPages: 1,
       loading: false,
       lang: 'id',
+       slideStates: {},   
+    likedStates: {},    
 
       init() {
         this.filterAndPaginate();
       },
+
+          initCard(item) {
+      if (this.slideStates[item.id] === undefined) {
+        this.slideStates[item.id] = 0;
+      }
+      if (this.likedStates[item.id] === undefined) {
+        const currentUserId = {{#if user}}{{user.id}}{{else}}null{{/if}};
+        this.likedStates[item.id] = currentUserId !== null
+          && Array.isArray(item.likes)
+          && item.likes.some(like => like.user?.id == currentUserId);
+      }
+    },
+
+    getSlide(itemId) {
+      return this.slideStates[itemId] || 0;
+    },
+
+    setSlide(itemId, index) {
+      this.slideStates[itemId] = index;
+    },
+
+    nextSlide(item) {
+      const len = Array.isArray(item.gambar) ? item.gambar.length : 1;
+      this.slideStates[item.id] = (this.getSlide(item.id) + 1) % len;
+    },
+
+    prevSlide(item) {
+      const len = Array.isArray(item.gambar) ? item.gambar.length : 1;
+      this.slideStates[item.id] = this.getSlide(item.id) === 0 ? len - 1 : this.getSlide(item.id) - 1;
+    },
+
+    isLiked(item) {
+      return this.likedStates[item.id] || false;
+    },
 
       getKategoriCount(kategoriId) {
         return this.allBlog.filter(item => item.kategori_blog?.id == kategoriId).length;

@@ -1,34 +1,21 @@
 <article class='pt-24 pb-16 bg-white'>
   <div class='max-w-7xl mx-auto px-6'>
-
+    <!-- Back Button -->
     <a
       href='/dashboard/blog'
       class='btn bg-white inline-flex items-center gap-3 px-6 py-3 mb-6 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
     >
-      <svg
-        class='w-5 h-5'
-        fill='none'
-        stroke='currentColor'
-        viewBox='0 0 24 24'
-      >
-        <path
-          stroke-linecap='round'
-          stroke-linejoin='round'
-          stroke-width='2'
-          d='M15 19l-7-7 7-7'
-        />
+      <svg class='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 19l-7-7 7-7' />
       </svg>
-      <p class='pr-2'>
-        {{t 'test.detailBlog.backToBlog'}}
-      </p>
+      <p class='pr-2'>{{t 'test.detailBlog.backToBlog'}}</p>
     </a>
 
     <div class='flex flex-col lg:flex-row gap-8 lg:gap-12'>
+      <!-- Main Content -->
       <div class='lg:w-2/3'>
-        <div
-          x-data='{ currentSlide: 0, totalSlides: {{blog.gambar.length}} }'
-          class='relative mb-12'
-        >
+        <!-- Image Slider -->
+        <div x-data='{ currentSlide: 0, totalSlides: {{blog.gambar.length}} }' class='relative mb-12'>
           <div class='relative rounded-2xl overflow-hidden shadow-2xl'>
             {{#each blog.gambar}}
               <div
@@ -41,52 +28,30 @@
                 x-transition:leave-end='opacity-0 transform -translate-x-full'
                 class='w-full'
               >
-                <img
-                  src='{{this}}'
-                  alt='Blog image {{@index}}'
-                  class='w-full h-auto object-contain'
-                />
+                <img src='{{this}}' alt='Blog image {{@index}}' class='w-full h-auto object-contain' />
               </div>
             {{/each}}
 
+            <!-- Navigation Buttons -->
             <button
               @click='currentSlide = currentSlide > 0 ? currentSlide - 1 : totalSlides - 1'
               class='absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition'
             >
-              <svg
-                class='w-6 h-6'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M15 19l-7-7 7-7'
-                />
+              <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 19l-7-7 7-7' />
               </svg>
             </button>
             <button
               @click='currentSlide = currentSlide < totalSlides - 1 ? currentSlide + 1 : 0'
               class='absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transition'
             >
-              <svg
-                class='w-6 h-6'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M9 5l7 7-7 7'
-                />
+              <svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 5l7 7-7 7' />
               </svg>
             </button>
           </div>
 
+          <!-- Thumbnails -->
           <div class='flex gap-2 mt-4 overflow-x-auto pb-2'>
             {{#each blog.gambar}}
               <button
@@ -94,15 +59,12 @@
                 :class='currentSlide === {{@index}} ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
                 class='flex-shrink-0 w-24 h-20 rounded-lg overflow-hidden transition-all hover:ring-gray-600'
               >
-                <img
-                  src='{{this}}'
-                  alt='Thumbnail {{@index}}'
-                  class='w-full h-full object-cover'
-                />
+                <img src='{{this}}' alt='Thumbnail {{@index}}' class='w-full h-full object-cover' />
               </button>
             {{/each}}
           </div>
 
+          <!-- Dots Indicator -->
           <div class='flex justify-center gap-2 mt-4'>
             {{#each blog.gambar}}
               <button
@@ -114,90 +76,54 @@
           </div>
         </div>
 
+        <!-- Blog Content -->
         <div class='max-w-none bg-white p-10 rounded-lg shadow-xl'>
           {{{blog.isi}}}
         </div>
-
       </div>
+
+      <!-- Sidebar -->
       <div class='lg:w-1/3 rounded-lg shadow-xl bg-white p-6'>
         <div class='lg:sticky lg:top-24 space-y-6'>
+          <!-- Title & Category -->
           <div class='flex flex-col gap-2'>
-            <h1 class='text-xl font-bold text-gray-900'>
-              {{blog.judul}}
-            </h1>
-
-            <div
-              class='inline-flex w-fit max-w-full items-center gap-2 bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-4 py-2 rounded-full text-xs'
-            >
+            <h1 class='text-xl font-bold text-gray-900'>{{blog.judul}}</h1>
+            <div class='inline-flex w-fit max-w-full items-center gap-2 bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-4 py-2 rounded-full text-xs'>
               <i class='{{computeIcon blog.kategori_blog.icon}}'></i>
-              <span
-                class='font-semibold whitespace-nowrap md:whitespace-normal'
-              >
-                {{blog.kategori_blog.nama}}
-              </span>
+              <span class='font-semibold whitespace-nowrap md:whitespace-normal'>{{blog.kategori_blog.nama}}</span>
             </div>
           </div>
 
-                    <div>
-            <h2 class='text-lg font-semibold text-gray-900 mb-4'>{{t
-                'test.detailBlog.description'
-              }}</h2>
-            <p class='text-gray-700 text-sm leading-relaxed text-justify '>
-              {{blog.description}}
-            </p>
+          <!-- Description -->
+          <div>
+            <h2 class='text-lg font-semibold text-gray-900 mb-4'>{{t 'test.detailBlog.description'}}</h2>
+            <p class='text-gray-700 text-sm leading-relaxed text-justify'>{{blog.description}}</p>
           </div>
 
+          <!-- Meta Information -->
           <div class='space-y-4 border-t border-b border-gray-200 py-6'>
             <div class='flex items-center gap-3'>
-              <svg
-                class='w-5 h-5 text-gray-500'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M12 12a4 4 0 100-8 4 4 0 000 8zm6 8H6a6 6 0 0112 0z'
-                />
+              <svg class='w-5 h-5 text-gray-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 12a4 4 0 100-8 4 4 0 000 8zm6 8H6a6 6 0 0112 0z' />
               </svg>
               <div>
-                <p class='text-sm text-gray-500'>{{t
-                    'test.detailBlog.author'
-                  }}</p>
+                <p class='text-sm text-gray-500'>{{t 'test.detailBlog.author'}}</p>
                 <span class='font-medium text-gray-900'>{{blog.author}}</span>
               </div>
             </div>
-
             <div class='flex items-center gap-3'>
-              <svg
-                class='w-5 h-5 text-gray-500'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
-                />
+              <svg class='w-5 h-5 text-gray-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
               </svg>
               <div>
-                <p class='text-sm text-gray-500'>{{t
-                    'test.detailBlog.published'
-                  }}</p>
-                <time class='font-medium text-gray-900'>{{formatDate
-                    blog.updatedAt
-                  }}</time>
+                <p class='text-sm text-gray-500'>{{t 'test.detailBlog.published'}}</p>
+                <time class='font-medium text-gray-900'>{{formatDate blog.updatedAt}}</time>
               </div>
             </div>
           </div>
 
-          <h4 class='font-semibold text-gray-900 text-lg'>{{t
-              'test.detailBlog.informationBlog'
-            }}</h4>
+          <!-- Blog Information -->
+          <h4 class='font-semibold text-gray-900 text-lg'>{{t 'test.detailBlog.informationBlog'}}</h4>
           <div class='flex justify-between items-center'>
             <span class='text-gray-600'>{{t 'test.detailBlog.topic'}}</span>
             <span class='font-medium text-gray-900'>{{blog.topic.nama}}</span>
@@ -208,52 +134,188 @@
           </div>
           <div class='flex justify-between items-center'>
             <span class='text-gray-600'>{{t 'test.detailBlog.tags'}}</span>
-
-            <span class='font-medium text-gray-900'>{{#each blog.tags}}{{this}}
-              {{/each}}</span>
+            <span class='font-medium text-gray-900'>{{#each blog.tags}}{{this}} {{/each}}</span>
           </div>
 
-          <div class='lg:hidden'>
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>{{t
-                'test.detailBlog.share'
-              }}</h3>
-            <div class='flex flex-wrap gap-2'>
-            </div>
-          </div>
+<div class="border-t border-gray-200 pt-6 mt-6">
+  <div 
+    x-data="{
+      userLike: {{#if userLike}}{{userLike.length}}{{else}}0{{/if}},
+      countLike: {{blog.likes.length}},
+      copySuccess: false,
+      
+      likeBlog(id) {
+        fetch('/blog/like/' + id, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        .then(res => {
+          if (res.status === 401) {
+            window.location.href = '/login';
+            return;
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data) {
+            this.userLike = data.userLike;
+            this.countLike = data.countLike;
+          }
+        })
+        .catch(err => console.error('Error:', err));
+      },
+      
+      shareOnPlatform(platform) {
+        const url = window.location.href;
+        const title = '{{blog.judul}}';
+        const description = '{{blog.description}}';
+        
+        const shareUrls = {
+          facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+          twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+          whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' ' + url)}`,
+          linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description)}`,
+        };
+        
+        if (shareUrls[platform]) {
+          window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+        }
+      },
+      
+      copyLink() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url)
+          .then(() => {
+            this.copySuccess = true;
+            setTimeout(() => { this.copySuccess = false; }, 2000);
+          })
+          .catch(() => alert('Failed to copy link'));
+      }
+    }"
+    class="flex items-center gap-4 justify-around py-4"
+  >
+    <button
+      @click="likeBlog({{blog.id}})"
+      :class="userLike > 0 ? 'text-red-500' : 'text-gray-600'"
+      class="flex items-center gap-2 hover:text-red-500 transition-colors focus:outline-none"
+    >
+      <svg 
+        class="w-6 h-6" 
+        :fill="userLike > 0 ? 'currentColor' : 'none'"
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+      >
+        <path 
+          stroke-linecap="round" 
+          stroke-linejoin="round" 
+          stroke-width="2" 
+          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+        />
+      </svg>
+      <span class="font-semibold text-gray-900" x-text="countLike"></span>
+    </button>
+
+    <div class="flex items-center gap-2 text-gray-600">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      </svg>
+      <span class="font-semibold text-gray-900">{{blog.views}}</span>
+    </div>
+
+    <button
+      @click="copyLink()"
+      class="relative text-gray-600 hover:text-gray-900 transition-colors focus:outline-none"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+      <span x-show="copySuccess" x-cloak class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+        Copied!
+      </span>
+    </button>
+
+    <div class="relative" x-data="{ openShare: false }">
+      <button
+        @click="openShare = !openShare"
+        class="text-gray-600 hover:text-gray-900 transition-colors focus:outline-none"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+        </svg>
+      </button>
+      
+      <div
+        x-show="openShare"
+        @click.away="openShare = false"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-10"
+      >
+        <div class="py-2">
+          <button
+            @click="shareOnPlatform('facebook'); openShare = false"
+            class="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            <span>Facebook</span>
+          </button>
+          <button
+            @click="shareOnPlatform('twitter'); openShare = false"
+            class="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            <span>Twitter</span>
+          </button>
+          <button
+            @click="shareOnPlatform('whatsapp'); openShare = false"
+            class="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            </svg>
+            <span>WhatsApp</span>
+          </button>
+          <button
+            @click="shareOnPlatform('linkedin'); openShare = false"
+            class="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <svg class="w-4 h-4 text-blue-700" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451c.979 0 1.771-.773 1.771-1.729V1.729C24 .774 23.204 0 22.225 0z"/>
+            </svg>
+            <span>LinkedIn</span>
+          </button>
         </div>
       </div>
+    </div>
 
+  </div>
+</div>
+        </div>
+      </div>
     </div>
   </div>
-<article x-data="{
-  likeBlog(id) {
-    console.log('masuk function', id);
-    fetch('/blog/like/' + id, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    })
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(err => console.error('Error like blog:', err));
-  }
-}">
-  <button @click="likeBlog({{blog.id}})" class="p-20">tekan like</button>
-</article>
 </article>
 
 {{#if recentBlogs}}
   <section class='py-16 bg-gray-50'>
     <div class='max-w-7xl mx-auto px-6'>
-      <h2 class='text-3xl font-bold text-gray-900 mt-0 mb-8'>{{t
-          'test.detailBlog.relatedBlog'
-        }}</h2>
+      <h2 class='text-3xl font-bold text-gray-900 mt-0 mb-8'>{{t 'test.detailBlog.relatedBlog'}}</h2>
       <div class='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
         {{#each recentBlogs}}{{/each}}
       </div>
       <div class='text-center mt-12'>
         <a
           href='/dashboard/blog'
-          class='inline-flex items-center gap-2 font-semibold btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 border-0 shadow-lg hover:shadow-xl transition-xall duration-300 transform hover:-translate-y-1'
+          class='inline-flex items-center gap-2 font-semibold btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
         >
           {{t 'test.detailBlog.buttonViewAllBlog'}}
         </a>
@@ -263,50 +325,29 @@
 {{/if}}
 
 <script>
-
-
   const shareData = (platform, blog) => {
-
     const url = window.location.href;
     const title = blog.judul;
-    const description = blog.isi || "";
+    const description = blog.description || "";
     const image = blog.gambar?.[0] || "";
 
     switch (platform) {
-
       case "facebook":
-        window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-          "_blank"
-        );
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, "_blank");
         break;
-
       case "twitter":
-        window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(title + " - " + description)}&url=${encodeURIComponent(url)}`,
-          "_blank"
-        );
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title + " - " + description)}&url=${encodeURIComponent(url)}`, "_blank");
         break;
-
       case "whatsapp":
-        window.open(
-          `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`,
-          "_blank"
-        );
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`, "_blank");
         break;
-
+      case "linkedin":
+        window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description)}`, "_blank");
+        break;
       case "copy":
-        const textToCopy = `${url}`;
-
-        navigator.clipboard
-          .writeText(textToCopy)
-          .then(() => {
-            alert("Link copied with title!");
-          })
-          .catch(() => {
-            alert("Failed to copy link");
-          });
-
+        navigator.clipboard.writeText(url)
+          .then(() => alert("Link copied!"))
+          .catch(() => alert("Failed to copy link"));
         break;
     }
   };

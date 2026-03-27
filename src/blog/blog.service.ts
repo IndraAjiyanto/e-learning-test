@@ -120,7 +120,7 @@ export class BlogService {
   async findOne(id: number) {
     const blog = await this.blogRepository.findOne({
       where: { id },
-      relations: ['kategori_blog', 'topic'],
+      relations: ['kategori_blog', 'topic', 'likes', 'coment', 'coment.user'],
     });
     if (!blog) {
       throw new NotFoundException('Blog not found');
@@ -136,6 +136,7 @@ export class BlogService {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
+
     const blog = await this.blogRepository.findOne({
       where: { id: id },
     });
@@ -149,20 +150,17 @@ export class BlogService {
     }
 
     const like = await this.likeRepository.findOne({
-      where: { user: user, blog: blog },
+      where: { user: {id : user.id}, blog: {id: blog.id} },
     });
 
     if (like) {
-      console.log("masuk like")
       await this.likeRepository.remove(like);
-      console.log("berhasil menghapus")
     } else {
-      console.log("masuk tidak ada like")
-      await this.likeRepository.create({
+      const data = await this.likeRepository.create({
         user: user,
         blog: blog,
       });
-      console.log("berhasil membuat")
+      await this.likeRepository.save(data);
     }
   }
 
@@ -176,6 +174,31 @@ export class BlogService {
     return await this.topicRepository.find({
       order: { nama: 'ASC' },
     });
+  }
+
+  async countLikes(blogId: number) {
+    const count = await this.likeRepository.count({
+      where: { blog: { id: blogId } },
+    });
+    return count;
+  }
+
+  async userLike(userId: number, blogId: number){
+    const user = await this.userRepository.findOne({where: {id: userId}})
+    if(!user){
+      throw new NotFoundException("user not found");
+    }
+
+    const blog = await this.blogRepository.findOne({where : {id: blogId} })
+    if(!blog){
+      throw new NotFoundException("blog not found")
+    }
+
+    const like = await this.likeRepository.find({
+      where: { user: {id : user.id}, blog: {id: blog.id} },
+    });
+
+    return like;
   }
 
   async getRecentBlogs(id: number) {

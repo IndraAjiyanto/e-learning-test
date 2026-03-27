@@ -132,8 +132,10 @@ export class DashboardController {
 
   @Get('blog')
   async blog(@Req() req: Request, @Res() res: Response) {
-    const blog_tranding = await this.dashboardService.findBlogTrending();
-    const kategori_tranding = await this.dashboardService.findKategoriTrending();
+    const blog_tranding = await this.dashboardService.findBlogTrending(req.user?.id);
+    console.log(blog_tranding);
+    const kategori_tranding = await this.dashboardService.findKategoriTrending(req.user?.id);
+    console.log(kategori_tranding);
     if (blog_tranding !== null) {
       const blog = await this.dashboardService.findBlog();
       const kategori_blog = await this.dashboardService.findBlogCategory();

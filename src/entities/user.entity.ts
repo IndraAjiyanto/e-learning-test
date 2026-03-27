@@ -29,6 +29,7 @@ import { Mentoring } from './mentoring.entity';
 import { Pendaftaran } from './pendaftaran.entity';
 import { Exclude } from 'class-transformer';
 import { Likes } from './likes.entity';
+import { Coment } from './coment.entity';
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
 
@@ -105,6 +106,10 @@ export class User {
   @OneToMany(() => Likes, (likes) => likes.user)
   @Exclude()
   likes: Likes[];
+
+  @OneToMany(() => Coment, (coment) => coment.user)
+  @Exclude()
+  coment: Coment[];
 
   @OneToMany(() => Logbook, (logbook) => logbook.user, {
     cascade: true,

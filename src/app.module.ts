@@ -66,6 +66,7 @@ import {
 } from 'nestjs-i18n';
 import { OurExperienceModule } from './our_experience/our_experience.module';
 import { TopicModule } from './topic/topic.module';
+import { ComentModule } from './coment/coment.module';
 import path from 'path';
 
 @Module({
@@ -144,6 +145,7 @@ import path from 'path';
     SuperiorityModule,
     OurExperienceModule,
     TopicModule,
+    ComentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -79,19 +79,37 @@ export class DashboardService {
     private readonly kategoriBlogRepository: Repository<KategoriBlog>,
   ) {}
 
-async findBlogTrending() {
-  return await this.blogRepository
+async findBlogTrending(userId?: number) {
+  const qb = this.blogRepository
     .createQueryBuilder('blog')
-    .loadRelationCountAndMap('blog.likesCount', 'blog.likes') // ← 'likes' bukan 'like'
+    .loadRelationCountAndMap('blog.likesCount', 'blog.likes')
     .addSelect(
-      '(blog.views + (SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id))',
+      'blog.views + (SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id)',
       'score'
     )
-    .orderBy('score', 'DESC')
-    .getOne();
+    .orderBy('score', 'DESC');
+
+  if (userId) {
+    qb.addSelect(
+      `CAST(EXISTS(
+        SELECT 1 FROM likes l
+        WHERE l."blogId" = blog.id AND l."userId" = :userId
+      ) AS boolean)`,
+      'isLiked'
+    ).setParameter('userId', userId);
+  }
+
+  const { entities, raw } = await qb.getRawAndEntities();
+  const blog = entities[0];
+  if (!blog) return null;
+
+  return {
+    ...blog,
+    isLiked: userId ? (raw[0]?.isLiked === true) : false,
+  };
 }
 
-async findKategoriTrending() {
+async findKategoriTrending(userId?: number) {
   const kategoriTrending = await this.kategoriBlogRepository
     .createQueryBuilder('kategori')
     .leftJoin('kategori.blog', 'blog')
@@ -109,16 +127,28 @@ async findKategoriTrending() {
 
   const result = await Promise.all(
     kategoriTrending.map(async (kategori) => {
-      const topBlog = await this.blogRepository
+      const qb = this.blogRepository
         .createQueryBuilder('blog')
         .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
-        .loadRelationCountAndMap('blog.likesCount', 'blog.likes') // ← 'likes' bukan 'like'
+        .loadRelationCountAndMap('blog.likesCount', 'blog.likes')
         .where('kategori_blog.id = :id', { id: kategori.kategori_id })
         .orderBy(
           '(blog.views + (SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id))',
           'DESC'
-        )
-        .getOne();
+        );
+
+      if (userId) {
+        qb.addSelect(
+          `CAST(EXISTS(
+            SELECT 1 FROM likes l
+            WHERE l."blogId" = blog.id AND l."userId" = :userId
+          ) AS boolean)`,
+          'isLiked'
+        ).setParameter('userId', userId);
+      }
+
+      const { entities, raw } = await qb.getRawAndEntities();
+      const topBlog = entities[0];
 
       return {
         id: kategori.kategori_id,
@@ -128,7 +158,9 @@ async findKategoriTrending() {
         createdAt: kategori.kategori_createdAt,
         updatedAt: kategori.kategori_updatedAt,
         score: kategori.score,
-        blog: topBlog,
+        blog: topBlog
+          ? { ...topBlog, isLiked: userId ? (raw[0]?.isLiked === true) : false }
+          : null,
       };
     })
   );
@@ -232,6 +264,8 @@ async findBlog() {
   return await this.blogRepository
     .createQueryBuilder('blog')
     .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
+    .leftJoinAndSelect('blog.likes', 'likes')
+    .leftJoinAndSelect('likes.user', 'user') 
     .orderBy(
       '(blog.views * 1) + ((SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id) * 2)',
       'DESC'
