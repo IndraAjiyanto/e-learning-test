@@ -12,7 +12,11 @@
         
         <!-- Search Bar -->
         <div class="relative hidden lg:block">
-          <input type="text" placeholder="Cari artikel..." 
+          <input 
+            type="text" 
+            placeholder="Cari artikel..." 
+            x-model="searchQuery"
+            @input="handleSearch()"
             class="w-64 pl-10 pr-4 py-2 border bg-white border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent">
           <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
         </div>
@@ -42,34 +46,29 @@
       </div>
     </div>
 
-    <!-- Featured Stories Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Featured Stories Section - Hanya tampil jika tidak ada kategori yang dipilih dan tidak ada pencarian -->
+    <div x-show="selectedKategoriId === '' && searchQuery === ''" class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       <!-- Main Featured -->
       <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden group cursor-pointer">
-
         <div class="relative h-80">
-                  <a   href="/blog/detail/{{blog_tranding.id}}"
-                  @click="viewBlog({{blog_tranding.id}})" >
-          <img src="{{blog_tranding.gambar.[0]}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-          <div class="absolute bottom-0 left-0 p-6 text-white">
-            <span class="bg-red-600 text-xs px-3 py-1 rounded-full mb-3 inline-block">Trending</span>
-            <h2 class="text-3xl font-bold mb-2">{{blog_tranding.judul}}</h2>
-            <p class="text-gray-200 mb-4">{{blog_tranding.description}}</p>
-            <div class="flex items-center space-x-4 text-sm">
-                    <span class="flex items-center space-x-4 text-sm"><i class="far fa-heart mr-2" :class="{'fas text-red-500': {{blog_tranding.isLiked}} }"></i>{{blog_tranding.likesCount}}</span>
-              <span class="flex items-center"><i class="far fa-eye mr-2"></i> {{blog_tranding.views}}</span>
+          <a href="/blog/detail/{{blog_tranding.id}}" @click="viewBlog({{blog_tranding.id}})">
+            <img src="{{blog_tranding.gambar.[0]}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-6 text-white">
+              <span class="bg-red-600 text-xs px-3 py-1 rounded-full mb-3 inline-block">Trending</span>
+              <h2 class="text-3xl font-bold mb-2">{{blog_tranding.judul}}</h2>
+              <p class="text-gray-200 mb-4">{{blog_tranding.description}}</p>
+              <div class="flex items-center space-x-4 text-sm">
+                <span class="flex items-center space-x-4 text-sm"><i class="far fa-heart mr-2" :class="{'fas text-red-500': {{blog_tranding.isLiked}} }"></i>{{blog_tranding.likesCount}}</span>
+                <span class="flex items-center"><i class="far fa-eye mr-2"></i> {{blog_tranding.views}}</span>
+              </div>
             </div>
-            </span>
-          </div>
-        </a>
-
+          </a>
         </div>
       </div>
 
       <!-- Side Featured -->
       <div class="space-y-4">
-
         {{#each kategori_tranding}}
         <div class="bg-white rounded-xl shadow-lg p-4 flex space-x-4 group cursor-pointer">
           <img src="{{this.blog.gambar.[0]}}" class="w-20 h-20 object-cover rounded-lg">
@@ -77,9 +76,9 @@
             <i class="{{computeIcon this.icon}}"></i>
             <span class="text-xs text-blue-600 font-semibold">{{this.nama}}</span>
             <h3 class="font-semibold group-hover:text-blue-600">
-              <a href="/blog/detail/{{this.blog.id}}"
-                  @click="viewBlog({{this.blog.id}})">{{this.blog.judul}}</a></h3>
-                                  <p class="text-xs text-gray-600 line-clamp-2 mb-3 text-justify" >{{this.blog.description}}</p>
+              <a href="/blog/detail/{{this.blog.id}}" @click="viewBlog({{this.blog.id}})">{{this.blog.judul}}</a>
+            </h3>
+            <p class="text-xs text-gray-600 line-clamp-2 mb-3 text-justify">{{this.blog.description}}</p>
             <div class="flex items-center space-x-2 text-xs text-gray-500 mt-2">
               <span><i class="far fa-heart mr-1" :class="{'fas text-red-500': {{this.blog.isLiked}} }"></i>{{this.blog.likesCount}}</span>
               <span><i class="far fa-eye"></i> {{this.blog.views}}</span>
@@ -95,6 +94,7 @@
 
       <!-- Content Area -->
       <div class='lg:col-span-4'>
+
         <!-- Loading State -->
         <div x-show='loading' class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           <template x-for='i in 6' :key='i'>
@@ -115,19 +115,19 @@
             x-for='item in blogItems'
             :key='item.id'
           >
-            <div  x-init="initCard(item)" class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+            <div x-init="initCard(item)" class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
               <!-- Image Container -->
               <div class='relative overflow-hidden rounded-t-xl'>
                 <div class='relative h-44 w-full'>
                   <template
-       x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar])"
-      :key='index'
+                    x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar])"
+                    :key='index'
                   >
-      <img
-        :src='image'
-        class='absolute inset-0 w-full h-44 object-cover transition-opacity duration-500'
-        :class="{ 'opacity-100': getSlide(item.id) === index, 'opacity-0': getSlide(item.id) !== index }"
-      />
+                    <img
+                      :src='image'
+                      class='absolute inset-0 w-full h-44 object-cover transition-opacity duration-500'
+                      :class="{ 'opacity-100': getSlide(item.id) === index, 'opacity-0': getSlide(item.id) !== index }"
+                    />
                   </template>
                 </div>
 
@@ -155,10 +155,8 @@
 
                 <!-- Author Badge -->
                 <div class='absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md flex items-center'>
-                  {{!-- <img :src="'https://i.pravatar.cc/20?img=' + item.authorId" class="w-4 h-4 rounded-full mr-1"> --}}
                   <span x-text="item.author"></span>
                 </div>
-
 
                 <!-- Slide Indicators -->
                 <template x-if='Array.isArray(item.gambar) && item.gambar.length > 1'>
@@ -198,7 +196,6 @@
                       <i class="far fa-heart mr-1" :class="{'fas text-red-500': isLiked(item)}"></i>
                       <span x-text="item.likes.length"></span>
                     </span>
-
                   </div>
                   <span class="flex items-center">
                     <i class="far fa-eye mr-1"></i>
@@ -285,54 +282,80 @@
       selectedKategori: '',
       selectedKategoriId: '',
       searchKategoriQuery: '',
+      searchQuery: '', // Tambahkan properti untuk search query
       currentPage: 1,
       itemsPerPage: 9,
       totalPages: 1,
       loading: false,
       lang: 'id',
-       slideStates: {},   
-    likedStates: {},    
+      slideStates: {},   
+      likedStates: {},    
+      searchTimeout: null, // Untuk debounce
 
       init() {
         this.filterAndPaginate();
       },
 
-          initCard(item) {
-      if (this.slideStates[item.id] === undefined) {
-        this.slideStates[item.id] = 0;
-      }
-      if (this.likedStates[item.id] === undefined) {
-        const currentUserId = {{#if user}}{{user.id}}{{else}}null{{/if}};
-        this.likedStates[item.id] = currentUserId !== null
-          && Array.isArray(item.likes)
-          && item.likes.some(like => like.user?.id == currentUserId);
-      }
-    },
+      // Fungsi untuk menangani pencarian dengan debounce
+      handleSearch() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+          this.currentPage = 1;
+          this.filterAndPaginate();
+        }, 300);
+      },
 
-    getSlide(itemId) {
-      return this.slideStates[itemId] || 0;
-    },
+      initCard(item) {
+        if (this.slideStates[item.id] === undefined) {
+          this.slideStates[item.id] = 0;
+        }
+        if (this.likedStates[item.id] === undefined) {
+          const currentUserId = {{#if user}}{{user.id}}{{else}}null{{/if}};
+          this.likedStates[item.id] = currentUserId !== null
+            && Array.isArray(item.likes)
+            && item.likes.some(like => like.user?.id == currentUserId);
+        }
+      },
 
-    setSlide(itemId, index) {
-      this.slideStates[itemId] = index;
-    },
+      getSlide(itemId) {
+        return this.slideStates[itemId] || 0;
+      },
 
-    nextSlide(item) {
-      const len = Array.isArray(item.gambar) ? item.gambar.length : 1;
-      this.slideStates[item.id] = (this.getSlide(item.id) + 1) % len;
-    },
+      setSlide(itemId, index) {
+        this.slideStates[itemId] = index;
+      },
 
-    prevSlide(item) {
-      const len = Array.isArray(item.gambar) ? item.gambar.length : 1;
-      this.slideStates[item.id] = this.getSlide(item.id) === 0 ? len - 1 : this.getSlide(item.id) - 1;
-    },
+      nextSlide(item) {
+        const len = Array.isArray(item.gambar) ? item.gambar.length : 1;
+        this.slideStates[item.id] = (this.getSlide(item.id) + 1) % len;
+      },
 
-    isLiked(item) {
-      return this.likedStates[item.id] || false;
-    },
+      prevSlide(item) {
+        const len = Array.isArray(item.gambar) ? item.gambar.length : 1;
+        this.slideStates[item.id] = this.getSlide(item.id) === 0 ? len - 1 : this.getSlide(item.id) - 1;
+      },
+
+      isLiked(item) {
+        return this.likedStates[item.id] || false;
+      },
 
       getKategoriCount(kategoriId) {
-        return this.allBlog.filter(item => item.kategori_blog?.id == kategoriId).length;
+        let filtered = this.allBlog;
+        
+        // Filter berdasarkan kategori
+        filtered = filtered.filter(item => item.kategori_blog?.id == kategoriId);
+        
+        // Filter berdasarkan pencarian jika ada
+        if (this.searchQuery.trim() !== '') {
+          const query = this.searchQuery.toLowerCase().trim();
+          filtered = filtered.filter(item => {
+            return item.judul?.toLowerCase().includes(query) ||
+                   item.description?.toLowerCase().includes(query) ||
+                   item.tags?.some(tag => tag.toLowerCase().includes(query));
+          });
+        }
+        
+        return filtered.length;
       },
 
       filterKategori() {
@@ -349,10 +372,26 @@
       filterAndPaginate() {
         let filtered = this.allBlog;
         
+        // Filter berdasarkan kategori
         if (this.selectedKategoriId) {
           filtered = filtered.filter(item => {
             const kategoriId = item.kategori_blog?.id;
             return kategoriId == this.selectedKategoriId;
+          });
+        }
+        
+        // Filter berdasarkan pencarian
+        if (this.searchQuery.trim() !== '') {
+          const query = this.searchQuery.toLowerCase().trim();
+          filtered = filtered.filter(item => {
+            // Cari di judul
+            const matchJudul = item.judul?.toLowerCase().includes(query);
+            // Cari di deskripsi
+            const matchDeskripsi = item.description?.toLowerCase().includes(query);
+            // Cari di tags
+            const matchTags = item.tags?.some(tag => tag.toLowerCase().includes(query));
+            
+            return matchJudul || matchDeskripsi || matchTags;
           });
         }
         
@@ -378,20 +417,28 @@
           });
         }
         
+        if (this.searchQuery.trim() !== '') {
+          const query = this.searchQuery.toLowerCase().trim();
+          filtered = filtered.filter(item => {
+            return item.judul?.toLowerCase().includes(query) ||
+                   item.description?.toLowerCase().includes(query) ||
+                   item.tags?.some(tag => tag.toLowerCase().includes(query));
+          });
+        }
+        
         return filtered.length;
       },
 
-viewBlog(id) {
-  fetch('/blog/view/' + id, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-  .then(res => res.json())
-  .catch(err => console.error('Error view blog:', err));
-},
-
+      viewBlog(id) {
+        fetch('/blog/view/' + id, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(res => res.json())
+        .catch(err => console.error('Error view blog:', err));
+      },
 
       selectKategori(kategoriId) {
         this.selectedKategoriId = kategoriId;
@@ -415,17 +462,18 @@ viewBlog(id) {
         this.selectedKategoriId = '';
         this.selectedKategori = '';
         this.searchKategoriQuery = '';
+        this.searchQuery = ''; // Reset search query juga
         this.filteredKategoriList = [...this.allKategori];
         this.currentPage = 1;
         this.filterAndPaginate();
       },
 
-              computeIcon(iconValue) {
-      const raw = (iconValue || '').toString().trim();
-      if (!raw) return 'fa-solid fa-circle-question';
-      if (/^fa-/.test(raw)) return 'fa-solid ' + raw;
-      return raw;
-    },
+      computeIcon(iconValue) {
+        const raw = (iconValue || '').toString().trim();
+        if (!raw) return 'fa-solid fa-circle-question';
+        if (/^fa-/.test(raw)) return 'fa-solid ' + raw;
+        return raw;
+      },
 
       getCategoryName(item) {
         if (item.kategori_blog?.nama)

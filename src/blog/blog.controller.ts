@@ -278,6 +278,19 @@ export class BlogController {
     }
   }
 
+  @Patch('coment/:id')
+  async editComent(
+    @Param('id') id:number,
+    @Body('content') content: string,
+    @Res() res: Response,
+    @Req() req: Request
+   ){
+    if(req.user){
+          const result = await this.blogService.editComment(id, content, req.user.id);
+    return res.json({ success: true, data: result });
+    }
+  }
+
   @Roles('super_admin')
   @Delete(':id')
   async remove(
@@ -314,6 +327,20 @@ export class BlogController {
     } catch (error) {
       req.flash('error', error.message || 'Blog failed to remove');
       res.redirect('/blog');
+    }
+  }
+
+  @Delete('comment/:id')
+  async deleteComment(
+    @Param('id') id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.blogService.deleteComment(id);
+      return res.json({ success: true });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
     }
   }
 }

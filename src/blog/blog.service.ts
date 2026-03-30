@@ -302,11 +302,35 @@ export class BlogService {
     return await this.blogRepository.save(blog);
   }
 
+  async editComment(comentId: number, content: string, userId: number){
+    const coment = await this.comentRepository.findOne({where: {id: comentId}})
+    if(!coment){
+      throw new NotFoundException('coment not found')
+    }
+
+    const user = await this.userRepository.findOne({where: {id: userId}})
+    if(!user){
+      throw new NotFoundException('user not found')
+    }
+
+    await this.comentRepository.save({id: coment.id, content: content})
+  }
+
   async remove(id: number) {
     const blog = await this.findOne(id);
     if (!blog) {
       throw new NotFoundException();
     }
     return await this.blogRepository.remove(blog);
+  }
+
+  async deleteComment(id: number) {
+    const comment = await this.comentRepository.findOne({
+      where: { id },
+    });
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+    return await this.comentRepository.remove(comment);
   }
 }
