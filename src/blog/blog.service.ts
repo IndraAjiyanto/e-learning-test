@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -56,6 +56,13 @@ export class BlogService {
       order: { createdAt: 'DESC' },
     });
   }
+
+async getReply(comentId: number) {
+  return await this.comentRepository.find({
+    where: { replies: { id: comentId } },  // ← query by relasi
+    relations: ['user'],                    // ← load user-nya sekalian
+  });
+}
 
   async ChangeImageEditorJS(
     isi: string,
@@ -120,16 +127,47 @@ export class BlogService {
     return JSON.stringify(editorjsData);
   }
 
-  async findOne(id: number) {
-    const blog = await this.blogRepository.findOne({
-      where: { id },
-      relations: ['kategori_blog', 'topic', 'likes', 'coment','coment.user'],
-    });
-    if (!blog) {
-      throw new NotFoundException('Blog not found');
-    }
-    return blog;
-  }
+async findOne(id: number) {
+  const blog = await this.blogRepository.findOne({
+    where: { id },
+    relations: [
+      'kategori_blog',
+      'topic',
+      'likes',
+      'coment',
+      'coment.user',
+      'coment.replies',        // ← tambah ini untuk cek parent
+      'coment.children',
+      'coment.children.user',
+    ],
+  });
+
+  if (!blog) throw new NotFoundException('Blog not found');
+
+  // Filter hanya komentar utama (yang tidak punya parent)
+  blog.coment = blog.coment.filter(c => c.replies === null || c.replies === undefined);
+  return blog;
+}
+
+async createReply(comentId: number, userId: number, blogId: number, content: string) {
+  const coment = await this.comentRepository.findOne({ where: { id: comentId } });
+  if (!coment) throw new NotFoundException('coment not found');
+
+  const user = await this.userRepository.findOne({ where: { id: userId } });
+  if (!user) throw new NotFoundException('user not found');
+
+  const blog = await this.blogRepository.findOne({ where: { id: blogId } });
+  if (!blog) throw new NotFoundException('blog not found');
+
+  const data = this.comentRepository.create({
+    content: content,
+    replies: coment,   // ← object, bukan coment.id
+    user: user,
+    blog: blog,
+  });
+
+  await this.comentRepository.save(data);
+}
 
   async addComment(blogId: number, userId: number, content: string) {
     const user = await this.userRepository.findOne({

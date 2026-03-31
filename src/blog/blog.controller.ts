@@ -151,6 +151,30 @@ export class BlogController {
     });
   }
 
+  @Get('reply/:comentId')
+  async getReply(@Param('comentId') comentId: number, @Res() res:Response, @Req() req:Request){
+    const result = await this.blogService.getReply(comentId)
+     return res.json({ success: true, reply: result });
+  }
+
+  @Post('reply/create/:comentId/:blogId')
+  async createreply(
+    @Param('comentId') comentId: number,
+    @Param('blogId') blogId: number,
+    @Body('content') content: string,
+    @Res() res: Response,
+    @Req() req:  Request
+  ){
+        if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    await this.blogService.createReply(comentId, req.user.id, blogId, content)
+     return res.json({ success: true });
+
+
+  }
+
   @Roles('super_admin')
   @Post('')
   @UseInterceptors(
