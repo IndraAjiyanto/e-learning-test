@@ -404,129 +404,216 @@
           {{t 'test.profile.cancel'}}
         </button>
 
-        <button
-          @click='$refs.profileForm.submit(); loading = true;'
-          :disabled='validationError !== "" || loading'
-          :class="validationError !== '' || loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
-          class='btn px-6 py-3 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 text-white shadow-lg transition-all duration-300 font-semibold'
-        >
-          <span
-            x-show='loading'
-            class='loading loading-spinner loading-sm'
-          ></span>
-          <span x-show='!loading'>{{t 'test.profile.saveChanges'}}</span>
-        </button>
+<button
+  @click="
+    if (croppedBlob) {
+      const file = new File([croppedBlob], fileName || 'profile.jpg', { type: 'image/jpeg' });
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      $refs.fileInput.files = dataTransfer.files;
+    }
+    $refs.profileForm.submit();
+    loading = true;
+  "
+  :disabled="validationError !== '' || loading"
+  :class="validationError !== '' || loading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
+  class='btn px-6 py-3 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 text-white shadow-lg transition-all duration-300 font-semibold'
+>
+  <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+  <span x-show='!loading'>{{t 'test.profile.saveChanges'}}</span>
+</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Crop Modal -->
+<div
+  x-show="showCropModal"
+  x-cloak
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+  @click.self="closeCropModal()"
+>
+  <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+    <div class="p-6 border-b border-gray-200">
+      <h3 class="text-xl font-semibold text-slate-900">Crop Profile Photo</h3>
+      <p class="text-sm text-slate-600 mt-1">Sesuaikan area crop untuk foto profil kamu</p>
+    </div>
+    <div class="p-6 overflow-auto max-h-[60vh]">
+      <img id="cropImageProfile" :src="tempImageUrl" class="max-w-full" style="display: block;"/>
+    </div>
+    <div class="p-6 border-t border-gray-200 flex justify-end gap-3">
+      <button type="button"
+        class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+        @click="closeCropModal()">
+        Batal
+      </button>
+      <button type="button"
+        class="px-6 py-2 rounded-lg bg-gradient-to-br from-primary via-secondary to-gray-900 text-white hover:shadow-lg transition"
+        @click="applyCrop()">
+        Apply Crop
+      </button>
     </div>
   </div>
 </div>
 
+</div>
+
 <script>
-  function profilePreview() {
-    return {
-      // =========================
-      // State
-      // =========================
-      previewUrl: "",
-      open: false,
-      validationError: "",
-      imageInfo: "",
+function profilePreview() {
+  return {
+    // State lama
+    previewUrl: "",
+    open: false,
+    validationError: "",
+    imageInfo: "",
 
-      // =========================
-      // Handle File Upload
-      // =========================
-      handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+    // State baru untuk crop
+    cropper: null,
+    showCropModal: false,
+    tempImageUrl: null,
+    croppedBlob: null,
+    fileName: "",
 
-        // Reset state
-        this.previewUrl = "";
-        this.validationError = "";
-        this.imageInfo = "";
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
 
-        // =========================
-        // File type validation
-        // =========================
-        const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+      // Reset state
+      this.previewUrl = "";
+      this.validationError = "";
+      this.imageInfo = "";
+      this.croppedBlob = null;
+      this.fileName = file.name;
 
-        if (!allowedTypes.includes(file.type)) {
-          this.validationError =
-            "File type not allowed! Please upload JPG, JPEG, or PNG image only.";
-          this.open = true;
-          return;
-        }
+      // Validasi tipe file
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+      if (!allowedTypes.includes(file.type)) {
+        this.validationError = "File type not allowed! Please upload JPG, JPEG, or PNG image only.";
+        this.open = true;
+        return;
+      }
 
-        // =========================
-        // File size validation (max 5MB)
-        // =========================
-        const maxSize = 5 * 1024 * 1024;
-        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      // Validasi ukuran file (max 5MB)
+      const maxSize = 5 * 1024 * 1024;
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      if (file.size > maxSize) {
+        this.validationError = `File size too large! Maximum 5MB allowed. Your file: ${fileSizeMB}MB`;
+        this.open = true;
+        return;
+      }
 
-        if (file.size > maxSize) {
-          this.validationError = `File size too large! Maximum 5MB allowed. Your file: ${fileSizeMB}MB`;
-          this.open = true;
-          return;
-        }
+      // Buka crop modal
+      this.tempImageUrl = URL.createObjectURL(file);
+      this.showCropModal = true;
 
-        // =========================
-        // Validate image dimensions
-        // =========================
+      this.$nextTick(() => {
+        this.initCropper();
+      });
+    },
+
+    initCropper() {
+      const image = document.getElementById("cropImageProfile");
+      if (this.cropper) {
+        this.cropper.destroy();
+      }
+
+      this.cropper = new Cropper(image, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: "move",
+        autoCropArea: 0.8,
+        restore: false,
+        guides: false,
+        center: true,
+        highlight: false,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: false,
+        ready() {
+          const cropBox = this.cropper.cropBox;
+          cropBox.querySelector(".cropper-view-box").style.borderRadius = "50%";
+          cropBox.querySelector(".cropper-face").style.borderRadius = "50%";
+        },
+      });
+    },
+
+    applyCrop() {
+      if (!this.cropper) return;
+
+      this.cropper.getCroppedCanvas({
+        width: 400,
+        height: 400,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: "high",
+      }).toBlob((blob) => {
+        this.croppedBlob = blob;
+
+        // Tampilkan preview hasil crop
+        const fileSizeMB = (blob.size / (1024 * 1024)).toFixed(2);
         const img = new Image();
-        const objectUrl = URL.createObjectURL(file);
+        const objectUrl = URL.createObjectURL(blob);
 
         img.onload = () => {
-          const { width, height } = img;
-
           this.previewUrl = objectUrl;
+          this.imageInfo = `${img.width}x${img.height}px • ${fileSizeMB}MB • Ready to upload ✓`;
+          this.validationError = "";
+
+          // Langsung buka modal preview
           this.open = true;
-
-          if (
-            width < 300 ||
-            width > 2000 ||
-            height < 300 ||
-            height > 2000
-          ) {
-            this.validationError =
-              `Image dimensions must be between 300x300 and 2000x2000 pixels. ` +
-              `Your image: ${width}x${height}px`;
-
-            this.imageInfo = `${width}x${height}px • ${fileSizeMB}MB`;
-          } else {
-            this.validationError = "";
-            this.imageInfo = `${width}x${height}px • ${fileSizeMB}MB • Ready to upload ✓`;
-          }
-        };
-
-        img.onerror = () => {
-          this.previewUrl = "";
-          this.validationError =
-            "Failed to load image. Please try another file or ensure the file is not corrupted.";
-          this.open = true;
-
-          URL.revokeObjectURL(objectUrl);
         };
 
         img.src = objectUrl;
-      },
+        this.closeCropModal();
+      }, "image/jpeg", 0.9);
+    },
 
-      // =========================
-      // Close Modal
-      // =========================
-      closeModal() {
-        this.open = false;
+    closeCropModal() {
+      this.showCropModal = false;
+      if (this.cropper) {
+        this.cropper.destroy();
+        this.cropper = null;
+      }
+      if (this.tempImageUrl) {
+        URL.revokeObjectURL(this.tempImageUrl);
+        this.tempImageUrl = null;
+      }
+      if (this.$refs.fileInput) {
+        this.$refs.fileInput.value = null;
+      }
+    },
 
-        if (this.previewUrl) {
-          URL.revokeObjectURL(this.previewUrl);
-        }
+    closeModal() {
+      this.open = false;
 
-        this.previewUrl = "";
-        this.validationError = "";
-        this.imageInfo = "";
+      if (this.previewUrl) {
+        URL.revokeObjectURL(this.previewUrl);
+      }
 
-        if (this.$refs.fileInput) {
-          this.$refs.fileInput.value = null;
-        }
-      },
-    };
-  }
+      this.previewUrl = "";
+      this.validationError = "";
+      this.imageInfo = "";
+      this.croppedBlob = null;
+
+      if (this.$refs.fileInput) {
+        this.$refs.fileInput.value = null;
+      }
+    },
+  };
+}
 </script>
+
+<style>
+  [x-cloak] { display: none !important; }
+  .cropper-view-box,
+  .cropper-face {
+    border-radius: 50% !important;
+    border: 3px solid #10b981 !important;
+  }
+  .cropper-point {
+    width: 10px !important;
+    height: 10px !important;
+    background-color: #10b981 !important;
+    border-radius: 50% !important;
+    opacity: 1 !important;
+  }
+</style>
