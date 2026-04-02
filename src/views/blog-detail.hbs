@@ -578,55 +578,6 @@ deleteReply(replyId) {
     </div>
   </div>
 </div>
-
-<!-- Tambahkan Alpine.js x-data untuk fungsi komentar di elemen yang sudah ada -->
-<script>
-  // Tambahkan fungsi-fungsi ini ke dalam Alpine component yang sudah ada
-  // Jika Anda sudah memiliki x-data di elemen parent, tambahkan method berikut:
-  /*
-  x-data="{
-    ...existingData,
-    
-    replyToComment(commentId, userName) {
-      // Isi textarea dengan mention
-      const textarea = document.querySelector('textarea');
-      if (textarea) {
-        textarea.value = `@${userName} `;
-        textarea.focus();
-      }
-      // Scroll ke form komentar
-      document.querySelector('.bg-gray-50.rounded-xl').scrollIntoView({ behavior: 'smooth' });
-    },
-    
-    deleteComment(commentId) {
-      if (confirm('Apakah Anda yakin ingin menghapus komentar ini?')) {
-        fetch(`/blog/comment/${commentId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        })
-        .then(res => {
-          if (res.status === 401) {
-            window.location.href = '/login';
-            return;
-          }
-          return res.json();
-        })
-        .then(data => {
-          if (data && data.success) {
-            window.location.reload();
-          }
-        })
-        .catch(err => {
-          console.error('Error:', err);
-          alert('Failed to delete comment');
-        });
-      }
-    }
-  }"
-  */
-</script>
       </div>
 
       <!-- Sidebar -->
