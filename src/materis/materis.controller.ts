@@ -68,29 +68,13 @@ export class MaterisController {
 
   @Roles('admin')
   @Post('ppt/:pertemuanId')
-  @UseInterceptors(
-    FileInterceptor('file', multerConfigMemoryOnly),
-    ValidateFileInterceptor,
-  )
-  @ValidateFile({
-    maxSize: 50 * 1024 * 1024,
-    allowedTypes: [
-      'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    ],
-    fileExtensions: ['.ppt', '.pptx'],
-    folder: 'materi/ppt',
-    resourceType: 'raw',
-  })
   async createPpt(
     @Body() createMaterisDto: CreateMaterisDto,
-    @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
     @Param('pertemuanId') pertemuanId: number,
     @Req() req: Request,
   ) {
     try {
-      createMaterisDto.file = req.body.uploadedFileUrls?.[0];
       createMaterisDto.pertemuanId = pertemuanId;
       createMaterisDto.jenis_file = 'ppt';
 
@@ -221,33 +205,12 @@ export class MaterisController {
 
   @Roles('admin')
   @Patch('ppt/:id')
-  @UseInterceptors(
-    FileInterceptor('file', multerConfigMemoryOnly),
-    ValidateFileInterceptor,
-  )
-  @ValidateFile({
-    maxSize: 50 * 1024 * 1024,
-    allowedTypes: [
-      'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    ],
-    fileExtensions: ['.ppt', '.pptx'],
-    folder: 'materi/ppt',
-  })
   async updatePpt(
     @Param('id') id: number,
-    @UploadedFile() file: Express.Multer.File,
     @Body() updateMaterisDto: UpdateMaterisDto,
     @Req() req: Request,
   ) {
     const materi = await this.materisService.findOne(id);
-
-    if (file) {
-      await this.materisService.deleteFile(materi.file);
-
-      updateMaterisDto.file = materi.file;
-    }
-
     return await this.materisService.update(id, updateMaterisDto);
   }
 

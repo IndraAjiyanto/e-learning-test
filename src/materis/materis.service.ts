@@ -115,19 +115,12 @@ export class MaterisService {
     if (!url) return;
 
     try {
-      // Convert URL ke full path
-      // /uploads/alumni/123.jpg → /project-root/public/uploads/alumni/123.jpg
       const filePath = path.join(process.cwd(), 'public', url);
 
-      // Hapus file
       await fs.unlink(filePath);
-      console.log('File deleted:', filePath);
     } catch (error) {
       if (error.code === 'ENOENT') {
-        console.log('File not found, skipping delete:', url);
       } else {
-        console.error('Error deleting file:', error);
-        // Tidak throw error agar proses lain tetap jalan
       }
     }
   }
@@ -147,29 +140,8 @@ export class MaterisService {
       throw new NotFoundException('materi tidak ditemukan');
     }
 
-    // Hapus file dari Cloudinary (kecuali video karena video pakai link YouTube)
-    if (materi.jenis_file !== 'video') {
-      // Untuk PDF dan PPT gunakan resource_type: 'raw'
-      const resourceType =
-        materi.jenis_file === 'pdf' || materi.jenis_file === 'ppt'
-          ? 'raw'
-          : 'image';
+    if (materi.jenis_file == 'pdf') {
       await this.deleteFile(materi.file);
-    }
-
-    // Jika materi PPT, hapus juga semua slides
-    if (
-      materi.jenis_file === 'ppt' &&
-      materi.slides &&
-      materi.slides.length > 0
-    ) {
-      for (const slideUrl of materi.slides) {
-        try {
-          await this.deleteFile(slideUrl); // Slides adalah image
-        } catch (error) {
-          console.error(`Failed to delete slide: ${slideUrl}`, error);
-        }
-      }
     }
 
     return await this.materiRepository.remove(materi);
