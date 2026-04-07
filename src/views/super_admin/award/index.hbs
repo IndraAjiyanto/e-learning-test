@@ -198,7 +198,7 @@
 
       get filteredAward() {
         const filtered = this.award.filter(a =>
-          (`${a.content} ${a.isi}`)
+          (`${a.content.en} ${a.isi.en} ${a.content.id} ${a.isi.id} ${a.content.ja} ${a.isi.ja}`)
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

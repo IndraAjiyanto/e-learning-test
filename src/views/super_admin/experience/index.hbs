@@ -201,7 +201,7 @@
 
       get filteredExperience() {
         const filtered = this.experience.filter(e =>
-          (`${e.content} ${e.isi}`)
+          (`${e.content.en} ${e.isi.en} ${e.content.id} ${e.isi.id} ${e.content.ja} ${e.isi.ja}`)
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

@@ -198,7 +198,7 @@
 
       get filteredBackground() {
         const filtered = this.background.filter(b =>
-          (`${b.content} ${b.isi}`)
+          (`${b.content.en} ${b.isi.en} ${b.content.id} ${b.isi.id} ${b.content.ja} ${b.isi.ja}`)
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

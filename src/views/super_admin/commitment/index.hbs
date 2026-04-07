@@ -198,7 +198,7 @@
       // Filter + Pagination
       get filteredCommitments() {
         const filtered = this.commitments.filter(c =>
-          `${c.judul} ${c.deskripsi}`
+          `${c.judul.en} ${c.deskripsi.en} ${c.judul.id} ${c.deskripsi.id} ${c.judul.ja} ${c.deskripsi.ja}`
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

@@ -198,7 +198,7 @@
       // Filter + Pagination
       get filteredValues() {
         const filtered = this.values.filter(v =>
-          `${v.title} ${v.description}`
+          `${v.title.en} ${v.description.en} ${v.title.id} ${v.description.id} ${v.title.ja} ${v.description.ja}`
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );
