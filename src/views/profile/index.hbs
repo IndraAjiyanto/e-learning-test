@@ -79,14 +79,18 @@
         </div>
 
         <!-- User Info Section - Center Aligned -->
-        <div class='flex-1'>
-          <div class='flex flex-col items-center lg:items-start'>
-            <h1
-              class='text-3xl font-bold text-slate-800 mb-2 font-montserrat'
-            >{{user.username}}</h1>
-            <p class='text-slate-600 text-lg'>{{user.email}}</p>
-          </div>
-        </div>
+<div class='flex-1 min-w-0'>
+  <div class='flex flex-col items-center lg:items-start'>
+    <h1
+      class='text-3xl font-bold text-slate-800 mb-2 font-montserrat truncate w-full'
+    >
+      {{user.username}}
+    </h1>
+    <p class='text-slate-600 text-lg truncate w-full'>
+      {{user.email}}
+    </p>
+  </div>
+</div>
 
         <!-- Action Buttons Section -->
         <div class='flex flex-col gap-3 w-full lg:w-auto'>
@@ -132,7 +136,7 @@
                   'test.profile.username'
                 }}</p>
               <p
-                class='text-lg text-slate-800 font-semibold'
+                class='text-lg text-slate-800 font-semibold truncate w-80'
               >{{user.username}}</p>
             </div>
           </div>
