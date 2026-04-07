@@ -171,7 +171,6 @@
       @click='closeMenu()'
     ></div>
 
-    <!-- Mobile Menu Panel - Slide dari KIRI -->
 <nav
   x-show='open'
   x-transition:enter='transition ease-out duration-300 transform'
@@ -545,7 +544,6 @@
   </div>
 </nav>
 
-    <!-- Desktop Navigation (tetap sama seperti sebelumnya) -->
     <nav
       class='hidden md:flex md:items-center md:space-x-4'
       x-show='isDesktop'
@@ -557,7 +555,7 @@
           :class="isActive('/dashboard')
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.home'}}</a>
 
         <a
@@ -566,7 +564,7 @@
           :class="isActive('/dashboard/about')
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.about'}}</a>
 
         <div class='relative'>
@@ -578,7 +576,7 @@
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='flex items-center justify-between px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
           >
-            <span>{{t 'test.navbar.program'}}</span>
+            <span class="whitespace-nowrap">{{t 'test.navbar.program'}}</span>
             <svg
               fill='currentColor'
               viewBox='0 0 20 20'
@@ -638,7 +636,7 @@
           :class="isActive('/dashboard/portofolio') 
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.portfolio'}}</a>
 
         <a
@@ -647,7 +645,7 @@
           :class="isActive('/dashboard/blog') 
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.blog'}}</a>
 
         <a
@@ -656,7 +654,7 @@
           :class="isActive('/dashboard/alumni') 
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.alumni'}}</a>
 
         <div class='relative'>
@@ -778,7 +776,7 @@
           :class="isActive('/dashboard')
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.home'}}</a>
 
         <a
@@ -787,7 +785,7 @@
           :class="isActive('/dashboard/about')
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.about'}}</a>
 
         <div class='relative'>
@@ -799,7 +797,7 @@
             : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
             class='flex items-center justify-between px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
           >
-            <span>{{t 'test.navbar.program'}}</span>
+            <span class="whitespace-nowrap">{{t 'test.navbar.program'}}</span>
             <svg
               fill='currentColor'
               viewBox='0 0 20 20'
@@ -859,7 +857,7 @@
           :class="isActive('/dashboard/portofolio')
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.portfolio'}}</a>
 
         <a
@@ -868,7 +866,7 @@
           :class="isActive('/dashboard/blog') 
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.blog'}}</a>
 
         <a
@@ -877,7 +875,7 @@
           :class="isActive('/dashboard/alumni')
           ? 'bg-white text-gray-900' 
           : 'bg-transparent text-white hover:bg-gray-700 md:hover:bg-gray-200 hover:text-white md:hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.alumni'}}</a>
 
         <a
@@ -886,7 +884,7 @@
           :class="isActive('/login') 
           ? 'bg-white text-gray-900 border-2 border-white' 
           : 'bg-transparent text-white border-2 border-white hover:bg-gray-100 hover:text-gray-900'"
-          class='block px-4 py-2 text-sm font-semibold border-2 border-white hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors'
+          class='block px-4 py-2 text-sm font-semibold border-2 border-white hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.login'}}</a>
       {{/if}}
 
