@@ -152,7 +152,7 @@ function misiTable({ misi }) {
 
     get filteredMisi() {
       const filtered = this.misi.filter(m =>
-        (`${m.content} ${m.isi}`)
+        (`${m.content.en} ${m.isi.en} ${m.content.id} ${m.isi.id} ${m.content.ja} ${m.isi.ja}`)
           .toLowerCase()
           .includes(this.search.toLowerCase())
       );

@@ -140,7 +140,7 @@
 
       get filteredParagraf() {
         let filtered = this.paragraf.filter(p =>
-          (`${p.paragraf} ${p.p_ke}`)
+          (`${p.paragraf.en} ${p.paragraf.id} ${p.paragraf.ja} ${p.p_ke}`)
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );
