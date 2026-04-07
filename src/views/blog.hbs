@@ -7,14 +7,14 @@
       <!-- Header Navigation -->
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center space-x-6">
-          <h1 class="text-3xl font-bold text-gray-900 font-montserrat">Blog</h1>
+          <h1 class="text-3xl font-bold text-gray-900 font-montserrat">{{t 'test.blog.tittle'}}</h1>
         </div>
         
         <!-- Search Bar -->
         <div class="relative hidden lg:block">
           <input 
             type="text" 
-            placeholder="Cari artikel..." 
+            placeholder="{{t 'test.blog.searchBlogPlaceholder'}}" 
             x-model="searchQuery"
             @input="handleSearch()"
             class="w-64 pl-10 pr-4 py-2 border bg-white border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent">
@@ -30,7 +30,7 @@
           class="pb-2 text-sm whitespace-nowrap transition-all duration-200 flex items-center space-x-2"
         >
           <i class="fas fa-home"></i>
-          <span>Semua</span>
+          <span>{{t 'test.blog.allCategory' }}</span>
         </button>
         <template x-for='kategori in allKategori' :key='kategori.id'>
           <button
@@ -55,7 +55,7 @@
             <img src="{{blog_tranding.gambar.[0]}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
             <div class="absolute bottom-0 left-0 p-6 text-white">
-              <span class="bg-red-600 text-xs px-3 py-1 rounded-full mb-3 inline-block">Trending</span>
+              <span class="bg-red-600 text-xs px-3 py-1 rounded-full mb-3 inline-block">{{t 'test.blog.trending'}}</span>
               <h2 class="text-3xl font-bold mb-2">{{blog_tranding.judul}}</h2>
               <p class="text-gray-200 mb-4">{{blog_tranding.description}}</p>
               <div class="flex items-center space-x-4 text-sm">
@@ -216,8 +216,7 @@
                   @click="viewBlog(item.id)"
                   class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-sm px-4 py-2 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 rounded-lg flex items-center justify-center'
                 >
-                  <span>Baca Selengkapnya</span>
-                  <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                  <span>{{t 'test.blog.readMore'}}</span>
                 </a>
               </div>
             </div>
