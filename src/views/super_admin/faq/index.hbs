@@ -193,7 +193,7 @@
        ================================ */
       get filteredData() {
         let filtered = this.data.filter((item) =>
-          `${item.question} ${item.answer}`
+          `${item.question.en} ${item.answer.en} ${item.question.id} ${item.answer.id} ${item.question.ja} ${item.answer.ja}`
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

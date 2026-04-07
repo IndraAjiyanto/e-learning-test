@@ -3,57 +3,56 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create Technology</h2>
 
     <form
-      action='/teknologi'
-      method='post'
-      class='space-y-6'
-      x-data="{
-      loading: false,
-        nama: '',
-        svg: '',
-        svgPreview: '',
-        svgError: '',
-        errors: { nama: null, svg: null },
-        success: { nama: false, svg: false },
-        validateNama() {
-          if (!this.nama.trim()) {
-            this.errors.nama = 'Technology name is required';
-            this.success.nama = false;
-          } else if (this.nama.trim().length < 2) {
-            this.errors.nama = 'Technology name must be at least 2 characters';
-            this.success.nama = false;
-          } else {
-            this.errors.nama = null;
-            this.success.nama = true;
-          }
-        },
-        validateSVG(text) {
-          this.svgError = '';
-          this.errors.svg = null;
-          this.success.svg = false;
-          
-          if (!text) {
-            this.svgPreview = '';
-            this.errors.svg = 'SVG code is required';
-            return;
-          }
-          
-          // Basic SVG validation
-          if (!text.trim().startsWith('<svg') || !text.trim().endsWith('</svg>')) {
-            this.svgError = 'Invalid SVG format. Must start with <svg and end with </svg>';
-            this.errors.svg = this.svgError;
-            this.svgPreview = '';
-            return;
-          }
-          
-          this.svgPreview = text;
-          this.success.svg = true;
-        },
-        get canSubmit() {
-          return this.success.nama && this.success.svg;
-        }
-      }"
-      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
-    >
+  action='/teknologi'
+  method='post'
+  class='space-y-6'
+  x-data="{
+    loading: false,
+    nama: '',
+    svg: '',
+    svgPreview: '',
+    svgError: '',
+    errors: { nama: null, svg: null },
+    success: { nama: false, svg: false },
+    validateNama() {
+      if (!this.nama.trim()) {
+        this.errors.nama = 'Technology name is required';
+        this.success.nama = false;
+      } else if (this.nama.trim().length < 2) {
+        this.errors.nama = 'Technology name must be at least 2 characters';
+        this.success.nama = false;
+      } else {
+        this.errors.nama = null;
+        this.success.nama = true;
+      }
+    },
+    validateSVG(text) {
+      this.svgError = '';
+      this.errors.svg = null;
+      this.success.svg = false;
+      
+      if (!text) {
+        this.svgPreview = '';
+        this.errors.svg = 'SVG code is required';
+        return;
+      }
+      
+      if (!text.trim().startsWith('<svg') || !text.trim().endsWith('</svg>')) {
+        this.svgError = 'Invalid SVG format. Must start with <svg and end with </svg>';
+        this.errors.svg = this.svgError;
+        this.svgPreview = '';
+        return;
+      }
+      
+      this.svgPreview = text;
+      this.success.svg = true;
+    },
+    get canSubmit() {
+      return this.success.nama && this.success.svg;
+    }
+  }"
+  @submit.prevent="if (canSubmit) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+>
 
       <!-- Nama Teknologi -->
       <div class='space-y-2'>
@@ -148,27 +147,24 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class='flex gap-3'>
-        <button
-          type='submit'
-          :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-gray-900 flex items-center gap-2'
-        >
-          <span
-            x-show='loading'
-            class='loading loading-spinner loading-sm'
-          ></span>
-          <span x-show='!loading'>Create</span>
-        </button>
-        <a
-          href='/teknologi'
-:class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
-          Cancel
-        </a>
-      </div>
-    </form>
+<div class='flex gap-3'>
+    <button
+      type='submit'
+      :disabled='!canSubmit || loading'
+      :class="!canSubmit || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+      class='text-white px-6 py-2 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-gray-900 flex items-center gap-2'
+    >
+      <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+      <span x-show='!loading'>Create</span>
+    </button>
+    <a
+      href='/teknologi'
+      :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+      class='px-6 py-2 rounded-lg border border-gray-300 transition'>
+      Cancel
+    </a>
+  </div>
+</form>
 
     <!-- Submit Warning -->
     <template x-if='errors.nama || errors.svg || svgError'>

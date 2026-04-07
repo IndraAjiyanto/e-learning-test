@@ -942,7 +942,6 @@ export class KelassService {
 
       await fs.unlink(filePath);
     } catch (error) {
-      throw new BadRequestException('Failed to delete file: ' + error.message);
     }
   }
 }
