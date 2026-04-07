@@ -213,7 +213,7 @@
       get filteredBenefits() {
         let filtered = this.benefits.filter(b =>
           (
-            `${b.judul} ${b.text} ${b.no}`
+            `${b.judul.en} ${b.text.en} ${b.judul.id} ${b.text.id} ${b.judul.ja} ${b.text.ja}`
           )
             .toLowerCase()
             .includes(this.search.toLowerCase())
