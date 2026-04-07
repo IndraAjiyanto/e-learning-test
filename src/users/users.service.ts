@@ -36,7 +36,7 @@ export class UsersService {
       where: { email: createUserDto.email },
     });
     if (!cekEmail) {
-      const user = await this.userRepository.create(createUserDto);
+      const user = await this.userRepository.create({ ...createUserDto, isVerified: true });
       return await this.userRepository.save(user);
     } else {
       throw new NotFoundException('Email is already registered');
