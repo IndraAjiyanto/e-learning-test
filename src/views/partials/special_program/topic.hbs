@@ -1,0 +1,23 @@
+<section class='py-20 bg-white'>
+  <div class='container mx-auto px-4'>
+    <div class='text-center mb-16'>
+      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.specialProgram.trainingSection.tittle"}}</h2>
+      <p class='text-gray-600 text-lg '>{{t "test.specialProgram.trainingSection.description"}}</p>
+    </div>
+
+    <div class='max-w-6xl mx-auto'>
+      <div class='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
+{{#each kategori.jenis_kelas}}
+        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 shadow-lg hover:-translate-y-1 transition-all'>
+          <div class='w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4'>
+            <i class='{{computeIcon this.icon}} text-white text-xl'></i>
+          </div>
+          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>{{this.nama_jenis_kelas}}</h3>
+          <p class='text-gray-600 text-sm '>{{getByLang this.deskripsi ../lang}}</p>
+        </div>
+        {{/each}}
+
+      </div>
+    </div>
+  </div>
+</section>

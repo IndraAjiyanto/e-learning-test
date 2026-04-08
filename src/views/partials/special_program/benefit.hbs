@@ -1,0 +1,24 @@
+<section class='py-20 bg-white'>
+  <div class='container mx-auto px-4 flex flex-col md:flex-row items-center justify-center'>
+    <div class='md:ml-16 items-center md:text-left text-center  w-1/2'>
+      <h2 class='text-4xl font-bold text-gray-900 font-montserrat'>{{t "test.specialProgram.benefitSection.tittle"}} {{kategori.nama_kategori}}</h2>
+    </div>
+
+    <div class="md:w-1/2  max-w-xl space-y-8 text-base/7 text-gray-400 lg:max-w-none mt-10 md:mt-0">
+{{#each benefit_category}}
+
+            <div class="relative flex flex-row ">
+       
+            <i class='{{computeIcon this.icon}} text-gray-900 text-xl pr-10 mt-1'></i>
+            <div class="flex flex-col items-start">
+                <div class="inline text-xl font-bold text-gray-900  font-montserrat">{{getByLang this.title ../lang}}</div>
+              <div class="inline text-gray-600 text-lg leading-relaxed ">{{getByLang this.description ../lang}}</div>
+              </div>
+            </div>
+            {{/each}}
+
+
+          </div>
+
+  </div>
+</section>

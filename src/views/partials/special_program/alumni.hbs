@@ -1,0 +1,110 @@
+<section
+  class='bg-gradient-to-br from-primary via-secondary to-gray-900 py-20 px-6 lg:px-20'
+  x-data='{
+        active: 0, 
+        slides: [0,1,2],
+        init() {
+            // Auto slide setiap 5 detik
+            setInterval(() => {
+                this.active = (this.active + 1) % this.slides.length;
+            }, 5000);
+        }
+    }'
+>
+  <!-- Title -->
+  <div class='text-center mb-4'>
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">{{t "test.home.alumniSection.tittle"}}</h2>
+
+    <p class='text-lg text-white py-6 max-w-2xl mx-auto'>
+      {{t "test.home.alumniSection.description"}}
+    </p>
+  </div>
+
+  <!-- Carousel -->
+  <div class='relative w-full max-w-5xl mx-auto overflow-hidden'>
+
+    {{#if alumni}}
+    <!-- Slide Wrapper -->
+    <div
+      class='flex transition-transform duration-500'
+      :style='`transform: translateX(-${active * 100}%);`'
+    >
+
+      <!-- Slide (Dynamic from data) -->
+      {{#each alumni}}
+        <div class='w-full flex-shrink-0 flex justify-center px-4'>
+          <div
+            class='bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-10 max-w-3xl'
+          >
+            <span class='text-6xl text-white/50 font-bold'>❝</span>
+            <p class='text-white text-xl leading-relaxed mb-8 italic'>
+              {{getByLang pesan ../lang}}
+            </p>
+            <div class='flex items-center gap-6'>
+              <img
+                src='{{profile}}'
+                alt='Alumni'
+                class='w-16 h-16 rounded-full border-4 border-white/20'
+              />
+              <div>
+                <p class='font-bold text-white text-lg'>{{getByLang nama ../lang}}</p>
+                <p class='text-slate-300'>{{getByLang posisi_sekarang ../lang}}</p>
+                <p class='text-slate-400 text-sm'>{{getByLang kelas.nama_kelas ../lang}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+
+    <!-- Navigation Buttons -->
+    <button
+      class='absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:text-white shadow-lg transition-all duration-300'
+      @click='active = (active - 1 + slides.length) % slides.length'
+    >
+      <i class='fas fa-chevron-left'></i>
+    </button>
+    <button
+      class='absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 hover:text-white shadow-lg transition-all duration-300'
+      @click='active = (active + 1) % slides.length'
+    >
+      <i class='fas fa-chevron-right'></i>
+    </button>
+
+    <!-- Dot Indicators -->
+    <div class='flex justify-center mt-8 gap-3'>
+      <template x-for='(s, i) in slides' :key='i'>
+        <button
+          class='w-4 h-4 rounded-full transition-all duration-300'
+          :class="active === i ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/70'"
+          @click='active = i'
+        ></button>
+      </template>
+    </div>
+    {{else}}
+    <!-- Fallback - No Alumni Data -->
+    <div class='text-center py-12'>
+      <div
+        class='bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-10 max-w-3xl mx-auto'
+      >
+        <span class='text-6xl text-white/50 font-bold'>❝</span>
+        <p class='text-white text-xl leading-relaxed mb-8 italic'>
+          This bootcamp transformed my career completely! The mentors were amazing, and the curriculum was very comprehensive. Now I work at a leading tech company with a great salary.
+        </p>
+        <div class='flex items-center gap-6 justify-center'>
+          <img
+            src='https://ui-avatars.com/api/?name=John+Doe&background=64748b&color=fff&size=128'
+            alt='Alumni'
+            class='w-16 h-16 rounded-full border-4 border-white/20'
+          />
+          <div class='text-left'>
+            <p class='font-bold text-white text-lg'>John Doe</p>
+            <p class='text-slate-300'>Senior Software Engineer</p>
+            <p class='text-slate-400 text-sm'>Full Stack Development Bootcamp</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</section>

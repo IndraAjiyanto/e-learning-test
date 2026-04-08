@@ -1,0 +1,40 @@
+<section class='relative pt-32 pb-48 bg-gradient-to-br from-primary via-secondary to-slate-700 overflow-hidden  justify-center items-center flex'>
+
+
+  <div class='container mx-auto relative '>
+    <div class='max-w-4xl mx-auto flex flex-col md:flex-row md:gap-40 items-center px-2'>
+      <!-- Logo/Icon -->
+      <div class='md:w-2/4 flex justify-center'>
+        <div class=' p-5 bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300'>
+          <img src='{{kategori.icon}}' alt='In-House Training' class='w-40 h-auto'>
+        </div>
+      </div>
+
+      <div class="md:w-2/4 text-center mt-10 md:mt-0 md:text-left">
+      <h1 class='text-5xl md:text-6xl font-bold text-white mb-6 font-montserrat leading-tight'>
+        {{kategori.nama_kategori}}
+      </h1>
+      <p class='text-xl md:text-2xl text-gray-200 mb-4 '>
+        {{getByLang kategori.text lang}}
+      </p>
+      <p class='text-base text-gray-300 max-w-3xl mx-auto  leading-relaxed'>
+        {{getByLang kategori.deskripsi lang}}
+      </p>
+                 <button
+              onclick="document.getElementById('programs').scrollIntoView({ behavior: 'smooth', block: 'start' })"
+              class='btn border-0 hover:bg-slate-50 inline-block mt-7 bg-white text-gray-800 hover:text-slate-900 px-5 py-1 rounded-xl font-bold text-lg hover:shadow-2xl text-left transform hover:-translate-y-1 transition-all'
+            >
+              {{t "test.specialProgram.contactSection.buttonViewProgram"}}
+            </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Wave Divider -->
+  <div class='absolute bottom-0 left-0 right-0'>
+    <svg viewBox='0 0 1440 120' fill='none' xmlns='http://www.w3.org/2000/svg'>
+      <path d='M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z' fill='white'/>
+    </svg>
+  </div>
+</section>
