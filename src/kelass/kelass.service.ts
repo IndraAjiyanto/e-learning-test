@@ -643,6 +643,15 @@ export class KelassService {
     return await this.userRepository.find({ where: { role: 'user' } });
   }
 
+  async findKategoriMyProgram(userId: number){
+    return await this.kategoriRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
+  }
+
+
+  async findJenisKelasMyProgram(userId: number){
+    return await this.jenisKelasRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
+  }
+
   async findKategori() {
     return await this.kategoriRepository.find();
   }

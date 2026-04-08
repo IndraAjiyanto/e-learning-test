@@ -8,14 +8,23 @@
   }
 </style>
 
-<div class='pt-20 min-h-screen bg-white' x-data="{ activeSection: 'story' }">
+<div class='pt-20 min-h-screen bg-white' x-data="
+          {
+            activeSection: localStorage.getItem('activeSection') || 'story',
+
+            async toggleActiveSection(sectionName) {
+this.activeSection = sectionName;
+localStorage.setItem('activeSection', sectionName);
+}
+          }
+        ">
   <div class='max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12'>
 
     <div class='lg:hidden mb-6 -mx-4 sm:mx-0'>
       <div class='overflow-x-auto scrollbar-hide px-4 sm:px-0'>
-        <nav class='flex space-x-2 min-w-max sm:min-w-0 pb-4'>
+        <nav class='flex space-x-2 min-w-max sm:min-w-0 pb-4' >
           <button
-            @click="activeSection = 'story'"
+            @click="toggleActiveSection('story');"
             :class="activeSection === 'story' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
             class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
           >
@@ -23,7 +32,7 @@
             <span>{{t "test.about.tabAbout.story"}}</span>
           </button>
           <button
-            @click="activeSection = 'mission'"
+            @click="toggleActiveSection('mission');"
             :class="activeSection === 'mission' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
             class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
           >
@@ -31,7 +40,7 @@
             <span>{{t "test.about.tabAbout.visiMisi"}}</span>
           </button>
           <button
-            @click="activeSection = 'team'"
+            @click="toggleActiveSection('team');"
             :class="activeSection === 'team' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
             class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
           >
@@ -39,7 +48,7 @@
             <span>{{t "test.about.tabAbout.team"}}</span>
           </button>
           <button
-            @click="activeSection = 'values'"
+            @click="toggleActiveSection('values');"
             :class="activeSection === 'values' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
             class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
           >
@@ -47,7 +56,7 @@
             <span>{{t "test.about.tabAbout.value"}}</span>
           </button>
           <button
-            @click="activeSection = 'contact'"
+            @click="toggleActiveSection('contact');"
             :class="activeSection === 'contact' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
             class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
           >
@@ -64,7 +73,7 @@
         <div class='sticky top-32 space-y-2'>
           <nav class='space-y-1'>
             <button
-              @click="activeSection = 'story'"
+              @click="toggleActiveSection('story');"
               :class="activeSection === 'story' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
               class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
             >
@@ -72,7 +81,7 @@
               <span>{{t "test.about.tabAbout.story"}}</span>
             </button>
             <button
-              @click="activeSection = 'mission'"
+              @click="toggleActiveSection('mission');"
               :class="activeSection === 'mission' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
               class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
             >
@@ -80,7 +89,7 @@
               <span>{{t "test.about.tabAbout.visiMisi"}}</span>
             </button>
             <button
-              @click="activeSection = 'team'"
+              @click="toggleActiveSection('team');"
               :class="activeSection === 'team' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
               class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
             >
@@ -88,7 +97,7 @@
               <span>{{t "test.about.tabAbout.team"}}</span>
             </button>
             <button
-              @click="activeSection = 'values'"
+              @click="toggleActiveSection('values');"
               :class="activeSection === 'values' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
               class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
             >
@@ -96,7 +105,7 @@
               <span>{{t "test.about.tabAbout.value"}}</span>
             </button>
             <button
-              @click="activeSection = 'contact'"
+              @click="toggleActiveSection('contact');"
               :class="activeSection === 'contact' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
               class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
             >
@@ -108,15 +117,24 @@
       </div>
 
       <div class='lg:col-span-3'>
+        <div x-show="activeSection === 'story'">
         {{> tentang/story_tab}}
+        </div>
 
+<div x-show="activeSection === 'mission'">
         {{> tentang/mission_tab}}
+        </div>
 
+<div x-show="activeSection === 'team'">
         {{> tentang/team_tab}}
-
+        </div>
+<div x-show="activeSection === 'values'">
         {{> tentang/values_tab}}
-
+        </div>
+<div x-show="activeSection === 'contact'">
         {{> tentang/contact_tab}}
+        </div>
       </div>
     </div>
+  </div>
   </div>

@@ -130,32 +130,27 @@ export class DashboardController {
     });
   }
 
-  @Get('blog')
-  async blog(@Req() req: Request, @Res() res: Response) {
-    const blog_tranding = await this.dashboardService.findBlogTrending(req.user?.id);
-    const kategori_tranding = await this.dashboardService.findKategoriTrending(req.user?.id);
-    if (blog_tranding !== null) {
-      const blog = await this.dashboardService.findBlog();
-      const kategori_blog = await this.dashboardService.findBlogCategory();
-      res.render('blog', {
-        user: req.user,
-        blog,
-        kategori_blog,
-        blog_tranding,
-        kategori_tranding
-      });
-    } else {
-      const blog = await this.dashboardService.findBlog();
-      const kategori_blog = await this.dashboardService.findBlogCategory();
-      res.render('blog', {
-        user: req.user,
-        blog,
-        kategori_blog,
-        blog_tranding,
-        kategori_tranding
-      });
-    }
-  }
+@Get('blog')
+async blog(@Req() req: Request, @Res() res: Response) {
+  const blog_tranding = await this.dashboardService.findBlogTrending(req.user?.id);
+  const kategori_tranding = await this.dashboardService.findKategoriTrending(req.user?.id);
+
+  const excludeIds = [
+    blog_tranding?.id,
+    ...kategori_tranding.map(k => k.blog?.id),
+  ].filter(Boolean) as number[];
+
+  const blog = await this.dashboardService.findBlog(excludeIds);
+  const kategori_blog = await this.dashboardService.findBlogCategory();
+
+  res.render('blog', {
+    user: req.user,
+    blog,
+    kategori_blog,
+    blog_tranding,
+    kategori_tranding
+  });
+}
 
   @Get('about')
   async about(@Req() req: Request, @Res() res: Response) {

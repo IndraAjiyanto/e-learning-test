@@ -260,18 +260,23 @@ async findKategoriTrending(userId?: number) {
     });
   }
 
-async findBlog() {
-  return await this.blogRepository
+async findBlog(excludeIds: number[] = []) {
+  const qb = this.blogRepository
     .createQueryBuilder('blog')
     .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
     .leftJoinAndSelect('blog.likes', 'likes')
-    .leftJoinAndSelect('likes.user', 'user') 
+    .leftJoinAndSelect('likes.user', 'user')
     .orderBy(
       '(blog.views * 1) + ((SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id) * 2)',
       'DESC'
     )
-    .addOrderBy('blog.createdAt', 'DESC')
-    .getMany();
+    .addOrderBy('blog.createdAt', 'DESC');
+
+  if (excludeIds.length > 0) {
+    qb.where('blog.id NOT IN (:...excludeIds)', { excludeIds });
+  }
+
+  return await qb.getMany();
 }
 
   async findPortfolio() {

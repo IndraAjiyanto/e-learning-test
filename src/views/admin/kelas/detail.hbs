@@ -377,7 +377,6 @@ function tabData() {
         if(url === '') {
           this.data = [];
           localStorage.removeItem('activeData');
-          console.log('ℹ️ No data to fetch for this tab.');
           return;
         }else{
           const response = await fetch(url);

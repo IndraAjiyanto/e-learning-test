@@ -121,8 +121,8 @@ export class PortfoliosController {
     @Res() res: Response,
     @Param('userId') userId: number,
   ) {
-    const kategori = await this.portfoliosService.findKategori();
-    const jenis_kelas = await this.portfoliosService.findJenisKelas();
+    const kategori = await this.portfoliosService.findKategoriMyPortfolio(userId);
+    const jenis_kelas = await this.portfoliosService.findJenisKelasMyPortfolio(userId);
     const portfolio = await this.portfoliosService.findByUser(userId);
     res.render('user/myportfolio', {
       user: req.user,
