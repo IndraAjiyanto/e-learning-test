@@ -74,6 +74,14 @@ export class PortfoliosService {
     return await this.jenisKelasRepository.find();
   }
 
+  async findKategoriMyPortfolio(userId: number) {
+    return await this.kategoriRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
+  }
+
+  async findJenisKelasMyPortfolio(userId: number) {
+    return await this.jenisKelasRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
+  }
+
   async findAll(
     page: number = 1,
     limit: number = 6,
