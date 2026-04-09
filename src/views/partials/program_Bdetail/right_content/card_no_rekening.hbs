@@ -1,0 +1,136 @@
+    {{#if check_user}}
+        {{else}}
+          {{#if kelas.check_paid}}
+            {{#if (check daftar kelas.kuota)}}
+              <div
+                class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white p-6 rounded-2xl shadow-lg'
+              >
+                <p class='text-xs text-slate-300 mb-2'>{{t "test.detailProgram.accountNumber"}}</p>
+                <div class='flex items-center justify-between'>
+                  <p class='text-xl font-bold tracking-wider'>2847 9237 4298
+                    1234</p>
+                  <button
+                    @click='copyToClipboard'
+                    :class="{ 'bg-emerald-500': copied, 'bg-slate-700': !copied }"
+                    class='p-2 rounded-full transition-all duration-300 hover:scale-110'
+                  >
+                    <i class='far' :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                  </button>
+                </div>
+
+                <div
+                  class='flex justify-between items-center mt-4 pt-4 border-t border-slate-700'
+                >
+                  <div>
+                    <p class='text-xs text-slate-300'>{{t "test.detailProgram.accountHolder"}}</p>
+                    <p class='text-sm font-semibold'>PT. WIRATEK SOLUSI ASIA</p>
+                  </div>
+                  <div>
+                    <p class='text-xs text-slate-300'>{{t "test.detailProgram.bankName"}}</p>
+                    <p class='text-sm font-semibold'>BANK BCA</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment Instructions -->
+              <div
+                class='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5'
+                x-show="paymentType === 'full'"
+                x-transition
+              >
+                <h4
+                  class='font-bold text-blue-800 flex items-center gap-2 mb-3'
+                >
+                  <i class='fas fa-info-circle'></i>
+                  {{t "test.detailProgram.fullPayment.fullPaymentIntruction"}}
+                </h4>
+                <ol class='list-decimal pl-5 space-y-2 text-sm text-blue-700'>
+                  <li>{{t "test.detailProgram.fullPayment.transferAmount"}}
+                    <span
+                      class='font-bold bg-blue-100 px-2 py-1 rounded'
+                    >{{formatRupiah kelas.harga}}</span></li>
+                  <li>{{t "test.detailProgram.fullPayment.useYourName"}}</li>
+                  <li>{{t "test.detailProgram.fullPayment.enterWhatsApp"}}</li>
+                  <li>{{t "test.detailProgram.fullPayment.uploadProof"}}</li>
+                  <li>{{t "test.detailProgram.fullPayment.AfterUploading"}}</li>
+                  <li>{{t "test.detailProgram.fullPayment.waitConfirmation"}}</li>
+                  <li>{{t "test.detailProgram.fullPayment.programAccess"}}</li>
+                </ol>
+              </div>
+
+              <!-- Installment Payment Instructions -->
+              <div
+                x-show="paymentType === 'installment' && installmentMonths > 0"
+                x-transition
+                class='bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5'
+              >
+                <h4
+                  class='font-bold text-blue-800 flex items-center gap-2 mb-3'
+                >
+                  <i class='fas fa-calendar-check'></i>
+                  {{t "test.detailProgram.installment.installmentPaymentInstructions"}}
+                </h4>
+                <ol class='list-decimal pl-5 space-y-2 text-sm text-blue-700'>
+                  <li>{{t "test.detailProgram.installment.transferDownPayment"}}
+                    <span
+                      class='font-bold bg-blue-100 px-2 py-1 rounded'
+                      x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'
+                    ></span> {{t "test.detailProgram.installment.firstPayment"}}</li>
+                  <li>{{t "test.detailProgram.installment.includeTranferNotes"}}</li>
+                  <li>{{t "test.detailProgram.installment.enterWhatsApp"}}</li>
+                  <li>{{t "test.detailProgram.installment.uploadProof"}}</li>
+                  <li>{{t "test.detailProgram.installment.youllReceive"}}</li>
+                  <li>{{t "test.detailProgram.installment.continuePaying"}}:
+                    <ul class='list-disc pl-5 mt-2 space-y-1'>
+                      <li>{{t "test.detailProgram.installment.sameAmount"}}</li>
+                      <li>{{t "test.detailProgram.installment.uploadProofEach"}}</li>
+                      <li>{{t "test.detailProgram.installment.useNotes"}}</li>
+                    </ul>
+                  </li>
+                  <li>{{t "test.detailProgram.installment.certificateOfCompletion"}}</li>
+                </ol>
+              </div>
+            {{else}}
+              <div
+                class='bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-5 text-center'
+              >
+                <i class='fas fa-users text-red-500 text-2xl mb-2'></i>
+                <p class='font-semibold text-red-800'>{{ t "test.detailProgram.programIsFull" }}</p>
+                <p class='text-sm text-red-600'>{{ t "test.detailProgram.thisProgramMaximum" }}</p>
+              </div>
+            {{/if}}
+          {{else}}
+            <!-- Free Class Registration Instructions -->
+            <div
+              class='bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-xl p-5'
+            >
+              <h4
+                class='font-bold text-emerald-800 flex items-center gap-2 mb-3'
+              >
+                <i class='fas fa-clipboard-check'></i>
+                {{t "test.detailProgram.free.freeProgramInstruction"}}
+              </h4>
+              <ol class='list-decimal pl-5 space-y-2 text-sm text-emerald-700'>
+                <li>{{t "test.detailProgram.free.clickRegistrationForm"}}
+                  <div
+                    class='mt-2 bg-white rounded-lg p-3 border border-emerald-300'
+                  >
+                    <a
+                      href='{{kelas.form}}'
+                      target='_blank'
+                      class='text-emerald-600 hover:text-emerald-800 font-semibold break-all flex items-center gap-2'
+                    >
+                      <i class='fas fa-external-link-alt'></i>
+                      {{t "test.detailProgram.free.openRegistrationForm"}}
+                    </a>
+                  </div>
+                </li>
+                <li>{{t "test.detailProgram.free.fillInAll"}}</li>
+                <li>{{t "test.detailProgram.free.submitForm"}}</li>
+                <li>{{t "test.detailProgram.free.uploadScreenshot"}}</li>
+                <li>{{t "test.detailProgram.free.afterUploading"}}</li>
+                <li>{{t "test.detailProgram.free.waitConfirmation"}}</li>
+              </ol>
+            </div>
+          {{/if}}
+          {{/if}}
