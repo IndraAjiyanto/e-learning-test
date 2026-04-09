@@ -1,0 +1,43 @@
+  <!-- Status Filter Tabs -->
+  <div class="flex justify-center md:justify-start space-x-2 mb-8">
+    <button @click="toggleTabStatus('all')"
+      :class="tabStatus === 'all' ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+      <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        All
+      </span>
+    </button>
+    <button @click="toggleTabStatus('proces')"
+      :class="tabStatus === 'proces' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+      <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Process
+      </span>
+    </button>
+    <button @click="toggleTabStatus('acc')"
+      :class="tabStatus === 'acc' ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+      <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        Accepted
+      </span>
+    </button>
+    <button @click="toggleTabStatus('rejected')"
+      :class="tabStatus === 'rejected' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+      <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        Rejected
+      </span>
+    </button>
+  </div>
