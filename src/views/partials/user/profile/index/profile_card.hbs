@@ -1,0 +1,96 @@
+    <!-- Profile Card -->
+    <div
+      class='bg-white rounded-2xl shadow-2xl border border-slate-200 p-8 mb-10 transition-all duration-300 hover:shadow-3xl'
+    >
+      <!-- Profile Header with Image, Info, and Action Buttons -->
+      <div class='flex flex-col lg:flex-row items-center gap-8'>
+        <!-- Profile Image Section -->
+        <div class='flex-shrink-0'>
+          <div class='relative'>
+            {{#if user.profile}}
+              <img
+                :src="previewUrl || '{{user.profile}}'"
+                alt='Profile Photo'
+                class='w-32 h-32 rounded-full border-4 border-slate-200 shadow-2xl object-cover transition-all duration-300 hover:scale-105'
+              />
+
+            {{else}}
+              <div
+                class='w-32 h-32 rounded-full border-4 bg-gray-600 border-slate-200 shadow-2xl flex items-center justify-center text-4xl font-bold uppercase text-white transition-all duration-300 hover:scale-105'
+              >
+                {{substring user.username 0 1}}
+              </div>
+            {{/if}}
+
+            <label
+              for='profile-upload'
+              class='absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg cursor-pointer hover:bg-slate-100 transition-all duration-300 hover:scale-110'
+            >
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                class='h-5 w-5 text-slate-600'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
+              >
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  stroke-width='2'
+                  d='M15.232 5.232l3.536 3.536M9 11l6.586-6.586
+                                         a2 2 0 012.828 0l1.172 1.172a2 2 0 010 2.828L13 15
+                                         m-4 0h4m-4 0v4m0-4H5m4 0v-4'
+                />
+              </svg>
+            </label>
+
+            <form
+              x-ref='profileForm'
+              action='/users/update/profile/{{user.id}}?_method=PATCH'
+              method='post'
+              enctype='multipart/form-data'
+            >
+              <input
+                id='profile-upload'
+                type='file'
+                name='profile'
+                accept='image/jpeg,image/jpg,image/png'
+                class='hidden'
+                x-ref='fileInput'
+                @change='handleFileUpload($event)'
+              />
+            </form>
+          </div>
+        </div>
+
+        <!-- User Info Section - Center Aligned -->
+<div class='flex-1 min-w-0'>
+  <div class='flex flex-col items-center lg:items-start'>
+    <h1
+      class='text-3xl font-bold text-slate-800 mb-2 font-montserrat truncate w-full'
+    >
+      {{user.username}}
+    </h1>
+    <p class='text-slate-600 text-lg truncate w-full'>
+      {{user.email}}
+    </p>
+  </div>
+</div>
+
+        <!-- Action Buttons Section -->
+        <div class='flex flex-col gap-3 w-full lg:w-auto'>
+          <a
+            href='/users/profile/info_akun'
+            class='btn text-lg bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 font-semibold text-center whitespace-nowrap'
+          >
+            <i class='fas fa-edit mr-2'></i>{{t 'test.profile.editProfile'}}
+          </a>
+          <a
+            href='/users/profile/password'
+            class='btn text-lg bg-white text-slate-800 border-0 rounded-xl shadow-lg hover:shadow-xl hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 transform hover:-translate-y-1 font-semibold text-center whitespace-nowrap'
+          >
+            <i class='fas fa-key mr-2'></i>{{t 'test.profile.changePassword'}}
+          </a>
+        </div>
+      </div>
+    </div>

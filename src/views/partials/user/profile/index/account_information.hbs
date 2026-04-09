@@ -1,0 +1,225 @@
+    <!-- Account Information Section -->
+    <div class='mb-10'>
+      <div class='mb-6'>
+        <h2 class='text-2xl font-bold text-slate-800 font-montserrat'>{{t
+            'test.profile.accountlInfo'
+          }}</h2>
+        <p class='text-slate-600 mt-2'>{{t 'test.profile.personalDetails'}}</p>
+      </div>
+
+      <div class='bg-white rounded-2xl shadow-xl border border-slate-200 p-8'>
+        <!-- Basic Information Grid -->
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <!-- Username -->
+          <div
+            class='flex items-center gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200'
+          >
+            <div
+              class='w-12 h-12 flex items-center justify-center flex-shrink-0'
+            >
+              <i class='fas fa-user text-gray-700 text-lg'></i>
+            </div>
+            <div class='flex-1'>
+              <p class='text-sm text-slate-500 font-medium'>{{t
+                  'test.profile.username'
+                }}</p>
+              <p
+                class='text-lg text-slate-800 font-semibold truncate w-80'
+              >{{user.username}}</p>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div
+            class='flex items-center gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200'
+          >
+            <div
+              class='w-12 h-12 flex items-center justify-center flex-shrink-0'
+            >
+              <i class='fas fa-envelope text-gray-700 text-lg'></i>
+            </div>
+            <div class='flex-1'>
+              <p class='text-sm text-slate-500 font-medium'>{{t
+                  'test.profile.email'
+                }}</p>
+              <p class='text-lg text-slate-800 font-semibold'>{{user.email}}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Biodata Section for Users -->
+        {{#if (roles user.role 'user')}}
+          {{#if user.biodata}}
+            <!-- Personal Information -->
+            <div class='mt-8 pt-8 border-t border-slate-200'>
+              <div
+                class='flex flex-col md:flex-row md:items-center md:justify-between mb-6'
+              >
+                <h3 class='text-xl font-bold text-slate-800 font-montserrat'>{{t
+                    'test.profile.personalInfo'
+                  }}</h3>
+                <!-- Edit Information Button -->
+                <a
+                  href='/biodatas/formEdit/{{user.biodata.id}}'
+                  class='btn inline-flex items-center gap-2 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 font-semibold mt-4 md:mt-0'
+                >
+                  <i class='fas fa-edit mr-2'></i>
+                  {{t 'test.profile.editInfo'}}
+                </a>
+              </div>
+
+              <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <!-- Full Name -->
+                <div
+                  class='flex items-center gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200'
+                >
+                  <div
+                    class='w-12 h-12 flex items-center justify-center flex-shrink-0'
+                  >
+                    <i class='fas fa-id-card text-gray-700 text-lg'></i>
+                  </div>
+                  <div class='flex-1'>
+                    <p class='text-sm text-slate-500 font-medium'>{{t
+                        'test.profile.fullName'
+                      }}</p>
+                    <p
+                      class='text-lg text-slate-800 font-semibold'
+                    >{{user.biodata.nama_lengkap}}</p>
+                  </div>
+                </div>
+
+                <!-- Gender -->
+                <div
+                  class='flex items-center gap-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200'
+                >
+                  <div
+                    class='w-12 h-12 flex items-center justify-center flex-shrink-0'
+                  >
+                    <i class='fas fa-venus-mars text-gray-700 text-lg'></i>
+                  </div>
+                  <div class='flex-1'>
+                    <p class='text-sm text-slate-500 font-medium'>{{t
+                        'test.profile.gender'
+                      }}</p>
+                    <p class='text-lg text-slate-800 font-semibold'>{{#if
+                        (eq user.biodata.jenis_kelamin 'Laki laki')
+                      }}{{t 'test.profile.male'}}{{else if
+                          (eq user.biodata.jenis_kelamin 'Perempuan')
+                        }}{{t 'test.profile.female'}}{{/if}}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Additional Details -->
+              <div
+                class='mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'
+              >
+                <!-- Phone Number -->
+                <div
+                  class='p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 text-center'
+                >
+                  <div
+                    class='w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3'
+                  >
+                    <i class='fas fa-phone text-gray-700 text-lg'></i>
+                  </div>
+                  <p class='text-sm text-slate-500 font-medium'>{{t
+                      'test.profile.phoneNumber'
+                    }}</p>
+                  <p
+                    class='text-base text-slate-800 font-semibold'
+                  >{{user.biodata.no}}</p>
+                </div>
+                <!-- Location -->
+                <div
+                  class='p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 text-center'
+                >
+                  <div
+                    class='w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3'
+                  >
+                    <i class='fas fa-map-marker-alt text-gray-700 text-lg'></i>
+                  </div>
+                  <p class='text-sm text-slate-500 font-medium'>{{t
+                      'test.profile.location'
+                    }}</p>
+                  <p
+                    class='text-base text-slate-800 font-semibold'
+                  >{{user.biodata.kota}}</p>
+                </div>
+
+                <!-- Education -->
+                <div
+                  class='p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 text-center'
+                >
+                  <div
+                    class='w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3'
+                  >
+                    <i class='fas fa-graduation-cap text-gray-700 text-lg'></i>
+                  </div>
+                  <p class='text-sm text-slate-500 font-medium'>{{t
+                      'test.profile.education'
+                    }}</p>
+                  <p
+                    class='text-base text-slate-800 font-semibold'
+                  >{{#if (eq user.biodata.pendidikan "Junior High School")}}{{t 'test.profile.juniorHighSchool'}}
+                  {{else if (eq user.biodata.pendidikan "Senior High School")}}{{t 'test.profile.seniorHighSchool'}}
+                  {{else if (eq user.biodata.pendidikan "Diploma (D3/D4)")}}{{t 'test.profile.diploma'}}
+                  {{else if (eq user.biodata.pendidikan "Bachelor Degree (S1)")}}{{t 'test.profile.bachelorDegree'}}
+                  {{/if}}</p>
+                </div>
+
+                <!-- Study Program -->
+                <div
+                  class='p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 text-center'
+                >
+                  <div
+                    class='w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3'
+                  >
+                    <i class='fas fa-book text-gray-700 text-lg'></i>
+                  </div>
+                  <p class='text-sm text-slate-500 font-medium'>{{t
+                      'test.profile.studyProgram'
+                    }}</p>
+                  <p
+                    class='text-base text-slate-800 font-semibold'
+                  >{{user.biodata.program_studi}}</p>
+                </div>
+              </div>
+            </div>
+          {{else}}
+            <!-- No Biodata Warning -->
+            <div
+              class='mt-8 p-6 rounded-xl bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200'
+            >
+              <div
+                class='flex flex-col md:flex-row items-center justify-between gap-4'
+              >
+                <div class='flex items-center gap-4'>
+                  <div
+                    class='w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center'
+                  >
+                    <i
+                      class='fas fa-exclamation-triangle text-white text-lg'
+                    ></i>
+                  </div>
+                  <div>
+                    <p class='font-semibold text-yellow-800 text-lg'>{{t
+                        'test.profile.tittleCompleteYourProfile'
+                      }}</p>
+                    <p class='text-yellow-700 text-sm'>{{t
+                        'test.profile.spanCompleteYourProfile'
+                      }}</p>
+                  </div>
+                </div>
+                <a
+                  href='/biodatas/formCreate'
+                  class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 font-semibold whitespace-nowrap'
+                >
+                  {{t 'test.profile.completeBiodata'}}
+                </a>
+              </div>
+            </div>
+          {{/if}}
+        {{/if}}
+      </div>
+    </div>
