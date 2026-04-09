@@ -1,0 +1,27 @@
+  <div
+    class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center'
+    x-show='pageCount() > 1'
+  >
+    <button
+      @click='prevPage'
+      :disabled='pageNumber==0'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }"
+    >Prev</button>
+
+    <template x-for='(page,index) in pages()' :key='index'>
+      <button
+        @click='viewPage(index)'
+        class='px-3 py-1 rounded'
+        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
+        x-text='index+1'
+      ></button>
+    </template>
+
+    <button
+      @click='nextPage'
+      :disabled='pageNumber >= pageCount()-1'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
+    >Next</button>
+  </div>
