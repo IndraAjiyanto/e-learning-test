@@ -1,0 +1,58 @@
+    <!-- Filter & Actions -->
+    <div class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6'>
+      <div class='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+        <!-- Left: Search & Filters -->
+        <div class='space-y-4'>
+          <!-- Search -->
+          <div class='relative'>
+            <input
+              type='text'
+              placeholder='{{t "test.logbook.logbookList.placeholderSearch"}}'
+              x-model='searchInput'
+              @input='debounceSearch()'
+              class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-transparent transition-all'
+            />
+            <i
+              class='fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400'
+            ></i>
+          </div>
+
+        </div>
+
+        <!-- Right: Export Button -->
+        <div class='flex items-end justify-end'>
+          <button
+            @click='exportToExcel()'
+            class='bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5'
+          >
+            <i class='fas fa-file-excel text-lg'></i>
+            <span class='font-semibold'>{{t
+                'test.logbook.logbookList.exportExcel'
+              }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Filters Info -->
+      <div
+        x-show='hasActiveFilters()'
+        class='mt-4 pt-4 border-t border-gray-200'
+        x-transition:enter='transition ease-out duration-200'
+        x-transition:enter-start='opacity-0 -translate-y-2'
+        x-transition:enter-end='opacity-100 translate-y-0'
+      >
+        <div class='flex flex-wrap items-center gap-2 text-sm'>
+          <div class='flex items-center gap-2 text-gray-600 font-semibold'>
+            <i class='fas fa-filter'></i>
+            <span>{{t 'test.logbook.logbookList.ActiveFilters'}}</span>
+          </div>
+          <span
+            x-show='search'
+            class='px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-full text-slate-700 font-medium flex items-center gap-1'
+          >
+            <i class='fas fa-search text-xs'></i>
+            <span x-text='search'></span>
+          </span>
+        </div>
+      </div>
+    </div>
