@@ -48,7 +48,6 @@ export class BlogController {
     const blog = await this.blogService.findOne(id);
     res.render('blog-detail', { blog, user: req.user });
     }
-
   }
 
   @Post('view/:id')
