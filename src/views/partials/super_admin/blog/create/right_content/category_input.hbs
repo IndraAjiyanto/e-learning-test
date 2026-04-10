@@ -1,0 +1,72 @@
+        <div
+          x-data="{
+            search: '',
+            selectedCategory: null,
+            showDropdown: false,
+            availableCategories: {{json categories}},
+            get filteredCategories() {
+              return this.availableCategories.filter(c =>
+                c.nama.toLowerCase().includes(this.search.toLowerCase())
+              );
+            },
+            selectCategory(category) {
+              this.selectedCategory = category;
+              this.search = category.nama;
+              this.showDropdown = false;
+              $dispatch('category-selected', { category });
+            },
+            clearCategory() {
+              this.selectedCategory = null;
+              this.search = '';
+              $dispatch('category-selected', { category: null });
+            }
+          }"
+          @click.away='showDropdown = false'
+        >
+          <label
+            for='kategori_blog'
+            class='block text-sm font-medium text-gray-700 mb-2'
+          >Category</label>
+          <div class='relative'>
+            <input
+              type='text'
+              x-model='search'
+              @focus='showDropdown = true'
+              @input='showDropdown = true'
+              placeholder='Search and select category...'
+              class='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-900 bg-white pr-10'
+            />
+            <i
+              class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+            ></i>
+
+            <div
+              x-show='showDropdown && filteredCategories.length > 0'
+              class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+            >
+              <template
+                x-for='category in filteredCategories'
+                :key='category.id'
+              >
+                <button
+                  type='button'
+                  @click='selectCategory(category)'
+                  class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                >
+                  <span
+                    class='text-sm font-medium text-gray-700'
+                    x-text='category.nama'
+                  ></span>
+                </button>
+              </template>
+            </div>
+
+            <input
+              type='hidden'
+              id='kategori_blog'
+              name='kategori_blog'
+              x-model='selectedCategory ? selectedCategory.id : ""'
+              required
+            />
+          </div>
+        </div>

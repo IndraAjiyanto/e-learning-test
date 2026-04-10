@@ -1,0 +1,63 @@
+        <label
+          for='isi'
+          class='mb-2 block font-medium text-gray-700'
+        >Content</label>
+        <div
+          id='editor'
+          class='text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4'
+        ></div>
+
+        <input type='hidden' name='isi' id='isi' />
+        
+         <script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const editor = new EditorJS({
+    holder: 'editor',
+    placeholder: 'enter your content here...',
+    tools: {
+      header: {
+        class: EditorTools.Header,
+        inlineToolbar: ['link']
+      },
+      paragraph: {
+        class: EditorTools.Paragraph,
+        inlineToolbar: true,
+      },
+      list: {
+        class: EditorTools.List,
+        inlineToolbar: true
+      },
+      marker: {
+        class: EditorTools.Marker,
+        shortcut: 'CMD+SHIFT+M'
+      },
+      image: {
+        class: EditorTools.ImageTool,
+        tunes: {
+          "stretched": false,
+          "withBorder": false,
+          "withBackground": false
+        },
+        config: {
+          endpoints: {
+            byFile: '/blog/upload-image',
+            byUrl: '/blog/fetch-image'
+          }
+        }
+      },
+      linkTool: {
+        class: EditorTools.LinkTool,
+        config: { endpoint: '/blog/fetch-link' }
+      }
+    }
+  });
+
+  const form = document.querySelector('form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const output = await editor.save();
+    document.getElementById('isi').value = JSON.stringify(output);
+    form.submit();
+  });
+});
+</script>
