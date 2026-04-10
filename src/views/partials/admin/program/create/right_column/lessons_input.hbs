@@ -1,0 +1,96 @@
+        <!-- Lessons -->
+        <div>
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-2'
+          >Lessons</label>
+          <div x-data="{ materis_id: [''] }">
+
+            <label class='block text-xs text-gray-600 mb-1'>ID</label>
+            <template x-for='(materi_id, index) in materis_id' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='materis_id[index]'
+                  name='materi_id[]'
+                  placeholder='Enter a lesson'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <button
+                  type='button'
+                  @click='materis_id.splice(index,1)'
+                  x-show='materis_id.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                >
+                  ✕
+                </button>
+              </div>
+            </template>
+            <button
+              type='button'
+              @click="materis_id.push('')"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Lesson
+            </button>
+          </div>
+
+          <div x-data="{ materis_en: [''] }">
+            <label class='block text-xs text-gray-600 mb-1'>EN</label>
+            <template x-for='(materi_en, index) in materis_en' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='materis_en[index]'
+                  name='materi_en[]'
+                  placeholder='Enter a lesson'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <button
+                  type='button'
+                  @click='materis_en.splice(index,1)'
+                  x-show='materis_en.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                >
+                  ✕
+                </button>
+              </div>
+            </template>
+            <button
+              type='button'
+              @click="materis_en.push('')"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Lesson
+            </button>
+          </div>
+
+          <div x-data="{ materis_ja: [''] }">
+            <label class='block text-xs text-gray-600 mb-1'>JP</label>
+            <template x-for='(materi_ja, index) in materis_ja' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='materis_ja[index]'
+                  name='materi_ja[]'
+                  placeholder='Enter a lesson'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <button
+                  type='button'
+                  @click='materis_ja.splice(index,1)'
+                  x-show='materis_ja.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                >
+                  ✕
+                </button>
+              </div>
+            </template>
+            <button
+              type='button'
+              @click="materis_ja.push('')"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Lesson
+            </button>
+          </div>
+        </div>
