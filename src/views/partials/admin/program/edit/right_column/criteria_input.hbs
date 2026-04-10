@@ -1,0 +1,101 @@
+                    <!-- Criteria -->
+                    <div>
+                                        <label
+            class='block text-sm font-semibold text-gray-700 my-2'
+          >Criteria</label>
+                    <div x-data="{ kriterias_id: {{json kelas.kriteria_id}} || [''] }">
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >ID</label>
+                      <template x-for='(kriteria_id, index) in kriterias_id' :key='index'>
+                        <div class='flex items-center gap-3 mb-3'>
+                          <input
+                            type='text'
+                            x-model='kriterias_id[index]'
+                            name='kriteria_id[]'
+                            placeholder='Enter criteria'
+                            class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                          />
+                          <button
+                            type='button'
+                            @click='kriterias_id.splice(index,1)'
+                            x-show='kriterias_id.length > 1'
+                            class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </template>
+                      <button
+                        type='button'
+                        @click="kriterias_id.push('')"
+                        class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+                      >
+                        + Add Criteria
+                      </button>
+                    </div>
+
+                    <div x-data="{ kriterias_en: {{json kelas.kriteria_en}} || [''] }">
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >EN</label>
+                      <template x-for='(kriteria_en, index) in kriterias_en' :key='index'>
+                        <div class='flex items-center gap-3 mb-3'>
+                          <input
+                            type='text'
+                            x-model='kriterias_en[index]'
+                            name='kriteria_en[]'
+                            placeholder='Enter criteria'
+                            class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                          />
+                          <button
+                            type='button'
+                            @click='kriterias_en.splice(index,1)'
+                            x-show='kriterias_en.length > 1'
+                            class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </template>
+                      <button
+                        type='button'
+                        @click="kriterias_en.push('')"
+                        class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+                      >
+                        + Add Criteria
+                      </button>
+                    </div>
+
+                    <div x-data="{ kriterias_ja: {{json kelas.kriteria_ja}} || [''] }">
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >JP</label>
+                      <template x-for='(kriteria_ja, index) in kriterias_ja' :key='index'>
+                        <div class='flex items-center gap-3 mb-3'>
+                          <input
+                            type='text'
+                            x-model='kriterias_ja[index]'
+                            name='kriteria_ja[]'
+                            placeholder='Enter criteria'
+                            class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                          />
+                          <button
+                            type='button'
+                            @click='kriterias_ja.splice(index,1)'
+                            x-show='kriterias_ja.length > 1'
+                            class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </template>
+                      <button
+                        type='button'
+                        @click="kriterias_ja.push('')"
+                        class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+                      >
+                        + Add Criteria
+                      </button>
+                    </div>
+                    </div>

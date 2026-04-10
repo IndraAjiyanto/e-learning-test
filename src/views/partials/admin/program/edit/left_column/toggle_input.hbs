@@ -1,0 +1,113 @@
+                    <!-- Paid Class Toggle -->
+                    <div class='space-y-6'>
+                        <div class='flex items-center gap-3'>
+                            <label class='relative inline-flex items-center cursor-pointer'>
+                                <input type='checkbox' x-model='paidClass' class='sr-only' />
+
+                                <div
+                                    :class="paidClass ? 'bg-green-500' : 'bg-gray-300'"
+                                    class='w-11 h-6 rounded-full transition-colors'
+                                ></div>
+
+                                <div
+                                    :class="paidClass ? 'translate-x-5' : 'translate-x-0'"
+                                    class='absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform'
+                                ></div>
+                            </label>
+
+                            <span class='text-sm text-gray-700 font-semibold'>Paid Program</span>
+
+                            <input type='hidden' name='paid_check' :value='paidClass' />
+                        </div>
+
+{{#if (roles user.role "super_admin")}}
+                        <!-- Fields that appear when paid_check is true -->
+                        <div x-show='paidClass' x-transition class='space-y-6'>
+                            <!-- Price -->
+                            <div x-data="{
+                                display: '',
+                                value: '',
+                                formatHarga(event) {
+                                    let angka = event.target.value.replace(/\D/g, ''); 
+                                    this.value = angka;
+                                    this.display = new Intl.NumberFormat('id-ID').format(angka);
+                                }
+                            }"
+                            x-init="
+                                value = '{{kelas.harga}}'; 
+                                display = new Intl.NumberFormat('id-ID').format(value);
+                            ">
+                                <label for="harga1" class="block text-sm font-semibold text-gray-700 mb-1">Price</label>
+                                <input type="text" 
+                                       id="harga1"
+                                       x-model="display" 
+                                       @input="formatHarga($event)" 
+                                       placeholder="Enter price"
+                                       class="w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700">
+                                <input type="hidden" name="harga" x-model="value">
+                            </div>
+
+                            <!-- Promo -->
+                            <div x-data="{
+                                display: '',
+                                value: '',
+                                formatPromo(event) {
+                                    let angka = event.target.value.replace(/\D/g, ''); 
+                                    this.value = angka;
+                                    this.display = new Intl.NumberFormat('id-ID').format(angka);
+                                }
+                            }"
+                            x-init="
+                                value = '{{kelas.promo}}'; 
+                                display = new Intl.NumberFormat('id-ID').format(value);
+                            ">
+                                <label for="promo1" class="block text-sm font-semibold text-gray-700 mb-1">Promo</label>
+                                <input type="text" 
+                                       id="promo1"
+                                       x-model="display" 
+                                       @input="formatPromo($event)" 
+                                       placeholder="Enter promo price"
+                                       class="w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700">
+                                <input type="hidden" name="promo" x-model="value">
+                            </div>
+                        </div>
+
+                        <!-- Fields that appear when paid_check is false (not active) -->
+                        <div x-show='!paidClass' x-transition class='space-y-6'>
+                            <!-- Form -->
+                            <div>
+                                <label for="form" class="block text-sm font-semibold text-gray-700 mb-1">Registration Form Link</label>
+                                <input type="text" 
+                                       id="form"
+                                       name="form"
+                                       value="{{kelas.form}}"
+                                       placeholder="https://forms.google.com/..."
+                                       class="w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700">
+                            </div>
+                        </div>
+
+                        <!-- Quota - Always visible below Paid Class Toggle -->
+                        <div x-data="{
+                            display: '',
+                            value: '',
+                            formatKuota(event) {
+                                let angka = event.target.value.replace(/\D/g, ''); 
+                                this.value = angka;
+                                this.display = new Intl.NumberFormat('id-ID').format(angka);
+                            }
+                        }"
+                        x-init="
+                            value = '{{kelas.kuota}}';
+                            display = new Intl.NumberFormat('id-ID').format(value);
+                        ">
+                            <label for="kuota1" class="block text-sm font-semibold text-gray-700 mb-1">Program Quota</label>
+                            <input type="text" 
+                                   id="kuota1"
+                                   x-model="display" 
+                                   @input="formatKuota($event)" 
+                                   placeholder="Enter quota"
+                                   class="w-full border border-gray-300 bg-blue-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700">
+                            <input type="hidden" name="kuota" x-model="value">
+                        </div>
+{{/if}}
+                    </div>
