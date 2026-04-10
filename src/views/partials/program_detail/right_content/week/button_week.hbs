@@ -1,0 +1,47 @@
+              <button
+                @click='toggleAndFetch()'
+                class='w-full flex justify-between items-center px-5 py-3 bg-gradient-to-r from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 transition-all duration-300 text-left group'
+              >
+                <div class='flex items-center space-x-3'>
+                  <div>
+                    <div class='flex items-center gap-2'>
+                      <h2
+                        class='font-bold text-base text-gray-900 group-hover:text-slate-700 transition-colors font-montserrat'
+                      >
+                        {{t 'test.startLearning.week'}}
+                        {{this.minggu_ke}}
+                        :
+                        {{this.keterangan}}
+                      </h2>
+                      {{#if progres_minggu.[0].quiz}}
+                        <span
+                          class='bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-2 py-0.5 rounded-full font-semibold'
+                        >
+                          {{t 'test.startLearning.completed'}}
+                        </span>
+                      {{/if}}
+                    </div>
+                    <p class='text-xs text-gray-500 mt-0.5'>
+                      {{#if progres_minggu.[0].quiz}}
+                        {{t 'test.startLearning.clickToReview'}}
+                      {{else}}
+                        {{t 'test.startLearning.clickToExpandWeek'}}
+                      {{/if}}
+                    </p>
+                  </div>
+                </div>
+                <svg
+                  :class="{'rotate-180': openMinggu, 'text-slate-600': openMinggu}"
+                  class='w-5 h-5 text-gray-400 transition-all duration-300 group-hover:text-slate-600'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                    stroke-width='2'
+                    d='M19 9l-7 7-7-7'
+                  />
+                </svg>
+              </button>

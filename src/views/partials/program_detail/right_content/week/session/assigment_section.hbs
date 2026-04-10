@@ -1,0 +1,110 @@
+                                <!-- Assignment Section -->
+                                <div class='mb-4'>
+                                  <template
+                                    x-for='tugas in pertemuan.tugas'
+                                    :key='tugas.id'
+                                  >
+                                    <div class='my-4'>
+                                      <template
+                                        x-if='tugas.jawaban_tugas.length <= 0 '
+                                      >
+                                        <a
+                                          :href='`/jawaban-tugass/${pertemuan.id}/${tugas.id}`'
+                                          class='btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-blue-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-blue-500 w-full transform transition-all duration-300 text-sm'
+                                        >
+                                          <svg
+                                            class='w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            viewBox='0 0 24 24'
+                                          >
+                                            <path
+                                              stroke-linecap='round'
+                                              stroke-linejoin='round'
+                                              stroke-width='2'
+                                              d='M12 4v16m8-8H4'
+                                            />
+                                          </svg>
+                                          <span class='font-semibold'>{{t
+                                              'test.startLearning.startAssignment'
+                                            }}</span>
+                                        </a>
+                                      </template>
+                                      <template
+                                        x-if="tugas.jawaban_tugas[0].proses === 'acc'"
+                                      >
+                                        <a
+                                          :href='`/jawaban-tugass/${pertemuan.id}/${tugas.id}`'
+                                          class='btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-emerald-500 hover:to-emerald-600 w-full transform transition-all duration-300 text-sm'
+                                        >
+                                          <svg
+                                            class='w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            viewBox='0 0 24 24'
+                                          >
+                                            <path
+                                              stroke-linecap='round'
+                                              stroke-linejoin='round'
+                                              stroke-width='2'
+                                              d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                                            />
+                                          </svg>
+                                          <span class='font-semibold'>{{t
+                                              'test.startLearning.assignmentCompleted'
+                                            }}</span>
+                                        </a>
+                                      </template>
+                                      <template
+                                        x-if="tugas.jawaban_tugas[0].proses === 'proces'"
+                                      >
+                                        <a
+                                          :href='`/jawaban-tugass/${pertemuan.id}/${tugas.id}`'
+                                          class='btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-yellow-500 w-full transform transition-all duration-300 text-sm'
+                                        >
+                                          <svg
+                                            class='w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            viewBox='0 0 24 24'
+                                          >
+                                            <path
+                                              stroke-linecap='round'
+                                              stroke-linejoin='round'
+                                              stroke-width='2'
+                                              d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'
+                                            />
+                                          </svg>
+                                          <span class='font-semibold'>{{t
+                                              'test.startLearning.startAssignment'
+                                            }}</span>
+                                        </a>
+                                      </template>
+                                      <template
+                                        x-if="tugas.jawaban_tugas[0].proses === 'rejected'"
+                                      >
+                                        <a
+                                          :href='`/jawaban-tugass/${pertemuan.id}/${tugas.id}`'
+                                          class='btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-red-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-red-500 w-full transform transition-all duration-300 text-sm'
+                                        >
+                                          <svg
+                                            class='w-4 h-4 mr-1.5 group-hover:-translate-y-1 transition-transform'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            viewBox='0 0 24 24'
+                                          >
+                                            <path
+                                              stroke-linecap='round'
+                                              stroke-linejoin='round'
+                                              stroke-width='2'
+                                              d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'
+                                            />
+                                          </svg>
+                                          <span class='font-semibold'>{{t
+                                              'test.startLearning.startAssignment'
+                                            }}</span>
+                                        </a>
+                                      </template>
+                                    </div>
+                                  </template>
+                                </div>
