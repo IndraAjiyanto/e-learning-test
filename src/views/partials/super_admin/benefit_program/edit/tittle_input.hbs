@@ -1,0 +1,127 @@
+      <!-- Benefit Title -->
+      <div class='space-y-2'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
+          Benefit Title
+        </label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- Indonesian -->
+          <div class='space-y-1'>
+            <label
+              for='benefit_id'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >ID</label>
+            <input
+              x-model='formData.benefit.id'
+              @input='validateField("benefit", "id", $event.target.value)'
+              type='text'
+              id='benefit_id'
+              name='benefit[id]'
+              placeholder='Judul benefit dalam bahasa Indonesia'
+              :class="formErrors.benefit.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.benefit.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              x-init='$el.value = formData.benefit.id'
+            />
+            <template x-if='formErrors.benefit.id'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.benefit.id'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.benefit.id && !formErrors.benefit.id'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- English -->
+          <div class='space-y-1'>
+            <label
+              for='benefit_en'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >EN</label>
+            <input
+              x-model='formData.benefit.en'
+              @input='validateField("benefit", "en", $event.target.value)'
+              type='text'
+              id='benefit_en'
+              name='benefit[en]'
+              placeholder='Benefit title in English'
+              :class="formErrors.benefit.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.benefit.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              x-init='$el.value = formData.benefit.en'
+            />
+            <template x-if='formErrors.benefit.en'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.benefit.en'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.benefit.en && !formErrors.benefit.en'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- Japanese -->
+          <div class='space-y-1'>
+            <label
+              for='benefit_ja'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >JP</label>
+            <input
+              x-model='formData.benefit.ja'
+              @input='validateField("benefit", "ja", $event.target.value)'
+              type='text'
+              id='benefit_ja'
+              name='benefit[ja]'
+              placeholder='ベネフィットのタイトル（日本語）'
+              :class="formErrors.benefit.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.benefit.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              x-init='$el.value = formData.benefit.ja'
+            />
+            <template x-if='formErrors.benefit.ja'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.benefit.ja'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.benefit.ja && !formErrors.benefit.ja'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
