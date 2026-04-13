@@ -77,7 +77,8 @@ export class GambarBenefitController {
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    res.render('super_admin/gambar_benefit/create', { user: req.user });
+    const availableNumbers = await this.gambarBenefitService.findNo();
+    res.render('super_admin/gambar_benefit/create', { user: req.user, availableNumbers });
   }
 
   @Roles('super_admin')

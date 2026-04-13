@@ -37,6 +37,16 @@ export class GambarBenefitService {
     return gambar_benefit;
   }
 
+    async findNo() {
+        const benefit = await this.findAll();
+      const usedNumbers = benefit.map((b) => Number(b.no));
+      
+      const availableNumbers = [1, 2, 3, 4].filter(
+        (n) => !usedNumbers.includes(n)
+      );
+      return availableNumbers;
+  }
+
   async deleteFile(url: string) {
     if (!url) return;
 
@@ -57,6 +67,16 @@ export class GambarBenefitService {
     if (!gambar_benefit) {
       throw new NotFoundException('Image Benefit Not Found');
     }
+          // Cek apakah no yang diinginkan sudah dipakai data lain
+  const gambar_benefit_no_used = await this.gambarBenefitRepository.findOne({
+    where: { no: updateGambarBenefitDto.no },
+  });
+
+  // Kalau sudah dipakai dan bukan data yang sama, swap nomor
+  if (gambar_benefit_no_used && gambar_benefit_no_used.id !== gambarBenefitId) {
+    gambar_benefit_no_used.no = gambar_benefit.no; // data lain ambil no lama
+    await this.gambarBenefitRepository.save(gambar_benefit_no_used);
+  }
     Object.assign(gambar_benefit, updateGambarBenefitDto);
     return await this.gambarBenefitRepository.save(gambar_benefit);
   }

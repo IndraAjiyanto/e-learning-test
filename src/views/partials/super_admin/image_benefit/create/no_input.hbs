@@ -1,18 +1,17 @@
-      <!-- Number -->
+      <!-- Number Select -->
       <div class='space-y-2'>
         <label for='no' class='block text-sm font-semibold text-gray-700 mb-1'>
           Number
 
         </label>
         <select
-          x-model='formData.no'
-          @change='validateField("no", null, $event.target.value)'
+          x-model='no'
+          @change='validateNo()'
           id='no'
           name='no'
           required
-          :class="formErrors.no ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.no ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          :class="errors.no ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : success.no ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-          x-init='$el.value = formData.no'
         >
           <option value=''>-- Select Number --</option>
           {{#each availableNumbers}}
@@ -21,17 +20,17 @@
         </select>
 
         <!-- Error Message -->
-        <template x-if='formErrors.no'>
+        <template x-if='errors.no'>
           <div
             class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
           >
             <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-            <p class='text-xs text-red-700' x-text='formErrors.no'></p>
+            <p class='text-xs text-red-700' x-text='errors.no'></p>
           </div>
         </template>
 
         <!-- Success Message -->
-        <template x-if='formValid.no && !formErrors.no'>
+        <template x-if='success.no && !errors.no'>
           <div
             class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
           >
