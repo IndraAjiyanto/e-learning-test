@@ -1,0 +1,38 @@
+      <div class='space-y-2'>
+        <label
+          for='link_form'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          <i class='fas fa-link text-green-600 mr-2'></i>Link job form
+        </label>
+        <input
+          x-model='formData.link_form'
+          @input='validateField("link_form", $event.target.value)'
+          id='link_form'
+          required
+          name='link_form'
+          placeholder='https://forms.gle/... or other form link'
+          :class="formErrors.link_form ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.link_form ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+        />
+
+        <!-- Error Message -->
+        <template x-if='formErrors.link_form'>
+          <div
+            class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <p class='text-xs text-red-700' x-text='formErrors.link_form'></p>
+          </div>
+        </template>
+
+        <!-- Success Message -->
+        <template x-if='formValid.link_form && !formErrors.link_form'>
+          <div
+            class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+          >
+            <i class='fas fa-check-circle text-green-500'></i>
+            <p class='text-xs text-green-700'>Valid link form</p>
+          </div>
+        </template>
+      </div>
