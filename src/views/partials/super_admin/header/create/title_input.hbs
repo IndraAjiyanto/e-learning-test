@@ -1,0 +1,115 @@
+        <!-- Judul -->
+        <div class='space-y-2'>
+
+          <label
+            for='judul'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >
+            Title
+          </label>
+
+          <div class='flex flex-col gap-3'>
+            <!-- Indonesia -->
+            <div class='space-y-1'>
+              <label class='block text-xs font-medium text-gray-600'>ID</label>
+              <input
+                type='text'
+                x-model='formData.judul.id'
+                name='judul[id]'
+                placeholder='Judul'
+                required
+                :class="formErrors.judul.id ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+                class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+                @input='validateField("judul", "id", $event.target.value)'
+              />
+              <template x-if='formErrors.judul.id'>
+                <div
+                  class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+                >
+                  <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                  <p
+                    class='text-xs text-red-700'
+                    x-text='formErrors.judul.id'
+                  ></p>
+                </div>
+              </template>
+              <template x-if='formValid.judul.id && !formErrors.judul.id'>
+                <div
+                  class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+                >
+                  <i class='fas fa-check-circle text-green-500'></i>
+                  <p class='text-xs text-green-700'>Valid title (ID)</p>
+                </div>
+              </template>
+            </div>
+
+            <!-- English -->
+            <div class='space-y-1'>
+              <label class='block text-xs font-medium text-gray-600'>EN</label>
+              <input
+                type='text'
+                x-model='formData.judul.en'
+                name='judul[en]'
+                placeholder='Title'
+                required
+                :class="formErrors.judul.en ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+                class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+                @input='validateField("judul", "en", $event.target.value)'
+              />
+              <template x-if='formErrors.judul.en'>
+                <div
+                  class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+                >
+                  <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                  <p
+                    class='text-xs text-red-700'
+                    x-text='formErrors.judul.en'
+                  ></p>
+                </div>
+              </template>
+              <template x-if='formValid.judul.en && !formErrors.judul.en'>
+                <div
+                  class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+                >
+                  <i class='fas fa-check-circle text-green-500'></i>
+                  <p class='text-xs text-green-700'>Valid title (EN)</p>
+                </div>
+              </template>
+            </div>
+
+            <!-- Japanese -->
+            <div class='space-y-1'>
+              <label class='block text-xs font-medium text-gray-600'>JP</label>
+              <input
+                type='text'
+                x-model='formData.judul.ja'
+                name='judul[ja]'
+                placeholder='タイトル'
+                required
+                :class="formErrors.judul.ja ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+                class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+                @input='validateField("judul", "ja", $event.target.value)'
+              />
+              <template x-if='formErrors.judul.ja'>
+                <div
+                  class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+                >
+                  <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                  <p
+                    class='text-xs text-red-700'
+                    x-text='formErrors.judul.ja'
+                  ></p>
+                </div>
+              </template>
+              <template x-if='formValid.judul.ja && !formErrors.judul.ja'>
+                <div
+                  class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+                >
+                  <i class='fas fa-check-circle text-green-500'></i>
+                  <p class='text-xs text-green-700'>Valid title (JA)</p>
+                </div>
+              </template>
+            </div>
+          </div>
+
+        </div>
