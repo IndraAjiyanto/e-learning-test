@@ -1,0 +1,124 @@
+          <!-- Text -->
+          <div class='space-y-4'>
+            <label
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Text</label>
+            <div class='space-y-4'>
+              <!-- ID -->
+              <div class='space-y-2'>
+                <label
+                  class='block text-xs font-medium text-gray-600'
+                >ID</label>
+                <textarea
+                  x-model='formData.text.id'
+                  @input='validateField("text", $event.target.value, "id")'
+                  name='text[id]'
+                  rows='3'
+                  :class="formErrors.text.id ? 'border-red-500 focus:ring-red-500' : (formValid.text.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+                  class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+                  placeholder='Teks tambahan (ID) (opsional)...'
+                ></textarea>
+                <template x-if='formErrors.text.id'>
+                  <div
+                    class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+                  >
+                    <i
+                      class='fas fa-exclamation-circle text-red-500 mt-0.5'
+                    ></i>
+                    <p
+                      class='text-xs text-red-700'
+                      x-text='formErrors.text.id'
+                    ></p>
+                  </div>
+                </template>
+                <template
+                  x-if='formTouched.text.id && formValid.text.id && !formErrors.text.id'
+                >
+                  <div
+                    class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+                  >
+                    <i class='fas fa-check-circle text-green-500'></i>
+                    <p class='text-xs text-green-700'>Valid</p>
+                  </div>
+                </template>
+              </div>
+
+              <!-- EN -->
+              <div class='space-y-2'>
+                <label
+                  class='block text-xs font-medium text-gray-600'
+                >EN</label>
+                <textarea
+                  x-model='formData.text.en'
+                  @input='validateField("text", $event.target.value, "en")'
+                  name='text[en]'
+                  rows='3'
+                  :class="formErrors.text.en ? 'border-red-500 focus:ring-red-500' : (formValid.text.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+                  class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+                  placeholder='Additional text (EN) (optional)...'
+                ></textarea>
+                <template x-if='formErrors.text.en'>
+                  <div
+                    class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+                  >
+                    <i
+                      class='fas fa-exclamation-circle text-red-500 mt-0.5'
+                    ></i>
+                    <p
+                      class='text-xs text-red-700'
+                      x-text='formErrors.text.en'
+                    ></p>
+                  </div>
+                </template>
+                <template
+                  x-if='formTouched.text.en && formValid.text.en && !formErrors.text.en'
+                >
+                  <div
+                    class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+                  >
+                    <i class='fas fa-check-circle text-green-500'></i>
+                    <p class='text-xs text-green-700'>Valid</p>
+                  </div>
+                </template>
+              </div>
+
+              <!-- JP -->
+              <div class='space-y-2'>
+                <label
+                  class='block text-xs font-medium text-gray-600'
+                >JP</label>
+                <textarea
+                  x-model='formData.text.ja'
+                  @input='validateField("text", $event.target.value, "ja")'
+                  name='text[ja]'
+                  rows='3'
+                  :class="formErrors.text.ja ? 'border-red-500 focus:ring-red-500' : (formValid.text.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+                  class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+                  placeholder='追加テキスト (JA) (オプション)...'
+                ></textarea>
+                <template x-if='formErrors.text.ja'>
+                  <div
+                    class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+                  >
+                    <i
+                      class='fas fa-exclamation-circle text-red-500 mt-0.5'
+                    ></i>
+                    <p
+                      class='text-xs text-red-700'
+                      x-text='formErrors.text.ja'
+                    ></p>
+                  </div>
+                </template>
+                <template
+                  x-if='formTouched.text.ja && formValid.text.ja && !formErrors.text.ja'
+                >
+                  <div
+                    class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+                  >
+                    <i class='fas fa-check-circle text-green-500'></i>
+                    <p class='text-xs text-green-700'>Valid</p>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>

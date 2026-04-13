@@ -1,0 +1,39 @@
+          <!-- Contact -->
+          <div class='space-y-2'>
+            <label
+              for='contact'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Contact</label>
+            <input
+              type='number'
+              id='contact'
+              name='contact'
+              required
+              :class="formErrors.contact ? 'border-red-500 focus:ring-red-500' : formValid.contact ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              @input='validateField("contact", $event.target.value)'
+              placeholder='Enter contact number '
+            />
+
+            <!-- Error Message -->
+            <template x-if='formErrors.contact'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.contact'></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template
+              x-if='formTouched.contact && formValid.contact && !formErrors.contact'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Contact looks good</p>
+              </div>
+            </template>
+          </div>
