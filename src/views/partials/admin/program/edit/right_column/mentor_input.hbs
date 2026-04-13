@@ -1,0 +1,55 @@
+{{#if (roles user.role "super_admin")}}
+                    <!-- Mentoring -->
+                    <div
+                      x-data="{
+                        search: '{{#if kelas.mentoring.[0].user}}{{kelas.mentoring.[0].user.username}}{{/if}}',
+                        selectedMentoring: {{#if kelas.mentoring.[0].user}}{{json kelas.mentoring.[0].user}}{{else}}null{{/if}},
+                        showDropdown: false,
+                        availableMentoring: {{json mentoring}},
+                        get filteredMentoring() {
+                          return this.availableMentoring.filter(m => 
+                            m.username.toLowerCase().includes(this.search.toLowerCase())
+                          );
+                        },
+                        selectMentoring(mentoring) {
+                          this.selectedMentoring = mentoring;
+                          this.search = mentoring.username;
+                          this.showDropdown = false;
+                        }
+                      }"
+                      @click.away='showDropdown = false'
+                    >
+                      <label for='mentoringId' class='block text-sm font-semibold text-gray-700 mb-1'>Mentoring</label>
+                      
+  
+                      
+                      <div class='relative'>
+                        <input
+                          type='text'
+                          x-model='search'
+                          @focus='showDropdown = true'
+                          @input='showDropdown = true'
+                          placeholder='Search and select mentoring...'
+                          class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                        />
+                        <i class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                        
+                        <div
+                          x-show='showDropdown && filteredMentoring.length > 0'
+                          class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+                        >
+                          <template x-for='mentoring in filteredMentoring' :key='mentoring.id'>
+                            <button
+                              type='button'
+                              @click='selectMentoring(mentoring)'
+                              class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                            >
+                              <span class='text-sm font-medium text-gray-700' x-text='mentoring.username'></span>
+                            </button>
+                          </template>
+                        </div>
+                        
+                        <input type='hidden' name='mentoringId' x-model='selectedMentoring ? selectedMentoring.id : ""' />
+                      </div>
+                    </div>
+{{/if}}

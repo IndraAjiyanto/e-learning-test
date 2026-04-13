@@ -1,0 +1,53 @@
+      <!-- Upload Image -->
+      <div class='space-y-3'>
+        <label for='profile' class='block text-sm font-semibold text-gray-700 mb-1'>
+          Profile Photo
+          <span class='text-xs text-gray-500 font-normal'>(max 5MB, JPEG/PNG only, 300x300 to 2000x2000px)</span>
+        </label>
+
+        <!-- File input -->
+        <input
+          type='file'
+          id='profile'
+          name='profile'
+          accept='image/*'
+          x-ref='fileInput'
+          :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : isValid && hasFile ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
+          @change='validateImage($event.target.files[0])'
+        />
+
+        <!-- Error Message -->
+        <template x-if='!isValid && errorMessage'>
+          <div class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'>
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <div>
+              <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+              <p class='text-xs text-red-700' x-text='errorMessage'></p>
+            </div>
+          </div>
+        </template>
+
+        <!-- Preview with validation success -->
+        <template x-if='previewUrl && isValid'>
+          <div class='space-y-2'>
+            <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+              <i class='fas fa-check-circle text-green-500'></i>
+              <div class='text-xs text-green-700'>
+                <span class='font-semibold'>Valid image:</span>
+                <span x-text='`${imageWidth}x${imageHeight}px, ${(fileSize / 1024 / 1024).toFixed(2)}MB`'></span>
+              </div>
+            </div>
+
+            <div class='relative w-32 h-32'>
+              <img :src='previewUrl' alt='Preview Photo' class='w-32 h-32 object-cover rounded-lg border-2 border-green-500 shadow-sm' />
+              <button type='button' class='absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow hover:bg-red-600' @click='clearFile()'>&times;</button>
+            </div>
+          </div>
+        </template>
+
+        <!-- Tampilkan foto lama atau preview baru when not previewing -->
+        <div class='relative w-32 h-32 mt-2' x-show='!previewUrl'>
+          <img :src="oldPhoto" alt='Preview Photo' class='w-32 h-32 object-cover rounded-lg border border-gray-300' />
+        </div>
+      </div>

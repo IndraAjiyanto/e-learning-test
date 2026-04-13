@@ -31,11 +31,34 @@ export class BenefitService {
     return benefit;
   }
 
+  async findNo() {
+        const benefit = await this.findAll();
+      const usedNumbers = benefit.map((b) => Number(b.no));
+      
+      const availableNumbers = [1, 2, 3].filter(
+        (n) => !usedNumbers.includes(n)
+      );
+      return availableNumbers;
+  }
+
   async update(benefitId: number, updateBenefitDto: UpdateBenefitDto) {
     const benefit = await this.findOne(benefitId);
+
     if (!benefit) {
       throw new NotFoundException('benefit not found');
     }
+
+      // Cek apakah no yang diinginkan sudah dipakai data lain
+  const benefit_no_used = await this.benefitRepository.findOne({
+    where: { no: updateBenefitDto.no },
+  });
+
+  // Kalau sudah dipakai dan bukan data yang sama, swap nomor
+  if (benefit_no_used && benefit_no_used.id !== benefitId) {
+    benefit_no_used.no = benefit.no; // data lain ambil no lama
+    await this.benefitRepository.save(benefit_no_used);
+  }
+
     Object.assign(benefit, updateBenefitDto);
     return await this.benefitRepository.save(benefit);
   }

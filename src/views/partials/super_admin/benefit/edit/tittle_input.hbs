@@ -1,0 +1,91 @@
+  <!-- Judul -->
+      <div class='space-y-2'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
+          Title
+        </label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- Indonesian -->
+          <div class='space-y-1'>
+            <label for='judul_id' class='block text-xs font-medium text-gray-600 uppercase tracking-wide'>ID</label>
+            <input
+              x-model='formData.judul.id'
+              @input='validateField("judul", "id", $event.target.value)'
+              type='text'
+              id='judul_id'
+              name='judul[id]'
+              placeholder='Judul benefit dalam bahasa Indonesia'
+              :class="formErrors.judul.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              x-init='$el.value = formData.judul.id'
+            />
+            <template x-if='formErrors.judul.id'>
+              <div class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'>
+                <i class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.judul.id'></p>
+              </div>
+            </template>
+            <template x-if='formValid.judul.id && !formErrors.judul.id'>
+              <div class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'>
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- English -->
+          <div class='space-y-1'>
+            <label for='judul_en' class='block text-xs font-medium text-gray-600 uppercase tracking-wide'>EN</label>
+            <input
+              x-model='formData.judul.en'
+              @input='validateField("judul", "en", $event.target.value)'
+              type='text'
+              id='judul_en'
+              name='judul[en]'
+              placeholder='Benefit title in English'
+              :class="formErrors.judul.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              x-init='$el.value = formData.judul.en'
+            />
+            <template x-if='formErrors.judul.en'>
+              <div class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'>
+                <i class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.judul.en'></p>
+              </div>
+            </template>
+            <template x-if='formValid.judul.en && !formErrors.judul.en'>
+              <div class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'>
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- Japanese -->
+          <div class='space-y-1'>
+            <label for='judul_ja' class='block text-xs font-medium text-gray-600 uppercase tracking-wide'>JP</label>
+            <input
+              x-model='formData.judul.ja'
+              @input='validateField("judul", "ja", $event.target.value)'
+              type='text'
+              id='judul_ja'
+              name='judul[ja]'
+              placeholder='ベネフィットのタイトル（日本語）'
+              :class="formErrors.judul.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              x-init='$el.value = formData.judul.ja'
+            />
+            <template x-if='formErrors.judul.ja'>
+              <div class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'>
+                <i class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.judul.ja'></p>
+              </div>
+            </template>
+            <template x-if='formValid.judul.ja && !formErrors.judul.ja'>
+              <div class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'>
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>

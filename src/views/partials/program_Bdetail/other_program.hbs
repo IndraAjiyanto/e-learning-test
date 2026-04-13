@@ -1,0 +1,112 @@
+  <div class='max-w-7xl mx-auto px-6 mt-16'>
+    <h2
+      class='font-montserrat text-3xl font-bold mb-8 text-slate-900 bg-gradient-to-br from-primary via-secondary to-gray-900 bg-clip-text text-transparent'
+    >{{t "test.detailProgram.otherProgram"}}</h2>
+
+    <div
+      class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto'
+      x-data="{ getQuotaPercentage(enrolled, total) { return total > 0 ? Math.min((enrolled / total) * 100, 100) : 0; } }"
+    >
+      {{#each kelass}}
+        <div
+          class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
+          data-kategori='{{kategori.nama_kategori}}'
+          data-category='{{ jenis_kelas.nama_jenis_kelas }}'
+          data-nama='{{nama_kelas}}'
+          data-deskripsi='{{getByLang deskripsi ../lang}}'
+          data-location='{{metode}}'
+        >
+          <!-- Gambar lebih besar -->
+          <img
+            src='{{gambar}}'
+            alt='{{nama_kelas}}'
+            class='h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300 drop-shadow-lg'
+          />
+
+          <div class='card-body p-6'>
+            <div class='flex gap-2 mb-3'>
+              <span
+                class='badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full'
+              >
+                {{kategori.nama_kategori}}
+              </span>
+              <span
+                class='badge bg-gradient-to-br from-primary via-secondary to-gray-900  text-white px-3 py-1 text-xs font-semibold rounded-full'
+              >
+                {{ jenis_kelas.nama_jenis_kelas }}
+              </span>
+
+            </div>
+
+            <div class='flex flex-wrap gap-2 mb-4 text-sm text-gray-700'>
+              <div
+                class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
+              >
+                            {{#if (eq metode "online")}}
+              <i class='fas fa-laptop text-slate-500'></i>
+              <span>{{t "test.home.programSection.online"}}</span>
+              {{else if (eq metode "offline")}}
+              <i class='fas fa-map-marker-alt text-slate-500'></i>
+              <span>{{t "test.home.programSection.offline"}}</span>
+              {{/if}}
+              </div>
+              <div
+                class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
+              >
+                <i class='fas fa-user-tie text-slate-500'></i>
+                <span>{{getByLang lokasi ../lang}}</span>
+              </div>
+            </div>
+
+            <h2
+              class='card-title text-gray-900 text-xl font-bold mb-3'
+            >{{nama_kelas}}</h2>
+
+            <p class='text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed'>
+              {{getByLang deskripsi ../lang}}
+            </p>
+
+            <div
+              class='bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200'
+            >
+              <div class='flex items-center justify-between mb-3'>
+                <div class='flex items-center gap-2'>
+                  <i class='fas fa-users text-slate-600 animate-pulse'></i>
+                  <span class='text-sm font-medium text-slate-600'>{{t "test.detailProgram.kuota"}}</span>
+                </div>
+                <span
+                  class='text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm'
+                >
+                  {{user_kelas.length}}
+                  /
+                  {{kuota}}
+                  {{t "test.detailProgram.student"}}
+                </span>
+              </div>
+
+              <div
+                class='w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2'
+              >
+                <div
+                  class='h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out'
+                  :style='`width: ${getQuotaPercentage({{user_kelas.length}}, {{kuota}})}%`'
+                >
+                </div>
+              </div>
+
+            </div>
+
+  <div class='card-actions'>
+    <a
+      href='/kelass/{{id}}'
+      class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
+    >
+      {{t "test.detailProgram.buttonViewProgram"}}
+    </a>
+  </div>
+          </div>
+        </div>
+      {{/each}}
+
+    </div>
+  </div>

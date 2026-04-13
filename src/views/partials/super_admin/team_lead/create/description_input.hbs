@@ -1,0 +1,107 @@
+      <!-- Description (Multi-language) -->
+      <div class='space-y-4'>
+        <label
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Description</label>
+        <div class='space-y-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <textarea
+              x-model='formData.deskripsi.id'
+              @input='validateField("deskripsi", $event.target.value, "id")'
+              name='deskripsi[id]'
+              required
+              rows='4'
+              :class="formErrors.deskripsi.id ? 'border-red-500 focus:ring-red-500' : (formValid.deskripsi.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Enter team lead description (ID)...'
+            ></textarea>
+            <template x-if='formErrors.deskripsi.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.deskripsi.id'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.deskripsi.id && !formErrors.deskripsi.id'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid description (ID)</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <textarea
+              x-model='formData.deskripsi.en'
+              @input='validateField("deskripsi", $event.target.value, "en")'
+              name='deskripsi[en]'
+              rows='4'
+              :class="formErrors.deskripsi.en ? 'border-red-500 focus:ring-red-500' : (formValid.deskripsi.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='Enter team lead description (EN)...'
+            ></textarea>
+            <template x-if='formErrors.deskripsi.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.deskripsi.en'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.deskripsi.en && !formErrors.deskripsi.en'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid description (EN)</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- JP -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
+            <textarea
+              x-model='formData.deskripsi.ja'
+              @input='validateField("deskripsi", $event.target.value, "ja")'
+              name='deskripsi[ja]'
+              rows='4'
+              :class="formErrors.deskripsi.ja ? 'border-red-500 focus:ring-red-500' : (formValid.deskripsi.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              placeholder='チームリーダーの説明を入力してください (JA)...'
+            ></textarea>
+            <template x-if='formErrors.deskripsi.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.deskripsi.ja'
+                ></p>
+              </div>
+            </template>
+            <template x-if='formValid.deskripsi.ja && !formErrors.deskripsi.ja'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid description (JP)</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>

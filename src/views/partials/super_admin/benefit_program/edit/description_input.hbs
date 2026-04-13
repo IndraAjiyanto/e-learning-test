@@ -1,0 +1,118 @@
+      <!-- Description -->
+      <div class='space-y-2'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
+          Description
+        </label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- Indonesian -->
+          <div class='space-y-1'>
+            <label
+              for='isi_id'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >ID</label>
+            <textarea
+              x-model='formData.isi.id'
+              @input='validateField("isi", "id", $event.target.value)'
+              id='isi_id'
+              name='isi[id]'
+              rows='4'
+              placeholder='Deskripsi benefit dalam bahasa Indonesia'
+              :class="formErrors.isi.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              x-init='$el.value = formData.isi.id'
+            ></textarea>
+            <template x-if='formErrors.isi.id'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p class='text-xs text-red-700' x-text='formErrors.isi.id'></p>
+              </div>
+            </template>
+            <template x-if='formValid.isi.id && !formErrors.isi.id'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- English -->
+          <div class='space-y-1'>
+            <label
+              for='isi_en'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >EN</label>
+            <textarea
+              x-model='formData.isi.en'
+              @input='validateField("isi", "en", $event.target.value)'
+              id='isi_en'
+              name='isi[en]'
+              rows='4'
+              placeholder='Benefit description in English'
+              :class="formErrors.isi.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              x-init='$el.value = formData.isi.en'
+            ></textarea>
+            <template x-if='formErrors.isi.en'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p class='text-xs text-red-700' x-text='formErrors.isi.en'></p>
+              </div>
+            </template>
+            <template x-if='formValid.isi.en && !formErrors.isi.en'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- Japanese -->
+          <div class='space-y-1'>
+            <label
+              for='isi_ja'
+              class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
+            >JP</label>
+            <textarea
+              x-model='formData.isi.ja'
+              @input='validateField("isi", "ja", $event.target.value)'
+              id='isi_ja'
+              name='isi[ja]'
+              rows='4'
+              placeholder='ベネフィットの説明（日本語）'
+              :class="formErrors.isi.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
+              x-init='$el.value = formData.isi.ja'
+            ></textarea>
+            <template x-if='formErrors.isi.ja'>
+              <div
+                class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
+              >
+                <i
+                  class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
+                ></i>
+                <p class='text-xs text-red-700' x-text='formErrors.isi.ja'></p>
+              </div>
+            </template>
+            <template x-if='formValid.isi.ja && !formErrors.isi.ja'>
+              <div
+                class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
+              >
+                <i class='fas fa-check-circle text-green-500 text-xs'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>

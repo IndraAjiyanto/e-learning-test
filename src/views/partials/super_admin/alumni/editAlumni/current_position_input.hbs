@@ -1,0 +1,117 @@
+      <!-- Current Position -->
+      <div class='space-y-4'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>Current
+          Position</label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <input
+              x-model='formData.posisi_sekarang.id'
+              @input='validateField("posisi_sekarang", "id", $event.target.value)'
+              type='text'
+              name='posisi_sekarang[id]'
+              required
+              maxlength='255'
+              :class="formErrors.posisi_sekarang.id ? 'border-red-500 focus:ring-red-500' : (formValid.posisi_sekarang.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='Posisi Sekarang (ID)'
+            />
+            <template x-if='formErrors.posisi_sekarang.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.posisi_sekarang.id'
+                ></p>
+              </div>
+            </template>
+            <template
+              x-if='formValid.posisi_sekarang.id && !formErrors.posisi_sekarang.id'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <input
+              x-model='formData.posisi_sekarang.en'
+              @input='validateField("posisi_sekarang", "en", $event.target.value)'
+              type='text'
+              name='posisi_sekarang[en]'
+              required
+              maxlength='255'
+              :class="formErrors.posisi_sekarang.en ? 'border-red-500 focus:ring-red-500' : (formValid.posisi_sekarang.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='Current Position (EN)'
+            />
+            <template x-if='formErrors.posisi_sekarang.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.posisi_sekarang.en'
+                ></p>
+              </div>
+            </template>
+            <template
+              x-if='formValid.posisi_sekarang.en && !formErrors.posisi_sekarang.en'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- JP -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
+            <input
+              x-model='formData.posisi_sekarang.ja'
+              @input='validateField("posisi_sekarang", "ja", $event.target.value)'
+              type='text'
+              name='posisi_sekarang[ja]'
+              required
+              maxlength='255'
+              :class="formErrors.posisi_sekarang.ja ? 'border-red-500 focus:ring-red-500' : (formValid.posisi_sekarang.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='現在のポジション (JA)'
+            />
+            <template x-if='formErrors.posisi_sekarang.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.posisi_sekarang.ja'
+                ></p>
+              </div>
+            </template>
+            <template
+              x-if='formValid.posisi_sekarang.ja && !formErrors.posisi_sekarang.ja'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>

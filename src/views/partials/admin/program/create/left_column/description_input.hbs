@@ -1,0 +1,83 @@
+        <!-- Description -->
+        <div class='space-y-4'>
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Description</label>
+
+          <!-- ID Description -->
+          <div>
+            <label
+              for='deskripsi_id'
+              class='block text-xs text-gray-600 mb-1'
+            >ID</label>
+            <textarea
+              id='deskripsi_id'
+              x-model='formData.deskripsi.id'
+              @blur="validateField('deskripsi', 'id')"
+              rows='3'
+              placeholder='Tulis deskripsi dalam bahasa Indonesia...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+            <div
+              id='deskripsi_id_error'
+              class='hidden text-red-500 text-xs mt-1'
+            >Deskripsi bahasa Indonesia wajib diisi</div>
+          </div>
+
+          <!-- EN Description -->
+          <div>
+            <label
+              for='deskripsi_en'
+              class='block text-xs text-gray-600 mb-1'
+            >EN</label>
+            <textarea
+              id='deskripsi_en'
+              x-model='formData.deskripsi.en'
+              @blur="validateField('deskripsi', 'en')"
+              rows='3'
+              placeholder='Write description in English...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+            <div
+              id='deskripsi_en_error'
+              class='hidden text-red-500 text-xs mt-1'
+            >English description is required</div>
+          </div>
+
+          <!-- JP Description -->
+          <div>
+            <label
+              for='deskripsi_ja'
+              class='block text-xs text-gray-600 mb-1'
+            >JP</label>
+            <textarea
+              id='deskripsi_ja'
+              x-model='formData.deskripsi.ja'
+              @blur="validateField('deskripsi', 'ja')"
+              rows='3'
+              placeholder='日本語で説明を書いてください...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+            <div
+              id='deskripsi_ja_error'
+              class='hidden text-red-500 text-xs mt-1'
+            >日本語の説明が必要です</div>
+          </div>
+
+          <!-- Hidden inputs for form submission -->
+          <input
+            type='hidden'
+            name='deskripsi[id]'
+            x-model='formData.deskripsi.id'
+          />
+          <input
+            type='hidden'
+            name='deskripsi[en]'
+            x-model='formData.deskripsi.en'
+          />
+          <input
+            type='hidden'
+            name='deskripsi[ja]'
+            x-model='formData.deskripsi.ja'
+          />
+        </div>

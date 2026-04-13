@@ -1,0 +1,135 @@
+  <!-- Classes Grid -->
+  <div
+    class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto'
+    x-ref='kelasList'
+  >
+    {{#each kelas}}
+      <div
+        data-animate="scale-up"
+        data-delay="100"
+        class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
+        data-kategori='{{kategori.nama_kategori}}'
+        data-category='{{ jenis_kelas.nama_jenis_kelas }}'
+        data-nama='{{nama_kelas}}'
+        data-deskripsi='{{getByLang deskripsi ../lang}}'
+        data-location='{{metode}}'
+        x-show="(tab === 'all' || tab === '{{kategori.nama_kategori}}') && paginatedKelas($el)"
+        x-transition
+      >
+        <!-- Gambar lebih bescar -->
+        <img
+          src='{{gambar}}'
+          alt='{{nama_kelas}}'
+          class='h-48 w-full object-cover
+ group-hover:scale-105 transition-transform duration-300 drop-shadow-lg'
+        />
+
+        <div class='card-body p-6'>
+          <div class='flex gap-2 mb-3'>
+            <span
+              class='badge flex justify-center h-fit items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full'
+            >
+              {{kategori.nama_kategori}}
+            </span>
+            <span
+              class='badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-full'
+            >
+              {{ jenis_kelas.nama_jenis_kelas }}
+            </span>
+
+          </div>
+
+          <div class='flex flex-wrap gap-2 mb-4 text-sm text-gray-700'>
+            <div
+              class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
+            >
+            {{#if (eq metode "online")}}
+              <i class='fas fa-laptop text-slate-500'></i>
+              <span>{{t "test.home.programSection.online"}}</span>
+              {{else if (eq metode "offline")}}
+              <i class='fas fa-map-marker-alt text-slate-500'></i>
+              <span>{{t "test.home.programSection.offline"}}</span>
+              {{/if}}
+            </div>
+            <div
+              class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
+            >
+              <i class='fas fa-user-tie text-slate-500'></i>
+              <span>{{getByLang lokasi ../lang}}</span>
+            </div>
+          </div>
+
+          <h2
+            class='card-title text-gray-900 text-xl font-bold mb-3'
+          >{{nama_kelas}}</h2>
+
+          <p class='text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed'>
+            {{getByLang deskripsi ../lang}}
+          </p>
+
+
+        <div class='card-actions'>
+            <a
+            href='/kelass/{{id}}'
+            class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
+          >
+            {{t "test.home.programSection.buttonViewProgram"}}
+          </a>
+        </div>
+        </div>
+      </div>
+    {{/each}}
+
+  </div>
+
+  <!-- No Results -->
+  <div
+    x-show='filteredKelas.length === 0'
+    class='text-center py-20'
+    x-transition
+  >
+    <div
+      class='bg-slate-100 w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center border border-slate-200 shadow-md'
+    >
+      <i class='fas fa-inbox text-5xl text-slate-500'></i>
+    </div>
+    <h3 class='text-3xl font-bold text-gray-900 mb-3'>{{t "test.home.programSection.noProgram"}}</h3>
+    <p class='text-slate-600 text-lg mb-6'>{{t "test.home.programSection.spanNoProgram"}}</p>
+    <button
+      @click='resetFilters()'
+      class='btn text-lg  bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-lg transition-all duration-300 transform font-semibold shadow-xl hover:-translate-y-2 relative overflow-hidden cursor-pointer'
+    >
+      <i class='fas fa-redo mr-2'></i>{{t "test.home.programSection.clearFilters"}}
+    </button>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class='flex justify-center items-center gap-4 mt-12'
+    x-show='totalPages > 1'
+  >
+    <button
+      @click='currentPage = Math.max(1, currentPage - 1)'
+      :disabled='currentPage === 1'
+      class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+    >
+      <i class='fas fa-chevron-left'></i>
+    </button>
+
+    <template x-for='page in totalPages' :key='page'>
+      <button
+        @click='currentPage = page'
+        class='w-12 h-12 rounded-xl text-lg font-semibold transition-all duration-300 border shadow-sm'
+        :class="currentPage === page ? 'bg-gradient-to-r from-slate-600 to-slate-800 text-white border-slate-700 shadow-md' : 'bg-white text-gray-700 border-gray-300 hover:bg-slate-50'"
+        x-text='page'
+      ></button>
+    </template>
+
+    <button
+      @click='currentPage = Math.min(totalPages, currentPage + 1)'
+      :disabled='currentPage === totalPages'
+      class='px-5 py-3 bg-white border border-gray-300 hover:bg-slate-50 text-gray-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-sm'
+    >
+      <i class='fas fa-chevron-right'></i>
+    </button>
+  </div>

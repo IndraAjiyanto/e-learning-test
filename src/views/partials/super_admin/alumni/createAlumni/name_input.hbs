@@ -1,0 +1,89 @@
+      <!-- Name per Bahasa -->
+      <div class='space-y-4'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>Name <span class='text-red-500'>*</span></label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <input
+              x-model='formData.nama.id'
+              @input='validateField("nama", "id", $event.target.value)'
+              type='text'
+              name='nama[id]'
+              required
+              maxlength='255'
+              :class="formErrors.nama.id ? 'border-red-500 focus:ring-red-500' : (formValid.nama.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='Nama (ID)'
+            />
+            <template x-if='formErrors.nama.id'>
+              <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.nama.id'></p>
+              </div>
+            </template>
+            <template x-if='formValid.nama.id && !formErrors.nama.id'>
+              <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <input
+              x-model='formData.nama.en'
+              @input='validateField("nama", "en", $event.target.value)'
+              type='text'
+              name='nama[en]'
+              required
+              maxlength='255'
+              :class="formErrors.nama.en ? 'border-red-500 focus:ring-red-500' : (formValid.nama.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='Name (EN)'
+            />
+            <template x-if='formErrors.nama.en'>
+              <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.nama.en'></p>
+              </div>
+            </template>
+            <template x-if='formValid.nama.en && !formErrors.nama.en'>
+              <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- JP -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
+            <input
+              x-model='formData.nama.ja'
+              @input='validateField("nama", "ja", $event.target.value)'
+              type='text'
+              name='nama[ja]'
+              required
+              maxlength='255'
+              :class="formErrors.nama.ja ? 'border-red-500 focus:ring-red-500' : (formValid.nama.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='名前 (JA)'
+            />
+            <template x-if='formErrors.nama.ja'>
+              <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p class='text-xs text-red-700' x-text='formErrors.nama.ja'></p>
+              </div>
+            </template>
+            <template x-if='formValid.nama.ja && !formErrors.nama.ja'>
+              <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>

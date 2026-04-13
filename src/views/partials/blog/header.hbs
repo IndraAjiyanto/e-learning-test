@@ -1,0 +1,44 @@
+    <!-- Header dengan featured story -->
+    <div class="mb-8">
+
+      <!-- Header Navigation -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-6">
+          <h1 class="text-3xl font-bold text-gray-900 font-montserrat">{{t 'test.blog.tittle'}}</h1>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="relative hidden lg:block">
+          <input 
+            type="text" 
+            placeholder="{{t 'test.blog.searchBlogPlaceholder'}}" 
+            x-model="searchQuery"
+            @input="handleSearch()"
+            class="w-64 pl-10 pr-4 py-2 border bg-white border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        </div>
+      </div>
+
+      <!-- Kategori Horizontal dengan icon -->
+      <div class="flex items-center space-x-4 overflow-x-auto pb-4 scrollbar-hide border-b border-gray-200">
+        <button
+          @click="selectKategori('')"
+          :class="selectedKategoriId === '' ? 'text-gray-900 font-semibold border-b-2 border-gray-900' : 'text-gray-600 hover:text-gray-900'"
+          class="pb-2 text-sm whitespace-nowrap transition-all duration-200 flex items-center space-x-2"
+        >
+          <i class="fas fa-home"></i>
+          <span>{{t 'test.blog.allCategory' }}</span>
+        </button>
+        <template x-for='kategori in allKategori' :key='kategori.id'>
+          <button
+            @click='selectKategori(kategori.id)'
+            :class="selectedKategoriId == kategori.id ? 'text-gray-900 font-semibold border-b-2 border-gray-900' : 'text-gray-600 hover:text-gray-900'"
+            class="pb-2 text-sm whitespace-nowrap transition-all duration-200 flex items-center space-x-2"
+          >
+            <i :class="computeIcon(kategori.icon)"></i>
+            <span x-text='kategori.nama'></span>
+            <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-xs" x-text="getKategoriCount(kategori.id)"></span>
+          </button>
+        </template>
+      </div>
+    </div>

@@ -1,0 +1,101 @@
+                    <!-- Learning Targets -->
+                    <div>
+                                        <label
+            class='block text-sm font-semibold text-gray-700 my-2'
+          >Learning Targets</label>
+                    <div x-data="{ targets_id: {{json kelas.target_pembelajaran_id}} || [''] }">
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >ID</label>
+                      <template x-for='(target_id, index) in targets_id' :key='index'>
+                        <div class='flex items-center gap-3 mb-3'>
+                          <input
+                            type='text'
+                            x-model='targets_id[index]'
+                            name='target_pembelajaran_id[]'
+                            placeholder='Enter a learning target'
+                            class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                          />
+                          <button
+                            type='button'
+                            @click='targets_id.splice(index,1)'
+                            x-show='targets_id.length > 1'
+                            class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </template>
+                      <button
+                        type='button'
+                        @click="targets_id.push('')"
+                        class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+                      >
+                        + Add Target
+                      </button>
+                    </div>
+
+                    <div x-data="{ targets_en: {{json kelas.target_pembelajaran_en}} || [''] }">
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >EN</label>
+                      <template x-for='(target_en, index) in targets_en' :key='index'>
+                        <div class='flex items-center gap-3 mb-3'>
+                          <input
+                            type='text'
+                            x-model='targets_en[index]'
+                            name='target_pembelajaran_en[]'
+                            placeholder='Enter a learning target'
+                            class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                          />
+                          <button
+                            type='button'
+                            @click='targets_en.splice(index,1)'
+                            x-show='targets_en.length > 1'
+                            class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </template>
+                      <button
+                        type='button'
+                        @click="targets_en.push('')"
+                        class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+                      >
+                        + Add Target
+                      </button>
+                    </div>
+
+                    <div x-data="{ targets_ja: {{json kelas.target_pembelajaran_ja}} || [''] }">
+                            <label
+              class='block text-xs text-gray-600 my-2'
+            >JP</label>
+                      <template x-for='(target_ja, index) in targets_ja' :key='index'>
+                        <div class='flex items-center gap-3 mb-3'>
+                          <input
+                            type='text'
+                            x-model='targets_ja[index]'
+                            name='target_pembelajaran_ja[]'
+                            placeholder='Enter a learning target'
+                            class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                          />
+                          <button
+                            type='button'
+                            @click='targets_ja.splice(index,1)'
+                            x-show='targets_ja.length > 1'
+                            class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </template>
+                      <button
+                        type='button'
+                        @click="targets_ja.push('')"
+                        class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+                      >
+                        + Add Target
+                      </button>
+                    </div>
+                    </div>

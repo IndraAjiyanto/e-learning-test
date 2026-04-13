@@ -1,0 +1,30 @@
+  <!-- Main Tabs: Pembayaran & Pendaftaran -->
+  <div class="flex flex-wrap justify-center md:justify-start gap-3 mb-6">
+    {{#if kelas.check_paid}}
+    <button @click="toggleFetchMateri('/kelass/payment/{{kelas.id}}', 'payment');"
+      :class="tab === 'payment' ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+      </svg>
+      Full Payments
+    </button>
+    <button @click="toggleFetchMateri('/kelass/paymentInstallment/{{kelas.id}}', 'installment');"
+      :class="tab === 'installment' ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
+      class="px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+      </svg>
+      Installments
+    </button>
+    {{else}}
+    <button @click="toggleFetchMateri('/kelass/register/{{kelas.id}}', 'register');"
+      :class="tab === 'register' ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 border border-slate-200 hover:bg-emerald-50'"
+      class="px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+      </svg>
+      Registrations
+    </button>
+    {{/if}}
+  </div>
