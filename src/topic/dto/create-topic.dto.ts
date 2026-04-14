@@ -11,5 +11,5 @@ export class CreateTopicDto {
 
   @IsString()
   @IsNotEmpty()
-  deskripsi: string;
+  deskripsi: string[];
 }

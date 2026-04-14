@@ -19,8 +19,8 @@ export class Topic {
   @Column()
   icon: string;
 
-  @Column()
-  deskripsi: string;
+  @Column('jsonb', { nullable: true })
+  deskripsi: string[];
 
   @CreateDateColumn()
   createdAt: Date;

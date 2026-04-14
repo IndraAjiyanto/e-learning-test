@@ -1,18 +1,84 @@
 <div
   class='py-10'
   x-data="{
-  icon: '',
   get computedClass() {
-    const raw = (this.icon || '').toString().trim();
+    const raw = (this.formData.icon || '').toString().trim();
     if (!raw) return 'fa-solid fa-circle-question';
     const v = raw;
-    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
-    if (hasFaPrefix) {
-      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
-      return v;
+    const hasFa = v.includes('fa-') || v.includes('fas ') || v.includes('far ') || v.includes('fat ') || v.includes('fal ');
+    if (hasFa) {
+      if (v.includes(' ')) return v;
+      return 'fa-solid ' + v;
     }
     if (!v.includes(' ')) return 'fa-solid fa-' + v;
     return v;
+  },
+  formData: {
+    icon: '',
+    nama: '',
+    description: { id: '', en: '', ja: '' }
+  },
+  formErrors: {
+    icon: '',
+    nama: '',
+    description: { id: '', en: '', ja: '' }
+  },
+  formValid: {
+    icon: false,
+    nama: false,
+    description: { id: false, en: false, ja: false }
+  },
+  validateField(field, langOrValue, valueIfLang) {
+    if (field === 'icon') {
+      const value = langOrValue;
+      this.formData.icon = value;
+      if (!value.trim()) {
+        this.formErrors.icon = 'Icon wajib diisi';
+        this.formValid.icon = false;
+      } else if (value.trim().length < 2) {
+        this.formErrors.icon = 'Minimal 2 karakter';
+        this.formValid.icon = false;
+      } else {
+        this.formErrors.icon = '';
+        this.formValid.icon = true;
+      }
+    } else if (field === 'nama') {
+      const value = langOrValue;
+      this.formData.nama = value;
+      if (!value.trim()) {
+        this.formErrors.nama = 'Nama wajib diisi';
+        this.formValid.nama = false;
+      } else if (value.trim().length < 3) {
+        this.formErrors.nama = 'Minimal 3 karakter';
+        this.formValid.nama = false;
+      } else {
+        this.formErrors.nama = '';
+        this.formValid.nama = true;
+      }
+    } else if (field === 'description') {
+      const lang = langOrValue;
+      const value = valueIfLang;
+      this.formData.description[lang] = value;
+      if (!value.trim()) {
+        this.formErrors.description[lang] = 'Deskripsi wajib diisi';
+        this.formValid.description[lang] = false;
+      } else if (value.trim().length < 10) {
+        this.formErrors.description[lang] = 'Minimal 10 karakter';
+        this.formValid.description[lang] = false;
+      } else {
+        this.formErrors.description[lang] = '';
+        this.formValid.description[lang] = true;
+      }
+    }
+  },
+  canSubmit() {
+    const descValid = Object.values(this.formValid.description).every(v => v);
+    return this.formValid.icon && this.formValid.nama && descValid;
+  },
+  hasFormErrors() {
+    return this.formErrors.icon !== '' ||
+      this.formErrors.nama !== '' ||
+      Object.values(this.formErrors.description).some(e => e !== '');
   }
 }"
 >
@@ -26,19 +92,19 @@
       method='post'
       class='space-y-6'
       x-data='{ loading: false }'
-      @submit='loading = true'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
     >
 
-{{> super_admin/topic/create/name_input }}
-{{> super_admin/topic/create/icon_input }}
-{{> super_admin/topic/create/description_input }}
+      {{> super_admin/topic/create/name_input }}
+      {{> super_admin/topic/create/icon_input }}
+      {{> super_admin/topic/create/description_input }}
 
       <!-- Submit Buttons -->
       <div class='flex gap-2'>
         <button
           type='submit'
-          :disabled='loading'
-          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          :disabled='!canSubmit() || loading'
+          :class="(!canSubmit() || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='py-2 px-4 text-white font-semibold rounded-lg shadow transition'
         >
           <span
@@ -48,8 +114,8 @@
           <span x-show='!loading'>Create</span>
         </button>
         <a
-          href='/kategori-blog'
-:class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          href='/topic'
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>
           Cancel
         </a>
