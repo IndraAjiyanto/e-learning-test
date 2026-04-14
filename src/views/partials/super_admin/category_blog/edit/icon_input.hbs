@@ -1,27 +1,50 @@
-      <!-- Icon -->
-      <div>
-        <label
-          for='icon'
-          class='block text-sm font-semibold text-gray-700 mb-1'
-        >Icon</label>
-        <div class='flex items-center gap-4'>
-          <input
-            x-model='icon'
-            type='text'
-            id='icon'
-            name='icon'
-            placeholder='code or fa-code or fa-solid fa-code'
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          />
+<!-- Icon -->
+<div>
+  <label for='icon' class='block text-sm font-semibold text-gray-700 mb-1'>
+    Icon
+    <span class='text-red-500'>*</span>
+  </label>
+  <div class='flex items-center gap-4'>
+    <input
+      x-model='formData.icon'
+      @input='validateField("icon", $event.target.value)'
+      type='text'
+      id='icon'
+      name='icon'
+      placeholder='code or fa-code or fa-solid fa-code'
+      :class="formErrors.icon ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.icon ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+      class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+    />
 
-          <div class='flex items-center gap-3'>
-            <i :class='computedClass' class='text-2xl text-gray-700'></i>
-            <span class='text-sm text-gray-500' x-text='computedClass'></span>
-          </div>
-        </div>
-        <p class='text-sm text-gray-500 mt-2'>Type an icon name like
-          <code>code</code>
-          or
-          <code>fa-code</code>. It will preview using Font Awesome 6 (e.g.
-          <code>fa-solid fa-code</code>).</p>
-      </div>
+    <div class='flex items-center gap-3'>
+      <i :class='computedClass' class='text-2xl text-gray-700'></i>
+      <span class='text-sm text-gray-500' x-text='computedClass'></span>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <template x-if='formErrors.icon'>
+    <div
+      class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg mt-2'
+    >
+      <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+      <p class='text-xs text-red-700' x-text='formErrors.icon'></p>
+    </div>
+  </template>
+
+  <!-- Success Message -->
+  <template x-if='formValid.icon && !formErrors.icon'>
+    <div
+      class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg mt-2'
+    >
+      <i class='fas fa-check-circle text-green-500'></i>
+      <p class='text-xs text-green-700'>Icon looks good</p>
+    </div>
+  </template>
+
+  <p class='text-sm text-gray-500 mt-2'>Type an icon name like
+    <code>code</code>
+    or
+    <code>fa-code</code>. It will preview using Font Awesome 6 (e.g.
+    <code>fa-solid fa-code</code>).</p>
+</div>
