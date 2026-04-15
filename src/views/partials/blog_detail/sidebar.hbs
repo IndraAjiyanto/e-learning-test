@@ -5,7 +5,7 @@
             <h1 class='text-xl font-bold text-gray-900'>{{blog.judul}}</h1>
             <div class='inline-flex w-fit max-w-full items-center gap-2 bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-4 py-2 rounded-full text-xs'>
               <i class='{{computeIcon blog.kategori_blog.icon}}'></i>
-              <span class='font-semibold whitespace-nowrap md:whitespace-normal'>{{blog.kategori_blog.nama}}</span>
+              <span class='font-semibold whitespace-nowrap md:whitespace-normal'>{{getByLang blog.kategori_blog.nama lang}}</span>
             </div>
           </div>
 
@@ -41,7 +41,7 @@
           <h4 class='font-semibold text-gray-900 text-lg'>{{t 'test.detailBlog.informationBlog'}}</h4>
           <div class='flex justify-between items-center'>
             <span class='text-gray-600'>{{t 'test.detailBlog.topic'}}</span>
-            <span class='font-medium text-gray-900'>{{blog.topic.nama}}</span>
+            <span class='font-medium text-gray-900'>{{getByLang blog.topic.nama lang}}</span>
           </div>
           <div class='flex justify-between items-center'>
             <span class='text-gray-600'>{{t 'test.detailBlog.keyword'}}</span>

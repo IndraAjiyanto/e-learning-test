@@ -11,5 +11,5 @@ export class CreateKategoriBlogDto {
 
   @IsString()
   @IsNotEmpty()
-  deskripsi: string;
+  deskripsi: string[];
 }

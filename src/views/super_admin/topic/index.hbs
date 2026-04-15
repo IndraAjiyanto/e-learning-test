@@ -89,12 +89,20 @@
 
             <!-- Nama -->
             <td class='px-6 py-4 text-sm text-gray-800'>
-              <div class='font-semibold'>{{nama}}</div>
+              <div class='font-semibold'>
+                {{#each nama}}
+                  <p>{{this}}</p>
+                {{/each}}
+                </div>
             </td>
 
             <!-- Deskripsi -->
             <td class='px-6 py-4 text-sm text-gray-600 max-w-md'>
-              <div class='line-clamp-2'>{{deskripsi}}</div>
+              <div class='line-clamp-2'>
+                {{#each deskripsi}}
+                  <p>{{this}}</p>
+                {{/each}}
+              </div>
             </td>
 
             <!-- Total Blog -->

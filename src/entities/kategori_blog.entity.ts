@@ -13,14 +13,14 @@ export class KategoriBlog {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  nama: string;
+  @Column('jsonb', { nullable: true })
+  nama: string[];
 
   @Column()
   icon: string;
 
-  @Column()
-  deskripsi: string;
+  @Column('jsonb', { nullable: true })
+  deskripsi: string[];
 
   @CreateDateColumn()
   createdAt: Date;

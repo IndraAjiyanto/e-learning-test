@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreateTopicDto {
   @IsString()
   @IsNotEmpty()
-  nama: string;
+  nama: string[];
 
   @IsString()
   @IsNotEmpty()
@@ -11,5 +11,5 @@ export class CreateTopicDto {
 
   @IsString()
   @IsNotEmpty()
-  deskripsi: string;
+  deskripsi: string[];
 }

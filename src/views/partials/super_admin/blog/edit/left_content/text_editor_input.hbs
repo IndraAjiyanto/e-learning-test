@@ -1,15 +1,23 @@
-        <!-- Editor Section -->
-        <label for="isi" class="mb-2 block font-medium text-gray-700 mt-6">Content</label>
-        <div id="editor" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
-        <input type="hidden" name="isi" id="isi">
+<!-- Editor ID -->
+<label class="mb-2 block font-medium text-gray-700 mt-6">Content ID</label>
+<div id="editor-id" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
+<input type="hidden" name="isi[id]" id="isi-id">
 
-        <script>
-// Tag Input Function dengan initial data
+<!-- Editor EN -->
+<label class="mb-2 block font-medium text-gray-700 mt-6">Content EN</label>
+<div id="editor-en" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
+<input type="hidden" name="isi[en]" id="isi-en">
+
+<!-- Editor JP -->
+<label class="mb-2 block font-medium text-gray-700 mt-6">Content JP</label>
+<div id="editor-jp" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
+<input type="hidden" name="isi[jp]" id="isi-jp">
+
+<script>
 function tagInput(initialTags = '[]') {
   return {
     prefix: "#",
     tags: JSON.parse(initialTags).length > 0 ? JSON.parse(initialTags) : ["#"],
-
     format(index) {
       let val = this.tags[index];
       if (!val.startsWith(this.prefix)) {
@@ -19,16 +27,18 @@ function tagInput(initialTags = '[]') {
   }
 }
 
-// EditorJS Initialization dengan existing content
 document.addEventListener('DOMContentLoaded', async () => {
-  // Parse existing content jika ada
-    const editorData = JSON.parse(`{{{blog.isi_editorjs}}}`);
+  // Load existing content per bahasa
+  const existingData = {
+    id: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.id}}}`); } catch { return {}; } })(),
+    en: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.en}}}`); } catch { return {}; } })(),
+    jp: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.jp}}}`); } catch { return {}; } })(),
+  };
 
-  
-  const editor = new EditorJS({
-    holder: 'editor',
-    placeholder: 'enter your content here...',
-    data: editorData || {}, // Load existing content jika ada
+  const editorConfig = (holderId, lang) => ({
+    holder: holderId,
+    placeholder: 'Enter your content here...',
+    data: existingData[lang] || {},
     tools: {
       header: {
         class: EditorTools.Header,
@@ -67,11 +77,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  const editors = {
+    id: new EditorJS(editorConfig('editor-id', 'id')),
+    en: new EditorJS(editorConfig('editor-en', 'en')),
+    jp: new EditorJS(editorConfig('editor-jp', 'jp')),
+  };
+
   const form = document.querySelector('form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const output = await editor.save();
-    document.getElementById('isi').value = JSON.stringify(output);
+
+    const [outputId, outputEn, outputJp] = await Promise.all([
+      editors.id.save(),
+      editors.en.save(),
+      editors.jp.save(),
+    ]);
+
+    document.getElementById('isi-id').value = JSON.stringify(outputId);
+    document.getElementById('isi-en').value = JSON.stringify(outputEn);
+    document.getElementById('isi-jp').value = JSON.stringify(outputJp);
+
     form.submit();
   });
 });

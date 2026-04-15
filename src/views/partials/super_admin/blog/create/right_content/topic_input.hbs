@@ -6,12 +6,12 @@
             availableTopics: {{json topics}},
             get filteredTopics() {
               return this.availableTopics.filter(c =>
-                c.nama.toLowerCase().includes(this.search.toLowerCase())
+                c.nama.en.toLowerCase().includes(this.search.toLowerCase())
               );
             },
             selectTopic(topic) {
               this.selectedTopic = topic;
-              this.search = topic.nama;
+              this.search = topic.nama.en;
               this.showDropdown = false;
               $dispatch('topic-selected', { topic });
             },
@@ -52,7 +52,7 @@
                 >
                   <span
                     class='text-sm font-medium text-gray-700'
-                    x-text='topic.nama'
+                    x-text='topic.nama.en'
                   ></span>
                 </button>
               </template>

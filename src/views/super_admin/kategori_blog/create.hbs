@@ -1,16 +1,83 @@
-<div class='py-10'   x-data="{
-  icon: '',
+<div class='py-10' x-data="{
   get computedClass() {
-    const raw = (this.icon || '').toString().trim();
+    const raw = (this.formData.icon || '').toString().trim();
     if (!raw) return 'fa-solid fa-circle-question';
     const v = raw;
-    const hasFaPrefix = /\b(fa|fas|far|fal|fad|fab|fa-solid|fa-regular|fa-light|fa-duotone)\b/i.test(v) || v.split(/\s+/).some(s => /^fa-/i.test(s));
-    if (hasFaPrefix) {
-      if (/^fa-\w+/i.test(v) && !/\s+/.test(v)) return 'fa-solid ' + v;
-      return v;
+    const hasFa = v.includes('fa-') || v.includes('fas ') || v.includes('far ') || v.includes('fat ') || v.includes('fal ');
+    if (hasFa) {
+      if (v.includes(' ')) return v;
+      return 'fa-solid ' + v;
     }
     if (!v.includes(' ')) return 'fa-solid fa-' + v;
     return v;
+  },
+  formData: {
+    icon: '',
+    nama: { id: '', en: '', ja: '' },
+    deskripsi: { id: '', en: '', ja: '' }
+  },
+  formErrors: {
+    icon: '',
+    nama: { id: '', en: '', ja: '' },
+    deskripsi: { id: '', en: '', ja: '' }
+  },
+  formValid: {
+    icon: false,
+    nama: { id: false, en: false, ja: false },
+    deskripsi: { id: false, en: false, ja: false }
+  },
+  validateField(field, langOrValue, valueIfLang) {
+    if (field === 'icon') {
+      const value = langOrValue;
+      this.formData.icon = value;
+      if (!value.trim()) {
+        this.formErrors.icon = 'Icon wajib diisi';
+        this.formValid.icon = false;
+      } else if (value.trim().length < 2) {
+        this.formErrors.icon = 'Minimal 2 karakter';
+        this.formValid.icon = false;
+      } else {
+        this.formErrors.icon = '';
+        this.formValid.icon = true;
+      }
+    } else if (field === 'nama') {
+      const lang = langOrValue;
+      const value = valueIfLang;
+      this.formData.nama[lang] = value;
+      if (!value.trim()) {
+        this.formErrors.nama[lang] = 'Nama kategori wajib diisi';
+        this.formValid.nama[lang] = false;
+      } else if (value.trim().length < 3) {
+        this.formErrors.nama[lang] = 'Minimal 3 karakter';
+        this.formValid.nama[lang] = false;
+      } else {
+        this.formErrors.nama[lang] = '';
+        this.formValid.nama[lang] = true;
+      }
+    } else if (field === 'deskripsi') {
+      const lang = langOrValue;
+      const value = valueIfLang;
+      this.formData.deskripsi[lang] = value;
+      if (!value.trim()) {
+        this.formErrors.deskripsi[lang] = 'Deskripsi wajib diisi';
+        this.formValid.deskripsi[lang] = false;
+      } else if (value.trim().length < 10) {
+        this.formErrors.deskripsi[lang] = 'Minimal 10 karakter';
+        this.formValid.deskripsi[lang] = false;
+      } else {
+        this.formErrors.deskripsi[lang] = '';
+        this.formValid.deskripsi[lang] = true;
+      }
+    }
+  },
+  canSubmit() {
+    const descValid = Object.values(this.formValid.deskripsi).every(v => v);
+    return this.formValid.icon && Object.values(this.formValid.nama).every(v => v) && descValid;
+  },
+  hasFormErrors() {
+    return this.formErrors.icon !== '' ||
+      Object.values(this.formErrors.nama).some(e => e !== '') ||
+      Object.values(this.formErrors.deskripsi).some(e => e !== '');
   }
 }">
   <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
@@ -18,27 +85,33 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900 text-center'>Create
       Blog Category</h2>
 
-    <form action='/kategori-blog' method='post' class='space-y-6' x-data="{ loading: false }" @submit="loading = true">
+    <form
+      action='/kategori-blog'
+      method='post'
+      class='space-y-6'
+      x-data='{ loading: false }'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
+    >
 
-{{> super_admin/category_blog/create/name_input }}
-{{> super_admin/category_blog/create/icon_input }}
-{{> super_admin/category_blog/create/description_input }}
+      {{> super_admin/category_blog/create/name_input }}
+      {{> super_admin/category_blog/create/icon_input }}
+      {{> super_admin/category_blog/create/description_input }}
 
       <!-- Submit Buttons -->
       <div class='flex gap-2'>
         <button
           type='submit'
-          :disabled='loading'
-          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          :disabled='!canSubmit() || loading'
+          :class="(!canSubmit() || loading) ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
           class='py-2 px-4 text-white font-semibold rounded-lg shadow transition'
         >
-          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-          <span x-show="!loading">Create</span>
+          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+          <span x-show='!loading'>Create</span>
         </button>
         <a
           href='/kategori-blog'
-  :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300 transition'>
           Cancel
         </a>
       </div>

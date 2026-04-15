@@ -42,6 +42,7 @@ export class BlogService {
     if (!topic) {
       throw new NotFoundException('Topic not found');
     }
+
     const blog = this.blogRepository.create({
       ...createBlogDto,
       kategori_blog: kategori,
@@ -110,6 +111,23 @@ async getReply(comentId: number) {
 
     return JSON.stringify(editorjsData);
   }
+
+  async deleteFileTemp(folder: string) {
+      const deleteDir = path.join(process.cwd(), 'public' + folder);
+
+      if (fs.existsSync(deleteDir)) {
+        const files = fs.readdirSync(deleteDir);
+
+        files.forEach((file) => {
+          const filePath = path.join(deleteDir, file);
+
+          if (fs.lstatSync(filePath).isFile()) {
+            fs.unlinkSync(filePath);
+          }
+        });
+      }
+  }
+
 
   async ChangeImgPath(isi: string, newFolder: string): Promise<string> {
     const editorjsData = JSON.parse(isi);
