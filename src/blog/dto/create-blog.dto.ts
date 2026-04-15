@@ -11,13 +11,12 @@ export class CreateBlogDto {
   @IsNotEmpty()
   judul: string;
 
-  @IsString()
+  @IsArray()
   @IsNotEmpty()
-  isi: string;
+  isi: string[];
 
-  @IsString()
-  @IsOptional()
-  isi_editorjs: string;
+  @IsArray()
+  isi_editorjs: string[];
 
   @IsArray()
   tags: string[];

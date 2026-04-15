@@ -29,6 +29,7 @@ export class BenefitController {
     @Req() req: Request,
     @Body() createBenefitDto: CreateBenefitDto,
   ) {
+    console.log(createBenefitDto.text);
     try {
       await this.benefitService.create(createBenefitDto);
       req.flash('success', 'benefit successfully created');

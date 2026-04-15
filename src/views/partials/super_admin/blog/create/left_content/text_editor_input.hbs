@@ -1,19 +1,32 @@
-        <label
-          for='isi'
-          class='mb-2 block font-medium text-gray-700'
-        >Content</label>
-        <div
-          id='editor'
-          class='text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4'
-        ></div>
+<!-- Editor ID -->
+<label class='mb-2 block font-medium text-gray-700'>Content ID</label>
+<div
+  id='editor-id'
+  class='text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4'
+></div>
+<input type='hidden' name='isi[id]' id='isi-id' />
 
-        <input type='hidden' name='isi' id='isi' />
-        
-         <script>
+<!-- Editor EN -->
+<label class='mb-2 block font-medium text-gray-700'>Content EN</label>
+<div
+  id='editor-en'
+  class='text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4'
+></div>
+<input type='hidden' name='isi[en]' id='isi-en' />
+
+<!-- Editor JP -->
+<label class='mb-2 block font-medium text-gray-700'>Content JP</label>
+<div
+  id='editor-jp'
+  class='text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4'
+></div>
+<input type='hidden' name='isi[jp]' id='isi-jp' />
+
+<script>
 document.addEventListener('DOMContentLoaded', async () => {
-  const editor = new EditorJS({
-    holder: 'editor',
-    placeholder: 'enter your content here...',
+  const editorConfig = (holderId) => ({
+    holder: holderId,
+    placeholder: 'Enter your content here...',
     tools: {
       header: {
         class: EditorTools.Header,
@@ -33,11 +46,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       },
       image: {
         class: EditorTools.ImageTool,
-        tunes: {
-          "stretched": false,
-          "withBorder": false,
-          "withBackground": false
-        },
         config: {
           endpoints: {
             byFile: '/blog/upload-image',
@@ -52,11 +60,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Inisialisasi 3 editor
+  const editors = {
+    id: new EditorJS(editorConfig('editor-id')),
+    en: new EditorJS(editorConfig('editor-en')),
+    jp: new EditorJS(editorConfig('editor-jp')),
+  };
+
   const form = document.querySelector('form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const output = await editor.save();
-    document.getElementById('isi').value = JSON.stringify(output);
+
+    // Save semua editor sekaligus
+    const [outputId, outputEn, outputJp] = await Promise.all([
+      editors.id.save(),
+      editors.en.save(),
+      editors.jp.save(),
+    ]);
+
+    document.getElementById('isi-id').value = JSON.stringify(outputId);
+    document.getElementById('isi-en').value = JSON.stringify(outputEn);
+    document.getElementById('isi-jp').value = JSON.stringify(outputJp);
+
     form.submit();
   });
 });

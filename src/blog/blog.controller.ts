@@ -194,21 +194,37 @@ export class BlogController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    createBlogDto.isi_editorjs = createBlogDto.isi_editorjs || {};
     try {
-      const editorjsData = await this.blogService.ChangeImageEditorJS(
-        createBlogDto.isi,
+      const editorjsDataId = await this.blogService.ChangeImageEditorJS(
+        createBlogDto.isi['id'],
         '/asset/blog/temp',
         '/asset/blog/isi',
+      );
+      const editorjsDataEn = await this.blogService.ChangeImageEditorJS(
+        createBlogDto.isi['en'],
         '/asset/blog/temp',
+        '/asset/blog/isi',
+      );
+      const editorjsDataJp = await this.blogService.ChangeImageEditorJS(
+        createBlogDto.isi['jp'],
+        '/asset/blog/temp',
+        '/asset/blog/isi',
       );
 
-      createBlogDto.isi_editorjs = editorjsData;
+      await this.blogService.deleteFileTemp('/asset/blog/temp');
 
+      createBlogDto.isi_editorjs['id'] = editorjsDataId;
+      createBlogDto.isi_editorjs['en'] = editorjsDataEn;
+      createBlogDto.isi_editorjs['jp'] = editorjsDataJp;
       createBlogDto.gambar = req.body.uploadedImageUrls || [];
+      let htmlId = editorjsHTML.parse(JSON.parse(editorjsDataId));
+      let htmlEn = editorjsHTML.parse(JSON.parse(editorjsDataEn));
+      let htmlJp = editorjsHTML.parse(JSON.parse(editorjsDataJp));
 
-      let html = editorjsHTML.parse(JSON.parse(editorjsData));
-
-      createBlogDto.isi = html;
+      createBlogDto.isi['id'] = htmlId;
+      createBlogDto.isi['en'] = htmlEn;
+      createBlogDto.isi['jp'] = htmlJp;
 
       await this.blogService.create(createBlogDto);
       req.flash('success', 'Blog successfully created');
@@ -263,22 +279,31 @@ export class BlogController {
   ) {
     try {
       const blog = await this.blogService.findOne(id);
-      if (updateBlogDto.isi) {
-        await this.blogService.ChangeImageEditorJS(
-          blog.isi_editorjs,
-          '/asset/blog/isi',
-          '/asset/blog/temp',
-        );
-        updateBlogDto.isi_editorjs = await this.blogService.ChangeImageEditorJS(
-          updateBlogDto.isi,
-          '/asset/blog/temp',
-          '/asset/blog/isi',
-          '/asset/blog/temp',
-        );
-        updateBlogDto.isi = editorjsHTML.parse(
-          JSON.parse(updateBlogDto.isi_editorjs),
-        );
-      }
+if (updateBlogDto.isi) {
+  for (const lang of ['id', 'en', 'jp']) {
+    if (!updateBlogDto.isi[lang]) continue;
+
+    // Pindah gambar lama dari isi → temp
+    await this.blogService.ChangeImageEditorJS(
+      blog.isi_editorjs[lang],
+      '/asset/blog/isi',
+      '/asset/blog/temp',
+    );
+
+    updateBlogDto.isi_editorjs![lang] = await this.blogService.ChangeImageEditorJS(
+      updateBlogDto.isi[lang],
+      '/asset/blog/temp',
+      '/asset/blog/isi',
+      '/asset/blog/temp',
+    );
+
+    // Parse EditorJS ke HTML
+    updateBlogDto.isi[lang] = editorjsHTML.parse(
+      JSON.parse(updateBlogDto.isi_editorjs![lang]),
+    );
+  }
+}
+
 
       updateBlogDto.gambar = updateBlogDto.gambar || [];
       const combineImage = [
@@ -333,15 +358,16 @@ export class BlogController {
         }
       }
       if (blog.isi) {
-        const $ = cheerio.load(blog.isi);
-        const imgUrls = $('img')
-          .toArray()
-          .map((img) => $(img).attr('src'))
-          .filter((src) => !!src);
-
-        await Promise.all(
-          imgUrls.map((url) => this.blogService.deleteFile(url!)),
-        );
+await Promise.all(
+  ['id', 'en', 'jp'].flatMap((lang) => {
+    const $ = cheerio.load(blog.isi[lang]);
+    return $('img')
+      .toArray()
+      .map((img) => $(img).attr('src'))
+      .filter((src): src is string => !!src)
+      .map((url) => this.blogService.deleteFile(url));
+  }),
+);
       }
 
       await this.blogService.remove(id);

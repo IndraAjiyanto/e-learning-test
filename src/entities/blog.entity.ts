@@ -21,11 +21,11 @@ export class Blog {
   @Column()
   judul: string;
 
-  @Column({ type: 'text' })
-  isi: string;
+  @Column('jsonb')
+  isi: string[];
 
-  @Column({ type: 'text' })
-  isi_editorjs: string;
+  @Column('jsonb')
+  isi_editorjs: string[];
 
   @Column()
   author: string;
