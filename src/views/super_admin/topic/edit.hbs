@@ -15,17 +15,17 @@
     },
     formData: {
       icon: '{{topic.icon}}',
-      nama: '{{topic.nama}}',
+      nama: { id: '{{topic.nama.id}}', en: '{{topic.nama.en}}', jp: '{{topic.nama.jp}}' },
       description: { id: '{{topic.deskripsi.id}}', en: '{{topic.deskripsi.en}}', ja: '{{topic.deskripsi.ja}}' }
     },
     formErrors: {
       icon: '',
-      nama: '',
+      nama: { id: '', en: '', jp: '' },
       description: { id: '', en: '', ja: '' }
     },
     formValid: {
       icon: false,
-      nama: false,
+      nama: { id: false, en: false, jp: false },
       description: { id: false, en: false, ja: false }
     },
     validateField(field, langOrValue, valueIfLang) {
@@ -43,17 +43,18 @@
           this.formValid.icon = true;
         }
       } else if (field === 'nama') {
-        const value = langOrValue;
-        this.formData.nama = value;
+        const lang = langOrValue;
+        const value = valueIfLang;
+        this.formData.nama[lang] = value;
         if (!value.trim()) {
-          this.formErrors.nama = 'Nama wajib diisi';
-          this.formValid.nama = false;
+          this.formErrors.nama[lang] = 'Nama wajib diisi';
+          this.formValid.nama[lang] = false;
         } else if (value.trim().length < 3) {
-          this.formErrors.nama = 'Minimal 3 karakter';
-          this.formValid.nama = false;
+          this.formErrors.nama[lang] = 'Minimal 3 karakter';
+          this.formValid.nama[lang] = false;
         } else {
-          this.formErrors.nama = '';
-          this.formValid.nama = true;
+          this.formErrors.nama[lang] = '';
+          this.formValid.nama[lang] = true;
         }
       } else if (field === 'description') {
         const lang = langOrValue;
@@ -73,16 +74,18 @@
     },
     canSubmit() {
       const descValid = Object.values(this.formValid.description).every(v => v);
-      return this.formValid.icon && this.formValid.nama && descValid;
+      return this.formValid.icon && Object.values(this.formValid.nama).every(v => v) && descValid;
     },
     hasFormErrors() {
       return this.formErrors.icon !== '' ||
-        this.formErrors.nama !== '' ||
+        Object.values(this.formErrors.nama).some(e => e !== '') ||
         Object.values(this.formErrors.description).some(e => e !== '');
     },
     init() {
       this.validateField('icon', this.formData.icon);
-      this.validateField('nama', this.formData.nama);
+      this.validateField('nama', 'id', this.formData.nama.id);
+      this.validateField('nama', 'en', this.formData.nama.en);
+      this.validateField('nama', 'jp', this.formData.nama.jp);
       this.validateField('description', 'id', this.formData.description.id);
       this.validateField('description', 'en', this.formData.description.en);
       this.validateField('description', 'ja', this.formData.description.ja);

@@ -15,17 +15,17 @@
   },
   formData: {
     icon: '',
-    nama: '',
+    nama: { id: '', en: '', ja: '' },
     description: { id: '', en: '', ja: '' }
   },
   formErrors: {
     icon: '',
-    nama: '',
+    nama: { id: '', en: '', ja: '' },
     description: { id: '', en: '', ja: '' }
   },
   formValid: {
     icon: false,
-    nama: false,
+    nama: { id: false, en: false, ja: false },
     description: { id: false, en: false, ja: false }
   },
   validateField(field, langOrValue, valueIfLang) {
@@ -42,20 +42,21 @@
         this.formErrors.icon = '';
         this.formValid.icon = true;
       }
-    } else if (field === 'nama') {
-      const value = langOrValue;
-      this.formData.nama = value;
-      if (!value.trim()) {
-        this.formErrors.nama = 'Nama wajib diisi';
-        this.formValid.nama = false;
-      } else if (value.trim().length < 3) {
-        this.formErrors.nama = 'Minimal 3 karakter';
-        this.formValid.nama = false;
-      } else {
-        this.formErrors.nama = '';
-        this.formValid.nama = true;
-      }
-    } else if (field === 'description') {
+    }  else if (field === 'nama') {
+  const lang = langOrValue;   
+  const value = valueIfLang;  
+  this.formData.nama[lang] = value;
+  if (!value.trim()) {
+    this.formErrors.nama[lang] = 'Nama wajib diisi';
+    this.formValid.nama[lang] = false;
+  } else if (value.trim().length < 3) {
+    this.formErrors.nama[lang] = 'Minimal 3 karakter';
+    this.formValid.nama[lang] = false;
+  } else {
+    this.formErrors.nama[lang] = '';
+    this.formValid.nama[lang] = true;
+  }
+} else if (field === 'description') {
       const lang = langOrValue;
       const value = valueIfLang;
       this.formData.description[lang] = value;
@@ -73,13 +74,14 @@
   },
   canSubmit() {
     const descValid = Object.values(this.formValid.description).every(v => v);
-    return this.formValid.icon && this.formValid.nama && descValid;
+    const namaValid = Object.values(this.formValid.nama).every(v => v);
+    return this.formValid.icon && namaValid && descValid;
   },
-  hasFormErrors() {
-    return this.formErrors.icon !== '' ||
-      this.formErrors.nama !== '' ||
-      Object.values(this.formErrors.description).some(e => e !== '');
-  }
+hasFormErrors() {
+  return this.formErrors.icon !== '' ||
+    Object.values(this.formErrors.nama).some(e => e !== '') ||
+    Object.values(this.formErrors.description).some(e => e !== '');
+}
 }"
 >
   <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>

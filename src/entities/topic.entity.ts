@@ -13,8 +13,8 @@ export class Topic {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  nama: string;
+  @Column('jsonb', { nullable: true })
+  nama: string[];
 
   @Column()
   icon: string;

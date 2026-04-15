@@ -20,21 +20,23 @@
       selectedKategori: '',
       selectedKategoriId: '',
       searchKategoriQuery: '',
-      searchQuery: '', // Tambahkan properti untuk search query
+      searchQuery: '',
       currentPage: 1,
       itemsPerPage: 9,
       totalPages: 1,
       loading: false,
-      lang: 'id',
+      lang: {{lang}},
       slideStates: {},   
       likedStates: {},    
-      searchTimeout: null, // Untuk debounce
+      searchTimeout: null,
 
       init() {
+        console.log('hello world');
+        console.log('All blog:', this.allBlog);
+        console.log('lang:', this.lang);
         this.filterAndPaginate();
       },
 
-      // Fungsi untuk menangani pencarian dengan debounce
       handleSearch() {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(() => {
@@ -80,10 +82,8 @@
       getKategoriCount(kategoriId) {
         let filtered = this.allBlog;
         
-        // Filter berdasarkan kategori
         filtered = filtered.filter(item => item.kategori_blog?.id == kategoriId);
         
-        // Filter berdasarkan pencarian jika ada
         if (this.searchQuery.trim() !== '') {
           const query = this.searchQuery.toLowerCase().trim();
           filtered = filtered.filter(item => {
@@ -102,7 +102,7 @@
         } else {
           const query = this.searchKategoriQuery.toLowerCase().trim();
           this.filteredKategoriList = this.allKategori.filter(kategori =>
-            kategori.nama.toLowerCase().includes(query)
+            kategori.nama[this.lang]?.toLowerCase().includes(query)
           );
         }
       },
@@ -110,7 +110,6 @@
       filterAndPaginate() {
         let filtered = this.allBlog;
         
-        // Filter berdasarkan kategori
         if (this.selectedKategoriId) {
           filtered = filtered.filter(item => {
             const kategoriId = item.kategori_blog?.id;
@@ -185,7 +184,8 @@
         
         if (kategoriId) {
           const kat = this.allKategori.find(k => k.id == kategoriId);
-          this.selectedKategori = kat ? kat.nama : '';
+          console.log('Selected kategori:', kat.nama[this.lang]);
+          this.selectedKategori = kat ? kat.nama[this.lang] : '';
         } else {
           this.selectedKategori = '';
         }
@@ -214,8 +214,8 @@
       },
 
       getCategoryName(item) {
-        if (item.kategori_blog?.nama)
-          return item.kategori_blog.nama;
+        if (item.kategori_blog?.nama[this.lang])
+          return item.kategori_blog.nama[this.lang];
         return null;
       }
     }

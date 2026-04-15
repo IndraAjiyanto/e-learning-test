@@ -277,31 +277,69 @@ export class BlogController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    updateBlogDto.isi_editorjs = updateBlogDto.isi_editorjs! || {};
     try {
       const blog = await this.blogService.findOne(id);
 if (updateBlogDto.isi) {
-  for (const lang of ['id', 'en', 'jp']) {
-    if (!updateBlogDto.isi[lang]) continue;
+// Proses bahasa ID
+if (updateBlogDto.isi['id']) {
+  await this.blogService.ChangeImageEditorJS(
+    blog.isi_editorjs['id'],
+    '/asset/blog/isi',
+    '/asset/blog/temp',
+  );
 
-    // Pindah gambar lama dari isi → temp
-    await this.blogService.ChangeImageEditorJS(
-      blog.isi_editorjs[lang],
-      '/asset/blog/isi',
-      '/asset/blog/temp',
-    );
+  updateBlogDto.isi_editorjs['id'] = await this.blogService.ChangeImageEditorJS(
+    updateBlogDto.isi['id'],
+    '/asset/blog/temp',
+    '/asset/blog/isi',
+    '/asset/blog/temp',
+  );
 
-    updateBlogDto.isi_editorjs![lang] = await this.blogService.ChangeImageEditorJS(
-      updateBlogDto.isi[lang],
-      '/asset/blog/temp',
-      '/asset/blog/isi',
-      '/asset/blog/temp',
-    );
+  updateBlogDto.isi['id'] = editorjsHTML.parse(
+    JSON.parse(updateBlogDto.isi_editorjs['id']),
+  );
+}
 
-    // Parse EditorJS ke HTML
-    updateBlogDto.isi[lang] = editorjsHTML.parse(
-      JSON.parse(updateBlogDto.isi_editorjs![lang]),
-    );
-  }
+// Proses bahasa EN
+if (updateBlogDto.isi['en']) {
+  await this.blogService.ChangeImageEditorJS(
+    blog.isi_editorjs['en'],
+    '/asset/blog/isi',
+    '/asset/blog/temp',
+  );
+
+  updateBlogDto.isi_editorjs['en'] = await this.blogService.ChangeImageEditorJS(
+    updateBlogDto.isi['en'],
+    '/asset/blog/temp',
+    '/asset/blog/isi',
+    '/asset/blog/temp',
+  );
+
+  updateBlogDto.isi['en'] = editorjsHTML.parse(
+    JSON.parse(updateBlogDto.isi_editorjs['en']),
+  );
+}
+
+// Proses bahasa JP
+if (updateBlogDto.isi['jp']) {
+  await this.blogService.ChangeImageEditorJS(
+    blog.isi_editorjs['jp'],
+    '/asset/blog/isi',
+    '/asset/blog/temp',
+  );
+
+  updateBlogDto.isi_editorjs['jp'] = await this.blogService.ChangeImageEditorJS(
+    updateBlogDto.isi['jp'],
+    '/asset/blog/temp',
+    '/asset/blog/isi',
+    '/asset/blog/temp',
+  );
+
+  updateBlogDto.isi['jp'] = editorjsHTML.parse(
+    JSON.parse(updateBlogDto.isi_editorjs['jp']),
+  );
+}
 }
 
 

@@ -1,17 +1,17 @@
         <!-- Category -->
         <div x-data="{
-          search: '{{blog.kategori_blog.nama}}',
+          search: '{{blog.kategori_blog.nama.en}}',
           selectedCategory: {{json blog.kategori_blog}},
           showDropdown: false,
           availableCategories: {{json categories}},
           get filteredCategories() {
             return this.availableCategories.filter(c =>
-              c.nama.toLowerCase().includes(this.search.toLowerCase())
+              c.nama.en.toLowerCase().includes(this.search.toLowerCase())
             );
           },
           selectCategory(category) {
             this.selectedCategory = category;
-            this.search = category.nama;
+            this.search = category.nama.en;
             this.showDropdown = false;
             $dispatch('category-selected', { category });
           },
@@ -38,7 +38,7 @@
               <template x-for='category in filteredCategories' :key='category.id'>
                 <button type='button' @click='selectCategory(category)'
                         class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'>
-                  <span class='text-sm font-medium text-gray-700' x-text='category.nama'></span>
+                  <span class='text-sm font-medium text-gray-700' x-text='category.nama.en'></span>
                 </button>
               </template>
             </div>
