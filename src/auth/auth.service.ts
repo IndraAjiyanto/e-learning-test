@@ -6,6 +6,8 @@ import { UsersService } from 'src/users/users.service';
 import { KelassService } from 'src/kelass/kelass.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { EmailService } from 'src/common/email/email.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +15,8 @@ export class AuthService {
     private userService: UsersService,
     private kelasService: KelassService,
     private emailService: EmailService,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -40,7 +44,8 @@ export class AuthService {
 
     if (!isMatch) {
       try {
-        const user = await this.userService.create(createUserDto);
+        const user_data = await this.userRepository.create({ ...createUserDto, isVerified: false });
+        const user = await this.userRepository.save(user_data);
         await this.emailService.sendVerificationEmail(
           createUserDto.email,
           resetToken,

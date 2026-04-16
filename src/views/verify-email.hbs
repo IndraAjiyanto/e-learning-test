@@ -122,21 +122,40 @@
       {{#if remainingMs}}
         <div class='my-countdown simply-countdown'></div>
 
-        <script>
-          const remainingMs =
-          {{remainingMs}}; const target = new Date(Date.now() + remainingMs);
-          simplyCountdown('.my-countdown', { year: target.getFullYear(), month:
-          target.getMonth() + 1, day: target.getDate(), hours:
-          target.getHours(), minutes: target.getMinutes(), seconds:
-          target.getSeconds(), words: { days: { root: `{{t 'test.verify.day'}}`,
-          lambda: (root, n) => root }, hours: { root: `{{t
-            'test.verify.hour'
-          }}`, lambda: (root, n) => root }, minutes: { root: `{{t
-            'test.verify.minute'
-          }}`, lambda: (root, n) => root }, seconds: { root: `{{t
-            'test.verify.second'
-          }}`, lambda: (root, n) => root } }, onEnd: () => location.reload() });
-        </script>
+<script>
+  const remainingMs = {{remainingMs}};
+  const target = new Date(Date.now() + remainingMs);
+
+  simplyCountdown('.my-countdown', {
+    year: target.getFullYear(),
+    month: target.getMonth() + 1,
+    day: target.getDate(),
+    hours: target.getHours(),
+    minutes: target.getMinutes(),
+    seconds: target.getSeconds(),
+
+    words: {
+      days: {
+        root: `{{t 'test.verify.day'}}`,
+        lambda: (root, n) => root
+      },
+      hours: {
+        root: `{{t 'test.verify.hour'}}`,
+        lambda: (root, n) => root
+      },
+      minutes: {
+        root: `{{t 'test.verify.minute'}}`,
+        lambda: (root, n) => root
+      },
+      seconds: {
+        root: `{{t 'test.verify.second'}}`,
+        lambda: (root, n) => root
+      }
+    },
+
+    onEnd: () => location.reload()
+  });
+</script>
 
       {{else}}
 
