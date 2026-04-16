@@ -94,6 +94,16 @@ export class KelassService {
     return kategori;
   }
 
+      async findNo(kelasId: number) {
+        const installment = await this.findCicilanKelas(kelasId);
+      const usedNumbers = installment.map((i) => Number(i.bulan));
+      
+      const availableNumbers = [3, 6, 12].filter(
+        (n) => !usedNumbers.includes(n)
+      );
+      return availableNumbers;
+  }
+
   async create(createKelassDto: CreateKelassDto) {
     const kategori = await this.kategoriRepository.findOne({
       where: { id: createKelassDto.kategoriId },

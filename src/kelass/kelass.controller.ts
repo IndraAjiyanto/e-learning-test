@@ -322,8 +322,9 @@ export class KelassController {
   @Roles('super_admin')
   @Get('/installment/:kelasId')
   async getCicilan(@Param('kelasId') kelasId: number, @Res() res: Response) {
+    const availableMonths = await this.kelassService.findNo(kelasId);
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
-    res.json(cicilan);
+    res.json({ availableMonths, cicilan });
   }
 
   @Roles('super_admin')
