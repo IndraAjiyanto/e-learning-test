@@ -164,7 +164,7 @@
         },
 
         canSubmit() {
-          const imageValid = !this.hasFile || this.isValid;
+          const imageValid = this.hasFile && this.isValid;
           const namaValid = Object.values(this.formValid.nama).every(v => v);
           const pesanValid = Object.values(this.formValid.pesan).every(v => v);
           const alumniValid = Object.values(this.formValid.alumni).every(v => v);

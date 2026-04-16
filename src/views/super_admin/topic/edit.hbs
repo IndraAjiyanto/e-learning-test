@@ -15,17 +15,17 @@
     },
     formData: {
       icon: '{{topic.icon}}',
-      nama: { id: '{{topic.nama.id}}', en: '{{topic.nama.en}}', jp: '{{topic.nama.jp}}' },
+      nama: { id: '{{topic.nama.id}}', en: '{{topic.nama.en}}', ja: '{{topic.nama.ja}}' },
       description: { id: '{{topic.deskripsi.id}}', en: '{{topic.deskripsi.en}}', ja: '{{topic.deskripsi.ja}}' }
     },
     formErrors: {
       icon: '',
-      nama: { id: '', en: '', jp: '' },
+      nama: { id: '', en: '', ja: '' },
       description: { id: '', en: '', ja: '' }
     },
     formValid: {
       icon: false,
-      nama: { id: false, en: false, jp: false },
+      nama: { id: false, en: false, ja: false },
       description: { id: false, en: false, ja: false }
     },
     validateField(field, langOrValue, valueIfLang) {
@@ -85,7 +85,7 @@
       this.validateField('icon', this.formData.icon);
       this.validateField('nama', 'id', this.formData.nama.id);
       this.validateField('nama', 'en', this.formData.nama.en);
-      this.validateField('nama', 'jp', this.formData.nama.jp);
+      this.validateField('nama', 'ja', this.formData.nama.ja);
       this.validateField('description', 'id', this.formData.description.id);
       this.validateField('description', 'en', this.formData.description.en);
       this.validateField('description', 'ja', this.formData.description.ja);
