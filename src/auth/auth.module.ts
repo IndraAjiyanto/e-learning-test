@@ -6,9 +6,11 @@ import { SessionSerializer } from './session.serializer';
 import { UsersModule } from 'src/users/users.module';
 import { KelassModule } from 'src/kelass/kelass.module';
 import { EmailService } from 'src/common/email/email.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/entities/user.entity';
 
 @Module({
-  imports: [UsersModule, KelassModule],
+  imports: [TypeOrmModule.forFeature([User]), UsersModule, KelassModule],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, SessionSerializer, EmailService],
 })

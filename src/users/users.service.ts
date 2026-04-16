@@ -335,6 +335,7 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { verifikasiToken: token },
     });
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
