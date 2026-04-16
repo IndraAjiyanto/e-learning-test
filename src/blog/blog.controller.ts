@@ -207,7 +207,7 @@ export class BlogController {
         '/asset/blog/isi',
       );
       const editorjsDataJp = await this.blogService.ChangeImageEditorJS(
-        createBlogDto.isi['jp'],
+        createBlogDto.isi['ja'],
         '/asset/blog/temp',
         '/asset/blog/isi',
       );
@@ -216,7 +216,7 @@ export class BlogController {
 
       createBlogDto.isi_editorjs['id'] = editorjsDataId;
       createBlogDto.isi_editorjs['en'] = editorjsDataEn;
-      createBlogDto.isi_editorjs['jp'] = editorjsDataJp;
+      createBlogDto.isi_editorjs['ja'] = editorjsDataJp;
       createBlogDto.gambar = req.body.uploadedImageUrls || [];
       let htmlId = editorjsHTML.parse(JSON.parse(editorjsDataId));
       let htmlEn = editorjsHTML.parse(JSON.parse(editorjsDataEn));
@@ -224,7 +224,7 @@ export class BlogController {
 
       createBlogDto.isi['id'] = htmlId;
       createBlogDto.isi['en'] = htmlEn;
-      createBlogDto.isi['jp'] = htmlJp;
+      createBlogDto.isi['ja'] = htmlJp;
 
       await this.blogService.create(createBlogDto);
       req.flash('success', 'Blog successfully created');
@@ -293,7 +293,6 @@ if (updateBlogDto.isi['id']) {
     updateBlogDto.isi['id'],
     '/asset/blog/temp',
     '/asset/blog/isi',
-    '/asset/blog/temp',
   );
 
   updateBlogDto.isi['id'] = editorjsHTML.parse(
@@ -313,7 +312,6 @@ if (updateBlogDto.isi['en']) {
     updateBlogDto.isi['en'],
     '/asset/blog/temp',
     '/asset/blog/isi',
-    '/asset/blog/temp',
   );
 
   updateBlogDto.isi['en'] = editorjsHTML.parse(
@@ -322,24 +320,25 @@ if (updateBlogDto.isi['en']) {
 }
 
 // Proses bahasa JP
-if (updateBlogDto.isi['jp']) {
+if (updateBlogDto.isi['ja']) {
   await this.blogService.ChangeImageEditorJS(
-    blog.isi_editorjs['jp'],
+    blog.isi_editorjs['ja'],
     '/asset/blog/isi',
     '/asset/blog/temp',
   );
 
-  updateBlogDto.isi_editorjs['jp'] = await this.blogService.ChangeImageEditorJS(
-    updateBlogDto.isi['jp'],
+  updateBlogDto.isi_editorjs['ja'] = await this.blogService.ChangeImageEditorJS(
+    updateBlogDto.isi['ja'],
     '/asset/blog/temp',
     '/asset/blog/isi',
-    '/asset/blog/temp',
   );
 
-  updateBlogDto.isi['jp'] = editorjsHTML.parse(
-    JSON.parse(updateBlogDto.isi_editorjs['jp']),
+  updateBlogDto.isi['ja'] = editorjsHTML.parse(
+    JSON.parse(updateBlogDto.isi_editorjs['ja']),
   );
 }
+      await this.blogService.deleteFileTemp('/asset/blog/temp');
+
 }
 
 
@@ -397,7 +396,7 @@ if (updateBlogDto.isi['jp']) {
       }
       if (blog.isi) {
 await Promise.all(
-  ['id', 'en', 'jp'].flatMap((lang) => {
+  ['id', 'en', 'ja'].flatMap((lang) => {
     const $ = cheerio.load(blog.isi[lang]);
     return $('img')
       .toArray()

@@ -17,10 +17,10 @@
 <!-- Editor JP -->
 <label class='mb-2 block font-medium text-gray-700'>Content JP</label>
 <div
-  id='editor-jp'
+  id='editor-ja'
   class='text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4'
 ></div>
-<input type='hidden' name='isi[jp]' id='isi-jp' />
+<input type='hidden' name='isi[ja]' id='isi-ja' />
 
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const editors = {
     id: new EditorJS(editorConfig('editor-id')),
     en: new EditorJS(editorConfig('editor-en')),
-    jp: new EditorJS(editorConfig('editor-jp')),
+    ja: new EditorJS(editorConfig('editor-ja')),
   };
 
   const form = document.querySelector('form');
@@ -72,15 +72,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
 
     // Save semua editor sekaligus
-    const [outputId, outputEn, outputJp] = await Promise.all([
+    const [outputId, outputEn, outputJa] = await Promise.all([
       editors.id.save(),
       editors.en.save(),
-      editors.jp.save(),
+      editors.ja.save(),
     ]);
 
     document.getElementById('isi-id').value = JSON.stringify(outputId);
     document.getElementById('isi-en').value = JSON.stringify(outputEn);
-    document.getElementById('isi-jp').value = JSON.stringify(outputJp);
+    document.getElementById('isi-ja').value = JSON.stringify(outputJa);
 
     form.submit();
   });
