@@ -40,13 +40,14 @@
 
       init() {
         console.log('Total Portfolio:', this.allPortfolio.length);
+        console.log('Total jenis kelas:', this.allJenisKelas);
         // Sort kategori dan jenis kelas alphabetically
         this.allKategori = this.allKategori.sort((a, b) =>
           a.nama_kategori.localeCompare(b.nama_kategori)
         );
-        this.allJenisKelas = this.allJenisKelas.sort((a, b) =>
-          this.getByLang(a.nama_jenis_kelas, this.lang).localeCompare(this.getByLang(b.nama_jenis_kelas, this.lang))
-        );
+this.allJenisKelas = this.allJenisKelas.sort((a, b) =>
+  a.nama_jenis_kelas.localeCompare(b.nama_jenis_kelas)
+);
         // Initialize filtered lists
         this.filteredKategoriList = [...this.allKategori];
         this.filteredJenisKelasList = [...this.allJenisKelas];
