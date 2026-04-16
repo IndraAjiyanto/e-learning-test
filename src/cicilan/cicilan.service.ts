@@ -60,6 +60,16 @@ export class CicilanService {
     });
   }
 
+    async findNo(kelasId: number) {
+        const installment = await this.findByKelas(kelasId);
+      const usedNumbers = installment.map((i) => Number(i.bulan));
+      
+      const availableNumbers = [3, 6, 12].filter(
+        (n) => !usedNumbers.includes(n)
+      );
+      return availableNumbers;
+  }
+
   async update(id: number, updateCicilanDto: UpdateCicilanDto) {
     const cicilan = await this.findOne(id);
 

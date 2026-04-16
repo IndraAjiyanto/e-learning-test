@@ -29,7 +29,8 @@ export class CicilanController {
     @Res() res: Response,
     @Param('kelasId') kelasId: number,
   ) {
-    res.render('super_admin/cicilan/create', { user: req.user, kelasId });
+    const availableMonths = await this.cicilanService.findNo(kelasId);
+    res.render('super_admin/cicilan/create', { user: req.user, kelasId, availableMonths });
   }
 
   @Roles('super_admin')
@@ -40,7 +41,8 @@ export class CicilanController {
     @Res() res: Response,
   ) {
     const cicilan = await this.cicilanService.findOne(id);
-    res.render('super_admin/cicilan/edit', { user: req.user, cicilan });
+    const availableMonths = await this.cicilanService.findNo(cicilan.kelas.id);
+    res.render('super_admin/cicilan/edit', { user: req.user, cicilan, availableMonths });
   }
 
   @Roles('super_admin')

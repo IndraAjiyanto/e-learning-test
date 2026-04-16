@@ -14,9 +14,9 @@
                 <p><span class='font-medium'>Location :</span>
                   <span x-text="session.lokasi"></span></p>
                 <p><span class='font-medium'>Time:</span>
-                <span x-text="formatWaktu(session.waktu_awal)"></span>
+                <span x-text="formatTime(session.waktu_awal)"></span>
                   -
-                  <span x-text="formatWaktu(session.waktu_akhir)"></span></p>
+                  <span x-text="formatTime(session.waktu_akhir)"></span></p>
                 <p><span class='font-medium'>Date:</span>
                   <span x-text="formatTanggal(session.tanggal)"></span></p>
               </div>
@@ -120,10 +120,9 @@ function sessionData() {
       return new Date(value).toLocaleDateString('id-ID', options);
     },
 
-    formatWaktu(value) {
-      const options = { hour: '2-digit', minute: '2-digit' };
-      return new Date('1970-01-01T' + value + 'Z').toLocaleTimeString('id-ID', options);
-    },
+formatTime(value) {
+  return value ? value.slice(0, 5) : '';
+},
   }
 }
 </script>

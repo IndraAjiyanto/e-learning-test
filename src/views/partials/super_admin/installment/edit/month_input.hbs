@@ -1,4 +1,5 @@
       <!-- Pilih Bulan -->
+              {{#if availableMonths.length}}
       <div>
         <label
           for='bulan'
@@ -15,9 +16,11 @@
           :class="formErrors.bulan ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.bulan ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >
-          <option value='3'>3 Months</option>
-          <option value='6'>6 Months</option>
-          <option value='12'>12 Months</option>
+        <option value='{{cicilan.bulan}}' selected>{{cicilan.bulan}} Months</option>
+        {{#each availableMonths}}
+          <option value='{{this}}'>{{this}} Months</option>
+        {{/each}}
+
         </select>
         <!-- Error Message -->
         <template x-if='formErrors.bulan'>
@@ -39,3 +42,4 @@
           </div>
         </template>
       </div>
+      {{/if}}
