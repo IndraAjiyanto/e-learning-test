@@ -25,7 +25,7 @@
       itemsPerPage: 9,
       totalPages: 1,
       loading: false,
-      lang: {{lang}},
+      lang: `{{lang}}`,
       slideStates: {},   
       likedStates: {},    
       searchTimeout: null,
@@ -93,16 +93,24 @@
         return filtered.length;
       },
 
-      filterKategori() {
-        if (this.searchKategoriQuery.trim() === '') {
-          this.filteredKategoriList = [...this.allKategori];
-        } else {
-          const query = this.searchKategoriQuery.toLowerCase().trim();
-          this.filteredKategoriList = this.allKategori.filter(kategori =>
-            kategori.nama[this.lang]?.toLowerCase().includes(query)
-          );
-        }
-      },
+filterKategori() {
+  if (this.searchKategoriQuery.trim() === '') {
+    this.filteredKategoriList = [...this.allKategori];
+  } else {
+    const query = this.searchKategoriQuery.toLowerCase().trim();
+    this.filteredKategoriList = this.allKategori.filter(kategori =>
+      this.getLocalizedText(kategori.nama)?.toLowerCase().includes(query)  // ✅ fix
+    );
+  }
+},
+      // Tambahkan method ini di blogApp()
+getLocalizedText(obj) {
+  if (!obj) return '';
+  if (typeof obj === 'string') {
+    try { obj = JSON.parse(obj); } catch { return obj; }
+  }
+  return obj[this.lang] || obj['id'] || obj['en'] || Object.values(obj)[0] || '';
+},
 
       filterAndPaginate() {
         let filtered = this.allBlog;
@@ -174,20 +182,19 @@
         .catch(err => console.error('Error view blog:', err));
       },
 
-      selectKategori(kategoriId) {
-        this.selectedKategoriId = kategoriId;
-        this.currentPage = 1;
-        this.filterAndPaginate();
-        
-        if (kategoriId) {
-          const kat = this.allKategori.find(k => k.id == kategoriId);
-          console.log('Selected kategori:', kat.nama[this.lang]);
-          this.selectedKategori = kat ? kat.nama[this.lang] : '';
-        } else {
-          this.selectedKategori = '';
-        }
-      },
-
+selectKategori(kategoriId) {
+  this.selectedKategoriId = kategoriId;
+  this.currentPage = 1;
+  this.filterAndPaginate();
+  
+  if (kategoriId) {
+    const kat = this.allKategori.find(k => k.id == kategoriId);
+    console.log('Selected kategori:', this.getLocalizedText(kat?.nama));  // ✅ fix
+    this.selectedKategori = kat ? this.getLocalizedText(kat.nama) : '';   // ✅ fix
+  } else {
+    this.selectedKategori = '';
+  }
+},
       changePage(page) {
         this.currentPage = page;
         this.filterAndPaginate();
@@ -210,11 +217,9 @@
         return raw;
       },
 
-      getCategoryName(item) {
-        if (item.kategori_blog?.nama[this.lang])
-          return item.kategori_blog.nama[this.lang];
-        return null;
-      }
+getCategoryName(item) {
+  return this.getLocalizedText(item.kategori_blog?.nama) || null;  // ✅ fix
+}
     }
   }
 </script>
