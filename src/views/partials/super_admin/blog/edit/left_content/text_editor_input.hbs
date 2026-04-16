@@ -8,10 +8,10 @@
 <div id="editor-en" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
 <input type="hidden" name="isi[en]" id="isi-en">
 
-<!-- Editor JP -->
+<!-- Editor JA -->
 <label class="mb-2 block font-medium text-gray-700 mt-6">Content JP</label>
-<div id="editor-jp" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
-<input type="hidden" name="isi[jp]" id="isi-jp">
+<div id="editor-ja" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
+<input type="hidden" name="isi[ja]" id="isi-ja">
 
 <script>
 function tagInput(initialTags = '[]') {
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const existingData = {
     id: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.id}}}`); } catch { return {}; } })(),
     en: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.en}}}`); } catch { return {}; } })(),
-    jp: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.jp}}}`); } catch { return {}; } })(),
+    ja: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.ja}}}`); } catch { return {}; } })(),
   };
 
   const editorConfig = (holderId, lang) => ({
@@ -80,22 +80,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   const editors = {
     id: new EditorJS(editorConfig('editor-id', 'id')),
     en: new EditorJS(editorConfig('editor-en', 'en')),
-    jp: new EditorJS(editorConfig('editor-jp', 'jp')),
+    ja: new EditorJS(editorConfig('editor-ja', 'ja')),
   };
 
   const form = document.querySelector('form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const [outputId, outputEn, outputJp] = await Promise.all([
+    const [outputId, outputEn, outputJa] = await Promise.all([
       editors.id.save(),
       editors.en.save(),
-      editors.jp.save(),
+      editors.ja.save(),
     ]);
 
     document.getElementById('isi-id').value = JSON.stringify(outputId);
     document.getElementById('isi-en').value = JSON.stringify(outputEn);
-    document.getElementById('isi-jp').value = JSON.stringify(outputJp);
+    document.getElementById('isi-ja').value = JSON.stringify(outputJa);
 
     form.submit();
   });
