@@ -1,5 +1,7 @@
 <article class='pt-24 pb-16 bg-white'>
   <div class='max-w-7xl mx-auto px-6'>
+    {{#if (eq user.role "super_admin")}}
+    {{else}}
     <!-- Back Button -->
     <a
       href='/dashboard/blog'
@@ -10,6 +12,7 @@
       </svg>
       <p class='pr-2'>{{t 'test.detailBlog.backToBlog'}}</p>
     </a>
+    {{/if}}
 
     <div class='flex flex-col lg:flex-row gap-8 lg:gap-12'>
       <!-- Main Content -->

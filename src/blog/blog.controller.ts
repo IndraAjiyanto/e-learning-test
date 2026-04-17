@@ -123,7 +123,7 @@ export class BlogController {
   ) {
     const blog = await this.blogService.findOne(id);
     const notSidebar = true;
-    res.render('super_admin/blog/detail', {
+    res.render('blog-detail', {
       user: req.user,
       blog,
       notSidebar,
