@@ -61,30 +61,33 @@
     });
   }
 
-  function confirmAction(button, message, title = "Confirmation") {
-  const form = button.closest("form");
+function confirmAction(button, message, title = "Confirmation", value = null) {
+    const form = button.closest("form");
 
-  Swal.fire({
-    title: title,
-    text: message,
-    icon: "info", 
-    showCancelButton: true,
-    buttonsStyling: false,
-    confirmButtonText: "Yes, continue",
-    cancelButtonText: "Cancel",
-    customClass: {
-      confirmButton:
-        "px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition", // ✅ warna lebih netral / biru
-      cancelButton:
-        "px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition",
-      actions: "flex gap-4 justify-center"
-    }
-  }).then((result) => {
-                if (typeof clearQuizStorage === "function") {
-                clearQuizStorage();
+    Swal.fire({
+        title: title,
+        text: message,
+        icon: "info",
+        showCancelButton: true,
+        buttonsStyling: false,
+        confirmButtonText: "Yes, continue",
+        cancelButtonText: "Cancel",
+        customClass: {
+            confirmButton: "px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition",
+            cancelButton: "px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition",
+            actions: "flex gap-4 justify-center"
+        }
+    }).then((result) => {
+        if (typeof clearQuizStorage === "function") {
+            clearQuizStorage();
+        }
+        if (result.isConfirmed) {
+            if (value !== null) {
+                form.querySelector('#prosesValue').value = value;
             }
-    if (result.isConfirmed) form.submit();
-  });
+            form.submit();
+        }
+    });
 }
 
 function showTimeOverAlert(query, message, text) {

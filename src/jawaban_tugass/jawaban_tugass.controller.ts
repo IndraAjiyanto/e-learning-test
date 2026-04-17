@@ -100,6 +100,7 @@ export class JawabanTugassController {
   ) {
     try {
       const tugas = await this.jawabanTugassService.findTugas(tugasId);
+      console.log('updateJawabanTugassDto', updateJawabanTugassDto.proses);
       if (!updateJawabanTugassDto.proses) {
         updateJawabanTugassDto.proses = 'proces';
       }
