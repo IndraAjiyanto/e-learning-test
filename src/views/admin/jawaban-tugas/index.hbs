@@ -117,13 +117,13 @@
                     Submitted on: {{formatTanggal this.createdAt}}
                   </p>
                 </div>
-                <a href="{{this.file}}" target="_blank" class="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors whitespace-nowrap">
-                  Open Link
-                </a>
+
               </div>
 
               <!-- Comment Form -->
               <form action="/jawaban-tugass/{{tugas.id}}/{{this.id}}?_method=PATCH" method="POST" class="space-y-4">
+              <input type="hidden" name="proses" id="prosesValue">
+
                 <div>
                   <label class="block text-sm font-semibold text-gray-900 mb-2">
                     Leave a Comment
@@ -131,20 +131,20 @@
                   <textarea 
                     name="komentar" 
                     rows="3" 
-                    class="w-full px-4 py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all bg-white"
+                    class="w-full px-4 py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 text-gray-900 focus:ring-gray-900 focus:border-gray-900 transition-all bg-white"
                     placeholder="Write feedback or comments for this answer..."
                   ></textarea>
                 </div>
 
                 <div class="flex items-center gap-3">
-                  <button type="submit" onclick="confirmAction(this, 'Are you sure approve this answer?')" name="proses" value="acc"
+                  <button type="button" onclick="confirmAction(this, 'Are you sure approve this answer?', 'Confirmation', 'acc')" 
                     class="flex-1 px-6 py-3 text-sm font-semibold rounded-xl bg-green-500 text-white hover:bg-green-600 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Approve
                   </button>
-                  <button type="submit" onclick="confirmAction(this, 'Are you sure reject this answer?')" name="proses" value="rejected"
+                  <button type="button" onclick="confirmAction(this, 'Are you sure reject this answer?', 'Confirmation', 'rejected')"
                     class="flex-1 px-6 py-3 text-sm font-semibold rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>

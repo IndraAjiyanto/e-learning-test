@@ -121,7 +121,9 @@
             {{t 'test.home.heroSection.buttonStartLearning'}}
           </span>
         </button>
-        <a href="/dashboard/about" @click="localStorage.setItem('activeSection', 'contact');"
+<a 
+    href="#" 
+    onclick="localStorage.setItem('indra', 'contact'); console.log('hallo', localStorage.getItem('indra')); return false;"
           class=' btn text-xl bg-white hover:bg-slate-50 text-gray-800 hover:text-slate-900 px-8 sm:px-16 lg:px-20 border-2 border-secondary shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2'
         >
           <span class='flex items-center gap-2'>
