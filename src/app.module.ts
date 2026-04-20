@@ -58,6 +58,7 @@ import { BenefitCategoryModule } from './benefit_category/benefit_category.modul
 import { FlowCategoryModule } from './flow_category/flow_category.module';
 import { FaqModule } from './faq/faq.module';
 import { SuperiorityModule } from './superiority/superiority.module';
+import { AuthMiddleware } from './auth/auth.middleware';
 import {
   AcceptLanguageResolver,
   CookieResolver,
@@ -153,5 +154,20 @@ import path from 'path';
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(I18nMiddleware).forRoutes('*');
+     consumer
+            .apply(AuthMiddleware)
+            .exclude(
+                '/',
+                '/login',
+                '/register',
+                '/daftar/:id',
+                '/session-expired',
+                '/users/send-verify-email',
+                '/public/(.*)',
+                '/asset/(.*)',
+                '/uploads/(.*)',
+                '/dashboard/(.*)',
+            )
+            .forRoutes('*');
   }
 }

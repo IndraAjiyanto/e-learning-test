@@ -83,6 +83,20 @@
       })
     </script>
 
+    <script>
+    const isAuthenticated = {{{json isAuthenticated}}};
+    
+  if (!isAuthenticated) {
+        const keep = ['activeSection'];
+        
+        Object.keys(localStorage).forEach(key => {
+            if (!keep.includes(key)) {
+                localStorage.removeItem(key);
+            }
+        });
+    }
+</script>
+
 
     <script src="/public/js/scroll-animator.js"></script>
     <script src="/public/js/main.js"></script>

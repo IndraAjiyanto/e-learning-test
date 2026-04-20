@@ -16,6 +16,7 @@ import { NextFunction, Request, Response } from 'express';
 import { I18nContext } from 'nestjs-i18n';
 import { engine } from 'express-handlebars';
 import Handlebars from 'handlebars';
+import connectPgSimple from 'connect-pg-simple';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -243,9 +244,22 @@ async function bootstrap() {
   app.setViewEngine('hbs');
   app.set('view cache', false);
 
+  const PgSession = connectPgSimple(session);
+
   app.use(methodOverride('_method'));
   app.use(
     session({
+                     store: new PgSession({
+            conObject: {
+                host: process.env.DB_HOST,
+                port: Number(process.env.DB_PORT),
+                user: process.env.DB_USERNAME,
+                password: process.env.DB_PASSWORD,
+                database: process.env.DB_NAME,
+            },
+            tableName: 'session',
+            createTableIfMissing: true,
+        }),
       secret: 'rahasia-super',
       resave: false,
       saveUninitialized: false,
@@ -264,6 +278,11 @@ async function bootstrap() {
 
   app.use(passport.initialize());
   app.use(passport.session());
+
+app.use((req: any, res: Response, next: NextFunction) => {
+    res.locals.isAuthenticated = req.isAuthenticated();
+    next();
+});
 
   app.use((req: Request, res: Response, next: NextFunction) => {
     const lang = req.cookies?.lang || 'id';
