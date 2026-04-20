@@ -18,7 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('absens')
+@Controller('attendance')
 export class AbsensController {
   constructor(private readonly absensService: AbsensService) {}
 

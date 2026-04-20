@@ -109,7 +109,7 @@ export class AlumniController {
   }
 
   @Roles('super_admin')
-  @Get('kategori/formCreate/:kategoriId')
+  @Get('category/formCreate/:kategoriId')
   async formCreateByKategori(
     @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
@@ -135,7 +135,7 @@ export class AlumniController {
   }
 
   @Roles('super_admin')
-  @Get('kategori/formEdit/:alumniId')
+  @Get('category/formEdit/:alumniId')
   async formEditAlumni(
     @Param('alumniId') alumniId: number,
     @Res() res: Response,
@@ -184,7 +184,7 @@ export class AlumniController {
   }
 
   @Roles('super_admin')
-  @Patch('kategori/:alumniId/:kategoriId')
+  @Patch('category/:alumniId/:kategoriId')
   @UseInterceptors(
     FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -246,7 +246,7 @@ export class AlumniController {
   }
 
   @Roles('super_admin')
-  @Delete('kategori/:alumniId/:kategoriId')
+  @Delete('category/:alumniId/:kategoriId')
   async removeAlumni(
     @Param('alumniId') alumniId: number,
     @Param('kategoriId') kategoriId: number,

@@ -9,7 +9,7 @@
 
       <form
         @submit='loading = true'
-        action='/absens/{{pertemuan.id}}/{{user.id}}/{{pertemuan.minggu.kelas.id}}'
+        action='/attendance/{{pertemuan.id}}/{{user.id}}/{{pertemuan.minggu.kelas.id}}'
         method='POST'
         class='space-y-8'
         x-data="{
