@@ -72,14 +72,14 @@ export class AuthController {
       } else {
         req.login(user, (err) => {
           if (err) {
-            req.flash('error', 'Terjadi kesalahan saat login');
+            req.flash('error', 'Email not verified');
             return res.redirect('/login');
           }
           res.redirect('/dashboard');
         });
       }
     } catch (error) {
-      req.flash('error', error.message || 'Email atau password salah');
+      req.flash('error', error.message || 'Email or password is incorrect');
       return res.redirect('/login');
     }
   }
@@ -97,4 +97,9 @@ export class AuthController {
       });
     });
   }
+
+  @Get('session-expired')
+sessionExpired(@Res() res: Response) {
+    res.redirect('/login');
+}
 }
