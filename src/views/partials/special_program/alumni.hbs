@@ -2,7 +2,7 @@
   class='bg-gradient-to-br from-primary via-secondary to-gray-900 py-20 px-6 lg:px-20'
   x-data='{
         active: 0, 
-        slides: [0,1,2],
+        slides: Array.from({ length: {{alumni.length}} }, (_, i) => i),
         init() {
             // Auto slide setiap 5 detik
             setInterval(() => {

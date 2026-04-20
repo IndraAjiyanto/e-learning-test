@@ -299,13 +299,14 @@ async findBlog(excludeIds: number[] = []) {
   async findAlumni() {
     return await this.alumniRepository.find({
       relations: ['kelas'],
-      order: { id: 'DESC' },
+      order: { createdAt: 'DESC' },
+      take: 6,
     });
   }
 
   async findKerjaSama() {
     return await this.kerjaSamaRepository.find({
-      order: { id: 'ASC' },
+      order: { createdAt: 'ASC' },
     });
   }
 

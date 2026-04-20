@@ -159,13 +159,18 @@ export class AppModule {
             .exclude(
                 '/',
                 '/login',
+                '/translation',
                 '/register',
+                'kelass/(.*)',
+                'kategoris/(.*)',
+                'blog/(.*)',
                 '/daftar/:id',
                 '/session-expired',
                 '/users/send-verify-email',
                 '/public/(.*)',
                 '/asset/(.*)',
                 '/uploads/(.*)',
+                '/dashboard',
                 '/dashboard/(.*)',
             )
             .forRoutes('*');

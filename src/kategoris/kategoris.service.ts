@@ -96,6 +96,8 @@ export class KategorisService {
     return await this.alumniRepository.find({
       where: { kelas: { kategori: { id: kategoriId } } },
       relations: ['kelas'],
+      order: { createdAt: 'DESC' },
+      take: 6,
     });
   }
 
