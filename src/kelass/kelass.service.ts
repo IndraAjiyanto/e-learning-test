@@ -504,7 +504,7 @@ export class KelassService {
         'logbook',
         'logbook.userId = :userId',
       )
-      .leftJoinAndSelect('pertemuan.absen', 'absen', 'absen.userId = :userId', {
+      .leftJoinAndSelect('pertemuan.attendance', 'attendance', 'attendance.userId = :userId', {
         userId,
       })
       .leftJoinAndSelect('pertemuan.tugas', 'tugas')

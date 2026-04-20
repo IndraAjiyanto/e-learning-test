@@ -20,8 +20,8 @@
         />
       </div>
 
-      <!-- Tambah Absen -->
-      <a href="/absens/create/{{pertemuan.id}}"
+      <!-- Tambah Attendance -->
+      <a href="/attendance/create/{{pertemuan.id}}"
          class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
         Create Attendance
       </a>
@@ -41,19 +41,19 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-        <template x-for="(peserta, index) in filteredData" :key="peserta.id">
+        <template x-for="(participant, index) in filteredData" :key="participant.id">
         <tr class="hover:bg-gray-50 transition">
           <td class="px-6 py-4 text-sm text-gray-800" x-text="pageNumber * size + index + 1"></td>
-          <td class="px-6 py-4 text-sm text-gray-800" x-text="peserta.username"></td>
-          <td class="px-6 py-4 text-sm text-gray-800" x-text="peserta.email"></td>
+          <td class="px-6 py-4 text-sm text-gray-800" x-text="participant.username"></td>
+          <td class="px-6 py-4 text-sm text-gray-800" x-text="participant.email"></td>
           <td class="px-6 py-4 text-sm">
-            <template x-for="pesertaAbsen in peserta.absen" :key="pesertaAbsen.id">
-              <span class="font-medium" x-text="pesertaAbsen.status"></span>
+            <template x-for="attendance in participant.attendance" :key="attendance.id">
+              <span class="font-medium" x-text="attendance.status"></span>
               </template>
           </td>
           <td class="px-6 py-4 text-sm text-gray-800 flex items-center gap-3">
-            <template x-for="pesertaAbsen in peserta.absen" :key="pesertaAbsen.id">
-                <form :action="`/absens/formEdit/${pesertaAbsen.id}`" method="get">
+            <template x-for="attendance in participant.attendance" :key="attendance.id">
+                <form :action="`/attendance/formEdit/${attendance.id}`" method="get">
     <button type="submit" 
             class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition" 
             title="Edit">
@@ -73,7 +73,7 @@
   </button>
   </form>
 
-              <form :action="`/absens/${pesertaAbsen.id}/{{pertemuan.id}}?_method=DELETE`" method="post" class="inline">
+              <form :action="`/attendance/${participant.id}/{{pertemuan.id}}?_method=DELETE`" method="post" class="inline">
                 <button type="submit" 
             onclick="confirmDelete(this)" 
             class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition" 
@@ -113,7 +113,7 @@
 
 
 <script>
-function absenData() {
+function attendanceData() {
   return {
     data: JSON.parse(localStorage.getItem('activeData')) || [],
     searchInput: '',
@@ -122,8 +122,8 @@ function absenData() {
     size: 5,
     amount: 0,
 
-    async fetchAbsens() {
-      const res = await fetch('/pertemuans/absen/{{pertemuan.id}}');
+    async fetchAttendances() {
+      const res = await fetch('/pertemuans/attendance/{{pertemuan.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

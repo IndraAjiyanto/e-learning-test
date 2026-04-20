@@ -120,17 +120,17 @@ export class PertemuansController {
   }
 
   @Roles('admin')
-  @Get('absen/:pertemuanId')
-  async getAbsen(
+  @Get('attendance/:pertemuanId')
+  async getAttendance(
     @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
   ) {
     const pertemuan = await this.pertemuansService.findOne(pertemuanId);
-    const absen = await this.pertemuansService.findMuridInKelas(
+    const attendance = await this.pertemuansService.findMuridInKelas(
       pertemuan.minggu.kelas.id,
       pertemuanId,
     );
-    res.json(absen);
+    res.json(attendance);
   }
 
   @Roles('admin')

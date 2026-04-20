@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
 import { User } from 'src/entities/user.entity';
 import { Pertemuan } from 'src/entities/pertemuan.entity';
-import { Absen } from 'src/entities/absen.entity';
+import { Attendance } from 'src/entities/attendance.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { PertanyaansModule } from 'src/pertanyaans/pertanyaans.module';
 import { JawabanUsersModule } from 'src/jawaban_users/jawaban_users.module';
@@ -45,7 +45,7 @@ import { Portfolio } from 'src/entities/portfolio.entity';
       Kelas,
       User,
       Pertemuan,
-      Absen,
+      Attendance,
       Kategori,
       Minggu,
       ProgresMinggu,

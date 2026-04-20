@@ -5,18 +5,18 @@ import {
   IsDateString,
   IsNumber,
 } from 'class-validator';
-import { Status } from 'src/entities/absen.entity';
+import { Status } from 'src/entities/attendance.entity';
 
-export class CreateAbsenDto {
+export class CreateAttendanceDto {
   @IsEnum(['permission', 'present', 'sick', 'absent', 'no_information'])
   @IsOptional()
   role?: Status;
 
   @IsDateString()
-  waktu_absen: Date;
+  time_attendance: Date;
 
   @IsString()
-  keterangan: string;
+  description: string;
 
   @IsNumber()
   userId: number;

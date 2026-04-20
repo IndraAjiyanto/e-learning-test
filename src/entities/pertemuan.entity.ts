@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Absen } from './absen.entity';
+import { Attendance } from './attendance.entity';
 import { Materi } from './materi.entity';
 import { Tugas } from './tugas.entity';
 import { Minggu } from './minggu.entity';
@@ -42,12 +42,12 @@ export class Pertemuan {
   @Column({ default: false })
   akhir: boolean;
 
-  @OneToMany(() => Absen, (absen) => absen.pertemuan, {
+  @OneToMany(() => Attendance, (attendance) => attendance.pertemuan, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  absen: Absen[];
+  attendance: Attendance[];
 
   @OneToMany(() => Materi, (materi) => materi.pertemuan, {
     cascade: true,

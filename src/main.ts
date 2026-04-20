@@ -135,12 +135,12 @@ async function bootstrap() {
           const end = new Date(`${tanggal}T${waktu_akhir}`);
           return now >= start && now <= end;
         },
-        hasUserAbsen: (absenList: any[], userId: string) => {
-          if (!absenList || !Array.isArray(absenList)) {
+        hasUserAttendance: (attendanceList: any[], userId: string) => {
+          if (!attendanceList || !Array.isArray(attendanceList)) {
             return false;
           }
-          return absenList.some(
-            (absen) => absen.user && absen.user.id === userId,
+          return attendanceList.some(
+            (attendance) => attendance.user && attendance.user.id === userId,
           );
         },
         roles: (userRole: string, ...roles: string[]) => {

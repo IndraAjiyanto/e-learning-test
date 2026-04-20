@@ -86,8 +86,8 @@
 <div class="w-full mx-auto" x-data="tabData()">
 
   <div class="flex space-x-4 mb-6">
-    <button @click="toggleFetch('/pertemuans/absen/{{pertemuan.id}}', 'absen')" 
-            :class="tab === 'absen' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+    <button @click="toggleFetch('/pertemuans/attendance/{{pertemuan.id}}', 'attendance')" 
+            :class="tab === 'attendance' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Attendance
     </button>
@@ -121,8 +121,8 @@
     {{> pertemuan/logbook_mentor_tab}}
   </div>
 
-  <div x-show="tab === 'absen'" x-data="absenData()" x-init="fetchAbsens()">
-    {{> pertemuan/absen_tab}}
+  <div x-show="tab === 'attendance'" x-data="attendanceData()" x-init="fetchAttendances()">
+    {{> pertemuan/attendance_tab}}
   </div>  
 
   <div x-show="tab === 'materi'" x-data="materiData()" x-init="fetchMateris()">
@@ -152,8 +152,8 @@ function tabData() {
 
     async init() {
       if(!this.tab) {
-          this.tab = 'absen';
-          localStorage.setItem('activeTabSession', 'absen');
+          this.tab = 'attendance';
+          localStorage.setItem('activeTabSession', 'attendance');
       }
     },
     

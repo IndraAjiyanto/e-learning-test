@@ -166,9 +166,9 @@ export class PertemuansService {
     return await this.userRepository.find({
       where: {
         user_kelas: { kelas: { id: kelasId } },
-        absen: { pertemuan: { id: pertemuanId } },
+        attendance: { pertemuan: { id: pertemuanId } },
       },
-      relations: ['absen'],
+      relations: ['attendance'],
     });
   }
 

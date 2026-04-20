@@ -18,9 +18,9 @@ export type Status =
   | 'no_information';
 
 @Entity()
-export class Absen {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Attendance {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({
     type: 'enum',
@@ -30,10 +30,10 @@ export class Absen {
   status: Status;
 
   @Column()
-  waktu_absen: Date;
+  time_attendance: Date;
 
   @Column()
-  keterangan: string;
+  description: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -41,11 +41,11 @@ export class Absen {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.absen, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.attendance, { onDelete: 'CASCADE' })
   @Exclude()
   user: User;
 
-  @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.absen, {
+  @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.attendance, {
     onDelete: 'CASCADE',
   })
   @Exclude()

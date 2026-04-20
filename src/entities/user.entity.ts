@@ -10,7 +10,7 @@ import {
   OneToOne,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Absen } from './absen.entity';
+import { Attendance } from './attendance.entity';
 import { Biodata } from './biodata.entity';
 import { Portfolio } from './portfolio.entity';
 import { Pembayaran } from './pembayaran.entity';
@@ -96,12 +96,12 @@ export class User {
     }
   }
 
-  @OneToMany(() => Absen, (absen) => absen.user, {
+  @OneToMany(() => Attendance, (attendance) => attendance.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  absen: Absen[];
+  attendance: Attendance[];
 
   @OneToMany(() => Likes, (likes) => likes.user)
   @Exclude()

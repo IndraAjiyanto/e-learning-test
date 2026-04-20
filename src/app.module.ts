@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { AbsensModule } from './absens/absens.module';
+import { AttendanceModule } from './attendance/attendance.module';
 import { MaterisModule } from './materis/materis.module';
 import { KelassModule } from './kelass/kelass.module';
 import { PertemuansModule } from './pertemuans/pertemuans.module';
@@ -91,7 +91,7 @@ import path from 'path';
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
     UsersModule,
-    AbsensModule,
+    AttendanceModule,
     MaterisModule,
     KelassModule,
     PertemuansModule,

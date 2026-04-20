@@ -50,7 +50,7 @@ export class UsersService {
         user_kelas: {
           kelas: true,
         },
-        absen: true,
+        attendance: true,
       },
     });
   }

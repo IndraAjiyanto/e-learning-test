@@ -4,7 +4,7 @@
 
     <form
       method='POST'
-      action='/absens/{{pertemuanId}}'
+      action='/attendance/{{pertemuanId}}'
       class='space-y-6'
       @submit="loading = true"
       x-data="{
@@ -133,13 +133,13 @@
       <!-- Date -->
       <div>
         <label
-          for='waktu_absen'
+          for='time_attendance'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Attendance Date</label>
         <input
           type='date'
-          id='waktu_absen'
-          name='waktu_absen'
+          id='time_attendance'
+          name='time_attendance'
           required
           class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
           style='color-scheme: light;'
@@ -149,12 +149,12 @@
       <!-- Note -->
       <div>
         <label
-          for='keterangan'
+          for='description'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Note</label>
         <textarea
-          id='keterangan'
-          name='keterangan'
+          id='description'
+          name='description'
           rows='3'
           placeholder='Enter additional note...'
           class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
