@@ -133,7 +133,7 @@ function flowData() {
     amount: 0,
 
     async fetchFlow() {
-      const res = await fetch('/kelass/flow/{{kelas.id}}');
+      const res = await fetch('/program/flow/{{kelas.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

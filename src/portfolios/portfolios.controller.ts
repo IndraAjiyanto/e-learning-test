@@ -94,10 +94,10 @@ export class PortfoliosController {
       }
       await this.portfoliosService.create(createPortfolioDto);
       req.flash('success', 'portofolio successfully upload');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/program/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Failed to upload portofolio');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/program/${kelasId}`);
     }
   }
 
@@ -253,10 +253,10 @@ export class PortfoliosController {
         await this.portfoliosService.remove(portfolioId);
       }
       req.flash('success', 'Portfolio successfully deleted');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/program/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Failed to delete portfolio');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/program/${kelasId}`);
     }
   }
 }

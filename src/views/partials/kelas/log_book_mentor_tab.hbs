@@ -190,7 +190,7 @@ function logBookMentorData() {
     amount: 0,
 
     async fetchLogBookMentors() {
-      const res = await fetch('/kelass/logbookMentor/{{kelas.id}}');
+      const res = await fetch('/program/logbookMentor/{{kelas.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

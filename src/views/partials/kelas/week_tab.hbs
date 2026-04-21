@@ -66,7 +66,7 @@ function weekData() {
     data: JSON.parse(localStorage.getItem('activeData')) || [],
 
     async fetchWeeks() {
-      const res = await fetch('/kelass/minggu/{{kelas.id}}');
+      const res = await fetch('/program/minggu/{{kelas.id}}');
       this.data = await res.json();
 
       localStorage.setItem('activeData', JSON.stringify(this.data));

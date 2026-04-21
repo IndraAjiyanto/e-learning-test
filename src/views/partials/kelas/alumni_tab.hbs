@@ -148,7 +148,7 @@ function alumniData() {
     amount: 0,
 
     async fetchAlumni() {
-      const res = await fetch('/kelass/alumni/{{kelas.id}}');
+      const res = await fetch('/program/alumni/{{kelas.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

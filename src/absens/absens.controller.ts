@@ -38,14 +38,14 @@ export class AbsensController {
       createAbsenDto.waktu_absen = new Date();
       await this.absensService.create(createAbsenDto);
       req.flash('success', 'Successfully submitted attendance');
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/program/${kelasId}`);
     } catch (error) {
       req.flash(
         'error',
         error.message ||
           'You have already submitted attendance for this meeting',
       );
-      res.redirect(`/kelass/${kelasId}`);
+      res.redirect(`/program/${kelasId}`);
     }
   }
 

@@ -38,10 +38,10 @@ export class PertemuansController {
         await this.pertemuansService.noPertemuan(createPertemuanDto.mingguId);
       await this.pertemuansService.create(createPertemuanDto);
       req.flash('success', 'session succesfuly create');
-      res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`);
+      res.redirect(`program/detail/kelas/admin/${createPertemuanDto.mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'session unsucces create');
-      res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`);
+      res.redirect(`program/detail/kelas/admin/${createPertemuanDto.mingguId}`);
     }
   }
 

@@ -196,7 +196,7 @@ function installmentData() {
     amount: 0,
 
 async fetchInstallment() {
-  const res = await fetch('/kelass/installment/{{kelas.id}}');
+  const res = await fetch('/program/installment/{{kelas.id}}');
   const result = await res.json();
   this.data = result.cicilan;           // ✅ simpan cicilan saja ke data
   this.availableMonths = result.availableMonths;  // ✅ simpan availableMonths

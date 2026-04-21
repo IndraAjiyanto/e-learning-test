@@ -62,10 +62,10 @@ export class MentorController {
 
       await this.mentorService.create(createMentorDto);
       req.flash('success', 'mentor successfully created');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'mentor failed to create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -155,10 +155,10 @@ export class MentorController {
 
       await this.mentorService.update(mentorId, updateMentorDto);
       req.flash('success', 'mentor successfully update');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'mentor failed to update');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -174,15 +174,15 @@ export class MentorController {
       const mentor = await this.mentorService.findOne(mentorId);
       if (!mentor) {
         req.flash('error', 'mentor not found');
-        res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+        res.redirect(`/program/detail/kelas/admin/${kelasId}`);
       }
       await this.mentorService.deleteFile(mentor.profile);
       await this.mentorService.remove(mentorId);
       req.flash('success', 'mentor successfully deleted');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'mentor failed to delete');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 }

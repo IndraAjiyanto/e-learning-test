@@ -14,7 +14,7 @@ export class DashboardController {
       if (req.user.role === 'super_admin') {
         res.redirect('/users');
       } else if (req.user.role === 'admin') {
-        res.redirect('/kelass');
+        res.redirect('/program');
       } else if (req.user.role === 'user') {
         const our_experience = await this.dashboardService.findOurExperience();
         const special_program =

@@ -31,10 +31,10 @@ export class MingguController {
       createMingguDto.minggu_ke = await this.mingguService.noPertemuan(kelasId);
       await this.mingguService.create(createMingguDto, kelasId);
       req.flash('success', 'session succesfuly create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'session unsucces create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -119,10 +119,10 @@ export class MingguController {
     try {
       await this.mingguService.remove(id, kelasId);
       req.flash('success', 'week successfully deleted');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'week failed deleted');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 }

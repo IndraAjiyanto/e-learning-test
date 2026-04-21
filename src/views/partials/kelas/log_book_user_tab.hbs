@@ -210,7 +210,7 @@ function logBookUserData() {
     amount: 0,
 
     async fetchLogBookUsers() {
-      const res = await fetch('/kelass/logbookUser/{{kelas.id}}');
+      const res = await fetch('/program/logbookUser/{{kelas.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

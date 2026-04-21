@@ -59,10 +59,10 @@ export class AlumniController {
       createAlumnusDto.kelasId = kelasId;
       await this.alumniService.create(createAlumnusDto);
       req.flash('success', 'Alumni successfully created');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -176,10 +176,10 @@ export class AlumniController {
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
       req.flash('success', 'Alumni successfully updated');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to update');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -233,15 +233,15 @@ export class AlumniController {
       const alumni = await this.alumniService.findOne(alumniId);
       if (!alumni) {
         req.flash('error', 'Alumni not found');
-        res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+        res.redirect(`/program/detail/kelas/admin/${kelasId}`);
       }
       await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
       req.flash('success', 'Alumni successfully removed');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to remove');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 

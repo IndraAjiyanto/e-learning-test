@@ -61,7 +61,7 @@
           </button>
         </div>
 
-        <a href="/kelass/create" 
+        <a href="/program/create" 
            class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
           Create Program
         </a>
@@ -116,7 +116,7 @@
           </td>
           {{/if}}
           <td class="px-6 py-4 text-sm text-gray-800">
-            <form action="/kelass/{{id}}/toggle-launch?_method=PATCH" method="POST">
+            <form action="/program/{{id}}/toggle-launch?_method=PATCH" method="POST">
               <button type="button"  onclick="confirmAction(this, '{{#if launch}}Are you sure cancel launch this program?{{else}}Are you sure launch this program?{{/if}}')"
                 class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none
                   {{#if launch}} bg-green-500 {{else}} bg-gray-300 {{/if}}">
@@ -131,10 +131,10 @@
 {{/if}}
 <td class="px-6 py-4 text-sm text-gray-800 flex items-center gap-3">
     <!-- View Kelas -->
-    <a href="/kelass/detail/kelas/admin/{{this.id}}"
+    <a href="/program/detail/kelas/admin/{{this.id}}"
                       @click.prevent="
     localStorage.setItem('kelasPrevUrl', window.location.href);
-    window.location.href = `/kelass/detail/kelas/admin/{{this.id}}`;
+    window.location.href = `/program/detail/kelas/admin/{{this.id}}`;
   "
        class="p-2 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-800 transition" 
        title="View Kelas">
@@ -152,7 +152,7 @@
     </a>
 
     <!-- View Murid -->
-    <a href="/kelass/addUser/{{id}}" 
+    <a href="/program/addUser/{{id}}" 
        class="p-2 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800 transition" 
        title="View Murid">
       <svg xmlns="http://www.w3.org/2000/svg" 

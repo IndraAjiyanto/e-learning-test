@@ -144,7 +144,7 @@ function mentorData() {
     amount: 0,
 
     async fetchMentors() {
-      const res = await fetch('/kelass/mentorKelas/{{kelas.id}}');
+      const res = await fetch('/program/mentorKelas/{{kelas.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

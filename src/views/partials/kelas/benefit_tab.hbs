@@ -137,7 +137,7 @@ function benefitData() {
     amount: 0,
 
     async fetchBenefit() {
-      const res = await fetch('/kelass/benefit/{{kelas.id}}');
+      const res = await fetch('/program/benefit/{{kelas.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

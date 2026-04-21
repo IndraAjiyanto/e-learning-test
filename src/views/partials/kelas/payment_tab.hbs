@@ -59,9 +59,9 @@
 
     async init() {
       const urlMap = {
-        payment: '/kelass/payment/{{kelas.id}}',
-        installment: '/kelass/paymentInstallment/{{kelas.id}}',
-        register: '/kelass/register/{{kelas.id}}'
+        payment: '/program/payment/{{kelas.id}}',
+        installment: '/program/paymentInstallment/{{kelas.id}}',
+        register: '/program/register/{{kelas.id}}'
       }
 
       await this.toggleFetchMateri(urlMap[this.tab], this.tab);

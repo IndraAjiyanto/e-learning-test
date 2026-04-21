@@ -161,7 +161,7 @@ export class AppModule {
                 '/login',
                 '/translation',
                 '/register',
-                'kelass/(.*)',
+                'program/(.*)',
                 'category/(.*)',
                 'blog/(.*)',
                 '/daftar/:id',

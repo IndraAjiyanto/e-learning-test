@@ -65,7 +65,7 @@ export class LogbookController {
       if (req.user?.role === 'admin') {
         res.redirect(`/pertemuans/${pertemuanId}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/kelass/${pertemuan.minggu.kelas.id}`);
+        res.redirect(`/program/${pertemuan.minggu.kelas.id}`);
       }
     } catch (error) {
       const pertemuan = await this.logbookService.findPertemuan(pertemuanId);
@@ -74,7 +74,7 @@ export class LogbookController {
       if (req.user?.role === 'admin') {
         res.redirect(`/pertemuans/${pertemuanId}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/kelass/${pertemuan.minggu.kelas.id}`);
+        res.redirect(`/program/${pertemuan.minggu.kelas.id}`);
       }
     }
   }
@@ -176,7 +176,7 @@ export class LogbookController {
       if (req.user?.role === 'admin') {
         res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/kelass/${logbook.pertemuan.minggu.kelas.id}`);
+        res.redirect(`/program/${logbook.pertemuan.minggu.kelas.id}`);
       }
     } catch (error) {
       const logbook = await this.logbookService.findOne(logbookId);
@@ -184,7 +184,7 @@ export class LogbookController {
       if (req.user?.role === 'admin') {
         res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/kelass/${logbook.pertemuan.minggu.kelas.id}`);
+        res.redirect(`/program/${logbook.pertemuan.minggu.kelas.id}`);
       }
     }
   }

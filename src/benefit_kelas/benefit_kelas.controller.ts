@@ -34,10 +34,10 @@ export class BenefitKelasController {
       createBenefitKelaDto.kelasId = kelasId;
       await this.benefitKelasService.create(createBenefitKelaDto);
       req.flash('success', 'Benefit Program successfully created');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Benefit Program failed to create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -81,10 +81,10 @@ export class BenefitKelasController {
         updateBenefitKelaDto,
       );
       req.flash('success', 'Benefit Program successfully updated');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Benefit Program failed to update');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 
@@ -104,11 +104,11 @@ export class BenefitKelasController {
       }
       await this.benefitKelasService.remove(benefitKelasId);
       req.flash('success', 'Benefit Program successfully deleted');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Benefit Program failed to delete');
 
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
     }
   }
 }
