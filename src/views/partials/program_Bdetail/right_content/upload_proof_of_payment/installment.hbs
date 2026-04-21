@@ -2,7 +2,7 @@
                 <template x-for="cicilan in cicilanData" :key="cicilan.bulan">
                   <form
                     x-show="paymentType === 'installment' && installmentMonths === cicilan.bulan"
-                    :action="`/pembayarans/{{user.id}}/{{kelas.id}}/${cicilan.id}`"
+                    :action="`/payment/{{user.id}}/{{kelas.id}}/${cicilan.id}`"
                     enctype='multipart/form-data'
                     method='post'
                     class='space-y-4'

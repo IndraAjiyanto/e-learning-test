@@ -22,7 +22,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('pendaftaran')
+@Controller('registration')
 export class PendaftaranController {
   constructor(private readonly pendaftaranService: PendaftaranService) {}
 
@@ -57,17 +57,17 @@ export class PendaftaranController {
           'info',
           'you have already submitted the registration proof, please wait for further information from the admin',
         );
-        res.redirect(`/pembayarans/riwayat/${userId}`);
+        res.redirect(`/payment/history/${userId}`);
       } else {
         req.flash(
           'success',
           'registration proof successfully sent, please wait for the admin',
         );
-        res.redirect(`/pembayarans/riwayat/${userId}`);
+        res.redirect(`/payment/history/${userId}`);
       }
     } catch (error) {
       req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
-      res.redirect(`/pembayarans/riwayat/${userId}`);
+      res.redirect(`/payment/history/${userId}`);
     }
   }
 

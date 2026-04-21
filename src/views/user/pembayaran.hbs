@@ -156,7 +156,7 @@
         </h3>
         {{#if (roles kelas.kategori.nama_kategori 'free class')}}
           <form
-            action='/pembayarans/{{user.id}}/{{kelas.id}}'
+            action='/payment/{{user.id}}/{{kelas.id}}'
             method='post'
             class='space-y-6'
           >
@@ -167,7 +167,7 @@
           </form>
         {{else if (roles kelas.kategori.nama_kategori 'course')}}
           <form
-            action='/pembayarans/{{user.id}}/{{kelas.id}}'
+            action='/payment/{{user.id}}/{{kelas.id}}'
             method='post'
             enctype='multipart/form-data'
             class='space-y-6'
@@ -190,7 +190,7 @@
           </form>
         {{else if (roles kelas.kategori.nama_kategori 'bootcamp')}}
           <form
-            action='/pembayarans/{{user.id}}/{{kelas.id}}'
+            action='/payment/{{user.id}}/{{kelas.id}}'
             method='post'
             enctype='multipart/form-data'
             class='space-y-6'

@@ -22,7 +22,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('pembayarans')
+@Controller('payment')
 export class PembayaransController {
   constructor(private readonly pembayaransService: PembayaransService) {}
 
@@ -57,17 +57,17 @@ export class PembayaransController {
           'info',
           'You have already submitted the payment proof, please wait for further information from the admin.',
         );
-        res.redirect(`/pembayarans/riwayat/${userId}`);
+        res.redirect(`/payment/history/${userId}`);
       } else {
         req.flash(
           'success',
           'Payment proof has been successfully submitted, please wait for the admin',
         );
-        res.redirect(`/pembayarans/riwayat/${userId}`);
+        res.redirect(`/payment/history/${userId}`);
       }
     } catch (error) {
       req.flash('error', error.message || 'Payment proof submission failed');
-      res.redirect(`/pembayarans/riwayat/${userId}`);
+      res.redirect(`/payment/history/${userId}`);
     }
   }
 
@@ -104,22 +104,22 @@ export class PembayaransController {
           'info',
           'You have already submitted the payment proof, please wait for further information from the admin.',
         );
-        res.redirect(`/pembayarans/riwayat/${userId}`);
+        res.redirect(`/payment/history/${userId}`);
       } else {
         req.flash(
           'success',
           'Payment proof has been successfully submitted, please wait for the admin',
         );
-        res.redirect(`/pembayarans/riwayat/${userId}`);
+        res.redirect(`/payment/history/${userId}`);
       }
     } catch (error) {
       req.flash('error', error.message || 'Payment proof submission failed');
-      res.redirect(`/pembayarans/riwayat/${userId}`);
+      res.redirect(`/payment/history/${userId}`);
     }
   }
 
   @Roles('user')
-  @Get('riwayat/:userId')
+  @Get('history/:userId')
   async riwayat(
     @Param('userId') userId: number,
     @Res() res: Response,

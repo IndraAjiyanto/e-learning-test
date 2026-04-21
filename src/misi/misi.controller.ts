@@ -18,7 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Response, Request } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('misi')
+@Controller('mission')
 export class MisiController {
   constructor(private readonly misiService: MisiService) {}
 
