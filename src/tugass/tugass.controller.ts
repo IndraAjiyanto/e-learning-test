@@ -22,7 +22,7 @@ import { ValidateFileInterceptor } from 'src/common/interceptors/validate-file.i
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('tugass')
+@Controller('task')
 export class TugassController {
   constructor(private readonly tugassService: TugassService) {}
 

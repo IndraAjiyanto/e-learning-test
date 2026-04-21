@@ -18,7 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('visi')
+@Controller('vision')
 export class VisiController {
   constructor(private readonly visiService: VisiService) {}
 
@@ -33,10 +33,10 @@ export class VisiController {
       await this.visiService.create(createVisiDto);
 
       req.flash('success', 'visi successfully created');
-      res.redirect('/visi');
+      res.redirect('/vision');
     } catch (error) {
       req.flash('error', error.message || 'visi failed to create');
-      res.redirect('/visi');
+      res.redirect('/vision');
     }
   }
 
@@ -78,10 +78,10 @@ export class VisiController {
     try {
       await this.visiService.update(visiId, updateVisiDto);
       req.flash('success', 'visi successfully updated');
-      res.redirect('/visi');
+      res.redirect('/vision');
     } catch (error) {
       req.flash('error', error.message || 'visi failed to update');
-      res.redirect('/visi');
+      res.redirect('/vision');
     }
   }
 
@@ -95,10 +95,10 @@ export class VisiController {
     try {
       await this.visiService.remove(visiId);
       req.flash('success', 'visi successfully remove');
-      res.redirect('/visi');
+      res.redirect('/vision');
     } catch (error) {
       req.flash('error', error.message || 'visi failed to remove');
-      res.redirect('/visi');
+      res.redirect('/vision');
     }
   }
 }
