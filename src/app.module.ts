@@ -162,7 +162,7 @@ export class AppModule {
                 '/translation',
                 '/register',
                 'kelass/(.*)',
-                'kategoris/(.*)',
+                'category/(.*)',
                 'blog/(.*)',
                 '/daftar/:id',
                 '/session-expired',

@@ -154,7 +154,7 @@
     amount: 0,
 
         async fetchAlumni() {
-      const res = await fetch('/kategoris/alumni/{{kategori.id}}');
+      const res = await fetch('/category/alumni/{{kategori.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

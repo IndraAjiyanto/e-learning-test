@@ -25,7 +25,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
-@Controller('kategoris')
+@Controller('category')
 export class KategorisController {
   constructor(private readonly kategorisService: KategorisService) {}
 
@@ -53,10 +53,10 @@ export class KategorisController {
       createKategorisDto.icon = req.body.uploadedImageUrls?.[0];
       await this.kategorisService.create(createKategorisDto);
       req.flash('success', 'kategori successfully created');
-      res.redirect('/kategoris');
+      res.redirect('/category');
     } catch (error) {
       req.flash('error', error.message || 'kategori failed to create');
-      res.redirect('/kategoris');
+      res.redirect('/category');
     }
   }
 
@@ -158,7 +158,7 @@ export class KategorisController {
   }
 
   @Roles('super_admin')
-  @Get('kelas/:kategoriId')
+  @Get('admin/program/:kategoriId')
   async findKelasByKategori(
     @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
@@ -238,10 +238,10 @@ export class KategorisController {
       }
       await this.kategorisService.update(kategoriId, updateKategorisDto);
       req.flash('success', 'kategori successfully updated');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', error.message || 'kategori failed to update');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 
@@ -257,10 +257,10 @@ export class KategorisController {
       await this.kategorisService.deleteFile(kategori.icon);
       await this.kategorisService.remove(kategoriId);
       req.flash('success', 'kategori successfully deleted');
-      res.redirect('/kategoris');
+      res.redirect('/category');
     } catch (error) {
       req.flash('success', 'kategori failed to delete');
-      res.redirect('/kategoris');
+      res.redirect('/category');
     }
   }
 }

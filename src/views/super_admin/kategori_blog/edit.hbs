@@ -97,7 +97,7 @@
       x-data='{ loading: false }'
       @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
       x-init='init()'
-      action='/kategori-blog/{{kategori_blog.id}}?_method=PATCH'
+      action='/category-blog/{{kategori_blog.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
     >
@@ -118,7 +118,7 @@
         <span x-show='!loading'>Update</span>
       </button>
         <a
-          href='/kategori-blog'
+          href='/category-blog'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300 transition'>
           Cancel

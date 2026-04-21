@@ -66,10 +66,10 @@
   const currentPath = this.active;
 
   return (
-    currentPath.includes('/kategoris/') ||
-    currentPath.includes('/dashboard/kategoris/') ||
+    currentPath.includes('/category/') ||
+    currentPath.includes('/dashboard/category/') ||
     kategori.some(kat =>
-      currentPath === `/kategoris/${kat.nama_kategori}`
+      currentPath === `/category/${kat.nama_kategori}`
     )
   );
 },
@@ -250,8 +250,8 @@
           >
             <template x-for='kat in kategori' :key='kat.id'>
               <a
-                :href="'/kategoris/program/' + kat.nama_kategori"
-                @click="setActive('/kategoris/program/' + kat.nama_kategori)"
+                :href="'/category/program/' + kat.nama_kategori"
+                @click="setActive('/category/program/' + kat.nama_kategori)"
                 class='flex items-start rounded-lg p-3 hover:bg-white/10 transition-colors'
               >
                 <div
@@ -437,8 +437,8 @@
           >
             <template x-for='kat in kategori' :key='kat.id'>
               <a
-                :href="'/kategoris/program/' + kat.nama_kategori"
-                @click="setActive('/kategoris/program/' + kat.nama_kategori)"
+                :href="'/category/program/' + kat.nama_kategori"
+                @click="setActive('/category/program/' + kat.nama_kategori)"
                 class='flex items-start rounded-lg p-3 hover:bg-white/10 transition-colors'
               >
                 <div
@@ -603,9 +603,9 @@
               <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <template x-for='kat in kategori' :key='kat.id'>
                   <a
-                    :href="'/kategoris/program/' + kat.nama_kategori"
-                    @click="setActive('/kategoris/program/' + kat.nama_kategori)"
-                    :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-gray-100' : 'bg-transparent'"
+                    :href="'/category/program/' + kat.nama_kategori"
+                    @click="setActive('/category/program/' + kat.nama_kategori)"
+                    :class="isActive('/category/program/' + kat.nama_kategori) ? 'bg-gray-100' : 'bg-transparent'"
                     class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                   >
                     <div
@@ -824,9 +824,9 @@
               <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <template x-for='kat in kategori' :key='kat.id'>
                   <a
-                    :href="'/kategoris/program/' + kat.nama_kategori"
-                    @click="setActive('/kategoris/program/' + kat.nama_kategori)"
-                    :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-gray-100' : 'bg-transparent'"
+                    :href="'/category/program/' + kat.nama_kategori"
+                    @click="setActive('/category/program/' + kat.nama_kategori)"
+                    :class="isActive('/category/program/' + kat.nama_kategori) ? 'bg-gray-100' : 'bg-transparent'"
                     class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                   >
                     <div

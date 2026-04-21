@@ -91,10 +91,10 @@ export class AlumniController {
       createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       await this.alumniService.create(createAlumnusDto);
       req.flash('success', 'Alumni successfully created');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to create');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     }
   }
 
@@ -214,10 +214,10 @@ export class AlumniController {
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
       req.flash('success', 'Alumni successfully updated');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to update');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     }
   }
 
@@ -257,15 +257,15 @@ export class AlumniController {
       const alumni = await this.alumniService.findOne(alumniId);
       if (!alumni) {
         req.flash('error', 'Alumni not found');
-        res.redirect(`/kategoris/${kategoriId}`);
+        res.redirect(`/category/${kategoriId}`);
       }
       await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
       req.flash('success', 'Alumni successfully removed');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to remove');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     }
   }
 }

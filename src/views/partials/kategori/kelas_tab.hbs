@@ -152,7 +152,7 @@
 
       async fetchKelas() {
         try {
-          const res = await fetch('/kategoris/kelas/{{kategori.id}}');
+          const res = await fetch('/category/admin/program/{{kategori.id}}');
           this.data = await res.json();
           this.filteredData = this.data;
           localStorage.setItem('activeData', JSON.stringify(this.data));

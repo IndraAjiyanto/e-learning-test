@@ -160,10 +160,10 @@ export class KelassController {
         await this.kelassService.createMentoring(req.user!.id, kelas.id);
       }
       req.flash('success', 'program successfully created');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     } catch (error) {
       req.flash('error', error.message || 'program failed created');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     }
   }
 

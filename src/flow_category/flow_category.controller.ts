@@ -47,10 +47,10 @@ export class FlowCategoryController {
       createFlowCategoryDto.kategoriId = kategoriId;
       await this.flowCategoryService.create(createFlowCategoryDto);
       req.flash('success', 'flow category successfully created');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to create flow category');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 
@@ -80,10 +80,10 @@ export class FlowCategoryController {
     try {
       await this.flowCategoryService.update(id, updateFlowCategoryDto);
       req.flash('success', 'Flow category successfully updated');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to update flow category');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 
@@ -98,10 +98,10 @@ export class FlowCategoryController {
     try {
       await this.flowCategoryService.remove(id);
       req.flash('success', 'Flow category successfully deleted');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to delete flow category');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 }

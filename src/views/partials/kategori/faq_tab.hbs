@@ -133,7 +133,7 @@
     amount: 0,
 
                 async fetchFaq() {
-      const res = await fetch('/kategoris/faq/{{kategori.id}}');
+      const res = await fetch('/category/faq/{{kategori.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

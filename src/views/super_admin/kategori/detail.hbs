@@ -7,7 +7,7 @@
     <!-- Tombol Back -->
     <div>
       <a
-        href='/kategoris'
+        href='/category'
         class='inline-flex items-center text-gray-600 text-base font-medium hover:underline'
       >
         <svg
@@ -32,7 +32,7 @@
     <div class='absolute top-4 right-4 flex items-center gap-2 z-10'>
       <!-- Tombol Edit -->
       <a
-        href='/kategoris/formEdit/{{kategori.id}}'
+        href='/category/formEdit/{{kategori.id}}'
         class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm'
         title='Edit Category'
       >
@@ -62,7 +62,7 @@
 
       <!-- Tombol Delete -->
       <form
-        action='/kategoris/{{kategori.id}}?_method=DELETE'
+        action='/category/{{kategori.id}}?_method=DELETE'
         method='post'
         class='inline'
       >
@@ -196,42 +196,42 @@
     <!-- Tab Navigation -->
     <div class='flex space-x-4 mb-6'>
       <button
-        @click="toggleFetch('/kategoris/kelas/{{kategori.id}}', 'kelas')"
+        @click="toggleFetch('/category/admin/program/{{kategori.id}}', 'kelas')"
         :class="tab === 'kelas' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
       >
         Program
       </button>
       <button
-        @click="toggleFetch('/kategoris/alumni/{{kategori.id}}', 'alumni')"
+        @click="toggleFetch('/category/alumni/{{kategori.id}}', 'alumni')"
         :class="tab === 'alumni' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
       >
         Alumni
       </button>
       <button
-        @click="toggleFetch('/kategoris/faq/{{kategori.id}}', 'faq')"
+        @click="toggleFetch('/category/faq/{{kategori.id}}', 'faq')"
         :class="tab === 'faq' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
       >
         FAQ
       </button>
       <button
-        @click="toggleFetch('/kategoris/benefit/{{kategori.id}}', 'benefit')"
+        @click="toggleFetch('/category/benefit/{{kategori.id}}', 'benefit')"
         :class="tab === 'benefit' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
       >
         Benefit
       </button>
       <button
-        @click="toggleFetch('/kategoris/superiority/{{kategori.id}}', 'superiority')"
+        @click="toggleFetch('/category/superiority/{{kategori.id}}', 'superiority')"
         :class="tab === 'superiority' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
       >
         Superiority
       </button>
       <button
-        @click="toggleFetch('/kategoris/flow/{{kategori.id}}', 'flow')"
+        @click="toggleFetch('/category/flow/{{kategori.id}}', 'flow')"
         :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
       >
