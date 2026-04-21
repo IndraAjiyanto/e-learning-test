@@ -18,7 +18,7 @@ import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('cicilan')
+@Controller('installment')
 export class CicilanController {
   constructor(private readonly cicilanService: CicilanService) {}
 
