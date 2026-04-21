@@ -28,7 +28,7 @@
         </div>
 
         <!-- Tombol Tambah FAQ -->
-        <a href="/pertanyaan-umum/formCreate/{{kategori.id}}"
+        <a href="/question-general/formCreate/{{kategori.id}}"
            class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
           Add FAQ
         </a>
@@ -63,7 +63,7 @@
             </td>
             <td class="px-6 py-4 text-sm flex items-center gap-3">
               <!-- Edit -->
-              <a :href="`/pertanyaan-umum/formEdit/${faq.id}`"
+              <a :href="`/question-general/formEdit/${faq.id}`"
                  class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition"
                  title="Edit">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +81,7 @@
               </a>
 
               <!-- Delete -->
-              <form :action="`/pertanyaan-umum/${faq.id}/{{kategori.id}}?_method=DELETE`" method="post" class="inline">
+              <form :action="`/question-general/${faq.id}/{{kategori.id}}?_method=DELETE`" method="post" class="inline">
                 <button type="button"
                         onclick="confirmDelete(this)"
                         class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"

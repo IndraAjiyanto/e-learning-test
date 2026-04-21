@@ -15,7 +15,7 @@ import { UpdatePertanyaanKelaDto } from './dto/update-pertanyaan_kela.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
-@Controller('pertanyaan-kelas')
+@Controller('question-program')
 export class PertanyaanKelasController {
   constructor(
     private readonly pertanyaanKelasService: PertanyaanKelasService,

@@ -15,7 +15,7 @@ import { UpdatePertanyaanUmumDto } from './dto/update-pertanyaan_umum.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
-@Controller('pertanyaan-umum')
+@Controller('question-general')
 export class PertanyaanUmumController {
   constructor(private readonly pertanyaanUmumService: PertanyaanUmumService) {}
 

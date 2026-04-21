@@ -27,7 +27,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('pertanyaans')
+@Controller('question')
 export class PertanyaansController {
   constructor(
     private readonly pertanyaansService: PertanyaansService,
