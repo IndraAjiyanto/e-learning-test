@@ -3,7 +3,7 @@
     <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
       <h2 class="text-4xl font-bold text-gray-900 mb-10 text-center font-montserrat">{{t "test.profile.editBiodata.tittle"}}</h2>
 
-      <form action="/biodatas/{{biodata.id}}?_method=PATCH"
+      <form action="/biodata/{{biodata.id}}?_method=PATCH"
   @submit="loading = true" method="POST" x-data="{
   loading: false,
         pendidikanOpen: false,

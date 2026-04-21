@@ -18,7 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('alur-kelas')
+@Controller('flow-program')
 export class AlurKelasController {
   constructor(private readonly alurKelasService: AlurKelasService) {}
 
@@ -59,10 +59,10 @@ export class AlurKelasController {
       createAlurKelaDto.kelasId = kelasId;
       await this.alurKelasService.create(createAlurKelaDto);
       req.flash('success', 'Flow Program successfully created');
-      res.redirect(`/alur-kelas`);
+      res.redirect(`/flow-program`);
     } catch (error) {
       req.flash('error', error.message || 'Flow Program failed to create');
-      res.redirect(`/alur-kelas`);
+      res.redirect(`/flow-program`);
     }
   }
 

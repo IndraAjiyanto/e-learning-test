@@ -18,7 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('benefit-kelas')
+@Controller('benefit-program')
 export class BenefitKelasController {
   constructor(private readonly benefitKelasService: BenefitKelasService) {}
 
