@@ -12,12 +12,12 @@
 
         <div>
           <p class="text-sm text-gray-500">Kelas</p>
-          <a href="/kelass/detail/kelas/admin/{{absen.pertemuan.kelas.id}}" class="text-lg font-semibold text-gray-900">{{absen.pertemuan.kelas.nama_kelas}}</a>
+          <a href="/program/detail/program/admin/{{absen.pertemuan.kelas.id}}" class="text-lg font-semibold text-gray-900">{{absen.pertemuan.kelas.nama_kelas}}</a>
         </div>
 
         <div>
           <p class="text-sm text-gray-500">Pertemuan Ke</p>
-          <a href="/pertemuans/{{absen.pertemuan.id}}" class="text-lg font-semibold text-gray-900">{{absen.pertemuan.pertemuan_ke}}</a>
+          <a href="/session/{{absen.pertemuan.id}}" class="text-lg font-semibold text-gray-900">{{absen.pertemuan.pertemuan_ke}}</a>
         </div>
 
         <div>
@@ -47,8 +47,8 @@
       </div>
 
       <div class="mt-8 flex justify-end gap-4">
-        <a href="/absens" class="btn btn-outline">Kembali</a>
-        <a href="/absens/{{absen.id}}/edit" class="btn btn-primary">Edit Absen</a>
+        <a href="/attendance" class="btn btn-outline">Kembali</a>
+        <a href="/attendance/{{absen.id}}/edit" class="btn btn-primary">Edit Attendance</a>
       </div>
     </div>
   </div>

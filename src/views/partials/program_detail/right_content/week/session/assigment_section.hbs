@@ -9,7 +9,7 @@
                                         x-if='tugas.jawaban_tugas.length <= 0 '
                                       >
                                         <a
-                                          :href='`/jawaban-tugass/${pertemuan.id}/${tugas.id}`'
+                                          :href='`/answer-assigment/${pertemuan.id}/${tugas.id}`'
                                           class='btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-blue-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-blue-500 w-full transform transition-all duration-300 text-sm'
                                         >
                                           <svg
@@ -34,7 +34,7 @@
                                         x-if="tugas.jawaban_tugas[0].proses === 'acc'"
                                       >
                                         <a
-                                          :href='`/jawaban-tugass/${pertemuan.id}/${tugas.id}`'
+                                          :href='`/answer-assigment/${pertemuan.id}/${tugas.id}`'
                                           class='btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-emerald-500 hover:to-emerald-600 w-full transform transition-all duration-300 text-sm'
                                         >
                                           <svg
@@ -59,7 +59,7 @@
                                         x-if="tugas.jawaban_tugas[0].proses === 'proces'"
                                       >
                                         <a
-                                          :href='`/jawaban-tugass/${pertemuan.id}/${tugas.id}`'
+                                          :href='`/answer-assigment/${pertemuan.id}/${tugas.id}`'
                                           class='btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-yellow-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-yellow-500 w-full transform transition-all duration-300 text-sm'
                                         >
                                           <svg
@@ -84,7 +84,7 @@
                                         x-if="tugas.jawaban_tugas[0].proses === 'rejected'"
                                       >
                                         <a
-                                          :href='`/jawaban-tugass/${pertemuan.id}/${tugas.id}`'
+                                          :href='`/answer-assigment/${pertemuan.id}/${tugas.id}`'
                                           class='btn border-0 group flex items-center justify-center px-5 py-2.5 text-center bg-red-600 text-white rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:bg-red-500 w-full transform transition-all duration-300 text-sm'
                                         >
                                           <svg

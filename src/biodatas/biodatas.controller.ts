@@ -17,7 +17,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('biodatas')
+@Controller('biodata')
 export class BiodatasController {
   constructor(private readonly biodatasService: BiodatasService) {}
 

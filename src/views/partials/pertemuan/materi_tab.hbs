@@ -3,13 +3,13 @@
     <div x-data="materiData()" x-init="init()" class="space-y-6">
 
       <div class="flex space-x-4">
-        <button @click="toggleFetchMateri('/pertemuans/pdf/{{pertemuan.id}}', 'pdf')" 
+        <button @click="toggleFetchMateri('/session/pdf/{{pertemuan.id}}', 'pdf')" 
                 :class="tabMateri === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
                 class="px-4 py-2 rounded-lg shadow transition">PDF</button>
-        <button @click="toggleFetchMateri('/pertemuans/video/{{pertemuan.id}}', 'video')" 
+        <button @click="toggleFetchMateri('/session/video/{{pertemuan.id}}', 'video')" 
                 :class="tabMateri === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
                 class="px-4 py-2 rounded-lg shadow transition">Video</button>
-        <button @click="toggleFetchMateri('/pertemuans/ppt/{{pertemuan.id}}', 'ppt')" 
+        <button @click="toggleFetchMateri('/session/ppt/{{pertemuan.id}}', 'ppt')" 
                 :class="tabMateri === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
                 class="px-4 py-2 rounded-lg shadow transition">PPT</button>
       </div>
@@ -147,9 +147,9 @@ function materiData() {
 
     async init() {
       const urlMap = {
-        pdf: '/pertemuans/pdf/{{pertemuan.id}}',
-        video: '/pertemuans/video/{{pertemuan.id}}',
-        ppt: '/pertemuans/ppt/{{pertemuan.id}}'
+        pdf: '/session/pdf/{{pertemuan.id}}',
+        video: '/session/video/{{pertemuan.id}}',
+        ppt: '/session/ppt/{{pertemuan.id}}'
       }
 
       await this.toggleFetchMateri(urlMap[this.tabMateri], this.tabMateri);

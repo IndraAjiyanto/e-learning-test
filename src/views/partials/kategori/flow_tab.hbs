@@ -136,7 +136,7 @@
 
     
                 async fetchFlow() {
-      const res = await fetch('/kategoris/flow/{{kategori.id}}');
+      const res = await fetch('/category/flow/{{kategori.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

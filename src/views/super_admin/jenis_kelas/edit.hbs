@@ -96,7 +96,7 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Update Program Type</h2>
 
     <form
-      action='/jenis-kelas/{{jenis_kelas.id}}?_method=PATCH'
+      action='/type-program/{{jenis_kelas.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
       x-data='{ loading: false }'
@@ -122,7 +122,7 @@
           <span x-show='!loading'>Update</span>
         </button>
         <a
-          href='/jenis-kelas'
+          href='/type-program'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300 transition'
         >

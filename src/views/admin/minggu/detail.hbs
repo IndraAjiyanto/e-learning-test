@@ -4,7 +4,7 @@
     <div class='mb-8 bg-white rounded-xl shadow-lg p-6'>
       <div class='mb-4'>
         <a
-          href='/kelass/detail/kelas/admin/{{minggu.kelas.id}}'
+          href='/program/detail/program/admin/{{minggu.kelas.id}}'
           class='inline-flex items-center text-gray-700 text-base font-medium hover:underline'
         >
           <svg
@@ -43,7 +43,7 @@
         <div class='flex items-center gap-4'>
           <!-- Tombol Edit -->
           <a
-            href='/minggu/formEdit/{{minggu.id}}'
+            href='/week/formEdit/{{minggu.id}}'
             class='p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm'
             title='Edit Minggu'
           >
@@ -74,7 +74,7 @@
 
           <!-- Tombol Delete -->
           <form
-            action='/minggu/{{minggu.id}}/{{minggu.kelas.id}}?_method=DELETE'
+            action='/week/{{minggu.id}}/{{minggu.kelas.id}}?_method=DELETE'
             method='post'
           >
             <button
@@ -110,7 +110,7 @@
 
   <div class='flex space-x-4 mb-6'>
     <button
-      @click="toggleFetch('/minggu/session/{{minggu.id}}', 'session')"
+      @click="toggleFetch('/week/session/{{minggu.id}}', 'session')"
       :class="tab === 'session' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
       class='px-4 py-2 rounded-lg shadow transition'
     >
@@ -118,7 +118,7 @@
     </button>
     {{#if pertemuanAkhir}}
       <button
-        @click="toggleFetch('/minggu/quiz/{{minggu.id}}', 'quiz')"
+        @click="toggleFetch('/week/quiz/{{minggu.id}}', 'quiz')"
         :class="tab === 'quiz' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
         class='px-4 py-2 rounded-lg shadow transition'
       >

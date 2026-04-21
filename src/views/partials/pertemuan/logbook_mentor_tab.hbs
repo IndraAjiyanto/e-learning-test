@@ -20,7 +20,7 @@
       selectedLogbook: null,
 
       async fetchLogBookMentor() {
-      const res = await fetch('/pertemuans/logbook-mentor/{{pertemuan.id}}');
+      const res = await fetch('/session/logbook-mentor/{{pertemuan.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

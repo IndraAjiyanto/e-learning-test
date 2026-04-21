@@ -18,7 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('kategori-blog')
+@Controller('category-blog')
 export class KategoriBlogController {
   constructor(private readonly kategoriBlogService: KategoriBlogService) {}
 
@@ -64,11 +64,11 @@ export class KategoriBlogController {
     try {
       await this.kategoriBlogService.create(createKategoriBlogDto);
       req.flash('success', 'Blog Category successfully created');
-      res.redirect('/kategori-blog');
+      res.redirect('/category-blog');
     } catch (error) {
       console.log(error);
       req.flash('error', error.message || 'Blog Category failed to create');
-      res.redirect('/kategori-blog');
+      res.redirect('/category-blog');
     }
   }
 
@@ -83,11 +83,11 @@ export class KategoriBlogController {
     try {
       await this.kategoriBlogService.update(+id, updateKategoriBlogDto);
       req.flash('success', 'Blog Category successfully updated');
-      res.redirect('/kategori-blog');
+      res.redirect('/category-blog');
     } catch (error) {
       console.log(error);
       req.flash('error', error.message || 'Blog Category failed to update');
-      res.redirect('/kategori-blog');
+      res.redirect('/category-blog');
     }
   }
 
@@ -102,14 +102,14 @@ export class KategoriBlogController {
       const kategori = await this.kategoriBlogService.findOne(+id);
       if (!kategori) {
         req.flash('error', 'Blog Category not found');
-        res.redirect('/kategori-blog');
+        res.redirect('/category-blog');
       }
       await this.kategoriBlogService.remove(+id);
       req.flash('success', 'Blog Category successfully removed');
-      res.redirect('/kategori-blog');
+      res.redirect('/category-blog');
     } catch (error) {
       req.flash('error', error.message || 'Blog Category failed to remove');
-      res.redirect('/kategori-blog');
+      res.redirect('/category-blog');
     }
   }
 }

@@ -57,10 +57,10 @@ export class TentangController {
       createTentangDto.gambar = req.body.uploadedImageUrls?.[0];
       await this.tentangService.create(createTentangDto);
       req.flash('success', 'Header successfully created');
-      res.redirect('/tentang');
+      res.redirect('/about');
     } catch (error) {
       req.flash('error', error.message || 'Header failed to create');
-      res.redirect('/tentang');
+      res.redirect('/about');
     }
   }
 
@@ -129,10 +129,10 @@ export class TentangController {
       }
       await this.tentangService.update(id, updateTentangDto);
       req.flash('success', 'Header successfully updated');
-      res.redirect('/tentang');
+      res.redirect('/about');
     } catch (error) {
       req.flash('error', error.message || 'Header failed to update');
-      res.redirect('/tentang');
+      res.redirect('/about');
     }
   }
 
@@ -148,10 +148,10 @@ export class TentangController {
       await this.tentangService.deleteFile(tentang.gambar);
       await this.tentangService.remove(id);
       req.flash('success', 'Header successfully deleted');
-      res.redirect('/tentang');
+      res.redirect('/about');
     } catch (error) {
       req.flash('error', error.message || 'Header failed to delete');
-      res.redirect('/tentang');
+      res.redirect('/about');
     }
   }
 }

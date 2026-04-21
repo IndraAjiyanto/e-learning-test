@@ -19,7 +19,7 @@ import { Request, Response } from 'express';
 import { MaterisService } from 'src/materis/materis.service';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('pertemuans')
+@Controller('session')
 export class PertemuansController {
   constructor(
     private readonly pertemuansService: PertemuansService,
@@ -38,10 +38,10 @@ export class PertemuansController {
         await this.pertemuansService.noPertemuan(createPertemuanDto.mingguId);
       await this.pertemuansService.create(createPertemuanDto);
       req.flash('success', 'session succesfuly create');
-      res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`);
+      res.redirect(`program/detail/program/admin/${createPertemuanDto.mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'session unsucces create');
-      res.redirect(`kelass/detail/kelas/admin/${createPertemuanDto.mingguId}`);
+      res.redirect(`program/detail/program/admin/${createPertemuanDto.mingguId}`);
     }
   }
 
@@ -59,10 +59,10 @@ export class PertemuansController {
         await this.pertemuansService.noPertemuan(mingguId);
       await this.pertemuansService.create(createPertemuanDto);
       req.flash('success', 'session succesfuly create');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'session unsucces create');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     }
   }
 
@@ -120,7 +120,7 @@ export class PertemuansController {
   }
 
   @Roles('admin')
-  @Get('absen/:pertemuanId')
+  @Get('attendance/:pertemuanId')
   async getAbsen(
     @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
@@ -134,7 +134,7 @@ export class PertemuansController {
   }
 
   @Roles('admin')
-  @Get('tugas/:pertemuanId')
+  @Get('task/:pertemuanId')
   async getTugas(
     @Param('pertemuanId') pertemuanId: number,
     @Res() res: Response,
@@ -198,10 +198,10 @@ export class PertemuansController {
     try {
       await this.pertemuansService.update(pertemuanId, updatePertemuanDto);
       req.flash('success', 'Session successfuly update');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     } catch (error) {
       req.flash('error', error.message || 'Session unsuccess update');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     }
   }
 
@@ -216,10 +216,10 @@ export class PertemuansController {
     try {
       await this.pertemuansService.remove(id, mingguId);
       req.flash('success', 'session successfuly delete');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'session unsucces delete');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     }
   }
 }

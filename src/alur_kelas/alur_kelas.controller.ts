@@ -18,7 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('alur-kelas')
+@Controller('flow-program')
 export class AlurKelasController {
   constructor(private readonly alurKelasService: AlurKelasService) {}
 
@@ -59,10 +59,10 @@ export class AlurKelasController {
       createAlurKelaDto.kelasId = kelasId;
       await this.alurKelasService.create(createAlurKelaDto);
       req.flash('success', 'Flow Program successfully created');
-      res.redirect(`/alur-kelas`);
+      res.redirect(`/flow-program`);
     } catch (error) {
       req.flash('error', error.message || 'Flow Program failed to create');
-      res.redirect(`/alur-kelas`);
+      res.redirect(`/flow-program`);
     }
   }
 
@@ -78,10 +78,10 @@ export class AlurKelasController {
       createAlurKelaDto.kelasId = kelasId;
       await this.alurKelasService.create(createAlurKelaDto);
       req.flash('success', 'alur kelas successfully created');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'alur kelas failed to create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -118,10 +118,10 @@ export class AlurKelasController {
     try {
       await this.alurKelasService.update(alurKelasId, updateAlurKelaDto);
       req.flash('success', 'Flow Program successfully updated');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Flow Program failed to update');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -136,10 +136,10 @@ export class AlurKelasController {
     try {
       await this.alurKelasService.remove(alurKelasId, kelasId);
       req.flash('success', 'Flow Program successfully deleted');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Flow Program failed to delete');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 }

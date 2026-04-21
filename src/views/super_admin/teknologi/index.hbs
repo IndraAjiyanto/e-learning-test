@@ -40,7 +40,7 @@
       </div>
 
       <a
-        href='/teknologi/formCreate'
+        href='/technology/formCreate'
         class='bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition'
       >
         Create Teknologi
@@ -81,7 +81,7 @@
             <td class='px-6 py-4 text-sm text-gray-800'>{{nama}}</td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
               <!-- Edit Button -->
-              <form action='/teknologi/formEdit/{{id}}' method='get'>
+              <form action='/technology/formEdit/{{id}}' method='get'>
                 <button
                   type='submit'
                   class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
@@ -114,7 +114,7 @@
               </form>
 
               <!-- Delete Button -->
-              <form action='/teknologi/{{id}}?_method=DELETE' method='post'>
+              <form action='/technology/{{id}}?_method=DELETE' method='post'>
                 <button
                   type='button'
                   onclick='confirmDelete(this)'

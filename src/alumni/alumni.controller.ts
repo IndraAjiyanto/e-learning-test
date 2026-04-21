@@ -59,10 +59,10 @@ export class AlumniController {
       createAlumnusDto.kelasId = kelasId;
       await this.alumniService.create(createAlumnusDto);
       req.flash('success', 'Alumni successfully created');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -91,10 +91,10 @@ export class AlumniController {
       createAlumnusDto.profile = req.body.uploadedImageUrls?.[0];
       await this.alumniService.create(createAlumnusDto);
       req.flash('success', 'Alumni successfully created');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to create');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     }
   }
 
@@ -109,7 +109,7 @@ export class AlumniController {
   }
 
   @Roles('super_admin')
-  @Get('kategori/formCreate/:kategoriId')
+  @Get('category/formCreate/:kategoriId')
   async formCreateByKategori(
     @Param('kategoriId') kategoriId: number,
     @Res() res: Response,
@@ -135,7 +135,7 @@ export class AlumniController {
   }
 
   @Roles('super_admin')
-  @Get('kategori/formEdit/:alumniId')
+  @Get('category/formEdit/:alumniId')
   async formEditAlumni(
     @Param('alumniId') alumniId: number,
     @Res() res: Response,
@@ -176,15 +176,15 @@ export class AlumniController {
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
       req.flash('success', 'Alumni successfully updated');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to update');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
   @Roles('super_admin')
-  @Patch('kategori/:alumniId/:kategoriId')
+  @Patch('category/:alumniId/:kategoriId')
   @UseInterceptors(
     FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -214,10 +214,10 @@ export class AlumniController {
       }
       await this.alumniService.update(alumniId, updateAlumnusDto);
       req.flash('success', 'Alumni successfully updated');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to update');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     }
   }
 
@@ -233,20 +233,20 @@ export class AlumniController {
       const alumni = await this.alumniService.findOne(alumniId);
       if (!alumni) {
         req.flash('error', 'Alumni not found');
-        res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+        res.redirect(`/program/detail/program/admin/${kelasId}`);
       }
       await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
       req.flash('success', 'Alumni successfully removed');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to remove');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
   @Roles('super_admin')
-  @Delete('kategori/:alumniId/:kategoriId')
+  @Delete('category/:alumniId/:kategoriId')
   async removeAlumni(
     @Param('alumniId') alumniId: number,
     @Param('kategoriId') kategoriId: number,
@@ -257,15 +257,15 @@ export class AlumniController {
       const alumni = await this.alumniService.findOne(alumniId);
       if (!alumni) {
         req.flash('error', 'Alumni not found');
-        res.redirect(`/kategoris/${kategoriId}`);
+        res.redirect(`/category/${kategoriId}`);
       }
       await this.alumniService.deleteFile(alumni.profile);
       await this.alumniService.remove(alumniId);
       req.flash('success', 'Alumni successfully removed');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     } catch (error) {
       req.flash('error', error.message || 'Alumni failed to remove');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     }
   }
 }

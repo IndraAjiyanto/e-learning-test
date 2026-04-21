@@ -1,9 +1,9 @@
 <div class="py-10 w-full mx-auto px-6">
   <!-- ===================== CARD DETAIL KELAS ===================== -->
   <div class="mb-6 mx-auto px-6 py-10 bg-white rounded-2xl shadow-xl space-y-8 relative" x-data="{
-      prev: '/kelass',
+      prev: '/program',
       init() {
-        this.prev = localStorage.getItem('kelasPrevUrl') || '/kelass';
+        this.prev = localStorage.getItem('kelasPrevUrl') || '/program';
       },
       goBack() {
         const prevUrl = localStorage.getItem('kelasPrevUrl');
@@ -11,7 +11,7 @@
           localStorage.removeItem('kelasPrevUrl');
           window.location.href = prevUrl;
         } else {
-          window.location.href = '/kelass';
+          window.location.href = '/program';
         }
       }
     }" x-init="init()">
@@ -40,7 +40,7 @@
     <div class="absolute top-0 right-6 flex flex-col items-end gap-1 z-10">
       <!-- Tombol Launch/Toggle di Atas -->
       {{#if (roles kelas.proses "acc")}}
-      <form action="/kelass/{{kelas.id}}/toggle-status?_method=PATCH" method="POST">
+      <form action="/program/{{kelas.id}}/toggle-status?_method=PATCH" method="POST">
         <button type="button" 
                 onclick="confirmAction(this, '{{#if kelas.launch}}Are you sure cancel launch this program?{{else}}Are you sure launch this program?{{/if}}')"
                 class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none
@@ -56,7 +56,7 @@
       <!-- Tombol Edit dan Delete di Bawah (Samping Kanan Kiri) -->
       <div class="flex items-center gap-2">
         <!-- Tombol Edit (Kiri) -->
-        <a href="/kelass/edit/{{kelas.id}}"
+        <a href="/program/edit/{{kelas.id}}"
            class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
            title="Edit Class">
           <svg xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +74,7 @@
         </a>
 
         <!-- Tombol Delete (Kanan) -->
-        <form action="/kelass/{{kelas.id}}?_method=DELETE" method="post" class="inline" x-data>
+        <form action="/program/{{kelas.id}}?_method=DELETE" method="post" class="inline" x-data>
           <input type="hidden" name="previous" :value="prev">
           <button
             type="button"
@@ -222,13 +222,13 @@
   <!-- Tab Navigation -->
   <div class="flex space-x-4 mb-6">
     {{#if (eq user.role "admin")}}
-    <button @click="toggleFetch('/kelass/minggu/{{kelas.id}}', 'week')" 
+    <button @click="toggleFetch('/program/week/{{kelas.id}}', 'week')" 
             :class="tab === 'week' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Week
     </button>
 
-    <button @click="toggleFetch('/kelass/userKelas/{{kelas.id}}', 'user')" 
+    <button @click="toggleFetch('/program/userProgram/{{kelas.id}}', 'user')" 
             :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       User
@@ -236,26 +236,26 @@
 
     {{else if (eq user.role "super_admin")}}
 
-    <button @click="toggleFetch('/kelass/benefit/{{kelas.id}}', 'benefit')" 
+    <button @click="toggleFetch('/program/benefit/{{kelas.id}}', 'benefit')" 
             :class="tab === 'benefit' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Benefit
     </button>
 
-    <button @click="toggleFetch('/kelass/flow/{{kelas.id}}', 'flow')" 
+    <button @click="toggleFetch('/program/flow/{{kelas.id}}', 'flow')" 
             :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Flow
     </button>
 
-    <button @click="toggleFetch('/kelass/faq/{{kelas.id}}', 'faq')" 
+    <button @click="toggleFetch('/program/faq/{{kelas.id}}', 'faq')" 
             :class="tab === 'faq' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       FAQ
     </button>
 
     {{#if kelas.check_paid}}
-    <button @click="toggleFetch('/kelass/installment/{{kelas.id}}', 'installment')" 
+    <button @click="toggleFetch('/program/installment/{{kelas.id}}', 'installment')" 
             :class="tab === 'installment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Installment
@@ -268,32 +268,32 @@
       Payment
     </button>
 
-    <button @click="toggleFetch('/kelass/alumni/{{kelas.id}}', 'alumni')" 
+    <button @click="toggleFetch('/program/alumni/{{kelas.id}}', 'alumni')" 
             :class="tab === 'alumni' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Alumni
     </button>
 
-    <button @click="toggleFetch('/kelass/userKelas/{{kelas.id}}', 'user')" 
+    <button @click="toggleFetch('/program/userProgram/{{kelas.id}}', 'user')" 
             :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       User
     </button>
 
     {{/if}}
-        <button @click="toggleFetch('/kelass/logbookUser/{{kelas.id}}', 'log_book_user')" 
+        <button @click="toggleFetch('/program/logbookUser/{{kelas.id}}', 'log_book_user')" 
             :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log Book User
     </button>
 
-    <button @click="toggleFetch('/kelass/logbookMentor/{{kelas.id}}', 'log_book_mentor')" 
+    <button @click="toggleFetch('/program/logbookMentor/{{kelas.id}}', 'log_book_mentor')" 
             :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log Book Mentor
     </button>
     
-    <button @click="toggleFetch('/kelass/mentorKelas/{{kelas.id}}', 'mentor')" 
+    <button @click="toggleFetch('/program/mentorProgram/{{kelas.id}}', 'mentor')" 
             :class="tab === 'mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Mentor

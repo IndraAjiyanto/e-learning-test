@@ -3,7 +3,7 @@
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
     <div class="mb-4">
-      <a href="/minggu/{{quiz.minggu.id}}" 
+      <a href="/week/{{quiz.minggu.id}}" 
          class="inline-flex items-center text-gray-700 text-base font-medium hover:underline">
         <svg xmlns="http://www.w3.org/2000/svg" 
              class="h-5 w-5 mr-1" fill="none" 
@@ -157,11 +157,11 @@
           </ul>
 
           <div class="flex gap-3 pt-2">
-            <a href="/pertanyaans/FormEdit/{{this.id}}"
+            <a href="/question/FormEdit/{{this.id}}"
                class="inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-lg shadow hover:bg-gray-700 transition">
               Edit
             </a>
-            <form action="/pertanyaans/{{this.id}}/{{../quiz.id}}?_method=DELETE" method="post">
+            <form action="/question/{{this.id}}/{{../quiz.id}}?_method=DELETE" method="post">
               <button type="button" 
                       onclick="confirmDelete(this)"
                       class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-500 transition">
@@ -189,7 +189,7 @@
     {{/if}}
 
     <!-- Add Question -->
-    <a href="/pertanyaans/formCreate/{{quiz.id}}" 
+    <a href="/question/formCreate/{{quiz.id}}" 
        class="flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition">
       <svg xmlns="http://www.w3.org/2000/svg" 
            class="h-12 w-12 text-gray-400 mb-3" 

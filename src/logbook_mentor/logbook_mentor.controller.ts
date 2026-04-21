@@ -51,10 +51,10 @@ export class LogbookMentorController {
       createLogbookMentorDto.pertemuanId = pertemuanId;
       await this.logbookMentorService.create(createLogbookMentorDto);
       req.flash('success', 'Log book added successfully');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     } catch (error) {
       req.flash('error', error.message || 'Log book failed to create');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     }
   }
 
@@ -124,11 +124,11 @@ export class LogbookMentorController {
         updateLogbookMentorDto,
       );
       req.flash('success', 'logbook successfully updated');
-      res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
+      res.redirect(`/session/${logbook.pertemuan.id}`);
     } catch (error) {
       const logbook = await this.logbookMentorService.findOne(logbook_mentorId);
       req.flash('error', error.message || 'logbook failed to updated');
-      res.redirect(`/pertemuans/${logbook.pertemuan.id}`);
+      res.redirect(`/session/${logbook.pertemuan.id}`);
     }
   }
 
@@ -145,10 +145,10 @@ export class LogbookMentorController {
       await this.logbookMentorService.deleteFile(logbook.dokumentasi);
       await this.logbookMentorService.remove(logbook_mentorId);
       req.flash('success', 'logbook successfully deleted');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     } catch (error) {
       req.flash('error', error.message || 'logbook failed to delete');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     }
   }
 }

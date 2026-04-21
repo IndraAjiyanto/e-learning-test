@@ -27,7 +27,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
-@Controller('kelass')
+@Controller('program')
 export class KelassController {
   constructor(private readonly kelassService: KelassService) {}
 
@@ -91,10 +91,10 @@ export class KelassController {
         await this.kelassService.createMentoring(req.user!.id, kelas.id);
       }
       req.flash('success', 'program successfully created');
-      res.redirect('/kelass');
+      res.redirect('/program');
     } catch (error) {
       req.flash('error', error.message || 'program failed created');
-      res.redirect('/kelass');
+      res.redirect('/program');
     }
   }
 
@@ -160,15 +160,15 @@ export class KelassController {
         await this.kelassService.createMentoring(req.user!.id, kelas.id);
       }
       req.flash('success', 'program successfully created');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     } catch (error) {
       req.flash('error', error.message || 'program failed created');
-      res.redirect(`/kategoris/${kategoriId}`);
+      res.redirect(`/category/${kategoriId}`);
     }
   }
 
   @Roles('admin', 'super_admin')
-  @Post('tambahMurid/:kelasId')
+  @Post('addStudent/:kelasId')
   async addUserToKelas(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
@@ -178,10 +178,10 @@ export class KelassController {
     try {
       await this.kelassService.addUserToKelas(userId, kelasId);
       req.flash('success', 'user successfuly add to program');
-      res.redirect(`/kelass/addUser/${kelasId}`);
+      res.redirect(`/program/addUser/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'user failed add to program');
-      res.redirect(`/kelass/addUser/${kelasId}`);
+      res.redirect(`/program/addUser/${kelasId}`);
     }
   }
 
@@ -296,7 +296,7 @@ export class KelassController {
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/mentorKelas/:kelasId')
+  @Get('/mentorProgram/:kelasId')
   async getMentorKelas(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
@@ -306,14 +306,14 @@ export class KelassController {
   }
 
   @Roles('admin')
-  @Get('/minggu/:kelasId')
+  @Get('/week/:kelasId')
   async getMinggu(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const minggu = await this.kelassService.findMingguKelas(kelasId);
     res.json(minggu);
   }
 
   @Roles('super_admin', 'admin')
-  @Get('/userKelas/:kelasId')
+  @Get('/userProgram/:kelasId')
   async getUserKelas(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const user_kelas = await this.kelassService.findUserKelas(kelasId);
     res.json(user_kelas);
@@ -391,7 +391,7 @@ export class KelassController {
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/detail/kelas/admin/:kelasId')
+  @Get('/detail/program/admin/:kelasId')
   async detailKelas(
     @Param('kelasId', ParseIntPipe) kelasId: number,
 
@@ -417,7 +417,7 @@ export class KelassController {
   }
 
   @Roles('user')
-  @Get('kelas_saya/:id')
+  @Get('myProgram/:id')
   async myCourse(
     @Param('id') id: number,
     @Res() res: Response,
@@ -435,7 +435,7 @@ export class KelassController {
   }
 
   @Roles('user')
-  @Get('kelas/detail/:kelasId')
+  @Get('program/detail/:kelasId')
   async viewDetail(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
@@ -609,10 +609,10 @@ export class KelassController {
       await this.kelassService.update(kelasId, updateKelassDto);
       req.flash('success', 'Successfully update program');
 
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'failed update program');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -627,10 +627,10 @@ export class KelassController {
     try {
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
       req.flash('success', 'program successfuly switch launch');
-      res.redirect('/kelass');
+      res.redirect('/program');
     } catch (error) {
       req.flash('error', error.message || 'program failed to launch');
-      res.redirect('/kelass');
+      res.redirect('/program');
     }
   }
 
@@ -645,10 +645,10 @@ export class KelassController {
     try {
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
       req.flash('success', 'program successfuly switch status');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'program failed to switch status');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -664,20 +664,20 @@ export class KelassController {
       const kelas = await this.kelassService.findOne(kelasId);
       if (!kelas) {
         req.flash('error', 'Program not found');
-        return res.redirect(previous || '/kelass');
+        return res.redirect(previous || '/program');
       }
       await this.kelassService.deleteFile(kelas.gambar);
       await this.kelassService.remove(kelasId);
       req.flash('success', 'Program successfully removed');
-      return res.redirect(previous || '/kelass');
+      return res.redirect(previous || '/program');
     } catch (error) {
       req.flash('error', error.message || 'Failed to remove program');
-      return res.redirect(previous || '/kelass');
+      return res.redirect(previous || '/program');
     }
   }
 
   @Roles('admin', 'super_admin')
-  @Delete(':userId/kelas/:kelasId')
+  @Delete(':userId/program/:kelasId')
   async removeUserKelas(
     @Param('userId') userId: number,
     @Param('kelasId') kelasId: number,
@@ -687,15 +687,15 @@ export class KelassController {
     try {
       await this.kelassService.removeUserKelas(userId, kelasId);
       req.flash('success', 'User successfully removed from program');
-      res.redirect(`/kelass/addUser/${kelasId}`);
+      res.redirect(`/program/addUser/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Failed to remove user from program');
-      res.redirect(`/kelass/addUser/${kelasId}`);
+      res.redirect(`/program/addUser/${kelasId}`);
     }
   }
 
   @Roles('user')
-  @Get('pertemuan/:mingguId')
+  @Get('session/:mingguId')
   async getPertemuan(
     @Res() res: Response,
     @Req() req: Request,

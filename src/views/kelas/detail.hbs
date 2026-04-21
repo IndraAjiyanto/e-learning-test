@@ -30,8 +30,8 @@
                 dataLoaded: false,
 
                   async init() {
-          const pertemuanResponse = await fetch('/kelass/pertemuan/{{this.id}}');
-          const quizResponse = await fetch('/kelass/quiz/{{this.id}}');
+          const pertemuanResponse = await fetch('/program/session/{{this.id}}');
+          const quizResponse = await fetch('/program/quiz/{{this.id}}');
 
           this.pertemuanData = await pertemuanResponse.json();
       localStorage.setItem(`pertemuan-data-{{this.id}}`, JSON.stringify(this.pertemuanData));
@@ -58,8 +58,8 @@
                   try {
                     // Fetch pertemuan dan quiz secara parallel
                     const [pertemuanResponse, quizResponse] = await Promise.all([
-                      fetch('/kelass/pertemuan/{{this.id}}'),
-                      fetch('/kelass/quiz/{{this.id}}')
+                      fetch('/program/session/{{this.id}}'),
+                      fetch('/program/quiz/{{this.id}}')
                     ]);
                     
                     if (!pertemuanResponse.ok || !quizResponse.ok) {

@@ -18,7 +18,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('teknologi')
+@Controller('technology')
 export class TeknologiController {
   constructor(private readonly teknologiService: TeknologiService) {}
 
@@ -32,10 +32,10 @@ export class TeknologiController {
     try {
       await this.teknologiService.create(createTeknologiDto);
       req.flash('success', 'Tech successfully created');
-      res.redirect('/teknologi');
+      res.redirect('/technology');
     } catch (error) {
       req.flash('error', error.message || 'Tech failed to create');
-      res.redirect('/teknologi');
+      res.redirect('/technology');
     }
   }
 
@@ -74,10 +74,10 @@ export class TeknologiController {
     try {
       await this.teknologiService.update(id, updateTeknologiDto);
       req.flash('success', 'Tech successfully updated');
-      res.redirect('/teknologi');
+      res.redirect('/technology');
     } catch (error) {
       req.flash('error', error.message || 'Tech failed to update');
-      res.redirect('/teknologi');
+      res.redirect('/technology');
     }
   }
 
@@ -92,14 +92,14 @@ export class TeknologiController {
       const teknologi = await this.teknologiService.findOne(id);
       if (!teknologi) {
         req.flash('error', 'Tech not found');
-        res.redirect('/teknologi');
+        res.redirect('/technology');
       }
       await this.teknologiService.remove(id);
       req.flash('success', 'Tech   successfully deleted');
-      res.redirect('/teknologi');
+      res.redirect('/technology');
     } catch (error) {
       req.flash('error', error.message || 'Failed to delete tech');
-      res.redirect('/teknologi');
+      res.redirect('/technology');
     }
   }
 }

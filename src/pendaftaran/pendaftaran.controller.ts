@@ -22,7 +22,7 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('pendaftaran')
+@Controller('registration')
 export class PendaftaranController {
   constructor(private readonly pendaftaranService: PendaftaranService) {}
 
@@ -57,17 +57,17 @@ export class PendaftaranController {
           'info',
           'you have already submitted the registration proof, please wait for further information from the admin',
         );
-        res.redirect(`/pembayarans/riwayat/${userId}`);
+        res.redirect(`/payment/history/${userId}`);
       } else {
         req.flash(
           'success',
           'registration proof successfully sent, please wait for the admin',
         );
-        res.redirect(`/pembayarans/riwayat/${userId}`);
+        res.redirect(`/payment/history/${userId}`);
       }
     } catch (error) {
       req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
-      res.redirect(`/pembayarans/riwayat/${userId}`);
+      res.redirect(`/payment/history/${userId}`);
     }
   }
 
@@ -109,7 +109,7 @@ export class PendaftaranController {
 
         req.flash('success', 'proces successfully change acc');
         res.redirect(
-          `/kelass/detail/kelas/admin/${pendaftaran['kelas']['id']}`,
+          `/program/detail/program/admin/${pendaftaran['kelas']['id']}`,
         );
       } else if (proses === 'rejected') {
         updatePendaftaranDto.file = pendaftaran['file'];
@@ -128,13 +128,13 @@ export class PendaftaranController {
         } catch (error) {}
         req.flash('success', 'proces successfully change rejected');
         res.redirect(
-          `/kelass/detail/kelas/admin/${[pendaftaran]['kelas']['id']}`,
+          `/program/detail/program/admin/${[pendaftaran]['kelas']['id']}`,
         );
       }
     } catch (error) {
       const pendaftaran = await this.pendaftaranService.findOne(pendaftaranId);
       req.flash('error', error.message || 'proses pembayaran gagal diubah');
-      res.redirect(`/kelass/detail/kelas/admin/${pendaftaran['kelas']['id']}`);
+      res.redirect(`/program/detail/program/admin/${pendaftaran['kelas']['id']}`);
     }
   }
 }

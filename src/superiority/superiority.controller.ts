@@ -47,10 +47,10 @@ export class SuperiorityController {
       createSuperiorityDto.kategoriId = kategoriId;
       await this.superiorityService.create(createSuperiorityDto);
       req.flash('success', 'superiority successfully created');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to create superiority');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 
@@ -77,10 +77,10 @@ export class SuperiorityController {
     try {
       await this.superiorityService.update(id, updateSuperiorityDto);
       req.flash('success', 'Superiority successfully updated');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to update superiority');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 
@@ -95,10 +95,10 @@ export class SuperiorityController {
     try {
       await this.superiorityService.remove(id);
       req.flash('success', 'Superiority successfully deleted');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to delete superiority');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 }

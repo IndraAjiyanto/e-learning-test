@@ -89,7 +89,7 @@
 
                 <template x-if="item.proses === 'proces'">
                   <div class="flex gap-2">
-                    <form :action="`/pendaftaran/acc/${item.id}?_method=PATCH`" method="post" class="flex-1">
+                    <form :action="`/registration/acc/${item.id}?_method=PATCH`" method="post" class="flex-1">
                       <button type="button"
                       onclick="confirmAction(this, 'Are you sure you want to accept this registration?')" 
                         class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold text-sm hover:from-emerald-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
@@ -99,7 +99,7 @@
                         Accept
                       </button>
                     </form>
-                    <form :action="`/pendaftaran/rejected/${item.id}?_method=PATCH`" method="post" class="flex-1">
+                    <form :action="`/registration/rejected/${item.id}?_method=PATCH`" method="post" class="flex-1">
                       <button type="button"
                       onclick="confirmAction(this, 'Are you sure you want to reject this registration?')"
                         class="w-full py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold text-sm hover:from-red-600 hover:to-rose-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
@@ -112,7 +112,7 @@
                   </div>
                   </template>
                   <template x-if="item.proses === 'acc'">
-                  <form :action="`/pendaftaran/rejected/${item.id}?_method=PATCH`" method="post">
+                  <form :action="`/registration/rejected/${item.id}?_method=PATCH`" method="post">
                     <button type="button" onclick="confirmAction(this, 'Are you sure you want to reject this accepted registration?')"
                       class="w-full py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold text-sm hover:from-red-600 hover:to-rose-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +123,7 @@
                   </form>
                   </template>
                 <template x-if="item.proses === 'rejected'">
-                  <form :action="`/pendaftaran/acc/${item.id}?_method=PATCH`" method="post">
+                  <form :action="`/registration/acc/${item.id}?_method=PATCH`" method="post">
                     <button type="button" onclick="confirmAction(this, 'Are you sure you want to accept this rejected registration?')"
                       class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold text-sm hover:from-emerald-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

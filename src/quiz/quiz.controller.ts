@@ -34,10 +34,10 @@ export class QuizController {
       createQuizDto.mingguId = mingguId;
       await this.quizService.create(createQuizDto);
       req.flash('success', 'Quiz created successfully');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'Failed to create quiz');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     }
   }
 
@@ -156,10 +156,10 @@ export class QuizController {
     try {
       await this.quizService.remove(quizId);
       req.flash('success', 'Quiz deleted successfully');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'Quiz Failed to deleted');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     }
   }
 }

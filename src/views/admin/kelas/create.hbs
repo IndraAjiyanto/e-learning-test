@@ -30,7 +30,7 @@
 
     <form
       method='POST'
-      action='/kelass'
+      action='/program'
       class='grid grid-cols-1 lg:grid-cols-2 gap-8'
       enctype='multipart/form-data'
       x-data="{loading:false}"
@@ -107,7 +107,7 @@
           <span x-show="!loading">Create</span>
         </button>
         <a
-          href='/kelass'
+          href='/program'
           :disabled='loading'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300 transition'

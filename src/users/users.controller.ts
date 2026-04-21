@@ -235,7 +235,7 @@ export class UsersController {
   }
 
   @Roles('user', 'admin', 'super_admin')
-  @Get('profile/info_akun')
+  @Get('profile/info_account')
   async editInfoAkun(@Res() res: Response, @Req() req: Request) {
     return res.render('profile/editInfo', { user: req.user });
   }

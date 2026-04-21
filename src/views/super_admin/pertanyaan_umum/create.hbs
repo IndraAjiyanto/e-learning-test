@@ -73,7 +73,7 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create FAQ</h2>
 
     <form
-      action='/pertanyaan-umum/{{kategoriId}}'
+      action='/question-general/{{kategoriId}}'
       method='post'
       class='space-y-6'
       x-data="{ loading: false }"
@@ -94,7 +94,7 @@
           <span x-show='!loading'>Create</span>
         </button>
         <a
-          href='/kategoris/{{kategoriId}}'
+          href='/category/{{kategoriId}}'
 :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>
           Cancel

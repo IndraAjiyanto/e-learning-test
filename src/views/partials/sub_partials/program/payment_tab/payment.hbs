@@ -1,7 +1,7 @@
   <!-- Main Tabs: Pembayaran & Pendaftaran -->
   <div class="flex flex-wrap justify-center md:justify-start gap-3 mb-6">
     {{#if kelas.check_paid}}
-    <button @click="toggleFetchMateri('/kelass/payment/{{kelas.id}}', 'payment');"
+    <button @click="toggleFetchMateri('/program/payment/{{kelas.id}}', 'payment');"
       :class="tab === 'payment' ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
       class="px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -9,7 +9,7 @@
       </svg>
       Full Payments
     </button>
-    <button @click="toggleFetchMateri('/kelass/paymentInstallment/{{kelas.id}}', 'installment');"
+    <button @click="toggleFetchMateri('/program/paymentInstallment/{{kelas.id}}', 'installment');"
       :class="tab === 'installment' ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
       class="px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,7 +18,7 @@
       Installments
     </button>
     {{else}}
-    <button @click="toggleFetchMateri('/kelass/register/{{kelas.id}}', 'register');"
+    <button @click="toggleFetchMateri('/program/register/{{kelas.id}}', 'register');"
       :class="tab === 'register' ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 border border-slate-200 hover:bg-emerald-50'"
       class="px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -14,7 +14,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { CreateJawabanUserDto, JawabanUserDto } from './dto/create-jawaban_user.dto';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('jawaban-users')
+@Controller('answer-users')
 export class JawabanUsersController {
   constructor(private readonly jawabanUsersService: JawabanUsersService) {}
 

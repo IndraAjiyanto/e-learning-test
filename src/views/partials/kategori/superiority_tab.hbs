@@ -140,7 +140,7 @@ function superiorityData() {
     // Fetch data dari server
     async fetchSuperiority() {
       try {
-        const res = await fetch('/kategoris/superiority/{{kategori.id}}');
+        const res = await fetch('/category/superiority/{{kategori.id}}');
         this.data = await res.json();
         localStorage.setItem('activeData', JSON.stringify(this.data));
         console.log('Superiority data fetched:', this.data);

@@ -29,7 +29,7 @@
       </div>
     </div>
     
-    <a href="/kelass/formCreate/{{kategori.id}}"
+    <a href="/program/formCreate/{{kategori.id}}"
        class="bg-gray-900 text-white px-6 py-2.5 rounded-lg shadow hover:bg-gray-700 transition flex items-center gap-2 whitespace-nowrap">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -72,10 +72,10 @@
           <div class='flex justify-between items-center'>
             <span class='text-xs text-gray-500' x-text="kelasItem.metode"></span>
             <a
-              :href="`/kelass/detail/kelas/admin/${kelasItem.id}`"
+              :href="`/program/detail/program/admin/${kelasItem.id}`"
               @click.prevent="
                 localStorage.setItem('kelasPrevUrl', window.location.href);
-                window.location.href = `/kelass/detail/kelas/admin/${kelasItem.id}`;
+                window.location.href = `/program/detail/program/admin/${kelasItem.id}`;
               "
               class='text-xs text-blue-600 hover:text-blue-800 font-medium'
             >
@@ -152,7 +152,7 @@
 
       async fetchKelas() {
         try {
-          const res = await fetch('/kategoris/kelas/{{kategori.id}}');
+          const res = await fetch('/category/admin/program/{{kategori.id}}');
           this.data = await res.json();
           this.filteredData = this.data;
           localStorage.setItem('activeData', JSON.stringify(this.data));

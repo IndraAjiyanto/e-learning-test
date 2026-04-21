@@ -4,7 +4,7 @@
 
     <form
       method='POST'
-      action='/absens/{{pertemuanId}}'
+      action='/attendance/{{pertemuanId}}'
       class='space-y-6'
       @submit="loading = true"
       x-data="{
@@ -173,7 +173,7 @@
           
         </button>
         <a
-          href='/pertemuans/{{pertemuanId}}'
+          href='/session/{{pertemuanId}}'
         :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>

@@ -49,10 +49,10 @@ export class BenefitCategoryController {
       createBenefitCategoryDto.kategoriId = kategoriId;
       await this.benefitCategoryService.create(createBenefitCategoryDto);
       req.flash('success', 'benefit category successfully created');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to create benefit category');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 
@@ -82,10 +82,10 @@ export class BenefitCategoryController {
     try {
       await this.benefitCategoryService.update(id, updateBenefitCategoryDto);
       req.flash('success', 'Benefit category successfully updated');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to update benefit category');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 
@@ -100,10 +100,10 @@ export class BenefitCategoryController {
     try {
       await this.benefitCategoryService.remove(id);
       req.flash('success', 'Benefit category successfully deleted');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     } catch (error) {
       req.flash('error', 'Failed to delete benefit category');
-      res.redirect('/kategoris/' + kategoriId);
+      res.redirect('/category/' + kategoriId);
     }
   }
 }

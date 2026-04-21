@@ -54,10 +54,10 @@
         }
         
         if (path.includes('/users/profile') && currentPath.includes('/users/profile')) return true;
-        if (path.includes('/kelass/kelas_saya') && currentPath.includes('/kelass/kelas_saya')) return true;
-        if (path.includes('/portfolios/myportfolio') && currentPath.includes('/portfolios/myportfolio')) return true;
+        if (path.includes('/program/myProgram') && currentPath.includes('/program/myProgram')) return true;
+        if (path.includes('/portfolio/myportfolio') && currentPath.includes('/portfolio/myportfolio')) return true;
         if (path.includes('/blog/detail') && currentPath.includes('/blog/detail')) return true;
-        if (path.includes('/pembayarans/riwayat') && currentPath.includes('/pembayarans/riwayat')) return true;
+        if (path.includes('/payment/history') && currentPath.includes('/payment/history')) return true;
         
         return false;
       },
@@ -66,10 +66,10 @@
   const currentPath = this.active;
 
   return (
-    currentPath.includes('/kategoris/') ||
-    currentPath.includes('/dashboard/kategoris/') ||
+    currentPath.includes('/category/') ||
+    currentPath.includes('/dashboard/category/') ||
     kategori.some(kat =>
-      currentPath === `/kategoris/${kat.nama_kategori}`
+      currentPath === `/category/${kat.nama_kategori}`
     )
   );
 },
@@ -89,10 +89,10 @@
       isUserActive() {
         const currentPath = this.active;
         return currentPath.includes('/users/') || 
-               currentPath.includes('/kelass/kelas_saya') || 
-               currentPath.includes('/portfolios/myportfolio') || 
+               currentPath.includes('/program/myProgram') || 
+               currentPath.includes('/portfolio/myportfolio') || 
                currentPath.includes('/blog/detail') ||
-               currentPath.includes('/pembayarans/riwayat');
+               currentPath.includes('/payment/history');
       },
       
       async init() {
@@ -250,8 +250,8 @@
           >
             <template x-for='kat in kategori' :key='kat.id'>
               <a
-                :href="'/kategoris/program/' + kat.nama_kategori"
-                @click="setActive('/kategoris/program/' + kat.nama_kategori)"
+                :href="'/category/program/' + kat.nama_kategori"
+                @click="setActive('/category/program/' + kat.nama_kategori)"
                 class='flex items-start rounded-lg p-3 hover:bg-white/10 transition-colors'
               >
                 <div
@@ -352,8 +352,8 @@
               <span>{{t 'test.navbar.profile'}}</span>
             </a>
             <a
-              href='/kelass/kelas_saya/{{user.id}}'
-              @click="setActive('/kelass/kelas_saya/{{user.id}}')"
+              href='/program/myProgram/{{user.id}}'
+              @click="setActive('/program/myProgram/{{user.id}}')"
               class='flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors text-white/80'
             >
               <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -362,8 +362,8 @@
               <span>{{t 'test.navbar.myLearning'}}</span>
             </a>
             <a
-              href='/portfolios/myportfolio/{{user.id}}'
-              @click="setActive('/portfolios/myportfolio/{{user.id}}')"
+              href='/portfolio/myportfolio/{{user.id}}'
+              @click="setActive('/portfolio/myportfolio/{{user.id}}')"
               class='flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors text-white/80'
             >
               <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -372,8 +372,8 @@
               <span>{{t 'test.navbar.myPortfolio'}}</span>
             </a>
             <a
-              href='/pembayarans/riwayat/{{user.id}}'
-              @click="setActive('/pembayarans/riwayat/{{user.id}}')"
+              href='/payment/history/{{user.id}}'
+              @click="setActive('/payment/history/{{user.id}}')"
               class='flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors text-white/80'
             >
               <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -437,8 +437,8 @@
           >
             <template x-for='kat in kategori' :key='kat.id'>
               <a
-                :href="'/kategoris/program/' + kat.nama_kategori"
-                @click="setActive('/kategoris/program/' + kat.nama_kategori)"
+                :href="'/category/program/' + kat.nama_kategori"
+                @click="setActive('/category/program/' + kat.nama_kategori)"
                 class='flex items-start rounded-lg p-3 hover:bg-white/10 transition-colors'
               >
                 <div
@@ -603,9 +603,9 @@
               <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <template x-for='kat in kategori' :key='kat.id'>
                   <a
-                    :href="'/kategoris/program/' + kat.nama_kategori"
-                    @click="setActive('/kategoris/program/' + kat.nama_kategori)"
-                    :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-gray-100' : 'bg-transparent'"
+                    :href="'/category/program/' + kat.nama_kategori"
+                    @click="setActive('/category/program/' + kat.nama_kategori)"
+                    :class="isActive('/category/program/' + kat.nama_kategori) ? 'bg-gray-100' : 'bg-transparent'"
                     class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                   >
                     <div
@@ -724,9 +724,9 @@
                 <span>{{t 'test.navbar.profile'}}</span>
               </a>
               <a
-                href='/kelass/kelas_saya/{{user.id}}'
-                @click="setActive('/kelass/kelas_saya/{{user.id}}')"
-                :class="isActive('/kelass/kelas_saya/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                href='/program/myProgram/{{user.id}}'
+                @click="setActive('/program/myProgram/{{user.id}}')"
+                :class="isActive('/program/myProgram/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
                 class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -735,9 +735,9 @@
                 <span>{{t 'test.navbar.myLearning'}}</span>
               </a>
               <a
-                href='/portfolios/myportfolio/{{user.id}}'
-                @click="setActive('/portfolios/myportfolio/{{user.id}}')"
-                :class="isActive('/portfolios/myportfolio/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                href='/portfolio/myportfolio/{{user.id}}'
+                @click="setActive('/portfolio/myportfolio/{{user.id}}')"
+                :class="isActive('/portfolio/myportfolio/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
                 class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -746,9 +746,9 @@
                 <span>{{t 'test.navbar.myPortfolio'}}</span>
               </a>
               <a
-                href='/pembayarans/riwayat/{{user.id}}'
-                @click="setActive('/pembayarans/riwayat/{{user.id}}')"
-                :class="isActive('/pembayarans/riwayat/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                href='/payment/history/{{user.id}}'
+                @click="setActive('/payment/history/{{user.id}}')"
+                :class="isActive('/payment/history/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
                 class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -824,9 +824,9 @@
               <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <template x-for='kat in kategori' :key='kat.id'>
                   <a
-                    :href="'/kategoris/program/' + kat.nama_kategori"
-                    @click="setActive('/kategoris/program/' + kat.nama_kategori)"
-                    :class="isActive('/kategoris/program/' + kat.nama_kategori) ? 'bg-gray-100' : 'bg-transparent'"
+                    :href="'/category/program/' + kat.nama_kategori"
+                    @click="setActive('/category/program/' + kat.nama_kategori)"
+                    :class="isActive('/category/program/' + kat.nama_kategori) ? 'bg-gray-100' : 'bg-transparent'"
                     class='flex items-start rounded-lg p-3 hover:bg-gray-200 transition-colors'
                   >
                     <div

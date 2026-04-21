@@ -3,7 +3,7 @@
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
     <div class="mb-4">
-      <a href="/minggu/{{pertemuan.minggu.id}}" 
+      <a href="/week/{{pertemuan.minggu.id}}" 
          class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
         <svg xmlns="http://www.w3.org/2000/svg" 
              class="h-5 w-5 mr-1" fill="none" 
@@ -41,7 +41,7 @@
 
 <div class="flex items-center gap-4">
   <!-- Tombol Edit -->
-  <a href="/pertemuans/formEdit/{{pertemuan.id}}"
+  <a href="/session/formEdit/{{pertemuan.id}}"
      class="p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
      title="Edit Pertemuan">
     <!-- Icon Edit (Pencil) -->
@@ -60,7 +60,7 @@
   </a>
 
   <!-- Tombol Delete -->
-  <form action="/pertemuans/{{pertemuan.id}}/{{pertemuan.minggu.id}}?_method=DELETE" method="post">
+  <form action="/session/{{pertemuan.id}}/{{pertemuan.minggu.id}}?_method=DELETE" method="post">
     <button 
       type="button"
       onclick="confirmDelete(this)"
@@ -86,7 +86,7 @@
 <div class="w-full mx-auto" x-data="tabData()">
 
   <div class="flex space-x-4 mb-6">
-    <button @click="toggleFetch('/pertemuans/absen/{{pertemuan.id}}', 'absen')" 
+    <button @click="toggleFetch('/session/attendance/{{pertemuan.id}}', 'absen')" 
             :class="tab === 'absen' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Attendance
@@ -96,17 +96,17 @@
             class="px-4 py-2 rounded-lg shadow transition">
       Materi
     </button>
-    <button @click="toggleFetch('/pertemuans/tugas/{{pertemuan.id}}', 'tugas')" 
+    <button @click="toggleFetch('/session/task/{{pertemuan.id}}', 'tugas')" 
             :class="tab === 'tugas' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Assignment
     </button>
-    <button @click="toggleFetch('/pertemuans/logbook/{{pertemuan.id}}', 'logbook')" 
+    <button @click="toggleFetch('/session/logbook/{{pertemuan.id}}', 'logbook')" 
             :class="tab === 'logbook' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log book user
     </button>
-    <button @click="toggleFetch('/pertemuans/logbook-mentor/{{pertemuan.id}}', 'logbook_mentor')" 
+    <button @click="toggleFetch('/session/logbook-mentor/{{pertemuan.id}}', 'logbook_mentor')" 
             :class="tab === 'logbook_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log book mentor

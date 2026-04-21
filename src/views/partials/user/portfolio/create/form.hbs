@@ -1,7 +1,7 @@
       <form
         id='portfolioForm'
         method='POST'
-        action='/portfolios/create/{{kelasId}}'
+        action='/portfolio/create/{{kelasId}}'
         enctype='multipart/form-data'
         x-data='{ loading: false }'
         @submit='loading = true'
@@ -94,8 +94,8 @@
           },
           config: {
             endpoints: {
-              byFile: "/portfolios/upload-image",
-              byUrl: "/portfolios/fetch-image"
+              byFile: "/portfolio/upload-image",
+              byUrl: "/portfolio/fetch-image"
             }
           }
         },
@@ -103,7 +103,7 @@
         linkTool: {
           class: EditorTools.LinkTool,
           config: {
-            endpoint: "/portfolios/fetch-link"
+            endpoint: "/portfolio/fetch-link"
           }
         }
       }
@@ -339,7 +339,7 @@
               }}</span>
           </button>
           <a
-            href='/kelass/{{kelasId}}'
+            href='/program/{{kelasId}}'
             :disabled='loading'
             class='btn bg-white rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
           >

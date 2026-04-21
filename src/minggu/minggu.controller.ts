@@ -15,7 +15,7 @@ import { UpdateMingguDto } from './dto/update-minggu.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
-@Controller('minggu')
+@Controller('week')
 export class MingguController {
   constructor(private readonly mingguService: MingguService) {}
 
@@ -31,10 +31,10 @@ export class MingguController {
       createMingguDto.minggu_ke = await this.mingguService.noPertemuan(kelasId);
       await this.mingguService.create(createMingguDto, kelasId);
       req.flash('success', 'session succesfuly create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'session unsucces create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -101,10 +101,10 @@ export class MingguController {
     try {
       await this.mingguService.update(mingguId, updateMingguDto);
       req.flash('success', 'week successfully updated');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'week failed updated');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     }
   }
 
@@ -119,10 +119,10 @@ export class MingguController {
     try {
       await this.mingguService.remove(id, kelasId);
       req.flash('success', 'week successfully deleted');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'week failed deleted');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 }

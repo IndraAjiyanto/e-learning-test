@@ -15,7 +15,7 @@ import { UpdatePertanyaanKelaDto } from './dto/update-pertanyaan_kela.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
-@Controller('pertanyaan-kelas')
+@Controller('question-program')
 export class PertanyaanKelasController {
   constructor(
     private readonly pertanyaanKelasService: PertanyaanKelasService,
@@ -58,10 +58,10 @@ export class PertanyaanKelasController {
       createPertanyaanKelaDto.kelasId = kelasId;
       await this.pertanyaanKelasService.create(createPertanyaanKelaDto);
       req.flash('success', 'FAQ program created successfully');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'FAQ program  failed to create');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -93,10 +93,10 @@ export class PertanyaanKelasController {
     try {
       await this.pertanyaanKelasService.update(+id, updatePertanyaanKelaDto);
       req.flash('success', 'FAQ program updated successfully');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'FAQ program failed to update');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -111,10 +111,10 @@ export class PertanyaanKelasController {
     try {
       await this.pertanyaanKelasService.remove(+id);
       req.flash('success', 'FAQ program deleted successfully');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'FAQ program failed to delete');
-      res.redirect(`/kelass/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 }
