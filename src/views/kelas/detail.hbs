@@ -30,7 +30,7 @@
                 dataLoaded: false,
 
                   async init() {
-          const pertemuanResponse = await fetch('/program/pertemuan/{{this.id}}');
+          const pertemuanResponse = await fetch('/program/session/{{this.id}}');
           const quizResponse = await fetch('/program/quiz/{{this.id}}');
 
           this.pertemuanData = await pertemuanResponse.json();
@@ -58,7 +58,7 @@
                   try {
                     // Fetch pertemuan dan quiz secara parallel
                     const [pertemuanResponse, quizResponse] = await Promise.all([
-                      fetch('/program/pertemuan/{{this.id}}'),
+                      fetch('/program/session/{{this.id}}'),
                       fetch('/program/quiz/{{this.id}}')
                     ]);
                     

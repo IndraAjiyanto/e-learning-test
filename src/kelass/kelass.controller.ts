@@ -168,7 +168,7 @@ export class KelassController {
   }
 
   @Roles('admin', 'super_admin')
-  @Post('tambahMurid/:kelasId')
+  @Post('addStudent/:kelasId')
   async addUserToKelas(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
@@ -296,7 +296,7 @@ export class KelassController {
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/mentorKelas/:kelasId')
+  @Get('/mentorProgram/:kelasId')
   async getMentorKelas(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
@@ -306,14 +306,14 @@ export class KelassController {
   }
 
   @Roles('admin')
-  @Get('/minggu/:kelasId')
+  @Get('/week/:kelasId')
   async getMinggu(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const minggu = await this.kelassService.findMingguKelas(kelasId);
     res.json(minggu);
   }
 
   @Roles('super_admin', 'admin')
-  @Get('/userKelas/:kelasId')
+  @Get('/userProgram/:kelasId')
   async getUserKelas(@Param('kelasId') kelasId: number, @Res() res: Response) {
     const user_kelas = await this.kelassService.findUserKelas(kelasId);
     res.json(user_kelas);
@@ -391,7 +391,7 @@ export class KelassController {
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/detail/kelas/admin/:kelasId')
+  @Get('/detail/program/admin/:kelasId')
   async detailKelas(
     @Param('kelasId', ParseIntPipe) kelasId: number,
 
@@ -417,7 +417,7 @@ export class KelassController {
   }
 
   @Roles('user')
-  @Get('kelas_saya/:id')
+  @Get('myProgram/:id')
   async myCourse(
     @Param('id') id: number,
     @Res() res: Response,
@@ -435,7 +435,7 @@ export class KelassController {
   }
 
   @Roles('user')
-  @Get('kelas/detail/:kelasId')
+  @Get('program/detail/:kelasId')
   async viewDetail(
     @Param('kelasId') kelasId: number,
     @Res() res: Response,
@@ -609,10 +609,10 @@ export class KelassController {
       await this.kelassService.update(kelasId, updateKelassDto);
       req.flash('success', 'Successfully update program');
 
-      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'failed update program');
-      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -645,10 +645,10 @@ export class KelassController {
     try {
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
       req.flash('success', 'program successfuly switch status');
-      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'program failed to switch status');
-      res.redirect(`/program/detail/kelas/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
   }
 
@@ -677,7 +677,7 @@ export class KelassController {
   }
 
   @Roles('admin', 'super_admin')
-  @Delete(':userId/kelas/:kelasId')
+  @Delete(':userId/program/:kelasId')
   async removeUserKelas(
     @Param('userId') userId: number,
     @Param('kelasId') kelasId: number,
@@ -695,7 +695,7 @@ export class KelassController {
   }
 
   @Roles('user')
-  @Get('pertemuan/:mingguId')
+  @Get('session/:mingguId')
   async getPertemuan(
     @Res() res: Response,
     @Req() req: Request,

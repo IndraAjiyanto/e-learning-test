@@ -130,7 +130,7 @@ function userData() {
     amount: 0,
 
     async fetchUsers() {
-      const res = await fetch('/program/userKelas/{{kelas.id}}');
+      const res = await fetch('/program/userProgram/{{kelas.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

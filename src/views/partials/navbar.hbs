@@ -54,7 +54,7 @@
         }
         
         if (path.includes('/users/profile') && currentPath.includes('/users/profile')) return true;
-        if (path.includes('/program/kelas_saya') && currentPath.includes('/program/kelas_saya')) return true;
+        if (path.includes('/program/myProgram') && currentPath.includes('/program/myProgram')) return true;
         if (path.includes('/portfolios/myportfolio') && currentPath.includes('/portfolios/myportfolio')) return true;
         if (path.includes('/blog/detail') && currentPath.includes('/blog/detail')) return true;
         if (path.includes('/pembayarans/riwayat') && currentPath.includes('/pembayarans/riwayat')) return true;
@@ -89,7 +89,7 @@
       isUserActive() {
         const currentPath = this.active;
         return currentPath.includes('/users/') || 
-               currentPath.includes('/program/kelas_saya') || 
+               currentPath.includes('/program/myProgram') || 
                currentPath.includes('/portfolios/myportfolio') || 
                currentPath.includes('/blog/detail') ||
                currentPath.includes('/pembayarans/riwayat');
@@ -352,8 +352,8 @@
               <span>{{t 'test.navbar.profile'}}</span>
             </a>
             <a
-              href='/program/kelas_saya/{{user.id}}'
-              @click="setActive('/program/kelas_saya/{{user.id}}')"
+              href='/program/myProgram/{{user.id}}'
+              @click="setActive('/program/myProgram/{{user.id}}')"
               class='flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors text-white/80'
             >
               <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -724,9 +724,9 @@
                 <span>{{t 'test.navbar.profile'}}</span>
               </a>
               <a
-                href='/program/kelas_saya/{{user.id}}'
-                @click="setActive('/program/kelas_saya/{{user.id}}')"
-                :class="isActive('/program/kelas_saya/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                href='/program/myProgram/{{user.id}}'
+                @click="setActive('/program/myProgram/{{user.id}}')"
+                :class="isActive('/program/myProgram/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
                 class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

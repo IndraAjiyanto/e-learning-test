@@ -222,13 +222,13 @@
   <!-- Tab Navigation -->
   <div class="flex space-x-4 mb-6">
     {{#if (eq user.role "admin")}}
-    <button @click="toggleFetch('/program/minggu/{{kelas.id}}', 'week')" 
+    <button @click="toggleFetch('/program/week/{{kelas.id}}', 'week')" 
             :class="tab === 'week' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Week
     </button>
 
-    <button @click="toggleFetch('/program/userKelas/{{kelas.id}}', 'user')" 
+    <button @click="toggleFetch('/program/userProgram/{{kelas.id}}', 'user')" 
             :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       User
@@ -274,7 +274,7 @@
       Alumni
     </button>
 
-    <button @click="toggleFetch('/program/userKelas/{{kelas.id}}', 'user')" 
+    <button @click="toggleFetch('/program/userProgram/{{kelas.id}}', 'user')" 
             :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       User
@@ -293,7 +293,7 @@
       Log Book Mentor
     </button>
     
-    <button @click="toggleFetch('/program/mentorKelas/{{kelas.id}}', 'mentor')" 
+    <button @click="toggleFetch('/program/mentorProgram/{{kelas.id}}', 'mentor')" 
             :class="tab === 'mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Mentor
