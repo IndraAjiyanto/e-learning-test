@@ -122,7 +122,7 @@
                       <form 
                             x-data="{ loading: false }"
   @submit="loading = true"
-                        action="/jawaban-tugass/{{../tugas.id}}/{{this.id}}?_method=PATCH" 
+                        action="/answer-assigment/{{../tugas.id}}/{{this.id}}?_method=PATCH" 
                         method="POST" 
                         class="space-y-4"
                       >
@@ -163,7 +163,7 @@
             <form 
                   x-data="{ loading: false }"
   @submit="loading = true"
-              action="/jawaban-tugass/{{tugas.id}}/{{tugas.pertemuan.id}}" 
+              action="/answer-assigment/{{tugas.id}}/{{tugas.pertemuan.id}}" 
               method="POST" 
               class="space-y-4"
             >

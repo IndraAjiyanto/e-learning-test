@@ -17,7 +17,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('jawaban-tugass')
+@Controller('answer-assigment')
 export class JawabanTugassController {
   constructor(private readonly jawabanTugassService: JawabanTugassService) {}
 
@@ -38,10 +38,10 @@ export class JawabanTugassController {
       createJawabanTugassDto.tugasId = tugasId;
       await this.jawabanTugassService.create(createJawabanTugassDto);
       req.flash('success', 'submission successfuly send');
-      res.redirect(`/jawaban-tugass/${pertemuanId}/${tugasId}`);
+      res.redirect(`/answer-assigment/${pertemuanId}/${tugasId}`);
     } catch (error) {
       req.flash('error', error.message || 'submission unsuccess send');
-      res.redirect(`/jawaban-tugass/${pertemuanId}/${tugasId}`);
+      res.redirect(`/answer-assigment/${pertemuanId}/${tugasId}`);
     }
   }
 
@@ -116,19 +116,19 @@ export class JawabanTugassController {
       }
       if (req.user?.role.includes('admin')) {
         req.flash('success', 'Update answer successfuly');
-        res.redirect(`/jawaban-tugass/${tugasId}`);
+        res.redirect(`/answer-assigment/${tugasId}`);
       } else if (req.user?.role.includes('user')) {
         req.flash('success', 'Update answer successfuly');
-        res.redirect(`/jawaban-tugass/${tugas.pertemuan.id}/${tugas.id}`);
+        res.redirect(`/answer-assigment/${tugas.pertemuan.id}/${tugas.id}`);
       }
     } catch (error) {
       const tugas = await this.jawabanTugassService.findTugas(tugasId);
       if (req.user?.role.includes('admin')) {
         req.flash('error', error.message || 'Update answer unsuccessfully');
-        res.redirect(`/jawaban-tugass/${tugasId}`);
+        res.redirect(`/answer-assigment/${tugasId}`);
       } else if (req.user?.role.includes('user')) {
         req.flash('error', error.message || 'Update answer unsuccessfully');
-        res.redirect(`/jawaban-tugass/${tugas.pertemuan.id}/${tugas.id}`);
+        res.redirect(`/answer-assigment/${tugas.pertemuan.id}/${tugas.id}`);
       }
     }
   }

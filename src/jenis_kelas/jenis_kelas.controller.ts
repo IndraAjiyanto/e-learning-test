@@ -19,7 +19,7 @@ import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigImage } from 'src/common/config/multer.config';
 
-@Controller('jenis-kelas')
+@Controller('type-program')
 export class JenisKelasController {
   constructor(private readonly jenisKelasService: JenisKelasService) {}
 
@@ -33,10 +33,10 @@ export class JenisKelasController {
     try {
       await this.jenisKelasService.create(createJenisKelaDto);
       req.flash('success', 'Program type successfully created');
-      res.redirect('/jenis-kelas');
+      res.redirect('/type-program');
     } catch (error) {
       req.flash('error', 'Program type failed to created');
-      res.render('jenis-kelas');
+      res.render('type-program');
     }
   }
 
@@ -81,10 +81,10 @@ export class JenisKelasController {
       const jenis_kelas = await this.jenisKelasService.findOne(jenis_kelasId);
       await this.jenisKelasService.update(jenis_kelasId, updateJenisKelaDto);
       req.flash('success', 'Program type successfully update');
-      res.redirect('/jenis-kelas');
+      res.redirect('/type-program');
     } catch (error) {
       req.flash('error', error.message || 'Program type failed to updated');
-      res.redirect('/jenis-kelas');
+      res.redirect('/type-program');
     }
   }
 
@@ -99,14 +99,14 @@ export class JenisKelasController {
       const jenis_kelas = await this.jenisKelasService.findOne(jenis_kelasId);
       if (!jenis_kelas) {
         req.flash('error', 'jenis_kelas not found');
-        return res.redirect('/jenis-kelas');
+        return res.redirect('/type-program');
       }
       await this.jenisKelasService.remove(jenis_kelasId);
       req.flash('success', 'Program type successfully delete');
-      res.redirect('/jenis-kelas');
+      res.redirect('/type-program');
     } catch (error) {
       req.flash('error', error.message || 'Program type failed to deleted');
-      res.redirect('/jenis-kelas');
+      res.redirect('/type-program');
     }
   }
 }

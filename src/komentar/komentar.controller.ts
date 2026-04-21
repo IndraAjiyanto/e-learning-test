@@ -35,10 +35,10 @@ export class KomentarController {
         createKomentarDto.proses,
       );
       req.flash('success', 'comment successfuly send');
-      res.redirect(`/jawaban-tugass/${tugasId}`);
+      res.redirect(`/answer-assigment/${tugasId}`);
     } catch (error) {
       req.flash('error', error.message || 'comment unsuccess send');
-      res.redirect(`/jawaban-tugass/${tugasId}`);
+      res.redirect(`/answer-assigment/${tugasId}`);
     }
   }
 }
