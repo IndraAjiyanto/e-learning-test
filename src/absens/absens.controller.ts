@@ -61,13 +61,13 @@ export class AbsensController {
       createAbsenDto.pertemuanId = pertemuanId;
       await this.absensService.create(createAbsenDto);
       req.flash('success', 'Successfully added attendance');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     } catch (error) {
       req.flash(
         'error',
         'Failed to add attendance, user has already submitted attendance for this session',
       );
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     }
   }
 
@@ -134,10 +134,10 @@ export class AbsensController {
     try {
       await this.absensService.update(absenId, updateAbsenDto);
       req.flash('success', 'Successfully updated attendance');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     } catch (error) {
       req.flash('error', error.message || 'Failed to update attendance');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     }
   }
 
@@ -152,10 +152,10 @@ export class AbsensController {
     try {
       await this.absensService.remove(absenId, pertemuanId);
       req.flash('success', 'Successfully delete attendace');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     } catch (error) {
       req.flash('error', error.message || 'Failed to delete attendance');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     }
   }
 }

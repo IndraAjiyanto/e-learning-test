@@ -123,7 +123,7 @@ function absenData() {
     amount: 0,
 
     async fetchAbsens() {
-      const res = await fetch('/pertemuans/absen/{{pertemuan.id}}');
+      const res = await fetch('/session/attendance/{{pertemuan.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

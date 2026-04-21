@@ -29,7 +29,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
-@Controller('portfolios')
+@Controller('portfolio')
 export class PortfoliosController {
   constructor(private readonly portfoliosService: PortfoliosService) {}
 
@@ -229,10 +229,10 @@ export class PortfoliosController {
       await this.portfoliosService.update(portfolioId, updateData);
 
       req.flash('success', 'Portfolio successfully updated');
-      return res.redirect(`/portfolios/${portfolioId}/${kelasId}`);
+      return res.redirect(`/portfolio/${portfolioId}/${kelasId}`);
     } catch (error) {
       req.flash('error', error.message || 'Portfolio failed to update');
-      return res.redirect(`/portfolios/${portfolioId}/${kelasId}`);
+      return res.redirect(`/portfolio/${portfolioId}/${kelasId}`);
     }
   }
 

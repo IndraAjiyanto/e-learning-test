@@ -55,11 +55,11 @@ export class TugassController {
       createTugassDto.file = req.body.uploadedFileUrls[0];
       await this.tugassService.create(createTugassDto);
       req.flash('success', 'Assignment successfully created');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     } catch (error) {
       const errorMessage = error.message || 'Failed to create assignment';
       req.flash('error', errorMessage);
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     }
   }
 
@@ -86,10 +86,10 @@ export class TugassController {
       await this.tugassService.deleteFile(tugas.file);
       await this.tugassService.remove(tugasId);
       req.flash('success', 'successfuly delete assignment');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     } catch (error) {
       req.flash('error', error.message || 'unsuccess delete assignment');
-      res.redirect(`/pertemuans/${pertemuanId}`);
+      res.redirect(`/session/${pertemuanId}`);
     }
   }
 }

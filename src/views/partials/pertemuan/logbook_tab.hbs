@@ -21,7 +21,7 @@
       selectedLogbook: null,
 
             async fetchLogBook() {
-      const res = await fetch('/pertemuans/logbook/{{pertemuan.id}}');
+      const res = await fetch('/session/logbook/{{pertemuan.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

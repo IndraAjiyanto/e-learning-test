@@ -80,7 +80,7 @@ function tugasData() {
     data: JSON.parse(localStorage.getItem('activeData')) || [],
 
     async fetchTugas() {
-      const res = await fetch('/pertemuans/tugas/{{pertemuan.id}}');
+      const res = await fetch('/session/task/{{pertemuan.id}}');
       this.data = await res.json();
 
       localStorage.setItem('activeData', JSON.stringify(this.data));

@@ -148,7 +148,7 @@
             <span x-show='!loading'>Create PDF</span>
           </button>
           <a
-            href='/pertemuans/{{pertemuanId}}'
+            href='/session/{{pertemuanId}}'
         :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>
@@ -294,7 +294,7 @@
           <span x-show='!loading'>Create PPT</span>
         </button>
         <a
-          href='/pertemuans/{{pertemuanId}}'
+          href='/session/{{pertemuanId}}'
           :disabled='loading'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300 transition'
@@ -434,7 +434,7 @@ if (!urlPattern.test(value)) {
             <span x-show='!loading'>Create Video</span>
           </button>
           <a
-            href='/pertemuans/{{pertemuanId}}'
+            href='/session/{{pertemuanId}}'
           :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>
