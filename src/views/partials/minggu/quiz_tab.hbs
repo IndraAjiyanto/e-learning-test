@@ -102,7 +102,7 @@ function quizData() {
     data: JSON.parse(localStorage.getItem('activeData')) || [],
 
     async fetchQuizzes() {
-      const res = await fetch('/minggu/quiz/{{minggu.id}}');
+      const res = await fetch('/week/quiz/{{minggu.id}}');
       this.data = await res.json();
 
       localStorage.setItem('activeData', JSON.stringify(this.data));

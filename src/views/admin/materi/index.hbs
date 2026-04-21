@@ -9,9 +9,9 @@
       <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
         <span class="text-gray-800">{{judul}}</span>
         <div class="flex space-x-2">
-          <a href="/materis/{{id}}/download" 
+          <a href="/learning-material/{{id}}/download" 
              class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
-          <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
+          <form action="/learning-material/{{id}}?_method=DELETE" method="post" class="inline">
             <button type="submit" 
                     onclick="return confirm('Yakin hapus materi ini?')"
                     class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
@@ -33,9 +33,9 @@
       <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
         <span class="text-gray-800">{{judul}}</span>
         <div class="flex space-x-2">
-          <a href="/materis/{{id}}/download" 
+          <a href="/learning-material/{{id}}/download" 
              class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
-          <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
+          <form action="/learning-material/{{id}}?_method=DELETE" method="post" class="inline">
             <button type="submit" 
                     onclick="return confirm('Yakin hapus materi ini?')"
                     class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
@@ -57,9 +57,9 @@
       <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
         <span class="text-gray-800">{{judul}}</span>
         <div class="flex space-x-2">
-          <a href="/materis/{{id}}/download" 
+          <a href="/learning-material/{{id}}/download" 
              class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
-          <form action="/materis/{{id}}?_method=DELETE" method="post" class="inline">
+          <form action="/learning-material/{{id}}?_method=DELETE" method="post" class="inline">
             <button type="submit" 
                     onclick="return confirm('Yakin hapus materi ini?')"
                     class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">Hapus</button>
@@ -89,7 +89,7 @@
       </div>
 
       <div x-show="tab === 'pdf'" class="bg-white p-6 rounded-lg shadow-lg">
-        <form action="/materis/pdf/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form action="/learning-material/pdf/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Judul Materi</label>
             <input type="text" name="judul"  class="w-full border rounded-lg p-2" required>
@@ -103,7 +103,7 @@
       </div>
 
       <div x-show="tab === 'video'" class="bg-white p-6 rounded-lg shadow-lg">
-        <form action="/materis/video/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form action="/learning-material/video/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Judul Materi</label>
             <input type="text" name="judul"  class="w-full border rounded-lg p-2" required>
@@ -117,7 +117,7 @@
       </div>
 
       <div x-show="tab === 'ppt'" class="bg-white p-6 rounded-lg shadow-lg">
-        <form action="/materis/ppt/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form action="/learning-material/ppt/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Judul Materi</label>
             <input type="text" name="judul"  class="w-full border rounded-lg p-2" required>

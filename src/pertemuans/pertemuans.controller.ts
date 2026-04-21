@@ -59,10 +59,10 @@ export class PertemuansController {
         await this.pertemuansService.noPertemuan(mingguId);
       await this.pertemuansService.create(createPertemuanDto);
       req.flash('success', 'session succesfuly create');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'session unsucces create');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     }
   }
 
@@ -216,10 +216,10 @@ export class PertemuansController {
     try {
       await this.pertemuansService.remove(id, mingguId);
       req.flash('success', 'session successfuly delete');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'session unsucces delete');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     }
   }
 }

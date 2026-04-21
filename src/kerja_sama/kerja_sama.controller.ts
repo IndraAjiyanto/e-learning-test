@@ -29,7 +29,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
-@Controller('kerja-sama')
+@Controller('partnership')
 export class KerjaSamaController {
   constructor(private readonly kerjaSamaService: KerjaSamaService) {}
 
@@ -57,10 +57,10 @@ export class KerjaSamaController {
       createKerjaSamaDto.gambar = req.body.uploadedImageUrls?.[0];
       await this.kerjaSamaService.create(createKerjaSamaDto);
       req.flash('success', 'partnership successfully created');
-      res.redirect('/kerja-sama');
+      res.redirect('/partnership');
     } catch (error) {
       req.flash('error', error.message || 'partnership failed to create');
-      res.redirect('/kerja-sama');
+      res.redirect('/partnership');
     }
   }
 
@@ -129,10 +129,10 @@ export class KerjaSamaController {
       }
       await this.kerjaSamaService.update(kerja_samaId, updateKerjaSamaDto);
       req.flash('success', 'partnership successfully updated');
-      res.redirect('/kerja-sama');
+      res.redirect('/partnership');
     } catch (error) {
       req.flash('error', error.message || 'partnership failed to update');
-      res.redirect('/kerja-sama');
+      res.redirect('/partnership');
     }
   }
 
@@ -147,15 +147,15 @@ export class KerjaSamaController {
       const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
       if (!kerja_sama) {
         req.flash('error', 'partnership not found');
-        res.redirect('/kerja-sama');
+        res.redirect('/partnership');
       }
       await this.kerjaSamaService.deleteFile(kerja_sama.gambar);
       await this.kerjaSamaService.remove(kerja_samaId);
       req.flash('success', 'partnership successfully remove');
-      res.redirect('/kerja-sama');
+      res.redirect('/partnership');
     } catch (error) {
       req.flash('error', error.message || 'partnership failed to remove');
-      res.redirect('/kerja-sama');
+      res.redirect('/partnership');
     }
   }
 }

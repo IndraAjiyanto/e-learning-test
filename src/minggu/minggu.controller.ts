@@ -15,7 +15,7 @@ import { UpdateMingguDto } from './dto/update-minggu.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
-@Controller('minggu')
+@Controller('week')
 export class MingguController {
   constructor(private readonly mingguService: MingguService) {}
 
@@ -101,10 +101,10 @@ export class MingguController {
     try {
       await this.mingguService.update(mingguId, updateMingguDto);
       req.flash('success', 'week successfully updated');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     } catch (error) {
       req.flash('error', error.message || 'week failed updated');
-      res.redirect(`/minggu/${mingguId}`);
+      res.redirect(`/week/${mingguId}`);
     }
   }
 

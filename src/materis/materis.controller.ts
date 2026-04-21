@@ -30,7 +30,7 @@ import { ValidateFile } from 'src/common/decorators/validate-file.decorator';
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
-@Controller('materis')
+@Controller('learning-material')
 export class MaterisController {
   constructor(private readonly materisService: MaterisService) {}
 
@@ -133,11 +133,11 @@ export class MaterisController {
     return this.materisService.findOne(id);
   }
 
-  @Roles('admin', 'user')
-  @Get('/kelas/:pertemuanId')
-  findMateriByKelas(@Param('pertemuanId') pertemuanId: number) {
-    return this.materisService.findMateriBypertemuan(pertemuanId);
-  }
+  // @Roles('admin', 'user')
+  // @Get('/kelas/:pertemuanId')
+  // findMateriByKelas(@Param('pertemuanId') pertemuanId: number) {
+  //   return this.materisService.findMateriBypertemuan(pertemuanId);
+  // }
 
   @Roles('admin', 'user')
   @Get(':jenis_file/:pertemuanId')

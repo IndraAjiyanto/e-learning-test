@@ -109,7 +109,7 @@ function sessionData() {
     data: JSON.parse(localStorage.getItem('activeData')) || [],
 
     async fetchSessions() {
-      const res = await fetch(`/minggu/session/{{minggu.id}}`);
+      const res = await fetch(`/week/session/{{minggu.id}}`);
       this.data = await res.json();
 
       localStorage.setItem('activeData', JSON.stringify(this.data));
