@@ -55,6 +55,27 @@ export class UsersService {
     });
   }
 
+async findAllPaginated(params: {
+  search?: string;
+  page: number;
+  limit: number;
+}) {
+  const query = this.userRepository.createQueryBuilder('user')
+    .orderBy('user.id', 'DESC');
+
+  if (params.search) {
+    query.where(
+      '(user.username ILIKE :search OR user.email ILIKE :search OR CAST(user.role AS text) ILIKE :search)',
+      { search: `%${params.search}%` }
+    );
+  }
+
+  query.skip((params.page - 1) * params.limit).take(params.limit);
+
+  const [data, total] = await query.getManyAndCount();
+  return { data, total };
+}
+
   async findPortfolio(userId: number) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },

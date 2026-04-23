@@ -243,9 +243,34 @@ export class UsersController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const users = await this.usersService.findAll();
-    res.render('super_admin/user/index', { user: req.user, users });
+    // const users = await this.usersService.findAll();
+    res.render('super_admin/user/index', { user: req.user });
   }
+
+  @Roles('super_admin')
+@Get('filter')
+async filterUsers(
+  @Res() res: Response,
+  @Query('search') search?: string,
+  @Query('page') page?: string,
+  @Query('limit') limit?: string,
+) {
+  const currentPage = parseInt(page || '1', 10);
+  const itemsPerPage = parseInt(limit || '5', 10);
+
+  const result = await this.usersService.findAllPaginated({
+    search: search || undefined,
+    page: currentPage,
+    limit: itemsPerPage,
+  });
+
+  return res.json({
+    data: result.data,
+    totalItems: result.total,
+    totalPages: Math.ceil(result.total / itemsPerPage),
+    currentPage,
+  });
+}
 
   @Roles('super_admin')
   @Get('formEdit/:userId')

@@ -1,13 +1,10 @@
 <div
   class='w-full mx-auto px-6 py-10'
-  x-data='userTable({ users: {{json users}} })'
+  x-data='userTable()'
+  x-init='fetchUsers()'
 >
-  <div
-    class='mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4'
-  >
-    <h2
-      class='text-3xl font-bold text-gray-900 text-center md:text-left'
-    >Users</h2>
+  <div class='mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4'>
+    <h2 class='text-3xl font-bold text-gray-900 text-center md:text-left'>Users</h2>
 
     <div class='flex items-center gap-3'>
       <div class='relative w-full md:w-64'>
@@ -15,243 +12,156 @@
           type='text'
           placeholder='Search user...'
           x-model='searchInput'
-          @input='search = searchInput; pageNumber=0'
+          @input='handleSearch()'
           class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
         />
         <button
-          @click='search = searchInput; pageNumber=0'
+          @click='handleSearch()'
           class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900'
         >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            class='h-5 w-5'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z'
-            />
+          <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z' />
           </svg>
         </button>
       </div>
 
-      <a
-        href='/users/formCreate'
-        class='bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition'
-      >
+      <a href='/users/formCreate' class='bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition'>
         Create User
       </a>
     </div>
   </div>
 
   <div class='overflow-x-auto bg-white shadow-lg rounded-xl'>
-    <table class='min-w-full divide-y divide-gray-200'>
+    <!-- Loading -->
+    <div x-show='loading' class='py-12 text-center text-gray-500'>
+      <i class='fas fa-spinner fa-spin text-2xl'></i>
+    </div>
+
+    <table x-show='!loading' class='min-w-full divide-y divide-gray-200'>
       <thead class='bg-gray-100'>
         <tr>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >No</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Profile</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Name</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Email</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Role</th>
-          <th
-            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Action</th>
+          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>No</th>
+          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Profile</th>
+          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Name</th>
+          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Email</th>
+          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Role</th>
+          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Action</th>
         </tr>
       </thead>
       <tbody class='divide-y divide-gray-200'>
-        {{#each users}}
-          <tr
-            class='hover:bg-gray-50 transition'
-            x-show="filteredUsers.includes('{{id}}')"
-          >
-            <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
+        <template x-for='(user, index) in users' :key='user.id'>
+          <tr class='hover:bg-gray-50 transition'>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text='(currentPage - 1) * size + index + 1'></td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#if profile}}
-                <img
-                  src='{{profile}}'
-                  alt='{{username}}'
-                  class='w-12 h-12 rounded-full object-cover border'
-                />
-              {{else}}
-                <div
-                  class='w-12 h-12 bg-gray-600 rounded-full border border-gray-300 flex items-center justify-center'
-                >
-                  <span class='text-white font-bold text-lg'>{{substring
-                      username
-                      0
-                      1
-                    }}</span>
+              <template x-if='user.profile'>
+                <img :src='user.profile' :alt='user.username' class='w-12 h-12 rounded-full object-cover border' />
+              </template>
+              <template x-if='!user.profile'>
+                <div class='w-12 h-12 bg-gray-600 rounded-full border border-gray-300 flex items-center justify-center'>
+                  <span class='text-white font-bold text-lg' x-text='user.username?.charAt(0).toUpperCase()'></span>
                 </div>
-              {{/if}}
+              </template>
             </td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{username}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{email}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{role}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text='user.username'></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text='user.email'></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text='user.role'></td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
-              <!-- Edit Button -->
-              <form action='/users/formEdit/{{id}}' method='get'>
-                <button
-                  type='submit'
-                  class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
-                  title='Edit'
-                >
-                  <!-- Pencil Icon -->
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke-width='1.5'
-                    stroke='currentColor'
-                    class='w-5 h-5'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 
-                 2.652L10.582 16.07a4.5 4.5 0 01-1.897 
-                 1.13l-2.685.805.805-2.685a4.5 4.5 
-                 0 011.13-1.897l10.927-10.936z'
-                    />
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      d='M19.5 7.125L16.875 4.5'
-                    />
-                  </svg>
-                </button>
-              </form>
+              <!-- Edit -->
+              <a :href='"/users/formEdit/" + user.id'
+                class='p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition' title='Edit'>
+                <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
+                  <path stroke-linecap='round' stroke-linejoin='round' d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13l-2.685.805.805-2.685a4.5 4.5 0 011.13-1.897l10.927-10.936z' />
+                  <path stroke-linecap='round' stroke-linejoin='round' d='M19.5 7.125L16.875 4.5' />
+                </svg>
+              </a>
 
-              <!-- Delete Button -->
-              <form action='/users/{{id}}?_method=DELETE' method='post'>
-                <button
-                  type='button'
-                  onclick='confirmDelete(this)'
-                  class='p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition'
-                  title='Delete'
-                >
-                  <!-- Trash Icon -->
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke-width='1.5'
-                    stroke='currentColor'
-                    class='w-5 h-5'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      d='M6 18L18 6M6 6l12 12'
-                    />
+              <!-- Delete -->
+              <form :action='"/users/" + user.id + "?_method=DELETE"' method='post'>
+                <button type='button' onclick='confirmDelete(this)'
+                  class='p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition' title='Delete'>
+                  <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
+                    <path stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' />
                   </svg>
                 </button>
               </form>
             </td>
-
           </tr>
-        {{/each}}
+        </template>
+
+        <!-- Empty State -->
+        <tr x-show='!loading && users.length === 0'>
+          <td colspan='6' class='px-6 py-12 text-center text-gray-400'>No users found.</td>
+        </tr>
       </tbody>
     </table>
   </div>
 
-  <div
-    class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center'
-    x-show='pageCount() > 1'
-  >
-    <button
-      @click='prevPage'
-      :disabled='pageNumber==0'
+  <!-- Pagination -->
+  <div class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center' x-show='totalPages > 1'>
+    <button @click='changePage(currentPage - 1)' :disabled='currentPage === 1'
       class='px-3 py-1 rounded border border-gray-900 text-gray-900'
-      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }"
-    >Prev</button>
+      :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }">Prev</button>
 
-    <template x-for='(page,index) in pages()' :key='index'>
-      <button
-        @click='viewPage(index)'
-        class='px-3 py-1 rounded'
-        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
-        x-text='index+1'
-      ></button>
+    <template x-for='page in totalPages' :key='page'>
+      <button @click='changePage(page)' class='px-3 py-1 rounded'
+        :class="{ 'bg-gray-900 text-white font-bold': page === currentPage }"
+        x-text='page'>
+      </button>
     </template>
 
-    <button
-      @click='nextPage'
-      :disabled='pageNumber >= pageCount()-1'
+    <button @click='changePage(currentPage + 1)' :disabled='currentPage === totalPages'
       class='px-3 py-1 rounded border border-gray-900 text-gray-900'
-      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
-    >Next</button>
+      :class="{ 'opacity-50 cursor-not-allowed': currentPage === totalPages }">Next</button>
   </div>
 </div>
 
 <script>
-  function userTable({ users }) {
-    return {
-      // State
-      searchInput: "",
-      search: "",
-      pageNumber: 0,
-      size: 5,
-      users,
-      amount: 0,
+function userTable() {
+  return {
+    users: [],
+    searchInput: '',
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    size: 5,
+    loading: false,
+    searchTimeout: null,
 
-      // Filter + Pagination
-      get filteredUsers() {
-        const filtered = this.users.filter(u =>
-          `${u.username} ${u.email} ${u.role}`
-            .toLowerCase()
-            .includes(this.search.toLowerCase())
-        );
+    async fetchUsers() {
+      this.loading = true;
+      try {
+        const params = new URLSearchParams();
+        if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
+        params.set('page', this.currentPage);
+        params.set('limit', this.size);
 
-        this.amount = filtered.length;
+        const res = await fetch(`/users/filter?${params.toString()}`);
+        const json = await res.json();
 
-        const start = this.pageNumber * this.size;
-        const end = start + this.size;
-
-        return filtered
-          .slice(start, end)
-          .map(u => u.id.toString());
-      },
-
-      // Pagination list
-      pages() {
-        return Array.from({ length: this.pageCount() });
-      },
-
-      // Count total pages
-      pageCount() {
-        return Math.ceil(this.amount / this.size);
-      },
-
-      // Pagination actions
-      nextPage() {
-        if (this.pageNumber < this.pageCount() - 1) {
-          this.pageNumber++;
-        }
-      },
-
-      prevPage() {
-        if (this.pageNumber > 0) {
-          this.pageNumber--;
-        }
-      },
-
-      viewPage(index) {
-        this.pageNumber = index;
+        this.users = json.data;
+        this.totalItems = json.totalItems;
+        this.totalPages = json.totalPages;
+        this.currentPage = json.currentPage;
+      } catch (err) {
+        console.error('Fetch users error:', err);
+      } finally {
+        this.loading = false;
       }
-    }
+    },
+
+    handleSearch() {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(() => {
+        this.currentPage = 1;
+        this.fetchUsers();
+      }, 300);
+    },
+
+    async changePage(page) {
+      if (page < 1 || page > this.totalPages) return;
+      this.currentPage = page;
+      await this.fetchUsers();
+    },
   }
+}
 </script>
