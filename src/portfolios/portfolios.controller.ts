@@ -123,10 +123,10 @@ export class PortfoliosController {
   ) {
     const kategori = await this.portfoliosService.findKategoriMyPortfolio(userId);
     const jenis_kelas = await this.portfoliosService.findJenisKelasMyPortfolio(userId);
-    const portfolio = await this.portfoliosService.findByUser(userId);
+    // const portfolio = await this.portfoliosService.findByUser(userId);
     res.render('user/myportfolio', {
       user: req.user,
-      portfolio,
+      // portfolio,
       kategori,
       jenis_kelas,
     });

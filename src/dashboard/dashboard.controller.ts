@@ -131,6 +131,7 @@ async kelasFilter(
   async portfolioFilter(
     @Req() req: Request,
     @Res() res: Response,
+    @Query('userId') userId?: number,
     @Query('kategori_id') kategoriId?: string,
     @Query('jenis_kelas_id') jenisKelasId?: string,
     @Query('page') page?: string,
@@ -140,6 +141,7 @@ async kelasFilter(
     const itemsPerPage = parseInt(limit || '6', 10);
   
     const portfolioList = await this.dashboardService.findPortfolio({
+      userId: userId || null,
       kategoriId: kategoriId || null,
       jenisKelasId: jenisKelasId || null,
       page: currentPage,

@@ -320,6 +320,7 @@ async findBlog(excludeIds: number[] = []) {
 }
 
 async findPortfolio(options?: {
+  userId?: number | null;
   kategoriId?: string | null;
   jenisKelasId?: string | null;
   page?: number;
@@ -330,6 +331,10 @@ async findPortfolio(options?: {
   const skip = (page - 1) * limit;
 
   const where: any = {};
+
+  if (options?.userId) {
+    where.user = { id: options.userId };
+  }
 
   if (options?.kategoriId) {
     where.kelas = {
