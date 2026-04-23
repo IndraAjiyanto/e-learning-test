@@ -123,61 +123,6 @@
                 </div>
               </div>
 
-              <!-- Achievements & Awards -->
-              <div
-                class='border border-slate-300 rounded-lg bg-white overflow-hidden shadow-lg'
-              >
-                <button
-                  @click='achievementOpen = !achievementOpen'
-                  class='w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors'
-                >
-                  <div class='flex items-center space-x-3'>
-                    <i class='fas fa-trophy text-slate-700'></i>
-                    <span
-                      class='font-semibold text-slate-800 text-sm sm:text-base'
-                    >{{t 'test.about.team.awardAchievement'}}</span>
-                  </div>
-                  <i
-                    class='fas fa-chevron-down text-slate-600 transition-transform duration-200'
-                    :class="achievementOpen ? 'rotate-180' : ''"
-                  ></i>
-                </button>
-                <div
-                  x-show='achievementOpen'
-                  x-transition:enter='transition ease-out duration-200'
-                  x-transition:enter-start='opacity-0 transform -translate-y-2'
-                  x-transition:enter-end='opacity-100 transform translate-y-0'
-                  class='px-4 py-3 border-t border-slate-200 bg-slate-50'
-                >
-                  <ul class='space-y-2 text-sm sm:text-base text-slate-700'>
-                    {{#if award.length}}
-                    {{#each award}}
-                    <li class='flex items-center space-x-2'>
-                    <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
-                      <span><strong>{{getByLang content ../lang}}</strong>
-                        - {{getByLang isi ../lang}}</span>
-                    </li>
-                    {{/each}}
-                    {{else}}
-                    <li class='flex items-start space-x-2'>
-                                                                  <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
-                      <span><strong>Container Orchestration using Kubernetes</strong>
-                        - Big Data 101 - BD101N</span>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                                                                  <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
-                      <span><strong>Duolingo German Fluency</strong>
-                        - Elementary (Estimated)</span>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                                                                  <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
-                      <span><strong>Accelerating Through Angular 2</strong></span>
-                    </li>
-                    {{/if}}
-                  </ul>
-                </div>
-              </div>
-
               <!-- Portfolio -->
               <div
                 class='border border-slate-300 rounded-lg bg-white overflow-hidden shadow-lg'
