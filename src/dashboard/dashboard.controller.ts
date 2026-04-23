@@ -226,12 +226,13 @@ async blog(@Req() req: Request, @Res() res: Response) {
     ...kategori_tranding.map(k => k.blog?.id),
   ].filter(Boolean) as number[];
 
-  const blog = await this.dashboardService.findBlog(excludeIds);
+  // const blog = await this.dashboardService.findBlog(excludeIds);
   const kategori_blog = await this.dashboardService.findBlogCategory();
 
   res.render('blog', {
     user: req.user,
-    blog,
+    // blog,
+    excludeIds,
     kategori_blog,
     blog_tranding,
     kategori_tranding

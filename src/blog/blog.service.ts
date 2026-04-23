@@ -65,6 +65,41 @@ async getReply(comentId: number) {
   });
 }
 
+async findBlogPaginated(params: {
+  kategoriId?: string;
+  search?: string;
+  excludeIds?: number[];
+  page: number;
+  limit: number;
+}) {
+  const query = this.blogRepository.createQueryBuilder('blog')
+    .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
+    .leftJoinAndSelect('blog.likes', 'likes')
+    .leftJoinAndSelect('likes.user', 'user')
+    .orderBy('blog.createdAt', 'DESC');
+
+  // Exclude trending ids
+  if (params.excludeIds && params.excludeIds.length > 0) {
+    query.andWhere('blog.id NOT IN (:...excludeIds)', { excludeIds: params.excludeIds });
+  }
+
+  if (params.kategoriId) {
+    query.andWhere('kategori_blog.id = :kategoriId', { kategoriId: params.kategoriId });
+  }
+
+  if (params.search) {
+    query.andWhere(
+      '(blog.judul ILIKE :search OR blog.description ILIKE :search)',
+      { search: `%${params.search}%` }
+    );
+  }
+
+  query.skip((params.page - 1) * params.limit).take(params.limit);
+
+  const [data, total] = await query.getManyAndCount();
+  return { data, total };
+}
+
   async ChangeImageEditorJS(
     isi: string,
     oldFolder: string,

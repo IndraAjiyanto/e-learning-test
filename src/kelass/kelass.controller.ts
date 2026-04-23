@@ -528,8 +528,7 @@ export class KelassController {
         });
       } else {
         const kelas = await this.kelassService.findOneKelasUser(id);
-        const pertanyaan_kelas =
-          await this.kelassService.findPertanyaanKelas(id);
+        const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
         const alur_kelas = await this.kelassService.findAlurKelas(id);
         const mentor = await this.kelassService.findMentorKelas(id);
         const benefit_kelas = await this.kelassService.findBenefitKelas(id);

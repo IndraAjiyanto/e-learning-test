@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -49,6 +50,40 @@ export class BlogController {
     res.render('blog-detail', { blog, user: req.user });
     }
   }
+
+@Get('filter')
+async blogFilter(
+  @Req() req: Request,
+  @Res() res: Response,
+  @Query('kategori_id') kategoriId?: string,
+  @Query('search') search?: string,
+  @Query('page') page?: string,
+  @Query('limit') limit?: string,
+  @Query('exclude_ids') excludeIds?: string, // <-- tambah ini
+) {
+  const currentPage = parseInt(page || '1', 10);
+  const itemsPerPage = parseInt(limit || '9', 10);
+
+  // Parse exclude_ids dari string "1,2,3" ke array number
+  const parsedExcludeIds = excludeIds
+    ? excludeIds.split(',').map(id => parseInt(id, 10)).filter(Boolean)
+    : [];
+
+  const result = await this.blogService.findBlogPaginated({
+    kategoriId: kategoriId || undefined,
+    search: search || undefined,
+    excludeIds: parsedExcludeIds,
+    page: currentPage,
+    limit: itemsPerPage,
+  });
+
+  return res.json({
+    data: result.data,
+    totalItems: result.total,
+    totalPages: Math.ceil(result.total / itemsPerPage),
+    currentPage,
+  });
+}
 
   @Post('view/:id')
   async incrementViews(
