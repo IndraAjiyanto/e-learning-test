@@ -2,7 +2,7 @@
       <div class='lg:col-span-3'>
         <!-- Alumni Cards -->
         <div class='grid md:grid-cols-2 gap-6'>
-          <template x-for='alumni in displayedAlumni' :key='alumni.id'>
+          <template x-for='alumni in alumniItems' :key='alumni.id'>
             <div
               class='bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 group'
             >
@@ -83,7 +83,7 @@
         </div>
 
         <!-- No Results Message -->
-        <div x-show='displayedAlumni.length === 0' class='text-center py-12'>
+        <div x-show='alumniItems.length === 0' class='text-center py-12'>
           <div
             class='w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'
           >

@@ -1,4 +1,4 @@
-<div class='pt-24 min-h-screen bg-white' x-data='alumniApp()' x-init='init()'>
+<div class='pt-24 min-h-screen bg-white' x-data='alumniApp()'>
 
   <div class='container mx-auto px-4 pb-16'>
     <div class='text-center mb-12'>
@@ -21,13 +21,6 @@
 <script>
 function alumniApp() {
   return {
-
-    // ============================
-    // State
-    // ============================
-    allAlumni: {{#if alumni}}{{{json alumni}}}{{else}}[]{{/if}},
-    displayedAlumni: [],
-
     kelasList: {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}},
     filteredKelasList: [],
 
@@ -36,136 +29,83 @@ function alumniApp() {
     searchQuery: '',
 
     currentPage: 1,
-    itemsPerPage: 6,
     totalPages: 1,
-
+    totalItems: 0,
     loading: false,
+    alumniItems: [],
     lang: '{{lang}}' || 'id',
 
-    // ============================
-    // Init
-    // ============================
-    init() {
+    async init() {
       this.kelasList = this.kelasList.sort((a, b) =>
         a.nama_kelas.localeCompare(b.nama_kelas)
       );
-
       this.filteredKelasList = [...this.kelasList];
-      this.filterAndPaginate();
+      await this.fetchAlumni();
     },
 
-    // ============================
-    // Helper: get text by language
-    // ============================
     getByLang(obj, lang) {
       if (!obj || typeof obj !== 'object') return '';
       return obj[lang] || obj.id || obj.en || '';
     },
 
-    // ============================
-    // Filter kelas by search query
-    // ============================
     filterPrograms() {
-      if (this.searchQuery.trim() === '') {
-        this.filteredKelasList = [...this.kelasList];
-      } else {
-        const query = this.searchQuery.toLowerCase().trim();
+      const query = this.searchQuery.toLowerCase().trim();
+      this.filteredKelasList = query
+        ? this.kelasList.filter(k => k.nama_kelas.toLowerCase().includes(query))
+        : [...this.kelasList];
+    },
 
-        this.filteredKelasList = this.kelasList.filter(kelas =>
-          kelas.nama_kelas.toLowerCase().includes(query)
-        );
+    async fetchAlumni() {
+      this.loading = true;
+      try {
+        const params = new URLSearchParams();
+        if (this.selectedKelasId) params.set('kelas_id', this.selectedKelasId);
+        params.set('page', this.currentPage);
+        params.set('limit', 6);
+
+        const res = await fetch(`/dashboard/alumni/filter?${params.toString()}`);
+        const json = await res.json();
+
+        this.alumniItems = json.data;
+        this.totalItems = json.totalItems;
+        this.totalPages = json.totalPages;
+        this.currentPage = json.currentPage;
+      } catch (err) {
+        console.error('Fetch alumni error:', err);
+      } finally {
+        this.loading = false;
       }
     },
 
-    // ============================
-    // Filtering + Pagination alumni
-    // ============================
-    filterAndPaginate() {
-      let filtered = this.allAlumni;
-
-      // Filter by kelas
-      if (this.selectedKelasId) {
-        filtered = filtered.filter(
-          alumni => alumni.kelas && alumni.kelas.id == this.selectedKelasId
-        );
-      }
-
-      this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
-
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-
-      this.displayedAlumni = filtered.slice(startIndex, endIndex);
-    },
-
-    // ============================
-    // Getter: alumni untuk UI
-    // ============================
-    get alumniItems() {
-      return this.displayedAlumni || [];
-    },
-
-    // ============================
-    // Getter: total alumni setelah filter
-    // ============================
-    get totalItems() {
-      let filtered = this.allAlumni;
-
-      if (this.selectedKelasId) {
-        filtered = filtered.filter(
-          alumni => alumni.kelas && alumni.kelas.id == this.selectedKelasId
-        );
-      }
-
-      return filtered.length;
-    },
-
-    // ============================
-    // Select kelas
-    // ============================
-    selectKelas(kelasId) {
+    async selectKelas(kelasId) {
       this.selectedKelasId = kelasId;
       this.currentPage = 1;
-
-      this.filterAndPaginate();
-
       if (kelasId) {
         const kelas = this.kelasList.find(k => k.id == kelasId);
         this.selectedKelas = kelas ? kelas.nama_kelas : '';
       } else {
         this.selectedKelas = '';
       }
+      await this.fetchAlumni();
     },
 
-    // ============================
-    // Pagination
-    // ============================
-    changePage(page) {
+    async changePage(page) {
       this.currentPage = page;
-      this.filterAndPaginate();
+      await this.fetchAlumni();
     },
 
-    // ============================
-    // Reset filter
-    // ============================
-    resetFilters() {
+    async resetFilters() {
       this.selectedKelasId = null;
       this.selectedKelas = '';
       this.searchQuery = '';
-
       this.filteredKelasList = [...this.kelasList];
       this.currentPage = 1;
-
-      this.filterAndPaginate();
+      await this.fetchAlumni();
     },
 
-    // ============================
-    // Helper: ambil nama kelas alumni
-    // ============================
     getKelasName(alumni) {
       return alumni.kelas?.nama_kelas || 'Unknown';
     }
-
   };
 }
 

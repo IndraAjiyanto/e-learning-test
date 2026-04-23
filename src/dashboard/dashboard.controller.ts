@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req, Res } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { Request, Response } from 'express';
 
@@ -94,15 +94,43 @@ export class DashboardController {
     }
   }
 
+    @Get('portofolio/filter')
+  async portfolioFilter(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('kategori_id') kategoriId?: string,
+    @Query('jenis_kelas_id') jenisKelasId?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '6', 10);
+  
+    const portfolioList = await this.dashboardService.findPortfolio({
+      kategoriId: kategoriId || null,
+      jenisKelasId: jenisKelasId || null,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
+
+  
+    return res.json({
+      data: portfolioList.data,
+      totalItems: portfolioList.total,
+      totalPages: Math.ceil(portfolioList.total / itemsPerPage),
+      currentPage,
+    });
+  }
+
   @Get('portofolio')
   async portfolio(@Req() req: Request, @Res() res: Response) {
-    const portfolioList = await this.dashboardService.findPortfolio();
+    // const portfolioList = await this.dashboardService.findPortfolio();
     const kategoriList = await this.dashboardService.findKategori();
     const jenisKelasList = await this.dashboardService.findJenisKelas();
 
     res.render('portofolio', {
       user: req.user,
-      portfolio: portfolioList,
+      // portfolio: portfolioList,
       kategori: kategoriList,
       jenis_kelas: jenisKelasList,
     });
@@ -118,14 +146,37 @@ export class DashboardController {
     res.render('detail_portfolio', { user: req.user, portfolio });
   }
 
+  @Get('alumni/filter')
+async alumniFilter(
+  @Req() req: Request,
+  @Res() res: Response,
+  @Query('kelas_id') kelasId?: string,
+  @Query('page') page?: string,
+  @Query('limit') limit?: string,
+) {
+  const currentPage = parseInt(page || '1', 10);
+  const itemsPerPage = parseInt(limit || '6', 10);
+
+  const result = await this.dashboardService.findAlumni({
+    kelasId: kelasId || null,
+    page: currentPage,
+    limit: itemsPerPage,
+  });
+
+  return res.json({
+    data: result.data,
+    totalItems: result.total,
+    totalPages: Math.ceil(result.total / itemsPerPage),
+    currentPage,
+  });
+}
+
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
-    const alumniList = await this.dashboardService.findAlumni();
     const kelasList = await this.dashboardService.findKelas();
 
     res.render('alumni', {
       user: req.user,
-      alumni: alumniList,
       kelas: kelasList,
     });
   }

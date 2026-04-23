@@ -279,11 +279,74 @@ async findBlog(excludeIds: number[] = []) {
   return await qb.getMany();
 }
 
-  async findPortfolio() {
-    return await this.portfolioRepository.find({
-      relations: ['kelas', 'kelas.kategori', 'kelas.jenis_kelas', 'user'],
-    });
+async findPortfolio(options?: {
+  kategoriId?: string | null;
+  jenisKelasId?: string | null;
+  page?: number;
+  limit?: number;
+}) {
+  const page = options?.page || 1;
+  const limit = options?.limit || 6;
+  const skip = (page - 1) * limit;
+
+  const where: any = {};
+
+  if (options?.kategoriId) {
+    where.kelas = {
+      ...where.kelas,
+      kategori: { id: options.kategoriId }
+    };
   }
+
+  if (options?.jenisKelasId) {
+    where.kelas = {
+      ...where.kelas,
+      jenis_kelas: { id: options.jenisKelasId }
+    };
+  }
+
+  const [data, total] = await this.portfolioRepository.findAndCount({
+    where,
+    relations: ['kelas', 'kelas.kategori', 'kelas.jenis_kelas', 'user'],
+    skip,
+    take: limit,
+  });
+
+  return { data, total };
+}
+
+
+async findAlumni(options?: {
+  kelasId?: string | null;
+  page?: number;
+  limit?: number;
+}) {
+  const page = options?.page || 1;
+  const limit = options?.limit || 6;
+  const skip = (page - 1) * limit;
+
+  const where: any = {};
+
+  if (options?.kelasId) {
+    where.kelas = { id: options.kelasId };
+  }
+
+  const [data, total] = await this.alumniRepository.findAndCount({
+    where,
+    relations: ['kelas'],
+    order: { createdAt: 'DESC' },
+    skip,
+    take: limit,
+  });
+
+  return { data, total };
+}
+
+  // async findPortfolio() {
+  //   return await this.portfolioRepository.find({
+  //     relations: ['kelas', 'kelas.kategori', 'kelas.jenis_kelas', 'user'],
+  //   });
+  // }
 
   async findOnePortfolio(portfolioId: number) {
     return await this.portfolioRepository.findOne({
@@ -296,13 +359,13 @@ async findBlog(excludeIds: number[] = []) {
     return await this.faqRepository.find();
   }
 
-  async findAlumni() {
-    return await this.alumniRepository.find({
-      relations: ['kelas'],
-      order: { createdAt: 'DESC' },
-      take: 6,
-    });
-  }
+  // async findAlumni() {
+  //   return await this.alumniRepository.find({
+  //     relations: ['kelas'],
+  //     order: { createdAt: 'DESC' },
+  //     take: 6,
+  //   });
+  // }
 
   async findKerjaSama() {
     return await this.kerjaSamaRepository.find({
