@@ -12,6 +12,7 @@ import {
   UploadedFile,
   UseFilters,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { KelassService } from './kelass.service';
 import { CreateKelassDto } from './dto/create-kelass.dto';
@@ -189,13 +190,42 @@ export class KelassController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     if (req.user!.role === 'super_admin') {
-      const kelas = await this.kelassService.allKelas();
-      res.render('admin/kelas/index', { user: req.user, kelas });
+      // const kelas = await this.kelassService.allKelas();
+      res.render('admin/kelas/index', { user: req.user });
     } else if (req.user!.role === 'admin') {
-      const kelas = await this.kelassService.findKelasByMentoring(req.user!.id);
-      res.render('admin/kelas/index', { user: req.user, kelas });
+      // const kelas = await this.kelassService.findKelasByMentoring(req.user!.id);
+      res.render('admin/kelas/index', { user: req.user });
     }
   }
+
+  @Roles('admin', 'super_admin')
+@Get('filter')
+async filterKelas(
+  @Res() res: Response,
+  @Req() req: Request,
+  @Query('search') search?: string,
+  @Query('alphabet') alphabet?: string,
+  @Query('page') page?: string,
+  @Query('limit') limit?: string,
+) {
+  const currentPage = parseInt(page || '1', 10);
+  const itemsPerPage = parseInt(limit || '5', 10);
+
+  const result = await this.kelassService.findKelasPaginated({
+    search: search || undefined,
+    alphabet: alphabet || undefined,
+    page: currentPage,
+    limit: itemsPerPage,
+    userId: req.user!.role === 'admin' ? req.user!.id : undefined,
+  });
+
+  return res.json({
+    data: result.data,
+    totalItems: result.total,
+    totalPages: Math.ceil(result.total / itemsPerPage),
+    currentPage,
+  });
+}
 
   @Roles('admin', 'super_admin')
   @Get('/create')

@@ -673,6 +673,45 @@ export class KelassService {
     return await this.kelasRepository.find({ relations: ['kategori'] });
   }
 
+  async findKelasPaginated(params: {
+  search?: string;
+  alphabet?: string;
+  page: number;
+  limit: number;
+  userId?: number; // kalau ada = admin, kalau tidak = super_admin
+}) {
+  const query = this.kelasRepository.createQueryBuilder('kelas')
+    .leftJoinAndSelect('kelas.kategori', 'kategori')
+    .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
+    .leftJoinAndSelect('kelas.mentoring', 'mentoring')
+    .leftJoinAndSelect('mentoring.user', 'mentorUser')
+    .orderBy('kelas.id', 'DESC');
+
+  // Filter by mentor (admin only)
+  if (params.userId) {
+    query.innerJoin('kelas.mentoring', 'm')
+      .andWhere('m.userId = :userId', { userId: params.userId });
+  }
+
+if (params.search) {
+  query.andWhere(
+    '(kelas.nama_kelas ILIKE :search OR kategori.nama_kategori ILIKE :search)',
+    { search: `%${params.search}%` }
+  );
+}
+
+  if (params.alphabet) {
+    query.andWhere('kelas.nama_kelas ILIKE :alphabet', {
+      alphabet: `${params.alphabet}%`,
+    });
+  }
+
+  query.skip((params.page - 1) * params.limit).take(params.limit);
+
+  const [data, total] = await query.getManyAndCount();
+  return { data, total };
+}
+
   async findAllLaunch() {
     return await this.kelasRepository.find({
       where: { launch: true },
