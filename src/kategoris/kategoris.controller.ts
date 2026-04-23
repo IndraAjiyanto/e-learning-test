@@ -96,12 +96,12 @@ export class KategorisController {
     const alumni = await this.kategorisService.findAlumniByKategori(
       kategori.id,
     );
-    const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
+    // const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
     if (kategori?.type === 'Special Program') {
       res.render('special_program', {
         kategori,
         user: req.user,
-        kelas,
+        // kelas,
         alumni,
         benefit_category,
         flow_category,
@@ -109,7 +109,7 @@ export class KategorisController {
         pertanyaan_umum,
       });
     } else if (kategori?.type === 'Program') {
-      res.render('program', { kategori, user: req.user, kelas, alumni });
+      res.render('program', { kategori, user: req.user, alumni });
     }
   }
 

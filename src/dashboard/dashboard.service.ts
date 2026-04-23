@@ -194,6 +194,41 @@ async findKategoriTrending(userId?: number) {
     });
   }
 
+  async findKelasPaginated(params: {
+  kategori?: string;
+  jenisKelas?: string;
+  metode?: string;
+  search?: string;
+  page: number;
+  limit: number;
+}) {
+  const query = this.kelasRepository.createQueryBuilder('kelas')
+    .leftJoinAndSelect('kelas.kategori', 'kategori')
+    .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
+    .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
+    .where('kelas.launch = :launch', { launch: true });
+
+  if (params.kategori) {
+    query.andWhere('kategori.nama_kategori = :kategori', { kategori: params.kategori });
+  }
+  if (params.jenisKelas) {
+    query.andWhere('jenis_kelas.nama_jenis_kelas = :jenisKelas', { jenisKelas: params.jenisKelas });
+  }
+  if (params.metode) {
+    query.andWhere('kelas.metode = :metode', { metode: params.metode });
+  }
+  if (params.search) {
+    query.andWhere('kelas.nama_kelas ILIKE :search', { search: `%${params.search}%` });
+  }
+
+  query.orderBy('kelas.id', 'DESC')
+    .skip((params.page - 1) * params.limit)
+    .take(params.limit);
+
+  const [data, total] = await query.getManyAndCount();
+  return { data, total };
+}
+
   async findVisiMisi() {
     return await this.visiRepository.find();
   }

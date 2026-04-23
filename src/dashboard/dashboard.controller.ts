@@ -6,9 +6,40 @@ import { Request, Response } from 'express';
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
+  @Get('kelas/filter')
+async kelasFilter(
+  @Req() req: Request,
+  @Res() res: Response,
+  @Query('kategori') kategori?: string,
+  @Query('jenis_kelas') jenisKelas?: string,
+  @Query('metode') metode?: string,
+  @Query('search') search?: string,
+  @Query('page') page?: string,
+  @Query('limit') limit?: string,
+) {
+  const currentPage = parseInt(page || '1', 10);
+  const itemsPerPage = parseInt(limit || '6', 10);
+
+  const result = await this.dashboardService.findKelasPaginated({
+    kategori: kategori || undefined,
+    jenisKelas: jenisKelas || undefined,
+    metode: metode || undefined,
+    search: search || undefined,
+    page: currentPage,
+    limit: itemsPerPage,
+  });
+
+  return res.json({
+    data: result.data,
+    totalItems: result.total,
+    totalPages: Math.ceil(result.total / itemsPerPage),
+    currentPage,
+  });
+}
+
   @Get()
   async getProtected(@Req() req: Request, @Res() res: Response) {
-    const kelas = await this.dashboardService.findAllKelas();
+    // const kelas = await this.dashboardService.findAllKelas();
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
@@ -36,7 +67,7 @@ export class DashboardController {
         res.render('dashboard', {
           special_program,
           user: req.user,
-          kelas,
+          // kelas,
           faq,
           gambar_benefit_1,
           gambar_benefit_2,
@@ -74,7 +105,7 @@ export class DashboardController {
       res.render('dashboard', {
         special_program,
         user: req.user,
-        kelas,
+        // kelas,
         faq,
         gambar_benefit_1,
         gambar_benefit_2,
