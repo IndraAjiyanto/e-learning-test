@@ -48,6 +48,7 @@
       this.loading = true;
       try {
         const params = new URLSearchParams();
+        params.set('userId', `{{user.id}}`)
         if (this.tab !== 'all') params.set('kategori', this.tab);
         if (this.selectedCategory !== 'all') params.set('jenis_kelas', this.selectedCategory);
         if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);

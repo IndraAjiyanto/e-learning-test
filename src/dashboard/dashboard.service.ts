@@ -195,6 +195,7 @@ async findKategoriTrending(userId?: number) {
   }
 
   async findKelasPaginated(params: {
+    userId?: number;
   kategori?: string;
   jenisKelas?: string;
   metode?: string;
@@ -207,6 +208,10 @@ async findKategoriTrending(userId?: number) {
     .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
     .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
     .where('kelas.launch = :launch', { launch: true });
+
+    if(params.userId){
+      query.andWhere('user_kelas.user.id = :userId', { userId: params.userId });
+    }
 
   if (params.kategori) {
     query.andWhere('kategori.nama_kategori = :kategori', { kategori: params.kategori });

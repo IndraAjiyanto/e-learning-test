@@ -10,6 +10,7 @@ export class DashboardController {
 async kelasFilter(
   @Req() req: Request,
   @Res() res: Response,
+  @Query('userId') userId?: number,
   @Query('kategori') kategori?: string,
   @Query('jenis_kelas') jenisKelas?: string,
   @Query('metode') metode?: string,
@@ -21,6 +22,7 @@ async kelasFilter(
   const itemsPerPage = parseInt(limit || '6', 10);
 
   const result = await this.dashboardService.findKelasPaginated({
+    userId: userId || undefined,
     kategori: kategori || undefined,
     jenisKelas: jenisKelas || undefined,
     metode: metode || undefined,
