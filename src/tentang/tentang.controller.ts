@@ -29,7 +29,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
-@Controller('tentang')
+@Controller('about')
 export class TentangController {
   constructor(private readonly tentangService: TentangService) {}
 

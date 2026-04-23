@@ -423,11 +423,11 @@ export class KelassController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kelas = await this.kelassService.findMyCourse(id);
+    // const kelas = await this.kelassService.findMyCourse(id);
     const kategori = await this.kelassService.findKategoriMyProgram(id);
     const jenis_kelas = await this.kelassService.findJenisKelasMyProgram(id);
     res.render('user/mycourse', {
-      kelas,
+      // kelas,
       user: req.user,
       kategori,
       jenis_kelas,
