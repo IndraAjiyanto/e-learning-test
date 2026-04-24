@@ -1,18 +1,89 @@
 <div
   class='bg-gradient-to-br from-slate-50 to-white text-slate-900 px-6 py-10 pt-28'
-  x-data="{ activeTab: 'info' }"
 >
   <div
     class='max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10'
   >
 
-    <!-- Left Content -->
-    <div class='lg:col-span-2 space-y-8'>
+    <div class='lg:col-span-2 space-y-8' 
+    x-init="fetchTab(activeTab); activeTab = localStorage.getItem('activeDetailTab_{{kelas.id}}') || 'info';"
+    x-data="{
+
+    activeTab: localStorage.getItem('activeDetailTab_{{kelas.id}}') || 'info',
+
+    benefit: null,
+    faq: null,
+    flow: null,
+    mentor: null,
+    lang: '{{lang}}',
+
+    loading: {
+      benefit: false,
+      faq: false,
+      flow: false,
+      mentor: false
+    },
+    fetched: {
+      benefit: false,
+      faq: false,
+      flow: false,
+      mentor: false
+    },
+
+    init() {
+        // Ambil dari localStorage saat komponen siap
+        const savedTab = localStorage.getItem('activeDetailTab_{{kelas.id}}');
+        if (savedTab) {
+            this.activeTab = savedTab;
+        }
+        
+        // Langsung jalankan fetch untuk tab yang aktif
+        this.fetchTab(this.activeTab);
+
+        // Otomatis simpan setiap kali activeTab berubah
+        this.$watch('activeTab', value => {
+            localStorage.setItem('activeDetailTab_{{kelas.id}}', value);
+        });
+    },
+
+    async fetchTab(tab) {
+      if (tab === 'info') return;
+      if (this.fetched[tab]) return;
+      this.loading[tab] = true;
+      
+      try {
+        const map = {
+          benefit: '/program/api/detail/{{kelas.id}}/benefit',
+          faq:     '/program/api/detail/{{kelas.id}}/faq',
+          flow:    '/program/api/detail/{{kelas.id}}/flow',
+          mentor:  '/program/api/detail/{{kelas.id}}/mentor'
+        };
+        const res = await fetch(map[tab]);
+        const json = await res.json();
+        this[tab] = json;
+        this.fetched[tab] = true;
+      } catch(e) {
+        console.error(e);
+      } finally {
+        this.loading[tab] = false;
+      }
+    },
+
+    getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
+    },
+
+    switchTab(tab) {
+      this.activeTab = tab;
+      localStorage.setItem('activeDetailTab_{{kelas.id}}', tab);
+      this.fetchTab(tab);
+    }
+  }">
 {{> program_Bdetail/left_content/program_priview}}
 
 {{> program_Bdetail/left_content/tab}}
 
-      <!-- Tab Content -->
       <div>
 {{> program_Bdetail/left_content/tab_content/information}}
 
@@ -25,7 +96,6 @@
 {{> program_Bdetail/left_content/tab_content/mentor}}
       </div>
     </div>
-
 
     <aside
       class='space-y-6'

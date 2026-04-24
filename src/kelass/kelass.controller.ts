@@ -507,10 +507,10 @@ async filterKelas(
     let isUserInKelas = false;
     if (!req.user) {
       const kelas = await this.kelassService.findOneKelasUser(id);
-      const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
-      const alur_kelas = await this.kelassService.findAlurKelas(id);
-      const mentor = await this.kelassService.findMentorKelas(id);
-      const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+      // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+      // const alur_kelas = await this.kelassService.findAlurKelas(id);
+      // const mentor = await this.kelassService.findMentorKelas(id);
+      // const benefit_kelas = await this.kelassService.findBenefitKelas(id);
       const teknologi = await this.kelassService.findTeknologiKelas(id);
       const cicilan = await this.kelassService.findCicilanKelas(id);
       const user_kelas = await this.kelassService.findUserKelas(id);
@@ -520,10 +520,10 @@ async filterKelas(
         kelas,
         kelass,
         daftar,
-        pertanyaan_kelas,
-        alur_kelas,
-        mentor,
-        benefit_kelas,
+        // pertanyaan_kelas,
+        // alur_kelas,
+        // mentor,
+        // benefit_kelas,
         teknologi,
         cicilan,
         user_kelas,
@@ -558,10 +558,10 @@ async filterKelas(
         });
       } else {
         const kelas = await this.kelassService.findOneKelasUser(id);
-        const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
-        const alur_kelas = await this.kelassService.findAlurKelas(id);
-        const mentor = await this.kelassService.findMentorKelas(id);
-        const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+        // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+        // const alur_kelas = await this.kelassService.findAlurKelas(id);
+        // const mentor = await this.kelassService.findMentorKelas(id);
+        // const benefit_kelas = await this.kelassService.findBenefitKelas(id);
         const teknologi = await this.kelassService.findTeknologiKelas(id);
         const cicilan = await this.kelassService.findCicilanKelas(id);
         const user_kelas = await this.kelassService.findUserKelas(id);
@@ -572,16 +572,40 @@ async filterKelas(
           kelas,
           kelass,
           daftar,
-          pertanyaan_kelas,
-          alur_kelas,
-          mentor,
-          benefit_kelas,
+          // pertanyaan_kelas,
+          // alur_kelas,
+          // mentor,
+          // benefit_kelas,
           teknologi,
           user_kelas,
           cicilan,
         });
       }
     }
+  }
+
+  @Get('api/detail/:id/benefit')
+  async getBenefit(@Param('id') id: number, @Res() res: Response) {
+    const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+    return res.json({ benefit_kelas });
+  }
+
+  @Get('api/detail/:id/faq')
+  async getFaq(@Param('id') id: number, @Res() res: Response) {
+    const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+    return res.json({ pertanyaan_kelas });
+  }
+
+  @Get('api/detail/:id/flow')
+  async getFlow(@Param('id') id: number, @Res() res: Response) {
+    const alur_kelas = await this.kelassService.findAlurKelas(id);
+    return res.json({ alur_kelas });
+  }
+
+  @Get('api/detail/:id/mentor')
+  async getMentor(@Param('id') id: number, @Res() res: Response) {
+    const mentor = await this.kelassService.findMentorKelas(id);
+    return res.json({ mentor });
   }
 
   @Roles('admin', 'super_admin')
