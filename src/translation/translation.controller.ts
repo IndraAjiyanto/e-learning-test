@@ -27,6 +27,8 @@ export class TranslationController {
     const allowed = ['id', 'en', 'ja'];
     const selected = allowed.includes(lang) ? lang : 'id';
 
+    console.log('Selected language:', selected);
+
     res.cookie('lang', selected, {
       httpOnly: false,
       secure: true,
@@ -36,6 +38,7 @@ export class TranslationController {
     });
 
     const backUrl = req.headers.referer || '/';
+    console.log('Redirecting back to:', backUrl);
 
     return res.redirect(backUrl);
   }
