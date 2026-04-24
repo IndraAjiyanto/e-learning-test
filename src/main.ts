@@ -285,7 +285,9 @@ app.use((req: any, res: Response, next: NextFunction) => {
 });
 
   app.use((req: Request, res: Response, next: NextFunction) => {
-    const lang = req.cookies?.lang || 'id';
+
+    console.log('Cookies:', req.cookies.lang);
+    const lang = req.cookies?.lang || 'en';
     res.locals.currentLang = lang;
     res.locals.lang = lang;
     next();
