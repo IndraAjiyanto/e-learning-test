@@ -1,26 +1,26 @@
     <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-12 px-4">
-      <button @click="statusTab = 'all'"
+      <button @click="switchStatusTab('all')"
         :class="statusTab === 'all' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
         class="px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-base">
         <i class="fas fa-list text-xs md:text-sm"></i>
         <span class="hidden sm:inline">{{t "test.historyPayment.allStatus"}}</span>
         <span class="sm:hidden">{{t "test.historyPayment.all"}}</span>
       </button>
-      <button @click="statusTab = 'acc'"
+      <button @click="switchStatusTab('acc')"
         :class="statusTab === 'acc' ? 'bg-gradient-to-r from-emerald-500 to-emerald-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200'"
         class="px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-base">
         <i class="fas fa-check-circle text-xs md:text-sm"></i>
         <span class="hidden sm:inline">{{t "test.historyPayment.accepted"}}</span>
         <span class="sm:hidden">{{t "test.historyPayment.accept"}}</span>
       </button>
-      <button @click="statusTab = 'proces'"
+      <button @click="switchStatusTab('proces')"
         :class="statusTab === 'proces' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-amber-50 border border-slate-200'"
         class="px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-base">
         <i class="fas fa-clock text-xs md:text-sm"></i>
         <span class="hidden sm:inline">{{t "test.historyPayment.processing"}}</span>
         <span class="sm:hidden">{{t "test.historyPayment.process"}}</span>
       </button>
-      <button @click="statusTab = 'rejected'"
+      <button @click="switchStatusTab('rejected')"
         :class="statusTab === 'rejected' ? 'bg-gradient-to-r from-red-500 to-red-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-red-50 border border-slate-200'"
         class="px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-base">
         <i class="fas fa-times-circle text-xs md:text-sm"></i>
