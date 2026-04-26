@@ -60,7 +60,7 @@ export class MaterisController {
       await this.materisService.create(createMaterisDto);
       req.flash('success', 'Successfully created PDF material');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create PDF material');
       res.redirect(`/session/${pertemuanId}`);
     }
@@ -81,7 +81,7 @@ export class MaterisController {
       await this.materisService.create(createMaterisDto);
       req.flash('success', 'Successfully created PPT material');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating PPT material:', error);
       req.flash('error', error.message || 'Failed to create PPT material');
       res.redirect(`/session/${pertemuanId}`);
@@ -102,7 +102,7 @@ export class MaterisController {
       await this.materisService.create(createMaterisDto);
       req.flash('success', 'Successfully created video material');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create video material');
       res.redirect(`/session/${pertemuanId}`);
     }
@@ -226,7 +226,7 @@ export class MaterisController {
       await this.materisService.remove(materiId);
       req.flash('success', 'successfully delete materi');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'failed delete materi');
       res.redirect(`/session/${pertemuanId}`);
     }

@@ -39,7 +39,7 @@ export class PertemuansController {
       await this.pertemuansService.create(createPertemuanDto);
       req.flash('success', 'session succesfuly create');
       res.redirect(`program/detail/program/admin/${createPertemuanDto.mingguId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'session unsucces create');
       res.redirect(`program/detail/program/admin/${createPertemuanDto.mingguId}`);
     }
@@ -60,7 +60,7 @@ export class PertemuansController {
       await this.pertemuansService.create(createPertemuanDto);
       req.flash('success', 'session succesfuly create');
       res.redirect(`/week/${mingguId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'session unsucces create');
       res.redirect(`/week/${mingguId}`);
     }
@@ -199,7 +199,7 @@ export class PertemuansController {
       await this.pertemuansService.update(pertemuanId, updatePertemuanDto);
       req.flash('success', 'Session successfuly update');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Session unsuccess update');
       res.redirect(`/session/${pertemuanId}`);
     }
@@ -217,7 +217,7 @@ export class PertemuansController {
       await this.pertemuansService.remove(id, mingguId);
       req.flash('success', 'session successfuly delete');
       res.redirect(`/week/${mingguId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'session unsucces delete');
       res.redirect(`/week/${mingguId}`);
     }

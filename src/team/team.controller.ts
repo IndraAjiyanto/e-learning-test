@@ -55,7 +55,7 @@ export class TeamController {
       await this.teamService.create(createTeamDto);
       req.flash('success', 'team successfully created');
       res.redirect('/team');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'team failed to create');
       res.redirect('/team');
     }
@@ -111,7 +111,7 @@ export class TeamController {
       await this.teamService.update(teamId, updateTeamDto);
       req.flash('success', 'team successfully updated');
       res.redirect('/team');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'team failed to update');
       res.redirect('/team');
     }
@@ -130,7 +130,7 @@ export class TeamController {
       await this.teamService.remove(teamId);
       req.flash('success', 'team successfully deleted');
       res.redirect('/team');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'team failed to delete');
       res.redirect('/team');
     }

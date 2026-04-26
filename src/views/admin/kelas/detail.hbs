@@ -384,10 +384,8 @@ function tabData() {
         
         this.data = await response.json();
         localStorage.setItem('activeData', JSON.stringify(this.data));
-        console.log('✅ Data fetched:', this.data);
         }
       } catch (error) {
-        console.error('❌ Error:', error);
       }
     }
   }

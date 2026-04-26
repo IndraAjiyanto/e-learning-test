@@ -58,7 +58,7 @@ export class TentangController {
       await this.tentangService.create(createTentangDto);
       req.flash('success', 'Header successfully created');
       res.redirect('/about');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Header failed to create');
       res.redirect('/about');
     }
@@ -130,7 +130,7 @@ export class TentangController {
       await this.tentangService.update(id, updateTentangDto);
       req.flash('success', 'Header successfully updated');
       res.redirect('/about');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Header failed to update');
       res.redirect('/about');
     }
@@ -149,7 +149,7 @@ export class TentangController {
       await this.tentangService.remove(id);
       req.flash('success', 'Header successfully deleted');
       res.redirect('/about');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Header failed to delete');
       res.redirect('/about');
     }

@@ -34,7 +34,7 @@ export class JenisKelasController {
       await this.jenisKelasService.create(createJenisKelaDto);
       req.flash('success', 'Program type successfully created');
       res.redirect('/type-program');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'Program type failed to created');
       res.render('type-program');
     }
@@ -82,7 +82,7 @@ export class JenisKelasController {
       await this.jenisKelasService.update(jenis_kelasId, updateJenisKelaDto);
       req.flash('success', 'Program type successfully update');
       res.redirect('/type-program');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Program type failed to updated');
       res.redirect('/type-program');
     }
@@ -104,7 +104,7 @@ export class JenisKelasController {
       await this.jenisKelasService.remove(jenis_kelasId);
       req.flash('success', 'Program type successfully delete');
       res.redirect('/type-program');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Program type failed to deleted');
       res.redirect('/type-program');
     }

@@ -73,7 +73,7 @@ export class UsersController {
         'Password reset link has been sent to your email. Please check your inbox.',
       );
       res.redirect('/users/forgot-password?token=' + token);
-    } catch (error) {
+    } catch (error: any) {
       const user = await this.usersService.findUserByEmail(
         forgotPasswordDto.email,
       );
@@ -95,7 +95,7 @@ export class UsersController {
     try {
       await this.usersService.validateResetToken(token);
       return res.render('reset-password', { token });
-    } catch (error) {
+    } catch (error: any) {
       const token = await this.usersService.findUserByEmail(email);
       req.flash('error', 'Invalid or missing reset token');
       return res.redirect(
@@ -117,7 +117,7 @@ export class UsersController {
         'Password has been reset successfully! You can now login with your new password.',
       );
       res.redirect('/login');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to reset password');
       res.redirect(`/users/reset-password?token=${resetPasswordDto.token}`);
     }
@@ -137,7 +137,7 @@ export class UsersController {
       const user = await this.usersService.sendVerificationEmail(token);
       req.flash('success', 'Verification email sent successfully');
       res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to send verification email');
       res.redirect('/users/send-verify-email');
     }
@@ -156,7 +156,7 @@ export class UsersController {
         remainingMs: remainingMs,
         user: user,
       });
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to send verification email');
       return res.render('verify-email');
     }
@@ -173,7 +173,7 @@ export class UsersController {
       await this.usersService.verifyEmail(token);
       req.flash('success', 'Email verified successfully! You can now login.');
       res.redirect('/login');
-    } catch (error) {
+    } catch (error: any) {
       const user = await this.usersService.findUserByEmail(email);
       req.flash('error', error.message || 'Email verification failed');
       res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
@@ -211,7 +211,7 @@ export class UsersController {
       await this.usersService.create(createUserDto);
       req.flash('success', 'User created successfully');
       res.redirect('/users');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create user');
       res.redirect('/users');
     }
@@ -305,7 +305,7 @@ async filterUsers(
       } else {
         req.flash('error', 'Failed to update user');
       }
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to update user');
       res.redirect('/users/profile');
     }
@@ -345,7 +345,7 @@ async filterUsers(
       await this.usersService.update(userId, updateUserDto);
       req.flash('success', 'User successfully updated');
       res.redirect('/users');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'User failed to update');
       res.redirect('/users');
     }
@@ -368,7 +368,7 @@ async filterUsers(
         req.flash('error', 'Unauthorized access');
         res.redirect('/users/profile');
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error.message || 'Failed to update password';
       req.flash('error', errorMessage);
       res.redirect('/users/profile');
@@ -413,7 +413,7 @@ async filterUsers(
         req.flash('error', 'update profile failed');
         res.redirect('/users/profile');
       }
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'update profile failed');
       res.redirect('/users/profile');
     }
@@ -440,7 +440,7 @@ async filterUsers(
 
       req.flash('success', 'User successfully deleted');
       res.redirect('/users');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete user');
       res.redirect('/users');
     }

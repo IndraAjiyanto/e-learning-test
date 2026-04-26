@@ -24,8 +24,7 @@ export class JawabanUsersController {
     try {
     await this.jawabanUsersService.createAnswer(jawabanUserDto);
       
-    } catch (error) {
-      console.log("error" + error);
+    } catch (error: any) {
     }
   }
 
@@ -44,7 +43,7 @@ export class JawabanUsersController {
 
       req.flash('success', 'Success complete quiz');
       res.redirect(`/quiz/form/${quizId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'unsuccess complete quiz');
       res.redirect(`/quiz/form/${quizId}`);
     }

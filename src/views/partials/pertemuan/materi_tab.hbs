@@ -102,23 +102,18 @@ function materiModal() {
     },
     
     openModal(data) {
-      console.log('Opening modal with data:', data);
-      console.log('Jenis file:', data.jenis_file);
-      console.log('Slides:', data.slides);
       
       this.materi = data;
       
       // Pastikan slides adalah array
       if (data.slides && !Array.isArray(data.slides)) {
-        console.log('Slides bukan array, converting...');
         this.materi.slides = [];
       }
       
       this.currentSlide = 0;
       this.isOpen = true;
       document.body.style.overflow = 'hidden';
-      
-      console.log('Modal opened, isOpen:', this.isOpen);
+    
     },
     
     closeModal() {

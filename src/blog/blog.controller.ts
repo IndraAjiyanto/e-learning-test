@@ -264,7 +264,7 @@ async blogFilter(
       await this.blogService.create(createBlogDto);
       req.flash('success', 'Blog successfully created');
       res.redirect('/blog');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }
@@ -285,7 +285,7 @@ async blogFilter(
     try {
       const imageUrl = req.body.uploadedImageUrls?.[0];
       res.json({ success: 1, file: { url: imageUrl } });
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }
@@ -392,7 +392,7 @@ if (updateBlogDto.isi['ja']) {
       await this.blogService.update(id, updateBlogDto);
       req.flash('success', 'Blog successfully updated');
       res.redirect('/blog');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog failed to update');
       res.redirect('/blog');
     }
@@ -445,7 +445,7 @@ await Promise.all(
       await this.blogService.remove(id);
       req.flash('success', 'Blog successfully removed');
       res.redirect('/blog');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog failed to remove');
       res.redirect('/blog');
     }
@@ -460,7 +460,7 @@ await Promise.all(
     try {
       await this.blogService.deleteComment(id);
       return res.json({ success: true });
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).json({ success: false, message: error.message });
     }
   }

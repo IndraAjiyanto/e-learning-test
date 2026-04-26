@@ -34,7 +34,7 @@ export class AwardController {
       await this.awardService.create(createAwardDto);
       req.flash('success', 'award successfully created');
       res.redirect('/award');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'award failed to create');
       res.redirect('/award');
     }
@@ -70,7 +70,7 @@ export class AwardController {
       await this.awardService.update(id, updateAwardDto);
       req.flash('success', 'award successfully updated');
       res.redirect('/award');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'award failed to update');
       res.redirect('/award');
     }
@@ -87,7 +87,7 @@ export class AwardController {
       await this.awardService.remove(id);
       req.flash('success', 'award successfully deleted');
       res.redirect('/award');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'award failed to delete');
       res.redirect('/award');
     }

@@ -35,7 +35,7 @@ export class BackgroundController {
       await this.backgroundService.create(createBackgroundDto);
       req.flash('success', 'background successfully created');
       res.redirect('/background');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'background failed to create');
       res.redirect('/background');
     }
@@ -71,7 +71,7 @@ export class BackgroundController {
       await this.backgroundService.update(id, updateBackgroundDto);
       req.flash('success', 'background successfully updated');
       res.redirect('/background');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'background failed to update');
       res.redirect('/background');
     }
@@ -88,7 +88,7 @@ export class BackgroundController {
       await this.backgroundService.remove(id);
       req.flash('success', 'background successfully deleted');
       res.redirect('/background');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'background failed to delete');
       res.redirect('/background');
     }

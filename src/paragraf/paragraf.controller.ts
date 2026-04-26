@@ -34,7 +34,7 @@ export class ParagrafController {
       await this.paragrafService.create(createParagrafDto);
       req.flash('success', 'paragraph succesfuly create');
       res.redirect('/paragraf');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create paragraph');
       res.redirect('/paragraf');
     }
@@ -76,7 +76,7 @@ export class ParagrafController {
       await this.paragrafService.update(id, updateParagrafDto);
       req.flash('success', 'paragraph succesfuly update');
       res.redirect('/paragraf');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to update paragraph');
       res.redirect('/paragraf');
     }
@@ -93,7 +93,7 @@ export class ParagrafController {
       await this.paragrafService.remove(id);
       req.flash('success', 'paragraph succesfuly delete');
       res.redirect('/paragraf');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete paragraph');
       res.redirect('/paragraf');
     }

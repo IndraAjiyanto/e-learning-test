@@ -65,8 +65,7 @@ export class KategoriBlogController {
       await this.kategoriBlogService.create(createKategoriBlogDto);
       req.flash('success', 'Blog Category successfully created');
       res.redirect('/category-blog');
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog Category failed to create');
       res.redirect('/category-blog');
     }
@@ -84,8 +83,7 @@ export class KategoriBlogController {
       await this.kategoriBlogService.update(+id, updateKategoriBlogDto);
       req.flash('success', 'Blog Category successfully updated');
       res.redirect('/category-blog');
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog Category failed to update');
       res.redirect('/category-blog');
     }
@@ -107,7 +105,7 @@ export class KategoriBlogController {
       await this.kategoriBlogService.remove(+id);
       req.flash('success', 'Blog Category successfully removed');
       res.redirect('/category-blog');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog Category failed to remove');
       res.redirect('/category-blog');
     }

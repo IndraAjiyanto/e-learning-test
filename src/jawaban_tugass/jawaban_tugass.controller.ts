@@ -39,7 +39,7 @@ export class JawabanTugassController {
       await this.jawabanTugassService.create(createJawabanTugassDto);
       req.flash('success', 'submission successfuly send');
       res.redirect(`/answer-assigment/${pertemuanId}/${tugasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'submission unsuccess send');
       res.redirect(`/answer-assigment/${pertemuanId}/${tugasId}`);
     }
@@ -100,7 +100,6 @@ export class JawabanTugassController {
   ) {
     try {
       const tugas = await this.jawabanTugassService.findTugas(tugasId);
-      console.log('updateJawabanTugassDto', updateJawabanTugassDto.proses);
       if (!updateJawabanTugassDto.proses) {
         updateJawabanTugassDto.proses = 'proces';
       }
@@ -121,7 +120,7 @@ export class JawabanTugassController {
         req.flash('success', 'Update answer successfuly');
         res.redirect(`/answer-assigment/${tugas.pertemuan.id}/${tugas.id}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       const tugas = await this.jawabanTugassService.findTugas(tugasId);
       if (req.user?.role.includes('admin')) {
         req.flash('error', error.message || 'Update answer unsuccessfully');

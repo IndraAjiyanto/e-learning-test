@@ -35,7 +35,7 @@ export class ExperienceController {
       await this.experienceService.create(createExperienceDto);
       req.flash('success', 'experience successfully created');
       res.redirect('/experience');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'experience failed to create');
       res.redirect('/experience');
     }
@@ -71,7 +71,7 @@ export class ExperienceController {
       await this.experienceService.update(id, updateExperienceDto);
       req.flash('success', 'experience successfully updated');
       res.redirect('/experience');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'experience failed to update');
       res.redirect('/experience');
     }
@@ -88,7 +88,7 @@ export class ExperienceController {
       await this.experienceService.remove(id);
       req.flash('success', 'experience successfully deleted');
       res.redirect('/experience');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'experience failed to delete');
       res.redirect('/experience');
     }

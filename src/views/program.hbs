@@ -33,7 +33,6 @@
       this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
       await this.fetchKelas();
-      console.log('Initial Kelas Items:', this.courseCategoriesData);
     },
 
     async fetchKelas() {

@@ -387,6 +387,14 @@ async findAlumni(options?: {
   return { data, total };
 }
 
+  async findAllAlumni() {
+    return await this.alumniRepository.find({
+      relations: ['kelas'],
+      order: { createdAt: 'DESC' },
+      take: 6,
+    });
+  }
+
   // async findPortfolio() {
   //   return await this.portfolioRepository.find({
   //     relations: ['kelas', 'kelas.kategori', 'kelas.jenis_kelas', 'user'],

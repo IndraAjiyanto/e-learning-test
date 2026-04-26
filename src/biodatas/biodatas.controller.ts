@@ -35,7 +35,7 @@ export class BiodatasController {
       await this.biodatasService.create(createBiodataDto);
       req.flash('success', 'biodata successfully create');
       res.redirect('/users/profile');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'biodata failed to create');
       res.redirect('/users/profile');
     }
@@ -70,7 +70,7 @@ export class BiodatasController {
       await this.biodatasService.update(biodataId, updateBiodataDto);
       req.flash('success', 'biodata successfully update');
       res.redirect('/users/profile');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'biodata failed to update');
       res.redirect('/users/profile');
     }

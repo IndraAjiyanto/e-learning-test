@@ -56,7 +56,7 @@ export class TugassController {
       await this.tugassService.create(createTugassDto);
       req.flash('success', 'Assignment successfully created');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error.message || 'Failed to create assignment';
       req.flash('error', errorMessage);
       res.redirect(`/session/${pertemuanId}`);
@@ -87,7 +87,7 @@ export class TugassController {
       await this.tugassService.remove(tugasId);
       req.flash('success', 'successfuly delete assignment');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'unsuccess delete assignment');
       res.redirect(`/session/${pertemuanId}`);
     }

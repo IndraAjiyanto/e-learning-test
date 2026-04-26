@@ -32,7 +32,7 @@ export class PertanyaanUmumController {
       await this.pertanyaanUmumService.create(createPertanyaanUmumDto);
       req.flash('success', 'FAQ successfully created');
       res.redirect('/category/' + kategoriId);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to created');
       res.redirect('/category/' + kategoriId);
     }
@@ -82,7 +82,7 @@ export class PertanyaanUmumController {
       );
       req.flash('success', 'FAQ successfully updated');
       res.redirect('/category/' + kategoriId);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to update');
       res.redirect('/category/' + kategoriId);
     }
@@ -100,7 +100,7 @@ export class PertanyaanUmumController {
       await this.pertanyaanUmumService.remove(pertanyaan_umumId);
       req.flash('success', 'FAQ successfully deleted');
       res.redirect('/category/' + kategoriId);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to delete');
       res.redirect('/category/' + kategoriId);
     }

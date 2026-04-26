@@ -35,7 +35,7 @@ export class QuizController {
       await this.quizService.create(createQuizDto);
       req.flash('success', 'Quiz created successfully');
       res.redirect(`/week/${mingguId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create quiz');
       res.redirect(`/week/${mingguId}`);
     }
@@ -139,7 +139,7 @@ export class QuizController {
       await this.quizService.update(quizId, updateQuizDto);
       req.flash('success', 'Quiz updated successfully');
       res.redirect(`/quiz/${quizId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Quiz failed to updated ');
       res.redirect(`/quiz/${quizId}`);
     }
@@ -157,7 +157,7 @@ export class QuizController {
       await this.quizService.remove(quizId);
       req.flash('success', 'Quiz deleted successfully');
       res.redirect(`/week/${mingguId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Quiz Failed to deleted');
       res.redirect(`/week/${mingguId}`);
     }

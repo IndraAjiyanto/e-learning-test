@@ -59,7 +59,7 @@ export class PertanyaanKelasController {
       await this.pertanyaanKelasService.create(createPertanyaanKelaDto);
       req.flash('success', 'FAQ program created successfully');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'FAQ program  failed to create');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -94,7 +94,7 @@ export class PertanyaanKelasController {
       await this.pertanyaanKelasService.update(+id, updatePertanyaanKelaDto);
       req.flash('success', 'FAQ program updated successfully');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'FAQ program failed to update');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -112,7 +112,7 @@ export class PertanyaanKelasController {
       await this.pertanyaanKelasService.remove(+id);
       req.flash('success', 'FAQ program deleted successfully');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'FAQ program failed to delete');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }

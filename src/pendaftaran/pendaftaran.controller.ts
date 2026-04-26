@@ -65,7 +65,7 @@ export class PendaftaranController {
         );
         res.redirect(`/payment/history/${userId}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
       res.redirect(`/payment/history/${userId}`);
     }
@@ -105,7 +105,7 @@ export class PendaftaranController {
             pendaftaran['user']['id'],
             pendaftaran['kelas']['id'],
           );
-        } catch (error) {}
+        } catch (error: any) {}
 
         req.flash('success', 'proces successfully change acc');
         res.redirect(
@@ -125,13 +125,13 @@ export class PendaftaranController {
             pendaftaran['user']['id'],
             pendaftaran['kelas']['id'],
           );
-        } catch (error) {}
+        } catch (error: any) {}
         req.flash('success', 'proces successfully change rejected');
         res.redirect(
           `/program/detail/program/admin/${[pendaftaran]['kelas']['id']}`,
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       const pendaftaran = await this.pendaftaranService.findOne(pendaftaranId);
       req.flash('error', error.message || 'proses pembayaran gagal diubah');
       res.redirect(`/program/detail/program/admin/${pendaftaran['kelas']['id']}`);

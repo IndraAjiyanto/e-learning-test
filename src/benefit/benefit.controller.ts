@@ -29,12 +29,11 @@ export class BenefitController {
     @Req() req: Request,
     @Body() createBenefitDto: CreateBenefitDto,
   ) {
-    console.log(createBenefitDto.text);
     try {
       await this.benefitService.create(createBenefitDto);
       req.flash('success', 'benefit successfully created');
       res.redirect('/benefit');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'benefit failed to create');
       res.redirect('/benefit');
     }
@@ -78,7 +77,7 @@ export class BenefitController {
       await this.benefitService.update(benefitId, updateBenefitDto);
       req.flash('success', 'benefit successfully updated');
       res.redirect('/benefit');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'benefit failed  to updat');
       res.redirect('/benefit');
     }
@@ -95,7 +94,7 @@ export class BenefitController {
       await this.benefitService.remove(benefitId);
       req.flash('success', 'benefit successfully deleted');
       res.redirect('/benefit');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'benefit failed  to delete');
       res.redirect('/benefit');
     }

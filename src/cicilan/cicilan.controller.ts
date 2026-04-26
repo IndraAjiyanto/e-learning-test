@@ -68,7 +68,7 @@ export class CicilanController {
       await this.cicilanService.create(createCicilanDto);
       req.flash('success', 'Installment created successfully');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create installment');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -94,12 +94,11 @@ export class CicilanController {
       if (updateCicilanDto.bulan) {
         updateCicilanDto.bulan = Number(updateCicilanDto.bulan) as 3 | 6 | 12;
       }
-      console.log('Update DTO:', updateCicilanDto.dp);
 
       const cicilan = await this.cicilanService.update(id, updateCicilanDto);
       req.flash('success', 'Installment updated successfully');
       res.redirect(`/program/detail/program/admin/${cicilan.kelas.id}`);
-    } catch (error) {
+    } catch (error: any) {
       const cicilan = await this.cicilanService.findOne(id);
       req.flash('error', error.message || 'Failed to update installment');
       res.redirect(`/program/detail/program/admin/${cicilan.kelas.id}`);
@@ -119,7 +118,7 @@ export class CicilanController {
       await this.cicilanService.remove(id);
       req.flash('success', 'Installment deleted successfully');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       const cicilan = await this.cicilanService.findOne(id);
       const kelasId = cicilan.kelas.id;
       req.flash('error', error.message || 'Failed to delete installment');

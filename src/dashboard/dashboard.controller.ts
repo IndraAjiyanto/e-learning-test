@@ -59,7 +59,7 @@ async kelasFilter(
         const gambar_benefit_4 = await this.dashboardService.findGambar4();
         const jenis_kelas = await this.dashboardService.findJenisKelas();
         const kategori = await this.dashboardService.findKategori();
-        const alumni = await this.dashboardService.findAlumni();
+        const alumni = await this.dashboardService.findAllAlumni();
         const kerja_sama = await this.dashboardService.findKerjaSama();
         const benefit_1 = await this.dashboardService.findBenefit1();
         const benefit_2 = await this.dashboardService.findBenefit2();
@@ -97,7 +97,7 @@ async kelasFilter(
       const gambar_benefit_4 = await this.dashboardService.findGambar4();
       const jenis_kelas = await this.dashboardService.findJenisKelas();
       const kategori = await this.dashboardService.findKategori();
-      const alumni = await this.dashboardService.findAlumni();
+      const alumni = await this.dashboardService.findAllAlumni();
       const kerja_sama = await this.dashboardService.findKerjaSama();
       const benefit_1 = await this.dashboardService.findBenefit1();
       const benefit_2 = await this.dashboardService.findBenefit2();

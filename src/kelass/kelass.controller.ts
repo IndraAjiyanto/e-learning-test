@@ -93,7 +93,7 @@ export class KelassController {
       }
       req.flash('success', 'program successfully created');
       res.redirect('/program');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'program failed created');
       res.redirect('/program');
     }
@@ -162,7 +162,7 @@ export class KelassController {
       }
       req.flash('success', 'program successfully created');
       res.redirect(`/category/${kategoriId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'program failed created');
       res.redirect(`/category/${kategoriId}`);
     }
@@ -180,7 +180,7 @@ export class KelassController {
       await this.kelassService.addUserToKelas(userId, kelasId);
       req.flash('success', 'user successfuly add to program');
       res.redirect(`/program/addUser/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'user failed add to program');
       res.redirect(`/program/addUser/${kelasId}`);
     }
@@ -663,7 +663,7 @@ async filterKelas(
       req.flash('success', 'Successfully update program');
 
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'failed update program');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -681,7 +681,7 @@ async filterKelas(
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
       req.flash('success', 'program successfuly switch launch');
       res.redirect('/program');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'program failed to launch');
       res.redirect('/program');
     }
@@ -699,7 +699,7 @@ async filterKelas(
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
       req.flash('success', 'program successfuly switch status');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'program failed to switch status');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -723,7 +723,7 @@ async filterKelas(
       await this.kelassService.remove(kelasId);
       req.flash('success', 'Program successfully removed');
       return res.redirect(previous || '/program');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to remove program');
       return res.redirect(previous || '/program');
     }
@@ -741,7 +741,7 @@ async filterKelas(
       await this.kelassService.removeUserKelas(userId, kelasId);
       req.flash('success', 'User successfully removed from program');
       res.redirect(`/program/addUser/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to remove user from program');
       res.redirect(`/program/addUser/${kelasId}`);
     }

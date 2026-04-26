@@ -37,7 +37,7 @@ export class ValueController {
       await this.valueService.create(createValueDto);
       req.flash('success', 'Value created successfully');
       res.redirect('/value');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create value');
       res.redirect('/value');
     }
@@ -79,7 +79,7 @@ export class ValueController {
       await this.valueService.update(id, updateValueDto);
       req.flash('success', 'Value updated successfully');
       res.redirect('/value');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to update value');
       res.redirect('/value');
     }
@@ -101,7 +101,7 @@ export class ValueController {
       await this.valueService.remove(id);
       req.flash('success', 'Value deleted successfully');
       res.redirect('/value');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete value');
       res.redirect('/value');
     }

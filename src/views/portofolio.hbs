@@ -86,9 +86,7 @@
           this.totalItems = json.totalItems;
           this.totalPages = json.totalPages;
           this.currentPage = json.currentPage;
-          console.log('Fetched portfolio:', this.portfolioItems);
         } catch (err) {
-          console.error('Fetch portfolio error:', err);
         } finally {
           this.loading = false;
         }

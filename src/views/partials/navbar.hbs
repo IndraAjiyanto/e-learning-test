@@ -62,15 +62,15 @@
         return false;
       },
 
-      isProgramActive() {
+isProgramActive() {
   const currentPath = this.active;
 
   return (
     currentPath.includes('/category/') ||
     currentPath.includes('/dashboard/category/') ||
-    kategori.some(kat =>
+    (this.kategori && this.kategori.length > 0 && this.kategori.some(kat =>
       currentPath === `/category/${kat.nama_kategori}`
-    )
+    ))
   );
 },
 

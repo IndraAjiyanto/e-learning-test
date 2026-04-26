@@ -53,7 +53,7 @@ export class AuthController {
       const user = await this.authService.createAcount(createUserDto);
       req.flash('success', 'success regis, please verify your email');
       res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'failed to regis');
       res.redirect('/login');
     }
@@ -78,7 +78,7 @@ export class AuthController {
           res.redirect('/dashboard');
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Email or password is incorrect');
       return res.redirect('/login');
     }

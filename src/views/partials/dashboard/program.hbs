@@ -10,6 +10,7 @@
     itemsPerPage: 6,
     loading: false,
     kelasItems: [],
+    lang: '{{lang}}',
 
       categoriesData: [
         { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
@@ -67,6 +68,11 @@
       } finally {
         this.loading = false;
       }
+    },
+
+        getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
     },
 
     async changePage(page) {
@@ -400,18 +406,19 @@
     </div>
 
     <!-- Results Counter -->
-    <div class='mt-6 text-center'>
-      <p class='text-slate-400'>
-        {{t "test.home.programSection.showing"}}
-        <span
-          class='text-white font-bold'
-          x-text='kelasItems.filter((el, idx) => paginatedKelas(el)).length'
-        ></span>
-        {{t "test.home.programSection.of"}}
-        <span class='text-white font-bold' x-text='kelasItems.length'></span>
-        {{t "test.home.programSection.program"}}
-      </p>
-    </div>
+<!-- Results Counter -->
+<div class='mt-6 text-center'>
+  <p class='text-slate-400'>
+    {{t "test.home.programSection.showing"}}
+    <span
+      class='text-white font-bold'
+      x-text='kelasItems.length'
+    ></span>
+    {{t "test.home.programSection.of"}}
+    <span class='text-white font-bold' x-text='totalItems'></span>
+    {{t "test.home.programSection.program"}}
+  </p>
+</div>
   </div>
 
   <!-- Classes Grid -->

@@ -36,7 +36,7 @@ export class SocialController {
       await this.socialService.create(createSocialDto);
       req.flash('success', 'Social created successfully');
       res.redirect('/social');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create social');
       res.redirect('/social');
     }
@@ -78,7 +78,7 @@ export class SocialController {
       await this.socialService.update(id, updateSocialDto);
       req.flash('success', 'Social updated successfully');
       res.redirect('/social');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to update social');
       res.redirect('/social');
     }
@@ -100,7 +100,7 @@ export class SocialController {
       await this.socialService.remove(id);
       req.flash('success', 'Social deleted successfully');
       res.redirect('/social');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete social');
       res.redirect('/social');
     }
