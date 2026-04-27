@@ -202,9 +202,9 @@
               this.formValid.text[lang] = value.trim().length > 0;
               break;
             case 'contact':
-              // Optional number field
-              if (value && isNaN(Number(value))) {
-                this.formErrors.contact = 'Contact must be a valid number';
+              // Ubah dari validasi isNaN (tidak cocok untuk string HP)
+              if (value && !/^[0-9+\-\s]+$/.test(value)) {
+                this.formErrors.contact = 'Contact must be a valid phone number';
                 this.formValid.contact = false;
               } else {
                 this.formErrors.contact = '';

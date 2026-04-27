@@ -21,8 +21,8 @@ export class CreateKategorisDto {
   text?: string[];
 
   @IsOptional()
-  @IsNumber()
-  contact?: number;
+  @IsString()
+  contact?: string;
 
   @IsOptional()
   @IsArray()

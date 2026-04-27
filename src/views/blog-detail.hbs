@@ -86,10 +86,9 @@
             <i class="far fa-heart mr-1" 
             {{#each likes}}
               {{#if (eq this.user.id ../user.id)}}
-                class="fas text-red-500 mr-1"
+                :class="fas text-red-500 mr-1"
               {{/if}}
             {{/each}}
-            :class="{'fas text-red-500': isLiked(item)}"
             ></i>
             <span>{{likes.length}}</span>
           </span>
