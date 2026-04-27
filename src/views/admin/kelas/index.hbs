@@ -94,19 +94,19 @@
             {{/if}}
 
             <!-- Toggle Launch -->
-            <td class="px-6 py-4 text-sm text-gray-800">
-              <form :action="'/program/' + kelas.id + '/toggle-launch?_method=PATCH'" method="POST">
-                <button type="button"
-                  onclick="confirmAction(this, kelas.launch ? 'Are you sure cancel launch this program?' : 'Are you sure launch this program?')"
-                  :class="kelas.launch ? 'bg-green-500' : 'bg-gray-300'"
-                  class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none">
-                  <span
-                    :class="kelas.launch ? 'translate-x-6' : 'translate-x-1'"
-                    class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform">
-                  </span>
-                </button>
-              </form>
-            </td>
+<td class="px-6 py-4 text-sm text-gray-800">
+  <form :action="'/program/' + kelas.id + '/toggle-launch?_method=PATCH'" method="POST">
+    <button type="button"
+      @click="confirmAction($el, kelas.launch ? 'Are you sure cancel launch this program?' : 'Are you sure launch this program?')"
+      :class="kelas.launch ? 'bg-green-500' : 'bg-gray-300'"
+      class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none">
+      <span
+        :class="kelas.launch ? 'translate-x-6' : 'translate-x-1'"
+        class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform">
+      </span>
+    </button>
+  </form>
+</td>
 
             <!-- Action -->
             <td class="px-6 py-4 text-sm text-gray-800 flex items-center gap-3">

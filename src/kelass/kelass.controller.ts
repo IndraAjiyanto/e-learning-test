@@ -199,33 +199,33 @@ export class KelassController {
   }
 
   @Roles('admin', 'super_admin')
-@Get('filter')
-async filterKelas(
-  @Res() res: Response,
-  @Req() req: Request,
-  @Query('search') search?: string,
-  @Query('alphabet') alphabet?: string,
-  @Query('page') page?: string,
-  @Query('limit') limit?: string,
-) {
-  const currentPage = parseInt(page || '1', 10);
-  const itemsPerPage = parseInt(limit || '5', 10);
+  @Get('filter')
+  async filterKelas(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('search') search?: string,
+    @Query('alphabet') alphabet?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '5', 10);
 
-  const result = await this.kelassService.findKelasPaginated({
-    search: search || undefined,
-    alphabet: alphabet || undefined,
-    page: currentPage,
-    limit: itemsPerPage,
-    userId: req.user!.role === 'admin' ? req.user!.id : undefined,
-  });
+    const result = await this.kelassService.findKelasPaginated({
+      search: search || undefined,
+      alphabet: alphabet || undefined,
+      page: currentPage,
+      limit: itemsPerPage,
+      userId: req.user!.role === 'admin' ? req.user!.id : undefined,
+    });
 
-  return res.json({
-    data: result.data,
-    totalItems: result.total,
-    totalPages: Math.ceil(result.total / itemsPerPage),
-    currentPage,
-  });
-}
+    return res.json({
+      data: result.data,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / itemsPerPage),
+      currentPage,
+    });
+  }
 
   @Roles('admin', 'super_admin')
   @Get('/create')
@@ -477,11 +477,10 @@ async filterKelas(
       req.user!.id,
     );
     const kelass = await this.kelassService.allClassExcept(kelas.id);
-    const pertanyaan_kelas =
-      await this.kelassService.findPertanyaanKelas(kelasId);
-    const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
-    const mentor = await this.kelassService.findMentorKelas(kelasId);
-    const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
+    // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(kelasId);
+    // const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
+    // const mentor = await this.kelassService.findMentorKelas(kelasId);
+    // const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
     const teknologi = await this.kelassService.findTeknologiKelas(kelasId);
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
     res.render('kelas/Bdetail', {
@@ -489,10 +488,10 @@ async filterKelas(
       user: req.user,
       kelass,
       check_user,
-      pertanyaan_kelas,
-      alur_kelas,
-      mentor,
-      benefit_kelas,
+      // pertanyaan_kelas,
+      // alur_kelas,
+      // mentor,
+      // benefit_kelas,
       teknologi,
       cicilan,
     });

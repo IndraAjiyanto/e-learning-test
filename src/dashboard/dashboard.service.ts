@@ -87,6 +87,7 @@ async findBlogTrending(userId?: number) {
       'blog.views + (SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id)',
       'score'
     )
+    .where('blog.createdAt >= NOW() - INTERVAL \'1 month\'')
     .orderBy('score', 'DESC');
 
   if (userId) {
