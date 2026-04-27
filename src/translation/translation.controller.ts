@@ -29,7 +29,7 @@ export class TranslationController {
 
     res.cookie('lang', selected, {
       httpOnly: false,
-      secure: true,
+      secure: false,
       sameSite: 'lax',
       path: '/',
       maxAge: 1000 * 60 * 60 * 24 * 30,
