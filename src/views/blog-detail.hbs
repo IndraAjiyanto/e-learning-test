@@ -34,18 +34,89 @@
   <section class='py-16 bg-gray-50'>
     <div class='max-w-7xl mx-auto px-6'>
       <h2 class='text-3xl font-bold text-gray-900 mt-0 mb-8'>{{t 'test.detailBlog.relatedBlog'}}</h2>
-      <div class='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
-        {{#each recentBlogs}}{{/each}}
+<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+  {{#each recentBlogs}}
+  <div class='bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+    
+    <!-- Image Container -->
+    <div class='relative overflow-hidden rounded-t-xl'>
+      <div class='relative h-44 w-full'>
+        {{#if (isArray gambar)}}
+          {{#each gambar}}
+            <img
+              src='{{this}}'
+              class='absolute inset-0 w-full h-44 object-cover {{#unless @first}}hidden{{/unless}}'
+            />
+          {{/each}}
+        {{else}}
+          <img
+            src='{{gambar}}'
+            class='absolute inset-0 w-full h-44 object-cover'
+          />
+        {{/if}}
       </div>
-      <div class='text-center mt-12'>
-        <a
-          href='/dashboard/blog'
-          class='inline-flex items-center gap-2 font-semibold btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
-        >
-          {{t 'test.detailBlog.buttonViewAllBlog'}}
-        </a>
+
+      <!-- Author Badge -->
+      <div class='absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md flex items-center'>
+        <span>{{author}}</span>
       </div>
     </div>
+
+    <!-- Content -->
+    <div class='p-4'>
+      <!-- Category and Date -->
+      <div class='flex items-center justify-between mb-2'>
+        <span class='badge bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-2 py-0.5 text-xs font-semibold rounded-full'>
+          {{#if category}}{{category.name}}{{else}}No Type{{/if}}
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h3 class='text-base font-semibold text-gray-900 leading-tight hover:text-gray-700 transition-colors line-clamp-2 mb-2'>
+        {{#if judul}}{{judul}}{{else}}No Title{{/if}}
+      </h3>
+
+      <!-- Excerpt -->
+      <p class="text-xs text-gray-600 line-clamp-2 mb-3 text-justify">{{description}}</p>
+
+      <!-- Stats -->
+      <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+        <div class="flex items-center space-x-3">
+          <span class="flex items-center">
+            <i class="far fa-heart mr-1" 
+            {{#each likes}}
+              {{#if (eq this.user.id ../user.id)}}
+                class="fas text-red-500 mr-1"
+              {{/if}}
+            {{/each}}
+            :class="{'fas text-red-500': isLiked(item)}"
+            ></i>
+            <span>{{likes.length}}</span>
+          </span>
+        </div>
+        <span class="flex items-center">
+          <i class="far fa-eye mr-1"></i>
+          <span>{{views}}</span>
+        </span>
+      </div>
+
+      <!-- Tags -->
+      <div class="flex flex-wrap gap-1 mb-3">
+        {{#each tags}}
+          <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{{this}}</span>
+        {{/each}}
+      </div>
+      
+      <a   href='/blog/detail/{{id}}'
+        class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-sm px-4 py-2 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 rounded-lg flex items-center justify-center'
+      >
+        <span>{{t 'test.blog.readMore'}}</span>
+      </a>
+    </div>
+
+  </div>
+  {{/each}}
+</div>  
   </section>
 {{/if}}
 

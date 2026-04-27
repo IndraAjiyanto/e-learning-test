@@ -240,6 +240,7 @@ export class KategorisController {
       req.flash('success', 'kategori successfully updated');
       res.redirect('/category/' + kategoriId);
     } catch (error: any) {
+      console.log(error);
       req.flash('error', error.message || 'kategori failed to update');
       res.redirect('/category/' + kategoriId);
     }

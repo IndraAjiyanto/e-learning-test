@@ -7,37 +7,37 @@ export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get('kelas/filter')
-async kelasFilter(
-  @Req() req: Request,
-  @Res() res: Response,
-  @Query('userId') userId?: number,
-  @Query('kategori') kategori?: string,
-  @Query('jenis_kelas') jenisKelas?: string,
-  @Query('metode') metode?: string,
-  @Query('search') search?: string,
-  @Query('page') page?: string,
-  @Query('limit') limit?: string,
-) {
-  const currentPage = parseInt(page || '1', 10);
-  const itemsPerPage = parseInt(limit || '6', 10);
+  async kelasFilter(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('userId') userId?: number,
+    @Query('kategori') kategori?: string,
+    @Query('jenis_kelas') jenisKelas?: string,
+    @Query('metode') metode?: string,
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '6', 10);
 
-  const result = await this.dashboardService.findKelasPaginated({
-    userId: userId || undefined,
-    kategori: kategori || undefined,
-    jenisKelas: jenisKelas || undefined,
-    metode: metode || undefined,
-    search: search || undefined,
-    page: currentPage,
-    limit: itemsPerPage,
-  });
+    const result = await this.dashboardService.findKelasPaginated({
+      userId: userId || undefined,
+      kategori: kategori || undefined,
+      jenisKelas: jenisKelas || undefined,
+      metode: metode || undefined,
+      search: search || undefined,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
 
-  return res.json({
-    data: result.data,
-    totalItems: result.total,
-    totalPages: Math.ceil(result.total / itemsPerPage),
-    currentPage,
-  });
-}
+    return res.json({
+      data: result.data,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / itemsPerPage),
+      currentPage,
+    });
+  }
 
   @Get()
   async getProtected(@Req() req: Request, @Res() res: Response) {
@@ -127,7 +127,7 @@ async kelasFilter(
     }
   }
 
-    @Get('portofolio/filter')
+  @Get('portofolio/filter')
   async portfolioFilter(
     @Req() req: Request,
     @Res() res: Response,
@@ -182,29 +182,29 @@ async kelasFilter(
   }
 
   @Get('alumni/filter')
-async alumniFilter(
-  @Req() req: Request,
-  @Res() res: Response,
-  @Query('kelas_id') kelasId?: string,
-  @Query('page') page?: string,
-  @Query('limit') limit?: string,
-) {
-  const currentPage = parseInt(page || '1', 10);
-  const itemsPerPage = parseInt(limit || '6', 10);
+  async alumniFilter(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('kelas_id') kelasId?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '6', 10);
 
-  const result = await this.dashboardService.findAlumni({
-    kelasId: kelasId || null,
-    page: currentPage,
-    limit: itemsPerPage,
-  });
+    const result = await this.dashboardService.findAlumni({
+      kelasId: kelasId || null,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
 
-  return res.json({
-    data: result.data,
-    totalItems: result.total,
-    totalPages: Math.ceil(result.total / itemsPerPage),
-    currentPage,
-  });
-}
+    return res.json({
+      data: result.data,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / itemsPerPage),
+      currentPage,
+    });
+  }
 
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
@@ -216,28 +216,28 @@ async alumniFilter(
     });
   }
 
-@Get('blog')
-async blog(@Req() req: Request, @Res() res: Response) {
-  const blog_tranding = await this.dashboardService.findBlogTrending(req.user?.id);
-  const kategori_tranding = await this.dashboardService.findKategoriTrending(req.user?.id);
+  @Get('blog')
+  async blog(@Req() req: Request, @Res() res: Response) {
+    const blog_tranding = await this.dashboardService.findBlogTrending(req.user?.id);
+    const kategori_tranding = await this.dashboardService.findKategoriTrending(req.user?.id);
 
-  const excludeIds = [
-    blog_tranding?.id,
-    ...kategori_tranding.map(k => k.blog?.id),
-  ].filter(Boolean) as number[];
+    const excludeIds = [
+      blog_tranding?.id,
+      ...kategori_tranding.map(k => k.blog?.id),
+    ].filter(Boolean) as number[];
 
-  // const blog = await this.dashboardService.findBlog(excludeIds);
-  const kategori_blog = await this.dashboardService.findBlogCategory();
+    // const blog = await this.dashboardService.findBlog(excludeIds);
+    const kategori_blog = await this.dashboardService.findBlogCategory();
 
-  res.render('blog', {
-    user: req.user,
-    // blog,
-    excludeIds,
-    kategori_blog,
-    blog_tranding,
-    kategori_tranding
-  });
-}
+    res.render('blog', {
+      user: req.user,
+      // blog,
+      excludeIds,
+      kategori_blog,
+      blog_tranding,
+      kategori_tranding
+    });
+  }
 
   @Get('about')
   async about(@Req() req: Request, @Res() res: Response) {

@@ -3,7 +3,7 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from 'src/entities/blog.entity';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { KategoriBlog } from 'src/entities/kategori_blog.entity';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -317,13 +317,64 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
   }
 
   async getRecentBlogs(id: number) {
-    return await this.blogRepository.find({
-      where: { id: Not(id) },
-      relations: ['kategori_blog', 'topic'],
-      order: { createdAt: 'DESC' },
-      take: 3,
-    });
+  const blog = await this.blogRepository.findOne({
+    where: { id },
+    relations: ['kategori_blog', 'topic'],
+  });
+
+  if (!blog) return [];
+
+  const usedIds = [id];
+  let results: any[] = [];
+
+  // 1. kategori sama (2 data)
+  const sameKategori = await this.blogRepository.find({
+    where: {
+      id: Not(In(usedIds)),
+      kategori_blog: { id: blog.kategori_blog.id },
+    },
+    relations: ['kategori_blog', 'topic', 'likes', 'likes.user'],
+    order: { createdAt: 'DESC' },
+    take: 2,
+  });
+
+  results.push(...sameKategori);
+  usedIds.push(...sameKategori.map(b => b.id));
+
+  // 2. topic sama (1 data)
+  const sameTopic = await this.blogRepository.find({
+    where: {
+      id: Not(In(usedIds)),
+      topic: { id: blog.topic.id },
+    },
+    relations: ['kategori_blog', 'topic', 'likes', 'likes.user'],
+    order: { createdAt: 'DESC' },
+    take: 1,
+  });
+
+  results.push(...sameTopic);
+  usedIds.push(...sameTopic.map(b => b.id));
+
+  // 3. fallback random kalau kurang dari 3
+  if (results.length < 3) {
+    const remaining = 3 - results.length;
+
+    const filler = await this.blogRepository
+      .createQueryBuilder('blog')
+      .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
+      .leftJoinAndSelect('blog.topic', 'topic')
+      .leftJoinAndSelect('blog.likes', 'likes')
+      .leftJoinAndSelect('likes.user', 'user')
+      .where('blog.id NOT IN (:...ids)', { ids: usedIds })
+      .orderBy('RANDOM()')
+      .limit(remaining)
+      .getMany();
+
+    results.push(...filler);
   }
+
+  return results;
+}
 
   async deleteFile(url: string) {
     if (!url) return;
