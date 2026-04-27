@@ -83,13 +83,7 @@
       <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
         <div class="flex items-center space-x-3">
           <span class="flex items-center">
-            <i class="far fa-heart mr-1" 
-            {{#each likes}}
-              {{#if (eq this.user.id ../user.id)}}
-                :class="fas text-red-500 mr-1"
-              {{/if}}
-            {{/each}}
-            ></i>
+<i class="far fa-heart mr-1 {{#each likes}}{{#if (eq this.user.id ../../user.id)}}fas text-red-500{{/if}}{{/each}}"></i>
             <span>{{likes.length}}</span>
           </span>
         </div>
