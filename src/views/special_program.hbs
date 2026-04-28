@@ -9,6 +9,7 @@
     itemsPerPage: 6,
     loading: false,
     kelasItems: [],
+    lang: '{{lang}}',
 
             courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
@@ -28,11 +29,15 @@
     methodDropdownOpen: false,
 
     async init() {
-      // Hapus $watch lama, ganti dengan watch yang trigger fetch
       this.$watch('selectedType', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
       await this.fetchKelas();
+    },
+
+            getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
     },
 
     async fetchKelas() {

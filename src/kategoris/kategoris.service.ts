@@ -89,6 +89,7 @@ export class KategorisService {
     return await this.kelasRepository.find({
       where: { kategori: { id: kategoriId } },
       relations: ['jenis_kelas', 'kategori', 'user_kelas'],
+      order: { launch: 'DESC' },
     });
   }
 
