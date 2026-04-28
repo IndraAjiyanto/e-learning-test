@@ -10,6 +10,7 @@
     itemsPerPage: 6,
     loading: false,
     kelasItems: [],
+    lang: '{{lang}}',
 
       categoriesData: [
         { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
@@ -73,6 +74,11 @@
     async changePage(page) {
       this.currentPage = page;
       await this.fetchKelas();
+    },
+
+            getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
     },
 
     async resetFilters() {

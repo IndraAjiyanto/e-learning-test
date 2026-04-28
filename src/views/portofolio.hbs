@@ -54,6 +54,12 @@
         return obj[lang] || obj.id || obj.en || '';
       },
 
+          getImages(item) {
+      return Array.isArray(item.gambar)
+        ? item.gambar
+        : [item.gambar || 'https://placehold.co/400x300?text=No+Image'];
+    },
+
       filterKategori() {
         const query = this.searchKategoriQuery.toLowerCase().trim();
         this.filteredKategoriList = query
