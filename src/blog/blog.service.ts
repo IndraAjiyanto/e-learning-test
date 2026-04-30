@@ -327,7 +327,6 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
   const usedIds = [id];
   let results: any[] = [];
 
-  // 1. kategori sama (2 data)
   const sameKategori = await this.blogRepository.find({
     where: {
       id: Not(In(usedIds)),
@@ -341,7 +340,6 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
   results.push(...sameKategori);
   usedIds.push(...sameKategori.map(b => b.id));
 
-  // 2. topic sama (1 data)
   const sameTopic = await this.blogRepository.find({
     where: {
       id: Not(In(usedIds)),
@@ -355,7 +353,6 @@ async createReply(comentId: number, userId: number, blogId: number, content: str
   results.push(...sameTopic);
   usedIds.push(...sameTopic.map(b => b.id));
 
-  // 3. fallback random kalau kurang dari 3
   if (results.length < 3) {
     const remaining = 3 - results.length;
 

@@ -1,17 +1,11 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   Res,
   Req,
 } from '@nestjs/common';
 import { TranslationService } from './translation.service';
-import { CreateTranslationDto } from './dto/create-translation.dto';
-import { UpdateTranslationDto } from './dto/update-translation.dto';
 import { Request, Response } from 'express';
 
 @Controller('translation')
@@ -29,7 +23,7 @@ export class TranslationController {
 
     res.cookie('lang', selected, {
       httpOnly: false,
-      secure: false,
+      secure: true,
       sameSite: 'lax',
       path: '/',
       maxAge: 1000 * 60 * 60 * 24 * 30,
