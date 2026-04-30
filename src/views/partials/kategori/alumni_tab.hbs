@@ -70,12 +70,12 @@
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
               <template x-for="alumniStatus in alumni.alumni">
-                <div x-text="alumniStatus"></div>
+                <div x-text="alumniStatus.length > 50 ? alumniStatus.substring(0, 50) + '...' : alumniStatus"></div>
                 </template>
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
               <template x-for="posisi in alumni.posisi_sekarang">
-                <div x-text="posisi">
+                <div x-text="posisi.length > 50 ? posisi.substring(0, 50) + '...' : posisi">
                 </div>
               </template>
             </td>

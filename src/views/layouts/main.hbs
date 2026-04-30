@@ -84,7 +84,7 @@
     const isAuthenticated = {{{json isAuthenticated}}};
     
   if (!isAuthenticated) {
-        const keep = ['activeSection'];
+        const keep = ['activeSection', 'activeDetailTab'];
         
         Object.keys(localStorage).forEach(key => {
             if (!keep.includes(key)) {

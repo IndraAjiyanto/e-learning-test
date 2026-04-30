@@ -6,10 +6,9 @@
   >
 
     <div class='lg:col-span-2 space-y-8' 
-    x-init="fetchTab(activeTab); activeTab = localStorage.getItem('activeDetailTab_{{kelas.id}}') || 'info';"
     x-data="{
 
-    activeTab: localStorage.getItem('activeDetailTab_{{kelas.id}}') || 'info',
+    activeTab: localStorage.getItem('activeDetailTab') || 'info',
 
     benefit: null,
     faq: null,
@@ -31,18 +30,16 @@
     },
 
     init() {
-        // Ambil dari localStorage saat komponen siap
-        const savedTab = localStorage.getItem('activeDetailTab_{{kelas.id}}');
+        const savedTab = localStorage.getItem('activeDetailTab');
+        console.log(savedTab)
         if (savedTab) {
             this.activeTab = savedTab;
         }
         
-        // Langsung jalankan fetch untuk tab yang aktif
         this.fetchTab(this.activeTab);
 
-        // Otomatis simpan setiap kali activeTab berubah
         this.$watch('activeTab', value => {
-            localStorage.setItem('activeDetailTab_{{kelas.id}}', value);
+            localStorage.setItem('activeDetailTab', value);
         });
     },
 
@@ -76,7 +73,7 @@
 
     switchTab(tab) {
       this.activeTab = tab;
-      localStorage.setItem('activeDetailTab_{{kelas.id}}', tab);
+      localStorage.setItem('activeDetailTab', tab);
       this.fetchTab(tab);
     }
   }">
