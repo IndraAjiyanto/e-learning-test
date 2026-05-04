@@ -133,7 +133,7 @@
             <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{ kelas.jenis_kelas.nama_jenis_kelas}}</span></p>
             <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (eq kelas.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
             <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{#each kelas.lokasi}}{{this}}{{/each}}</span></p>
-            <p><span class="font-medium text-gray-600">Location:</span> <a href="{{kelas.link_lokasi}}" target="_blank" class="text-blue-500 underline">{{kelas.link_lokasi}}</a></p>
+            <p><span class="font-medium text-gray-600">Location:</span> <a href="{{kelas.link_lokasi}}" target="_blank" class="text-blue-500 underline truncate block">{{kelas.link_lokasi}}</a></p>
             {{#if (eq kelas.kategori.nama_kategori "Short Class")}}
             <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.hari}} day</span></p>
             {{else}}
