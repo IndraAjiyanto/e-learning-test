@@ -26,7 +26,7 @@ localStorage.setItem('activeSection', sectionName);
           <button
             @click="toggleActiveSection('story');"
             :class="activeSection === 'story' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
+            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300 '
           >
             <i class='fas fa-book-open text-xs'></i>
             <span>{{t "test.about.tabAbout.story"}}</span>
@@ -34,7 +34,7 @@ localStorage.setItem('activeSection', sectionName);
           <button
             @click="toggleActiveSection('mission');"
             :class="activeSection === 'mission' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
+            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300'
           >
             <i class='fas fa-bullseye text-xs'></i>
             <span>{{t "test.about.tabAbout.visiMisi"}}</span>
@@ -42,7 +42,7 @@ localStorage.setItem('activeSection', sectionName);
           <button
             @click="toggleActiveSection('team');"
             :class="activeSection === 'team' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
+            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300'
           >
             <i class='fas fa-users text-xs'></i>
             <span>{{t "test.about.tabAbout.team"}}</span>
@@ -50,7 +50,7 @@ localStorage.setItem('activeSection', sectionName);
           <button
             @click="toggleActiveSection('values');"
             :class="activeSection === 'values' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
+            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300'
           >
             <i class='fas fa-heart text-xs'></i>
             <span>{{t "test.about.tabAbout.value"}}</span>
@@ -58,7 +58,7 @@ localStorage.setItem('activeSection', sectionName);
           <button
             @click="toggleActiveSection('contact');"
             :class="activeSection === 'contact' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium'
+            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300'
           >
             <i class='fas fa-envelope text-xs'></i>
             <span>{{t "test.about.tabAbout.contact"}}</span>
@@ -75,7 +75,7 @@ localStorage.setItem('activeSection', sectionName);
             <button
               @click="toggleActiveSection('story');"
               :class="activeSection === 'story' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
+              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
             >
               <i class='fas fa-book-open text-sm'></i>
               <span>{{t "test.about.tabAbout.story"}}</span>
@@ -83,7 +83,7 @@ localStorage.setItem('activeSection', sectionName);
             <button
               @click="toggleActiveSection('mission');"
               :class="activeSection === 'mission' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
+              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
             >
               <i class='fas fa-bullseye text-sm'></i>
               <span>{{t "test.about.tabAbout.visiMisi"}}</span>
@@ -91,7 +91,7 @@ localStorage.setItem('activeSection', sectionName);
             <button
               @click="toggleActiveSection('team');"
               :class="activeSection === 'team' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
+              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
             >
               <i class='fas fa-users text-sm'></i>
               <span>{{t "test.about.tabAbout.team"}}</span>
@@ -99,7 +99,7 @@ localStorage.setItem('activeSection', sectionName);
             <button
               @click="toggleActiveSection('values');"
               :class="activeSection === 'values' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
+              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
             >
               <i class='fas fa-heart text-sm'></i>
               <span>{{t "test.about.tabAbout.value"}}</span>
@@ -107,7 +107,7 @@ localStorage.setItem('activeSection', sectionName);
             <button
               @click="toggleActiveSection('contact');"
               :class="activeSection === 'contact' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 '
+              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
             >
               <i class='fas fa-envelope text-sm'></i>
               <span>{{t "test.about.tabAbout.contact"}}</span>
