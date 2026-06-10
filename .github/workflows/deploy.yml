@@ -52,12 +52,14 @@ jobs:
             trap 'notify "❌ *Deploy FAILED* at stage: ${STAGE}"' ERR
 
             REPO_DIR="/home/administrator/DATA/project/elearning-kesatria/elearning-kesatria"
-            REPO_URL="git@github.com:Wiratek-Solusi-Asia/elearning-kesatria.git"
             PM2_APP="elearning-kesatria"
 
+            STAGE="check repo"
             if [ ! -d "$REPO_DIR/.git" ]; then
-              notify "📦 Repo not found, cloning..."
-              git clone "$REPO_URL" "$REPO_DIR"
+              trap - ERR
+              notify "❌ *Deploy FAILED* — repo not found at ${REPO_DIR}"
+              echo "Repo not found at ${REPO_DIR}"
+              exit 1
             fi
 
             cd "$REPO_DIR"
