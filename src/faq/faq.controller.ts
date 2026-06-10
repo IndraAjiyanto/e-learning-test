@@ -30,7 +30,7 @@ export class FaqController {
       await this.faqService.create(createFaqDto);
       req.flash('success', 'FAQ successfully created');
       res.redirect('/faq');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to created');
       res.redirect('/faq');
     }
@@ -80,7 +80,7 @@ export class FaqController {
       await this.faqService.update(+faqId, updateFaqDto);
       req.flash('success', 'FAQ successfully updated');
       res.redirect('/faq');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to update');
       res.redirect('/faq');
     }
@@ -97,7 +97,7 @@ export class FaqController {
       await this.faqService.remove(faqId);
       req.flash('success', 'FAQ successfully deleted');
       res.redirect('/faq');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'FAQ failed to delete');
       res.redirect('/faq');
     }

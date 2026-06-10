@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -40,14 +41,49 @@ export class BlogController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const recentBlogs = await this.blogService.getRecentBlogs(id); 
     if(req.user){
       const userLike = await this.blogService.userLike(req.user.id, id)
           const blog = await this.blogService.findOne(id);
-    res.render('blog-detail', { blog, user: req.user, userLike });
+    res.render('blog-detail', { blog, user: req.user, userLike, recentBlogs });
     }else{
     const blog = await this.blogService.findOne(id);
-    res.render('blog-detail', { blog, user: req.user });
+    res.render('blog-detail', { blog, user: req.user, recentBlogs });
     }
+  }
+
+  @Get('filter')
+  async blogFilter(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('kategori_id') kategoriId?: string,
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('exclude_ids') excludeIds?: string, // <-- tambah ini
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '9', 10);
+
+    // Parse exclude_ids dari string "1,2,3" ke array number
+    const parsedExcludeIds = excludeIds
+      ? excludeIds.split(',').map(id => parseInt(id, 10)).filter(Boolean)
+      : [];
+
+    const result = await this.blogService.findBlogPaginated({
+      kategoriId: kategoriId || undefined,
+      search: search || undefined,
+      excludeIds: parsedExcludeIds,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
+
+    return res.json({
+      data: result.data,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / itemsPerPage),
+      currentPage,
+    });
   }
 
   @Post('view/:id')
@@ -229,7 +265,7 @@ export class BlogController {
       await this.blogService.create(createBlogDto);
       req.flash('success', 'Blog successfully created');
       res.redirect('/blog');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }
@@ -250,7 +286,7 @@ export class BlogController {
     try {
       const imageUrl = req.body.uploadedImageUrls?.[0];
       res.json({ success: 1, file: { url: imageUrl } });
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog failed to create');
       res.redirect('/blog');
     }
@@ -357,7 +393,7 @@ if (updateBlogDto.isi['ja']) {
       await this.blogService.update(id, updateBlogDto);
       req.flash('success', 'Blog successfully updated');
       res.redirect('/blog');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog failed to update');
       res.redirect('/blog');
     }
@@ -410,7 +446,7 @@ await Promise.all(
       await this.blogService.remove(id);
       req.flash('success', 'Blog successfully removed');
       res.redirect('/blog');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Blog failed to remove');
       res.redirect('/blog');
     }
@@ -425,7 +461,7 @@ await Promise.all(
     try {
       await this.blogService.deleteComment(id);
       return res.json({ success: true });
-    } catch (error) {
+    } catch (error: any) {
       return res.status(500).json({ success: false, message: error.message });
     }
   }

@@ -1,20 +1,20 @@
-    <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 px-4">
-      <button @click="mainTab = 'pembayaran'; statusTab = 'all'"
-        :class="mainTab === 'pembayaran' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900  text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
-        class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
-        <i class="fas fa-credit-card"></i>
-        <span>{{t "test.historyPayment.tabFullPayment"}}</span>
-      </button>
-      <button @click="mainTab = 'pendaftaran'; statusTab = 'all'"
-        :class="mainTab === 'pendaftaran' ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200'"
-        class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
-        <i class="fas fa-user-plus"></i>
-        <span>{{t "test.historyPayment.tabRegistration"}}</span>
-      </button>
-      <button @click="mainTab = 'cicilan'; statusTab = 'all'"
-        :class="mainTab === 'cicilan' ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-blue-50 border border-slate-200'"
-        class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
-        <i class="fas fa-calendar-check"></i>
-        <span>{{t "test.historyPayment.tabInstallment"}}</span>
-      </button>
-    </div>
+<div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 px-4">
+  <button @click="switchTab('pembayaran')"
+    :class="mainTab === 'pembayaran' ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'"
+    class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
+    <i class="fas fa-credit-card"></i>
+    <span>{{t "test.historyPayment.tabFullPayment"}}</span>
+  </button>
+  <button @click="switchTab('pendaftaran')"
+    :class="mainTab === 'pendaftaran' ? 'bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200'"
+    class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
+    <i class="fas fa-user-plus"></i>
+    <span>{{t "test.historyPayment.tabRegistration"}}</span>
+  </button>
+  <button @click="switchTab('cicilan')"
+    :class="mainTab === 'cicilan' ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg scale-105' : 'bg-white text-slate-700 hover:bg-blue-50 border border-slate-200'"
+    class="px-4 md:px-8 py-3 md:py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-md flex items-center gap-2 text-sm md:text-lg">
+    <i class="fas fa-calendar-check"></i>
+    <span>{{t "test.historyPayment.tabInstallment"}}</span>
+  </button>
+</div>

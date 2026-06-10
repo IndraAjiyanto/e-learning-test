@@ -172,7 +172,7 @@ export class PertanyaansController {
       await this.pertanyaansService.update(pertanyaanId, updatePertanyaanDto);
       req.flash('success', 'successfuly update question');
       res.redirect(`/quiz/${quizId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'unsuccess update question');
       res.redirect(`/quiz/${quizId}`);
     }
@@ -194,7 +194,7 @@ export class PertanyaansController {
       await this.pertanyaansService.remove(pertanyaanId);
       req.flash('success', 'successfuly delete question');
       res.redirect(`/quiz/${quizId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'unsuccess delete question');
       res.redirect(`/quiz/${quizId}`);
     }

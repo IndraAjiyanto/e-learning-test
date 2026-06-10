@@ -36,7 +36,7 @@ export class CommitmentController {
       await this.commitmentService.create(createCommitmentDto);
       req.flash('success', 'Commitment created successfully');
       res.redirect('/commitment');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create commitment');
       res.redirect('/commitment/formCreate');
     }
@@ -73,7 +73,7 @@ export class CommitmentController {
         commitment,
         error: req.flash('error'),
       };
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Commitment not found');
       return { redirect: '/commitment' };
     }
@@ -90,7 +90,7 @@ export class CommitmentController {
       await this.commitmentService.update(id, updateCommitmentDto);
       req.flash('success', 'Commitment updated successfully');
       res.redirect('/commitment');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to update commitment');
       res.redirect(`/commitment/formEdit/${id}`);
     }
@@ -106,7 +106,7 @@ export class CommitmentController {
       await this.commitmentService.remove(id);
       req.flash('success', 'Commitment deleted successfully');
       res.redirect('/commitment');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete commitment');
       res.redirect('/commitment');
     }

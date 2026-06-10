@@ -290,10 +290,10 @@
         {{t "test.home.programSection.showing"}}
         <span
           class='text-gray-900 font-bold'
-          x-text='filteredKelas.filter((el, idx) => paginatedKelas(el)).length'
+          x-text='kelasItems.length'
         ></span>
         {{t "test.home.programSection.of"}}
-        <span class='text-gray-900 font-bold' x-text='filteredKelas.length'></span>
+        <span class='text-gray-900 font-bold' x-text='totalItems'></span>
         {{t "test.mycourse.programsAvailable"}}
       </p>
     </div>

@@ -673,6 +673,45 @@ export class KelassService {
     return await this.kelasRepository.find({ relations: ['kategori'] });
   }
 
+  async findKelasPaginated(params: {
+  search?: string;
+  alphabet?: string;
+  page: number;
+  limit: number;
+  userId?: number; // kalau ada = admin, kalau tidak = super_admin
+}) {
+  const query = this.kelasRepository.createQueryBuilder('kelas')
+    .leftJoinAndSelect('kelas.kategori', 'kategori')
+    .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
+    .leftJoinAndSelect('kelas.mentoring', 'mentoring')
+    .leftJoinAndSelect('mentoring.user', 'mentorUser')
+    .orderBy('kelas.id', 'DESC');
+
+  // Filter by mentor (admin only)
+  if (params.userId) {
+    query.innerJoin('kelas.mentoring', 'm')
+      .andWhere('m.userId = :userId', { userId: params.userId });
+  }
+
+if (params.search) {
+  query.andWhere(
+    '(kelas.nama_kelas ILIKE :search OR kategori.nama_kategori ILIKE :search)',
+    { search: `%${params.search}%` }
+  );
+}
+
+  if (params.alphabet) {
+    query.andWhere('kelas.nama_kelas ILIKE :alphabet', {
+      alphabet: `${params.alphabet}%`,
+    });
+  }
+
+  query.skip((params.page - 1) * params.limit).take(params.limit);
+
+  const [data, total] = await query.getManyAndCount();
+  return { data, total };
+}
+
   async findAllLaunch() {
     return await this.kelasRepository.find({
       where: { launch: true },
@@ -692,12 +731,85 @@ export class KelassService {
     });
   }
 
-  async allClassExcept(kelasId: number) {
-    return await this.kelasRepository.find({
-      where: { id: Not(kelasId), launch: true },
-      relations: ['user_kelas', 'kategori', 'jenis_kelas'],
-    });
+async allClassExcept(kelasId: number) {
+  const kelas = await this.kelasRepository.findOne({
+    where: { id: kelasId },
+    relations: ['kategori', 'jenis_kelas'],
+  });
+
+  if (!kelas) {
+    throw new NotFoundException('Program not found');
   }
+
+  const usedIds = [kelasId];
+  let results: any[] = [];
+
+  // 1. kategori & jenis_kelas sama (1 data)
+  const sameAll = await this.kelasRepository.find({
+    where: {
+      id: Not(In(usedIds)),
+      launch: true,
+      kategori: { id: kelas.kategori.id },
+      jenis_kelas: { id: kelas.jenis_kelas.id },
+    },
+    relations: ['user_kelas', 'kategori', 'jenis_kelas'],
+    order: { id: 'DESC' },
+    take: 1,
+  });
+
+  results.push(...sameAll);
+  usedIds.push(...sameAll.map(k => k.id));
+
+  // 2. kategori sama (1 data)
+  const sameKategori = await this.kelasRepository.find({
+    where: {
+      id: Not(In(usedIds)),
+      launch: true,
+      kategori: { id: kelas.kategori.id },
+    },
+    relations: ['user_kelas', 'kategori', 'jenis_kelas'],
+    order: { id: 'DESC' },
+    take: 1,
+  });
+
+  results.push(...sameKategori);
+  usedIds.push(...sameKategori.map(k => k.id));
+
+  // 3. jenis_kelas sama (1 data)
+  const sameJenis = await this.kelasRepository.find({
+    where: {
+      id: Not(In(usedIds)),
+      launch: true,
+      jenis_kelas: { id: kelas.jenis_kelas.id },
+    },
+    relations: ['user_kelas', 'kategori', 'jenis_kelas'],
+    order: { id: 'DESC' },
+    take: 1,
+  });
+
+  results.push(...sameJenis);
+  usedIds.push(...sameJenis.map(k => k.id));
+
+  // 🔥 fallback kalau kurang dari 3
+  if (results.length < 3) {
+    const remaining = 3 - results.length;
+
+    const filler = await this.kelasRepository
+      .createQueryBuilder('kelas')
+      .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
+      .leftJoinAndSelect('kelas.kategori', 'kategori')
+      .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
+      .where('kelas.id NOT IN (:...ids)', { ids: usedIds })
+      .andWhere('kelas.launch = true')
+      .orderBy('RANDOM()')
+      .limit(remaining)
+      .getMany();
+
+    results.push(...filler);
+  }
+
+  return results;
+}
 
   async checkUserInKelas(kelasId: number, userId: number) {
     return await this.userKelasRepository.findOne({

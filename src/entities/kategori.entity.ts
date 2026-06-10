@@ -36,7 +36,7 @@ export class Kategori {
   deskripsi: string[];
 
   @Column({ nullable: true })
-  contact: number;
+  contact: string;
 
   @Column('jsonb', { nullable: true })
   for: string[];

@@ -15,137 +15,136 @@
 <script>
   function portfolioApp() {
     return {
-      allPortfolio: {{#if portfolio}}{{{json portfolio}}}{{else}}[]{{/if}},
-      displayedPortfolio: [],
       allKategori: {{{json kategori}}},
       allJenisKelas: {{{json jenis_kelas}}},
+      filteredKategoriList: [],
+      filteredJenisKelasList: [],
       selectedKategori: '',
       selectedJenisKelas: '',
       selectedKategoriId: '',
       selectedJenisKelasId: '',
+      searchKategoriQuery: '',
+      searchJenisKelasQuery: '',
       currentPage: 1,
-      itemsPerPage: 6,
       totalPages: 1,
+      totalItems: 0,
       loading: false,
+      portfolioItems: [],
+      lang: '{{lang}}',
 
-      init() {
-        console.log('Total Portfolio:', this.allPortfolio.length);
-        this.filterAndPaginate();
+      async init() {
+        this.allKategori = this.allKategori.sort((a, b) =>
+          a.nama_kategori.localeCompare(b.nama_kategori)
+        );
+        this.allJenisKelas = this.allJenisKelas.sort((a, b) =>
+          a.nama_jenis_kelas.localeCompare(b.nama_jenis_kelas)
+        );
+        this.filteredKategoriList = [...this.allKategori];
+        this.filteredJenisKelasList = [...this.allJenisKelas];
+        await this.fetchPortfolio();
       },
 
-      filterAndPaginate() {
-        // Filter berdasarkan kategori dan jenis kelas
-        let filtered = this.allPortfolio;
-        
-        if (this.selectedKategoriId) {
-          filtered = filtered.filter(item => {
-            const kategoriId = item.kelas?.kategori?.id || item.kategori?.id;
-            return kategoriId == this.selectedKategoriId;
-          });
-        }
-        
-        if (this.selectedJenisKelasId) {
-          filtered = filtered.filter(item => {
-            const jenisKelasId = item.kelas?.jenis_kelas?.id || item.jenis_kelas?.id;
-            return jenisKelasId == this.selectedJenisKelasId;
-          });
-        }
-        
-        // Hitung total pages
-        this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
-        
-        // Pagination
-        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        const endIndex = startIndex + this.itemsPerPage;
-        
-        this.displayedPortfolio = filtered.slice(startIndex, endIndex);
+      getByLang(obj, lang) {
+        if (!obj || typeof obj !== 'object') return '';
+        return obj[lang] || obj.id || obj.en || '';
       },
 
-      get portfolioItems() {
-        return this.displayedPortfolio || [];
+      filterKategori() {
+        const query = this.searchKategoriQuery.toLowerCase().trim();
+        this.filteredKategoriList = query
+          ? this.allKategori.filter(k => k.nama_kategori.toLowerCase().includes(query))
+          : [...this.allKategori];
       },
 
-      get totalItems() {
-        let filtered = this.allPortfolio;
-        
-        if (this.selectedKategoriId) {
-          filtered = filtered.filter(item => {
-            const kategoriId = item.kelas?.kategori?.id || item.kategori?.id;
-            return kategoriId == this.selectedKategoriId;
-          });
-        }
-        
-        if (this.selectedJenisKelasId) {
-          filtered = filtered.filter(item => {
-            const jenisKelasId = item.kelas?.jenis_kelas?.id || item.jenis_kelas?.id;
-            return jenisKelasId == this.selectedJenisKelasId;
-          });
-        }
-        
-        return filtered.length;
+      filterJenisKelas() {
+        const query = this.searchJenisKelasQuery.toLowerCase().trim();
+        this.filteredJenisKelasList = query
+          ? this.allJenisKelas.filter(j =>
+              this.getByLang(j.nama_jenis_kelas, this.lang).toLowerCase().includes(query)
+            )
+          : [...this.allJenisKelas];
       },
 
-      selectKategori(kategoriId) {
+      async fetchPortfolio() {
+        this.loading = true;
+        try {
+          const params = new URLSearchParams();
+          params.set('userId', {{user.id}});
+          if (this.selectedKategoriId) params.set('kategori_id', this.selectedKategoriId);
+          if (this.selectedJenisKelasId) params.set('jenis_kelas_id', this.selectedJenisKelasId);
+          params.set('page', this.currentPage);
+          params.set('limit', 6);
+
+          const res = await fetch(`/dashboard/portofolio/filter?${params.toString()}`);
+          const json = await res.json();
+
+          this.portfolioItems = json.data;
+          this.totalItems = json.totalItems;
+          this.totalPages = json.totalPages;
+          this.currentPage = json.currentPage;
+        } catch (err) {
+          console.error('Fetch portfolio error:', err);
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      async selectKategori(kategoriId) {
         this.selectedKategoriId = kategoriId;
         this.currentPage = 1;
-        this.filterAndPaginate();
-        
-        // Set selected name untuk display
         if (kategoriId) {
           const kat = this.allKategori.find(k => k.id == kategoriId);
           this.selectedKategori = kat ? kat.nama_kategori : '';
         } else {
           this.selectedKategori = '';
         }
+        await this.fetchPortfolio();
       },
 
-      selectJenisKelas(jenisKelasId) {
+      async selectJenisKelas(jenisKelasId) {
         this.selectedJenisKelasId = jenisKelasId;
         this.currentPage = 1;
-        this.filterAndPaginate();
-        
-        // Set selected name untuk display
         if (jenisKelasId) {
           const jenis = this.allJenisKelas.find(j => j.id == jenisKelasId);
           this.selectedJenisKelas = jenis ? jenis.nama_jenis_kelas : '';
         } else {
           this.selectedJenisKelas = '';
         }
+        await this.fetchPortfolio();
       },
 
-      changePage(page) {
+      async changePage(page) {
         this.currentPage = page;
-        this.filterAndPaginate();
+        await this.fetchPortfolio();
       },
 
-      resetFilters() {
+      async resetFilters() {
         this.selectedKategoriId = '';
         this.selectedJenisKelasId = '';
         this.selectedKategori = '';
         this.selectedJenisKelas = '';
+        this.searchKategoriQuery = '';
+        this.searchJenisKelasQuery = '';
+        this.filteredKategoriList = [...this.allKategori];
+        this.filteredJenisKelasList = [...this.allJenisKelas];
         this.currentPage = 1;
-        this.filterAndPaginate();
+        await this.fetchPortfolio();
       },
 
       getCategoryName(item) {
-        if (item.kelas?.kategori?.nama_kategori)
-          return item.kelas.kategori.nama_kategori;
-        if (item.kategori?.nama_kategori)
-          return item.kategori.nama_kategori;
-        if (item.kelas?.nama_kategori)
-          return item.kelas.nama_kategori;
-        return null;
+        return item.kelas?.kategori?.nama_kategori
+          || item.kategori?.nama_kategori
+          || item.kelas?.nama_kategori
+          || null;
       },
 
       getJenisKelasName(item) {
-        if (item.kelas?.jenis_kelas?.nama_jenis_kelas)
-          return item.kelas.jenis_kelas.nama_jenis_kelas;
-        if (item.jenis_kelas?.nama_jenis_kelas)
-          return item.jenis_kelas.nama_jenis_kelas;
-        if (item.kelas?.nama_jenis_kelas)
-          return item.kelas.nama_jenis_kelas;
-        return null;
+        return item.kelas?.jenis_kelas?.nama_jenis_kelas
+          || item.jenis_kelas?.nama_jenis_kelas
+          || item.kelas?.nama_jenis_kelas
+          || null;
       }
     };
   }
 </script>
+

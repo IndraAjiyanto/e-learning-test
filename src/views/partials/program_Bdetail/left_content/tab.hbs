@@ -3,21 +3,21 @@
         class='border-b border-slate-200 flex gap-6 text-sm font-medium overflow-x-auto'
       >
         <button
-          @click="activeTab = 'info'"
+          @click="switchTab('info')"
           :class="activeTab === 'info' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >
           {{t "test.detailProgram.tabDetailProgram.programInfo"}}
         </button>
                 <button
-          @click="activeTab = 'bootcamp'"
-          :class="activeTab === 'bootcamp' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          @click="switchTab('flow')"
+          :class="activeTab === 'flow' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >
           {{t "test.detailProgram.tabDetailProgram.flowProgram"}}
         </button>
         <button
-          @click="activeTab = 'benefit'"
+          @click="switchTab('benefit')"
           :class="activeTab === 'benefit' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >
@@ -25,14 +25,14 @@
         </button>
 
                 <button
-          @click="activeTab = 'mentor'"
+          @click="switchTab('mentor')"
           :class="activeTab === 'mentor' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >
           {{t "test.detailProgram.tabDetailProgram.mentor"}}
         </button>
         <button
-          @click="activeTab = 'faq'"
+          @click="switchTab('faq')"
           :class="activeTab === 'faq' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >

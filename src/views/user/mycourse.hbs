@@ -1,21 +1,21 @@
 <div
   x-data="{
       tab: 'all',
-      categories: ['all', {{#each kategori}}'{{this.nama_kategori}}',{{/each}}],
-      selectedCategory: 'all',
-      selectedMethod: 'all',
-      searchQuery: '',
-      courseCategories: ['all', {{#each jenis_kelas}}`{{this.nama_jenis_kelas}}`,{{/each}}],
-      currentPage: 1,
-      itemsPerPage: 6,
-      categoryDropdownOpen: false,
-      typeDropdownOpen: false,
-      methodDropdownOpen: false,
-      
+    selectedCategory: 'all',
+    selectedMethod: 'all',
+    searchQuery: '',
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 6,
+    loading: false,
+    kelasItems: [],
+    lang: '{{lang}}',
+
       categoriesData: [
         { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
         {{#each kategori}}
-        { value: '{{this.nama_kategori}}', icon: '{{this.icon}}', title: '{{this.nama_kategori}}', desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
+        { value: '{{this.nama_kategori}}', icon: `{{this.icon}}`, title: '{{this.nama_kategori}}', desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
         {{/each}}
       ],
       
@@ -32,50 +32,73 @@
         { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
       ],
 
-      get selectedCategoryItem() {
-        return this.categoriesData.find(c => c.value === this.tab) || this.categoriesData[0];
-      },
-      
-      get selectedTypeItem() {
-        return this.courseCategoriesData.find(c => c.value === this.selectedCategory) || this.courseCategoriesData[0];
-      },
+    categoryDropdownOpen: false,
+    typeDropdownOpen: false,
+    methodDropdownOpen: false,
 
-      get selectedMethodItem() {
-        return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
-      },
+    async init() {
+      // Hapus $watch lama, ganti dengan watch yang trigger fetch
+      this.$watch('tab', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedCategory', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
+      await this.fetchKelas();
+    },
 
-      get filteredKelas() {
-          return [...$refs.kelasList.children].filter(el => {
-              const matchesTab = this.tab === 'all' || el.dataset.kategori === this.tab;
-              const matchesCategory = this.selectedCategory === 'all' || 
-                                    el.dataset.category?.toLowerCase() === this.selectedCategory.toLowerCase();
-              const matchesMethod = this.selectedMethod === 'all' || 
-                                   el.dataset.location?.toLowerCase() === this.selectedMethod.toLowerCase();
-              const matchesSearch = this.searchQuery === '' || 
-                                  el.dataset.nama?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                  el.dataset.deskripsi?.toLowerCase().includes(this.searchQuery.toLowerCase());
-              
-              return matchesTab && matchesCategory && matchesMethod && matchesSearch;
-          })
-      },
+    async fetchKelas() {
+      this.loading = true;
+      try {
+        const params = new URLSearchParams();
+        params.set('userId', `{{user.id}}`)
+        if (this.tab !== 'all') params.set('kategori', this.tab);
+        if (this.selectedCategory !== 'all') params.set('jenis_kelas', this.selectedCategory);
+        if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);
+        if (this.searchQuery) params.set('search', this.searchQuery);
+        params.set('page', this.currentPage);
+        params.set('limit', this.itemsPerPage);
 
-      get totalPages() {
-          return Math.ceil(this.filteredKelas.length / this.itemsPerPage)
-      },
+        const res = await fetch(`/dashboard/kelas/filter?${params.toString()}`);
+        const json = await res.json();
 
-      paginatedKelas(el) {
-          const idx = this.filteredKelas.indexOf(el)
-          return idx >= (this.currentPage - 1) * this.itemsPerPage &&
-                 idx < this.currentPage * this.itemsPerPage
-      },
-
-      resetFilters() {
-          this.selectedCategory = 'all';
-          this.selectedMethod = 'all';
-          this.tab = 'all';
-          this.searchQuery = '';
-          this.currentPage = 1;
+        this.kelasItems = json.data;
+        this.totalItems = json.totalItems;
+        this.totalPages = json.totalPages;
+        this.currentPage = json.currentPage;
+      } catch (err) {
+        console.error('Fetch kelas error:', err);
+      } finally {
+        this.loading = false;
       }
+    },
+
+    async changePage(page) {
+      this.currentPage = page;
+      await this.fetchKelas();
+    },
+
+            getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
+    },
+
+    async resetFilters() {
+      this.tab = 'all';
+      this.selectedCategory = 'all';
+      this.selectedMethod = 'all';
+      this.searchQuery = '';
+      // currentPage akan di-reset oleh $watch tab
+    },
+
+    // Computed tetap bisa pakai ini
+    get selectedCategoryItem() {
+      return this.categoriesData.find(c => c.value === this.tab) || this.categoriesData[0];
+    },
+    get selectedTypeItem() {
+      return this.courseCategoriesData.find(c => c.value === this.selectedCategory) || this.courseCategoriesData[0];
+    },
+    get selectedMethodItem() {
+      return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
+    },
   }"
   class='bg-gradient-to-br from-white via-gray-50 to-white py-20 px-6 lg:px-20 relative overflow-visible'
   x-init="$watch('tab', () => currentPage = 1); $watch('selectedMethod', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"

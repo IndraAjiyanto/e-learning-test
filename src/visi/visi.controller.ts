@@ -34,7 +34,7 @@ export class VisiController {
 
       req.flash('success', 'visi successfully created');
       res.redirect('/vision');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'visi failed to create');
       res.redirect('/vision');
     }
@@ -79,7 +79,7 @@ export class VisiController {
       await this.visiService.update(visiId, updateVisiDto);
       req.flash('success', 'visi successfully updated');
       res.redirect('/vision');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'visi failed to update');
       res.redirect('/vision');
     }
@@ -96,7 +96,7 @@ export class VisiController {
       await this.visiService.remove(visiId);
       req.flash('success', 'visi successfully remove');
       res.redirect('/vision');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'visi failed to remove');
       res.redirect('/vision');
     }

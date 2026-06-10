@@ -1,39 +1,33 @@
-        <!-- FAQ Tab -->
-        <div x-show="activeTab === 'faq'" x-transition>
-          <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
-            <h3
-              class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
-            >
-              {{t "test.detailProgram.faq.tittle"}}
-            </h3>
-<div class='space-y-4' x-data='{ openFaq: null }'>
-  {{#each pertanyaan_kelas}}
-    <div class='border border-gray-200 rounded-xl overflow-hidden'>
-      <button
-        class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
-        @click='openFaq = openFaq === {{this.id}} ? null : {{this.id}}'
-      >
-        <span class='font-montserrat font-semibold text-gray-800'>
-          {{getByLang this.pertanyaan ../lang}}
-        </span>
+<div x-show="activeTab === 'faq'" x-transition>
 
-        <i
-          class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
-          :class="{ 'rotate-180': openFaq === {{this.id}} }"
-        ></i>
-      </button>
+  <div x-show="loading.faq" class="flex justify-center py-16">
+    <i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
+  </div>
 
-      <div
-        class=' px-5 pb-5 text-gray-700'
-        x-show='openFaq === {{this.id}}'
-        x-transition
-      >
-        {{getByLang this.jawaban ../lang}}
+  <div x-show="!loading.faq && faq" x-data="{ openFaq: null }">
+    <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
+      <h3 class='font-montserrat text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'>
+        {{t "test.detailProgram.faq.tittle"}}
+      </h3>
+      <div class='space-y-4'>
+        <template x-for="item in (faq?.pertanyaan_kelas || [])" :key="item.id">
+          <div class='border border-gray-200 rounded-xl overflow-hidden'>
+            <button
+              class='w-full text-left p-5 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center'
+              @click="openFaq = openFaq === item.id ? null : item.id">
+              <span class='font-montserrat font-semibold text-gray-800' x-text="getByLang(item.pertanyaan, lang)"></span>
+              <i class='fas fa-chevron-down text-gray-500 transition-transform duration-300'
+                :class="{ 'rotate-180': openFaq === item.id }"></i>
+            </button>
+            <div class='px-5 pb-5 text-gray-700'
+              x-show="openFaq === item.id"
+              x-transition
+              x-text="getByLang(item.jawaban, lang)">
+            </div>
+          </div>
+        </template>
       </div>
     </div>
-  {{/each}}
+  </div>
+
 </div>
-
-
-          </div>
-        </div>

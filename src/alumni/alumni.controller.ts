@@ -60,7 +60,7 @@ export class AlumniController {
       await this.alumniService.create(createAlumnusDto);
       req.flash('success', 'Alumni successfully created');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to create');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -92,7 +92,7 @@ export class AlumniController {
       await this.alumniService.create(createAlumnusDto);
       req.flash('success', 'Alumni successfully created');
       res.redirect(`/category/${kategoriId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to create');
       res.redirect(`/category/${kategoriId}`);
     }
@@ -177,7 +177,7 @@ export class AlumniController {
       await this.alumniService.update(alumniId, updateAlumnusDto);
       req.flash('success', 'Alumni successfully updated');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to update');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -215,7 +215,7 @@ export class AlumniController {
       await this.alumniService.update(alumniId, updateAlumnusDto);
       req.flash('success', 'Alumni successfully updated');
       res.redirect(`/category/${kategoriId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to update');
       res.redirect(`/category/${kategoriId}`);
     }
@@ -239,7 +239,7 @@ export class AlumniController {
       await this.alumniService.remove(alumniId);
       req.flash('success', 'Alumni successfully removed');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to remove');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -263,7 +263,7 @@ export class AlumniController {
       await this.alumniService.remove(alumniId);
       req.flash('success', 'Alumni successfully removed');
       res.redirect(`/category/${kategoriId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Alumni failed to remove');
       res.redirect(`/category/${kategoriId}`);
     }

@@ -52,7 +52,7 @@ export class LogbookMentorController {
       await this.logbookMentorService.create(createLogbookMentorDto);
       req.flash('success', 'Log book added successfully');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Log book failed to create');
       res.redirect(`/session/${pertemuanId}`);
     }
@@ -125,7 +125,7 @@ export class LogbookMentorController {
       );
       req.flash('success', 'logbook successfully updated');
       res.redirect(`/session/${logbook.pertemuan.id}`);
-    } catch (error) {
+    } catch (error: any) {
       const logbook = await this.logbookMentorService.findOne(logbook_mentorId);
       req.flash('error', error.message || 'logbook failed to updated');
       res.redirect(`/session/${logbook.pertemuan.id}`);
@@ -146,7 +146,7 @@ export class LogbookMentorController {
       await this.logbookMentorService.remove(logbook_mentorId);
       req.flash('success', 'logbook successfully deleted');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'logbook failed to delete');
       res.redirect(`/session/${pertemuanId}`);
     }

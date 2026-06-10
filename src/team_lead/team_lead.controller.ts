@@ -54,7 +54,7 @@ export class TeamLeadController {
       await this.teamLeadService.create(createTeamLeadDto);
       req.flash('success', 'Team Lead created successfully');
       res.redirect('/team-lead');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to create Team Lead');
       res.redirect('/team-lead');
     }
@@ -111,7 +111,7 @@ export class TeamLeadController {
       await this.teamLeadService.update(id, updateTeamLeadDto);
       req.flash('success', 'Team Lead updated successfully');
       res.redirect('/team-lead');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to update Team Lead');
       res.redirect('/team-lead');
     }
@@ -134,7 +134,7 @@ export class TeamLeadController {
       await this.teamLeadService.remove(id);
       req.flash('success', 'Team Lead deleted successfully');
       res.redirect('/team-lead');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete Team Lead');
       res.redirect('/team-lead');
     }

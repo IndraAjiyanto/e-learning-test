@@ -63,7 +63,7 @@ export class MentorController {
       await this.mentorService.create(createMentorDto);
       req.flash('success', 'mentor successfully created');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'mentor failed to create');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -156,7 +156,7 @@ export class MentorController {
       await this.mentorService.update(mentorId, updateMentorDto);
       req.flash('success', 'mentor successfully update');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'mentor failed to update');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -180,7 +180,7 @@ export class MentorController {
       await this.mentorService.remove(mentorId);
       req.flash('success', 'mentor successfully deleted');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'mentor failed to delete');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }

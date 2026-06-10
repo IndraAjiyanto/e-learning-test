@@ -1,17 +1,17 @@
 <div
   x-data="{
       tab: 'all',
-      categories: ['all', {{#each kategori}}'{{this.nama_kategori}}',{{/each}}],
-      selectedCategory: 'all',
-      selectedMethod: 'all',
-      searchQuery: '',
-      courseCategories: ['all', {{#each jenis_kelas}}`{{this.nama_jenis_kelas}}`,{{/each}}],
-      currentPage: 1,
-      itemsPerPage: 6,
-      categoryDropdownOpen: false,
-      typeDropdownOpen: false,
-      methodDropdownOpen: false,
-      
+    selectedCategory: 'all',
+    selectedMethod: 'all',
+    searchQuery: '',
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 6,
+    loading: false,
+    kelasItems: [],
+    lang: '{{lang}}',
+
       categoriesData: [
         { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
         {{#each kategori}}
@@ -32,50 +32,72 @@
         { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
       ],
 
-      get selectedCategoryItem() {
-        return this.categoriesData.find(c => c.value === this.tab) || this.categoriesData[0];
-      },
-      
-      get selectedTypeItem() {
-        return this.courseCategoriesData.find(c => c.value === this.selectedCategory) || this.courseCategoriesData[0];
-      },
+    categoryDropdownOpen: false,
+    typeDropdownOpen: false,
+    methodDropdownOpen: false,
 
-      get selectedMethodItem() {
-        return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
-      },
+    async init() {
+      // Hapus $watch lama, ganti dengan watch yang trigger fetch
+      this.$watch('tab', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedCategory', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
+      await this.fetchKelas();
+    },
 
-      get filteredKelas() {
-          return [...$refs.kelasList.children].filter(el => {
-              const matchesTab = this.tab === 'all' || el.dataset.kategori === this.tab;
-              const matchesCategory = this.selectedCategory === 'all' || 
-                                    el.dataset.category?.toLowerCase() === this.selectedCategory.toLowerCase();
-              const matchesMethod = this.selectedMethod === 'all' || 
-                                   el.dataset.location?.toLowerCase() === this.selectedMethod.toLowerCase();
-              const matchesSearch = this.searchQuery === '' || 
-                                  el.dataset.nama?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                  el.dataset.deskripsi?.toLowerCase().includes(this.searchQuery.toLowerCase());
-              
-              return matchesTab && matchesCategory && matchesMethod && matchesSearch;
-          })
-      },
+    async fetchKelas() {
+      this.loading = true;
+      try {
+        const params = new URLSearchParams();
+        if (this.tab !== 'all') params.set('kategori', this.tab);
+        if (this.selectedCategory !== 'all') params.set('jenis_kelas', this.selectedCategory);
+        if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);
+        if (this.searchQuery) params.set('search', this.searchQuery);
+        params.set('page', this.currentPage);
+        params.set('limit', this.itemsPerPage);
 
-      get totalPages() {
-          return Math.ceil(this.filteredKelas.length / this.itemsPerPage)
-      },
+        const res = await fetch(`/dashboard/kelas/filter?${params.toString()}`);
+        const json = await res.json();
 
-      paginatedKelas(el) {
-          const idx = this.filteredKelas.indexOf(el)
-          return idx >= (this.currentPage - 1) * this.itemsPerPage &&
-                 idx < this.currentPage * this.itemsPerPage
-      },
-
-      resetFilters() {
-          this.selectedCategory = 'all';
-          this.selectedMethod = 'all';
-          this.tab = 'all';
-          this.searchQuery = '';
-          this.currentPage = 1;
+        this.kelasItems = json.data;
+        this.totalItems = json.totalItems;
+        this.totalPages = json.totalPages;
+        this.currentPage = json.currentPage;
+      } catch (err) {
+        console.error('Fetch kelas error:', err);
+      } finally {
+        this.loading = false;
       }
+    },
+
+        getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
+    },
+
+    async changePage(page) {
+      this.currentPage = page;
+      await this.fetchKelas();
+    },
+
+    async resetFilters() {
+      this.tab = 'all';
+      this.selectedCategory = 'all';
+      this.selectedMethod = 'all';
+      this.searchQuery = '';
+      // currentPage akan di-reset oleh $watch tab
+    },
+
+    // Computed tetap bisa pakai ini
+    get selectedCategoryItem() {
+      return this.categoriesData.find(c => c.value === this.tab) || this.categoriesData[0];
+    },
+    get selectedTypeItem() {
+      return this.courseCategoriesData.find(c => c.value === this.selectedCategory) || this.courseCategoriesData[0];
+    },
+    get selectedMethodItem() {
+      return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
+    },
   }"
   class='bg-gradient-to-br from-primary via-secondary to-gray-900 py-20 px-6 lg:px-20 relative overflow-visible'
   x-init="$watch('tab', () => currentPage = 1); $watch('selectedMethod', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
@@ -369,9 +391,9 @@
             x-show="searchQuery !== ''"
             class='px-4 py-2 bg-slate-700/50 text-slate-200 rounded-lg text-sm font-medium'
           >
-            <i class='fas fa-search mr-2'></i>"<span
+            <i class='fas fa-search mr-2'></i><span
               x-text='searchQuery'
-            ></span>"
+            ></span>
           </span>
         </div>
         <button
@@ -384,18 +406,19 @@
     </div>
 
     <!-- Results Counter -->
-    <div class='mt-6 text-center'>
-      <p class='text-slate-400'>
-        {{t "test.home.programSection.showing"}}
-        <span
-          class='text-white font-bold'
-          x-text='filteredKelas.filter((el, idx) => paginatedKelas(el)).length'
-        ></span>
-        {{t "test.home.programSection.of"}}
-        <span class='text-white font-bold' x-text='filteredKelas.length'></span>
-        {{t "test.home.programSection.program"}}
-      </p>
-    </div>
+<!-- Results Counter -->
+<div class='mt-6 text-center'>
+  <p class='text-slate-400'>
+    {{t "test.home.programSection.showing"}}
+    <span
+      class='text-white font-bold'
+      x-text='kelasItems.length'
+    ></span>
+    {{t "test.home.programSection.of"}}
+    <span class='text-white font-bold' x-text='totalItems'></span>
+    {{t "test.home.programSection.program"}}
+  </p>
+</div>
   </div>
 
   <!-- Classes Grid -->
@@ -403,117 +426,103 @@
     class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto'
     x-ref='kelasList'
   >
-    {{#each kelas}}
-      <div
-        data-animate="scale-up"
-        data-delay="100"
-        class='group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl'
-        data-kategori='{{kategori.nama_kategori}}'
-        data-category='{{ jenis_kelas.nama_jenis_kelas }}'
-        data-nama='{{nama_kelas}}'
-        data-deskripsi='{{getByLang deskripsi ../lang}}'
-        data-location='{{metode}}'
-        x-show="(tab === 'all' || tab === '{{kategori.nama_kategori}}') && paginatedKelas($el)"
-        x-transition
-      >
-        <!-- Gambar lebih bescar -->
-        <img
-          src='{{gambar}}'
-          alt='{{nama_kelas}}'
-          class='h-48 w-full object-cover
- group-hover:scale-105 transition-transform duration-300 drop-shadow-lg'
-        />
+<template x-if="!loading">
+  <template x-for="kelas in kelasItems" :key="kelas.id">
+    <div
+      data-animate="scale-up"
+      data-delay="100"
+      class="group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
+    >
+      <img
+        :src="kelas.gambar"
+        :alt="kelas.nama_kelas"
+        class="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300 drop-shadow-lg"
+      />
 
-        <div class='card-body p-6'>
-          <div class='flex gap-2 mb-3'>
-            <span
-              class='badge flex justify-center h-fit items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full'
-            >
-              {{kategori.nama_kategori}}
-            </span>
-            <span
-              class='badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900  text-white px-3 py-1 text-xs font-semibold rounded-full'
-            >
-              {{ jenis_kelas.nama_jenis_kelas }}
-            </span>
+      <div class="card-body p-6">
+        <!-- Badge -->
+        <div class="flex gap-2 mb-3">
+          <span class="badge flex justify-center h-fit items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full"
+            x-text="kelas.kategori?.nama_kategori">
+          </span>
+          <span class="badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-full"
+            x-text="kelas.jenis_kelas?.nama_jenis_kelas">
+          </span>
+        </div>
 
-          </div>
-
-          <div class='flex flex-wrap gap-2 mb-4 text-sm text-gray-700'>
-            <div
-              class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
-            >
-            {{#if (eq metode "online")}}
-              <i class='fas fa-laptop text-slate-500'></i>
-              <span>{{t "test.home.programSection.online"}}</span>
-              {{else if (eq metode "offline")}}
-              <i class='fas fa-map-marker-alt text-slate-500'></i>
-              <span>{{t "test.home.programSection.offline"}}</span>
-              {{/if}}
-            </div>
-            <div
-              class='flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full'
-            >
-              <i class='fas fa-user-tie text-slate-500'></i>
-              <span>{{getByLang lokasi ../lang}}</span>
-            </div>
-          </div>
-
-          <h2
-            class='card-title text-gray-900 text-xl font-bold mb-3'
-          >{{nama_kelas}}</h2>
-
-          <p class='text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed'>
-            {{getByLang deskripsi ../lang}}
-          </p>
-
-          <div
-            class='bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200'
-          >
-            <div class='flex items-center justify-between mb-3'>
-              <div class='flex items-center gap-2'>
-                <i class='fas fa-users text-slate-600 animate-pulse'></i>
-                <span class='text-sm font-medium text-slate-600'>{{t "test.home.programSection.kuota"}}</span>
-              </div>
-              <span
-                class='text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm'
-              >
-                {{user_kelas.length}}
-                /
-                {{kuota}}
-                {{t "test.home.programSection.student"}}
+        <!-- Metode & Lokasi -->
+        <div class="flex flex-wrap gap-2 mb-4 text-sm text-gray-700">
+          <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+            <template x-if="kelas.metode === 'online'">
+              <span class="flex items-center gap-2">
+                <i class="fas fa-laptop text-slate-500"></i>
+                <span>{{t "test.home.programSection.online"}}</span>
               </span>
-            </div>
+            </template>
+            <template x-if="kelas.metode === 'offline'">
+              <span class="flex items-center gap-2">
+                <i class="fas fa-map-marker-alt text-slate-500"></i>
+                <span>{{t "test.home.programSection.offline"}}</span>
+              </span>
+            </template>
+          </div>
+          <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+            <i class="fas fa-user-tie text-slate-500"></i>
+            <span x-text="getByLang(kelas.lokasi, lang)"></span>
+          </div>
+        </div>
 
-            <div
-              class='w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2'
-            >
-              <div
-                class='h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out'
-                :style='`width: ${({{user_kelas.length}} / {{kuota}}) * 100}%`'
-              >
-              </div>
-            </div>
+        <!-- Nama -->
+        <h2 class="card-title text-gray-900 text-xl font-bold mb-3"
+          x-text="kelas.nama_kelas">
+        </h2>
 
+        <!-- Deskripsi -->
+        <p class="text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed"
+          x-text="getByLang(kelas.deskripsi, lang)">
+        </p>
+
+        <!-- Kuota -->
+        <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <i class="fas fa-users text-slate-600 animate-pulse"></i>
+              <span class="text-sm font-medium text-slate-600">{{t "test.home.programSection.kuota"}}</span>
+            </div>
+            <span class="text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm">
+              <span x-text="kelas.user_kelas?.length ?? 0"></span>
+              /
+              <span x-text="kelas.kuota"></span>
+              {{t "test.home.programSection.student"}}
+            </span>
           </div>
 
-        <div class='card-actions'>
-          <a
-            href='/program/{{id}}'
-            class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center'
+          <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2">
+            <div
+              class="h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out"
+              :style="`width: ${((kelas.user_kelas?.length ?? 0) / kelas.kuota) * 100}%`"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Button -->
+        <div class="card-actions">
+          <a :href="`/program/${kelas.id}`"
+            class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center"
           >
             {{t "test.home.programSection.buttonViewProgram"}}
           </a>
         </div>
-        </div>
       </div>
-    {{/each}}
+    </div>
+  </template>
+</template>
 
   </div>
 
   <!-- No Results -->
   <div
-    x-show='filteredKelas.length === 0'
+    x-show='kelasItems.length === 0'
     class='text-center py-20'
     x-transition
   >

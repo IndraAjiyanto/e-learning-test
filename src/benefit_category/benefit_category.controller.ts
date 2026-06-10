@@ -50,7 +50,7 @@ export class BenefitCategoryController {
       await this.benefitCategoryService.create(createBenefitCategoryDto);
       req.flash('success', 'benefit category successfully created');
       res.redirect('/category/' + kategoriId);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'Failed to create benefit category');
       res.redirect('/category/' + kategoriId);
     }
@@ -83,7 +83,7 @@ export class BenefitCategoryController {
       await this.benefitCategoryService.update(id, updateBenefitCategoryDto);
       req.flash('success', 'Benefit category successfully updated');
       res.redirect('/category/' + kategoriId);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'Failed to update benefit category');
       res.redirect('/category/' + kategoriId);
     }
@@ -101,7 +101,7 @@ export class BenefitCategoryController {
       await this.benefitCategoryService.remove(id);
       req.flash('success', 'Benefit category successfully deleted');
       res.redirect('/category/' + kategoriId);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'Failed to delete benefit category');
       res.redirect('/category/' + kategoriId);
     }

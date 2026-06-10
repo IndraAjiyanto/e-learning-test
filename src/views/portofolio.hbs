@@ -54,6 +54,12 @@
         return obj[lang] || obj.id || obj.en || '';
       },
 
+          getImages(item) {
+      return Array.isArray(item.gambar)
+        ? item.gambar
+        : [item.gambar || 'https://placehold.co/400x300?text=No+Image'];
+    },
+
       filterKategori() {
         const query = this.searchKategoriQuery.toLowerCase().trim();
         this.filteredKategoriList = query
@@ -86,9 +92,7 @@
           this.totalItems = json.totalItems;
           this.totalPages = json.totalPages;
           this.currentPage = json.currentPage;
-          console.log('Fetched portfolio:', this.portfolioItems);
         } catch (err) {
-          console.error('Fetch portfolio error:', err);
         } finally {
           this.loading = false;
         }

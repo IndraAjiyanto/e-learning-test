@@ -6,7 +6,7 @@
       >
         <div class='text-center'>
           <h2
-            class='text-4xl md:text-5xl font-bold text-white mb-6 font-montserrat'
+            class='text-4xl font-bold text-white mb-6 font-montserrat'
           >
             {{t "test.specialProgram.contactSection.tittle"}}
           </h2>
@@ -14,10 +14,26 @@
             {{t "test.specialProgram.contactSection.description"}}
           </p>
 
-          <div class='flex flex-col sm:flex-row gap-4 justify-center'>
+          <div class='flex flex-col sm:flex-row gap-4 justify-center' 
+          x-data="{
+    formatWa(nomor) {
+        if (!nomor) return '';
+        nomor = nomor.replace(/\D/g, ''); // hapus selain angka
+
+        if (nomor.startsWith('0')) {
+            return '62' + nomor.slice(1);
+        }
+
+        if (nomor.startsWith('62')) {
+            return nomor;
+        }
+
+        return nomor;
+    }
+}">
            
             <a
-              href='{{kategori.contact}}' target="_blank"
+              :href="'https://wa.me/' + formatWa('{{kategori.contact}}')" target="_blank"
               class='btn btn-lg border-0 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold text-base hover:shadow-2xl transform hover:-translate-y-1 transition-all'
             >
               {{t "test.specialProgram.contactSection.buttonContactUs"}}

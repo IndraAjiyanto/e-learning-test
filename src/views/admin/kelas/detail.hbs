@@ -133,6 +133,7 @@
             <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{ kelas.jenis_kelas.nama_jenis_kelas}}</span></p>
             <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (eq kelas.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
             <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{#each kelas.lokasi}}{{this}}{{/each}}</span></p>
+            <p><span class="font-medium text-gray-600">Location:</span> <a href="{{kelas.link_lokasi}}" target="_blank" class="text-blue-500 underline truncate block">{{kelas.link_lokasi}}</a></p>
             {{#if (eq kelas.kategori.nama_kategori "Short Class")}}
             <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.hari}} day</span></p>
             {{else}}
@@ -181,7 +182,7 @@
             <p><span class="font-medium text-gray-600">Promo:</span> <span class="text-green-600 font-semibold">Rp {{formatRupiah kelas.promo}}</span></p>
             <p><span class="font-medium text-gray-600">Type:</span> <span class="text-green-600">Paid</span></p>
             {{else}}
-            <p><span class="font-medium text-gray-600">Form:</span> <span class="text-gray-800">{{#if kelas.form}}{{kelas.form}}{{else}}No form required{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">Form:</span> <a href="{{kelas.form}}" target="_blank" class="text-blue-500 underline truncate block">{{#if kelas.form}}{{kelas.form}}{{else}}No form required{{/if}}</a></p>
             <p><span class="font-medium text-gray-600">Type:</span> <span class="text-blue-600">Free</span></p>
             {{/if}}
           </div>
@@ -384,10 +385,8 @@ function tabData() {
         
         this.data = await response.json();
         localStorage.setItem('activeData', JSON.stringify(this.data));
-        console.log('✅ Data fetched:', this.data);
         }
       } catch (error) {
-        console.error('❌ Error:', error);
       }
     }
   }

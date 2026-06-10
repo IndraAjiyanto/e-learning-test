@@ -65,7 +65,7 @@ export class PembayaransController {
         );
         res.redirect(`/payment/history/${userId}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Payment proof submission failed');
       res.redirect(`/payment/history/${userId}`);
     }
@@ -112,11 +112,33 @@ export class PembayaransController {
         );
         res.redirect(`/payment/history/${userId}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Payment proof submission failed');
       res.redirect(`/payment/history/${userId}`);
     }
   }
+
+
+ @Roles('user')
+@Get('api/payment/:userId')
+async getPayment(@Param('userId') userId: number, @Res() res: Response) {
+  const pembayaran = await this.pembayaransService.findPembayaran(userId);
+  return res.json({ data: pembayaran });
+}
+
+@Roles('user')
+@Get('api/registration/:userId')
+async getRegistration(@Param('userId') userId: number, @Res() res: Response) {
+  const pendaftaran = await this.pembayaransService.findPendaftaran(userId);
+  return res.json({ data: pendaftaran });
+}
+
+@Roles('user')
+@Get('api/installment/:userId')
+async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
+  const cicilan = await this.pembayaransService.findCicilan(userId);
+  return res.json({ data: cicilan });
+}
 
   @Roles('user')
   @Get('history/:userId')
@@ -125,14 +147,9 @@ export class PembayaransController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const pembayaran = await this.pembayaransService.findPembayaran(userId);
-    const pendaftaran = await this.pembayaransService.findPendaftaran(userId);
-    const cicilan = await this.pembayaransService.findCicilan(userId);
     res.render('user/riwayat', {
       user: req.user,
-      pembayaran,
-      pendaftaran,
-      cicilan,
+      userId
     });
   }
 
@@ -197,7 +214,7 @@ export class PembayaransController {
             pembayaran['user']['id'],
             pembayaran['kelas']['id'],
           );
-        } catch (error) {}
+        } catch (error: any) {}
 
         req.flash('success', 'proces successfully change acc');
         res.redirect(`/program/detail/program/admin/${pembayaran['kelas']['id']}`);
@@ -212,11 +229,11 @@ export class PembayaransController {
             pembayaran['user']['id'],
             pembayaran['kelas']['id'],
           );
-        } catch (error) {}
+        } catch (error: any) {}
         req.flash('success', 'proces successfully change rejected');
         res.redirect(`/program/detail/program/admin/${pembayaran['kelas']['id']}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       const pembayaran = await this.pembayaransService.findOne(pembayaranId);
       req.flash('error', error.message || 'Payment proof submission failed');
       res.redirect(`/program/detail/program/admin/${pembayaran['kelas']['id']}`);

@@ -58,7 +58,7 @@ export class GambarBenefitController {
       await this.gambarBenefitService.create(createGambarBenefitDto);
       req.flash('success', 'Image Benefit successfully created');
       res.redirect('/benefit-image');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Image Benefit failed to create');
       res.redirect('/benefit-image');
     }
@@ -126,7 +126,7 @@ export class GambarBenefitController {
       await this.gambarBenefitService.update(+id, updateGambarBenefitDto);
       req.flash('success', 'Image Benefit successfully updated');
       res.redirect('/benefit-image');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Image Benefit failed to update');
       res.redirect('/benefit-image');
     }
@@ -149,7 +149,7 @@ export class GambarBenefitController {
       await this.gambarBenefitService.remove(id);
       req.flash('success', 'Image Benefit successfully removed');
       res.redirect('/benefit-image');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Image Benefit failed to remove');
       res.redirect('/benefit-image');
     }

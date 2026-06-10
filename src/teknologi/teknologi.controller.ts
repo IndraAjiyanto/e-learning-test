@@ -33,7 +33,7 @@ export class TeknologiController {
       await this.teknologiService.create(createTeknologiDto);
       req.flash('success', 'Tech successfully created');
       res.redirect('/technology');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Tech failed to create');
       res.redirect('/technology');
     }
@@ -75,7 +75,7 @@ export class TeknologiController {
       await this.teknologiService.update(id, updateTeknologiDto);
       req.flash('success', 'Tech successfully updated');
       res.redirect('/technology');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Tech failed to update');
       res.redirect('/technology');
     }
@@ -97,7 +97,7 @@ export class TeknologiController {
       await this.teknologiService.remove(id);
       req.flash('success', 'Tech   successfully deleted');
       res.redirect('/technology');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete tech');
       res.redirect('/technology');
     }

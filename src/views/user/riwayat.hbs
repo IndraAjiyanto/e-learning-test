@@ -1,21 +1,66 @@
-
-
 <section class="py-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-28" 
-         x-data="{ open: false, imageSrc: '', mainTab: 'pembayaran', statusTab: 'all' }">
+  x-data="{
+    open: false,
+    imageSrc: '',
+    mainTab: localStorage.getItem('activeMainTab') || 'pembayaran',
+    statusTab: localStorage.getItem('activeStatusTab') || 'all',
+
+    pembayaran: [],
+    cicilan: [],
+    pendaftaran: [],
+
+    loading: {
+      pembayaran: false,
+      cicilan: false,
+      pendaftaran: false
+    },
+    fetched: {
+      pembayaran: false,
+      cicilan: false,
+      pendaftaran: false
+    },
+
+    async fetchTab(tab) {
+      if (this.fetched[tab]) return;
+      this.loading[tab] = true;
+      try {
+        const map = {
+          pembayaran: '/payment/api/payment/{{userId}}',
+          pendaftaran: '/payment/api/registration/{{userId}}',
+          cicilan: '/payment/api/installment/{{userId}}'
+        };
+        const res = await fetch(map[tab]);
+        const json = await res.json();
+        this[tab] = json.data;
+        this.fetched[tab] = true;
+      } catch(e) {
+        console.error(e);
+      } finally {
+        this.loading[tab] = false;
+      }
+    },
+
+    async switchTab(tab) {
+      this.mainTab = tab;
+      localStorage.setItem('activeMainTab', tab);
+      await this.fetchTab(tab);
+    },
+
+    switchStatusTab(status) {
+      this.statusTab = status;
+      localStorage.setItem('activeStatusTab', status);
+    }
+  }"
+  x-init="fetchTab(mainTab)">
+
   <div class="container mx-auto px-4 max-w-6xl">
-
-{{> user/payment_history/header}}
-
-{{> user/payment_history/tab_payment}}
-
-{{> user/payment_history/status_payment}}
-
-{{> user/payment_history/full_payment}}
-
-{{> user/payment_history/installment}}
-
-{{> user/payment_history/registration}}
+    {{> user/payment_history/header}}
+    {{> user/payment_history/tab_payment}}
+    {{> user/payment_history/status_payment}}
+    {{> user/payment_history/full_payment}}
+    {{> user/payment_history/installment}}
+    {{> user/payment_history/registration}}
   </div>
 
-{{> user/payment_history/payment_proof}}
+  {{> user/payment_history/payment_proof}}
 </section>

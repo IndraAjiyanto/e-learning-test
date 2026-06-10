@@ -58,7 +58,7 @@ export class KerjaSamaController {
       await this.kerjaSamaService.create(createKerjaSamaDto);
       req.flash('success', 'partnership successfully created');
       res.redirect('/partnership');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'partnership failed to create');
       res.redirect('/partnership');
     }
@@ -130,7 +130,7 @@ export class KerjaSamaController {
       await this.kerjaSamaService.update(kerja_samaId, updateKerjaSamaDto);
       req.flash('success', 'partnership successfully updated');
       res.redirect('/partnership');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'partnership failed to update');
       res.redirect('/partnership');
     }
@@ -153,7 +153,7 @@ export class KerjaSamaController {
       await this.kerjaSamaService.remove(kerja_samaId);
       req.flash('success', 'partnership successfully remove');
       res.redirect('/partnership');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'partnership failed to remove');
       res.redirect('/partnership');
     }

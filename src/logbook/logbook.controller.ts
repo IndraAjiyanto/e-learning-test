@@ -67,7 +67,7 @@ export class LogbookController {
       } else if (req.user?.role === 'user') {
         res.redirect(`/program/${pertemuan.minggu.kelas.id}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       const pertemuan = await this.logbookService.findPertemuan(pertemuanId);
       const errorMessage = error.message || 'Failed to add log book';
       req.flash('error', errorMessage);
@@ -178,7 +178,7 @@ export class LogbookController {
       } else if (req.user?.role === 'user') {
         res.redirect(`/program/${logbook.pertemuan.minggu.kelas.id}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       const logbook = await this.logbookService.findOne(logbookId);
       req.flash('error', error.message || 'logbook failed to update');
       if (req.user?.role === 'admin') {
@@ -204,7 +204,7 @@ export class LogbookController {
       await this.logbookService.update(logbookId, updateLogbookDto);
       req.flash('success', 'logbook successfully update proses');
       res.redirect(`/session/${logbook.pertemuan.id}`);
-    } catch (error) {
+    } catch (error: any) {
       const logbook = await this.logbookService.findOne(logbookId);
       req.flash('error', error.message || 'logbook failed to update proses');
       res.redirect(`/session/${logbook.pertemuan.id}`);
@@ -225,7 +225,7 @@ export class LogbookController {
       await this.logbookService.remove(logbookId);
       req.flash('success', 'logbook successfully deleted');
       res.redirect(`/session/${pertemuanId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'logbook failed to delete');
       res.redirect(`/session/${pertemuanId}`);
     }

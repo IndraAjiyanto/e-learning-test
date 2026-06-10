@@ -119,9 +119,6 @@ export class MaterisService {
 
       await fs.unlink(filePath);
     } catch (error) {
-      if (error.code === 'ENOENT') {
-      } else {
-      }
     }
   }
 

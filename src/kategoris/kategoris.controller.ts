@@ -54,7 +54,7 @@ export class KategorisController {
       await this.kategorisService.create(createKategorisDto);
       req.flash('success', 'kategori successfully created');
       res.redirect('/category');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'kategori failed to create');
       res.redirect('/category');
     }
@@ -96,12 +96,12 @@ export class KategorisController {
     const alumni = await this.kategorisService.findAlumniByKategori(
       kategori.id,
     );
-    const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
+    // const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
     if (kategori?.type === 'Special Program') {
       res.render('special_program', {
         kategori,
         user: req.user,
-        kelas,
+        // kelas,
         alumni,
         benefit_category,
         flow_category,
@@ -109,7 +109,7 @@ export class KategorisController {
         pertanyaan_umum,
       });
     } else if (kategori?.type === 'Program') {
-      res.render('program', { kategori, user: req.user, kelas, alumni });
+      res.render('program', { kategori, user: req.user, alumni });
     }
   }
 
@@ -239,7 +239,8 @@ export class KategorisController {
       await this.kategorisService.update(kategoriId, updateKategorisDto);
       req.flash('success', 'kategori successfully updated');
       res.redirect('/category/' + kategoriId);
-    } catch (error) {
+    } catch (error: any) {
+      console.log(error);
       req.flash('error', error.message || 'kategori failed to update');
       res.redirect('/category/' + kategoriId);
     }
@@ -258,7 +259,7 @@ export class KategorisController {
       await this.kategorisService.remove(kategoriId);
       req.flash('success', 'kategori successfully deleted');
       res.redirect('/category');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('success', 'kategori failed to delete');
       res.redirect('/category');
     }

@@ -48,7 +48,7 @@ export class PortfoliosController {
     try {
       const imageUrl = req.body.uploadedImageUrls?.[0];
       res.json({ success: 1, file: { url: imageUrl } });
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Portfolio failed to create');
       res.redirect('/portfolios');
     }
@@ -95,7 +95,7 @@ export class PortfoliosController {
       await this.portfoliosService.create(createPortfolioDto);
       req.flash('success', 'portofolio successfully upload');
       res.redirect(`/program/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to upload portofolio');
       res.redirect(`/program/${kelasId}`);
     }
@@ -123,10 +123,10 @@ export class PortfoliosController {
   ) {
     const kategori = await this.portfoliosService.findKategoriMyPortfolio(userId);
     const jenis_kelas = await this.portfoliosService.findJenisKelasMyPortfolio(userId);
-    const portfolio = await this.portfoliosService.findByUser(userId);
+    // const portfolio = await this.portfoliosService.findByUser(userId);
     res.render('user/myportfolio', {
       user: req.user,
-      portfolio,
+      // portfolio,
       kategori,
       jenis_kelas,
     });
@@ -230,7 +230,7 @@ export class PortfoliosController {
 
       req.flash('success', 'Portfolio successfully updated');
       return res.redirect(`/portfolio/${portfolioId}/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Portfolio failed to update');
       return res.redirect(`/portfolio/${portfolioId}/${kelasId}`);
     }
@@ -254,7 +254,7 @@ export class PortfoliosController {
       }
       req.flash('success', 'Portfolio successfully deleted');
       res.redirect(`/program/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete portfolio');
       res.redirect(`/program/${kelasId}`);
     }

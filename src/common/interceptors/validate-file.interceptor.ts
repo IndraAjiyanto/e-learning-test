@@ -110,7 +110,6 @@ export class ValidateFileInterceptor implements NestInterceptor {
         }
         request.body.uploadedFileUrls.push(fileUrl);
 
-        console.log('File berhasil disimpan ke:', fileUrl);
       } else {
         throw new Error('File tidak valid: tidak ada buffer atau path');
       }

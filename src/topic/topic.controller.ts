@@ -28,7 +28,7 @@ export class TopicController {
       await this.topicService.create(createTopicDto);
       req.flash('success', 'Topic created successfully');
       res.redirect('/topic');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'Failed to create topic');
       res.redirect('/topic');
     }
@@ -62,7 +62,7 @@ export class TopicController {
       await this.topicService.update(id, updateTopicDto);
       req.flash('success', 'Topic updated successfully');
       res.redirect('/topic');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'Failed to update topic');
       res.redirect('/topic');
     }
@@ -74,7 +74,7 @@ export class TopicController {
       await this.topicService.remove(id);
       req.flash('success', 'Topic removed successfully');
       res.redirect('/topic');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'Failed to remove topic');
       res.redirect('/topic');
     }

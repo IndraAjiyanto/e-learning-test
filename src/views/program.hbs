@@ -1,68 +1,85 @@
 <div
   x-data="{
-      selectedType: 'all',
-      selectedMethod: 'all',
-      searchQuery: '',
-      courseCategories: ['all', {{#each kategori.jenis_kelas}}'{{this.nama_jenis_kelas}}',{{/each}}],
-      currentPage: 1,
-      itemsPerPage: 6,
-      typeDropdownOpen: false,
-      methodDropdownOpen: false,
-      
-      courseCategoriesData: [
-        { value: 'all', icon: 'fa-layer-group', title: '{{t 'test.program.allTypes'}}', desc: '{{t 'test.program.deskripsiAllTypes'}}' },
+    selectedType: 'all',
+    selectedMethod: 'all',
+    searchQuery: '',
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 6,
+    loading: false,
+    kelasItems: [],
+
+            courseCategoriesData: [
+        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
         {{#each kategori.jenis_kelas}}
-        { value: `{{this.nama_jenis_kelas }}`, icon: '{{this.icon}}', title: `{{ this.nama_jenis_kelas }}`, desc: `{{truncate (getByLang this.deskripsi ../lang) 10}}` },
+        { value: '{{this.nama_jenis_kelas }}', icon: '{{computeIcon this.icon}}', title: '{{ this.nama_jenis_kelas }}', desc: '{{truncate (getByLang this.deskripsi ../lang) 10}}' },
         {{/each}}
       ],
       
       methodOptions: [
-        { value: 'all', icon: 'fa-th', title: '{{t 'test.program.allMethod'}}', desc: '{{t 'test.program.deskripsiAllMethod'}}' },
-        { value: 'online', icon: 'fa-laptop', title: '{{t 'test.program.online'}}', desc: '{{t 'test.program.deskripsiOnline'}}' },
-        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t 'test.program.offline'}}', desc: '{{t 'test.program.deskripsiOffline'}}' }
+        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: '{{t "test.home.programSection.deskripsiAllMethod"}}' },
+        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: '{{t "test.home.programSection.deskripsiOnline"}}' },
+        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
       ],
 
-      get selectedTypeItem() {
-        return this.courseCategoriesData.find(c => c.value === this.selectedType) || this.courseCategoriesData[0];
-      },
+    categoryDropdownOpen: false,
+    typeDropdownOpen: false,
+    methodDropdownOpen: false,
 
-      get selectedMethodItem() {
-        return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
-      },
+    async init() {
+      // Hapus $watch lama, ganti dengan watch yang trigger fetch
+      this.$watch('selectedType', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
+      await this.fetchKelas();
+    },
 
-      get filteredKelas() {
-          return [...$refs.kelasList.children].filter(el => {
-              const matchesType = this.selectedType === 'all' || 
-                                el.dataset.category?.toLowerCase() === this.selectedType.toLowerCase();
-              const matchesMethod = this.selectedMethod === 'all' || 
-                                   el.dataset.location?.toLowerCase() === this.selectedMethod.toLowerCase();
-              const matchesSearch = this.searchQuery === '' || 
-                                  el.dataset.nama?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                  el.dataset.deskripsi?.toLowerCase().includes(this.searchQuery.toLowerCase());
-              
-              return matchesType && matchesMethod && matchesSearch;
-          })
-      },
+    async fetchKelas() {
+      this.loading = true;
+      try {
+        const params = new URLSearchParams();
+        params.set('kategori', `{{kategori.nama_kategori}}`);
+        if (this.selectedType !== 'all') params.set('jenis_kelas', this.selectedType);
+        if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);
+        if (this.searchQuery) params.set('search', this.searchQuery);
+        params.set('page', this.currentPage);
+        params.set('limit', this.itemsPerPage);
 
-      get totalPages() {
-          return Math.ceil(this.filteredKelas.length / this.itemsPerPage)
-      },
+        const res = await fetch(`/dashboard/kelas/filter?${params.toString()}`);
+        const json = await res.json();
 
-      paginatedKelas(el) {
-          const idx = this.filteredKelas.indexOf(el)
-          return idx >= (this.currentPage - 1) * this.itemsPerPage &&
-                 idx < this.currentPage * this.itemsPerPage
-      },
-
-      resetFilters() {
-          this.selectedType = 'all';
-          this.selectedMethod = 'all';
-          this.searchQuery = '';
-          this.currentPage = 1;
+        this.kelasItems = json.data;
+        this.totalItems = json.totalItems;
+        this.totalPages = json.totalPages;
+        this.currentPage = json.currentPage;
+      } catch (err) {
+        console.error('Fetch kelas error:', err);
+      } finally {
+        this.loading = false;
       }
+    },
+
+    async changePage(page) {
+      this.currentPage = page;
+      await this.fetchKelas();
+    },
+
+    async resetFilters() {
+      this.selectedType = 'all';
+      this.selectedMethod = 'all';
+      this.searchQuery = '';
+      // currentPage akan di-reset oleh $watch tab
+    },
+
+    // Computed tetap bisa pakai ini
+    get selectedTypeItem() {
+      return this.courseCategoriesData.find(c => c.value === this.selectedType) || this.courseCategoriesData[0];
+    },
+    get selectedMethodItem() {
+      return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
+    },
   }"
-  class='bg-gradient-to-br from-white via-gray-50 to-white py-20 px-6 lg:px-20 relative overflow-visible'
-  x-init="$watch('selectedMethod', () => currentPage = 1); $watch('selectedType', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
 >
 
 {{> program/header}}

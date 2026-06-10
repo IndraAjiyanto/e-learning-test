@@ -15,7 +15,7 @@ export class ContactController {
     try {
       await this.contactService.sendContactEmail(contactDto);
       res.json({ success: true, message: 'Message sent successfully!' });
-    } catch (error) {
+    } catch (error: any) {
       res.status(500).json({
         success: false,
         message: 'Failed to send message. Please try again.',

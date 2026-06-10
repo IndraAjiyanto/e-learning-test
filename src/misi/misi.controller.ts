@@ -34,7 +34,7 @@ export class MisiController {
       await this.misiService.create(createMisiDto);
       req.flash('success', 'misi successfully created');
       res.redirect('/misi');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'misi failed to create');
       res.redirect('/misi');
     }
@@ -70,7 +70,7 @@ export class MisiController {
       await this.misiService.update(id, updateMisiDto);
       req.flash('success', 'misi successfully updated');
       res.redirect('/misi');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'misi failed to update');
       res.redirect('/misi');
     }
@@ -87,7 +87,7 @@ export class MisiController {
       await this.misiService.remove(id);
       req.flash('success', 'misi successfully deleted');
       res.redirect('/misi');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', 'misi failed to delete');
       res.redirect('/misi');
     }

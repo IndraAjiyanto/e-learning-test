@@ -6,9 +6,42 @@ import { Request, Response } from 'express';
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
+  @Get('kelas/filter')
+  async kelasFilter(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('userId') userId?: number,
+    @Query('kategori') kategori?: string,
+    @Query('jenis_kelas') jenisKelas?: string,
+    @Query('metode') metode?: string,
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '6', 10);
+
+    const result = await this.dashboardService.findKelasPaginated({
+      userId: userId || undefined,
+      kategori: kategori || undefined,
+      jenisKelas: jenisKelas || undefined,
+      metode: metode || undefined,
+      search: search || undefined,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
+
+    return res.json({
+      data: result.data,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / itemsPerPage),
+      currentPage,
+    });
+  }
+
   @Get()
   async getProtected(@Req() req: Request, @Res() res: Response) {
-    const kelas = await this.dashboardService.findAllKelas();
+    // const kelas = await this.dashboardService.findAllKelas();
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
@@ -26,7 +59,7 @@ export class DashboardController {
         const gambar_benefit_4 = await this.dashboardService.findGambar4();
         const jenis_kelas = await this.dashboardService.findJenisKelas();
         const kategori = await this.dashboardService.findKategori();
-        const alumni = await this.dashboardService.findAlumni();
+        const alumni = await this.dashboardService.findAllAlumni();
         const kerja_sama = await this.dashboardService.findKerjaSama();
         const benefit_1 = await this.dashboardService.findBenefit1();
         const benefit_2 = await this.dashboardService.findBenefit2();
@@ -36,7 +69,7 @@ export class DashboardController {
         res.render('dashboard', {
           special_program,
           user: req.user,
-          kelas,
+          // kelas,
           faq,
           gambar_benefit_1,
           gambar_benefit_2,
@@ -64,7 +97,7 @@ export class DashboardController {
       const gambar_benefit_4 = await this.dashboardService.findGambar4();
       const jenis_kelas = await this.dashboardService.findJenisKelas();
       const kategori = await this.dashboardService.findKategori();
-      const alumni = await this.dashboardService.findAlumni();
+      const alumni = await this.dashboardService.findAllAlumni();
       const kerja_sama = await this.dashboardService.findKerjaSama();
       const benefit_1 = await this.dashboardService.findBenefit1();
       const benefit_2 = await this.dashboardService.findBenefit2();
@@ -74,7 +107,7 @@ export class DashboardController {
       res.render('dashboard', {
         special_program,
         user: req.user,
-        kelas,
+        // kelas,
         faq,
         gambar_benefit_1,
         gambar_benefit_2,
@@ -94,10 +127,11 @@ export class DashboardController {
     }
   }
 
-    @Get('portofolio/filter')
+  @Get('portofolio/filter')
   async portfolioFilter(
     @Req() req: Request,
     @Res() res: Response,
+    @Query('userId') userId?: number,
     @Query('kategori_id') kategoriId?: string,
     @Query('jenis_kelas_id') jenisKelasId?: string,
     @Query('page') page?: string,
@@ -107,6 +141,7 @@ export class DashboardController {
     const itemsPerPage = parseInt(limit || '6', 10);
   
     const portfolioList = await this.dashboardService.findPortfolio({
+      userId: userId || null,
       kategoriId: kategoriId || null,
       jenisKelasId: jenisKelasId || null,
       page: currentPage,
@@ -147,29 +182,29 @@ export class DashboardController {
   }
 
   @Get('alumni/filter')
-async alumniFilter(
-  @Req() req: Request,
-  @Res() res: Response,
-  @Query('kelas_id') kelasId?: string,
-  @Query('page') page?: string,
-  @Query('limit') limit?: string,
-) {
-  const currentPage = parseInt(page || '1', 10);
-  const itemsPerPage = parseInt(limit || '6', 10);
+  async alumniFilter(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('kelas_id') kelasId?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '6', 10);
 
-  const result = await this.dashboardService.findAlumni({
-    kelasId: kelasId || null,
-    page: currentPage,
-    limit: itemsPerPage,
-  });
+    const result = await this.dashboardService.findAlumni({
+      kelasId: kelasId || null,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
 
-  return res.json({
-    data: result.data,
-    totalItems: result.total,
-    totalPages: Math.ceil(result.total / itemsPerPage),
-    currentPage,
-  });
-}
+    return res.json({
+      data: result.data,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / itemsPerPage),
+      currentPage,
+    });
+  }
 
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
@@ -181,27 +216,28 @@ async alumniFilter(
     });
   }
 
-@Get('blog')
-async blog(@Req() req: Request, @Res() res: Response) {
-  const blog_tranding = await this.dashboardService.findBlogTrending(req.user?.id);
-  const kategori_tranding = await this.dashboardService.findKategoriTrending(req.user?.id);
+  @Get('blog')
+  async blog(@Req() req: Request, @Res() res: Response) {
+    const blog_tranding = await this.dashboardService.findBlogTrending(req.user?.id);
+    const kategori_tranding = await this.dashboardService.findKategoriTrending(req.user?.id);
 
-  const excludeIds = [
-    blog_tranding?.id,
-    ...kategori_tranding.map(k => k.blog?.id),
-  ].filter(Boolean) as number[];
+    const excludeIds = [
+      blog_tranding?.id,
+      ...kategori_tranding.map(k => k.blog?.id),
+    ].filter(Boolean) as number[];
 
-  const blog = await this.dashboardService.findBlog(excludeIds);
-  const kategori_blog = await this.dashboardService.findBlogCategory();
+    // const blog = await this.dashboardService.findBlog(excludeIds);
+    const kategori_blog = await this.dashboardService.findBlogCategory();
 
-  res.render('blog', {
-    user: req.user,
-    blog,
-    kategori_blog,
-    blog_tranding,
-    kategori_tranding
-  });
-}
+    res.render('blog', {
+      user: req.user,
+      // blog,
+      excludeIds,
+      kategori_blog,
+      blog_tranding,
+      kategori_tranding
+    });
+  }
 
   @Get('about')
   async about(@Req() req: Request, @Res() res: Response) {

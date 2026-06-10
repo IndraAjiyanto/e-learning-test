@@ -12,6 +12,7 @@ import {
   UploadedFile,
   UseFilters,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { KelassService } from './kelass.service';
 import { CreateKelassDto } from './dto/create-kelass.dto';
@@ -92,7 +93,7 @@ export class KelassController {
       }
       req.flash('success', 'program successfully created');
       res.redirect('/program');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'program failed created');
       res.redirect('/program');
     }
@@ -161,7 +162,7 @@ export class KelassController {
       }
       req.flash('success', 'program successfully created');
       res.redirect(`/category/${kategoriId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'program failed created');
       res.redirect(`/category/${kategoriId}`);
     }
@@ -179,7 +180,7 @@ export class KelassController {
       await this.kelassService.addUserToKelas(userId, kelasId);
       req.flash('success', 'user successfuly add to program');
       res.redirect(`/program/addUser/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'user failed add to program');
       res.redirect(`/program/addUser/${kelasId}`);
     }
@@ -189,12 +190,41 @@ export class KelassController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     if (req.user!.role === 'super_admin') {
-      const kelas = await this.kelassService.allKelas();
-      res.render('admin/kelas/index', { user: req.user, kelas });
+      // const kelas = await this.kelassService.allKelas();
+      res.render('admin/kelas/index', { user: req.user });
     } else if (req.user!.role === 'admin') {
-      const kelas = await this.kelassService.findKelasByMentoring(req.user!.id);
-      res.render('admin/kelas/index', { user: req.user, kelas });
+      // const kelas = await this.kelassService.findKelasByMentoring(req.user!.id);
+      res.render('admin/kelas/index', { user: req.user });
     }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Get('filter')
+  async filterKelas(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('search') search?: string,
+    @Query('alphabet') alphabet?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '5', 10);
+
+    const result = await this.kelassService.findKelasPaginated({
+      search: search || undefined,
+      alphabet: alphabet || undefined,
+      page: currentPage,
+      limit: itemsPerPage,
+      userId: req.user!.role === 'admin' ? req.user!.id : undefined,
+    });
+
+    return res.json({
+      data: result.data,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / itemsPerPage),
+      currentPage,
+    });
   }
 
   @Roles('admin', 'super_admin')
@@ -423,11 +453,11 @@ export class KelassController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kelas = await this.kelassService.findMyCourse(id);
+    // const kelas = await this.kelassService.findMyCourse(id);
     const kategori = await this.kelassService.findKategoriMyProgram(id);
     const jenis_kelas = await this.kelassService.findJenisKelasMyProgram(id);
     res.render('user/mycourse', {
-      kelas,
+      // kelas,
       user: req.user,
       kategori,
       jenis_kelas,
@@ -447,11 +477,10 @@ export class KelassController {
       req.user!.id,
     );
     const kelass = await this.kelassService.allClassExcept(kelas.id);
-    const pertanyaan_kelas =
-      await this.kelassService.findPertanyaanKelas(kelasId);
-    const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
-    const mentor = await this.kelassService.findMentorKelas(kelasId);
-    const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
+    // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(kelasId);
+    // const alur_kelas = await this.kelassService.findAlurKelas(kelasId);
+    // const mentor = await this.kelassService.findMentorKelas(kelasId);
+    // const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
     const teknologi = await this.kelassService.findTeknologiKelas(kelasId);
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
     res.render('kelas/Bdetail', {
@@ -459,10 +488,10 @@ export class KelassController {
       user: req.user,
       kelass,
       check_user,
-      pertanyaan_kelas,
-      alur_kelas,
-      mentor,
-      benefit_kelas,
+      // pertanyaan_kelas,
+      // alur_kelas,
+      // mentor,
+      // benefit_kelas,
       teknologi,
       cicilan,
     });
@@ -477,10 +506,10 @@ export class KelassController {
     let isUserInKelas = false;
     if (!req.user) {
       const kelas = await this.kelassService.findOneKelasUser(id);
-      const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
-      const alur_kelas = await this.kelassService.findAlurKelas(id);
-      const mentor = await this.kelassService.findMentorKelas(id);
-      const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+      // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+      // const alur_kelas = await this.kelassService.findAlurKelas(id);
+      // const mentor = await this.kelassService.findMentorKelas(id);
+      // const benefit_kelas = await this.kelassService.findBenefitKelas(id);
       const teknologi = await this.kelassService.findTeknologiKelas(id);
       const cicilan = await this.kelassService.findCicilanKelas(id);
       const user_kelas = await this.kelassService.findUserKelas(id);
@@ -490,10 +519,10 @@ export class KelassController {
         kelas,
         kelass,
         daftar,
-        pertanyaan_kelas,
-        alur_kelas,
-        mentor,
-        benefit_kelas,
+        // pertanyaan_kelas,
+        // alur_kelas,
+        // mentor,
+        // benefit_kelas,
         teknologi,
         cicilan,
         user_kelas,
@@ -528,11 +557,10 @@ export class KelassController {
         });
       } else {
         const kelas = await this.kelassService.findOneKelasUser(id);
-        const pertanyaan_kelas =
-          await this.kelassService.findPertanyaanKelas(id);
-        const alur_kelas = await this.kelassService.findAlurKelas(id);
-        const mentor = await this.kelassService.findMentorKelas(id);
-        const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+        // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+        // const alur_kelas = await this.kelassService.findAlurKelas(id);
+        // const mentor = await this.kelassService.findMentorKelas(id);
+        // const benefit_kelas = await this.kelassService.findBenefitKelas(id);
         const teknologi = await this.kelassService.findTeknologiKelas(id);
         const cicilan = await this.kelassService.findCicilanKelas(id);
         const user_kelas = await this.kelassService.findUserKelas(id);
@@ -543,16 +571,40 @@ export class KelassController {
           kelas,
           kelass,
           daftar,
-          pertanyaan_kelas,
-          alur_kelas,
-          mentor,
-          benefit_kelas,
+          // pertanyaan_kelas,
+          // alur_kelas,
+          // mentor,
+          // benefit_kelas,
           teknologi,
           user_kelas,
           cicilan,
         });
       }
     }
+  }
+
+  @Get('api/detail/:id/benefit')
+  async getBenefit(@Param('id') id: number, @Res() res: Response) {
+    const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+    return res.json({ benefit_kelas });
+  }
+
+  @Get('api/detail/:id/faq')
+  async getFaq(@Param('id') id: number, @Res() res: Response) {
+    const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+    return res.json({ pertanyaan_kelas });
+  }
+
+  @Get('api/detail/:id/flow')
+  async getFlow(@Param('id') id: number, @Res() res: Response) {
+    const alur_kelas = await this.kelassService.findAlurKelas(id);
+    return res.json({ alur_kelas });
+  }
+
+  @Get('api/detail/:id/mentor')
+  async getMentor(@Param('id') id: number, @Res() res: Response) {
+    const mentor = await this.kelassService.findMentorKelas(id);
+    return res.json({ mentor });
   }
 
   @Roles('admin', 'super_admin')
@@ -610,7 +662,7 @@ export class KelassController {
       req.flash('success', 'Successfully update program');
 
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'failed update program');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -628,7 +680,7 @@ export class KelassController {
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
       req.flash('success', 'program successfuly switch launch');
       res.redirect('/program');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'program failed to launch');
       res.redirect('/program');
     }
@@ -646,7 +698,7 @@ export class KelassController {
       await this.kelassService.updateLaunch(kelasId, updateKelassDto);
       req.flash('success', 'program successfuly switch status');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'program failed to switch status');
       res.redirect(`/program/detail/program/admin/${kelasId}`);
     }
@@ -670,7 +722,7 @@ export class KelassController {
       await this.kelassService.remove(kelasId);
       req.flash('success', 'Program successfully removed');
       return res.redirect(previous || '/program');
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to remove program');
       return res.redirect(previous || '/program');
     }
@@ -688,7 +740,7 @@ export class KelassController {
       await this.kelassService.removeUserKelas(userId, kelasId);
       req.flash('success', 'User successfully removed from program');
       res.redirect(`/program/addUser/${kelasId}`);
-    } catch (error) {
+    } catch (error: any) {
       req.flash('error', error.message || 'Failed to remove user from program');
       res.redirect(`/program/addUser/${kelasId}`);
     }

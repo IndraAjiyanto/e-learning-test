@@ -87,6 +87,7 @@ async findBlogTrending(userId?: number) {
       'blog.views + (SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id)',
       'score'
     )
+    .where('blog.createdAt >= NOW() - INTERVAL \'1 month\'')
     .orderBy('score', 'DESC');
 
   if (userId) {
@@ -194,6 +195,46 @@ async findKategoriTrending(userId?: number) {
     });
   }
 
+  async findKelasPaginated(params: {
+    userId?: number;
+  kategori?: string;
+  jenisKelas?: string;
+  metode?: string;
+  search?: string;
+  page: number;
+  limit: number;
+}) {
+  const query = this.kelasRepository.createQueryBuilder('kelas')
+    .leftJoinAndSelect('kelas.kategori', 'kategori')
+    .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
+    .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
+    .where('kelas.launch = :launch', { launch: true });
+
+    if(params.userId){
+      query.andWhere('user_kelas.user.id = :userId', { userId: params.userId });
+    }
+
+  if (params.kategori) {
+    query.andWhere('kategori.nama_kategori = :kategori', { kategori: params.kategori });
+  }
+  if (params.jenisKelas) {
+    query.andWhere('jenis_kelas.nama_jenis_kelas = :jenisKelas', { jenisKelas: params.jenisKelas });
+  }
+  if (params.metode) {
+    query.andWhere('kelas.metode = :metode', { metode: params.metode });
+  }
+  if (params.search) {
+    query.andWhere('kelas.nama_kelas ILIKE :search', { search: `%${params.search}%` });
+  }
+
+  query.orderBy('kelas.id', 'DESC')
+    .skip((params.page - 1) * params.limit)
+    .take(params.limit);
+
+  const [data, total] = await query.getManyAndCount();
+  return { data, total };
+}
+
   async findVisiMisi() {
     return await this.visiRepository.find();
   }
@@ -280,6 +321,7 @@ async findBlog(excludeIds: number[] = []) {
 }
 
 async findPortfolio(options?: {
+  userId?: number | null;
   kategoriId?: string | null;
   jenisKelasId?: string | null;
   page?: number;
@@ -290,6 +332,10 @@ async findPortfolio(options?: {
   const skip = (page - 1) * limit;
 
   const where: any = {};
+
+  if (options?.userId) {
+    where.user = { id: options.userId };
+  }
 
   if (options?.kategoriId) {
     where.kelas = {
@@ -341,6 +387,14 @@ async findAlumni(options?: {
 
   return { data, total };
 }
+
+  async findAllAlumni() {
+    return await this.alumniRepository.find({
+      relations: ['kelas'],
+      order: { createdAt: 'DESC' },
+      take: 6,
+    });
+  }
 
   // async findPortfolio() {
   //   return await this.portfolioRepository.find({
