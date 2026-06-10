@@ -1,0 +1,119 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Notify deploy started
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+            🚀 *Deploy started*
+            Repo: `${{ github.repository }}`
+            Branch: `${{ github.ref_name }}`
+            By: ${{ github.actor }}
+            Commit: ${{ github.event.head_commit.message }}
+
+      - name: Build & Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          command_timeout: 20m
+          envs: TELEGRAM_BOT_TOKEN,TELEGRAM_CHAT_ID
+          script: |
+            set -e
+
+            # Helper: send a message to Telegram (won't fail the deploy if curl errors)
+            notify() {
+              curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+                -d chat_id="${TELEGRAM_CHAT_ID}" \
+                -d parse_mode="Markdown" \
+                --data-urlencode text="$1" > /dev/null || true
+            }
+
+            # On any failed command, notify which stage failed then exit
+            STAGE="initialization"
+            trap 'notify "❌ *Deploy FAILED* at stage: ${STAGE}"' ERR
+
+            REPO_DIR="/home/administrator/DATA/project/elearning-kesatria/elearning-kesatria"
+            PM2_APP="elearning-kesatria"
+
+            STAGE="check repo"
+            if [ ! -d "$REPO_DIR/.git" ]; then
+              trap - ERR
+              notify "❌ *Deploy FAILED* — repo not found at ${REPO_DIR}"
+              echo "Repo not found at ${REPO_DIR}"
+              exit 1
+            fi
+
+            cd "$REPO_DIR"
+
+            STAGE="pull code"
+            git pull origin main
+            notify "📥 Latest code pulled successfully"
+
+            STAGE="install dependencies"
+            npm ci
+            notify "📦 Dependencies installed"
+
+            STAGE="build app"
+            npm run build
+            notify "🔨 Build finished"
+
+            # Start the app (or zero-downtime reload if already running) via PM2
+            STAGE="start app"
+            pm2 startOrReload ecosystem.config.js --update-env
+            pm2 save
+            notify "▶️ Applying new version, checking health..."
+
+            # Health check: wait for the app to respond (max ~60s)
+            STAGE="health check"
+            HEALTH_URL="http://localhost:3069/"
+            HEALTHY=0
+            for i in $(seq 1 12); do
+              if curl -fs "$HEALTH_URL" > /dev/null 2>&1; then
+                HEALTHY=1
+                break
+              fi
+              sleep 5
+            done
+
+            if [ "$HEALTHY" -ne 1 ]; then
+              trap - ERR
+              notify "❌ *Deploy FAILED* — health check timed out (60s). App did not respond at ${HEALTH_URL}"
+              echo "Health check failed"
+              exit 1
+            fi
+
+            trap - ERR
+            notify "✅ *Deploy SUCCESSFUL* — app is healthy & running 🎉"
+            echo "✅ Deploy finished!"
+
+      - name: Notify failure (safety net)
+        if: failure()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+            ❌ *Deploy FAILED*
+            Repo: `${{ github.repository }}`
+            Commit: ${{ github.event.head_commit.message }}
+            Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
