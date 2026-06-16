@@ -49,7 +49,14 @@ export class ValidateImageInterceptor implements NestInterceptor {
       files.push(request.file);
     }
 
-    if (!files.length) return next.handle();
+
+    const validFiles = files.filter((file) => file.size > 0);
+
+    if (!validFiles.length) {
+      request.file = undefined;
+      request.files = undefined;
+      return next.handle();
+    }
 
     try {
       const uploadResults: string[] = [];

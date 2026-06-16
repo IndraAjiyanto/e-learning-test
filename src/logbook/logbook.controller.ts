@@ -47,11 +47,13 @@ export class LogbookController {
     @Req() req: Request,
   ) {
     try {
-      if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
-        throw new Error('Image upload failed. Please try again.');
-      }
 
-      createLogbookDto.dokumentasi = req.body.uploadedImageUrls[0];
+      
+      // if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
+      //   throw new Error('Image upload failed. Please try again.');
+      // }
+
+      createLogbookDto.dokumentasi = req.body.uploadedImageUrls?.[0] ?? null;
       if (req.user?.role === 'user') {
         createLogbookDto.userId = req.user!.id;
         createLogbookDto.proses = 'proces';
@@ -165,8 +167,10 @@ export class LogbookController {
   ) {
     try {
       const logbook = await this.logbookService.findOne(logbookId);
-      if (dokumentasi) {
+      if (dokumentasi && dokumentasi.size > 0) {
+        if (logbook.dokumentasi) {
         await this.logbookService.deleteFile(logbook.dokumentasi);
+      }
         updateLogbookDto.dokumentasi =
           req.body.uploadedImageUrls?.[0] || dokumentasi.path;
       }
@@ -179,6 +183,11 @@ export class LogbookController {
         res.redirect(`/program/${logbook.pertemuan.minggu.kelas.id}`);
       }
     } catch (error: any) {
+
+      console.log('====== ERROR UPDATE LOGBOOK ======');
+      console.error(error.response || error.message || error);
+
+
       const logbook = await this.logbookService.findOne(logbookId);
       req.flash('error', error.message || 'logbook failed to update');
       if (req.user?.role === 'admin') {
@@ -221,7 +230,9 @@ export class LogbookController {
   ) {
     try {
       const logbook = await this.logbookService.findOne(logbookId);
-      await this.logbookService.deleteFile(logbook.dokumentasi);
+      if (logbook && logbook.dokumentasi) {
+        await this.logbookService.deleteFile(logbook.dokumentasi);
+      }
       await this.logbookService.remove(logbookId);
       req.flash('success', 'logbook successfully deleted');
       res.redirect(`/session/${pertemuanId}`);

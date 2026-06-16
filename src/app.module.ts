@@ -150,32 +150,30 @@ import path from 'path';
   ],
   controllers: [AppController],
   providers: [AppService],
-})
-export class AppModule {
+})export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(I18nMiddleware).forRoutes('*');
-     consumer
-            .apply(AuthMiddleware)
-            .exclude(
-                '/',
-                '/login',
-                '/translation',
-                '/register',
-                'program/(.*)',
-                'category/(.*)',
-                'blog/(.*)',
-                '/daftar/:id',
-                '/session-expired',
-                '/users/send-verify-email',
-                '/users/verify-email',
-                '/users/reset-password',
-                '/users/forgot-password',
-                '/public/(.*)',
-                '/asset/(.*)',
-                '/uploads/(.*)',
-                '/dashboard',
-                '/dashboard/(.*)',
-            )
-            .forRoutes('*');
+    consumer
+      .apply(AuthMiddleware)
+      .exclude(
+        '/',
+        '/login',
+        '/translation',
+        '/register',
+        'program/*path',
+        'category/*path',
+        'blog/*path',
+        '/daftar/:id',
+        '/session-expired',
+        '/users/send-verify-email',
+        '/users/verify-email',
+        '/users/reset-password',
+        '/users/forgot-password',
+        '/public/*path',
+        '/asset/*path',
+        '/uploads/*path',
+        '/dashboard',
+        '/dashboard/*path',
+      )
+      .forRoutes('*');
   }
 }
