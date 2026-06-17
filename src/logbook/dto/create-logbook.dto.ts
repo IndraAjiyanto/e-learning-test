@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, isString, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, IsUrl } from 'class-validator';
 import { Proses } from 'src/entities/logbook.entity';
 
 export class CreateLogbookDto {
@@ -13,7 +13,7 @@ export class CreateLogbookDto {
   @IsString()
   dokumentasi?: string | null;
 
-  @IsString()
+  @IsUrl({require_protocol: true})
   dokumentasi_lain: string;
 
   @IsString()
