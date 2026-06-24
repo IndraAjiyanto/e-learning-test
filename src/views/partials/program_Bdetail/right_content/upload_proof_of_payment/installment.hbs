@@ -145,7 +145,7 @@
                       type='submit'
                       :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading'
                       :class="(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
-                      class='btn text-base w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
+                      class='btn text-sm w-full h-auto min-h-0 py-3 text-sm whitespace-normal text-center bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-xl font-semibold'
                     >
                       <i x-show="!loading" class='fas fa-calendar-check mr-2'></i>
                       <span x-show="!loading">{{t "test.detailProgram.installment.buttonSubmitProof"}}</span>

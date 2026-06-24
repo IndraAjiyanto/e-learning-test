@@ -1,8 +1,8 @@
 import Alpine from 'alpinejs';
-import persist from '@alpinejs/persist';
+import collapse from '@alpinejs/collapse';
 
 window.Alpine = Alpine;
-Alpine.plugin(persist);
+Alpine.plugin(collapse);
 // Register a small global store for UI state (sidebar toggle, current page)
 Alpine.store('ui', {
   sidebarToggle: false,

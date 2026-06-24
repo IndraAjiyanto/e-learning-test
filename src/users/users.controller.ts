@@ -289,6 +289,18 @@ async filterUsers(
     res.render('super_admin/user/create', { user: req.user });
   }
 
+  @Roles('super_admin')
+@Get('profile/:id')
+async detailUser(
+  @Param('id') userId: number,
+  @Res() res: Response,
+) {
+  
+  const user = await this.usersService.findOne(userId);
+  console.log('ID PARAM:', userId);
+  return res.render('super_admin/user/detail', { user });
+}
+
   @Roles('user', 'admin', 'super_admin')
   @Patch(':id')
   async update(

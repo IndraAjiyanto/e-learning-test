@@ -6,13 +6,14 @@ import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 import { Repository } from 'typeorm';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { existsSync } from 'fs';
 
 @Injectable()
 export class GambarBenefitService {
   constructor(
     @InjectRepository(GambarBenefit)
     private readonly gambarBenefitRepository: Repository<GambarBenefit>,
-  ) {}
+  ) { }
 
   async create(createGambarBenefitDto: CreateGambarBenefitDto) {
     const gambar_benefit = await this.gambarBenefitRepository.create(
@@ -37,26 +38,23 @@ export class GambarBenefitService {
     return gambar_benefit;
   }
 
-    async findNo() {
-        const benefit = await this.findAll();
-      const usedNumbers = benefit.map((b) => Number(b.no));
-      
-      const availableNumbers = [1, 2, 3, 4].filter(
-        (n) => !usedNumbers.includes(n)
-      );
-      return availableNumbers;
+  async findNo() {
+    const benefit = await this.findAll();
+    const usedNumbers = benefit.map((b) => Number(b.no));
+
+    const availableNumbers = [1, 2, 3, 4].filter(
+      (n) => !usedNumbers.includes(n)
+    );
+    return availableNumbers;
   }
 
   async deleteFile(url: string) {
     if (!url) return;
-
-    try {
-      const filePath = path.join(process.cwd(), 'public', url);
-
+    const filePath = path.join(process.cwd(), 'public', url);
+    if (existsSync(filePath)) {
       await fs.unlink(filePath);
-    } catch (error) {
-      throw new NotFoundException('File not found');
     }
+
   }
 
   async update(
@@ -67,16 +65,16 @@ export class GambarBenefitService {
     if (!gambar_benefit) {
       throw new NotFoundException('Image Benefit Not Found');
     }
-          // Cek apakah no yang diinginkan sudah dipakai data lain
-  const gambar_benefit_no_used = await this.gambarBenefitRepository.findOne({
-    where: { no: updateGambarBenefitDto.no },
-  });
+    // Cek apakah no yang diinginkan sudah dipakai data lain
+    const gambar_benefit_no_used = await this.gambarBenefitRepository.findOne({
+      where: { no: updateGambarBenefitDto.no },
+    });
 
-  // Kalau sudah dipakai dan bukan data yang sama, swap nomor
-  if (gambar_benefit_no_used && gambar_benefit_no_used.id !== gambarBenefitId) {
-    gambar_benefit_no_used.no = gambar_benefit.no; // data lain ambil no lama
-    await this.gambarBenefitRepository.save(gambar_benefit_no_used);
-  }
+    // Kalau sudah dipakai dan bukan data yang sama, swap nomor
+    if (gambar_benefit_no_used && gambar_benefit_no_used.id !== gambarBenefitId) {
+      gambar_benefit_no_used.no = gambar_benefit.no; // data lain ambil no lama
+      await this.gambarBenefitRepository.save(gambar_benefit_no_used);
+    }
     Object.assign(gambar_benefit, updateGambarBenefitDto);
     return await this.gambarBenefitRepository.save(gambar_benefit);
   }

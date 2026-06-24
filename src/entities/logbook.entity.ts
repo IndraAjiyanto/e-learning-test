@@ -23,8 +23,8 @@ export class Logbook {
   @Column()
   rincian_kegiatan: string;
 
-  @Column()
-  dokumentasi: string;
+  @Column({ type:'varchar', nullable: true })
+  dokumentasi?: string| null;
 
   @Column({
     type: 'enum',

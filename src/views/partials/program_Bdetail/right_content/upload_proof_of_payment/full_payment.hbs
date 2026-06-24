@@ -142,7 +142,7 @@
                     type='submit'
                     :disabled='(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading'
                     :class="(fileError || waError) || (!isValidFile && fileInputTouched) || (!isValidWa && waInputTouched) || loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-primary hover:to-secondary transform hover:-translate-y-1'"
-                    class='btn text-base w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
+                    class='btn text-sm w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl'
                   >
                           <span x-show="loading" class="loading loading-spinner loading-sm"></span>
                     <i x-show="!loading" class='fas fa-credit-card mr-2'></i>

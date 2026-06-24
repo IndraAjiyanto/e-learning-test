@@ -159,21 +159,13 @@ export class AppModule {
             .exclude(
                 '/',
                 '/login',
-                '/translation',
                 '/register',
-                'program/(.*)',
-                'category/(.*)',
-                'blog/(.*)',
                 '/daftar/:id',
                 '/session-expired',
                 '/users/send-verify-email',
-                '/users/verify-email',
-                '/users/reset-password',
-                '/users/forgot-password',
                 '/public/(.*)',
                 '/asset/(.*)',
                 '/uploads/(.*)',
-                '/dashboard',
                 '/dashboard/(.*)',
             )
             .forRoutes('*');

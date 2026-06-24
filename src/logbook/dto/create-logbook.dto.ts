@@ -1,4 +1,5 @@
-import { IsEnum, IsInt, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsInt, IsOptional, IsString, IsUrl } from 'class-validator';
 import { Proses } from 'src/entities/logbook.entity';
 
 export class CreateLogbookDto {
@@ -8,21 +9,27 @@ export class CreateLogbookDto {
   @IsString()
   rincian_kegiatan: string;
 
+  @IsOptional()
   @IsString()
-  dokumentasi: string;
+  dokumentasi?: string | null;
 
-  @IsString()
+  @IsUrl({require_protocol: true})
   dokumentasi_lain: string;
 
   @IsString()
   kendala: string;
-
+  
+@IsOptional() // Tambahkan opsional untuk update
+  @Type(() => Number) // <--- 2. Tambahkan ini agar string "1" jadi angka 1
   @IsInt()
   userId: number;
 
+  @IsOptional() // Tambahkan opsional untuk update
   @IsEnum(['acc', 'proces', 'rejected'])
   proses: Proses;
 
+ @IsOptional() // Tambahkan opsional untuk update
+  @Type(() => Number) // <--- 3. Tambahkan ini juga
   @IsInt()
   pertemuanId: number;
 }

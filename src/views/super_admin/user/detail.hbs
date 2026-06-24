@@ -1,0 +1,75 @@
+<div class="py-10">
+  <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
+
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">
+      User Detail
+    </h2>
+
+    <!-- Profile Image -->
+    <div class="flex flex-col items-center mb-8">
+      <img
+        src="{{#if user.profile}}{{user.profile}}{{else}}/images/default-avatar.png{{/if}}"
+        alt="User Profile"
+        class="w-32 h-32 rounded-full object-cover border shadow"
+      />
+
+      <p class="mt-3 text-gray-500 text-sm">
+        Profile Photo
+      </p>
+    </div>
+
+    <!-- User Info -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Username -->
+      <div>
+        <label class="text-sm text-gray-500">Username</label>
+        <p class="text-gray-900 font-medium">
+          {{user.username}}
+        </p>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="text-sm text-gray-500">Email</label>
+        <p class="text-gray-900 font-medium">
+          {{user.email}}
+        </p>
+      </div>
+
+      <!-- Role -->
+      <div>
+        <label class="text-sm text-gray-500">Role</label>
+        <p class="text-gray-900 font-medium">
+          {{user.role}}
+        </p>
+      </div>
+
+      <!-- Created At (optional) -->
+      <div>
+        <label class="text-sm text-gray-500">Created At</label>
+        <p class="text-gray-900 font-medium">
+          {{user.createdAt}}
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Buttons -->
+    <div class="mt-8 flex gap-3">
+      <a
+        href="/users"
+        class="px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition text-gray-700"
+      >
+        Back
+      </a>
+
+    <a href="/users/formEdit/{{user.id}}"
+        class="px-6 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition"
+      >
+        Edit User
+      </a>
+    </div>
+
+  </div>
+</div>
