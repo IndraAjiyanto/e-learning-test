@@ -157,16 +157,24 @@ export class AppModule {
      consumer
             .apply(AuthMiddleware)
             .exclude(
-                '/',
-                '/login',
-                '/register',
-                '/daftar/:id',
-                '/session-expired',
-                '/users/send-verify-email',
-                '/public/(.*)',
-                '/asset/(.*)',
-                '/uploads/(.*)',
-                '/dashboard/(.*)',
+            '/',
+            '/login',
+            '/translation',
+            '/register',
+            'program/*path',
+            'category/*path',
+            'blog/*path',
+            '/daftar/:id',
+            '/session-expired',
+            '/users/send-verify-email',
+            '/users/verify-email',
+            '/users/reset-password',
+            '/users/forgot-password',
+            '/public/*path',
+            '/asset/*path',
+            '/uploads/*path',
+            '/dashboard',
+            '/dashboard/*path',
             )
             .forRoutes('*');
   }
