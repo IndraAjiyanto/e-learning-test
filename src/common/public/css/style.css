@@ -5696,6 +5696,11 @@ details.collapse summary::-webkit-details-marker {
   border-left-color: rgb(30 41 59 / var(--tw-border-opacity, 1));
 }
 
+.bg-\[\#F5F5F5\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 245 245 / var(--tw-bg-opacity, 1));
+}
+
 .bg-amber-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 243 199 / var(--tw-bg-opacity, 1));
@@ -7193,11 +7198,6 @@ details.collapse summary::-webkit-details-marker {
   color: rgb(153 27 27 / var(--tw-text-opacity, 1));
 }
 
-.text-secondary {
-  --tw-text-opacity: 1;
-  color: rgb(0 48 96 / var(--tw-text-opacity, 1));
-}
-
 .text-slate-200 {
   --tw-text-opacity: 1;
   color: rgb(226 232 240 / var(--tw-text-opacity, 1));
@@ -7914,6 +7914,11 @@ details.collapse summary::-webkit-details-marker {
   background-color: rgb(185 28 28 / var(--tw-bg-opacity, 1));
 }
 
+.hover\:bg-secondary:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 48 96 / var(--tw-bg-opacity, 1));
+}
+
 .hover\:bg-slate-100:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1));
@@ -7954,10 +7959,6 @@ details.collapse summary::-webkit-details-marker {
 
 .hover\:bg-white\/70:hover {
   background-color: rgb(255 255 255 / 0.7);
-}
-
-.hover\:bg-white\/90:hover {
-  background-color: rgb(255 255 255 / 0.9);
 }
 
 .hover\:bg-yellow-500:hover {
@@ -9007,6 +9008,10 @@ details.collapse summary::-webkit-details-marker {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .md\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
   .md\:flex-row {
     flex-direction: row;
   }
@@ -9162,16 +9167,6 @@ details.collapse summary::-webkit-details-marker {
   .md\:text-xl {
     font-size: 1.25rem;
     line-height: 1.75rem;
-  }
-
-  .md\:hover\:bg-gray-200:hover {
-    --tw-bg-opacity: 1;
-    background-color: rgb(229 231 235 / var(--tw-bg-opacity, 1));
-  }
-
-  .md\:hover\:text-gray-900:hover {
-    --tw-text-opacity: 1;
-    color: rgb(17 24 39 / var(--tw-text-opacity, 1));
   }
 }
 
