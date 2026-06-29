@@ -1,19 +1,151 @@
-      <!-- Sidebar Filters -->
-      <div class='lg:col-span-1'>
-        <div
-          class='bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6'
-        >
-          <!-- Active Filters -->
-          <div class='mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-            <div class='flex items-center justify-between mb-3'>
-              <h4
-                class='text-sm font-semibold text-gray-700 font-montserrat'
-              >{{t 'test.alumni.activeFilters'}}</h4>
-              <button
-                @click='resetFilters()'
-                class='text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center'
+<!-- Sidebar Filters -->
+<div class='w-full w-full mx-auto'>
+  <div
+    class='bg-transparent rounded-xl shadow-sm p-6 flex flex-col gap-8'
+  >
+
+    <!-- Kelas Filter -->
+    <div class='flex-[2] min-w-[300px]'>
+      <h3
+        class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
+      >
+        {{t 'test.alumni.programTittle'}}
+      </h3>
+
+      <div
+        class='flex flex-row items-center gap-2 overflow-x-auto pb-2 no-scrollbar'
+      >
+        <button
+                @click='selectKelas(null)'
+                :class="!selectedKelasId ? 'bg-secondary hover:from-primary hover:to-secondary text-white' : 'bg-[#E0F1F9] text-gray-700 hover:bg-gray-50'"
+                class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-slate-300'
               >
-                <i class='fas fa-undo-alt mr-1 text-xs'></i>
+                <span class='text-sm'>{{t 'test.alumni.allProgram'}}</span>
+              </button>
+              <template x-for='kelas in filteredKelasList' :key='kelas.id'>
+                <button
+                  @click='selectKelas(kelas.id)'
+                  :class="selectedKelasId == kelas.id ? 'bg-secondary hover:from-primary hover:to-secondary text-white' : 'bg-[#E0F1F9] text-gray-700 hover:bg-gray-50'"
+                  class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-slate-300'
+                >
+                  <span
+                    class='text-sm text-left'
+                    x-text='kelas.nama_kelas'
+                  ></span>
+                </button>
+              </template>
+      </div>
+    </div>
+
+    <!-- Bootcamp Program -->
+    <div
+      class='flex-[2] min-w-[300px] w-full flex flex-row items-center justify-start gap-4'
+    >
+
+      <h3
+        class='text-base font-semibold text-gray-900 flex items-center font-montserrat whitespace-nowrap'
+      >
+        {{t 'test.alumni.bootcampProgram'}}
+      </h3>
+
+      <!-- Wrapper Dropdown dengan State Buka/Tutup menggunakan Alpine.js -->
+      <div
+        class='relative flex-1 max-w-xs'
+        x-data='{ open: false }'
+        @click.outside='open = false'
+      >
+
+        <!-- TOMBOL UTAMA DROPDOWN -->
+        <button
+          @click='open = !open'
+          type='button'
+          class='w-full px-4 py-3 bg-[#E0F1F9] text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-200 flex items-center justify-between shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400'
+        >
+          <!-- Menampilkan Teks Program yang Sedang Terpilih secara Dinamis -->
+          <span class='text-sm'>
+            <template x-if='!selectedKelasId'>
+              <span>{{t 'test.alumni.allProgram'}}</span>
+            </template>
+            <template x-if='selectedKelasId'>
+              <span
+                x-text='filteredKelasList.find(k => k.id == selectedKelasId)?.nama_kelas || {{t
+                  "test.alumni.allProgram"
+                }}'
+              ></span>
+            </template>
+          </span>
+
+          <!-- Icon Panah (Indikator Dropdown) yang otomatis berputar saat dibuka -->
+          <i
+            class='fas fa-chevron-down text-gray-400 transition-transform duration-200'
+            :class="open ? 'transform rotate-180' : ''"
+          ></i>
+        </button>
+
+        <!-- MENU PILIHAN (MENU DROPDOWN) -->
+        <div
+          x-show='open'
+          x-transition:enter='transition ease-out duration-100'
+          x-transition:enter-start='transform opacity-0 scale-95'
+          x-transition:enter-end='transform opacity-100 scale-100'
+          x-transition:leave='transition ease-in duration-75'
+          x-transition:leave-start='transform opacity-100 scale-100'
+          x-transition:leave-end='transform opacity-0 scale-95'
+          class='absolute left-0 mt-2 w-full max-h-60 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-1 space-y-1 focus:outline-none'
+          style='display: none;'
+        >
+          <!-- Pilihan Semua Program -->
+          <button
+            @click='selectKelas(null); open = false'
+            :class="!selectedKelasId ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 text-white' : 'text-gray-700 hover:bg-gray-50'"
+            class='w-full px-4 py-2.5 rounded-md text-sm font-medium text-left transition-colors flex items-center justify-between'
+          >
+            <span>{{t 'test.alumni.allProgram'}}</span>
+            <i x-show='!selectedKelasId' class='fas fa-check text-xs'></i>
+          </button>
+
+          <!-- Looping List Kelas -->
+          <template x-for='kelas in filteredKelasList' :key='kelas.id'>
+            <button
+              @click='selectKelas(kelas.id); open = false'
+              :class="selectedKelasId == kelas.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 text-white' : 'text-gray-700 hover:bg-gray-50'"
+              class='w-full px-4 py-2.5 rounded-md text-sm font-medium text-left transition-colors flex items-center justify-between'
+            >
+              <span x-text='kelas.nama_kelas'></span>
+              <i
+                x-show='selectedKelasId == kelas.id'
+                class='fas fa-check text-xs'
+              ></i>
+            </button>
+          </template>
+        </div>
+      </div>
+
+      <!-- Search Alumni -->
+      <div class='min-w-[240px] flex flex-row items-center justify-start gap-4'>
+        <div class='relative'>
+          <input
+            type='text'
+            x-model='searchQuery'
+            @input='filterPrograms()'
+            placeholder='{{t "test.alumni.searchAlumniPlaceholder"}}'
+            class='w-full text-gray-600 px-4 py-3 pl-10 bg-[#E0F1F9] rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
+          />
+          <i
+            class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+          ></i>
+        </div>
+      </div>
+
+      <!-- Active Filters -->
+      <div
+        class='text-base font-semibold text-gray-900 h-full self-stretch rounded-lg bg-transparent flex items-center font-montserrat overflow-hidden'
+      >
+        <button
+                @click='resetFilters()'
+                class='text-base text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors flex items-center justify-center h-full w-full py-3 px-5 whitespace-nowrap font-medium'
+              >
+                <i class='fas fa-rocket mr-1 text-xl'></i>
                 {{t 'test.alumni.resetFilters'}}
               </button>
             </div>
@@ -33,74 +165,10 @@
                   <span x-text='selectedKelas'></span>
                 </span>
               </template>
-            </div>
-          </div>
-
-          <!-- Search Program -->
-          <div class='mb-6'>
-            <h3
-              class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
-            >
-              <i class='fas fa-search text-gray-500 mr-2'></i>
-              {{t 'test.alumni.searchProgram'}}
-            </h3>
-            <div class='relative'>
-              <input
-                type='text'
-                x-model='searchQuery'
-                @input='filterPrograms()'
-                placeholder='{{t "test.alumni.searchProgramPlaceholder"}}'
-                class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
-              />
-              <i
-                class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-              ></i>
-            </div>
-          </div>
-
-          <!-- Kelas Filter -->
-          <div class='mb-6'>
-            <h3
-              class='text-base font-semibold text-gray-900 mb-3 flex items-center font-montserrat'
-            >
-              <i class='fas fa-graduation-cap text-gray-500 mr-2'></i>
-              {{t 'test.alumni.programTittle'}}
-            </h3>
-
-            <div class='space-y-2 max-h-64 overflow-y-auto'>
-              <button
-                @click='selectKelas(null)'
-                :class="!selectedKelasId ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
-                class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
-              >
-                <span class='text-sm'>{{t 'test.alumni.allProgram'}}</span>
-              </button>
-              <template x-for='kelas in filteredKelasList' :key='kelas.id'>
-                <button
-                  @click='selectKelas(kelas.id)'
-                  :class="selectedKelasId == kelas.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
-                  class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-gray-300'
-                >
-                  <span
-                    class='text-sm text-left'
-                    x-text='kelas.nama_kelas'
-                  ></span>
-                </button>
-              </template>
-            </div>
-          </div>
-
-          <!-- Alumni Count -->
-          <div class='mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-            <div class='text-center'>
-              <div
-                class='text-2xl font-bold text-gray-900'
-                x-text='totalItems'
-              ></div>
-              <div class='text-sm text-gray-600'>{{t
-                  'test.alumni.alumni'
-                }}</div>
-            </div>
-          </div>
-        </div>
       </div>
+    </div>
+</div>
+  </div>
+
+
+</div>
