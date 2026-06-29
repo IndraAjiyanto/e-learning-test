@@ -1,5 +1,5 @@
 <div
-  class='w-full bg-[#F5F5F5] shadow-lg fixed top-0 left-0 right-0 z-50 text-white'
+  class='w-full bg-[#F5F5F5] shadow-sm fixed top-0 left-0 right-0 z-50 text-white'
   x-data="{
     open: false,
     isDesktop: window.innerWidth >= 768,
@@ -121,9 +121,9 @@ isProgramActive() {
         });
       }
     }"
-    class='flex flex-col max-w-screen-xl px-4 mx-auto md:items-center md:justify-between md:flex-row md:px-6 lg:px-8 h-16'
+    class='flex max-w-screen-xl px-4 items-center mx-auto md:px-6 lg:px-8 h-16 w-full relative'
   >
-    <div class='flex flex-row items-center justify-between h-16 w-full'>
+    <div class='flex items-center justify-start h-16 w-26'>
       <a
         href='/dashboard'
         class='inline-block'
@@ -132,7 +132,7 @@ isProgramActive() {
         <img
           src='/public/image/logo_baru.png'
           alt='Logo'
-          class='h-40 w-auto tracking-widest uppercase rounded-lg focus:outline-none focus:shadow-outline'
+          class='h-32 w-auto uppercase rounded-lg focus:outline-none focus:shadow-outline'
         />
       </a>
 
@@ -615,7 +615,10 @@ isProgramActive() {
       </div>
     </nav>
 
-    <nav class='hidden md:flex md:items-center md:space-x-4' x-show='isDesktop'>
+    <nav
+      class='hidden md:flex flex-1 items-center justify-center space-x-8 h-full'
+      x-show='isDesktop'
+    >
       {{#if (roles user.role 'user')}}
         <a
           href='/dashboard'
@@ -698,23 +701,23 @@ isProgramActive() {
           </div>
         </div>
 
-        <a
+        {{!-- <a
           href='/dashboard/portofolio'
           @click="setActive('/dashboard/portofolio')"
           :class="isActive('/dashboard/portofolio') 
            ? 'bg-gray-200 text-gray-900' 
           : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.portfolio'}}</a>
+        >{{t 'test.navbar.portfolio'}}</a> --}}
 
-        <a
+        {{!-- <a
           href='/dashboard/blog'
           @click="setActive('/dashboard/blog')"
           :class="isActive('/dashboard/blog') 
            ? 'bg-gray-200 text-gray-900' 
           : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.blog'}}</a>
+        >{{t 'test.navbar.blog'}}</a> --}}
 
         <a
           href='/dashboard/alumni'
@@ -724,6 +727,15 @@ isProgramActive() {
           : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.alumni'}}</a>
+
+        <a
+          href='/dashboard/gallery'
+          @click="setActive('/dashboard/gallery')"
+          :class="isActive('/dashboard/gallery') 
+           ? 'bg-gray-200 text-gray-900' 
+          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
+        >{{t 'test.navbar.gallery'}}</a>
 
         <div class='relative'>
           <button
@@ -969,23 +981,23 @@ isProgramActive() {
           </div>
         </div>
 
-        <a
+        {{!-- <a
           href='/dashboard/portofolio'
           @click="setActive('/dashboard/portofolio')"
           :class="isActive('/dashboard/portofolio')
            ? 'bg-gray-200 text-gray-900' 
           : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.portfolio'}}</a>
+        >{{t 'test.navbar.portfolio'}}</a> --}}
 
-        <a
+        {{!-- <a
           href='/dashboard/blog'
           @click="setActive('/dashboard/blog')"
           :class="isActive('/dashboard/blog') 
            ? 'bg-gray-200 text-gray-900' 
           : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
-        >{{t 'test.navbar.blog'}}</a>
+        >{{t 'test.navbar.blog'}}</a> --}}
 
         <a
           href='/dashboard/alumni'
@@ -995,6 +1007,21 @@ isProgramActive() {
           : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
           class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
         >{{t 'test.navbar.alumni'}}</a>
+
+        <a
+          href='/dashboard/gallery'
+          @click="setActive('/dashboard/gallery')"
+          :class="isActive('/dashboard/gallery')
+           ? 'bg-gray-200 text-gray-900' 
+          : 'bg-transparent text-gray-900 hover:bg-gray-200 hover:text-gray-900 '"
+          class='block px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap'
+        >{{t 'test.navbar.gallery'}}</a>
+
+    </nav>
+    <nav  class='hidden md:flex items-center justify-center space-x-8 h-full'
+      x-show='isDesktop'>
+
+        <div class='flex justify-end items-center space-x-4 h-full'>
 
         <a
           href='/login'
@@ -1106,7 +1133,8 @@ isProgramActive() {
           </form>
         </div>
       </div>
-    </nav>
+      </nav>
+    
   </div>
 
 
