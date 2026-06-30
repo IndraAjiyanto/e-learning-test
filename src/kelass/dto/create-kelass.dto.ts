@@ -72,10 +72,10 @@ export class CreateKelassDto {
   @IsString()
   paid_check: string;
 
+  @IsOptional()
   @IsArray()
   @IsInt({ each: true })
-  @IsOptional()
-  teknologiIds: number[];
+  teknologiIds?: number[];
 
   @IsArray()
   materi: string[];
