@@ -13,25 +13,31 @@
       </h3>
 
       <div
-        class='flex flex-row items-center gap-2 overflow-x-auto pb-2 no-scrollbar'
+        class='flex flex-row items-center justify-between gap-2 overflow-x-auto pb-2 no-scrollbar'
       >
         <button
-                @click='selectKelas(null)'
-                :class="!selectedKelasId ? 'bg-secondary hover:from-primary hover:to-secondary text-white' : 'bg-[#E0F1F9] text-gray-700 hover:bg-gray-50'"
-                class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-slate-300'
-              >
-                <span class='text-sm'>{{t 'test.alumni.allProgram'}}</span>
+                @click='selectKategori(null), selectKelas(null)'
+                :class="!selectedKategoriId ? 'bg-secondary hover:from-primary hover:to-secondary text-white' : 'bg-[#E0F1F9] text-gray-700 hover:bg-gray-50'"
+                class='w-auto px-4 py-2.5 rounded-lg font-medium transition-all duration-200 flex-shrink-0 border border-slate-300 shadow-sm'
+              ><i class='fas fa-rocket mr-1 text-xl'></i>
+                <span class='text-sm whitespace-nowrap'>{{t 'test.alumni.allProgram'}}</span>
               </button>
-              <template x-for='kelas in filteredKelasList' :key='kelas.id'>
+              <template  x-for="kat in kategoriList" :key="kat.id">
                 <button
-                  @click='selectKelas(kelas.id)'
-                  :class="selectedKelasId == kelas.id ? 'bg-secondary hover:from-primary hover:to-secondary text-white' : 'bg-[#E0F1F9] text-gray-700 hover:bg-gray-50'"
-                  class='w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-between border border-slate-300'
-                >
-                  <span
+                
+                  @click='selectKategori(kat.id), selectKelas(null)'
+                  :class="selectedKategoriId == kat.id ? 'bg-secondary hover:from-primary hover:to-secondary text-white' : 'bg-[#E0F1F9] text-gray-700 hover:bg-gray-50'"
+                  class='w-auto px-4 py-2.5 rounded-lg font-medium transition-all duration-200 flex-shrink-0 border border-slate-300 shadow-sm'
+                  
+                ><i class='fas fa-rocket mr-1 text-xl'></i>
+                <span 
+          class="text-sm text-left whitespace-nowrap" 
+          x-text="getByLang(kat.nama_kategori, lang) || kat.nama_kategori || kat.nama || 'Kategori ' + kat.id"
+        ></span>
+                  {{!-- <span
                     class='text-sm text-left'
                     x-text='kelas.nama_kelas'
-                  ></span>
+                  ></span> --}}
                 </button>
               </template>
       </div>
@@ -66,12 +72,9 @@
             <template x-if='!selectedKelasId'>
               <span>{{t 'test.alumni.allProgram'}}</span>
             </template>
+
             <template x-if='selectedKelasId'>
-              <span
-                x-text='filteredKelasList.find(k => k.id == selectedKelasId)?.nama_kelas || {{t
-                  "test.alumni.allProgram"
-                }}'
-              ></span>
+            <span x-text="kelasList.find(k => k.id == selectedKelasId)?.nama_kelas || ''"></span>
             </template>
           </span>
 
@@ -127,7 +130,7 @@
           <input
             type='text'
             x-model='searchQuery'
-            @input='filterPrograms()'
+            @input.debounce.500ms='currentPage = 1; fetchAlumni()'
             placeholder='{{t "test.alumni.searchAlumniPlaceholder"}}'
             class='w-full text-gray-600 px-4 py-3 pl-10 bg-[#E0F1F9] rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
           />

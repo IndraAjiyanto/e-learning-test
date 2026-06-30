@@ -185,6 +185,7 @@ export class DashboardController {
   async alumniFilter(
     @Req() req: Request,
     @Res() res: Response,
+    @Query('search') search?: string,         
     @Query('kelas_id') kelasId?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -194,6 +195,7 @@ export class DashboardController {
 
     const result = await this.dashboardService.findAlumni({
       kelasId: kelasId || null,
+      search: search || null, 
       page: currentPage,
       limit: itemsPerPage,
     });
@@ -209,10 +211,12 @@ export class DashboardController {
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
     const kelasList = await this.dashboardService.findKelas();
+ const kategoriList = await this.dashboardService.findAllKategori();
 
     res.render('alumni', {
       user: req.user,
       kelas: kelasList,
+       kategoriList: kategoriList 
     });
   }
 
