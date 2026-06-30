@@ -14,15 +14,27 @@ export class UploadService {
       maxHeight: number;
     },
   ) {
-    if (!file) throw new BadRequestException('No image uploaded');
+    if (!file) {throw new BadRequestException('No image uploaded')};
 
     if (!file.mimetype.match(/^image\/(jpg|jpeg|png)$/)) {
       throw new BadRequestException('Only JPG, JPEG, or PNG files are allowed');
     }
+    let width: number | undefined;
+  let height: number | undefined;
+    
 
-    const { width, height } = imageSize(file.buffer);
-    if (!width || !height)
-      throw new BadRequestException('Invalid image dimensions');
+    try {
+    const dimensions = imageSize(file.buffer);
+    width = dimensions.width;
+    height = dimensions.height;
+  } catch (error) {
+    // Menangkap error jika file korup atau bukan gambar asli
+    throw new BadRequestException('Invalid or corrupted image file');
+  }
+  
+  if (!width || !height) {
+    throw new BadRequestException('Could not determine image dimensions');
+  }
 
     if (
       width < options.minWidth ||

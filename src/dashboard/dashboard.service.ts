@@ -1,7 +1,7 @@
+import { ILike, Like, Raw, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
-import { Repository } from 'typeorm';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
@@ -109,6 +109,11 @@ async findBlogTrending(userId?: number) {
     isLiked: userId ? (raw[0]?.isLiked === true) : false,
   };
 }
+
+async findAllKategori() {
+  return await this.kategoriRepository.find({ order: { id: 'ASC' } });
+}
+
 
 async findKategoriTrending(userId?: number) {
   const kategoriTrending = await this.kategoriBlogRepository
@@ -364,6 +369,8 @@ async findPortfolio(options?: {
 
 async findAlumni(options?: {
   kelasId?: string | null;
+  search?: string | null;
+  kategoriId?: string | null; 
   page?: number;
   limit?: number;
 }) {
@@ -373,13 +380,20 @@ async findAlumni(options?: {
 
   const where: any = {};
 
+  // Logika filter kelas atau kategori global
   if (options?.kelasId) {
     where.kelas = { id: options.kelasId };
+  } else if (options?.kategoriId) {
+    where.kelas = { kategori: { id: options.kategoriId } };
+  }
+ if (options?.search && options.search.trim() !== '') {
+    const keyword = `%${options.search.trim()}%`;
+    where.nama = Raw(() => `"Alumni"."nama"::text ILIKE :keyword`, { keyword });
   }
 
   const [data, total] = await this.alumniRepository.findAndCount({
     where,
-    relations: ['kelas'],
+    relations: ['kelas', 'kelas.kategori'],
     order: { createdAt: 'DESC' },
     skip,
     take: limit,

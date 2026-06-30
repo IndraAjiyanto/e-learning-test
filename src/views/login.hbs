@@ -1,23 +1,23 @@
 <div
-  class='min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-secondary to-gray-800 px-4 pt-28 py-20'
+  class='min-h-screen flex items-center justify-center bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)] px-4 pt-28 py-20'
 >
 
   <div class='w-full max-w-4xl flex items-center justify-center'>
     <div
-      class='w-full max-w-lg mx-auto bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl p-8'
+      class='w-full max-w-lg mx-auto bg-white backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl p-8'
     >
 
       <!-- Logo -->
-      <div class='flex items-center justify-center mb-6'>
-        <img src='/public/image/logo.png' alt='Logo' class='h-16 w-auto' />
+      <div class='flex items-center justify-center -mt-16 mb-0'>
+        <img src='/public/image/logo_baru.png' alt='Logo' class='h-48 w-auto' />
       </div>
 
       <!-- Title -->
-      <div class='text-center mb-6'>
+      <div class='text-center -mt-12 mb-6'>
         <h1
-          class='text-2xl whitespace-nowrap font-bold text-white mt-2 font-montserrat'
+          class='text-2xl whitespace-nowrap font-bold text-gray-900 mt-2 font-montserrat'
         >{{t 'test.login.tittle'}}</h1>
-        <p class='text-gray-400 text-sm mt-2'>
+        <p class='text-gray-900 text-sm mt-2'>
           {{t 'test.login.description'}}
         </p>
       </div>
@@ -130,7 +130,7 @@
 
         <!-- Email -->
         <div>
-          <label class='block text-gray-200 mb-2'>{{t
+          <label class='block text-gray-900 mb-2'>{{t
               'test.login.email'
             }}</label>
           <input
@@ -144,7 +144,7 @@
 
         <!-- Password -->
         <div x-data='{ show: false }'>
-          <label class='block text-gray-200 mb-2'>{{t
+          <label class='block text-gray-900 mb-2'>{{t
               'test.login.password'
             }}</label>
           <div class='relative'>
@@ -214,7 +214,7 @@
           <div class='flex justify-end mt-2'>
             <a
               href='/users/forgot-password'
-              class='text-sm text-indigo-300 hover:text-indigo-300'
+              class='text-sm text-[#6EB6E5] hover:text-indigo-300'
             >{{t 'test.login.forgotPassword'}}</a>
           </div>
         </div>
@@ -224,11 +224,11 @@
           :disabled='loading'
           :class="loading ? 'cursor-not-allowed opacity-50' : ''"
           type='submit'
-          class='btn w-full py-3 border-0 rounded-lg bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white font-semibold text-base transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'
+          class='btn h-10 min-h-10 w-full border-0 rounded-lg bg-secondary hover:bg-secondary text-white font-semibold text-base transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'
         >
           <span
             x-show='loading'
-            class='loading loading-spinner loading-sm'
+            class='loading loading-spinner loading-xs'
           ></span>
           <span x-show='!loading'>{{t 'test.login.loginButton'}}</span>
         </button>
@@ -236,14 +236,16 @@
 
       <!-- Register Link -->
       <div class='text-center mt-4'>
-        <p class='text-sm text-gray-400'>
+        <p class='text-sm text-gray-900'>
           {{t 'test.login.noAccount'}}
           <a
             href='/register'
-            class='text-indigo-300 hover:text-indigo-300 font-medium'
+            class='text-[#6EB6E5] hover:text-indigo-300 font-medium'
           >{{t 'test.login.signUp'}}</a>
         </p>
       </div>
     </div>
   </div>
+
+
 </div>

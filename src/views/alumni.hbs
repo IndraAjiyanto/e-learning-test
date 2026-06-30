@@ -1,16 +1,17 @@
-<div class='pt-24 min-h-screen bg-white' x-data='alumniApp()'>
+<div class='pt-24 min-h-screen bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)]' x-data='alumniApp()'>
 
-  <div class='container mx-auto px-4 pb-16'>
+  <div class='container mx-auto px-4 pb-16 max-w-5xl'>
     <div class='text-center mb-12'>
-      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t
+      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
           'test.alumni.tittle'
-        }}</h1>
+        }}}</h1>
+        <div class="border border-b-2 border-slate-900 w-10 mx-auto my-2 rounded"></div>
       <p class='text-gray-600 max-w-2xl mx-auto text-lg'>
         {{t 'test.alumni.description'}}
       </p>
     </div>
 
-    <div class='grid grid-cols-1 lg:grid-cols-4 gap-8'>
+    <div class='flex flex-col items-center w-full mx-auto gap-8 mb-12'>
 
 {{> alumni/sidebar}}
 {{> alumni/content}}
@@ -21,6 +22,9 @@
 <script>
 function alumniApp() {
   return {
+    selectedKategoriId: {{#if kategoriId}}{{kategoriId}}{{else}}null{{/if}},
+   kategoriList: {{#if kategoriList}}{{{json kategoriList}}}{{else}}[]{{/if}},
+
     kelasList: {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}},
     filteredKelasList: [],
 
@@ -37,10 +41,27 @@ function alumniApp() {
 
     async init() {
       this.kelasList = this.kelasList.sort((a, b) =>
-        a.nama_kelas.localeCompare(b.nama_kelas)
+        (a.nama_kelas || '').localeCompare(b.nama_kelas || '')
       );
-      this.filteredKelasList = [...this.kelasList];
+       this.filterKelasByKategori();
       await this.fetchAlumni();
+    },
+    filterKelasByKategori() {
+      if (this.selectedKategoriId) {
+        this.filteredKelasList = this.kelasList.filter(k =>  k.kategori?.id  == this.selectedKategoriId);
+      } else {
+        this.filteredKelasList = [...this.kelasList];
+           }  
+    },
+
+     async selectKategori(kategoriId) {
+      this.selectedKategoriId = kategoriId;
+  this.selectedKelasId = null;
+      this.selectedKelas = '';
+      this.currentPage = 1;
+      
+      this.filterKelasByKategori(); 
+      await this.fetchAlumni();   
     },
 
     getByLang(obj, lang) {
@@ -50,26 +71,44 @@ function alumniApp() {
 
     filterPrograms() {
       const query = this.searchQuery.toLowerCase().trim();
-      this.filteredKelasList = query
-        ? this.kelasList.filter(k => k.nama_kelas.toLowerCase().includes(query))
-        : [...this.kelasList];
+       const baseList = this.selectedKategoriId 
+        ? this.kelasList.filter(k => k.kategori?.id == this.selectedKategoriId)
+        : this.kelasList;
+         this.filteredKelasList = query
+        ? baseList.filter(k => k.nama_kelas.toLowerCase().includes(query))
+        : [...baseList];
     },
 
     async fetchAlumni() {
       this.loading = true;
       try {
         const params = new URLSearchParams();
-        if (this.selectedKelasId) params.set('kelas_id', this.selectedKelasId);
+         if (this.searchQuery && this.searchQuery.trim() !== '') {
+      params.set('search', this.searchQuery.trim());
+    }
+        if (this.searchQuery && this.searchQuery.trim() !== '') {
+      params.set('search', this.searchQuery.trim());
+    }
+    
+    // 2. Parameter Kelas ID (Ditulis terpisah, tanpa ELSE IF)
+    if (this.selectedKelasId) {
+      params.set('kelas_id', this.selectedKelasId);
+    }
+    
+    // 3. Parameter Kategori ID (Selalu dikirim agar backend tahu kategori aktif saat ini)
+    if (this.selectedKategoriId) {
+      params.set('kategori_id', this.selectedKategoriId);
+    }
         params.set('page', this.currentPage);
         params.set('limit', 6);
 
         const res = await fetch(`/dashboard/alumni/filter?${params.toString()}`);
         const json = await res.json();
 
-        this.alumniItems = json.data;
-        this.totalItems = json.totalItems;
-        this.totalPages = json.totalPages;
-        this.currentPage = json.currentPage;
+        this.alumniItems = json.data || [];
+        this.totalItems = json.totalItems || 0;
+        this.totalPages = json.totalPages || 1;
+        this.currentPage = json.currentPage || 1; 
       } catch (err) {
         console.error('Fetch alumni error:', err);
       } finally {
@@ -98,7 +137,7 @@ function alumniApp() {
       this.selectedKelasId = null;
       this.selectedKelas = '';
       this.searchQuery = '';
-      this.filteredKelasList = [...this.kelasList];
+      this.filterKelasByKategori();
       this.currentPage = 1;
       await this.fetchAlumni();
     },
