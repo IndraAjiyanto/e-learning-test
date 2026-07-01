@@ -658,6 +658,10 @@ export class KelassController {
         updateKelassDto.proses = 'acc';
       }
 
+      if (req.body.teknologiIds_sent !== undefined && updateKelassDto.teknologiIds === undefined) {
+        updateKelassDto.teknologiIds = [];
+      }
+
       await this.kelassService.update(kelasId, updateKelassDto);
       req.flash('success', 'Successfully update program');
 
