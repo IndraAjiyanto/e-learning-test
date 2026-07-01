@@ -4,12 +4,15 @@ import { Repository } from 'typeorm';
 import { Gallery } from './../entities/gallery.entity'
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
+import { Kategori } from 'src/entities/kategori.entity';
 
 @Injectable()
 export class GalleryService {
   constructor(
     @InjectRepository(Gallery)
     private readonly galleryRepository: Repository<Gallery>,
+    @InjectRepository(Kategori)
+    private readonly kategoriRepository: Repository<Kategori>
   ) {}
 
   async create(createGalleryDto: CreateGalleryDto): Promise<Gallery> {

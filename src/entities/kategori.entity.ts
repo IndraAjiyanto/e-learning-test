@@ -15,6 +15,7 @@ import { BenefitCategory } from './benefit_category.entity';
 import { FlowCategory } from './flow_category.entity';
 import { Superiority } from './superiority.entity';
 import { Exclude } from 'class-transformer';
+import { Gallery } from './gallery.entity';
 
 export type Type = 'Special Program' | 'Program';
 
@@ -93,4 +94,8 @@ export class Kategori {
   @JoinTable()
   @Exclude()
   jenis_kelas: JenisKelas[];
+
+   @OneToMany(() => Gallery, (gallery) => gallery.kategori)
+  @Exclude()
+  gallery: Gallery[];
 }
