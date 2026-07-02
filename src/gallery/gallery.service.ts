@@ -44,11 +44,19 @@ export class GalleryService {
     return gallery;
   }
 
+  async findByKategori(kategoriId: number): Promise<Gallery[]> {
+  return this.galleryRepository.find({
+    where: { kategori: { id: kategoriId } },
+    relations: ['kategori'],
+    order: { id: 'DESC' },
+  });
+}
+
  async update(
-  id: number,
+  galleryId: number,
   updateGalleryDto: UpdateGalleryDto & { file_path?: string },
 ): Promise<Gallery> {
-  const gallery = await this.findOne(id);
+  const gallery = await this.findOne(galleryId);
   const { kategori_id, ...rest } = updateGalleryDto;
 
   Object.assign(gallery, rest);

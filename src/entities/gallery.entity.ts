@@ -13,7 +13,7 @@ export class Gallery {
     @Column()
     title:string
 
-    @Column()
+    @Column({nullable:true})
     description: string
 
      @ManyToOne(() => Kategori, (kategori) => kategori.gallery, {

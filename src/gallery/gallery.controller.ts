@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UseFilters,
   BadRequestException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
 import { KategorisService } from '../kategoris/kategoris.service';
@@ -34,9 +35,7 @@ export class GalleryController {
     private readonly kategorisService: KategorisService,
   ) {}
 
-  // ============================
-  // LIST — GET /gallery
-  // ============================
+
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
@@ -44,20 +43,13 @@ export class GalleryController {
     res.render('super_admin/gallery/index', { user: req.user, gallery });
   }
 
-  // ============================
-  // FORM CREATE — GET /gallery/formCreate
-  // (harus di atas ':id' supaya tidak tertabrak)
-  // ============================
   @Roles('super_admin')
-  @Get('formCreate')
-  async formCreate(@Res() res: Response, @Req() req: Request) {
-    const kategori = await this.kategorisService.findAll();
+  @Get('formCreate/:kategoriId')
+  async formCreate(@Param('kategoriId') kategoriId: string, @Res() res: Response, @Req() req: Request) {
+    const kategori = await this.kategorisService.findOne(+kategoriId);
     res.render('super_admin/gallery/create', { user: req.user, kategori });
   }
 
-  // ============================
-  // SUBMIT CREATE — POST /gallery
-  // ============================
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
@@ -74,55 +66,70 @@ export class GalleryController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
-    @Body() createGalleryDto: CreateGalleryDto,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    try {
-      if (!req.body.uploadedImageUrls || req.body.uploadedImageUrls.length === 0) {
-        throw new BadRequestException('No image uploaded');
-      }
-      createGalleryDto.file_path = req.body.uploadedImageUrls[0];
-      await this.galleryService.create(createGalleryDto);
-      req.flash('success', 'Gallery successfully created');
-      res.redirect('/gallery');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Gallery failed to create');
-      res.redirect('/gallery');
+  @Body() createGalleryDto: CreateGalleryDto,
+  @Res() res: Response,
+  @Req() req: Request,
+) {
+  try {
+    if (
+      !req.body.uploadedImageUrls ||
+      req.body.uploadedImageUrls.length === 0
+    ) {
+      throw new BadRequestException('No image uploaded');
     }
-  }
 
-  // ============================
-  // FORM EDIT — GET /gallery/formEdit/:id
-  // ============================
+    createGalleryDto.file_path =
+      req.body.uploadedImageUrls[0];
+
+    const gallery =
+      await this.galleryService.create(createGalleryDto);
+
+    req.flash('success', 'Gallery successfully created');
+
+    res.redirect(`/category/${gallery.kategori.id}`);
+
+  } catch (error: any) {
+
+    req.flash(
+      'error',
+      error.message || 'Gallery failed to create'
+    );
+
+    res.redirect(
+      `/category/${createGalleryDto.kategori_id}`
+    );
+  }
+}
+
   @Roles('super_admin')
-  @Get('formEdit/:id')
-  async formEdit(
-    @Param('id') id: string,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    const [gallery, kategori] = await Promise.all([
-      this.galleryService.findOne(+id),
-      this.kategorisService.findAll(),
-    ]);
-    res.render('super_admin/gallery/edit', { user: req.user, gallery, kategori });
-  }
+@Get('kategori/:kategoriId')
+async findByKategori(
+  @Param('kategoriId') kategoriId: string,
+  @Res() res: Response,
+) {
+  const gallery = await this.galleryService.findByKategori(+kategoriId);
+  res.json(gallery);
+}
 
-  // ============================
-  // DETAIL — GET /gallery/:id
-  // (opsional; boleh dihapus kalau tidak butuh halaman detail terpisah)
-  // ============================
+  
   @Roles('super_admin')
-  @Get(':id')
-  async findOne(@Param('id') id: string, @Res() res: Response) {
-    const gallery = await this.galleryService.findOne(+id);
-    res.json(gallery);
-  }
+@Get('formEdit/:galleryId')
+async formEdit(
+  @Param('galleryId', ParseIntPipe) galleryId: number,
+  @Res() res: Response,
+  @Req() req: Request,
+) {
+  const gallery = await this.galleryService.findOne(galleryId);
 
-  // ============================
-  // SUBMIT UPDATE — PATCH /gallery/:id
-  // ============================
+  res.render('super_admin/gallery/edit', {
+    user: req.user,
+    gallery,
+    kategori: gallery.kategori
+  });
+}
+
+  
+
   @Roles('super_admin')
   @Patch(':id')
   @UseInterceptors(
@@ -138,41 +145,83 @@ export class GalleryController {
     maxSize: 10 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
-  async update(
-    @Param('id') id: string,
-    @Body() updateGalleryDto: UpdateGalleryDto,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    try {
-      const data: UpdateGalleryDto & { file_path?: string } = {
-        ...updateGalleryDto,
-      };
-      if (req.body.uploadedImageUrls && req.body.uploadedImageUrls.length > 0) {
-        data.file_path = req.body.uploadedImageUrls[0];
-      }
-      await this.galleryService.update(+id, data);
-      req.flash('success', 'Gallery successfully updated');
-      res.redirect('/gallery');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Gallery failed to update');
-      res.redirect('/gallery');
-    }
-  }
+ async update(
+  @Param('id') id: string,
+  @Body() updateGalleryDto: UpdateGalleryDto,
+  @Res() res: Response,
+  @Req() req: Request,
+) {
+  try {
+    const data: UpdateGalleryDto & { file_path?: string } = {
+      ...updateGalleryDto,
+    };
 
-  // ============================
-  // SUBMIT DELETE — DELETE /gallery/:id
-  // ============================
-  @Roles('super_admin')
-  @Delete(':id')
-  async remove(@Param('id') id: string, @Res() res: Response, @Req() req: Request) {
-    try {
-      await this.galleryService.remove(+id);
-      req.flash('success', 'Gallery successfully deleted');
-      res.redirect('/gallery');
-    } catch (error: any) {
-      req.flash('error', error.message || 'Gallery failed to delete');
-      res.redirect('/gallery');
+    if (
+      req.body.uploadedImageUrls &&
+      req.body.uploadedImageUrls.length > 0
+    ) {
+      data.file_path = req.body.uploadedImageUrls[0];
     }
+
+    const gallery = await this.galleryService.update(+id, data);
+
+    req.flash('success', 'Gallery successfully updated');
+
+    res.redirect(`/category/${gallery.kategori.id}`);
+
+  } catch (error: any) {
+
+    req.flash(
+      'error',
+      error.message || 'Gallery failed to update'
+    );
+
+    res.redirect('/kategori_id');
+  }
+}
+
+ @Roles('super_admin')
+@Delete(':id')
+async remove(
+  @Param('id') id: string,
+  @Res() res: Response,
+  @Req() req: Request,
+) {
+  try {
+    const gallery = await this.galleryService.findOne(+id);
+
+    await this.galleryService.remove(+id);
+
+    if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      return res.json({ success: true });
+    }
+
+    req.flash('success', 'Gallery successfully deleted');
+
+    return res.redirect(`/category/${gallery.kategori.id}`);
+
+  } catch (error: any) {
+
+    if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    req.flash(
+      'error',
+      error.message || 'Gallery failed to delete'
+    );
+
+    return res.redirect('/category');
+  }
+}
+
+@Roles('super_admin')
+  @Get(':id')
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    const gallery = await this.galleryService.findOne(+id);
+    res.json(gallery);
   }
 }

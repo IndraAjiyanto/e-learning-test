@@ -267,6 +267,11 @@
       >
         Alumni
       </button>
+     <button @click="toggleFetch('/category/gallery/{{kategori.id}}', 'gallery')" 
+            :class="tab === 'gallery' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Gallery
+    </button>
 
     {{#if (eq kategori.type 'Special Program') }}
       <button
@@ -313,6 +318,8 @@
     {{> kategori/superiority_tab }}
 
     {{> kategori/flow_tab }}
+
+{{> kategori/gallery_tab kategori=kategori}}
 </div>
 </div>
 
