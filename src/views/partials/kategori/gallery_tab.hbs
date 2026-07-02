@@ -1,0 +1,124 @@
+<!-- ===================== TAB GALLERY ===================== -->
+<div
+  x-show="tab === 'gallery'"
+  class='space-y-4'
+  x-data='galleryData()'
+  x-init='fetchGallery()'
+>
+  <!-- Header -->
+  <div class='flex justify-between items-center mb-6'>
+    <div>
+      <h3 class='text-lg font-semibold text-gray-800'>
+        Gallery
+      </h3>
+      <p class='text-sm text-gray-500'>
+        Gallery in this Category
+      </p>
+    </div>
+    <a
+      href='/gallery/formCreate/{{kategori.id}}'
+      class='bg-gray-900 text-white px-6 py-2.5 rounded-lg shadow hover:bg-gray-700 transition flex items-center gap-2'
+    >
+      <svg
+        class='w-5 h-5'
+        fill='none'
+        stroke='currentColor'
+        viewBox='0 0 24 24'
+      >
+        <path
+          stroke-linecap='round'
+          stroke-linejoin='round'
+          stroke-width='2'
+          d='M12 4v16m8-8H4'
+        />
+      </svg>
+      Add Gallery
+    </a>
+  </div>
+
+  <!-- Gallery -->
+  <div
+    x-show='data.length > 0'
+    class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'
+  >
+    <template x-for='item in data' :key='item.id'>
+      <div class='bg-white border rounded-lg shadow overflow-hidden'>
+        <img :src='item.file_path' class='w-full h-52 object-cover' />
+        <div class='p-3'>
+          <h4
+            class='font-semibold text-gray-800'
+            x-text="item.title || 'Gallery'"
+          >
+          </h4>
+          <p class='text-gray-600' x-text="item.description || 'Gallery'">
+          </p>
+          <div class='flex items-center gap-2 pt-3 border-t border-gray-100'>
+            <a
+              :href="'/gallery/formEdit/' + item.id"
+              class='flex-1 text-center text-sm font-medium border border-gray-200 rounded-lg py-2 hover:bg-gray-900 hover:text-white transition'
+            >
+              Edit
+            </a>
+            <button
+              @click='removeGallery(item.id)'
+              type='button'
+              class='flex-1 text-sm font-medium border border-red-200 text-red-600 rounded-lg py-2 hover:bg-red-600 hover:text-white transition'
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- Empty -->
+  <div
+    x-show='data.length === 0'
+    class='text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed'
+  >
+    <p class='text-gray-500'>
+      No gallery found.
+    </p>
+  </div>
+</div>
+{{!-- prettier-ignore --}}
+<script>
+function galleryData() {
+  return {
+    data: JSON.parse(localStorage.getItem('galleryData')) || [],
+    async fetchGallery() {
+      try {
+        const response = await fetch('/gallery/kategori/{{kategori.id}}');
+        if (!response.ok) {
+          throw new Error('Failed fetch gallery');
+        }
+        this.data = await response.json();
+        localStorage.setItem('galleryData', JSON.stringify(this.data));
+      } catch (e) {
+        console.error(e);
+        this.data = [];
+      }
+    },
+    async removeGallery(id) {
+      if (!confirm('Delete this gallery item?')) return;
+      try {
+        const response = await fetch('/gallery/' + id, {
+          method: 'DELETE',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to delete gallery item');
+        }
+        this.data = this.data.filter(function (item) {
+          return item.id !== id;
+        });
+        localStorage.setItem('galleryData', JSON.stringify(this.data));
+      } catch (e) {
+        console.error(e);
+        alert('Failed to delete gallery item.');
+      }
+    }
+  }
+}
+</script>
