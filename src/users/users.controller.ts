@@ -35,7 +35,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   // ============================================
   // PUBLIC ROUTES - Forgot & Reset Password (No Auth Required)
@@ -248,29 +248,29 @@ export class UsersController {
   }
 
   @Roles('super_admin')
-@Get('filter')
-async filterUsers(
-  @Res() res: Response,
-  @Query('search') search?: string,
-  @Query('page') page?: string,
-  @Query('limit') limit?: string,
-) {
-  const currentPage = parseInt(page || '1', 10);
-  const itemsPerPage = parseInt(limit || '5', 10);
+  @Get('filter')
+  async filterUsers(
+    @Res() res: Response,
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const currentPage = parseInt(page || '1', 10);
+    const itemsPerPage = parseInt(limit || '5', 10);
 
-  const result = await this.usersService.findAllPaginated({
-    search: search || undefined,
-    page: currentPage,
-    limit: itemsPerPage,
-  });
+    const result = await this.usersService.findAllPaginated({
+      search: search || undefined,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
 
-  return res.json({
-    data: result.data,
-    totalItems: result.total,
-    totalPages: Math.ceil(result.total / itemsPerPage),
-    currentPage,
-  });
-}
+    return res.json({
+      data: result.data,
+      totalItems: result.total,
+      totalPages: Math.ceil(result.total / itemsPerPage),
+      currentPage,
+    });
+  }
 
   @Roles('super_admin')
   @Get('formEdit/:userId')
@@ -290,16 +290,16 @@ async filterUsers(
   }
 
   @Roles('super_admin')
-@Get('profile/:id')
-async detailUser(
-  @Param('id') userId: number,
-  @Res() res: Response,
-) {
-  
-  const user = await this.usersService.findOne(userId);
-  console.log('ID PARAM:', userId);
-  return res.render('super_admin/user/detail', { user });
-}
+  @Get('profile/:id')
+  async detailUser(
+    @Param('id') userId: number,
+    @Res() res: Response,
+  ) {
+
+    const user = await this.usersService.findOne(userId);
+    console.log('ID PARAM:', userId);
+    return res.render('super_admin/user/detail', { user });
+  }
 
   @Roles('user', 'admin', 'super_admin')
   @Patch(':id')
