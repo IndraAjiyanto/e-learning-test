@@ -105,6 +105,11 @@ export class KelassService {
   }
 
   async create(createKelassDto: CreateKelassDto) {
+
+    if (!createKelassDto.gambar || createKelassDto.gambar.trim() === '') {
+    throw new BadRequestException('Image file is required');
+  }
+
     const kategori = await this.kategoriRepository.findOne({
       where: { id: createKelassDto.kategoriId },
     });
