@@ -27,7 +27,16 @@
                       <div class="flex flex-wrap gap-2 mb-3" x-show="selectedTechs.length > 0">
                         <template x-for="tech in selectedTechs" :key="tech.id">
                           <div class="flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2">
-                            <div class="w-6 h-6 flex items-center justify-center" x-html="tech.svg"></div>
+                            <div class="flex items-center gap-1">
+                              <template x-if="tech.svg && tech.svg !== 'null' && tech.svg.trim() !== ''">
+                                <div class="w-6 h-6 flex items-center justify-center" x-html="tech.svg"></div>
+                              </template>
+                              <template x-if="tech.img_url && tech.img_url !== 'null' && tech.img_url.trim() !== ''">
+                                <div class="w-6 h-6 flex items-center justify-center">
+                                  <img :src="tech.img_url" :alt="tech.nama" class="w-full h-full object-contain">
+                                </div>
+                              </template>
+                            </div>
                             <span class="text-sm font-medium text-gray-700" x-text="tech.nama"></span>
                             <button type="button" @click="removeTech(tech.id)" 
                               class="text-red-500 hover:text-red-700 ml-2">
@@ -54,7 +63,16 @@
                           <template x-for="tech in filteredTechs" :key="tech.id">
                             <button type="button" @click="selectTech(tech)"
                               class="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0">
-                              <div class="w-8 h-8 flex items-center justify-center flex-shrink-0" x-html="tech.svg"></div>
+                              <div class="flex items-center gap-2 flex-shrink-0">
+                                <template x-if="tech.svg && tech.svg !== 'null' && tech.svg.trim() !== ''">
+                                  <div class="w-8 h-8 flex items-center justify-center" x-html="tech.svg"></div>
+                                </template>
+                                <template x-if="tech.img_url && tech.img_url !== 'null' && tech.img_url.trim() !== ''">
+                                  <div class="w-8 h-8 flex items-center justify-center">
+                                    <img :src="tech.img_url" :alt="tech.nama" class="w-full h-full object-contain">
+                                  </div>
+                                </template>
+                              </div>
                               <span class="text-sm font-medium text-gray-700" x-text="tech.nama"></span>
                             </button>
                           </template>
