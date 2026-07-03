@@ -19,7 +19,9 @@
                         this.selectedTechs = this.selectedTechs.filter(t => t.id !== techId);
                       }
                     }" @click.away="showDropdown = false">
-                      <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
+                    
+  <input type="hidden" name="teknologiIds_sent" value="1">
+  <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies</label>
                       
                       <!-- Selected Technologies -->
                       <div class="flex flex-wrap gap-2 mb-3" x-show="selectedTechs.length > 0">

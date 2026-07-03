@@ -155,7 +155,7 @@ import path from 'path';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(I18nMiddleware).forRoutes('*');
+    // consumer.apply(I18nMiddleware).forRoutes('*');
      consumer
             .apply(AuthMiddleware)
             .exclude(
