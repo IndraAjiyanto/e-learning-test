@@ -97,7 +97,11 @@ export class KategorisController {
       kategori.id,
     );
     // const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
-    if (kategori?.type === 'Special Program') {
+    if (kategori?.type === 'Program') {
+      res.render('program', { kategori, user: req.user, alumni });
+    } else {
+      // 'Special Program' or any unknown/null type falls back here so the
+      // request always gets a response instead of hanging (loading forever).
       res.render('special_program', {
         kategori,
         user: req.user,
@@ -108,8 +112,6 @@ export class KategorisController {
         superiority,
         pertanyaan_umum,
       });
-    } else if (kategori?.type === 'Program') {
-      res.render('program', { kategori, user: req.user, alumni });
     }
   }
 
