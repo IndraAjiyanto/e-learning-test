@@ -34,14 +34,22 @@ export class GalleryController {
     private readonly galleryService: GalleryService,
     private readonly kategorisService: KategorisService,
   ) {}
+ 
+  // @Get()
+  // async findAll(@Res() res: Response, @Req() req: Request) {
+  //   const gallery = await this.galleryService.findAll();
+  //   res.render('super_admin/gallery/index', { user: req.user, gallery, notSidebar:true});
+  // }
 
-
-  @Roles('super_admin')
-  @Get()
-  async findAll(@Res() res: Response, @Req() req: Request) {
+ @Get()
+  async index(@Res() res: Response) {
     const gallery = await this.galleryService.findAll();
-    res.render('super_admin/gallery/index', { user: req.user, gallery });
-  }
+    const programs = await this.kategorisService.findAll();
+
+
+    res.render('super_admin/gallery/index', { gallery, programs });
+  } 
+
 
   @Roles('super_admin')
   @Get('formCreate/:kategoriId')
@@ -223,5 +231,23 @@ async remove(
   async findOne(@Param('id') id: string, @Res() res: Response) {
     const gallery = await this.galleryService.findOne(+id);
     res.json(gallery);
+  }
+
+ 
+}
+
+@Controller('dashboard/gallery') 
+export class PublicGalleryController {
+  constructor(
+    private readonly galleryService: GalleryService,
+    private readonly kategorisService: KategorisService,
+  ) {}
+
+  @Get() 
+  async index(@Res() res: Response) {
+    const gallery = await this.galleryService.findAll();
+    const programs = await this.kategorisService.findAll();
+
+    res.render('public/gallery/index', { gallery, programs });
   }
 }
