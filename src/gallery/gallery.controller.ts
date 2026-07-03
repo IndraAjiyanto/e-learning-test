@@ -236,18 +236,28 @@ async remove(
  
 }
 
-@Controller('dashboard/gallery') 
+@Controller('dashboard') 
 export class PublicGalleryController {
   constructor(
     private readonly galleryService: GalleryService,
     private readonly kategorisService: KategorisService,
   ) {}
 
-  @Get() 
+  // 1. Menampilkan halaman pertama (Lengkap)
+  @Get('gallery') 
   async index(@Res() res: Response) {
     const gallery = await this.galleryService.findAll();
     const programs = await this.kategorisService.findAll();
 
-    res.render('public/gallery/index', { gallery, programs });
+    return res.render('public/gallery/index', { gallery, programs });
+  }
+
+  // 2. Menampilkan halaman kedua (Fitur yang dikurangi)
+  @Get('galeri') 
+  async dashboard(@Res() res: Response) {
+    const gallery = await this.galleryService.findAll();
+    const programs = await this.kategorisService.findAll();
+
+    return res.render('partials/dashboard/gallery', { gallery, programs });
   }
 }

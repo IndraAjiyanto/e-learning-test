@@ -1,10 +1,14 @@
 import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
+import { GalleryService } from '../gallery/gallery.service';
 import { Request, Response } from 'express';
 
 @Controller('dashboard')
 export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) {}
+  constructor(
+    private readonly dashboardService: DashboardService,
+    private readonly galleryService: GalleryService,
+  ) {}
 
   @Get('kelas/filter')
   async kelasFilter(
@@ -66,9 +70,13 @@ export class DashboardController {
         const benefit_3 = await this.dashboardService.findBenefit3();
         const tentang = await this.dashboardService.findTentang();
         const social = await this.dashboardService.findSocial();
+        const gallery = await this.galleryService.findAll();
+        const programs = await this.dashboardService.findAllKategori();
         res.render('dashboard', {
           special_program,
           user: req.user,
+          gallery,
+          programs,
           // kelas,
           faq,
           gambar_benefit_1,
@@ -104,9 +112,13 @@ export class DashboardController {
       const benefit_3 = await this.dashboardService.findBenefit3();
       const tentang = await this.dashboardService.findTentang();
       const social = await this.dashboardService.findSocial();
+      const gallery = await this.galleryService.findAll();
+      const programs = await this.dashboardService.findAllKategori();
       res.render('dashboard', {
         special_program,
         user: req.user,
+        gallery,
+        programs,
         // kelas,
         faq,
         gambar_benefit_1,

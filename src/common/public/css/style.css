@@ -4259,6 +4259,10 @@ details.collapse summary::-webkit-details-marker {
   margin-bottom: 2rem;
 }
 
+.-mb-12 {
+  margin-bottom: -3rem;
+}
+
 .-ml-5 {
   margin-left: -1.25rem;
 }
@@ -4431,16 +4435,8 @@ details.collapse summary::-webkit-details-marker {
   margin-top: auto;
 }
 
-.-mb-2 {
-  margin-bottom: -0.5rem;
-}
-
-.-mb-8 {
-  margin-bottom: -2rem;
-}
-
-.-mb-12 {
-  margin-bottom: -3rem;
+.box-border {
+  box-sizing: border-box;
 }
 
 .line-clamp-1 {
@@ -4825,6 +4821,10 @@ details.collapse summary::-webkit-details-marker {
   width: 8rem;
 }
 
+.w-36 {
+  width: 9rem;
+}
+
 .w-4 {
   width: 1rem;
 }
@@ -4892,10 +4892,6 @@ details.collapse summary::-webkit-details-marker {
 
 .w-full {
   width: 100%;
-}
-
-.w-36 {
-  width: 9rem;
 }
 
 .min-w-0 {
@@ -5175,6 +5171,16 @@ details.collapse summary::-webkit-details-marker {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
+}
+
+.columns-1 {
+  -moz-columns: 1;
+       columns: 1;
+}
+
+.break-inside-avoid {
+  -moz-column-break-inside: avoid;
+       break-inside: avoid;
 }
 
 .grid-cols-1 {
@@ -5783,6 +5789,10 @@ details.collapse summary::-webkit-details-marker {
   background-color: #0B1F3B33;
 }
 
+.bg-\[\#6EB6E533\] {
+  background-color: #6EB6E533;
+}
+
 .bg-\[\#E0F1F980\] {
   background-color: #E0F1F980;
 }
@@ -6099,10 +6109,6 @@ details.collapse summary::-webkit-details-marker {
 .bg-yellow-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(202 138 4 / var(--tw-bg-opacity, 1));
-}
-
-.bg-\[\#6EB6E533\] {
-  background-color: #6EB6E533;
 }
 
 .bg-opacity-50 {
@@ -6775,6 +6781,10 @@ details.collapse summary::-webkit-details-marker {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
+}
+
+.pb-1 {
+  padding-bottom: 0.25rem;
 }
 
 .pb-10 {
@@ -7711,6 +7721,11 @@ details.collapse summary::-webkit-details-marker {
   line-height: 1.5rem;
 }
 
+.\[column-fill\:_balance\] {
+  -moz-column-fill: balance;
+       column-fill: balance;
+}
+
 /* Optional: Custom styles untuk highlight */
 
 .highlighted-word {
@@ -7801,6 +7816,16 @@ details.collapse summary::-webkit-details-marker {
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
+.before\:box-border::before {
+  content: var(--tw-content);
+  box-sizing: border-box;
+}
+
+.after\:box-border::after {
+  content: var(--tw-content);
+  box-sizing: border-box;
+}
+
 .last\:border-0:last-child {
   border-width: 0px;
 }
@@ -7860,6 +7885,11 @@ details.collapse summary::-webkit-details-marker {
 .hover\:border-amber-300:hover {
   --tw-border-opacity: 1;
   border-color: rgb(252 211 77 / var(--tw-border-opacity, 1));
+}
+
+.hover\:border-blue-600:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(37 99 235 / var(--tw-border-opacity, 1));
 }
 
 .hover\:border-emerald-300:hover {
@@ -8870,6 +8900,11 @@ details.collapse summary::-webkit-details-marker {
     --tw-scale-x: .95;
     --tw-scale-y: .95;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  }
+
+  .sm\:columns-3 {
+    -moz-columns: 3;
+         columns: 3;
   }
 
   .sm\:grid-cols-2 {

@@ -28,6 +28,7 @@ import { Faq } from 'src/entities/faq.entity';
 import { TranslationModule } from 'src/translation/translation.module';
 import { OurExperience } from 'src/entities/our_experience.entity';
 import { KategoriBlog } from 'src/entities/kategori_blog.entity';
+import { GalleryModule } from 'src/gallery/gallery.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { KategoriBlog } from 'src/entities/kategori_blog.entity';
       KategoriBlog,
     ]),
     TranslationModule, // Import TranslationModule
+    GalleryModule,
   ],
   controllers: [DashboardController],
   providers: [DashboardService],
