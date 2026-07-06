@@ -1,0 +1,46 @@
+<section id="what-you-learn" class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <div class="flex items-center justify-center mx-auto rounded-full border border-[#003060] bg-[#6EB6E5]/20 text-[#003060] font-semibold text-lg font-montserrat" style="width: 305px; height: 49px;">
+        What You Learn
+      </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-2xl p-8 md:p-12 shadow-sm flex flex-col lg:flex-row items-center gap-10">
+      <div class="lg:w-1/2 space-y-4">
+        <ul class="space-y-6">
+          {{#if (eq lang 'id')}}
+            {{#each kelas.materi_id}}
+            <li class="flex items-start">
+              <span class="w-1.5 h-1.5 rounded-full bg-gray-800 mt-2 mr-3 flex-shrink-0"></span>
+              <p class="text-gray-700 font-medium">{{this}}</p>
+            </li>
+            {{/each}}
+          {{else if (eq lang 'en')}}
+            {{#each kelas.materi_en}}
+            <li class="flex items-start">
+              <span class="w-1.5 h-1.5 rounded-full bg-gray-800 mt-2 mr-3 flex-shrink-0"></span>
+              <p class="text-gray-700 font-medium">{{this}}</p>
+            </li>
+            {{/each}}
+          {{else if (eq lang 'ja')}}
+            {{#each kelas.materi_ja}}
+            <li class="flex items-start">
+              <span class="w-1.5 h-1.5 rounded-full bg-gray-800 mt-2 mr-3 flex-shrink-0"></span>
+              <p class="text-gray-700 font-medium">{{this}}</p>
+            </li>
+            {{/each}}
+          {{/if}}
+        </ul>
+      </div>
+      
+      <div class="lg:w-1/2 flex justify-center">
+        <!-- Placeholder Image representing the Figma illustration -->
+        <div class="w-full max-w-md aspect-video bg-blue-50 rounded-xl flex items-center justify-center border border-blue-100">
+          <i class="fas fa-laptop-code text-5xl text-blue-300"></i>
+          <span class="ml-4 text-blue-400 font-medium font-montserrat">UI/UX Illustration</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
