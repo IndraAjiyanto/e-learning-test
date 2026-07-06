@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class CreateKerjaSamaDto {
+export class CreatePartnerDto {
   @IsString()
   gambar: string;
 }

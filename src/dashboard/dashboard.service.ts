@@ -7,7 +7,7 @@ import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import { KerjaSama } from 'src/entities/kerja_sama.entity';
+import { Partner } from 'src/entities/partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -41,8 +41,8 @@ export class DashboardService {
     private readonly kategoriRepository: Repository<Kategori>,
     @InjectRepository(JenisKelas)
     private readonly jenisKelasRepository: Repository<JenisKelas>,
-    @InjectRepository(KerjaSama)
-    private readonly kerjaSamaRepository: Repository<KerjaSama>,
+    @InjectRepository(Partner)
+    private readonly PartnerRepository: Repository<Partner>,
     @InjectRepository(Benefit)
     private readonly benefitRepository: Repository<Benefit>,
     @InjectRepository(Team)
@@ -436,7 +436,7 @@ async findAlumni(options?: {
   // }
 
   async findKerjaSama() {
-    return await this.kerjaSamaRepository.find({
+    return await this.PartnerRepository.find({
       order: { createdAt: 'ASC' },
     });
   }

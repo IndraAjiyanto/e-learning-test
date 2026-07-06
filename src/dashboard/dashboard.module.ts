@@ -9,7 +9,7 @@ import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import { KerjaSama } from 'src/entities/kerja_sama.entity';
+import { Partner } from 'src/entities/partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -49,7 +49,7 @@ import { GalleryModule } from 'src/gallery/gallery.module';
       GambarBenefit,
       Kategori,
       JenisKelas,
-      KerjaSama,
+      Partner,
       Misi,
       Experience,
       Award,

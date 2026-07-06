@@ -1,31 +1,31 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateKerjaSamaDto } from './dto/create-kerja_sama.dto';
-import { UpdateKerjaSamaDto } from './dto/update-kerja_sama.dto';
+import { CreatePartnerDto } from './dto/create-partner.dto';
+import { UpdatePartnerDto } from './dto/update-partner.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { KerjaSama } from 'src/entities/kerja_sama.entity';
+import { Partner } from 'src/entities/partner.entity';
 import { Repository } from 'typeorm';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
 @Injectable()
-export class KerjaSamaService {
+export class PartnerService {
   constructor(
-    @InjectRepository(KerjaSama)
-    private readonly kerjaSamaRepository: Repository<KerjaSama>,
+    @InjectRepository(Partner)
+    private readonly PartnerRepository: Repository<Partner>,
   ) {}
 
-  async create(createKerjaSamaDto: CreateKerjaSamaDto) {
+  async create(createPartnerDto: CreatePartnerDto) {
     const kerja_sama =
-      await this.kerjaSamaRepository.create(createKerjaSamaDto);
-    return await this.kerjaSamaRepository.save(kerja_sama);
+      await this.PartnerRepository.create(createPartnerDto);
+    return await this.PartnerRepository.save(kerja_sama);
   }
 
   async findAll() {
-    return await this.kerjaSamaRepository.find();
+    return await this.PartnerRepository.find();
   }
 
   async findOne(kerja_samaId: number) {
-    const kerja_sama = await this.kerjaSamaRepository.findOne({
+    const kerja_sama = await this.PartnerRepository.findOne({
       where: { id: kerja_samaId },
     });
     if (!kerja_sama) {
@@ -34,13 +34,13 @@ export class KerjaSamaService {
     return kerja_sama;
   }
 
-  async update(kerja_samaId: number, updateKerjaSamaDto: UpdateKerjaSamaDto) {
+  async update(kerja_samaId: number, updatePartnerDto: UpdatePartnerDto) {
     const kerja_sama = await this.findOne(kerja_samaId);
     if (!kerja_sama) {
       throw new NotFoundException('partnership not found');
     }
-    Object.assign(kerja_sama, updateKerjaSamaDto);
-    return await this.kerjaSamaRepository.save(kerja_sama);
+    Object.assign(kerja_sama, updatePartnerDto);
+    return await this.PartnerRepository.save(kerja_sama);
   }
 
   async remove(kerja_samaId: number) {
@@ -48,7 +48,7 @@ export class KerjaSamaService {
     if (!kerja_sama) {
       throw new NotFoundException('partnership not found');
     }
-    return await this.kerjaSamaRepository.remove(kerja_sama);
+    return await this.PartnerRepository.remove(kerja_sama);
   }
 
   async deleteFile(url: string) {
