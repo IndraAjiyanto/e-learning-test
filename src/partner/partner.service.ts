@@ -6,27 +6,37 @@ import { Partner } from 'src/entities/partner.entity';
 import { Repository } from 'typeorm';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { CategoryPartnerService } from 'src/category_partner/category_partner.service';
 
 @Injectable()
 export class PartnerService {
   constructor(
     @InjectRepository(Partner)
     private readonly PartnerRepository: Repository<Partner>,
+    private readonly categoryPartnerService: CategoryPartnerService,
   ) {}
 
   async create(createPartnerDto: CreatePartnerDto) {
-    const kerja_sama =
-      await this.PartnerRepository.create(createPartnerDto);
+    const categoryPartner = await this.categoryPartnerService.findOne(
+      createPartnerDto.categoryPartnerId,
+    );
+    const kerja_sama = this.PartnerRepository.create({
+      ...createPartnerDto,
+      categoryPartner,
+    });
     return await this.PartnerRepository.save(kerja_sama);
   }
 
   async findAll() {
-    return await this.PartnerRepository.find();
+    return await this.PartnerRepository.find({
+      relations: ['categoryPartner'],
+    });
   }
 
   async findOne(kerja_samaId: number) {
     const kerja_sama = await this.PartnerRepository.findOne({
       where: { id: kerja_samaId },
+      relations: ['categoryPartner'],
     });
     if (!kerja_sama) {
       throw new NotFoundException('partnership not found');
@@ -38,6 +48,11 @@ export class PartnerService {
     const kerja_sama = await this.findOne(kerja_samaId);
     if (!kerja_sama) {
       throw new NotFoundException('partnership not found');
+    }
+    if (updatePartnerDto.categoryPartnerId) {
+      kerja_sama.categoryPartner = await this.categoryPartnerService.findOne(
+        updatePartnerDto.categoryPartnerId,
+      );
     }
     Object.assign(kerja_sama, updatePartnerDto);
     return await this.PartnerRepository.save(kerja_sama);

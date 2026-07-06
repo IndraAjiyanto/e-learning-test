@@ -25,13 +25,17 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { CategoryPartnerService } from 'src/category_partner/category_partner.service';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('partnership')
 export class PartnerController {
-  constructor(private readonly PartnerService: PartnerService) {}
+  constructor(
+    private readonly PartnerService: PartnerService,
+    private readonly categoryPartnerService: CategoryPartnerService,
+  ) {}
 
   @Roles('super_admin')
   @Post()
@@ -74,7 +78,11 @@ export class PartnerController {
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    res.render('super_admin/kerja_sama/create', { user: req.user });
+    const categories = await this.categoryPartnerService.findAll();
+    res.render('super_admin/kerja_sama/create', {
+      user: req.user,
+      categories,
+    });
   }
 
   @Roles('super_admin')
@@ -96,7 +104,12 @@ export class PartnerController {
     @Req() req: Request,
   ) {
     const kerja_sama = await this.PartnerService.findOne(kerja_samaId);
-    res.render('super_admin/kerja_sama/edit', { user: req.user, kerja_sama });
+    const categories = await this.categoryPartnerService.findAll();
+    res.render('super_admin/kerja_sama/edit', {
+      user: req.user,
+      kerja_sama,
+      categories,
+    });
   }
 
   @Roles('super_admin')

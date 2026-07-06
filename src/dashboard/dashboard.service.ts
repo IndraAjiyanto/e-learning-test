@@ -437,6 +437,7 @@ async findAlumni(options?: {
 
   async findKerjaSama() {
     return await this.PartnerRepository.find({
+      relations: ['categoryPartner'],
       order: { createdAt: 'ASC' },
     });
   }
