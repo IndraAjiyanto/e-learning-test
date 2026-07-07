@@ -3,12 +3,12 @@
   x-data='galleryTable({ gallery: {{{json gallery}}}, programs: {{{json programs}}} })'
 >
   <div class='container mx-auto px-4 pb-8 max-w-5xl'>
-    <div class='flex flex-col items-center text-center justify-center mb-12'>
-      <h1 class='text-l border bg-[#6EB6E533] border-gray-400 w-36 rounded-full -mb-12 text-gray-900 font-montserrat'>{{{t
+    <div class='flex flex-col items-center text-center mb-8'>
+      <span class='inline-block text-sm border bg-[#6EB6E533] border-gray-300 px-5 py-1 rounded-full text-gray-900 font-montserrat mb-5'>{{{t
           'test.gallery.gallery'
-        }}}</h1>
-      </div>
-    <div class='text-center mb-12'>
+        }}}</span>
+    </div>
+    <div class='text-center mb-10'>
       <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
           'test.gallery.title'
         }}}</h1>
@@ -30,7 +30,7 @@
         <button
           @click='open = !open'
           type='button'
-          class='inline-flex items-center justify-between w-56 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none'
+          class='inline-flex items-center justify-between w-56 rounded-xl border border-gray-300 bg-[#E0F1F9] px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none'
           aria-haspopup='true'
           :aria-expanded='open'
         >
@@ -90,7 +90,7 @@
             placeholder='Search gallery...'
             x-model='searchInput'
             @input='search = searchInput; pageNumber = 0'
-            class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
+            class='border border-gray-300 bg-[#E0F1F9] text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
           />
           <button
             @click='search = searchInput; pageNumber = 0'
@@ -119,50 +119,65 @@
   <div class='mb-10'></div>
 
   <!-- Grid Cards -->
-  <div class='container mx-auto px-4 flex grid sm:grid-cols-3 sm:grid-rows-3 gap-6 max-w-5xl'>
+  <div class='container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl'>
     {{#each gallery}}
       <div
-        class='bg-[#FAFAFA] shadow-lg w-auto rounded-xl overflow-hidden'
+        class='bg-white shadow-lg rounded-xl overflow-hidden group'
         x-show="filteredGallery.includes('{{id}}')"
       >
-        <div class='aspect-[1/1] bg-gray-100 overflow-hidden'>
+        <div class='aspect-[4/3] bg-gray-100 overflow-hidden'>
           <img
             src='{{file_path}}'
             alt='{{title}}'
-            class='w-full h-full object-cover'
+            class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
           />
         </div>
-        <div class='bg-[#FAFAFA] p-4'>
-          <h3 class='font-semibold text-gray-900 mb-1'>{{title}}</h3>
+        <div class='p-4'>
+          <h3 class='font-semibold text-gray-900'>{{title}}</h3>
         </div>
       </div>
     {{/each}}
   </div>
 
+  <!-- Empty state -->
   <div
-    class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center'
+    class='container mx-auto px-4 max-w-5xl text-center py-16'
+    x-show='amount === 0'
+  >
+    <p class='text-gray-500 text-lg'>No gallery found.</p>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class='mx-auto py-10 flex justify-center gap-2 items-center'
     x-show='pageCount() > 1'
   >
     <button
       @click='prevPage'
       :disabled='pageNumber==0'
-      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
-      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }"
-    >Prev</button>
+      class='w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition'
+      :class="{ 'opacity-40 cursor-not-allowed': pageNumber==0 }"
+    >
+      <i class='fas fa-chevron-left text-sm'></i>
+    </button>
+
     <template x-for='(page,index) in pages()' :key='index'>
       <button
         @click='viewPage(index)'
-        class='px-3 py-1 rounded'
-        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
+        class='w-9 h-9 flex items-center justify-center rounded-full border transition'
+        :class="index===pageNumber ? 'bg-gray-900 text-white border-gray-900 font-bold' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
         x-text='index+1'
       ></button>
     </template>
+
     <button
       @click='nextPage'
       :disabled='pageNumber >= pageCount()-1'
-      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
-      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
-    >Next</button>
+      class='w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition'
+      :class="{ 'opacity-40 cursor-not-allowed': pageNumber >= pageCount()-1 }"
+    >
+      <i class='fas fa-chevron-right text-sm'></i>
+    </button>
   </div>
 </div>
 

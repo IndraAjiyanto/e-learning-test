@@ -3,7 +3,7 @@
   x-data='{
         active: 0,
         perView: 3,
-        total: {{alumni.length}},
+        total: {{#if alumni}}{{alumni.length}}{{else}}0{{/if}},
         get maxIndex() {
             return Math.max(0, this.total - this.perView);
         },

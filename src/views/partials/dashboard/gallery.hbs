@@ -1,14 +1,14 @@
 <div
-  class='pt-24 min-h-screen bg-transparant'
+  class='py-20 bg-transparant'
   x-data='galleryTable({ gallery: {{{json gallery}}}, programs: {{{json programs}}} })'
 >
+  <!-- Header -->
   <div class='container mx-auto px-4 max-w-5xl'>
-    <div class='flex flex-col items-center text-center justify-center mb-12'>
-      <h1 class='text-l border bg-[#6EB6E533] border-gray-400 w-36 rounded-full -mb-12 text-gray-900 font-montserrat'>{{{t
-          'test.home.gallery.gallery'
-        }}}</h1>
-      </div>
-    <div class='text-center mb-12'>
+    <div class='flex flex-col items-center text-center mb-12'>
+      <span
+        class='inline-block text-sm border bg-[#6EB6E533] border-gray-300 px-5 py-1 rounded-full text-gray-900 font-montserrat mb-5'
+      >{{{t 'test.home.gallery.gallery'}}}</span>
+
       <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
           'test.home.gallery.title'
         }}}</h1>
@@ -21,16 +21,14 @@
     </div>
   </div>
 
-  <div class='mb-10'></div>
-
-  <!-- Grid Cards -->
+  <!-- Grid Cards (Masonry) -->
 <div class="container mx-auto px-4 max-w-5xl">
-  
-  <div class="gap-6  columns-1 sm:columns-3 [column-fill:_balance] box-border before:box-border after:box-border">
+
+  <div class="gap-6 columns-1 sm:columns-2 lg:columns-3 [column-fill:_balance] box-border before:box-border after:box-border">
     {{#each gallery}}
       <!-- Kartu Gambar (Gunakan 'break-inside-avoid' agar kartu tidak terpotong di tengah kolom) -->
       <div
-        class="mb-6 break-inside-avoid bg-[#FAFAFA] shadow-lg rounded-xl overflow-hidden inline-block w-full"
+        class="mb-6 break-inside-avoid bg-[#FAFAFA] shadow-lg rounded-xl overflow-hidden inline-block w-full group"
         x-show="filteredGallery.includes('{{id}}')"
       >
         <div class="bg-gray-100 overflow-hidden">
@@ -38,7 +36,7 @@
           <img
             src="{{file_path}}"
             alt="{{title}}"
-            class="w-full h-auto object-cover hover:scale-105 transition-transform duration-300"
+            class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
       </div>
@@ -46,10 +44,10 @@
   </div>
 
   <!-- Tombol "See All Our Gallery" di Bagian Bawah -->
-  <div class="text-center mb-8">
+  <div class="text-center mt-6 mb-8">
     <a href="/dashboard/gallery" class="inline-flex items-center gap-2 text-slate-900 hover:text-blue-600 transition-colors text-lg border-b border-transparent hover:border-blue-600 pb-1">
       {{t 'test.home.gallery.chooseProgram'}}
-      <svg xmlns="http://w3.org" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3' />
       </svg>
     </a>
