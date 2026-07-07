@@ -97,22 +97,25 @@ export class KategorisController {
       kategori.id,
     );
     // const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
-    if (kategori?.type === 'Program') {
-      res.render('program', { kategori, user: req.user, alumni });
+    const viewData = {
+      kategori,
+      user: req.user,
+      // kelas,
+      alumni,
+      benefit_category,
+      flow_category,
+      superiority,
+      pertanyaan_umum,
+    };
+
+    if (kategori?.type === 'Paid Program') {
+      res.render('paid_program', viewData);
+    } else if (kategori?.type === 'Free Program') {
+      res.render('free_program', viewData);
     } else {
-      // 'Special Program' or any unknown/null type falls back here so the
-      // request always gets a response instead of hanging (loading forever).
-      res.render('special_program', {
-        kategori,
-        user: req.user,
-        // kelas,
-        alumni,
-        benefit_category,
-        flow_category,
-        superiority,
-        pertanyaan_umum,
-      });
+      res.render('special_program', viewData);
     }
+
   }
 
   @Roles('super_admin')
