@@ -481,6 +481,10 @@ async findAlumni(options?: {
     return await this.benefitRepository.findOne({ where: { no: 3 } });
   }
 
+  async findBenefits() {
+    return await this.benefitRepository.find({ order: { no: 'ASC' } });
+  }
+
   async findJenisKelas() {
     return await this.jenisKelasRepository.find();
   }

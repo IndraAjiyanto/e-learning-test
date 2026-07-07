@@ -68,6 +68,7 @@ export class DashboardController {
         const benefit_1 = await this.dashboardService.findBenefit1();
         const benefit_2 = await this.dashboardService.findBenefit2();
         const benefit_3 = await this.dashboardService.findBenefit3();
+        const benefits = await this.dashboardService.findBenefits();
         const tentang = await this.dashboardService.findTentang();
         const social = await this.dashboardService.findSocial();
         const gallery = await this.galleryService.findAll();
@@ -90,6 +91,7 @@ export class DashboardController {
           benefit_1,
           benefit_2,
           benefit_3,
+          benefits,
           tentang,
           social,
           our_experience,
@@ -110,6 +112,7 @@ export class DashboardController {
       const benefit_1 = await this.dashboardService.findBenefit1();
       const benefit_2 = await this.dashboardService.findBenefit2();
       const benefit_3 = await this.dashboardService.findBenefit3();
+      const benefits = await this.dashboardService.findBenefits();
       const tentang = await this.dashboardService.findTentang();
       const social = await this.dashboardService.findSocial();
       const gallery = await this.galleryService.findAll();
@@ -132,6 +135,7 @@ export class DashboardController {
         benefit_1,
         benefit_2,
         benefit_3,
+        benefits,
         tentang,
         social,
         our_experience,
