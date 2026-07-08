@@ -1,0 +1,109 @@
+<div
+  x-data="{
+    selectedType: 'all',
+    selectedMethod: 'all',
+    searchQuery: '',
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 6,
+    loading: false,
+    kelasItems: [],
+    lang: '{{lang}}',
+
+            courseCategoriesData: [
+        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
+        {{#each kategori.jenis_kelas}}
+        { value: '{{this.nama_jenis_kelas }}', icon: '{{computeIcon this.icon}}', title: '{{ this.nama_jenis_kelas }}', desc: '{{truncate (getByLang this.deskripsi ../lang) 10}}' },
+        {{/each}}
+      ],
+
+      methodOptions: [
+        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: '{{t "test.home.programSection.deskripsiAllMethod"}}' },
+        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: '{{t "test.home.programSection.deskripsiOnline"}}' },
+        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
+      ],
+
+    categoryDropdownOpen: false,
+    typeDropdownOpen: false,
+    methodDropdownOpen: false,
+
+    async init() {
+      this.$watch('selectedType', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
+      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
+      await this.fetchKelas();
+    },
+
+            getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
+    },
+
+    async fetchKelas() {
+      this.loading = true;
+      try {
+        const params = new URLSearchParams();
+        params.set('kategori', `{{kategori.nama_kategori}}`);
+        if (this.selectedType !== 'all') params.set('jenis_kelas', this.selectedType);
+        if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);
+        if (this.searchQuery) params.set('search', this.searchQuery);
+        params.set('page', this.currentPage);
+        params.set('limit', this.itemsPerPage);
+
+        const res = await fetch(`/dashboard/kelas/filter?${params.toString()}`);
+        const json = await res.json();
+
+        this.kelasItems = json.data;
+        this.totalItems = json.totalItems;
+        this.totalPages = json.totalPages;
+        this.currentPage = json.currentPage;
+      } catch (err) {
+        console.error('Fetch kelas error:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async changePage(page) {
+      this.currentPage = page;
+      await this.fetchKelas();
+    },
+
+    async resetFilters() {
+      this.selectedType = 'all';
+      this.selectedMethod = 'all';
+      this.searchQuery = '';
+      // currentPage akan di-reset oleh $watch tab
+    },
+
+    // Computed tetap bisa pakai ini
+    get selectedTypeItem() {
+      return this.courseCategoriesData.find(c => c.value === this.selectedType) || this.courseCategoriesData[0];
+    },
+    get selectedMethodItem() {
+      return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
+    },
+  }"
+>
+
+{{> special_program/hero_section}}
+
+{{> special_program/benefit}}
+
+{{> special_program/topic}}
+
+{{> special_program/program_proses}}
+
+{{> special_program/alumni}}
+
+{{> special_program/program}}
+
+{{> special_program/contact}}
+
+{{> special_program/feature}}
+
+{{> special_program/faq}}
+
+
+</div>

@@ -83,4 +83,52 @@ export class AlumniService {
     }
     return await this.alumniRepository.remove(alumni);
   }
+
+  async filterAlumni(
+    kategoriId?: number,
+    kelasId?: number,
+    search?: string,
+    page: number = 1,
+    limit: number = 6,
+  ) {
+    let query = this.alumniRepository
+      .createQueryBuilder('alumni')
+      .leftJoinAndSelect('alumni.kelas', 'kelas')
+      .leftJoinAndSelect('kelas.kategori', 'kategori');
+
+    // Filter by kelas first (most specific)
+    if (kelasId) {
+      query = query.where('alumni.kelas_id = :kelasId', { kelasId });
+    }
+    // Then by kategori (if no kelas specified)
+    else if (kategoriId) {
+      query = query.where('kelas.kategori_id = :kategoriId', { kategoriId });
+    }
+
+    // Search filter
+    if (search && search.trim()) {
+      const searchLower = `%${search.toLowerCase()}%`;
+      query = query.andWhere(
+        '(LOWER(alumni.nama) LIKE :search OR LOWER(alumni.posisi_sekarang) LIKE :search)',
+        { search: searchLower },
+      );
+    }
+
+    // Order by ID descending
+    query = query.orderBy('alumni.id', 'DESC');
+
+    // Pagination
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).take(limit);
+
+    const [data, total] = await query.getManyAndCount();
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
 }

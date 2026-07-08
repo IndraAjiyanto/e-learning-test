@@ -1,62 +1,120 @@
-<section class='bg-white py-20 px-6 lg:px-20'>
+<section class='bg-transparant py-20 px-6 lg:px-20'>
+  <div class='flex flex-col items-center text-center justify-center mb-12'>
+    <h1 class='text-l border bg-[#6EB6E533] border-gray-400 w-36 rounded-full -mb-12 text-gray-900 font-montserrat'>{{{t
+        'test.home.partnerSection.ourPartners'
+      }}}</h1>
+  </div>
   <div class='text-center mb-16'>
-    <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">{{t "test.home.partnerSection.tittle"}}</h2>
+    <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">{{{t "test.home.partnerSection.tittle"}}}</h2>
+    <div
+        class='border border-b-2 border-slate-900 w-24 mx-auto mt-8 my-2 rounded'
+      ></div>
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
       {{t "test.home.partnerSection.description"}}
     </p>
   </div>
 
-  <div class='overflow-hidden whitespace-nowrap bg-white rounded-2xl shadow-lg py-8 relative'>
-    {{#if kerja_sama}}
-    <div class=' inline-flex animate-scroll-seamless'>
-      {{#each kerja_sama}}
-      <img
-        src='{{gambar}}'
-        alt='Partner Logo'
-        class='h-24 w-auto inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300 flex-shrink-0'
-      />
-      {{/each}}
+  {{#if kerja_sama}}
+    <div x-data='partnerFilter({ partners: {{json kerja_sama}} })'>
+
+
+      <!-- Filter Buttons -->
+      <div class='flex flex-wrap items-center justify-center gap-3 mb-10'>
+        <button
+          type='button'
+          @click="selected = 'all'"
+          :class="selected === 'all'
+            ? 'bg-[#6EB6E5] text-white border-gray-900'
+            : 'bg-secondary text-white border-gray-300 hover:bg-[#6EB6E5]'"
+          class='px-5 py-2 rounded-full border text-sm font-semibold transition'
+        >
+          All
+        </button>
+        <template x-for='cat in categories' :key='cat.id'>
+          <button
+            type='button'
+            @click="selected = cat.id"
+            :class="String(selected) === String(cat.id)
+              ? 'bg-[#6EB6E5] text-white border-gray-900'
+              : 'bg-secondary text-white border-gray-300 hover:bg-[#6EB6E5]'"
+            class='px-5 py-2 rounded-full border text-sm font-semibold transition'
+            x-text='cat.category'
+          ></button>
+        </template>
+      </div>
+
+      <!-- Partner Logos -->
+      <div class='flex flex-wrap items-center justify-center gap-8 bg-transparant rounded-2xl max-w-6xl mx-auto py-8'>
+        <template x-for='partner in filtered' :key='partner.id'>
+          <div class='w-[201px] h-[132px] border shadow-lg  border-gray-300 flex items-center justify-center flex-shrink-0 rounded-lg'>
+            <img
+              :src='partner.gambar'
+              alt='Partner Logo'
+              class='h-24 w-auto inline-block'
+            />
+          </div>
+        </template>
+
+        <!-- Empty state when a filter has no partners -->
+        <p
+          x-show='filtered.length === 0'
+          class='text-gray-400 text-sm py-8'
+        >No partners in this category.</p>
+      </div>
     </div>
-    {{else}}
-    <div class='flex items-center justify-center gap-8 px-8'>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-building text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 1</p>
-      </div>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-industry text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 2</p>
-      </div>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-store text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 3</p>
-      </div>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-landmark text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 4</p>
-      </div>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-university text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 5</p>
+  {{else}}
+    <div class='overflow-hidden justify-center flex bg-transparant rounded-2xl py-8 relative'>
+      <div class='flex items-center justify-center gap-8 px-8'>
+        <div class='text-center text-slate-400 py-4'>
+          <i class='fas fa-building text-4xl mb-2'></i>
+          <p class='text-sm'>Partner Logo 1</p>
+        </div>
+        <div class='text-center text-slate-400 py-4'>
+          <i class='fas fa-industry text-4xl mb-2'></i>
+          <p class='text-sm'>Partner Logo 2</p>
+        </div>
+        <div class='text-center text-slate-400 py-4'>
+          <i class='fas fa-store text-4xl mb-2'></i>
+          <p class='text-sm'>Partner Logo 3</p>
+        </div>
+        <div class='text-center text-slate-400 py-4'>
+          <i class='fas fa-landmark text-4xl mb-2'></i>
+          <p class='text-sm'>Partner Logo 4</p>
+        </div>
+        <div class='text-center text-slate-400 py-4'>
+          <i class='fas fa-university text-4xl mb-2'></i>
+          <p class='text-sm'>Partner Logo 5</p>
+        </div>
       </div>
     </div>
-    {{/if}}
-  </div>
+  {{/if}}
 </section>
 
+<script>
+  function partnerFilter({ partners }) {
+    return {
+      partners,
+      // 'all' by default → semua logo tampil saat halaman dibuka / di-refresh
+      selected: 'all',
 
-<style>
-@keyframes scroll-seamless {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-200%);
-  }
-}
+      get categories() {
+        const seen = {};
+        this.partners.forEach((p) => {
+          if (p.categoryPartner) {
+            seen[p.categoryPartner.id] = p.categoryPartner.category;
+          }
+        });
+        return Object.keys(seen).map((id) => ({ id, category: seen[id] }));
+      },
 
-.animate-scroll-seamless {
-  animation: scroll-seamless 30s linear infinite;
-  will-change: transform;
-}
-</style>
+      get filtered() {
+        if (this.selected === 'all') return this.partners;
+        return this.partners.filter(
+          (p) =>
+            p.categoryPartner &&
+            String(p.categoryPartner.id) === String(this.selected),
+        );
+      },
+    };
+  }
+</script>
