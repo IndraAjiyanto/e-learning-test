@@ -1,235 +1,58 @@
-        <!-- Harga -->
-        {{#if check_user}}{{else}}
-          {{#if kelas.check_paid}}
-            <div class='space-y-4'>
-              <!-- Payment Type Toggle -->
-              <div class='flex gap-2 p-1 bg-gray-100 rounded-xl'>
-                <button
-                  @click="setPaymentType('full')"
-                  :class="paymentType === 'full' ? 'bg-white shadow-md' : 'bg-transparent'"
-                  class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
-                >
-                  <i class='fas fa-money-bill-wave mr-2'></i>
-                  {{t "test.detailProgram.fullPayment.tittle"}}
-                </button>
-                <button
-                  @click="setPaymentType('installment')"
-                  :class="paymentType === 'installment' ? 'bg-white shadow-md' : 'bg-transparent'"
-                  class='flex-1 py-2.5 px-4 rounded-lg font-semibold text-sm transition-all duration-300'
-                  x-show="hasCicilan"
-                >
-                  <i class='fas fa-calendar-alt mr-2'></i>
-                  {{t "test.detailProgram.installment.tittle"}}
-                </button>
-              </div>
+<!-- Info Card -->
+<div class="space-y-6">
+  
+  <!-- Learning Date -->
+  <div class="flex items-start gap-4">
+    <div class="mt-1 text-slate-600">
+      <i class="far fa-calendar-alt text-xl"></i>
+    </div>
+    <div>
+      <h3 class="font-bold text-slate-900 text-base">Learning Date</h3>
+      <p class="text-sm text-slate-600 mt-1">
+        <span x-text="new Date('{{kelas.tanggal_mulai}}').toLocaleDateString('en-US', {day: 'numeric', month: 'long'})"></span> - 
+        <span x-text="new Date('{{kelas.tanggal_selesai}}').toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'})"></span> - 
+        <span class="capitalize">{{kelas.metode}}</span>
+      </p>
+    </div>
+  </div>
 
-              <!-- Full Payment Display -->
-              <div
-                x-show="paymentType === 'full'"
-                x-transition
-                class='text-center space-y-2'
-              >
-                <!-- Harga coret -->
-                <p class='text-lg text-gray-400 line-through'>
-                  {{formatRupiah kelas.promo}}
-                </p>
-
-                <!-- Harga promo -->
-                <p
-                  class='text-4xl font-bold bg-gradient-to-r animate-pulse from-slate-700 to-slate-900 bg-clip-text text-transparent'
-                >
-                  {{formatRupiah kelas.harga}}
-                </p>
-                <p class='text-sm text-gray-600'>{{t "test.detailProgram.fullPayment.oneTimePayment"}}</p>
-              </div>
-
-              <!-- Installment Payment Display -->
-              <div
-                x-show="paymentType === 'installment'"
-                x-transition
-                class='space-y-4'
-              >
-                <!-- Installment Options -->
-                <div class='bg-white rounded-xl p-4 border-2 border-slate-200'>
-                  <label
-                    class='block text-sm font-semibold text-slate-700 mb-3'
-                  >
-                    <i class='fas fa-clock mr-2'></i>
-                    {{t "test.detailProgram.installment.chooseInstallmentPeriod"}}
-                  </label>
-                  <div class='grid grid-cols-3 gap-2'>
-                    {{#each cicilan}}
-                      <button
-                        @click='installmentMonths = {{this.bulan}}'
-                        :class="installmentMonths === {{this.bulan}} ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"
-                        class='py-2 px-3 rounded-lg border-2 font-semibold text-sm transition-all duration-300 hover:border-slate-500'
-                      >
-                        {{this.bulan}} {{t "test.detailProgram.installment.months"}}
-                      </button>
-                    {{/each}}
-                  </div>
-                </div>
-                <!-- Installment Price Display -->
-                <div
-                  x-show="installmentMonths > 0"
-                  x-transition
-                  class='bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-xl p-6 text-white'
-                >
-                  <div class='flex items-center justify-between mb-2'>
-                    <p class='text-sm text-slate-300'>{{t "test.detailProgram.installment.downPayment"}}</p>
-                    <span class='bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold'>{{t "test.detailProgram.installment.required"}}</span>
-                  </div>
-                  <div class='flex items-baseline gap-2 mb-3'>
-                    <span
-                      class='text-4xl font-bold animate-pulse'
-                      x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'
-                    ></span>
-                  </div>
-                  <div class='pt-3 border-t border-slate-600'>
-                    <p class='text-xs text-slate-300'>{{t "test.detailProgram.installment.duration"}}</p>
-                    <p
-                      class='text-lg font-semibold'
-                      x-text='installmentMonths + " {{t "test.detailProgram.installment.months"}}"'
-                    ></p>
-                  </div>
-                </div>
-
-                <!-- Installment Info -->
-                <div 
-                  x-show="installmentMonths > 0"
-                  x-transition
-                  class='bg-amber-50 border border-amber-200 rounded-xl p-4'
-                >
-                  <div class='flex items-start gap-3'>
-                    <i class='fas fa-info-circle text-amber-600 mt-1'></i>
-                    <div class='text-sm text-amber-800'>
-                      <p class='font-semibold mb-1'>{{t "test.detailProgram.installment.installmentInformation"}}</p>
-                      <ul class='list-disc pl-4 space-y-1'>
-                        <li>{{t "test.detailProgram.installment.downPaymentIsRequired"}}</li>
-                        <li>{{t "test.detailProgram.installment.noAdditionalFees"}}</li>
-                        <li>{{t "test.detailProgram.installment.payMonthly"}}</li>
-                        <li>{{t "test.detailProgram.installment.fullAccessAfterDP"}}</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Monthly Payment Breakdown -->
-                <div 
-                  x-show="installmentMonths > 0"
-                  x-transition
-                  class='bg-white rounded-xl p-4 border-2 border-slate-200'
-                >
-                  <h4 class='font-semibold text-slate-700 mb-3 flex items-center gap-2'>
-                    <i class='fas fa-list-ul'></i>
-                    {{t "test.detailProgram.installment.paymentSchedule"}}
-                  </h4>
-                  
-                  <!-- DP Payment - Highlighted -->
-                  <div class='mb-2'>
-                    <div class='bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-lg p-2'>
-                      <div class='flex items-center justify-between'>
-                        <div class='flex items-center gap-2'>
-                          <div>
-                            <p class='font-semibold text-amber-800 text-sm'>{{t "test.detailProgram.installment.downPaymentDP"}}</p>
-                            <p class='text-xs text-amber-600'>{{t "test.detailProgram.installment.payNowToEnroll"}}</p>
-                          </div>
-                        </div>
-                        <div class='text-right'>
-                          <p class='text-lg font-bold text-amber-800' x-text='`Rp ${installmentAmount.toLocaleString("id-ID")}`'></p>
-                          <p class='text-xs text-amber-600'>{{t "test.detailProgram.installment.required"}}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Monthly Installments -->
-                  <div class='space-y-2'>
-                    <h5 class='font-medium text-slate-600 mb-2'>{{t "test.detailProgram.installment.monthlyInstallment"}}</h5>
-                    <template x-for='(amount, index) in getCicilanByMonth(installmentMonths)?.harga || []' :key='index'>
-                      <div class='flex justify-between items-center py-2 px-3 bg-slate-50 rounded-lg'>
-                        <span class='text-sm font-medium text-slate-600' x-text='`{{t "test.detailProgram.infoProgram.month"}} ${index + 1}`'></span>
-                        <span class='text-sm font-bold text-slate-900' x-text='`Rp ${amount.toLocaleString("id-ID")}`'></span>
-                      </div>
-                    </template>
-                  </div>
-      
-                </div>
-              </div>
-            </div>
-          {{else}}
-            <!-- Free Class Display -->
-            <div class='text-center space-y-4'>
-              <!-- Free Badge with Animation -->
-              <div class='relative inline-block'>
-                <div
-                  class='absolute inset-0 bg-gradient-to-r from-emerald-400 to-green-500 rounded-2xl blur-xl opacity-50 animate-pulse'
-                ></div>
-                <div
-                  class='relative bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-2xl shadow-2xl'
-                >
-                  <div class='flex items-center gap-3'>
-                    <i class='fas fa-gift text-3xl'></i>
-                    <div class='text-left'>
-                      <p class='text-sm font-medium opacity-90'>{{t "test.detailProgram.installment.100Free"}}</p>
-                      <p class='text-2xl font-bold'>{{t "test.detailProgram.installment.noPaymentRequired"}}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Free Features -->
-              <div
-                class='bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-6 border-2 border-emerald-200'
-              >
-                <h4
-                  class='font-bold text-emerald-800 text-lg mb-4 flex items-center justify-center gap-2'
-                >
-                  <i class='fas fa-check-circle'></i>
-                  {{t "test.detailProgram.free.whatIncluded"}}
-                </h4>
-                <div class='space-y-3 text-left'>
-                  <div class='flex items-start gap-3'>
-                    <i
-                      class='fas fa-check text-emerald-600 mt-1 flex-shrink-0'
-                    ></i>
-                    <span class='text-emerald-800 font-medium'>{{t "test.detailProgram.free.fullAccess"}}</span>
-                  </div>
-                  <div class='flex items-start gap-3'>
-                    <i
-                      class='fas fa-check text-emerald-600 mt-1 flex-shrink-0'
-                    ></i>
-                    <span class='text-emerald-800 font-medium'>{{t "test.detailProgram.free.lifeTimeLearning"}}</span>
-                  </div>
-                  <div class='flex items-start gap-3'>
-                    <i
-                      class='fas fa-check text-emerald-600 mt-1 flex-shrink-0'
-                    ></i>
-                    <span class='text-emerald-800 font-medium'>{{t "test.detailProgram.free.certificate"}}</span>
-                  </div>
-                  <div class='flex items-start gap-3'>
-                    <i
-                      class='fas fa-check text-emerald-600 mt-1 flex-shrink-0'
-                    ></i>
-                    <span class='text-emerald-800 font-medium'>{{t "test.detailProgram.free.communitySupport"}}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Info Card -->
-              <div
-                class='bg-white border-2 border-emerald-200 rounded-xl p-5 shadow-sm'
-              >
-                <div class='flex items-start gap-3'>
-                  <i
-                    class='fas fa-info-circle text-emerald-600 text-xl mt-1'
-                  ></i>
-                  <div class='text-left text-sm text-emerald-800'>
-                    <p class='font-semibold mb-1'>{{t "test.detailProgram.free.howToJoin"}}</p>
-                    <p>{{t "test.detailProgram.free.simplyClick"}}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          {{/if}}
+  <!-- Location -->
+  <div class="flex items-start gap-4">
+    <div class="mt-1 text-slate-600">
+      <i class="fas fa-map-marker-alt text-xl"></i>
+    </div>
+    <div>
+      <h3 class="font-bold text-slate-900 text-base">Location</h3>
+      <p class="text-sm text-slate-600 mt-1">
+        {{#if kelas.lokasi}}
+          <span x-text="getByLang({{json kelas.lokasi}}, lang) || '{{kelas.lokasi.[0]}}'"></span>
+        {{else}}
+          <span class="capitalize">{{kelas.metode}}</span>
         {{/if}}
+      </p>
+    </div>
+  </div>
+
+  <!-- Capacity -->
+  <div class="flex items-start gap-4">
+    <div class="mt-1 text-slate-600">
+      <i class="fas fa-user-friends text-xl"></i>
+    </div>
+    <div>
+      <h3 class="font-bold text-slate-900 text-base">Capacity</h3>
+      <p class="text-sm text-slate-600 mt-1">
+        {{kelas.kuota}} Students
+      </p>
+    </div>
+  </div>
+
+  <div class="border-t border-slate-200 my-4"></div>
+
+  <!-- Registration Close Info -->
+  <div class="text-center pb-2">
+    <p class="text-red-600 font-semibold text-sm">
+      Registration is Open Until <span x-text="new Date('{{kelas.tanggal_mulai}}').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})"></span>
+    </p>
+  </div>
+
+</div>
