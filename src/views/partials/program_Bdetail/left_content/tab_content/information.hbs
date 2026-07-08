@@ -1,221 +1,6 @@
-        <!-- Course Info Tab -->
-        <div x-show="activeTab === 'info'" x-transition>
+        <!-- What You'll Learn Tab -->
+        <div x-show="activeTab === 'what_you_learn'" x-transition>
           <div class='space-y-6'>
-
-            <!-- Description -->
-            <div
-              class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200'
-            >
-              <h3
-                class='font-montserrat text-3xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent'
-              >
-                {{kelas.nama_kelas}}
-              </h3>
-              <p
-                class=' text-justify text-gray-700 leading-relaxed text-lg'
-              >
-                {{getByLang kelas.deskripsi lang}}
-              </p>
-            </div>
-
-            <!-- Method, Location & Capacity Grid -->
-            <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
-
-              <!-- Learning Method Card -->
-              {{#if (eq kelas.metode 'online')}}
-                <div
-                  class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
-                >
-                  <div class='flex items-start gap-4'>
-                    <div
-                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
-                    >
-                      <i class='fas fa-laptop text-white text-xl'></i>
-                    </div>
-                    <div class='flex-1'>
-                      <p
-                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
-                      >{{t "test.detailProgram.infoProgram.method"}}</p>
-                      <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{t "test.detailProgram.infoProgram.online"}}</h4>
-                    </div>
-                  </div>
-                </div>
-              {{else}}
-                <div
-                  class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
-                >
-                  <div class='flex items-start gap-4'>
-                    <div
-                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
-                    >
-                      <i
-                        class='fas fa-chalkboard-teacher text-white text-xl'
-                      ></i>
-                    </div>
-                    <div class='flex-1'>
-                      <p
-                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
-                      >{{t "test.detailProgram.infoProgram.method"}}</p>
-                      <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{t "test.detailProgram.infoProgram.offline"}}</h4>
-                    </div>
-                  </div>
-                </div>
-              {{/if}}
-
-              <!-- Location Card -->
-              <div
-                class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
-              >
-                <div class='flex items-start gap-4'>
-                  <div
-                    class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
-                  >
-                    {{#if (eq kelas.metode 'online')}}
-                      <i class='fas fa-globe text-white text-xl'></i>
-                    {{else}}
-                      <i class='fas fa-map-marker-alt text-white text-xl'></i>
-                    {{/if}}
-                  </div>
-                  <div class='flex-1'>
-                    <p
-                      class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
-                    >{{t "test.detailProgram.infoProgram.location"}}</p>
-                    {{#if (eq kelas.metode 'online')}}
-                      <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang kelas.lokasi lang}}</a></h4>
-                    {{else}}
-                      <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                        title='{{kelas.lokasi}}'
-                      ><a href="{{kelas.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang kelas.lokasi lang}}</a></h4>
-                    {{/if}}
-                  </div>
-                </div>
-
-              </div>
-
-              <!-- Capacity Card -->
-              {{#if kelas.kuota}}
-                <div
-                  class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
-                >
-                  <div class='flex items-start gap-4'>
-                    <div
-                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
-                    >
-                      <i class='fas fa-users text-white text-xl'></i>
-                    </div>
-                    <div class='flex-1'>
-                      <p
-                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
-                      >{{t "test.detailProgram.infoProgram.capacity"}}</p>
-                      <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{kelas.kuota}} {{t "test.detailProgram.infoProgram.students"}}</h4>
-                    </div>
-                  </div>
-                </div>
-              {{/if}}
-
-            </div>
-
-            <!-- Schedule Information -->
-            <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
-
-              <!-- Month Card -->
-              {{#unless (eq kelas.kategori.nama_kategori 'Short Class')}}
-                <div
-                  class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
-                >
-                  <div class='flex items-start gap-4'>
-                    <div
-                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
-                    >
-                      <i class='fas fa-calendar-alt text-white text-xl'></i>
-                    </div>
-                    <div class='flex-1'>
-                      <p
-                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
-                      >{{t "test.detailProgram.infoProgram.month"}}</p>
-                      <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{kelas.bulan}} {{t "test.detailProgram.infoProgram.months"}}</h4>
-                    </div>
-                  </div>
-                </div>
-              {{/unless}}
-
-              <!-- Day Card -->
-              {{#if (eq kelas.kategori.nama_kategori 'Short Class')}}
-                <div
-                  class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
-                >
-                  <div class='flex items-start gap-4'>
-                    <div
-                      class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
-                    >
-                      <i class='fas fa-clock text-white text-xl'></i>
-                    </div>
-                    <div class='flex-1'>
-                      <p
-                        class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
-                      >{{t "test.detailProgram.infoProgram.day"}}</p>
-                      <h4
-                        class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{kelas.hari}} {{t "test.detailProgram.infoProgram.days"}}</h4>
-                    </div>
-                  </div>
-                </div>
-              {{/if}}
-
-              <!-- Start Date Card -->
-              <div
-                class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
-              >
-                <div class='flex items-start gap-4'>
-                  <div
-                    class='w-12 h-12 rounded-xl bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
-                  >
-                    <i class='fas fa-play-circle text-white text-xl'></i>
-                  </div>
-                  <div class='flex-1'>
-                    <p
-                      class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
-                    >{{t "test.detailProgram.infoProgram.startDate"}}</p>
-                    <h4
-                      class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                    >{{#if kelas.tanggal_mulai}}{{formatTanggal kelas.tanggal_mulai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
-                  </div>
-                </div>
-              </div>
-
-              <!-- End Date Card -->
-              <div
-                class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
-              >
-                <div class='flex items-start gap-4'>
-                  <div
-                    class='w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
-                  >
-                    <i class='fas fa-stop-circle text-white text-xl'></i>
-                  </div>
-                  <div class='flex-1'>
-                    <p
-                      class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
-                    >{{t "test.detailProgram.infoProgram.endDate"}}</p>
-                    <h4
-                      class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                    >{{#if kelas.tanggal_selesai}}{{formatTanggal kelas.tanggal_selesai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
-                  </div>
-                </div>
-              </div>
-
-            </div>
 
             <!-- Material Includes -->
             <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
@@ -345,8 +130,17 @@
               </h4>
               <div class='ml-8 flex gap-2 flex-wrap'>
                 {{#each teknologi}}
-                  <div class='w-6 h-6 flex items-center justify-center'>
-                    {{{this.svg}}}
+                  <div class='flex items-center gap-2'>
+                    {{#if this.svg}}
+                      <div class='w-6 h-6 flex items-center justify-center'>
+                        {{{this.svg}}}
+                      </div>
+                    {{/if}}
+                    {{#if this.img_url}}
+                      <div class='w-6 h-6 flex items-center justify-center'>
+                        <img src="{{this.img_url}}" alt="{{this.nama}}" class="w-full h-full object-contain">
+                      </div>
+                    {{/if}}
                   </div>
                 {{/each}}
               </div>
