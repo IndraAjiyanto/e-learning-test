@@ -388,7 +388,7 @@ async findAlumni(options?: {
   }
  if (options?.search && options.search.trim() !== '') {
     const keyword = `%${options.search.trim()}%`;
-    where.nama = Raw(() => `"Alumni"."nama"::text ILIKE :keyword`, { keyword });
+    where.nama = ILike(keyword);
   }
 
   const [data, total] = await this.alumniRepository.findAndCount({

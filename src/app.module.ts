@@ -68,6 +68,7 @@ import {
 import { OurExperienceModule } from './our_experience/our_experience.module';
 import { TopicModule } from './topic/topic.module';
 import { ComentModule } from './coment/coment.module';
+import { GalleryModule } from './gallery/gallery.module';
 import path from 'path';
 
 @Module({
@@ -147,6 +148,7 @@ import path from 'path';
     OurExperienceModule,
     TopicModule,
     ComentModule,
+    GalleryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

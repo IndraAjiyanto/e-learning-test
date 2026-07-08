@@ -18,9 +18,11 @@ export class Teknologi {
   @Column()
   nama: string;
 
-  @Column({ type: 'text' })
-  svg: string;
+  @Column({ type: 'text', nullable: true })
+  svg: string | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  img_url: string | null;
   @ManyToMany(() => Kelas, (kelas) => kelas.teknologi)
   @Exclude()
   kelas: Kelas[];

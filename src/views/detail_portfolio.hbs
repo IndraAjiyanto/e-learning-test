@@ -178,7 +178,16 @@
                 <h2 class="text-2xl font-bold text-gray-900 mb-6 font-montserrat">{{t "test.detailPortfolio.technologiesUsed"}}</h2>
                 <div class="flex flex-wrap gap-3">
                     {{#each portfolio.kelas.teknologi}}
-                    <div class='w-6 h-6 flex items-center justify-center'>{{{this.svg}}}</div>
+                    <div class='flex items-center gap-2'>
+                        {{#if this.svg}}
+                        <div class='w-6 h-6 flex items-center justify-center'>{{{this.svg}}}</div>
+                        {{/if}}
+                        {{#if this.img_url}}
+                        <div class='w-6 h-6 flex items-center justify-center'>
+                            <img src="{{this.img_url}}" alt="{{this.nama}}" class="w-full h-full object-contain">
+                        </div>
+                        {{/if}}
+                    </div>
                     {{/each}}
                 </div>
             </div>
