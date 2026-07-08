@@ -76,11 +76,12 @@ function alumniApp() {
            }
     },
 
-    // Hanya kelas/program dari kategori Bootcamp (untuk dropdown "Bootcamp Program")
-    get bootcampKelasList() {
-      return this.kelasList.filter((k) =>
-        (k.kategori?.nama_kategori || '').toLowerCase().includes('bootcamp')
-      );
+    // Hanya kelas/program yang sesuai kategori terpilih
+    get filteredKelasList() {
+      if (this.selectedKategoriId) {
+        return this.kelasList.filter(k => k.kategori?.id == this.selectedKategoriId);
+      }
+      return this.kelasList;
     },
 
      async selectKategori(kategoriId) {
@@ -148,11 +149,17 @@ function alumniApp() {
     async selectKelas(kelasId) {
       this.selectedKelasId = kelasId;
       this.currentPage = 1;
+
       if (kelasId) {
         const kelas = this.kelasList.find(k => k.id == kelasId);
         this.selectedKelas = kelas ? kelas.nama_kelas : '';
+        // Auto-set kategori berdasarkan kategori program yang dipilih
+        if (kelas && kelas.kategori) {
+          this.selectedKategoriId = kelas.kategori.id;
+        }
       } else {
         this.selectedKelas = '';
+        // Jika program dihapus, keep kategori tetap aktif
       }
       await this.fetchAlumni();
     },

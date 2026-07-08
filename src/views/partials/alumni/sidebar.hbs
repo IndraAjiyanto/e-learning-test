@@ -43,7 +43,7 @@
         {{t 'test.alumni.bootcampProgram'}}
       </h3>
 
-      <!-- Dropdown Kelas -->
+      <!-- Dropdown Kelas (Dynamic - shows programs from selected kategori) -->
       <div
         class='relative flex-1 min-w-[200px] max-w-xs'
         x-data='{ open: false }'
@@ -89,8 +89,8 @@
             <i x-show='!selectedKelasId' class='fas fa-check text-xs'></i>
           </button>
 
-          <!-- List Kelas (khusus kategori Bootcamp) -->
-          <template x-for='kelas in bootcampKelasList' :key='kelas.id'>
+          <!-- List Kelas (dari kategori yang dipilih) -->
+          <template x-for='kelas in filteredKelasList' :key='kelas.id'>
             <button
               @click='selectKelas(kelas.id); open = false'
               :class="selectedKelasId == kelas.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 text-white' : 'text-gray-700 hover:bg-gray-50'"

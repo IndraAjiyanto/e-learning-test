@@ -177,6 +177,7 @@ export class AppModule {
             '/public/*path',
             '/asset/*path',
             '/uploads/*path',
+            '/alumni/filter',
             '/dashboard',
             '/dashboard/*path',
             )
