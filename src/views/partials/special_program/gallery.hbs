@@ -1,0 +1,125 @@
+<div
+  class='py-20 bg-transparant'
+  x-data='galleryTable({
+    gallery: {{{json gallery}}},
+    programs: {{{json programs}}},
+    defaultCategoryId: {{kategori.id}},
+    defaultCategoryName: "{{kategori.nama_kategori}}"
+  })'
+>
+  <!-- Header -->
+  <div class='container mx-auto px-4 max-w-5xl'>
+    <div class='flex flex-col items-center text-center mb-12'>
+     
+
+      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
+          'test.specialProgram.gallery.title'
+        }}}</h1>      
+      <p class='text-gray-600 max-w-4xl mx-auto text-md'>{{t
+          'test.specialProgram.gallery.description'
+        }}</p>
+    </div>
+  </div>
+
+  <!-- Grid Cards (Masonry) -->
+<div class="container mx-auto px-4 max-w-5xl">
+
+  <div class="gap-6 columns-1 sm:columns-2 lg:columns-3 [column-fill:_balance] box-border before:box-border after:box-border">
+    {{#each gallery}}
+      <!-- Kartu Gambar (Gunakan 'break-inside-avoid' agar kartu tidak terpotong di tengah kolom) -->
+      <div
+        class="mb-6 break-inside-avoid bg-[#FAFAFA] shadow-lg rounded-xl overflow-hidden inline-block w-full group"
+        x-show="filteredGallery.includes('{{id}}')"
+      >
+        <div class="bg-gray-100 overflow-hidden">
+          <!-- Gambar akan otomatis menyesuaikan tinggi aslinya tanpa dipotong paksa aspect ratio -->
+          <img
+            src="{{file_path}}"
+            alt="{{title}}"
+            class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      </div>
+    {{/each}}
+  </div>
+
+  <!-- Tombol "See All Our Gallery" di Bagian Bawah -->
+  <div class="text-center mt-6 mb-8">
+    <a href="/dashboard/gallery" class="inline-flex items-center gap-2 text-slate-900 hover:text-blue-600 transition-colors text-lg border-b border-transparent hover:border-blue-600 pb-1">
+      {{t 'test.home.gallery.chooseProgram'}}
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3' />
+      </svg>
+    </a>
+  </div>
+
+</div>
+
+<script>
+function galleryTable({ gallery, programs, defaultCategoryId, defaultCategoryName }) {
+  return {
+    gallery,
+    programs,
+
+    search: "",
+    searchInput: "",
+    pageNumber: 0,
+    size: 6,
+
+    selectedProgram: defaultCategoryId ? String(defaultCategoryId) : null,
+    selectedProgramName: defaultCategoryName || "",
+
+    get filteredGalleryFull() {
+      return this.gallery.filter((item) => {
+        const matchSearch = item.title
+          .toLowerCase()
+          .includes(this.search.toLowerCase());
+
+        const matchProgram =
+          this.selectedProgram === null ||
+          String(item.kategori?.id) === String(this.selectedProgram);
+
+        return matchSearch && matchProgram;
+      });
+    },
+
+    get amount() {
+      return this.filteredGalleryFull.length;
+    },
+
+    get filteredGallery() {
+      const start = this.pageNumber * this.size;
+      const end = start + this.size;
+      return this.filteredGalleryFull
+        .slice(start, end)
+        .map((i) => i.id.toString());
+    },
+
+    pageCount() {
+      return Math.max(1, Math.ceil(this.amount / this.size));
+    },
+
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
+
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
+
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
+
+    viewPage(index) {
+      this.pageNumber = index;
+    },
+
+    selectProgram(id, name = "") {
+      this.selectedProgram = id === null ? null : String(id);
+      this.selectedProgramName = name;
+      this.pageNumber = 0;
+    },
+  };
+}
+</script>

@@ -10,6 +10,8 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { KategorisService } from './kategoris.service';
 import { CreateKategorisDto } from './dto/create-kategoris.dto';
@@ -22,12 +24,19 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { GalleryService } from 'src/gallery/gallery.service';
+import { LogbookService } from 'src/logbook/logbook.service'; // Tambah ini
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('category')
 export class KategorisController {
-  constructor(private readonly kategorisService: KategorisService) {}
+  constructor(
+    private readonly kategorisService: KategorisService,
+    private readonly logbookService: LogbookService, // Tambah ini
+    @Inject(forwardRef(() => GalleryService))
+    private readonly galleryService: GalleryService,
+  ) {}
 
   @Roles('super_admin')
   @Post()
@@ -96,6 +105,16 @@ export class KategorisController {
     const alumni = await this.kategorisService.findAlumniByKategori(
       kategori.id,
     );
+    const gallery = await this.galleryService.findAll();
+    const programs = await this.kategorisService.findAll();
+
+    const logbooks = await this.logbookService.findCapstoneProjects(kategori.id);
+    const capstoneProjects = logbooks.map(log => ({
+      title: log.kegiatan,
+      description: log.rincian_kegiatan,
+      dokumentasi: log.dokumentasi
+    }));
+
     // const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
     const viewData = {
       kategori,
@@ -106,6 +125,9 @@ export class KategorisController {
       flow_category,
       superiority,
       pertanyaan_umum,
+      gallery,
+      programs,
+      capstoneProjects,
     };
 
     if (kategori?.type === 'Paid Program') {

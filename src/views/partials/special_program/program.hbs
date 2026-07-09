@@ -4,13 +4,13 @@
     <!-- Header Section -->
     <div class='text-center mb-16 relative'>
       <h2 class='text-4xl font-extrabold text-gray-900 mb-4 relative z-10 font-montserrat'>
-        {{t "test.specialProgram.programSection.tittle"}}
+        {{{t "test.specialProgram.programSection.tittle"}}}
       </h2>
-      <p class='text-gray-600 text-lg '>{{t "test.specialProgram.programSection.description"}}</p>
+      <p class='text-gray-600 text-lg '>{{{t "test.specialProgram.programSection.description"}}}</p>
     </div>
 
     <!-- Filter Section -->
-    <div class='max-w-6xl mx-auto mb-16 relative z-10 overflow-visible'>
+    {{!-- <div class='max-w-6xl mx-auto mb-16 relative z-10 overflow-visible'>
       <div class='bg-white backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-lg'>
         
         <!-- Filter Title -->
@@ -201,37 +201,45 @@
           {{t "test.specialProgram.programSection.program"}}
         </p>
       </div>
-    </div>
+    </div> --}}
+     
 
     <!-- Programs Grid -->
-    <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto' x-ref='kelasList'>
+    <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-8xl mx-auto' x-ref='kelasList'>
 <template x-if="!loading">
   <template x-for="kelas in kelasItems" :key="kelas.id">
+    <div class="card-body p-6">
+      
     <div
       data-animate="scale-up"
       data-delay="100"
-      class="group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
+      class="group card bg-[#E0F1F9]/50 pt-4 w-[464px] h-[685px] shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
     >
+      <!-- Badge -->
+        <div class="flex px-6 gap-2 mb-3">
+          <span class="badge flex justify-center h-fit items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded"
+            x-text="kelas.kategori?.nama_kategori">
+          </span>
+        </div>
       <img
         :src="kelas.gambar"
         :alt="kelas.nama_kelas"
-        class="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300 drop-shadow-lg"
+        class="w-[416px] h-[262px] object-cover rounded-xl mx-auto group-hover:scale-105 transition-transform duration-300 drop-shadow-lg"
       />
 
-      <div class="card-body p-6">
-        <!-- Badge -->
-        <div class="flex gap-2 mb-3">
-          <span class="badge flex justify-center h-fit items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full"
-            x-text="kelas.kategori?.nama_kategori">
-          </span>
-          <span class="badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-full"
-            x-text="kelas.jenis_kelas?.nama_jenis_kelas">
-          </span>
-        </div>
+        <!-- Nama -->
+        <h2 class="card-title text-secondary w-full px-6 text-xl font-bold mb-3"
+          x-text="kelas.nama_kelas">
+        </h2>
 
-        <!-- Metode & Lokasi -->
-        <div class="flex flex-wrap gap-2 mb-4 text-sm text-gray-700">
-          <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+        <!-- Deskripsi -->
+        <p class="text-sm text-gray-600 w-full px-6 line-clamp-1 mb-4 leading-relaxed"
+          x-text="getByLang(kelas.deskripsi, lang)">
+        </p>
+
+         <!-- Metode & Lokasi -->
+        <div class="flex w-full gap-2 mb-4 text-sm text-gray-700 px-6">
+          <div class="flex items-center gap-2 bg-[#CFE6F5] px-3 py-1 rounded-md">
             <template x-if="kelas.metode === 'online'">
               <span class="flex items-center gap-2">
                 <i class="fas fa-laptop text-slate-500"></i>
@@ -245,52 +253,65 @@
               </span>
             </template>
           </div>
-          <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+
+          <!-- Durasi -->
+          <div class="flex items-center gap-2 bg-[#CFE6F5] px-3 py-1 rounded-md">
+            <i class="fas fa-hourglass-half text-slate-500"></i>
+            <span x-text="
+              (() => {
+                const start = new Date(kelas.tanggal_mulai);
+                const end = new Date(kelas.tanggal_selesai);
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays >= 7) {
+                  const weeks = Math.round(diffDays / 7);
+                  return weeks + ' {{t 'test.detailProgram.infoProgram.weeks'}}';
+                } else {
+                  return diffDays + ' {{t 'test.detailProgram.infoProgram.days'}}';
+                }
+              })()
+            "></span>
+          </div>
+
+          <div class="flex items-center gap-2 bg-[#CFE6F5] px-3 py-1 rounded-md">
             <i class="fas fa-user-tie text-slate-500"></i>
             <span x-text="getByLang(kelas.lokasi, lang)"></span>
           </div>
         </div>
 
-        <!-- Nama -->
-        <h2 class="card-title text-gray-900 text-xl font-bold mb-3"
-          x-text="kelas.nama_kelas">
-        </h2>
-
-        <!-- Deskripsi -->
-        <p class="text-sm text-gray-600 line-clamp-1 mb-4 leading-relaxed"
-          x-text="getByLang(kelas.deskripsi, lang)">
-        </p>
 
         <!-- Kuota -->
-        <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <i class="fas fa-users text-slate-600 animate-pulse"></i>
-              <span class="text-sm font-medium text-slate-600">{{t "test.home.programSection.kuota"}}</span>
+          {{!-- <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <i class="fas fa-users text-slate-600 animate-pulse"></i>
+                <span class="text-sm font-medium text-slate-600">{{t "test.home.programSection.kuota"}}</span>
+              </div>
+              <span class="text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm">
+                <span x-text="kelas.user_kelas?.length ?? 0"></span>
+                /
+                <span x-text="kelas.kuota"></span>
+                {{t "test.home.programSection.student"}}
+              </span>
             </div>
-            <span class="text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm">
-              <span x-text="kelas.user_kelas?.length ?? 0"></span>
-              /
-              <span x-text="kelas.kuota"></span>
-              {{t "test.home.programSection.student"}}
-            </span>
-          </div>
 
-          <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2">
-            <div
-              class="h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out"
-              :style="`width: ${((kelas.user_kelas?.length ?? 0) / kelas.kuota) * 100}%`"
-            ></div>
-          </div>
-        </div>
+            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2">
+              <div
+                class="h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out"
+                :style="`width: ${((kelas.user_kelas?.length ?? 0) / kelas.kuota) * 100}%`"
+              ></div>
+            </div>
+          </div> --}}
 
         <!-- Button -->
-        <div class="card-actions">
+        <div class="card-actions mx-auto justify-center items-center mb-4">
           <a :href="`/program/${kelas.id}`"
             class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center"
           >
             {{t "test.home.programSection.buttonViewProgram"}}
-          </a>
+             <i class="fa-solid fa-arrow-right"></i>
+          </a>         
         </div>
       </div>
     </div>
