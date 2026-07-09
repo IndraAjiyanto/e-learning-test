@@ -9,7 +9,7 @@ import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import { KerjaSama } from 'src/entities/kerja_sama.entity';
+import { Partner } from 'src/entities/partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -28,6 +28,7 @@ import { Faq } from 'src/entities/faq.entity';
 import { TranslationModule } from 'src/translation/translation.module';
 import { OurExperience } from 'src/entities/our_experience.entity';
 import { KategoriBlog } from 'src/entities/kategori_blog.entity';
+import { GalleryModule } from 'src/gallery/gallery.module';
 
 @Module({
   imports: [
@@ -48,7 +49,7 @@ import { KategoriBlog } from 'src/entities/kategori_blog.entity';
       GambarBenefit,
       Kategori,
       JenisKelas,
-      KerjaSama,
+      Partner,
       Misi,
       Experience,
       Award,
@@ -60,6 +61,7 @@ import { KategoriBlog } from 'src/entities/kategori_blog.entity';
       KategoriBlog,
     ]),
     TranslationModule, // Import TranslationModule
+    GalleryModule,
   ],
   controllers: [DashboardController],
   providers: [DashboardService],

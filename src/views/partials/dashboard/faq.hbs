@@ -1,10 +1,27 @@
-<section class='py-20 bg-gradient-to-br from-slate-50 via-white to-slate-100'>
-  <div class='container mx-auto px-6 max-w-6xl'>
+<section class='py-20 bg-transparant'>
+  <div class='flex container mx-auto max-w-6xl'>
 
-    <div class='max-w-4xl mx-auto space-y-8'>
-       <h2 class="text-4xl md:text-5xl font-bold leading-tight text-center font-montserrat text-gray-900">{{t "test.home.faq.tittle"}}</h2>
-
+    <div class='w-full mx-auto space-y-8 flex columns-2' >
+      <div class=" flex flex-col">
+         <div class='flex flex-col text-center mb-4 justify-center'>
+      <h1 class='text-l border flex  items-center justify-center  h-8 bg-[#6EB6E533] border-gray-400 w-52 rounded-full text-gray-900 font-montserrat'>{{{t
+          'test.home.faq.question'
+        }}}</h1>
+      </div>
+          <div class="flex flex-col justify-start w-52 mb-2">
+          <h2 class="text-2xl md:text-4xl font-semibold leading-tight font-montserrat text-gray-900">{{{t "test.home.faq.tittle"}}}</h2>
+      </div> 
+      <div class="rounded h-1 bg-gray-900 w-12 mb-4"></div>
+      <div class=" max-w-xs">
+          <p class="text-sm md:text-5xlfont-bold leading-tight font-montserrat text-gray-900">{{t "test.home.faq.description"}}</p>
+      </div>    
+      </div>
+          
+      </div>
+    
+    
       <div
+      class="flex flex-col w-full justify-center"
         x-data="{
           activeIndex: null,
           currentPage: 1,
@@ -41,26 +58,37 @@
         <!-- FAQ Items -->
         <template x-for="(faq, index) in paginatedFaqs" :key="index">
           <div
-            class='group bg-white rounded-2xl shadow-lg border border-slate-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 overflow-hidden mb-5'
+            class='group bg-transparant justify-between border-t border-b border-gray-200 hover:shadow-2xl hover:border-slate-300 transition-all duration-300 overflow-hidden'
           >
             <button
               @click="toggle((currentPage - 1) * itemsPerPage + index)"
-              class='w-full text-left p-8 focus:outline-none'
+              class='w-full text-left p-2 justify-between flex items-center focus:outline-none'
             >
-              <div class='flex items-center justify-between'>
+            
+              <div class='flex items-center gap-4'>
+                <svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 10 10"
+  class="w-3 h-3 text-gray-900"
+  fill="currentColor"
+>
+  <circle cx="5" cy="5" r="4" />
+</svg>
+<div class="w-px h-4 bg-gray-300"></div>
                 <h3
-                  class='text-xl font-bold text-gray-900 group-hover:text-slate-700 transition-colors duration-300'
+                  class='text-xl font-semibold text-gray-900 group-hover:text-slate-700 transition-colors duration-300'
                   x-text="faq.question"
-                ></h3>
-                <div
-                  class='w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 group-hover:bg-slate-200 transition-colors duration-300'
+                ></h3>               
+              </div>
+
+               <div
+                  class='w-8 h-8 flex items-center justify-center rounded-full  transition-colors duration-300'
                 >
                   <i
                     class='fas fa-chevron-down text-slate-600 transition-transform duration-300'
                     :class="activeIndex === (currentPage - 1) * itemsPerPage + index ? 'rotate-180' : ''"
                   ></i>
                 </div>
-              </div>
             </button>
             <div
               x-show="activeIndex === (currentPage - 1) * itemsPerPage + index"
@@ -81,7 +109,7 @@
 
         <!-- Pagination -->
 
-<div class="flex items-center justify-center gap-3 flex-wrap">
+{{!-- <div class="flex items-center justify-center gap-3 flex-wrap">
             <!-- First Page -->
             <button
               @click="currentPage = 1"
@@ -112,5 +140,5 @@
           </div>
       </div>
     </div>
-  </div>
+  </div> --}}
 </section>

@@ -1,0 +1,251 @@
+<div
+  class='pt-24 min-h-screen bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)]'
+  x-data='galleryTable({ gallery: {{{json gallery}}}, programs: {{{json programs}}} })'
+>
+  <div class='container mx-auto px-4 pb-8 max-w-5xl'>
+    <div class='flex flex-col items-center text-center mb-8'>
+      <span class='inline-block text-sm border bg-[#6EB6E533] border-gray-300 px-5 py-1 rounded-full text-gray-900 font-montserrat mb-5'>{{{t
+          'test.gallery.gallery'
+        }}}</span>
+    </div>
+    <div class='text-center mb-10'>
+      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
+          'test.gallery.title'
+        }}}</h1>
+      <div
+        class='border border-b-2 border-slate-900 w-10 mx-auto my-2 rounded'
+      ></div>
+      <p class='text-gray-600 max-w-2xl mx-auto text-lg'>{{t
+          'test.gallery.description'
+        }}</p>
+    </div>
+
+    <!-- Header & Search -->
+    <div
+      class=' flex w-full justify-end md:items-center gap-4'
+      x-data='{ open: false }'
+    >
+      <!-- Trigger -->
+      <div class='relative inline-block text-left'>
+        <button
+          @click='open = !open'
+          type='button'
+          class='inline-flex items-center justify-between w-56 rounded-xl border border-gray-300 bg-[#E0F1F9] px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none'
+          aria-haspopup='true'
+          :aria-expanded='open'
+        >
+          <span
+            x-text="selectedProgramName || '{{t "test.gallery.program"}}'"
+          ></span>
+          <svg
+            class='w-5 h-5 ml-2'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M19.5 8.25l-7.5 7.5-7.5-7.5'
+            />
+          </svg>
+        </button>
+
+        <!-- Dropdown -->
+        <div
+          x-show='open'
+          @click.outside='open = false'
+          x-transition
+          class='absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-lg border border-gray-200 z-50'
+        >
+          <div class='py-1'>
+            <button
+              type='button'
+              @click='selectProgram(null); open = false'
+              class='block w-full text-left px-4 py-2 text-sm hover:bg-gray-100'
+              :class="{ 'font-semibold bg-gray-50': selectedProgram === null }"
+            >
+              {{t 'test.gallery.allPrograms'}}
+            </button>
+
+            {{#each programs}}
+              <button
+                type='button'
+                @click="selectProgram('{{this.id}}', '{{this.nama_kategori}}'); open = false"
+                class='block w-full text-left px-4 py-2 text-sm hover:bg-gray-100'
+                :class="{ 'font-semibold bg-gray-50': selectedProgram === '{{this.id}}' }"
+              >
+                {{this.nama_kategori}}
+              </button>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+
+      <div class='flex items-center gap-3'>
+        <div class='relative w-full md:w-64'>
+          <input
+            type='text'
+            placeholder='Search gallery...'
+            x-model='searchInput'
+            @input='search = searchInput; pageNumber = 0'
+            class='border border-gray-300 bg-[#E0F1F9] text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
+          />
+          <button
+            @click='search = searchInput; pageNumber = 0'
+            class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900'
+          >
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              class='h-5 w-5'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z'
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class='mb-10'></div>
+
+  <!-- Grid Cards -->
+  <div class='container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl'>
+    {{#each gallery}}
+      <div
+        class='bg-white shadow-lg rounded-xl overflow-hidden group'
+        x-show="filteredGallery.includes('{{id}}')"
+      >
+        <div class='aspect-[4/3] bg-gray-100 overflow-hidden'>
+          <img
+            src='{{file_path}}'
+            alt='{{title}}'
+            class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+          />
+        </div>
+        <div class='p-4'>
+          <h3 class='font-semibold text-gray-900'>{{title}}</h3>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+
+  <!-- Empty state -->
+  <div
+    class='container mx-auto px-4 max-w-5xl text-center py-16'
+    x-show='amount === 0'
+  >
+    <p class='text-gray-500 text-lg'>No gallery found.</p>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class='mx-auto py-10 flex justify-center gap-2 items-center'
+    x-show='pageCount() > 1'
+  >
+    <button
+      @click='prevPage'
+      :disabled='pageNumber==0'
+      class='w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition'
+      :class="{ 'opacity-40 cursor-not-allowed': pageNumber==0 }"
+    >
+      <i class='fas fa-chevron-left text-sm'></i>
+    </button>
+
+    <template x-for='(page,index) in pages()' :key='index'>
+      <button
+        @click='viewPage(index)'
+        class='w-9 h-9 flex items-center justify-center rounded-full border transition'
+        :class="index===pageNumber ? 'bg-gray-900 text-white border-gray-900 font-bold' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+        x-text='index+1'
+      ></button>
+    </template>
+
+    <button
+      @click='nextPage'
+      :disabled='pageNumber >= pageCount()-1'
+      class='w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition'
+      :class="{ 'opacity-40 cursor-not-allowed': pageNumber >= pageCount()-1 }"
+    >
+      <i class='fas fa-chevron-right text-sm'></i>
+    </button>
+  </div>
+</div>
+
+<script>
+function galleryTable({ gallery, programs }) {
+  return {
+    gallery,
+    programs,
+
+    search: "",
+    searchInput: "",
+    pageNumber: 0,
+    size: 9,
+
+    selectedProgram: null,
+    selectedProgramName: "",
+
+    get filteredGalleryFull() {
+      return this.gallery.filter((item) => {
+        const matchSearch = item.title
+          .toLowerCase()
+          .includes(this.search.toLowerCase());
+
+        const matchProgram =
+          this.selectedProgram === null ||
+          String(item.kategori?.id) === String(this.selectedProgram);
+
+        return matchSearch && matchProgram;
+      });
+    },
+
+    get amount() {
+      return this.filteredGalleryFull.length;
+    },
+
+    get filteredGallery() {
+      const start = this.pageNumber * this.size;
+      const end = start + this.size;
+      return this.filteredGalleryFull
+        .slice(start, end)
+        .map((i) => i.id.toString());
+    },
+
+    pageCount() {
+      return Math.max(1, Math.ceil(this.amount / this.size));
+    },
+
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
+
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
+
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
+
+    viewPage(index) {
+      this.pageNumber = index;
+    },
+
+    selectProgram(id, name = "") {
+      this.selectedProgram = id === null ? null : String(id);
+      this.selectedProgramName = name;
+      this.pageNumber = 0;
+    },
+  };
+}
+</script>

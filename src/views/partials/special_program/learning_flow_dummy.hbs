@@ -1,0 +1,31 @@
+<section id="learning-flow" class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <div class="flex items-center justify-center mx-auto rounded-full border border-[#003060] bg-[#6EB6E5]/20 text-[#003060] font-semibold text-lg font-montserrat" style="width: 305px; height: 49px;">
+        Learning Flow
+      </div>
+      <p class="text-gray-500 mt-4">Step-by-step syllabus designed to take you from zero to hero.</p>
+    </div>
+    
+    <div class="max-w-3xl mx-auto space-y-6">
+      {{#each alur_kelas}}
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">{{this.alur_ke}}</div>
+          {{#unless @last}}
+          <div class="w-0.5 h-full bg-blue-200 mt-2"></div>
+          {{/unless}}
+        </div>
+        <div class="{{#unless @last}}pb-8{{/unless}}">
+          <h3 class="text-xl font-semibold text-gray-900">{{getByLang this.judul ../lang}}</h3>
+          <p class="text-gray-600 mt-2">{{getByLang this.isi ../lang}}</p>
+        </div>
+      </div>
+      {{else}}
+      <div class="text-center text-gray-500 py-8">
+        Learning Flow is currently being updated by our team.
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>

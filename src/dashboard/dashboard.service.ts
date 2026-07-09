@@ -1,4 +1,4 @@
-import { ILike, Like, Raw, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kelas } from 'src/entities/kelas.entity';
@@ -7,7 +7,7 @@ import { Portfolio } from 'src/entities/portfolio.entity';
 import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
 import { Kategori } from 'src/entities/kategori.entity';
 import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import { KerjaSama } from 'src/entities/kerja_sama.entity';
+import { Partner } from 'src/entities/partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -41,8 +41,8 @@ export class DashboardService {
     private readonly kategoriRepository: Repository<Kategori>,
     @InjectRepository(JenisKelas)
     private readonly jenisKelasRepository: Repository<JenisKelas>,
-    @InjectRepository(KerjaSama)
-    private readonly kerjaSamaRepository: Repository<KerjaSama>,
+    @InjectRepository(Partner)
+    private readonly PartnerRepository: Repository<Partner>,
     @InjectRepository(Benefit)
     private readonly benefitRepository: Repository<Benefit>,
     @InjectRepository(Team)
@@ -378,26 +378,29 @@ async findAlumni(options?: {
   const limit = options?.limit || 6;
   const skip = (page - 1) * limit;
 
-  const where: any = {};
+  const qb = this.alumniRepository
+    .createQueryBuilder('alumni')
+    .leftJoinAndSelect('alumni.kelas', 'kelas')
+    .leftJoinAndSelect('kelas.kategori', 'kategori')
+    .orderBy('alumni.createdAt', 'DESC')
+    .skip(skip)
+    .take(limit);
 
   // Logika filter kelas atau kategori global
   if (options?.kelasId) {
-    where.kelas = { id: options.kelasId };
+    qb.andWhere('kelas.id = :kelasId', { kelasId: options.kelasId });
   } else if (options?.kategoriId) {
-    where.kelas = { kategori: { id: options.kategoriId } };
-  }
- if (options?.search && options.search.trim() !== '') {
-    const keyword = `%${options.search.trim()}%`;
-    where.nama = ILike(keyword);
+    qb.andWhere('kategori.id = :kategoriId', { kategoriId: options.kategoriId });
   }
 
-  const [data, total] = await this.alumniRepository.findAndCount({
-    where,
-    relations: ['kelas', 'kelas.kategori'],
-    order: { createdAt: 'DESC' },
-    skip,
-    take: limit,
-  });
+  // `nama` disimpan sebagai jsonb, jadi cast ke text lalu cari case-insensitive
+  if (options?.search && options.search.trim() !== '') {
+    qb.andWhere('LOWER(alumni.nama::text) LIKE :kw', {
+      kw: `%${options.search.trim().toLowerCase()}%`,
+    });
+  }
+
+  const [data, total] = await qb.getManyAndCount();
 
   return { data, total };
 }
@@ -436,7 +439,8 @@ async findAlumni(options?: {
   // }
 
   async findKerjaSama() {
-    return await this.kerjaSamaRepository.find({
+    return await this.PartnerRepository.find({
+      relations: ['categoryPartner'],
       order: { createdAt: 'ASC' },
     });
   }
@@ -478,6 +482,10 @@ async findAlumni(options?: {
 
   async findBenefit3() {
     return await this.benefitRepository.findOne({ where: { no: 3 } });
+  }
+
+  async findBenefits() {
+    return await this.benefitRepository.find({ order: { no: 'ASC' } });
   }
 
   async findJenisKelas() {

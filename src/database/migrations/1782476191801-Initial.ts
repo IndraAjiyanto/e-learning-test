@@ -4,7 +4,7 @@ export class Initial1782476191801 implements MigrationInterface {
     name = 'Initial1782476191801'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "visi" ("id" SERIAL NOT NULL, "visi" jsonb, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_081db4bcf67224b44279c2905a2" PRIMARY KEY ("id"))`);
+        // await queryRunner.query(`CREATE TABLE "visi" ("id" SERIAL NOT NULL, "visi" jsonb, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_081db4bcf67224b44279c2905a2" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "value" ("id" SERIAL NOT NULL, "title" jsonb, "description" jsonb, "icon" character varying NOT NULL, "value_ke" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_0af87b1623a34dd5357bfdb38a4" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TYPE "public"."materi_jenis_file_enum" AS ENUM('video', 'pdf', 'ppt')`);
         await queryRunner.query(`CREATE TABLE "materi" ("id" SERIAL NOT NULL, "judul" character varying NOT NULL, "file" character varying NOT NULL, "jenis_file" "public"."materi_jenis_file_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "pertemuanId" integer, CONSTRAINT "PK_8635051686af32e69dca1bc2347" PRIMARY KEY ("id"))`);

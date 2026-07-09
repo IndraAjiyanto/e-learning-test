@@ -48,6 +48,6 @@ export class CreateKategorisDto {
   @IsString({ each: true })
   info_ja?: string[];
 
-  @IsEnum(['Special Program', 'Program'])
-  type: 'Special Program' | 'Program';
+  @IsEnum(['Special Program', 'Paid Program', 'Free Program'])
+  type: 'Special Program' | 'Paid Program' | 'Free Program';
 }

@@ -1,32 +1,44 @@
-<div
-  class='bg-gradient-to-br from-slate-50 to-white text-slate-900 px-6 py-10 pt-28'
->
-  <div
-    class='max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10'
-  >
+<div class='min-h-screen text-slate-900 px-6 py-10 pt-28' style="background: linear-gradient(180deg, #FAFAFA 0%, #CEE5F6 15%, #FAFAFA 100%);">
+  <div class='max-w-7xl mx-auto px-2 py-2'>
+    
+    <!-- Tombol Kembali -->
+    <button onclick="history.back()" class="flex items-center justify-center w-10 h-10 rounded-full border border-[#0B1F3B]/30 hover:bg-[#0B1F3B]/10 transition mb-8 text-[#0B1F3B]">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class='grid grid-cols-1 lg:grid-cols-3 gap-10'>
 
     <div class='lg:col-span-2 space-y-8' 
     x-data="{
 
-    activeTab: localStorage.getItem('activeDetailTab') || 'info',
+    activeTab: localStorage.getItem('activeDetailTab') || 'what_you_learn',
 
-    benefit: null,
+    participants: null,
+    what_you_learn: null,
+    benefits: null,
+    learning_flow: null,
+    schedule_fees: null,
+    gallery: null,
     faq: null,
-    flow: null,
-    mentor: null,
     lang: '{{lang}}',
 
     loading: {
-      benefit: false,
-      faq: false,
-      flow: false,
-      mentor: false
+      participants: false,
+      what_you_learn: false,
+      benefits: false,
+      learning_flow: false,
+      schedule_fees: false,
+      gallery: false,
+      faq: false
     },
     fetched: {
-      benefit: false,
-      faq: false,
-      flow: false,
-      mentor: false
+      participants: false,
+      what_you_learn: false,
+      benefits: false,
+      learning_flow: false,
+      schedule_fees: false,
+      gallery: false,
+      faq: false
     },
 
     init() {
@@ -44,21 +56,22 @@
     },
 
     async fetchTab(tab) {
-      if (tab === 'info') return;
+      if (['what_you_learn', 'participants', 'schedule_fees', 'gallery'].includes(tab)) return;
       if (this.fetched[tab]) return;
       this.loading[tab] = true;
       
       try {
         const map = {
-          benefit: '/program/api/detail/{{kelas.id}}/benefit',
+          benefits: '/program/api/detail/{{kelas.id}}/benefit',
           faq:     '/program/api/detail/{{kelas.id}}/faq',
-          flow:    '/program/api/detail/{{kelas.id}}/flow',
-          mentor:  '/program/api/detail/{{kelas.id}}/mentor'
+          learning_flow:    '/program/api/detail/{{kelas.id}}/flow'
         };
-        const res = await fetch(map[tab]);
-        const json = await res.json();
-        this[tab] = json;
-        this.fetched[tab] = true;
+        if(map[tab]) {
+          const res = await fetch(map[tab]);
+          const json = await res.json();
+          this[tab] = json;
+          this.fetched[tab] = true;
+        }
       } catch(e) {
         console.error(e);
       } finally {
@@ -82,15 +95,19 @@
 {{> program_Bdetail/left_content/tab}}
 
       <div>
+{{> program_Bdetail/left_content/tab_content/participants}}
+
 {{> program_Bdetail/left_content/tab_content/information}}
 
 {{> program_Bdetail/left_content/tab_content/benefit}}
 
-{{> program_Bdetail/left_content/tab_content/faq}}
-
 {{> program_Bdetail/left_content/tab_content/flow}}
 
-{{> program_Bdetail/left_content/tab_content/mentor}}
+{{> program_Bdetail/left_content/tab_content/schedule_fees}}
+
+{{> program_Bdetail/left_content/tab_content/gallery}}
+
+{{> program_Bdetail/left_content/tab_content/faq}}
       </div>
     </div>
 
@@ -220,7 +237,7 @@
           {{#if check_user}}
             <a
               href='/program/{{kelas.id}}'
-              class='btn text-base w-full text-center  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold '
+              class='btn text-base w-full text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-semibold border-none'
             >
               <i class='fas fa-play-circle mr-2'></i>
               {{t "test.detailProgram.continueLearning"}}
@@ -242,14 +259,16 @@
         {{else}}
           <a
             href='/login'
-            class='btn text-base w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white  rounded-xl font-semibold  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center'
+            class='btn text-base w-full bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center border-none'
           >
             <i class='fas fa-sign-in-alt mr-2'></i>
-            {{t "test.detailProgram.loginToEnroll"}}
+            Registration Now
           </a>
         {{/if}}
       </div>
+      </div>
     </aside>
+    </div>
   </div>
 
 

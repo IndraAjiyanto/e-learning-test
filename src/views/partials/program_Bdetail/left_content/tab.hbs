@@ -1,43 +1,52 @@
       <!-- Tabs -->
-      <div
-        class='border-b border-slate-200 flex gap-6 text-sm font-medium overflow-x-auto'
-      >
+      <div class='border-b border-slate-200 flex gap-6 text-base font-medium overflow-x-auto pb-2'>
         <button
-          @click="switchTab('info')"
-          :class="activeTab === 'info' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          @click="switchTab('participants')"
+          :class="activeTab === 'participants' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >
-          {{t "test.detailProgram.tabDetailProgram.programInfo"}}
-        </button>
-                <button
-          @click="switchTab('flow')"
-          :class="activeTab === 'flow' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
-        >
-          {{t "test.detailProgram.tabDetailProgram.flowProgram"}}
+          Participants
         </button>
         <button
-          @click="switchTab('benefit')"
-          :class="activeTab === 'benefit' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          @click="switchTab('what_you_learn')"
+          :class="activeTab === 'what_you_learn' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >
-          {{t "test.detailProgram.tabDetailProgram.benefitProgram"}}
+          What You'll Learn
         </button>
-
-                <button
-          @click="switchTab('mentor')"
-          :class="activeTab === 'mentor' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+        <button
+          @click="switchTab('benefits')"
+          :class="activeTab === 'benefits' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >
-          {{t "test.detailProgram.tabDetailProgram.mentor"}}
+          Benefits
+        </button>
+        <button
+          @click="switchTab('learning_flow')"
+          :class="activeTab === 'learning_flow' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class='pb-3 transition-colors whitespace-nowrap'
+        >
+          Learning Flow
+        </button>
+        <button
+          @click="switchTab('schedule_fees')"
+          :class="activeTab === 'schedule_fees' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class='pb-3 transition-colors whitespace-nowrap'
+        >
+          Schedule & Fees
+        </button>
+        <button
+          @click="switchTab('gallery')"
+          :class="activeTab === 'gallery' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          class='pb-3 transition-colors whitespace-nowrap'
+        >
+          Gallery
         </button>
         <button
           @click="switchTab('faq')"
-          :class="activeTab === 'faq' ? 'border-b-2 border-slate-600 text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+          :class="activeTab === 'faq' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
           class='pb-3 transition-colors whitespace-nowrap'
         >
-          {{t "test.detailProgram.tabDetailProgram.faq"}}
+          FAQ
         </button>
-
-
       </div>
