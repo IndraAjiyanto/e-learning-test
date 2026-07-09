@@ -1,7 +1,8 @@
-        <!-- Course Info Tab -->
-        <div x-show="activeTab === 'info'" x-transition>
+        <!-- What You'll Learn Tab -->
+        <div x-show="activeTab === 'what_you_learn'" x-transition>
           <div class='space-y-6'>
 
+<<<<<<< HEAD
             <!-- Description -->
             <div
               class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-slate-200'
@@ -246,6 +247,8 @@
 
             </div>
 
+=======
+>>>>>>> e7e09cd565cbba8fdae45390bfd3b61e8e65729f
             <!-- Material Includes -->
             <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
               <h4
@@ -374,8 +377,17 @@
               </h4>
               <div class='ml-8 flex gap-2 flex-wrap'>
                 {{#each teknologi}}
-                  <div class='w-6 h-6 flex items-center justify-center'>
-                    {{{this.svg}}}
+                  <div class='flex items-center gap-2'>
+                    {{#if this.svg}}
+                      <div class='w-6 h-6 flex items-center justify-center'>
+                        {{{this.svg}}}
+                      </div>
+                    {{/if}}
+                    {{#if this.img_url}}
+                      <div class='w-6 h-6 flex items-center justify-center'>
+                        <img src="{{this.img_url}}" alt="{{this.nama}}" class="w-full h-full object-contain">
+                      </div>
+                    {{/if}}
                   </div>
                 {{/each}}
               </div>

@@ -1,0 +1,24 @@
+<section id="benefits" class="py-16 bg-gray-50/50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <div class="flex items-center justify-center mx-auto rounded-full border border-[#003060] bg-[#6EB6E5]/20 text-[#003060] font-semibold text-lg font-montserrat" style="width: 305px; height: 49px;">
+        Benefits
+      </div>
+      <p class="text-gray-500 mt-4 max-w-2xl mx-auto">Get the best benefits to support your learning journey and career development.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+      {{#each benefit_kelas}}
+      <div class="bg-white p-6 rounded-xl border border-gray-200 text-center shadow-sm hover:shadow-md transition">
+        <i class="{{this.icon}} text-4xl text-blue-500 mb-4"></i>
+        <h3 class="text-xl font-semibold mb-2">{{getByLang this.benefit ../lang}}</h3>
+        <p class="text-gray-500 text-sm">{{getByLang this.isi ../lang}}</p>
+      </div>
+      {{else}}
+      <div class="col-span-1 md:col-span-3 text-center text-gray-500 py-8">
+        Benefits are currently being updated by our team.
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>
