@@ -30,7 +30,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('program')
 export class KelassController {
-  constructor(private readonly kelassService: KelassService) {}
+  constructor(private readonly kelassService: KelassService) { }
 
   @Roles('admin', 'super_admin')
   @Post()
@@ -483,18 +483,35 @@ export class KelassController {
     // const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
     const teknologi = await this.kelassService.findTeknologiKelas(kelasId);
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
-    res.render('kelas/Bdetail', {
-      kelas,
-      user: req.user,
-      kelass,
-      check_user,
-      // pertanyaan_kelas,
-      // alur_kelas,
-      // mentor,
-      // benefit_kelas,
-      teknologi,
-      cicilan,
-    });
+
+    if (kelas.check_paid === false) {
+      // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
+      res.render('detail_program/free_program/index', {
+        kelas,
+        user: req.user,
+        kelass,
+        check_user,
+        // pertanyaan_kelas,
+        // alur_kelas,
+        // mentor,
+        // benefit_kelas,
+        teknologi,
+        cicilan,
+      });
+    } else {
+      res.render('kelas/Bdetail', {
+        kelas,
+        user: req.user,
+        kelass,
+        check_user,
+        // pertanyaan_kelas,
+        // alur_kelas,
+        // mentor,
+        // benefit_kelas,
+        teknologi,
+        cicilan,
+      });
+    }
   }
 
   @Get(':id')
@@ -515,18 +532,29 @@ export class KelassController {
       const user_kelas = await this.kelassService.findUserKelas(id);
       const kelass = await this.kelassService.allClassExcept(kelas.id);
       const daftar = await this.kelassService.sumStudent(kelas.id);
-      res.render('kelas/Bdetail', {
-        kelas,
-        kelass,
-        daftar,
-        // pertanyaan_kelas,
-        // alur_kelas,
-        // mentor,
-        // benefit_kelas,
-        teknologi,
-        cicilan,
-        user_kelas,
-      });
+      if (kelas.check_paid === false) {
+        res.render('detail_program/free_program/index', {
+          kelas,
+          kelass,
+          daftar,
+          teknologi,
+          cicilan,
+          user_kelas,
+        });
+      } else {
+        res.render('kelas/Bdetail', {
+          kelas,
+          kelass,
+          daftar,
+          // pertanyaan_kelas,
+          // alur_kelas,
+          // mentor,
+          // benefit_kelas,
+          teknologi,
+          cicilan,
+          user_kelas,
+        });
+      }
     } else {
       const kelas = await this.kelassService.findOneKelasUserLaunch(id);
       for (const u of kelas.user_kelas) {
@@ -566,19 +594,31 @@ export class KelassController {
         const user_kelas = await this.kelassService.findUserKelas(id);
         const kelass = await this.kelassService.allClassExcept(kelas.id);
         const daftar = await this.kelassService.sumStudent(kelas.id);
-        res.render('kelas/Bdetail', {
-          user: req.user,
-          kelas,
-          kelass,
-          daftar,
-          // pertanyaan_kelas,
-          // alur_kelas,
-          // mentor,
-          // benefit_kelas,
-          teknologi,
-          user_kelas,
-          cicilan,
-        });
+        if (kelas.check_paid === false) {
+          res.render('detail_program/free_program/index', {
+            user: req.user,
+            kelas,
+            kelass,
+            daftar,
+            teknologi,
+            user_kelas,
+            cicilan,
+          });
+        } else {
+          res.render('kelas/Bdetail', {
+            user: req.user,
+            kelas,
+            kelass,
+            daftar,
+            // pertanyaan_kelas,
+            // alur_kelas,
+            // mentor,
+            // benefit_kelas,
+            teknologi,
+            user_kelas,
+            cicilan,
+          });
+        }
       }
     }
   }

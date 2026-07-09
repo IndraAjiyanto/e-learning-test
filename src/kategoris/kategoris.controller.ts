@@ -109,7 +109,11 @@ export class KategorisController {
         pertanyaan_umum,
       });
     } else if (kategori?.type === 'Program') {
-      res.render('program', { kategori, user: req.user, alumni });
+      if (kategori.nama_kategori === 'Short Class') {
+        res.render('short_class', { kategori, user: req.user, alumni });
+      } else {
+        res.render('program', { kategori, user: req.user, alumni });
+      }
     }
   }
 

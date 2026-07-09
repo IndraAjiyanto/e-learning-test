@@ -17,7 +17,7 @@ import { Superiority } from './superiority.entity';
 import { Exclude } from 'class-transformer';
 import { Gallery } from './gallery.entity';
 
-export type Type = 'Special Program' | 'Program';
+export type Type = 'Special Program' | 'Program' | 'Free Program';
 
 @Entity()
 export class Kategori {
@@ -53,7 +53,7 @@ export class Kategori {
 
   @Column({
     type: 'enum',
-    enum: ['Special Program', 'Program'],
+    enum: ['Special Program', 'Program', 'Free Program'],
     nullable: true,
   })
   type: Type;

@@ -9,7 +9,6 @@
     itemsPerPage: 6,
     loading: false,
     kelasItems: [],
-    lang: '{{lang}}',
 
             courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
@@ -29,15 +28,11 @@
     methodDropdownOpen: false,
 
     async init() {
+      // Hapus $watch lama, ganti dengan watch yang trigger fetch
       this.$watch('selectedType', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
       await this.fetchKelas();
-    },
-
-            getByLang(obj, lang) {
-      if (!obj || typeof obj !== 'object') return '';
-      return obj[lang] || obj.id || obj.en || '';
     },
 
     async fetchKelas() {
@@ -87,26 +82,16 @@
   }"
 >
 
-{{> special_program/hero_section}}
+{{> short_class/hero_section}}
 
-{{> special_program/program}}
+{{> short_class/program}}
 
-{{> special_program/benefit}}
+{{> short_class/benefit}}
 
-{{> special_program/topic}}
+{{> short_class/alumni}}
 
-{{> special_program/alumni}}
+{{> short_class/gallery}}
 
-{{> special_program/gallery}}
-
-{{> special_program/contact}}
-
-{{> special_program/faq}}
-
-{{> special_program/program_proses}}
-
-{{> special_program/feature}}
-
+{{> short_class/cta}}
 
 </div>
-
