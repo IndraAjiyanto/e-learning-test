@@ -1,51 +1,51 @@
       <!-- Tabs -->
-      <div class='border-b border-slate-200 flex gap-6 text-base font-medium overflow-x-auto pb-2'>
+      <div class='border-b border-t border-slate-300 flex justify-center items-center gap-20 text-base font-medium overflow-x-auto'>
         <button
           @click="switchTab('participants')"
-          :class="activeTab === 'participants' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
+          :class="activeTab === 'participants' ? 'text-secondary font-semibold' : 'text-slate-500 hover:text-secondary'"
+          class='transition-colors py-2 whitespace-nowrap'
         >
           Participants
         </button>
         <button
           @click="switchTab('what_you_learn')"
-          :class="activeTab === 'what_you_learn' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
+          :class="activeTab === 'what_you_learn' ? 'text-secondary font-semibold' : 'text-slate-500 hover:text-secondary'"
+          class=' transition-colors whitespace-nowrap'
         >
           What You'll Learn
         </button>
         <button
           @click="switchTab('benefits')"
-          :class="activeTab === 'benefits' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
+          :class="activeTab === 'benefits' ? 'text-secondary font-semibold' : 'text-slate-500 hover:text-secondary'"
+          class=' transition-colors whitespace-nowrap'
         >
           Benefits
         </button>
         <button
           @click="switchTab('learning_flow')"
-          :class="activeTab === 'learning_flow' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
+          :class="activeTab === 'learning_flow' ? 'text-secondary font-semibold' : 'text-slate-500 hover:text-secondary'"
+          class=' transition-colors whitespace-nowrap'
         >
           Learning Flow
         </button>
         <button
           @click="switchTab('schedule_fees')"
-          :class="activeTab === 'schedule_fees' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
+          :class="activeTab === 'schedule_fees' ? 'text-secondary font-semibold' : 'text-slate-500 hover:text-secondary'"
+          class=' transition-colors whitespace-nowrap'
         >
           Schedule & Fees
         </button>
         <button
           @click="switchTab('gallery')"
-          :class="activeTab === 'gallery' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
+          :class="activeTab === 'gallery' ? 'text-secondary font-semibold' : 'text-slate-500 hover:text-secondary'"
+          class=' transition-colors whitespace-nowrap'
         >
           Gallery
         </button>
         <button
           @click="switchTab('faq')"
-          :class="activeTab === 'faq' ? 'border-b-2 border-[#0B1F3B] text-[#0B1F3B] font-semibold' : 'text-slate-500 hover:text-slate-700'"
-          class='pb-3 transition-colors whitespace-nowrap'
+          :class="activeTab === 'faq' ? 'text-secondary font-semibold' : 'text-slate-500 hover:text-secondary'"
+          class=' transition-colors whitespace-nowrap'
         >
           FAQ
         </button>

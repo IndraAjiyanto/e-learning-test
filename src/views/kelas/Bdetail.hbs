@@ -1,276 +1,87 @@
 <div class='min-h-screen text-slate-900 px-6 py-10 pt-28' style="background: linear-gradient(180deg, #FAFAFA 0%, #CEE5F6 15%, #FAFAFA 100%);">
   <div class='max-w-7xl mx-auto px-2 py-2'>
-    
+
     <!-- Tombol Kembali -->
     <button onclick="history.back()" class="flex items-center justify-center w-10 h-10 rounded-full border border-[#0B1F3B]/30 hover:bg-[#0B1F3B]/10 transition mb-8 text-[#0B1F3B]">
       <i class="fas fa-arrow-left"></i>
     </button>
 
-    <div class='grid grid-cols-1 lg:grid-cols-3 gap-10'>
-
-    <div class='lg:col-span-2 space-y-8' 
-    x-data="{
-
-    activeTab: localStorage.getItem('activeDetailTab') || 'what_you_learn',
-
-    participants: null,
-    what_you_learn: null,
-    benefits: null,
-    learning_flow: null,
-    schedule_fees: null,
-    gallery: null,
-    faq: null,
-    lang: '{{lang}}',
-
-    loading: {
-      participants: false,
-      what_you_learn: false,
-      benefits: false,
-      learning_flow: false,
-      schedule_fees: false,
-      gallery: false,
-      faq: false
-    },
-    fetched: {
-      participants: false,
-      what_you_learn: false,
-      benefits: false,
-      learning_flow: false,
-      schedule_fees: false,
-      gallery: false,
-      faq: false
-    },
-
-    init() {
-        const savedTab = localStorage.getItem('activeDetailTab');
-        console.log(savedTab)
-        if (savedTab) {
-            this.activeTab = savedTab;
-        }
-        
-        this.fetchTab(this.activeTab);
-
-        this.$watch('activeTab', value => {
-            localStorage.setItem('activeDetailTab', value);
-        });
-    },
-
-    async fetchTab(tab) {
-      if (['what_you_learn', 'participants', 'schedule_fees', 'gallery'].includes(tab)) return;
-      if (this.fetched[tab]) return;
-      this.loading[tab] = true;
-      
-      try {
-        const map = {
-          benefits: '/program/api/detail/{{kelas.id}}/benefit',
-          faq:     '/program/api/detail/{{kelas.id}}/faq',
-          learning_flow:    '/program/api/detail/{{kelas.id}}/flow'
-        };
-        if(map[tab]) {
-          const res = await fetch(map[tab]);
-          const json = await res.json();
-          this[tab] = json;
-          this.fetched[tab] = true;
-        }
-      } catch(e) {
-        console.error(e);
-      } finally {
-        this.loading[tab] = false;
-      }
-    },
-
-    getByLang(obj, lang) {
-      if (!obj || typeof obj !== 'object') return '';
-      return obj[lang] || obj.id || obj.en || '';
-    },
-
-    switchTab(tab) {
-      this.activeTab = tab;
-      localStorage.setItem('activeDetailTab', tab);
-      this.fetchTab(tab);
-    }
-  }">
-{{> program_Bdetail/left_content/program_priview}}
-
-{{> program_Bdetail/left_content/tab}}
-
-      <div>
-{{> program_Bdetail/left_content/tab_content/participants}}
-
-{{> program_Bdetail/left_content/tab_content/information}}
-
-{{> program_Bdetail/left_content/tab_content/benefit}}
-
-{{> program_Bdetail/left_content/tab_content/flow}}
-
-{{> program_Bdetail/left_content/tab_content/schedule_fees}}
-
-{{> program_Bdetail/left_content/tab_content/gallery}}
-
-{{> program_Bdetail/left_content/tab_content/faq}}
-      </div>
-    </div>
-
-    <aside
-      class='space-y-6'
-      x-data="{ 
-        previewUrl: null, 
-        copied: false, 
-        paymentType: 'full',
-        installmentMonths: 0,
-        fileError: '',
-        waError: '',
-        isValidFile: false,
-        isValidWa: false,
-        fileInputTouched: false,
-        waInputTouched: false,
-        cicilanData: [
-          {{#each cicilan}}
-            {
-              id: {{this.id}},
-              bulan: {{this.bulan}},
-              dp: {{this.dp}},
-              harga: {{json this.harga}}
-            }{{#unless @last}},{{/unless}}
-          {{/each}}
-        ],
-        hasCicilan: {{#if cicilan.length}}true{{else}}false{{/if}},
-        copyToClipboard() { 
-          navigator.clipboard.writeText('2847 9237 4298 1234'); 
-          this.copied = true; 
-          setTimeout(() => this.copied = false, 2000); 
+    <div x-data="{
+        activeTab: localStorage.getItem('activeDetailTab') || 'what_you_learn',
+        participants: null, what_you_learn: null, benefits: null, learning_flow: null,
+        schedule_fees: null, gallery: null, faq: null, lang: '{{lang}}',
+        loading: { participants: false, what_you_learn: false, benefits: false, learning_flow: false, schedule_fees: false, gallery: false, faq: false },
+        fetched: { participants: false, what_you_learn: false, benefits: false, learning_flow: false, schedule_fees: false, gallery: false, faq: false },
+        init() { const savedTab = localStorage.getItem('activeDetailTab'); if (savedTab) this.activeTab = savedTab; this.fetchTab(this.activeTab); this.$watch('activeTab', value => localStorage.setItem('activeDetailTab', value)); },
+        async fetchTab(tab) {
+          if (['what_you_learn', 'participants', 'schedule_fees', 'gallery'].includes(tab)) return;
+          if (this.fetched[tab]) return;
+          this.loading[tab] = true;
+          try {
+            const map = { benefits: '/program/api/detail/{{kelas.id}}/benefit', faq: '/program/api/detail/{{kelas.id}}/faq', learning_flow: '/program/api/detail/{{kelas.id}}/flow' };
+            if(map[tab]) { const res = await fetch(map[tab]); const json = await res.json(); this[tab] = json; this.fetched[tab] = true; }
+          } catch(e) { console.error(e); } finally { this.loading[tab] = false; }
         },
-        setPaymentType(type) {
-          this.paymentType = type;
-          if (type === 'installment' && this.installmentMonths === 0 && this.availableMonths.length > 0) {
-            this.installmentMonths = this.availableMonths[0];
-          }
-        },
-        getCicilanByMonth(months) {
-          const cicilan = this.cicilanData.find(c => c.bulan === months);
-          return cicilan ? cicilan : null;
-        },
-        get installmentAmount() {
-          if (!this.installmentMonths || this.installmentMonths === 0) return 0;
-          const cicilan = this.getCicilanByMonth(this.installmentMonths);
-          if (cicilan && cicilan.dp) {
-            return cicilan.dp;
-          }
-          return Math.ceil({{kelas.harga}} / this.installmentMonths);
-        },
-        get totalCicilanAmount() {
-          if (!this.installmentMonths || this.installmentMonths === 0) return {{kelas.harga}};
-          const cicilan = this.getCicilanByMonth(this.installmentMonths);
-          if (cicilan && cicilan.harga && cicilan.harga.length > 0) {
-            return cicilan.harga.reduce((sum, h) => sum + h, 0);
-          }
-          return {{kelas.harga}};
-        },
-        get availableMonths() {
-          return this.cicilanData.map(c => c.bulan);
-        },
-        validateFile(event) {
-          const file = event.target.files[0];
-          this.fileError = '';
-          this.isValidFile = false;
-          this.previewUrl = null;
-          this.fileInputTouched = true;
+        getByLang(obj, lang) { if (!obj || typeof obj !== 'object') return ''; return obj[lang] || obj.id || obj.en || ''; },
+        switchTab(tab) { this.activeTab = tab; localStorage.setItem('activeDetailTab', tab); this.fetchTab(tab); }
+    }">
 
-          if (!file) return;
+        <!-- Main Content Area: Preview + Aside -->
+        <div class='grid grid-cols-1 lg:grid-cols-3 gap-10 mb-10'>
+            <div class='lg:col-span-2'>
+                {{> program_Bdetail/left_content/program_priview}}
+            </div>
 
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.fileError = 'File type not allowed. Please upload JPG, JPEG, or PNG only.';
-            event.target.value = '';
-            return;
-          }
+            <aside class='space-y-6' x-data="{
+                previewUrl: null, copied: false, paymentType: 'full', installmentMonths: 0, fileError: '', waError: '', isValidFile: false, isValidWa: false, fileInputTouched: false, waInputTouched: false,
+                cicilanData: [ {{#each cicilan}} { id: {{this.id}}, bulan: {{this.bulan}}, dp: {{this.dp}}, harga: {{json this.harga}} }{{#unless @last}},{{/unless}} {{/each}} ],
+                hasCicilan: {{#if cicilan.length}}true{{else}}false{{/if}},
+                copyToClipboard() { navigator.clipboard.writeText('2847 9237 4298 1234'); this.copied = true; setTimeout(() => this.copied = false, 2000); },
+                setPaymentType(type) { this.paymentType = type; if (type === 'installment' && this.installmentMonths === 0 && this.availableMonths.length > 0) this.installmentMonths = this.availableMonths[0]; },
+                getCicilanByMonth(months) { return this.cicilanData.find(c => c.bulan === months) || null; },
+                get installmentAmount() { if (!this.installmentMonths || this.installmentMonths === 0) return 0; const cicilan = this.getCicilanByMonth(this.installmentMonths); return cicilan && cicilan.dp ? cicilan.dp : Math.ceil({{kelas.harga}} / this.installmentMonths); },
+                get totalCicilanAmount() { if (!this.installmentMonths || this.installmentMonths === 0) return {{kelas.harga}}; const cicilan = this.getCicilanByMonth(this.installmentMonths); return cicilan && cicilan.harga && cicilan.harga.length > 0 ? cicilan.harga.reduce((sum, h) => sum + h, 0) : {{kelas.harga}}; },
+                get availableMonths() { return this.cicilanData.map(c => c.bulan); },
+                validateFile(event) { const file = event.target.files[0]; this.fileError = ''; this.isValidFile = false; this.previewUrl = null; this.fileInputTouched = true; if (!file) return; const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']; if (!allowedTypes.includes(file.type)) { this.fileError = 'File type not allowed.'; event.target.value = ''; return; } if (file.size > 5 * 1024 * 1024) { this.fileError = 'File size exceeds 5MB.'; event.target.value = ''; return; } this.isValidFile = true; this.previewUrl = URL.createObjectURL(file); },
+                validateWa(event) { const value = event.target.value; this.waError = ''; this.isValidWa = false; this.waInputTouched = true; if (!value) return; const cleanValue = value.replace(/[\s\-\(\)]/g, ''); if (!/^\d+$/.test(cleanValue) || cleanValue.length < 10 || cleanValue.length > 13 || (!cleanValue.startsWith('0') && !cleanValue.startsWith('62'))) { this.waError = 'Invalid WA format.'; return; } this.isValidWa = true; }
+            }">
+                <div class='p-8 border border-slate-200 rounded-2xl shadow-xl bg-gradient-to-br from-white to-slate-50 space-y-6 sticky top-6'>
+                    {{> program_Bdetail/right_content/price}}
+                    {{#if user}}
+                        {{> program_Bdetail/right_content/card_no_rekening}}
+                        {{#if check_user}}
+                            <a href='/program/{{kelas.id}}' class='btn text-base w-full text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-semibold border-none'><i class='fas fa-play-circle mr-2'></i>{{t "test.detailProgram.continueLearning"}}</a>
+                        {{else}}
+                            {{#if kelas.check_paid}}
+                                {{#if (check daftar kelas.kuota)}}
+                                    {{> program_Bdetail/right_content/upload_proof_of_payment/full_payment}}
+                                    {{> program_Bdetail/right_content/upload_proof_of_payment/installment}}
+                                {{/if}}
+                            {{else}}
+                                {{#if (check daftar kelas.kuota)}}
+                                    {{> program_Bdetail/right_content/upload_proof_of_payment/free_payment}}
+                                {{/if}}
+                            {{/if}}
+                        {{/if}}
+                    {{else}}
+                        <a href='/login' class='btn text-base w-full bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center border-none'><i class='fas fa-sign-in-alt mr-2'></i>Registration Now</a>
+                    {{/if}}
+                </div>
+            </aside>
+        </div>
 
-          const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-          if (file.size > maxSize) {
-            this.fileError = `File size exceeds 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`;
-            event.target.value = '';
-            return;
-          }
-
-          this.isValidFile = true;
-          this.previewUrl = URL.createObjectURL(file);
-        },
-        validateWa(event) {
-          const value = event.target.value;
-          this.waError = '';
-          this.isValidWa = false;
-          this.waInputTouched = true;
-
-          if (!value) return;
-
-          const cleanValue = value.replace(/[\s\-\(\)]/g, '');
-
-          if (!/^\d+$/.test(cleanValue)) {
-            this.waError = 'WhatsApp number must contain only numbers.';
-            return;
-          }
-
-          if (cleanValue.length < 10 || cleanValue.length > 13) {
-            this.waError = `WhatsApp number must be 10-13 digits. Current: ${cleanValue.length} digits.`;
-            return;
-          }
-
-          if (!cleanValue.startsWith('0') && !cleanValue.startsWith('62')) {
-            this.waError = 'WhatsApp number must start with 0 or 62 (e.g., 08123456789 or 628123456789).';
-            return;
-          }
-
-          this.isValidWa = true;
-        }
-      }"
-    >
-      <div
-        class='p-8 border border-slate-200 rounded-2xl shadow-xl bg-gradient-to-br from-white to-slate-50 space-y-6 sticky top-6'
-      >
-{{> program_Bdetail/right_content/price}}
-
-        <!-- Card No Rekening -->
-        {{#if user}}
-    {{> program_Bdetail/right_content/card_no_rekening}}
-
-          <!-- Form Upload -->
-          {{#if check_user}}
-            <a
-              href='/program/{{kelas.id}}'
-              class='btn text-base w-full text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-semibold border-none'
-            >
-              <i class='fas fa-play-circle mr-2'></i>
-              {{t "test.detailProgram.continueLearning"}}
-            </a>
-          {{else}}
-            {{#if kelas.check_paid}}
-              {{#if (check daftar kelas.kuota)}}
-{{> program_Bdetail/right_content/upload_proof_of_payment/full_payment}}
-
-{{> program_Bdetail/right_content/upload_proof_of_payment/installment}}
-              {{/if}}
-            {{else}}
-              {{#if (check daftar kelas.kuota)}}
-{{> program_Bdetail/right_content/upload_proof_of_payment/free_payment}}
-              {{/if}}
-            {{/if}}
-          {{/if}}
-
-        {{else}}
-          <a
-            href='/login'
-            class='btn text-base w-full bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center border-none'
-          >
-            <i class='fas fa-sign-in-alt mr-2'></i>
-            Registration Now
-          </a>
-        {{/if}}
-      </div>
-      </div>
-    </aside>
+        <!-- Full Width Tabs Area -->
+        {{> program_Bdetail/left_content/tab}}
+        <div class="mt-8">
+            {{> program_Bdetail/left_content/tab_content/participants}}
+            {{> program_Bdetail/left_content/tab_content/information}}
+            {{> program_Bdetail/left_content/tab_content/benefit}}
+            {{> program_Bdetail/left_content/tab_content/flow}}
+            {{> program_Bdetail/left_content/tab_content/schedule_fees}}
+            {{> program_Bdetail/left_content/tab_content/gallery}}
+            {{> program_Bdetail/left_content/tab_content/faq}}
+        </div>
     </div>
   </div>
-
-
-{{> program_Bdetail/other_program}}
 </div>
+{{> program_Bdetail/other_program}}
