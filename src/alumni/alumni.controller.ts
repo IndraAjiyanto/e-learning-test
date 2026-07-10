@@ -221,6 +221,37 @@ export class AlumniController {
     }
   }
 
+  @Get('filter')
+  async filterAlumni(
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      const kategoriId = req.query.kategori_id ? Number(req.query.kategori_id) : undefined;
+      const kelasId = req.query.kelas_id ? Number(req.query.kelas_id) : undefined;
+      const search = req.query.search ? String(req.query.search) : undefined;
+      const page = req.query.page ? Number(req.query.page) : 1;
+      const limit = req.query.limit ? Number(req.query.limit) : 6;
+
+      const result = await this.alumniService.filterAlumni(
+        kategoriId,
+        kelasId,
+        search,
+        page,
+        limit,
+      );
+
+      res.json({
+        data: result.data,
+        totalItems: result.total,
+        totalPages: result.totalPages,
+        currentPage: result.page,
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || 'Filter failed' });
+    }
+  }
+
   @Roles('super_admin')
   @Delete(':alumniId/:kelasId')
   async remove(

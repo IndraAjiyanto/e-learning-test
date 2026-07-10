@@ -1,125 +1,53 @@
 <section
-  class='bg-gradient-to-br from-slate-50 via-white to-slate-100 py-20 px-6 lg:px-20 relative'
+  class='bg-transparant  py-20 px-6 lg:px-20 relative'
 >
+<div class='flex flex-col items-center text-center justify-center mb-6 '>
+      <h1 class='text-l border bg-[#6EB6E533] border-gray-400 w-52 py-2 rounded-full text-gray-900 font-montserrat'>{{{t
+          'test.home.imagine.whyChooseUs'
+        }}}</h1>
+      </div>
   <div class='text-center mb-16'>
-    <h2 class='text-4xl md:text-5xl font-bold text-gray-900 mb-4'>
-      {{t 'test.home.imagine.tittle'}}
+    <h2 class='text-4xl md:text-5xl font-bold text-gray-900 mb-2'>
+      {{{t 'test.home.imagine.tittle'}}}
     </h2>
-    <p class='text-lg text-gray-600 max-w-2xl mx-auto'>
-{{t 'test.home.imagine.description'}}
+     <div
+        class='border border-b-4 border-slate-900 w-20 mx-auto mb-10 rounded'
+      ></div>
+    <p class='text-lg text-gray-600  mx-auto'>
+      {{t 'test.home.imagine.description'}}
     </p>
   </div>
 
-  <div class='grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto'>
-    <div class='space-y-6'>
-
-      {{! Fallback (static) when no data is passed) }}
+ <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
+  {{#each benefits}}
+    <div
+      data-animate="slide-right"
+      data-delay="100"
+      class="
+        flex flex-col items-center justify-center gap-5
+        rounded-2xl p-6 bg-white/70 ring-1 ring-slate-200 shadow-lg
+        lg:col-span-2
+        {{#if (eq @index 3)}}lg:col-start-2{{/if}}
+      "
+    >
       <div
-        data-animate="slide-right"
-        data-delay="100"
-        class='relative group rounded-2xl p-6 bg-white shadow-xl ring-2 ring-emerald-400/60 hover:ring-emerald-500 transition-all duration-300'
+        class="text-white text-2xl bg-gradient-to-br from-primary via-secondary to-gray-900 p-4 rounded-xl"
       >
-        <div
-          aria-hidden='true'
-          class='pointer-events-none absolute inset-0 rounded-2xl bg-emerald-50/40 group-hover:bg-emerald-50/70 transition-colors duration-300'
-        ></div>
-        <div class='absolute -top-3 left-6'>
-          <span
-            class='inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white shadow-sm'
-          >
-            <i class='fa-solid fa-fire text-[10px]'></i>
-            {{t 'test.home.imagine.mostWanted'}}
-          </span>
-        </div>
-        <div class='relative flex items-start gap-5'>
-          <div
-            class='text-white text-2xl bg-emerald-600 p-4 rounded-xl shadow-md'
-          >
-            <i class='{{#if benefit_1.icon}}{{computeIcon benefit_1.icon}}{{else}}fas fa-briefcase{{/if}}'></i>
-          </div>
-          <div>
-            <h3 class='text-2xl font-extrabold text-gray-900 mb-2'>
-              {{#if benefit_1.judul}}{{getByLang benefit_1.judul lang}}{{else}}Job/Internship Placement{{/if}}
-            </h3>
-            <p class='text-gray-700 text-lg leading-relaxed'>
-              {{#if benefit_1.text}}{{getByLang benefit_1.text lang}}{{else}}Get the opportunity for job or internship placement through our hiring partner network after completing the bootcamp. We’ll help you start your career with strong industry connections.{{/if}}
-            </p>
-            <span class='sr-only'>{{t 'test.home.imagine.spanMostWanted'}}</span>
-          </div>
-        </div>
+        <i class="{{#if icon}}{{computeIcon icon}}{{else}}fas fa-star{{/if}}"></i>
       </div>
 
-      <div
-        data-animate="slide-right"
-        data-delay="100"
-        class='flex items-start gap-5 group rounded-2xl p-4 bg-white/70 hover:bg-white transition-colors duration-300 ring-1 ring-slate-200 hover:ring-slate-300 shadow-lg'
-      >
-        <div
-          class='text-white text-2xl bg-gradient-to-br from-primary via-secondary to-gray-900 p-4 rounded-xl group-hover:bg-slate-700 group-hover:text-white transition-colors duration-300'
-        >
-          <i class='{{#if benefit_2.icon}}{{computeIcon benefit_2.icon}}{{else}}fas fa-users{{/if}}'></i>
-        </div>
-        <div>
-          <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{#if benefit_2.judul}}{{getByLang benefit_2.judul lang}}{{else}}Capstone Project{{/if}}
-          </h3>
-          <p class='text-gray-600 leading-relaxed'>
-            {{#if benefit_2.text}}{{getByLang benefit_2.text lang}}{{else}}Apply everything you’ve learned through a real-world capstone project that reflects real industry challenges — a strong proof of your technical and problem-solving skills.{{/if}}
-          </p>
-        </div>
-      </div>
+      <div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2 text-center">
+          {{getByLang judul ../lang}}
+        </h3>
 
-      <div
-        data-animate="slide-right"
-        data-delay="100"
-        class='flex items-start gap-5 group rounded-2xl p-4 bg-white/70 hover:bg-white transition-colors duration-300 ring-1 ring-slate-200 hover:ring-slate-300 shadow-lg'
-      >
-        <div
-          class='text-white text-2xl bg-gradient-to-br from-primary via-secondary to-gray-900 p-4 rounded-xl group-hover:bg-primary group-hover:text-white transition-colors duration-300'
-        >
-          <i class='{{#if benefit_3.icon}}{{computeIcon benefit_3.icon}}{{else}}fas fa-certificate{{/if}}'></i>
-        </div>
-        <div>
-          <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{#if benefit_3.judul}}{{getByLang benefit_3.judul lang}}{{else}}Portfolio Building{{/if}}
-          </h3>
-          <p class='text-gray-600 leading-relaxed'>
-            {{#if benefit_3.text}}{{getByLang benefit_3.text lang}}{{else}}Build a powerful portfolio showcasing your best work and projects throughout the bootcamp — your professional identity and key to standing out in the job market.{{/if}}
-          </p>
-        </div>
-      </div>
+        <div class="border-b-4 border-slate-900 w-10 mx-auto mt-2 mb-4"></div>
 
+        <p class="text-gray-600 leading-relaxed text-center">
+          {{getByLang text ../lang}}
+        </p>
+      </div>
     </div>
-
-    <div class='grid grid-cols-2 gap-6'>
-      <img
-        data-animate="scale-up"
-        data-delay="100"
-        src='{{#if gambar_benefit_1.gambar}}{{gambar_benefit_1.gambar}}{{else}}https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800{{/if}}'
-        class='rounded-2xl shadow-2xl col-span-2 h-64 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
-        alt='Teamwork'
-      />
-      <img
-        data-animate="scale-up"
-        data-delay="100"
-        src='{{#if gambar_benefit_2.gambar}}{{gambar_benefit_2.gambar}}{{else}}https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800{{/if}}'
-        class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
-        alt='Laptop Work'
-      />
-      <img
-        data-animate="scale-up"
-        data-delay="100"
-        src='{{#if gambar_benefit_3.gambar}}{{gambar_benefit_3.gambar}}{{else}}https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800{{/if}}'
-        class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
-        alt='Meeting'
-      />
-      <img
-        data-animate="scale-up"
-        data-delay="100"
-        src='{{#if gambar_benefit_4.gambar}}{{gambar_benefit_4.gambar}}{{else}}https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800{{/if}}'
-        class='rounded-2xl shadow-2xl col-span-2 h-60 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
-        alt='Coding'
-      />
-    </div>
-  </div>
+  {{/each}}
+</div>
 </section>

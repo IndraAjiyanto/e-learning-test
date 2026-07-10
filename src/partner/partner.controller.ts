@@ -13,9 +13,9 @@ import {
   UseGuards,
   UseFilters,
 } from '@nestjs/common';
-import { KerjaSamaService } from './kerja_sama.service';
-import { CreateKerjaSamaDto } from './dto/create-kerja_sama.dto';
-import { UpdateKerjaSamaDto } from './dto/update-kerja_sama.dto';
+import { PartnerService } from './partner.service';
+import { CreatePartnerDto } from './dto/create-partner.dto';
+import { UpdatePartnerDto } from './dto/update-partner.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -25,13 +25,17 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { CategoryPartnerService } from 'src/category_partner/category_partner.service';
 
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('partnership')
-export class KerjaSamaController {
-  constructor(private readonly kerjaSamaService: KerjaSamaService) {}
+export class PartnerController {
+  constructor(
+    private readonly PartnerService: PartnerService,
+    private readonly categoryPartnerService: CategoryPartnerService,
+  ) {}
 
   @Roles('super_admin')
   @Post()
@@ -49,13 +53,13 @@ export class KerjaSamaController {
     folder: 'kerja_sama',
   })
   async create(
-    @Body() createKerjaSamaDto: CreateKerjaSamaDto,
+    @Body() createPartnerDto: CreatePartnerDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createKerjaSamaDto.gambar = req.body.uploadedImageUrls?.[0];
-      await this.kerjaSamaService.create(createKerjaSamaDto);
+      createPartnerDto.gambar = req.body.uploadedImageUrls?.[0];
+      await this.PartnerService.create(createPartnerDto);
       req.flash('success', 'partnership successfully created');
       res.redirect('/partnership');
     } catch (error: any) {
@@ -67,14 +71,18 @@ export class KerjaSamaController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const kerja_sama = await this.kerjaSamaService.findAll();
+    const kerja_sama = await this.PartnerService.findAll();
     res.render('super_admin/kerja_sama/index', { user: req.user, kerja_sama });
   }
 
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    res.render('super_admin/kerja_sama/create', { user: req.user });
+    const categories = await this.categoryPartnerService.findAll();
+    res.render('super_admin/kerja_sama/create', {
+      user: req.user,
+      categories,
+    });
   }
 
   @Roles('super_admin')
@@ -84,7 +92,7 @@ export class KerjaSamaController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
+    const kerja_sama = await this.PartnerService.findOne(kerja_samaId);
     res.render('super_admin/kerja_sama/detail', { user: req.user, kerja_sama });
   }
 
@@ -95,8 +103,13 @@ export class KerjaSamaController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
-    res.render('super_admin/kerja_sama/edit', { user: req.user, kerja_sama });
+    const kerja_sama = await this.PartnerService.findOne(kerja_samaId);
+    const categories = await this.categoryPartnerService.findAll();
+    res.render('super_admin/kerja_sama/edit', {
+      user: req.user,
+      kerja_sama,
+      categories,
+    });
   }
 
   @Roles('super_admin')
@@ -117,17 +130,17 @@ export class KerjaSamaController {
   async update(
     @UploadedFile() gambar: Express.Multer.File,
     @Param('kerja_samaId') kerja_samaId: number,
-    @Body() updateKerjaSamaDto: UpdateKerjaSamaDto,
+    @Body() updatePartnerDto: UpdatePartnerDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
+      const kerja_sama = await this.PartnerService.findOne(kerja_samaId);
       if (gambar) {
-        await this.kerjaSamaService.deleteFile(kerja_sama.gambar);
-        updateKerjaSamaDto.gambar = req.body.uploadedImageUrls?.[0];
+        await this.PartnerService.deleteFile(kerja_sama.gambar);
+        updatePartnerDto.gambar = req.body.uploadedImageUrls?.[0];
       }
-      await this.kerjaSamaService.update(kerja_samaId, updateKerjaSamaDto);
+      await this.PartnerService.update(kerja_samaId, updatePartnerDto);
       req.flash('success', 'partnership successfully updated');
       res.redirect('/partnership');
     } catch (error: any) {
@@ -144,13 +157,13 @@ export class KerjaSamaController {
     @Req() req: Request,
   ) {
     try {
-      const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
+      const kerja_sama = await this.PartnerService.findOne(kerja_samaId);
       if (!kerja_sama) {
         req.flash('error', 'partnership not found');
         res.redirect('/partnership');
       }
-      await this.kerjaSamaService.deleteFile(kerja_sama.gambar);
-      await this.kerjaSamaService.remove(kerja_samaId);
+      await this.PartnerService.deleteFile(kerja_sama.gambar);
+      await this.PartnerService.remove(kerja_samaId);
       req.flash('success', 'partnership successfully remove');
       res.redirect('/partnership');
     } catch (error: any) {

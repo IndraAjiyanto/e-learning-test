@@ -18,9 +18,9 @@
           x-init='$el.value = formData.no'
         >
           <option value=''>-- Select Number --</option>
-          <option value='1' {{#if (eq benefit.no 1)}}selected{{/if}}>1</option>
-          <option value='2' {{#if (eq benefit.no 2)}}selected{{/if}}>2</option>
-          <option value='3' {{#if (eq benefit.no 3)}}selected{{/if}}>3</option>
+          {{#each availableNumbers}}
+            <option value='{{this}}' {{#if (eq ../benefit.no this)}}selected{{/if}}>{{this}}</option>
+          {{/each}}
         </select>
 
         <!-- Error Message -->

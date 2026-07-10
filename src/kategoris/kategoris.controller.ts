@@ -97,24 +97,25 @@ export class KategorisController {
       kategori.id,
     );
     // const kelas = await this.kategorisService.findKelasByKategori(kategori.id);
-    if (kategori?.type === 'Special Program') {
-      res.render('special_program', {
-        kategori,
-        user: req.user,
-        // kelas,
-        alumni,
-        benefit_category,
-        flow_category,
-        superiority,
-        pertanyaan_umum,
-      });
+    const viewData = {
+      kategori,
+      user: req.user,
+      // kelas,
+      alumni,
+      benefit_category,
+      flow_category,
+      superiority,
+      pertanyaan_umum,
+    };
+
+    if (kategori?.type === 'Paid Program') {
+      res.render('paid_program', viewData);
     } else if (kategori?.type === 'Free Program') {
-      if (kategori.nama_kategori === 'Short Class') {
-        res.render('short_class', { kategori, user: req.user, alumni });
-      } else {
-        res.render('program', { kategori, user: req.user, alumni });
-      }
+      res.render('free_program', viewData);
+    } else {
+      res.render('special_program', viewData);
     }
+
   }
 
   @Roles('super_admin')

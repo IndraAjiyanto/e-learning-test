@@ -1,257 +1,243 @@
-<div
-  class='bg-gradient-to-br from-slate-50 to-white text-slate-900 px-6 py-10 pt-28'
->
-  <div
-    class='max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10'
-  >
-
-    <div class='lg:col-span-2 space-y-8' 
-    x-data="{
-
-    activeTab: localStorage.getItem('activeDetailTab') || 'info',
-
-    benefit: null,
-    faq: null,
-    flow: null,
-    mentor: null,
-    lang: '{{lang}}',
-
-    loading: {
-      benefit: false,
-      faq: false,
-      flow: false,
-      mentor: false
-    },
-    fetched: {
-      benefit: false,
-      faq: false,
-      flow: false,
-      mentor: false
-    },
-
-    init() {
-        const savedTab = localStorage.getItem('activeDetailTab');
-        console.log(savedTab)
-        if (savedTab) {
-            this.activeTab = savedTab;
-        }
-        
-        this.fetchTab(this.activeTab);
-
-        this.$watch('activeTab', value => {
-            localStorage.setItem('activeDetailTab', value);
+<style>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 150px; /* Offset for sticky header + nav */
+  }
+  @keyframes slideFadeUp {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .anim-slide-up {
+    opacity: 0;
+    animation: slideFadeUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .delay-1 { animation-delay: 0.3s; }
+  .delay-2 { animation-delay: 0.6s; }
+</style>
+<div class='min-h-screen text-slate-900 bg-white relative overflow-hidden' 
+     x-data="{ heroHeight: 600 }" 
+     x-init="$nextTick(() => { 
+        const resizeObserver = new ResizeObserver(entries => {
+            heroHeight = $refs.heroContent.offsetHeight;
         });
-    },
+        if ($refs.heroContent) resizeObserver.observe($refs.heroContent);
+     })">
+  
+  <!-- Full-width Parallax Gradient Background -->
+  <div class="absolute top-0 left-0 w-full z-0 transition-all duration-300 bg-[linear-gradient(180deg,#CEE5F6_0%,#CEE5F6_50%,#E2F0F9_85%,#FFFFFF_100%)]" 
+       :style="`height: ${heroHeight}px;`"></div>
 
-    async fetchTab(tab) {
-      if (tab === 'info') return;
-      if (this.fetched[tab]) return;
-      this.loading[tab] = true;
-      
-      try {
-        const map = {
-          benefit: '/program/api/detail/{{kelas.id}}/benefit',
-          faq:     '/program/api/detail/{{kelas.id}}/faq',
-          flow:    '/program/api/detail/{{kelas.id}}/flow',
-          mentor:  '/program/api/detail/{{kelas.id}}/mentor'
-        };
-        const res = await fetch(map[tab]);
-        const json = await res.json();
-        this[tab] = json;
-        this.fetched[tab] = true;
-      } catch(e) {
-        console.error(e);
-      } finally {
-        this.loading[tab] = false;
-      }
-    },
+  <!-- HERO SECTION BLOCK -->
+  <div class='w-full mx-auto py-10 pt-28 relative z-10' style="max-width: 1728px; padding-left: 104px; padding-right: 87px;" x-ref="heroContent">
+    
+    <!-- Tombol Kembali -->
+    <button onclick="history.back()" class="flex items-center justify-center rounded-full border border-[#0B1F3B]/30 bg-white hover:bg-[#0B1F3B]/10 transition mb-8 text-[#0B1F3B]" style="width: 50px; height: 50px;">
+      <i class="fas fa-arrow-left"></i>
+    </button>
 
-    getByLang(obj, lang) {
-      if (!obj || typeof obj !== 'object') return '';
-      return obj[lang] || obj.id || obj.en || '';
-    },
-
-    switchTab(tab) {
-      this.activeTab = tab;
-      localStorage.setItem('activeDetailTab', tab);
-      this.fetchTab(tab);
-    }
-  }">
-{{> program_Bdetail/left_content/program_priview}}
-
-{{> program_Bdetail/left_content/tab}}
-
-      <div>
-{{> program_Bdetail/left_content/tab_content/information}}
-
-{{> program_Bdetail/left_content/tab_content/benefit}}
-
-{{> program_Bdetail/left_content/tab_content/faq}}
-
-{{> program_Bdetail/left_content/tab_content/flow}}
-
-{{> program_Bdetail/left_content/tab_content/mentor}}
+    <!-- Flex Layout (Figma: 1537px wide = 828 left + 75 gap + 634 right) -->
+    <div class='flex flex-col lg:flex-row items-start pb-8' style="gap: 75px;">
+      <div class='anim-slide-up delay-1' style="width: 100%; max-width: 828px;">
+        <div class="w-full" x-data="{
+          lang: '{{lang}}',
+          getByLang(obj, lang) {
+            if (!obj || typeof obj !== 'object') return '';
+            return obj[lang] || obj.id || obj.en || '';
+          }
+        }">
+          {{> program_Bdetail/left_content/program_priview}}
+        </div>
       </div>
-    </div>
 
-    <aside
-      class='space-y-6'
-      x-data="{ 
-        previewUrl: null, 
-        copied: false, 
-        paymentType: 'full',
-        installmentMonths: 0,
-        fileError: '',
-        waError: '',
-        isValidFile: false,
-        isValidWa: false,
-        fileInputTouched: false,
-        waInputTouched: false,
-        cicilanData: [
-          {{#each cicilan}}
-            {
-              id: {{this.id}},
-              bulan: {{this.bulan}},
-              dp: {{this.dp}},
-              harga: {{json this.harga}}
-            }{{#unless @last}},{{/unless}}
-          {{/each}}
-        ],
-        hasCicilan: {{#if cicilan.length}}true{{else}}false{{/if}},
-        copyToClipboard() { 
-          navigator.clipboard.writeText('2847 9237 4298 1234'); 
-          this.copied = true; 
-          setTimeout(() => this.copied = false, 2000); 
-        },
-        setPaymentType(type) {
-          this.paymentType = type;
-          if (type === 'installment' && this.installmentMonths === 0 && this.availableMonths.length > 0) {
-            this.installmentMonths = this.availableMonths[0];
-          }
-        },
-        getCicilanByMonth(months) {
-          const cicilan = this.cicilanData.find(c => c.bulan === months);
-          return cicilan ? cicilan : null;
-        },
-        get installmentAmount() {
-          if (!this.installmentMonths || this.installmentMonths === 0) return 0;
-          const cicilan = this.getCicilanByMonth(this.installmentMonths);
-          if (cicilan && cicilan.dp) {
-            return cicilan.dp;
-          }
-          return Math.ceil({{kelas.harga}} / this.installmentMonths);
-        },
-        get totalCicilanAmount() {
-          if (!this.installmentMonths || this.installmentMonths === 0) return {{kelas.harga}};
-          const cicilan = this.getCicilanByMonth(this.installmentMonths);
-          if (cicilan && cicilan.harga && cicilan.harga.length > 0) {
-            return cicilan.harga.reduce((sum, h) => sum + h, 0);
-          }
-          return {{kelas.harga}};
-        },
-        get availableMonths() {
-          return this.cicilanData.map(c => c.bulan);
-        },
-        validateFile(event) {
-          const file = event.target.files[0];
-          this.fileError = '';
-          this.isValidFile = false;
-          this.previewUrl = null;
-          this.fileInputTouched = true;
-
-          if (!file) return;
-
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            this.fileError = 'File type not allowed. Please upload JPG, JPEG, or PNG only.';
-            event.target.value = '';
-            return;
-          }
-
-          const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-          if (file.size > maxSize) {
-            this.fileError = `File size exceeds 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`;
-            event.target.value = '';
-            return;
-          }
-
-          this.isValidFile = true;
-          this.previewUrl = URL.createObjectURL(file);
-        },
-        validateWa(event) {
-          const value = event.target.value;
-          this.waError = '';
-          this.isValidWa = false;
-          this.waInputTouched = true;
-
-          if (!value) return;
-
-          const cleanValue = value.replace(/[\s\-\(\)]/g, '');
-
-          if (!/^\d+$/.test(cleanValue)) {
-            this.waError = 'WhatsApp number must contain only numbers.';
-            return;
-          }
-
-          if (cleanValue.length < 10 || cleanValue.length > 13) {
-            this.waError = `WhatsApp number must be 10-13 digits. Current: ${cleanValue.length} digits.`;
-            return;
-          }
-
-          if (!cleanValue.startsWith('0') && !cleanValue.startsWith('62')) {
-            this.waError = 'WhatsApp number must start with 0 or 62 (e.g., 08123456789 or 628123456789).';
-            return;
-          }
-
-          this.isValidWa = true;
-        }
-      }"
-    >
-      <div
-        class='p-8 border border-slate-200 rounded-2xl shadow-xl bg-gradient-to-br from-white to-slate-50 space-y-6 sticky top-6'
+      <aside
+        class='w-full shrink space-y-6 relative z-20 anim-slide-up delay-2'
+        style="width: 100%; max-width: 634px;"
+        x-data="paymentFormData()"
       >
-{{> program_Bdetail/right_content/price}}
-
-        <!-- Card No Rekening -->
-        {{#if user}}
-    {{> program_Bdetail/right_content/card_no_rekening}}
-
-          <!-- Form Upload -->
-          {{#if check_user}}
-            <a
-              href='/program/{{kelas.id}}'
-              class='btn text-base w-full text-center  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold '
-            >
-              <i class='fas fa-play-circle mr-2'></i>
-              {{t "test.detailProgram.continueLearning"}}
-            </a>
-          {{else}}
-            {{#if kelas.check_paid}}
-              {{#if (check daftar kelas.kuota)}}
-{{> program_Bdetail/right_content/upload_proof_of_payment/full_payment}}
-
-{{> program_Bdetail/right_content/upload_proof_of_payment/installment}}
-              {{/if}}
+        <!-- Removing sticky and scroll so it stays fixed in the hero section -->
+        <div class='p-8 border border-slate-200 rounded-xl shadow-xl bg-gradient-to-br from-white to-slate-50 space-y-6 font-montserrat font-medium w-full min-h-[559px]'>
+          {{> program_Bdetail/right_content/price}}
+          
+          <!-- Card No Rekening -->
+          {{#if user}}
+            {{> program_Bdetail/right_content/card_no_rekening}}
+            
+            <!-- Form Upload -->
+            {{#if check_user}}
+              <a
+                href='/program/{{kelas.id}}'
+                class='btn w-full text-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-montserrat font-medium border-none flex items-center justify-center'
+                style="font-size: 25px;"
+              >
+                {{t "test.detailProgram.continueLearning"}}
+              </a>
             {{else}}
-              {{#if (check daftar kelas.kuota)}}
-{{> program_Bdetail/right_content/upload_proof_of_payment/free_payment}}
+              {{#if kelas.check_paid}}
+                {{#if (check daftar kelas.kuota)}}
+                  {{> program_Bdetail/right_content/upload_proof_of_payment/full_payment}}
+                  {{> program_Bdetail/right_content/upload_proof_of_payment/installment}}
+                {{/if}}
+              {{else}}
+                {{#if (check daftar kelas.kuota)}}
+                  {{> program_Bdetail/right_content/upload_proof_of_payment/free_payment}}
+                {{/if}}
               {{/if}}
             {{/if}}
+          {{else}}
+            <a
+              href='/login'
+              class='btn mx-auto bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-montserrat font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center border-none flex items-center justify-center'
+              style="font-size: 25px; margin-top: 75px; width: 522px; height: 67px; max-width: 100%;"
+            >
+              Registration Now
+            </a>
           {{/if}}
-
-        {{else}}
-          <a
-            href='/login'
-            class='btn text-base w-full bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white  rounded-xl font-semibold  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center'
-          >
-            <i class='fas fa-sign-in-alt mr-2'></i>
-            {{t "test.detailProgram.loginToEnroll"}}
-          </a>
-        {{/if}}
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </div>
   </div>
+  <!-- END HERO SECTION BLOCK -->
+
+  <!-- FULL WIDTH STICKY MENU BLOCK -->
+  {{> special_program/nav_sticky}}
+
+  <!-- CONTENT SECTIONS BLOCK -->
+  <div class='max-w-[1728px] mx-auto px-2 py-8 relative z-10'>
+    <div class="space-y-8">
+      {{> special_program/participants_dummy}}
+      {{> special_program/what_you_learn_dummy}}
+      {{> special_program/benefits_dummy}}
+      {{> special_program/learning_flow_dummy}}
+      {{> special_program/schedule_fees_dummy}}
+      {{!-- {{> special_program/gallery_dummy}} --}}
+      {{> special_program/faq_dummy}}
+    </div>
+  </div>
+  <!-- END CONTENT SECTIONS BLOCK -->
 
 
 {{> program_Bdetail/other_program}}
 </div>
+
+<script>
+  function paymentFormData() {
+    return {
+      previewUrl: null, 
+      copied: false, 
+      paymentType: 'full',
+      installmentMonths: 0,
+      fileError: '',
+      waError: '',
+      isValidFile: false,
+      isValidWa: false,
+      waInputTouched: false,
+      lang: '{{lang}}',
+      getByLang(obj, lang) {
+        if (!obj || typeof obj !== 'object') return '';
+        return obj[lang] || obj.id || obj.en || '';
+      },
+      cicilanData: [
+        {{#each cicilan}}
+          {
+            id: '{{this.id}}',
+            bulan: Number('{{this.bulan}}' || 0),
+            dp: Number('{{this.dp}}' || 0),
+            harga: {{#if this.harga}}{{{json this.harga}}}{{else}}[]{{/if}}
+          }{{#unless @last}},{{/unless}}
+        {{/each}}
+      ],
+      hasCicilan: {{#if cicilan.length}}true{{else}}false{{/if}},
+      copyToClipboard() { 
+        navigator.clipboard.writeText('2847 9237 4298 1234'); 
+        this.copied = true; 
+        setTimeout(() => this.copied = false, 2000); 
+      },
+      setPaymentType(type) {
+        this.paymentType = type;
+        if (type === 'installment' && this.installmentMonths === 0 && this.availableMonths.length > 0) {
+          this.installmentMonths = this.availableMonths[0];
+        }
+      },
+      getCicilanByMonth(months) {
+        const cicilan = this.cicilanData.find(c => c.bulan === months);
+        return cicilan ? cicilan : null;
+      },
+      get installmentAmount() {
+        if (!this.installmentMonths || this.installmentMonths === 0) return 0;
+        const cicilan = this.getCicilanByMonth(this.installmentMonths);
+        if (cicilan && cicilan.dp) {
+          return Number(cicilan.dp);
+        }
+        const baseHarga = Number('{{kelas.harga}}') || 0;
+        return Math.ceil(baseHarga / this.installmentMonths);
+      },
+      get totalCicilanAmount() {
+        const baseHarga = Number('{{kelas.harga}}') || 0;
+        if (!this.installmentMonths || this.installmentMonths === 0) return baseHarga;
+        const cicilan = this.getCicilanByMonth(this.installmentMonths);
+        if (cicilan && cicilan.harga && cicilan.harga.length > 0) {
+          return cicilan.harga.reduce((sum, h) => sum + h, 0);
+        }
+        return baseHarga;
+      },
+      get availableMonths() {
+        return this.cicilanData.map(c => c.bulan);
+      },
+      validateFile(event) {
+        const file = event.target.files[0];
+        this.fileError = '';
+        this.isValidFile = false;
+        this.previewUrl = null;
+        this.fileInputTouched = true;
+
+        if (!file) return;
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          this.fileError = 'File type not allowed. Please upload JPG, JPEG, or PNG only.';
+          event.target.value = '';
+          return;
+        }
+
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (file.size > maxSize) {
+          this.fileError = `File size exceeds 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`;
+          event.target.value = '';
+          return;
+        }
+
+        this.isValidFile = true;
+        this.previewUrl = URL.createObjectURL(file);
+      },
+      validateWa(event) {
+        const value = event.target.value;
+        this.waError = '';
+        this.isValidWa = false;
+        this.waInputTouched = true;
+
+        if (!value) return;
+
+        const cleanValue = value.replace(/[\s\-\(\)]/g, '');
+
+        if (!/^\d+$/.test(cleanValue)) {
+          this.waError = 'WhatsApp number must contain only numbers.';
+          return;
+        }
+
+        if (cleanValue.length < 10 || cleanValue.length > 13) {
+          this.waError = `WhatsApp number must be 10-13 digits. Current: ${cleanValue.length} digits.`;
+          return;
+        }
+
+        if (!cleanValue.startsWith('0') && !cleanValue.startsWith('62')) {
+          this.waError = 'WhatsApp number must start with 0 or 62 (e.g., 08123456789 or 628123456789).';
+          return;
+        }
+
+        this.isValidWa = true;
+      }
+    };
+  }
+
+
+</script>

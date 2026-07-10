@@ -28,7 +28,7 @@ import { PertanyaanUmumModule } from './pertanyaan_umum/pertanyaan_umum.module';
 import { AlumniModule } from './alumni/alumni.module';
 import { JenisKelasModule } from './jenis_kelas/jenis_kelas.module';
 import { SertifikatModule } from './sertifikat/sertifikat.module';
-import { KerjaSamaModule } from './kerja_sama/kerja_sama.module';
+import { PartnerModule } from './partner/partner.module';
 import { PertanyaanKelasModule } from './pertanyaan_kelas/pertanyaan_kelas.module';
 import { LogbookMentorModule } from './logbook_mentor/logbook_mentor.module';
 import { BenefitModule } from './benefit/benefit.module';
@@ -69,6 +69,7 @@ import { OurExperienceModule } from './our_experience/our_experience.module';
 import { TopicModule } from './topic/topic.module';
 import { ComentModule } from './coment/coment.module';
 import { GalleryModule } from './gallery/gallery.module';
+import { CategoryPartnerModule } from './category_partner/category_partner.module';
 import path from 'path';
 
 @Module({
@@ -115,7 +116,7 @@ import path from 'path';
     AlumniModule,
     JenisKelasModule,
     SertifikatModule,
-    KerjaSamaModule,
+    PartnerModule,
     PertanyaanKelasModule,
     LogbookMentorModule,
     BenefitModule,
@@ -149,6 +150,7 @@ import path from 'path';
     TopicModule,
     ComentModule,
     GalleryModule,
+    CategoryPartnerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -175,6 +177,7 @@ export class AppModule {
             '/public/*path',
             '/asset/*path',
             '/uploads/*path',
+            '/alumni/filter',
             '/dashboard',
             '/dashboard/*path',
             )

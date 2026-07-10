@@ -1,20 +1,42 @@
 <div class='pt-24 min-h-screen bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)]' x-data='alumniApp()'>
 
   <div class='container mx-auto px-4 pb-16 max-w-5xl'>
-    <div class='text-center mb-12'>
+    <!-- Header -->
+    <div class='text-center mb-8'>
+      <span class='inline-block text-sm border bg-[#6EB6E533] border-gray-300 px-5 py-1 rounded-full text-gray-900 font-montserrat mb-5'>{{t 'test.alumni.alumni'}}</span>
       <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
           'test.alumni.tittle'
         }}}</h1>
-        <div class="border border-b-2 border-slate-900 w-10 mx-auto my-2 rounded"></div>
+      <div class="border border-b-2 border-slate-900 w-10 mx-auto my-2 rounded"></div>
       <p class='text-gray-600 max-w-2xl mx-auto text-lg'>
         {{t 'test.alumni.description'}}
       </p>
     </div>
 
-    <div class='flex flex-col items-center w-full mx-auto gap-8 mb-12'>
+    <!-- Stats -->
+    <div class='max-w-3xl mx-auto mb-12'>
+      <div class='grid grid-cols-3 bg-white/70 border border-slate-200 rounded-2xl shadow-sm divide-x divide-slate-200'>
+        <div class='flex flex-col items-center justify-center py-5 px-3 text-center'>
+          <i class='fas fa-user-graduate text-blue-600 mb-1'></i>
+          <span class='text-2xl font-bold text-gray-900'>1000+</span>
+          <span class='text-xs text-gray-500'>Alumni</span>
+        </div>
+        <div class='flex flex-col items-center justify-center py-5 px-3 text-center'>
+          <i class='fas fa-chart-line text-blue-600 mb-1'></i>
+          <span class='text-2xl font-bold text-gray-900'>95%</span>
+          <span class='text-xs text-gray-500'>Career Growth</span>
+        </div>
+        <div class='flex flex-col items-center justify-center py-5 px-3 text-center'>
+          <i class='fas fa-handshake text-blue-600 mb-1'></i>
+          <span class='text-2xl font-bold text-gray-900'>200+</span>
+          <span class='text-xs text-gray-500'>Hiring Partners</span>
+        </div>
+      </div>
+    </div>
 
-{{> alumni/sidebar}}
-{{> alumni/content}}
+    <div class='w-full mx-auto mb-12'>
+      {{> alumni/sidebar}}
+      {{> alumni/content}}
     </div>
   </div>
 </div>
@@ -51,7 +73,15 @@ function alumniApp() {
         this.filteredKelasList = this.kelasList.filter(k =>  k.kategori?.id  == this.selectedKategoriId);
       } else {
         this.filteredKelasList = [...this.kelasList];
-           }  
+           }
+    },
+
+    // Hanya kelas/program yang sesuai kategori terpilih
+    get filteredKelasList() {
+      if (this.selectedKategoriId) {
+        return this.kelasList.filter(k => k.kategori?.id == this.selectedKategoriId);
+      }
+      return this.kelasList;
     },
 
      async selectKategori(kategoriId) {
@@ -119,11 +149,17 @@ function alumniApp() {
     async selectKelas(kelasId) {
       this.selectedKelasId = kelasId;
       this.currentPage = 1;
+
       if (kelasId) {
         const kelas = this.kelasList.find(k => k.id == kelasId);
         this.selectedKelas = kelas ? kelas.nama_kelas : '';
+        // Auto-set kategori berdasarkan kategori program yang dipilih
+        if (kelas && kelas.kategori) {
+          this.selectedKategoriId = kelas.kategori.id;
+        }
       } else {
         this.selectedKelas = '';
+        // Jika program dihapus, keep kategori tetap aktif
       }
       await this.fetchAlumni();
     },
