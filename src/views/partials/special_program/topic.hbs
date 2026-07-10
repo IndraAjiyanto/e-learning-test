@@ -1,23 +1,93 @@
-<section class='py-20 bg-white'>
-  <div class='container mx-auto px-4'>
-    <div class='text-center mb-16'>
-      <h2 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{t "test.specialProgram.trainingSection.tittle"}}</h2>
-      <p class='text-gray-600 text-lg '>{{t "test.specialProgram.trainingSection.description"}}</p>
+<section class='w-full py-24 bg-[#FAFAFA]'>
+  <div class='container mx-auto px-4 lg:px-8 max-w-7xl'>
+    
+    <!-- Judul Dummy Hardcode -->
+    <div class='text-center max-w-3xl mx-auto mb-16 space-y-4'>
+      <h2 class='text-3xl md:text-4xl font-semibold font-montserrat leading-tight'>
+        <span style="color: #6EB6E5;">Training</span> <span style="color: #0B1F3B;">Topics</span>
+      </h2>
+      <p class='max-w-2xl mx-auto text-[20px] font-normal leading-relaxed' style="color: rgba(0,0,0,0.8); font-family: 'Open Sans', sans-serif;">
+        Popular topics available in this program
+      </p>
     </div>
 
-    <div class='max-w-6xl mx-auto'>
-      <div class='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
-{{#each kategori.jenis_kelas}}
-        <div class='bg-gray-50 rounded-2xl p-6 border border-gray-200 shadow-lg hover:-translate-y-1 transition-all'>
-          <div class='w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-4'>
-            <i class='{{computeIcon this.icon}} text-white text-xl'></i>
-          </div>
-          <h3 class='text-xl font-bold text-gray-900 mb-3 font-montserrat'>{{this.nama_jenis_kelas}}</h3>
-          <p class='text-gray-600 text-sm '>{{getByLang this.deskripsi ../lang}}</p>
+    <!-- Kotak Dummy Rata Kiri -->
+    <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
+      
+      <!-- DUMMY 1: Code Class -->
+      <div class='flex flex-col items-start justify-center text-left px-8 transition-transform duration-300 hover:-translate-y-1' 
+           style='width: 360px; height: 360px; border-radius: 12px; background: linear-gradient(180deg, rgba(240, 240, 240, 0.5) 33.18%, rgba(224, 241, 249, 0.5) 94.72%); backdrop-filter: blur(6.6px); box-shadow: 0px 0px 6px 0px #00000080; margin: 0 auto;'>
+        <div class='w-14 h-14 rounded-full flex items-center justify-center text-white mb-6 shadow-sm' style='background-color: #0B1F3B;'>
+           <i class='fas fa-code text-2xl'></i>
         </div>
-        {{/each}}
-
+        <h3 class='text-xl font-semibold font-montserrat leading-snug mb-4' style='color: #0B1F3B;'>
+          Code Class
+        </h3>
+        <p class='text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 2.2;">
+          Learn programming, AI, and data technology through practical projects designed to prepare you for real industry challenges.
+        </p>
       </div>
+
+      <!-- DUMMY 2: Business Class -->
+      <div class='flex flex-col items-start justify-center text-left px-8 transition-transform duration-300 hover:-translate-y-1' 
+           style='width: 360px; height: 360px; border-radius: 12px; background: linear-gradient(180deg, rgba(240, 240, 240, 0.5) 33.18%, rgba(224, 241, 249, 0.5) 94.72%); backdrop-filter: blur(6.6px); box-shadow: 0px 0px 6px 0px #00000080; margin: 0 auto;'>
+        <div class='w-14 h-14 rounded-full flex items-center justify-center text-white mb-6 shadow-sm' style='background-color: #0B1F3B;'>
+           <i class='fas fa-briefcase text-2xl'></i>
+        </div>
+        <h3 class='text-xl font-semibold font-montserrat leading-snug mb-4' style='color: #0B1F3B;'>
+          Business Class
+        </h3>
+        <p class='text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 2.2;">
+          Learn business management from conventional foundations to modern digital strategies to support effective business growth.
+        </p>
+      </div>
+
+      <!-- DUMMY 3: Design Class -->
+      <div class='flex flex-col items-start justify-center text-left px-8 transition-transform duration-300 hover:-translate-y-1' 
+           style='width: 360px; height: 360px; border-radius: 12px; background: linear-gradient(180deg, rgba(240, 240, 240, 0.5) 33.18%, rgba(224, 241, 249, 0.5) 94.72%); backdrop-filter: blur(6.6px); box-shadow: 0px 0px 6px 0px #00000080; margin: 0 auto;'>
+        <div class='w-14 h-14 rounded-full flex items-center justify-center text-white mb-6 shadow-sm' style='background-color: #0B1F3B;'>
+           <i class='fas fa-pen-nib text-2xl'></i>
+        </div>
+        <h3 class='text-xl font-semibold font-montserrat leading-snug mb-4' style='color: #0B1F3B;'>
+          Design Class
+        </h3>
+        <p class='text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 2.2;">
+          Learn creative skills in visual design, UI/UX, and video editing to build professional digital experiences and strong creative portfolio.
+        </p>
+      </div>
+
     </div>
   </div>
 </section>
+
+{{!-- 
+KODE ASLI LOOPING 
+<section class='w-full py-24 bg-[#FAFAFA]'>
+  <div class='container mx-auto px-4 lg:px-8 max-w-7xl'>
+    <div class='text-center max-w-3xl mx-auto mb-16 space-y-4'>
+      <h2 class='text-3xl md:text-4xl font-semibold font-montserrat leading-tight'>
+        <span style="color: #6EB6E5;">{{t "test.specialProgram.trainingSection.tittle"}}</span> 
+      </h2>
+      <p class='max-w-2xl mx-auto text-lg leading-relaxed' style="color: rgba(0,0,0,0.8); font-family: 'Open Sans', sans-serif;">
+        {{t "test.specialProgram.trainingSection.description"}}
+      </p>
+    </div>
+    <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
+      {{#each kategori.jenis_kelas}}
+      <div class='flex flex-col items-start justify-center text-left px-8 transition-transform duration-300 hover:-translate-y-1' 
+           style='width: 360px; height: 360px; border-radius: 12px; background: linear-gradient(180deg, rgba(240, 240, 240, 0.5) 33.18%, rgba(224, 241, 249, 0.5) 94.72%); backdrop-filter: blur(6.6px); box-shadow: 0px 0px 6px 0px #00000080; margin: 0 auto;'>
+        <div class='w-14 h-14 rounded-full flex items-center justify-center text-white mb-6 shadow-sm' style='background-color: #0B1F3B;'>
+           <i class='{{computeIcon this.icon}} text-2xl'></i>
+        </div>
+        <h3 class='text-xl font-semibold font-montserrat leading-snug mb-4' style='color: #0B1F3B;'>
+          {{this.nama_jenis_kelas}}
+        </h3>
+        <p class='text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 2.2;">
+          {{getByLang this.deskripsi ../lang}}
+        </p>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>
+--}}

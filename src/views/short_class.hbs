@@ -9,7 +9,6 @@
     itemsPerPage: 6,
     loading: false,
     kelasItems: [],
-    lang: '{{lang}}',
 
             courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
@@ -29,15 +28,11 @@
     methodDropdownOpen: false,
 
     async init() {
+      // Hapus $watch lama, ganti dengan watch yang trigger fetch
       this.$watch('selectedType', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
       this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
       await this.fetchKelas();
-    },
-
-            getByLang(obj, lang) {
-      if (!obj || typeof obj !== 'object') return '';
-      return obj[lang] || obj.id || obj.en || '';
     },
 
     async fetchKelas() {
@@ -87,38 +82,16 @@
   }"
 >
 
-<style>
-  html {
-    scroll-behavior: smooth;
-  }
-</style>
-{{> special_program/hero_section}}
+{{> short_class/hero_section}}
 
-<!-- NEW KESATRIAN ACADEMY STICKY NAV & SECTIONS -->
-{{> special_program/nav_sticky}}
-{{> special_program/participants_dummy}}
-{{> special_program/what_you_learn_dummy}}
-{{> special_program/benefits_dummy}}
-{{> special_program/learning_flow_dummy}}
-{{> special_program/schedule_fees_dummy}}
-{{> special_program/gallery_dummy}}
-{{> special_program/faq_dummy}}
-<!-- END NEW KESATRIAN ACADEMY SECTIONS -->
+{{> short_class/program}}
 
-<!-- OLD SECTIONS RETAINED BUT COMMENTED OUT PER USER REQUEST -->
-<!--
-{{> special_program/benefit}}
+{{> short_class/benefit}}
 
-{{> special_program/topic}}
+{{> short_class/alumni}}
 
-{{> special_program/alumni}}
+{{> short_class/gallery}}
 
-{{> special_program/gallery}}
-
-{{> special_program/contact}}
-
-{{> special_program/faq}}
--->
+{{> short_class/cta}}
 
 </div>
-

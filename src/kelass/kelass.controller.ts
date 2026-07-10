@@ -30,7 +30,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('program')
 export class KelassController {
-  constructor(private readonly kelassService: KelassService) {}
+  constructor(private readonly kelassService: KelassService) { }
 
   @Roles('admin', 'super_admin')
   @Post()
@@ -483,18 +483,34 @@ export class KelassController {
     // const benefit_kelas = await this.kelassService.findBenefitKelas(kelasId);
     const teknologi = await this.kelassService.findTeknologiKelas(kelasId);
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
-    res.render('kelas/Bdetail', {
-      kelas,
-      user: req.user,
-      kelass,
-      check_user,
-      // pertanyaan_kelas,
-      // alur_kelas,
-      // mentor,
-      // benefit_kelas,
-      teknologi,
-      cicilan,
-    });
+
+    if (kelas.check_paid === false) {
+      res.render('detail_program/free_program/index', {
+        kelas,
+        user: req.user,
+        kelass,
+        check_user,
+        // pertanyaan_kelas,
+        // alur_kelas,
+        // mentor,
+        // benefit_kelas,
+        teknologi,
+        cicilan,
+      });
+    } else {
+      res.render('kelas/Bdetail', {
+        kelas,
+        user: req.user,
+        kelass,
+        check_user,
+        // pertanyaan_kelas,
+        // alur_kelas,
+        // mentor,
+        // benefit_kelas,
+        teknologi,
+        cicilan,
+      });
+    }
   }
 
   @Get(':id')
@@ -506,10 +522,10 @@ export class KelassController {
     let isUserInKelas = false;
     if (!req.user) {
       const kelas = await this.kelassService.findOneKelasUser(id);
-      // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
-      // const alur_kelas = await this.kelassService.findAlurKelas(id);
+      const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+      const alur_kelas = await this.kelassService.findAlurKelas(id);
       // const mentor = await this.kelassService.findMentorKelas(id);
-      // const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+      const benefit_kelas = await this.kelassService.findBenefitKelas(id);
       const teknologi = await this.kelassService.findTeknologiKelas(id);
       const cicilan = await this.kelassService.findCicilanKelas(id);
       const user_kelas = await this.kelassService.findUserKelas(id);
@@ -519,10 +535,10 @@ export class KelassController {
         kelas,
         kelass,
         daftar,
-        // pertanyaan_kelas,
-        // alur_kelas,
+        pertanyaan_kelas,
+        alur_kelas,
         // mentor,
-        // benefit_kelas,
+        benefit_kelas,
         teknologi,
         cicilan,
         user_kelas,
@@ -557,28 +573,40 @@ export class KelassController {
         });
       } else {
         const kelas = await this.kelassService.findOneKelasUser(id);
-        // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
-        // const alur_kelas = await this.kelassService.findAlurKelas(id);
+        const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+        const alur_kelas = await this.kelassService.findAlurKelas(id);
         // const mentor = await this.kelassService.findMentorKelas(id);
-        // const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+        const benefit_kelas = await this.kelassService.findBenefitKelas(id);
         const teknologi = await this.kelassService.findTeknologiKelas(id);
         const cicilan = await this.kelassService.findCicilanKelas(id);
         const user_kelas = await this.kelassService.findUserKelas(id);
         const kelass = await this.kelassService.allClassExcept(kelas.id);
         const daftar = await this.kelassService.sumStudent(kelas.id);
-        res.render('kelas/Bdetail', {
-          user: req.user,
-          kelas,
-          kelass,
-          daftar,
-          // pertanyaan_kelas,
-          // alur_kelas,
-          // mentor,
-          // benefit_kelas,
-          teknologi,
-          user_kelas,
-          cicilan,
-        });
+        if (kelas.check_paid === false) {
+          res.render('detail_program/free_program/index', {
+            user: req.user,
+            kelas,
+            kelass,
+            daftar,
+            teknologi,
+            user_kelas,
+            cicilan,
+          });
+        } else {
+          res.render('kelas/Bdetail', {
+            user: req.user,
+            kelas,
+            kelass,
+            daftar,
+            // pertanyaan_kelas,
+            // alur_kelas,
+            // mentor,
+            // benefit_kelas,
+            teknologi,
+            user_kelas,
+            cicilan,
+          });
+        }
       }
     }
   }

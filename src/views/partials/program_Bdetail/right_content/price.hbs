@@ -3,12 +3,23 @@
   
   <!-- Learning Date -->
   <div class="flex items-start gap-4">
-    <div class="mt-1 text-slate-600">
-      <i class="far fa-calendar-alt text-xl"></i>
+    <div class="mt-1 text-black">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+        <circle cx="7.5" cy="14" r="1.5" fill="currentColor" stroke="none"></circle>
+        <circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none"></circle>
+        <circle cx="16.5" cy="14" r="1.5" fill="currentColor" stroke="none"></circle>
+        <circle cx="7.5" cy="18" r="1.5" fill="currentColor" stroke="none"></circle>
+        <circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none"></circle>
+        <circle cx="16.5" cy="18" r="1.5" fill="currentColor" stroke="none"></circle>
+      </svg>
     </div>
     <div>
-      <h3 class="font-bold text-slate-900 text-base">Learning Date</h3>
-      <p class="text-sm text-slate-600 mt-1">
+      <h3 class="font-montserrat font-semibold text-slate-900" style="font-size: 25px;">Learning Date</h3>
+      <p class="font-['Open_Sans',sans-serif] font-normal text-black mt-1" style="font-size: 20px;">
         <span x-text="new Date('{{kelas.tanggal_mulai}}').toLocaleDateString('en-US', {day: 'numeric', month: 'long'})"></span> - 
         <span x-text="new Date('{{kelas.tanggal_selesai}}').toLocaleDateString('en-US', {day: 'numeric', month: 'long', year: 'numeric'})"></span> - 
         <span class="capitalize">{{kelas.metode}}</span>
@@ -18,12 +29,15 @@
 
   <!-- Location -->
   <div class="flex items-start gap-4">
-    <div class="mt-1 text-slate-600">
-      <i class="fas fa-map-marker-alt text-xl"></i>
+    <div class="mt-1 text-black">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+      </svg>
     </div>
     <div>
-      <h3 class="font-bold text-slate-900 text-base">Location</h3>
-      <p class="text-sm text-slate-600 mt-1">
+      <h3 class="font-montserrat font-semibold text-slate-900" style="font-size: 25px;">Location</h3>
+      <p class="font-['Open_Sans',sans-serif] font-normal text-black mt-1" style="font-size: 20px;">
         {{#if kelas.lokasi}}
           <span x-text="getByLang({{json kelas.lokasi}}, lang) || '{{kelas.lokasi.[0]}}'"></span>
         {{else}}
@@ -35,22 +49,24 @@
 
   <!-- Capacity -->
   <div class="flex items-start gap-4">
-    <div class="mt-1 text-slate-600">
-      <i class="fas fa-user-friends text-xl"></i>
+    <div class="mt-1 text-black">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" class="w-6 h-6">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+      </svg>
     </div>
     <div>
-      <h3 class="font-bold text-slate-900 text-base">Capacity</h3>
-      <p class="text-sm text-slate-600 mt-1">
+      <h3 class="font-montserrat font-semibold text-slate-900" style="font-size: 25px;">Capacity</h3>
+      <p class="font-['Open_Sans',sans-serif] font-normal text-black mt-1" style="font-size: 20px;">
         {{kelas.kuota}} Students
       </p>
     </div>
   </div>
 
-  <div class="border-t border-slate-200 my-4"></div>
 
   <!-- Registration Close Info -->
   <div class="text-center pb-2">
-    <p class="text-red-600 font-semibold text-sm">
+    <p class="text-red-600 font-semibold" style="font-size: 25px;">
       Registration is Open Until <span x-text="new Date('{{kelas.tanggal_mulai}}').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})"></span>
     </p>
   </div>

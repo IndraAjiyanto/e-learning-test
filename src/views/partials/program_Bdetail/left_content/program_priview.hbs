@@ -1,18 +1,18 @@
       <div class="mb-10">
         <!-- Badge Batch & Start Date -->
-        <div class="flex items-center justify-center w-full max-w-xl border-2 border-slate-200 bg-white rounded-full px-14 py-2 shadow-sm mb-8">
-          <span class="text-[#0B1F3B] font-bold text-xl tracking-wide">
-            {{kelas.grup}} - Start Learning <span x-text="new Date('{{kelas.tanggal_mulai}}').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})"></span>
+        <div class="flex items-center justify-center border border-slate-200 bg-white rounded-xl shadow-sm mb-3 px-4 mx-auto md:mx-0 w-full" style="width: 100%; max-width: 828px; height: 82px;">
+          <span class="text-[#0B1F3B] font-montserrat font-semibold tracking-wide text-center leading-none" style="font-size: 35px;">
+            {{kelas.grup}} - Start Learning <span x-text="(() => { const d = new Date('{{kelas.tanggal_mulai}}'); return isNaN(d) ? 'TBA' : d.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'}) })()"></span>
           </span>
         </div>
 
         <!-- Title -->
-        <h1 class="text-4xl md:text-5xl font-bold text-[#0B1F3B] mb-6 leading-tight">
+        <h1 class="font-montserrat font-semibold text-[#0B1F3B] mb-2 leading-tight text-3xl" style="font-size: 45px; margin-left: 6px;">
           {{kelas.nama_kelas}}
         </h1>
 
         <!-- Description -->
-        <div class="text-slate-700 text-lg leading-relaxed max-w-3xl" x-html="getByLang({{json kelas.deskripsi}}, lang)">
+        <div class="font-['Open_Sans',sans-serif] font-normal text-3xl text-black leading-relaxed max-w-3xl" style="margin-left: 6px;" x-html="getByLang({{json kelas.deskripsi}}, lang)">
           {{#each kelas.deskripsi}}
             <p class="mb-4">{{this}}</p>
           {{/each}}
