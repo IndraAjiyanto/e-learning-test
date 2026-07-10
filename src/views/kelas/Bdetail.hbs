@@ -7,44 +7,53 @@
     </button>
 
     <div x-data="{
-        activeTab: localStorage.getItem('activeDetailTab') || 'what_you_learn',
         participants: null, what_you_learn: null, benefits: null, learning_flow: null,
         schedule_fees: null, gallery: null, faq: null, lang: '{{lang}}',
         loading: { participants: false, what_you_learn: false, benefits: false, learning_flow: false, schedule_fees: false, gallery: false, faq: false },
         fetched: { participants: false, what_you_learn: false, benefits: false, learning_flow: false, schedule_fees: false, gallery: false, faq: false },
-        init() { const savedTab = localStorage.getItem('activeDetailTab'); if (savedTab) this.activeTab = savedTab; this.fetchTab(this.activeTab); this.$watch('activeTab', value => localStorage.setItem('activeDetailTab', value)); },
+        async init() {
+            // Fetch all async tabs on load
+            await Promise.all([
+                this.fetchTab('benefits'),
+                this.fetchTab('faq'),
+                this.fetchTab('learning_flow')
+            ]);
+        },
+        get snakeFlow() {
+            const items = this.learning_flow?.alur_kelas || [];
+            const rows = [];
+            for (let i = 0; i < items.length; i += 6) {
+                let row = items.slice(i, i + 6);
+                if ((i / 6) % 2 !== 0) {
+                    row = row.slice().reverse();
+                }
+                rows.push(row);
+            }
+            return rows;
+        },
         async fetchTab(tab) {
-          if (['what_you_learn', 'participants', 'schedule_fees', 'gallery'].includes(tab)) return;
           if (this.fetched[tab]) return;
           this.loading[tab] = true;
           try {
             const map = { benefits: '/program/api/detail/{{kelas.id}}/benefit', faq: '/program/api/detail/{{kelas.id}}/faq', learning_flow: '/program/api/detail/{{kelas.id}}/flow' };
-            if(map[tab]) { const res = await fetch(map[tab]); const json = await res.json(); this[tab] = json; this.fetched[tab] = true; }
+            if(map[tab]) {
+                const res = await fetch(map[tab]);
+                const json = await res.json();
+                this[tab] = json;
+                this.fetched[tab] = true;
+            }
           } catch(e) { console.error(e); } finally { this.loading[tab] = false; }
         },
-        getByLang(obj, lang) { if (!obj || typeof obj !== 'object') return ''; return obj[lang] || obj.id || obj.en || ''; },
-        switchTab(tab) { this.activeTab = tab; localStorage.setItem('activeDetailTab', tab); this.fetchTab(tab); }
+        getByLang(obj, lang) { if (!obj || typeof obj !== 'object') return ''; return obj[lang] || obj.id || obj.en || ''; }
     }">
 
-        <!-- Main Content Area: Preview + Aside -->
+        <!-- Main Content Area -->
         <div class='grid grid-cols-1 lg:grid-cols-3 gap-10 mb-10'>
             <div class='lg:col-span-2'>
                 {{> program_Bdetail/left_content/program_priview}}
             </div>
 
-            <aside class='space-y-6' x-data="{
-                previewUrl: null, copied: false, paymentType: 'full', installmentMonths: 0, fileError: '', waError: '', isValidFile: false, isValidWa: false, fileInputTouched: false, waInputTouched: false,
-                cicilanData: [ {{#each cicilan}} { id: {{this.id}}, bulan: {{this.bulan}}, dp: {{this.dp}}, harga: {{json this.harga}} }{{#unless @last}},{{/unless}} {{/each}} ],
-                hasCicilan: {{#if cicilan.length}}true{{else}}false{{/if}},
-                copyToClipboard() { navigator.clipboard.writeText('2847 9237 4298 1234'); this.copied = true; setTimeout(() => this.copied = false, 2000); },
-                setPaymentType(type) { this.paymentType = type; if (type === 'installment' && this.installmentMonths === 0 && this.availableMonths.length > 0) this.installmentMonths = this.availableMonths[0]; },
-                getCicilanByMonth(months) { return this.cicilanData.find(c => c.bulan === months) || null; },
-                get installmentAmount() { if (!this.installmentMonths || this.installmentMonths === 0) return 0; const cicilan = this.getCicilanByMonth(this.installmentMonths); return cicilan && cicilan.dp ? cicilan.dp : Math.ceil({{kelas.harga}} / this.installmentMonths); },
-                get totalCicilanAmount() { if (!this.installmentMonths || this.installmentMonths === 0) return {{kelas.harga}}; const cicilan = this.getCicilanByMonth(this.installmentMonths); return cicilan && cicilan.harga && cicilan.harga.length > 0 ? cicilan.harga.reduce((sum, h) => sum + h, 0) : {{kelas.harga}}; },
-                get availableMonths() { return this.cicilanData.map(c => c.bulan); },
-                validateFile(event) { const file = event.target.files[0]; this.fileError = ''; this.isValidFile = false; this.previewUrl = null; this.fileInputTouched = true; if (!file) return; const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']; if (!allowedTypes.includes(file.type)) { this.fileError = 'File type not allowed.'; event.target.value = ''; return; } if (file.size > 5 * 1024 * 1024) { this.fileError = 'File size exceeds 5MB.'; event.target.value = ''; return; } this.isValidFile = true; this.previewUrl = URL.createObjectURL(file); },
-                validateWa(event) { const value = event.target.value; this.waError = ''; this.isValidWa = false; this.waInputTouched = true; if (!value) return; const cleanValue = value.replace(/[\s\-\(\)]/g, ''); if (!/^\d+$/.test(cleanValue) || cleanValue.length < 10 || cleanValue.length > 13 || (!cleanValue.startsWith('0') && !cleanValue.startsWith('62'))) { this.waError = 'Invalid WA format.'; return; } this.isValidWa = true; }
-            }">
+            <aside class='space-y-6'>
                 <div class='p-8 border border-slate-300 rounded-lg bg-white/60 space-y-6 sticky top-6'>
                     {{> program_Bdetail/right_content/price}}
                     {{#if user}}
@@ -70,9 +79,8 @@
             </aside>
         </div>
 
-        <!-- Full Width Tabs Area -->
-        {{> program_Bdetail/left_content/tab}}
-        <div class="mt-8">
+        <!-- Consolidated Content Area -->
+        <div class="mt-8 space-y-12">
             {{> program_Bdetail/left_content/tab_content/participants}}
             {{> program_Bdetail/left_content/tab_content/information}}
             {{> program_Bdetail/left_content/tab_content/benefit}}
@@ -84,4 +92,3 @@
     </div>
   </div>
 </div>
-{{!-- {{> program_Bdetail/other_program}} --}}

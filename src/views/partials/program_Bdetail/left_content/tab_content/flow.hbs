@@ -1,23 +1,10 @@
-<div x-show="activeTab === 'learning_flow'" x-transition x-data="{
-    get snakeFlow() {
-        const items = this.learning_flow?.alur_kelas || [];
-        const rows = [];
-        for (let i = 0; i < items.length; i += 6) {
-            let row = items.slice(i, i + 6);
-            if ((i / 6) % 2 !== 0) {
-                row = row.slice().reverse();
-            }
-            rows.push(row);
-        }
-        return rows;
-    }
-}">
+<div>
 
   <div x-show="loading.learning_flow" class="flex justify-center py-16">
     <i class="fas fa-spinner fa-spin text-4xl text-[#0B1F3B]"></i>
   </div>
 
-  <div x-show="!loading.learning_flow && learning_flow">
+  <div>
     <div class='bg-transparent rounded-xl p-6'>
       <div class="text-center mb-8">
         <h3 class='text-lg border-gray-900 inline-flex px-4 rounded-full font-light border bg-[#6EB6E5]/20'>
