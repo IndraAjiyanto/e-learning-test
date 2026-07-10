@@ -49,14 +49,14 @@ async function bootstrap() {
       nama_kategori_uniq: 'Short Class',
       icon: 'short.png',
       deskripsi: ['class free', 'class free', 'class free'],
-      type: 'Program',
+      type: 'Free Program',
     },
     {
       nama_kategori: 'Course',
       nama_kategori_uniq: 'Course',
       icon: 'course.png',
       deskripsi: ['class advance', 'class advance', 'class advance'],
-      type: 'Program',
+      type: 'Free Program',
     },
     {
       nama_kategori: 'Bootcamp',

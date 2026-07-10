@@ -108,7 +108,7 @@ export class KategorisController {
         superiority,
         pertanyaan_umum,
       });
-    } else if (kategori?.type === 'Program') {
+    } else if (kategori?.type === 'Free Program') {
       if (kategori.nama_kategori === 'Short Class') {
         res.render('short_class', { kategori, user: req.user, alumni });
       } else {
