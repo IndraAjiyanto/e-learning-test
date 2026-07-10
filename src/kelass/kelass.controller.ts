@@ -485,7 +485,6 @@ export class KelassController {
     const cicilan = await this.kelassService.findCicilanKelas(kelasId);
 
     if (kelas.check_paid === false) {
-      // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
       res.render('detail_program/free_program/index', {
         kelas,
         user: req.user,
@@ -523,38 +522,27 @@ export class KelassController {
     let isUserInKelas = false;
     if (!req.user) {
       const kelas = await this.kelassService.findOneKelasUser(id);
-      // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
-      // const alur_kelas = await this.kelassService.findAlurKelas(id);
+      const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+      const alur_kelas = await this.kelassService.findAlurKelas(id);
       // const mentor = await this.kelassService.findMentorKelas(id);
-      // const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+      const benefit_kelas = await this.kelassService.findBenefitKelas(id);
       const teknologi = await this.kelassService.findTeknologiKelas(id);
       const cicilan = await this.kelassService.findCicilanKelas(id);
       const user_kelas = await this.kelassService.findUserKelas(id);
       const kelass = await this.kelassService.allClassExcept(kelas.id);
       const daftar = await this.kelassService.sumStudent(kelas.id);
-      if (kelas.check_paid === false) {
-        res.render('detail_program/free_program/index', {
-          kelas,
-          kelass,
-          daftar,
-          teknologi,
-          cicilan,
-          user_kelas,
-        });
-      } else {
-        res.render('kelas/Bdetail', {
-          kelas,
-          kelass,
-          daftar,
-          // pertanyaan_kelas,
-          // alur_kelas,
-          // mentor,
-          // benefit_kelas,
-          teknologi,
-          cicilan,
-          user_kelas,
-        });
-      }
+      res.render('kelas/Bdetail', {
+        kelas,
+        kelass,
+        daftar,
+        pertanyaan_kelas,
+        alur_kelas,
+        // mentor,
+        benefit_kelas,
+        teknologi,
+        cicilan,
+        user_kelas,
+      });
     } else {
       const kelas = await this.kelassService.findOneKelasUserLaunch(id);
       for (const u of kelas.user_kelas) {
@@ -585,10 +573,10 @@ export class KelassController {
         });
       } else {
         const kelas = await this.kelassService.findOneKelasUser(id);
-        // const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
-        // const alur_kelas = await this.kelassService.findAlurKelas(id);
+        const pertanyaan_kelas = await this.kelassService.findPertanyaanKelas(id);
+        const alur_kelas = await this.kelassService.findAlurKelas(id);
         // const mentor = await this.kelassService.findMentorKelas(id);
-        // const benefit_kelas = await this.kelassService.findBenefitKelas(id);
+        const benefit_kelas = await this.kelassService.findBenefitKelas(id);
         const teknologi = await this.kelassService.findTeknologiKelas(id);
         const cicilan = await this.kelassService.findCicilanKelas(id);
         const user_kelas = await this.kelassService.findUserKelas(id);
