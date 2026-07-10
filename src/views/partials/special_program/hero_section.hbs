@@ -1,52 +1,36 @@
-<section class='relative pt-20 pb-48 min-h-screen bg-[linear-gradient(180deg,_#FAFAFA_0%,_#CEE5F6_50%,_#FAFAFA_95%)] overflow-hidden justify-center items-center flex'>
-  <div
-    class="absolute top-24 inset-x-12 bottom-12 bg-cover bg-center bg-no-repeat rounded-2xl"
-    style="background-image: url('/public/image/Frame-1618876030.png'); z-index: 0; background-position: center top;"
-  ></div>
+<section 
+  class='relative w-full min-h-[500px] md:min-h-[700px] xl:min-h-[850px] flex items-center justify-center bg-cover bg-center bg-no-repeat' 
+  style="background-image: url('https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"
+>
+  <div class='absolute inset-0 bg-black/60'></div>
+
+<div class='relative z-10 container mx-auto px-4 flex flex-col items-center text-center mt-10'>      
 
   <div class=' w-full relative z-10'>
     <div class='max-w-6xl flex flex-col md:flex-row md:gap-12 items-center justify-between px-2'>
 
-     
-
-      <!-- Text Content (Left) -->
-      <div class="px-20 w-full text-center md:text-left">
-        <div class="inline-flex items-center gap-3 rounded-full bg-secondary/10 px-5 py-2">
-  <i class="fa-solid fa-graduation-cap text-secondary text-2xl"></i>
-  <span class="text-secondary text-2xl font-semibold">
-    {{t 'test.specialProgram.heroSection.enrollmentOpen'}}
-  </span>
-</div>
-        <h1 class='text-5xl md:text-6xl font-semibold text-white mb-6 mt-8 font-montserrat leading-tight'>
-          {{kategori.nama_kategori}}
-        </h1>
-        <p class='text-5xl md:text-6xl text-secondary font-semibold mb-4'>
-          {{getByLang kategori.text lang}}
-        </p>
-        <p class='text-base text-white max-w-sm'>
-          {{getByLang kategori.deskripsi lang}}
-        </p>
-        <div class="mt-7 flex flex-col md:flex-row items-center md:items-start gap-6">
-        <button
-          onclick="document.getElementById('programs').scrollIntoView({ behavior: 'smooth', block: 'start' })"
-          class='btn border-0 hover:bg-slate-50 inline-block bg-secondary text-white hover:text-slate-900 px-5 py-1 rounded-xl font-light text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all'
-        >
-          {{t "test.specialProgram.heroSection.buttonExploreLearningPath"}}
-          <i class='fas fa-arrow-down text-xs'></i>
-        </button>
-         <a
-          href="/dashboard/about"
-          class='btn text-lg bg-transparent text-white border-2 border-white px-10 py-2 rounded-xl hover:bg-slate-900 hover:text-white transition-all duration-300 transform hover:-translate-y-1 font-bold uppercase tracking-widest text-sm w-full md:w-auto text-center'
-        >
-        <i class="fa-solid fa-headset"></i>
-          {{t 'test.home.heroSection.buttonConsultation'}}
-        </a>
-        </div>
-      </div>
-
-     
-
+  <div class='w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#70B4E3] flex items-center justify-center mb-6 shadow-lg'>
+      <img src='{{kategori.icon}}' alt='{{kategori.nama_kategori}}' class='w-10 h-10 md:w-12 md:h-12 object-contain filter brightness-0 contrast-200'>
     </div>
-  </div>
 
+    <h1 class='w-full mx-auto text-center text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-bold text-white mb-4 font-montserrat tracking-tight leading-tight'>
+      {{kategori.nama_kategori}}
+    </h1>
+
+    <p class='w-full mx-auto text-center text-base md:text-lg lg:text-xl text-gray-200 max-w-2xl leading-relaxed mb-12'>
+      {{getByLang kategori.deskripsi lang}}
+    </p>
+
+  <button
+      onclick="document.getElementById('programs').scrollIntoView({ behavior: 'smooth', block: 'start' })"
+      class='mx-auto group flex items-center justify-center gap-3.5 bg-[#093F74] hover:bg-[#06284B] text-white px-24 py-6 rounded-lg font-semibold text-[17px] transition-all duration-300 shadow-md hover:shadow-xl'
+    >
+      <span>{{t "test.specialProgram.contactSection.buttonViewProgram"}}</span>
+      
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:translate-y-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      </svg>
+    </button>
+    
+  </div>
 </section>

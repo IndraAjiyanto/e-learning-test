@@ -1,0 +1,81 @@
+<div class="w-full text-slate-900"
+    x-data="{
+    activeTab: localStorage.getItem('activeDetailTab') || 'info',
+
+    benefit: null,
+    faq: null,
+    flow: null,
+    mentor: null,
+    lang: '{{lang}}',
+    
+    // Status loading per tab
+    loading: { benefit: false, faq: false, flow: false, mentor: false },
+    fetched: { benefit: false, faq: false, flow: false, mentor: false },
+
+    init() {
+        const savedTab = localStorage.getItem('activeDetailTab');
+        if (savedTab) this.activeTab = savedTab;
+        
+        this.fetchTab(this.activeTab);
+
+        this.$watch('activeTab', value => {
+            localStorage.setItem('activeDetailTab', value);
+        });
+    },
+
+    async fetchTab(tab) {
+      if (tab === 'info') return;
+      if (this.fetched[tab]) return; // Cegah ambil data berulang
+      
+      this.loading[tab] = true;
+      try {
+        const map = {
+          benefit: '/program/api/detail/{{kelas.id}}/benefit',
+          faq:     '/program/api/detail/{{kelas.id}}/faq',
+          flow:    '/program/api/detail/{{kelas.id}}/flow',
+          mentor:  '/program/api/detail/{{kelas.id}}/mentor'
+        };
+        const res = await fetch(map[tab]);
+        this[tab] = await res.json();
+        this.fetched[tab] = true;
+      } catch(e) {
+        console.error('Gagal mengambil data tab:', e);
+    } finally {
+        this.loading[tab] = false;
+    }
+    },
+
+    switchTab(tab) {
+    this.activeTab = tab;
+    this.fetchTab(tab);
+    }
+}"
+>
+
+
+  <!-- Ganti semua awalan detail_free_program menjadi free_program -->
+  {{> free_program/hero_section }}
+
+  {{> free_program/nav_menu }}
+
+{{> free_program/participants_section }}
+
+{{> free_program/what_you_get_section }}
+
+{{> free_program/schedule_fees_section }}
+
+{{> free_program/gallery }}
+
+{{> free_program/faq }}
+
+
+
+
+
+
+  
+  {{!-- {{> free_program/program }} --}}
+  {{!-- {{> free_program/benefit }} --}}
+  {{!-- {{> free_program/cta }} --}}
+
+</div>

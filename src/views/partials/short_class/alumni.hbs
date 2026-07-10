@@ -1,5 +1,5 @@
-<section class='w-full py-24 bg-[#FAFAFA]'>
-  <div class='container mx-auto px-4 lg:px-8 max-w-7xl' 
+<section class='w-full py-20 bg-[#fafafa]'>
+    <div class='container mx-auto px-4 lg:px-8 max-w-7xl' 
        x-data="{
           scrollNext() { this.$refs.slider.scrollBy({ left: 380, behavior: 'smooth' }); },
           scrollPrev() { this.$refs.slider.scrollBy({ left: -380, behavior: 'smooth' }); }
@@ -20,22 +20,18 @@
           <style> div::-webkit-scrollbar { display: none; } </style>
           
           {{#if alumni}}
-            
-            <!-- ============================================= -->
-            <!-- 1. DATA ASLI DARI DATABASE BE TAMPIL DI SINI  -->
-            <!-- ============================================= -->
             {{#each alumni}}
+            
             <div class='snap-center flex-shrink-0 flex flex-col justify-between text-left px-8 py-8 transition-transform duration-300 hover:-translate-y-1' 
                  style='width: 360px; height: 420px; border-radius: 12px; background: linear-gradient(180deg, #FFFFFF 0%, #E3F2F9 100%); border: 1px solid #E5E7EB; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>
               
-              <!-- Bagian Atas -->
               <div>
                 <div style="color: #0B1F3B; font-size: 50px; line-height: 0.8; font-family: serif; margin-bottom: 16px;">❝</div>
                 <p class='text-[14px] md:text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 1.8;">
                   {{getByLang pesan ../lang}}
                 </p>
               </div>
-              <!-- Bagian Bawah -->
+
               <div>
                 <hr class="w-full border-gray-200 mb-5 mt-4" />
                 <div class="flex items-center gap-4 h-[72px]">
@@ -55,8 +51,6 @@
             {{/each}}
           {{else}}
            
-             <!-- 2. JIKA DATABASE KOSONG, MUNCUL 5 DUMMY INI   -->
-             <!-- Dummy 1 -->
              <div class='snap-center flex-shrink-0 flex flex-col justify-between text-left px-8 py-8 transition-transform duration-300 hover:-translate-y-1' 
                   style='width: 360px; height: 420px; border-radius: 12px; background: linear-gradient(180deg, #FFFFFF 0%, #E3F2F9 100%); border: 1px solid #E5E7EB; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>
                <div>
