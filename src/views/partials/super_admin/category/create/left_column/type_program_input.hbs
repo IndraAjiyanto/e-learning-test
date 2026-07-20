@@ -109,7 +109,7 @@
 
             <!-- Hidden inputs for selected jenis_kelas IDs -->
             <template x-for='id in formData.jenis_kelas' :key='id'>
-              <input type='hidden' name='jenis_kelas[]' :value='id' />
+              <input type='hidden' name='courseType[]' :value='id' />
             </template>
 
             <p class='text-xs text-gray-500 mt-2'>Click to select program types</p>

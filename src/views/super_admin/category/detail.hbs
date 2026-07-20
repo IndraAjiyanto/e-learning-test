@@ -225,11 +225,11 @@
     </div>
   {{/if}}
 
-  {{#if category.jenis_kelas}}
+  {{#if category.courseTypes}}
     <div class='space-y-2 border-t pt-4'>
       <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Type Program</span>
       <div class='flex flex-wrap gap-2'>
-        {{#each category.jenis_kelas}}
+        {{#each category.courseTypes}}
           <span class='inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium'>
             <i class="{{computeIcon this.icon}}"></i>
             {{this.name_clasess_type}}

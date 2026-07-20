@@ -4,9 +4,9 @@
     x-data="{
     // Form validation states
     formData: {
-      name_clasess_type: `{{jenis_kelas.name_clasess_type}}`,
-      description: { id: `{{jenis_kelas.description.id}}`, en: `{{jenis_kelas.description.en}}`, ja: `{{jenis_kelas.description.ja}}` },
-      icon: `{{jenis_kelas.icon}}`
+      name_clasess_type: `{{courseType.name_clasess_type}}`,
+      description: { id: `{{courseType.description.id}}`, en: `{{courseType.description.en}}`, ja: `{{courseType.description.ja}}` },
+      icon: `{{courseType.icon}}`
     },
     formErrors: {
       name_clasess_type: '',
@@ -96,7 +96,7 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Update Program Type</h2>
 
     <form
-      action='/type-program/{{jenis_kelas.id}}?_method=PATCH'
+      action='/type-program/{{courseType.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
       x-data='{ loading: false }'

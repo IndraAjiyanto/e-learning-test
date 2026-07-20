@@ -48,6 +48,6 @@ export class CreateCategoriesDto {
   @IsString({ each: true })
   info_ja?: string[];
 
-  @IsEnum(['Special Program', 'Program', 'Free Program'])
+  @IsEnum(['Special Program', 'Paid Program', 'Free Program'])
   type: 'Special Program' | 'Paid Program' | 'Free Program';
 }

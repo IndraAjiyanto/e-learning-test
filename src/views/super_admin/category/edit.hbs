@@ -35,14 +35,14 @@
         en: `{{category.for.en}}`,
         ja: `{{category.for.ja}}`
       },
-      jenis_kelas: [],
+      courseTypes: [],
       info_id: {{{json category.info_id}}} || [''],
       info_en: {{{json category.info_en}}} || [''],
       info_ja: {{{json category.info_ja}}} || [''],
       type: `{{category.type}}`,
     },
 
-    selectedJenisKelas: {{{json category.jenis_kelas}}},
+    selectedJenisKelas: {{{json category.courseTypes}}} || [],
     searchJenisKelas: '',
     showJenisKelasDropdown: false,
     availableJenisKelas: {{{json courseTypes}}},
@@ -63,7 +63,7 @@
       text:       { id: '', en: '', ja: '' },
       contact: '',
       for:        { id: '', en: '', ja: '' },
-      jenis_kelas: '',
+      courseTypes: '',
       info_id: '',
       info_en: '',
       info_ja: '',
@@ -80,7 +80,7 @@
       text:      { id: false, en: false, ja: false },
       contact: false,
       for:       { id: false, en: false, ja: false },
-      jenis_kelas: {{{json category.jenis_kelas}}}.length > 0,
+      courseTypes: ({{{json category.courseTypes}}} || []).length > 0,
       info_id: {{{json category.info_id}}} && {{{json category.info_id}}}.some(info => info.trim()),
       info_en: {{{json category.info_en}}} && {{{json category.info_en}}}.some(info => info.trim()),
       info_ja: {{{json category.info_ja}}} && {{{json category.info_ja}}}.some(info => info.trim()),
@@ -97,7 +97,7 @@
       text:      { id: false, en: false, ja: false },
       contact: false,
       for:       { id: false, en: false, ja: false },
-      jenis_kelas: {{{json category.jenis_kelas}}}.length > 0,
+      courseTypes: ({{{json category.courseTypes}}} || []).length > 0,
       info_id: true,
       info_en: true,
       info_ja: true,
@@ -109,7 +109,7 @@
      * ============================================================ */
 
     init() {
-      this.formData.jenis_kelas = this.selectedJenisKelas.map(jk => jk.id);
+      this.formData.courseTypes = this.selectedJenisKelas.map(jk => jk.id);
     },
 
     /* ============================================================
@@ -247,8 +247,8 @@ case 'contact':
           break;
 
         case 'jenis_kelas':
-          this.formValid.jenis_kelas = Array.isArray(value) && value.length > 0;
-          this.formErrors.jenis_kelas = '';
+          this.formValid.courseTypes = Array.isArray(value) && value.length > 0;
+          this.formErrors.courseTypes = '';
           break;
       }
     },
@@ -260,8 +260,8 @@ case 'contact':
     selectJenisKelas(jk) {
       if (!this.selectedJenisKelas.some(s => s.id === jk.id)) {
         this.selectedJenisKelas.push(jk);
-        this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
-        this.validateField('jenis_kelas', this.formData.jenis_kelas);
+        this.formData.courseTypes = this.selectedJenisKelas.map(s => s.id);
+        this.validateField('jenis_kelas', this.formData.courseTypes);
       }
       this.searchJenisKelas = '';
       this.showJenisKelasDropdown = false;
@@ -269,8 +269,8 @@ case 'contact':
 
     removeJenisKelas(id) {
       this.selectedJenisKelas = this.selectedJenisKelas.filter(s => s.id !== id);
-      this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
-      this.validateField('jenis_kelas', this.formData.jenis_kelas);
+      this.formData.courseTypes = this.selectedJenisKelas.map(s => s.id);
+      this.validateField('jenis_kelas', this.formData.courseTypes);
     },
 
     get filteredJenisKelas() {
