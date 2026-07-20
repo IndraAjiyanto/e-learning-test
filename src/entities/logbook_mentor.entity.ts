@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Pertemuan } from './pertemuan.entity';
+import { Session } from './session.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
@@ -16,16 +16,16 @@ export class LogbookMentor {
   id: number;
 
   @Column()
-  kegiatan: string;
+  activity: string;
 
   @Column()
-  rincian_kegiatan: string;
+  activity_detail: string;
 
   @Column()
-  dokumentasi: string;
+  documentation: string;
 
   @Column()
-  kendala: string;
+  obstacle: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -37,9 +37,9 @@ export class LogbookMentor {
   @Exclude()
   user: User;
 
-  @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.logbook_mentor, {
+  @ManyToOne(() => Session, (session) => session.logbookMentors, {
     onDelete: 'CASCADE',
   })
   @Exclude()
-  pertemuan: Pertemuan;
+  session: Session;
 }

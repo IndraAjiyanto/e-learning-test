@@ -20,7 +20,7 @@ export class CreateSocialDto {
   email: string;
 
   @IsString()
-  alamat: string;
+  address: string;
 
   @IsString()
   link_alamat: string;

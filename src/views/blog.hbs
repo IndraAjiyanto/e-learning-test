@@ -111,8 +111,8 @@
         this.filteredKategoriList = [...this.allKategori];
       } else {
         const query = this.searchKategoriQuery.toLowerCase().trim();
-        this.filteredKategoriList = this.allKategori.filter(kategori =>
-          this.getLocalizedText(kategori.nama)?.toLowerCase().includes(query)
+        this.filteredKategoriList = this.allKategori.filter(category =>
+          this.getLocalizedText(category.name)?.toLowerCase().includes(query)
         );
       }
     },
@@ -130,7 +130,7 @@
       this.currentPage = 1;
       if (kategoriId) {
         const kat = this.allKategori.find(k => k.id == kategoriId);
-        this.selectedKategori = kat ? this.getLocalizedText(kat.nama) : '';
+        this.selectedKategori = kat ? this.getLocalizedText(kat.name) : '';
       } else {
         this.selectedKategori = '';
       }
@@ -153,7 +153,7 @@
     },
 
     getCategoryName(item) {
-      return this.getLocalizedText(item.kategori_blog?.nama) || null;
+      return this.getLocalizedText(item.kategori_blog?.name) || null;
     },
 
     viewBlog(id) {

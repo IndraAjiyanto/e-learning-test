@@ -3,13 +3,13 @@ import { CreateParagrafDto } from './dto/create-paragraf.dto';
 import { UpdateParagrafDto } from './dto/update-paragraf.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Paragraf } from 'src/entities/paragraf.entity';
+import { Paragraph } from 'src/entities/paragraph.entity';
 
 @Injectable()
 export class ParagrafService {
   constructor(
-    @InjectRepository(Paragraf)
-    private readonly paragrafRepository: Repository<Paragraf>,
+    @InjectRepository(Paragraph)
+    private readonly paragrafRepository: Repository<Paragraph>,
   ) {}
 
   async create(createParagrafDto: CreateParagrafDto) {
@@ -19,14 +19,14 @@ export class ParagrafService {
 
   async noPertemuan() {
     const paragrafList = await this.paragrafRepository.find({
-      order: { p_ke: 'DESC' },
+      order: { paragraphOrder: 'DESC' },
       take: 1,
     });
     const paragraf_old = paragrafList[0];
     if (!paragraf_old) {
       return 0;
     }
-    return paragraf_old.p_ke + 1;
+    return paragraf_old.paragraphOrder + 1;
   }
 
   async findAll() {
@@ -61,8 +61,8 @@ export class ParagrafService {
 
     const allParagraf = await this.paragrafRepository.find();
     for (const item of allParagraf) {
-      if (item.p_ke > paragraf.p_ke) {
-        item.p_ke -= 1;
+      if (item.paragraphOrder > paragraf.paragraphOrder) {
+        item.paragraphOrder -= 1;
         await this.paragrafRepository.save(item);
       }
     }

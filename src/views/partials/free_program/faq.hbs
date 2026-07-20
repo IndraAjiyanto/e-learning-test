@@ -22,7 +22,7 @@
         faqs: [
           {{#if pertanyaan_umum.length}}
             {{#each pertanyaan_umum}}
-              { question: `{{getByLang pertanyaan ../lang}}`, answer: `{{getByLang jawaban ../lang}}` }{{#unless @last}},{{/unless}}
+              { question: `{{getByLang pertanyaan ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
             {{/each}}
           {{else}}
             // DUMMY DATA: Tampil otomatis jika database/tabel pertanyaan_umum kosong
@@ -83,7 +83,7 @@
               x-transition:leave-end="opacity-0 max-h-0"
               class="overflow-hidden"
             >
-              <!-- Padding Left (pl-10) untuk menyejajarkan teks jawaban dengan teks pertanyaan (melewati bullet) -->
+              <!-- Padding Left (pl-10) untuk menyejajarkan teks answer dengan teks pertanyaan (melewati bullet) -->
               <div class="pl-10 pr-4 pb-6">
                 <p class="text-gray-600 leading-relaxed text-[15px] md:text-[16px]" x-html="faq.answer"></p>
               </div>

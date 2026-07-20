@@ -2,16 +2,16 @@ import { Module } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { PortfoliosController } from './portfolios.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Portfolio } from 'src/entities/portfolio.entity';
+import { Portofolios } from 'src/entities/portofolios.entity';
 import { User } from 'src/entities/user.entity';
-import { Kelas } from 'src/entities/kelas.entity';
-import { Kategori } from 'src/entities/kategori.entity';
-import { JenisKelas } from 'src/entities/jenis_kelas.entity';
+import { Course } from 'src/entities/course.entity';
+import { Category } from 'src/entities/category.entity';
+import { CourseType } from 'src/entities/course_type.entity';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Portfolio, User, Kelas, Kategori, JenisKelas]),
+    TypeOrmModule.forFeature([Portofolios, User, Course, Category, CourseType]),
     CommonModule,
   ],
   controllers: [PortfoliosController],

@@ -64,14 +64,14 @@
                 
               case 'isi':
                 if (!value.trim()) {
-                  this.formErrors.isi[lang] = 'Description is required';
-                  this.formValid.isi[lang] = false;
+                  this.formErrors.description[lang] = 'Description is required';
+                  this.formValid.description[lang] = false;
                 } else if (value.trim().length < 10) {
-                  this.formErrors.isi[lang] = 'Description must be at least 10 characters';
-                  this.formValid.isi[lang] = false;
+                  this.formErrors.description[lang] = 'Description must be at least 10 characters';
+                  this.formValid.description[lang] = false;
                 } else {
-                  this.formErrors.isi[lang] = '';
-                  this.formValid.isi[lang] = true;
+                  this.formErrors.description[lang] = '';
+                  this.formValid.description[lang] = true;
                 }
                 break;
             }

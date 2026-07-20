@@ -2,14 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTeknologiDto } from './dto/create-teknologi.dto';
 import { UpdateTeknologiDto } from './dto/update-teknologi.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Teknologi } from 'src/entities/teknologi.entity';
+import { Technology } from 'src/entities/technology.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class TeknologiService {
   constructor(
-    @InjectRepository(Teknologi)
-    private readonly teknologiRepository: Repository<Teknologi>,
+    @InjectRepository(Technology)
+    private readonly teknologiRepository: Repository<Technology>,
   ) {}
 
   async create(createTeknologiDto: CreateTeknologiDto) {

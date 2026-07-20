@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGambarBenefitDto } from './dto/create-gambar_benefit.dto';
 import { UpdateGambarBenefitDto } from './dto/update-gambar_benefit.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
+import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Repository } from 'typeorm';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -11,15 +11,15 @@ import { existsSync } from 'fs';
 @Injectable()
 export class GambarBenefitService {
   constructor(
-    @InjectRepository(GambarBenefit)
-    private readonly gambarBenefitRepository: Repository<GambarBenefit>,
+    @InjectRepository(ImageBenefit)
+    private readonly gambarBenefitRepository: Repository<ImageBenefit>,
   ) { }
 
   async create(createGambarBenefitDto: CreateGambarBenefitDto) {
-    const gambar_benefit = await this.gambarBenefitRepository.create(
+    const image_benefit = await this.gambarBenefitRepository.create(
       createGambarBenefitDto,
     );
-    return await this.gambarBenefitRepository.save(gambar_benefit);
+    return await this.gambarBenefitRepository.save(image_benefit);
   }
 
   async findAll() {

@@ -9,23 +9,23 @@
         en: `{{pertanyaanKelas.pertanyaan.en}}`,
         ja: `{{pertanyaanKelas.pertanyaan.ja}}`
       },
-      jawaban: {
-        id: `{{pertanyaanKelas.jawaban.id}}`,
-        en: `{{pertanyaanKelas.jawaban.en}}`,
-        ja: `{{pertanyaanKelas.jawaban.ja}}`
+      answer: {
+        id: `{{pertanyaanKelas.answer.id}}`,
+        en: `{{pertanyaanKelas.answer.en}}`,
+        ja: `{{pertanyaanKelas.answer.ja}}`
       }
     },
     formErrors: {
       pertanyaan: { id: '', en: '', ja: '' },
-      jawaban: { id: '', en: '', ja: '' }
+      answer: { id: '', en: '', ja: '' }
     },
     formValid: {
       pertanyaan: { id: true, en: true, ja: true },
-      jawaban: { id: true, en: true, ja: true }
+      answer: { id: true, en: true, ja: true }
     },
     formTouched: {
       pertanyaan: { id: false, en: false, ja: false },
-      jawaban: { id: false, en: false, ja: false }
+      answer: { id: false, en: false, ja: false }
     },
 
     validateField(field, value, lang = null) {
@@ -51,16 +51,16 @@
           }
           break;
           
-        case 'jawaban':
+        case 'answer':
           if (!value.trim()) {
-            this.formErrors.jawaban[lang] = 'Answer is required';
-            this.formValid.jawaban[lang] = false;
+            this.formErrors.answer[lang] = 'Answer is required';
+            this.formValid.answer[lang] = false;
           } else if (value.trim().length < 20) {
-            this.formErrors.jawaban[lang] = 'Answer must be at least 20 characters';
-            this.formValid.jawaban[lang] = false;
+            this.formErrors.answer[lang] = 'Answer must be at least 20 characters';
+            this.formValid.answer[lang] = false;
           } else {
-            this.formErrors.jawaban[lang] = '';
-            this.formValid.jawaban[lang] = true;
+            this.formErrors.answer[lang] = '';
+            this.formValid.answer[lang] = true;
           }
           break;
       }
@@ -68,20 +68,20 @@
 
     canSubmit() {
       const pertanyaanValid = Object.values(this.formValid.pertanyaan).every(v => v);
-      const jawabanValid = Object.values(this.formValid.jawaban).every(v => v);
+      const jawabanValid = Object.values(this.formValid.answer).every(v => v);
       return pertanyaanValid && jawabanValid;
     },
 
     hasFormErrors() {
       return Object.values(this.formErrors.pertanyaan).some(e => e !== '') ||
-             Object.values(this.formErrors.jawaban).some(e => e !== '');
+             Object.values(this.formErrors.answer).some(e => e !== '');
     }
   }"
   >
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit FAQ</h2>
 
     <form
-      action='/question-program/{{pertanyaanKelas.id}}/{{pertanyaanKelas.kelas.id}}?_method=PATCH'
+      action='/question-program/{{pertanyaanKelas.id}}/{{pertanyaanKelas.course.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
       x-data ="{ loading: false }"
@@ -102,7 +102,7 @@
           Update
         </button>
         <a
-          href='/program/detail/program/admin/{{pertanyaanKelas.kelas.id}}'
+          href='/program/detail/program/admin/{{pertanyaanKelas.course.id}}'
 :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>
           Cancel

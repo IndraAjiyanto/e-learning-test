@@ -2,20 +2,20 @@ import { IsInt, IsString } from 'class-validator';
 
 export class CreateLogbookMentorDto {
   @IsString()
-  kegiatan: string;
+  activity: string;
 
   @IsString()
-  rincian_kegiatan: string;
+  activity_detail: string;
 
   @IsString()
-  dokumentasi: string;
+  documentation: string;
 
   @IsString()
-  kendala: string;
+  obstacle: string;
 
   @IsInt()
   userId: number;
 
   @IsInt()
-  pertemuanId: number;
+  sessionId: number;
 }

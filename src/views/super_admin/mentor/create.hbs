@@ -16,27 +16,27 @@
 
         // Form validation states
         formData: {
-          nama: '',
-          posisi: { id: '', en: '', ja: '' },
-          deskripsi: { id: '', en: '', ja: '' },
+          name: '',
+          position: { id: '', en: '', ja: '' },
+          description: { id: '', en: '', ja: '' },
           linkedin: '',
         },
         formErrors: {
-          nama: '',
-          posisi: { id: '', en: '', ja: '' },
-          deskripsi: { id: '', en: '', ja: '' },
+          name: '',
+          position: { id: '', en: '', ja: '' },
+          description: { id: '', en: '', ja: '' },
           linkedin: '',
         },
         formValid: {
-          nama: false,
-          posisi: { id: false, en: false, ja: false },
-          deskripsi: { id: false, en: false, ja: false },
+          name: false,
+          position: { id: false, en: false, ja: false },
+          description: { id: false, en: false, ja: false },
           linkedin: false,
         },
         formTouched: {
-          nama: false,
-          posisi: { id: false, en: false, ja: false },
-          deskripsi: { id: false, en: false, ja: false },
+          name: false,
+          position: { id: false, en: false, ja: false },
+          description: { id: false, en: false, ja: false },
           linkedin: false,
         },
 
@@ -50,39 +50,39 @@
           }
           
           switch(field) {
-            case 'nama':
+            case 'name':
               if (!value.trim()) {
-                this.formErrors.nama = 'Mentor name is required';
-                this.formValid.nama = false;
+                this.formErrors.name = 'Mentor name is required';
+                this.formValid.name = false;
               } else {
-                this.formErrors.nama = '';
-                this.formValid.nama = true;
+                this.formErrors.name = '';
+                this.formValid.name = true;
               }
               break;
               
-            case 'posisi':
+            case 'position':
               if (!value.trim()) {
-                this.formErrors.posisi[lang] = 'Position is required';
-                this.formValid.posisi[lang] = false;
+                this.formErrors.position[lang] = 'Position is required';
+                this.formValid.position[lang] = false;
               } else if (value.trim().length < 2) {
-                this.formErrors.posisi[lang] = 'Position must be at least 2 characters';
-                this.formValid.posisi[lang] = false;
+                this.formErrors.position[lang] = 'Position must be at least 2 characters';
+                this.formValid.position[lang] = false;
               } else {
-                this.formErrors.posisi[lang] = '';
-                this.formValid.posisi[lang] = true;
+                this.formErrors.position[lang] = '';
+                this.formValid.position[lang] = true;
               }
               break;
               
-            case 'deskripsi':
+            case 'description':
               if (!value.trim()) {
-                this.formErrors.deskripsi[lang] = 'Description is required';
-                this.formValid.deskripsi[lang] = false;
+                this.formErrors.description[lang] = 'Description is required';
+                this.formValid.description[lang] = false;
               } else if (value.trim().length < 10) {
-                this.formErrors.deskripsi[lang] = 'Description must be at least 10 characters';
-                this.formValid.deskripsi[lang] = false;
+                this.formErrors.description[lang] = 'Description must be at least 10 characters';
+                this.formValid.description[lang] = false;
               } else {
-                this.formErrors.deskripsi[lang] = '';
-                this.formValid.deskripsi[lang] = true;
+                this.formErrors.description[lang] = '';
+                this.formValid.description[lang] = true;
               }
               break;
               
@@ -160,16 +160,16 @@
 
         canSubmit() {
           const imageValid = !this.hasFile || this.isValid;
-          const posisiValid = Object.values(this.formValid.posisi).every(v => v);
-          const deskripsiValid = Object.values(this.formValid.deskripsi).every(v => v);
-          const formValid = this.formValid.nama && posisiValid && deskripsiValid && this.formValid.linkedin;
+          const posisiValid = Object.values(this.formValid.position).every(v => v);
+          const deskripsiValid = Object.values(this.formValid.description).every(v => v);
+          const formValid = this.formValid.name && posisiValid && deskripsiValid && this.formValid.linkedin;
           return imageValid && formValid;
         },
 
         hasFormErrors() {
-          return this.formErrors.nama !== '' || 
-                 Object.values(this.formErrors.posisi).some(e => e !== '') ||
-                 Object.values(this.formErrors.deskripsi).some(e => e !== '') ||
+          return this.formErrors.name !== '' || 
+                 Object.values(this.formErrors.position).some(e => e !== '') ||
+                 Object.values(this.formErrors.description).some(e => e !== '') ||
                  this.formErrors.linkedin !== '' 
         }
       }"

@@ -2,58 +2,56 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { AbsensModule } from './absens/absens.module';
-import { MaterisModule } from './materis/materis.module';
-import { KelassModule } from './kelass/kelass.module';
-import { PertemuansModule } from './pertemuans/pertemuans.module';
+import { AttendancesModule } from './attendances/attendances.module';
+import { MaterialsModule } from './materials/material.module';
+import { CoursesModule } from './courses/courses.module';
+import { SessionsModule } from './sessions/session.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './data-source';
 import { AuthModule } from './auth/auth.module';
 import { BiodatasModule } from './biodatas/biodatas.module';
 import { PortfoliosModule } from './portfolios/portfolios.module';
-import { KategorisModule } from './kategoris/kategoris.module';
-import { JawabansModule } from './jawabans/jawabans.module';
-import { TugassModule } from './tugass/tugass.module';
-import { PembayaransModule } from './pembayarans/pembayarans.module';
-import { PertanyaansModule } from './pertanyaans/pertanyaans.module';
-import { JawabanTugassModule } from './jawaban_tugass/jawaban_tugass.module';
-import { JawabanUsersModule } from './jawaban_users/jawaban_users.module';
-import { KomentarModule } from './komentar/komentar.module';
+import { CategoriesModule } from './categories/categories.module';
+import { AnswersModule } from './answers/answers.module';
+import { AssignmentsModule } from './assignments/assignments.module';
+import { PaymentsModule } from './payments/payments.module';
+import { QuestionsModule } from './questions/questions.module';
+import { AnswerTasksModule } from './assignment_answers/assignment_answers.module';
+import { UserAnswersModule } from './user_answers/user_answers.module';
+import { CommentsModule } from './comments/comments.module';
 import { LogbookModule } from './logbook/logbook.module';
-import { MingguModule } from './minggu/minggu.module';
+import { WeeksModule } from './weeks/weeks.module';
 import { QuizModule } from './quiz/quiz.module';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { PertanyaanUmumModule } from './pertanyaan_umum/pertanyaan_umum.module';
+import { FaqsModule } from './faqs/faqs.module';
 import { AlumniModule } from './alumni/alumni.module';
-import { JenisKelasModule } from './jenis_kelas/jenis_kelas.module';
+import { CourseTypesModule } from './course_types/course_types.module';
 import { SertifikatModule } from './sertifikat/sertifikat.module';
-import { KerjaSamaModule } from './kerja_sama/kerja_sama.module';
-import { PertanyaanKelasModule } from './pertanyaan_kelas/pertanyaan_kelas.module';
+import { CollaborationsModule } from './collaborations/collaborations.module';
+import { CourseQuestionsModule } from './course_questions/course_questions.module';
 import { LogbookMentorModule } from './logbook_mentor/logbook_mentor.module';
 import { BenefitModule } from './benefit/benefit.module';
 import { MentorModule } from './mentor/mentor.module';
-import { AlurKelasModule } from './alur_kelas/alur_kelas.module';
-import { BenefitKelasModule } from './benefit_kelas/benefit_kelas.module';
+import { CourseFlowsModule } from './course_flows/course_flows.module';
+import { ProgramBenefitModule } from './course_benefits/course_benefits.module';
 import { TeamModule } from './team/team.module';
-import { VisiModule } from './visi/visi.module';
+import { VisionsModule } from './visions/visions.module';
 import { SocialModule } from './social/social.module';
-import { BlogModule } from './blog/blog.module';
-import { KategoriBlogModule } from './kategori_blog/kategori_blog.module';
-import { CicilanModule } from './cicilan/cicilan.module';
+import { InstallmentsModule } from './installments/installments.module';
 import { GambarBenefitModule } from './gambar_benefit/gambar_benefit.module';
-import { TentangModule } from './tentang/tentang.module';
+import { AboutModule } from './about/about.module';
 import { TeknologiModule } from './teknologi/teknologi.module';
 import { TeamLeadModule } from './team_lead/team_lead.module';
 import { ValueModule } from './value/value.module';
 import { CommitmentModule } from './commitment/commitment.module';
-import { PendaftaranModule } from './pendaftaran/pendaftaran.module';
+import { RegistrationsModule } from './registrations/registrations.module';
 import { ParagrafModule } from './paragraf/paragraf.module';
 import { ContactModule } from './contact/contact.module';
 import { AwardModule } from './award/award.module';
 import { ExperienceModule } from './experience/experience.module';
 import { BackgroundModule } from './background/background.module';
-import { MisiModule } from './misi/misi.module';
+import { MissionsModule } from './missions/missions.module';
 import { BenefitCategoryModule } from './benefit_category/benefit_category.module';
 import { FlowCategoryModule } from './flow_category/flow_category.module';
 import { FaqModule } from './faq/faq.module';
@@ -66,8 +64,6 @@ import {
   I18nModule,
 } from 'nestjs-i18n';
 import { OurExperienceModule } from './our_experience/our_experience.module';
-import { TopicModule } from './topic/topic.module';
-import { ComentModule } from './coment/coment.module';
 import { GalleryModule } from './gallery/gallery.module';
 import path from 'path';
 
@@ -92,62 +88,58 @@ import path from 'path';
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
     UsersModule,
-    AbsensModule,
-    MaterisModule,
-    KelassModule,
-    PertemuansModule,
+    AttendancesModule,
+    MaterialsModule,
+    CoursesModule,
+    SessionsModule,
     AuthModule,
     BiodatasModule,
     PortfoliosModule,
-    KategorisModule,
-    JawabansModule,
-    TugassModule,
-    PembayaransModule,
-    PertanyaansModule,
-    JawabanTugassModule,
-    JawabanUsersModule,
-    KomentarModule,
+    CategoriesModule,
+    AnswersModule,
+    AssignmentsModule,
+    PaymentsModule,
+    QuestionsModule,
+    AnswerTasksModule,
+    UserAnswersModule,
+    CommentsModule,
     LogbookModule,
-    MingguModule,
+    WeeksModule,
     QuizModule,
     DashboardModule,
-    PertanyaanUmumModule,
+    FaqsModule,
     AlumniModule,
-    JenisKelasModule,
+    CourseTypesModule,
     SertifikatModule,
-    KerjaSamaModule,
-    PertanyaanKelasModule,
+    CollaborationsModule,
+    CourseQuestionsModule,
     LogbookMentorModule,
     BenefitModule,
     MentorModule,
-    AlurKelasModule,
-    BenefitKelasModule,
+    CourseFlowsModule,
+    ProgramBenefitModule,
     TeamModule,
-    VisiModule,
+    VisionsModule,
     SocialModule,
-    BlogModule,
-    KategoriBlogModule,
-    CicilanModule,
+    InstallmentsModule,
     GambarBenefitModule,
-    TentangModule,
+    AboutModule,
     TeknologiModule,
     TeamLeadModule,
     ValueModule,
     CommitmentModule,
-    PendaftaranModule,
+    RegistrationsModule,
     ParagrafModule,
     ContactModule,
     AwardModule,
     ExperienceModule,
     BackgroundModule,
-    MisiModule,
+    MissionsModule,
     BenefitCategoryModule,
     FlowCategoryModule,
     FaqModule,
     SuperiorityModule,
     OurExperienceModule,
-    TopicModule,
-    ComentModule,
     GalleryModule,
   ],
   controllers: [AppController],

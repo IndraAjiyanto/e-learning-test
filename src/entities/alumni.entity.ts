@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Kelas } from './kelas.entity';
+import { Course } from './course.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
@@ -18,20 +18,20 @@ export class Alumni {
   profile: string;
 
   @Column('jsonb', { nullable: true })
-  nama: string[];
+  name: string[];
 
   @Column('jsonb', { nullable: true })
-  pesan: string[];
+  message: string[];
 
   @Column('jsonb', { nullable: true })
-  alumni: string[];
+  program: string[];
 
   @Column('jsonb', { nullable: true })
-  posisi_sekarang: string[];
+  currentPosition: string[];
 
-  @ManyToOne(() => Kelas, (kelas) => kelas.alumni, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.alumni, { onDelete: 'CASCADE' })
   @Exclude()
-  kelas: Kelas;
+  course: Course;
 
   @CreateDateColumn()
   createdAt: Date;

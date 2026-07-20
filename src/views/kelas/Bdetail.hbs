@@ -50,10 +50,10 @@
       
       try {
         const map = {
-          benefit: '/program/api/detail/{{kelas.id}}/benefit',
-          faq:     '/program/api/detail/{{kelas.id}}/faq',
-          flow:    '/program/api/detail/{{kelas.id}}/flow',
-          mentor:  '/program/api/detail/{{kelas.id}}/mentor'
+          benefit: '/program/api/detail/{{course.id}}/benefit',
+          faq:     '/program/api/detail/{{course.id}}/faq',
+          flow:    '/program/api/detail/{{course.id}}/flow',
+          mentor:  '/program/api/detail/{{course.id}}/mentor'
         };
         const res = await fetch(map[tab]);
         const json = await res.json();
@@ -139,15 +139,15 @@
           if (cicilan && cicilan.dp) {
             return cicilan.dp;
           }
-          return Math.ceil({{kelas.harga}} / this.installmentMonths);
+          return Math.ceil({{course.harga}} / this.installmentMonths);
         },
         get totalCicilanAmount() {
-          if (!this.installmentMonths || this.installmentMonths === 0) return {{kelas.harga}};
+          if (!this.installmentMonths || this.installmentMonths === 0) return {{course.harga}};
           const cicilan = this.getCicilanByMonth(this.installmentMonths);
           if (cicilan && cicilan.harga && cicilan.harga.length > 0) {
             return cicilan.harga.reduce((sum, h) => sum + h, 0);
           }
-          return {{kelas.harga}};
+          return {{course.harga}};
         },
         get availableMonths() {
           return this.cicilanData.map(c => c.bulan);
@@ -219,21 +219,21 @@
           <!-- Form Upload -->
           {{#if check_user}}
             <a
-              href='/program/{{kelas.id}}'
+              href='/program/{{course.id}}'
               class='btn text-base w-full text-center  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold '
             >
               <i class='fas fa-play-circle mr-2'></i>
               {{t "test.detailProgram.continueLearning"}}
             </a>
           {{else}}
-            {{#if kelas.check_paid}}
-              {{#if (check daftar kelas.kuota)}}
+            {{#if course.check_paid}}
+              {{#if (check daftar course.kuota)}}
 {{> program_Bdetail/right_content/upload_proof_of_payment/full_payment}}
 
 {{> program_Bdetail/right_content/upload_proof_of_payment/installment}}
               {{/if}}
             {{else}}
-              {{#if (check daftar kelas.kuota)}}
+              {{#if (check daftar course.kuota)}}
 {{> program_Bdetail/right_content/upload_proof_of_payment/free_payment}}
               {{/if}}
             {{/if}}

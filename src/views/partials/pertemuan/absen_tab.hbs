@@ -21,7 +21,7 @@
       </div>
 
       <!-- Tambah Absen -->
-      <a href="/attendance/create/{{pertemuan.id}}"
+      <a href="/attendance/create/{{session.id}}"
          class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
         Create Attendance
       </a>
@@ -47,12 +47,12 @@
           <td class="px-6 py-4 text-sm text-gray-800" x-text="peserta.username"></td>
           <td class="px-6 py-4 text-sm text-gray-800" x-text="peserta.email"></td>
           <td class="px-6 py-4 text-sm">
-            <template x-for="pesertaAbsen in peserta.absen" :key="pesertaAbsen.id">
+            <template x-for="pesertaAbsen in peserta.attendance" :key="pesertaAbsen.id">
               <span class="font-medium" x-text="pesertaAbsen.status"></span>
               </template>
           </td>
           <td class="px-6 py-4 text-sm text-gray-800 flex items-center gap-3">
-            <template x-for="pesertaAbsen in peserta.absen" :key="pesertaAbsen.id">
+            <template x-for="pesertaAbsen in peserta.attendance" :key="pesertaAbsen.id">
                 <form :action="`/attendance/formEdit/${pesertaAbsen.id}`" method="get">
     <button type="submit" 
             class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition" 
@@ -73,7 +73,7 @@
   </button>
   </form>
 
-              <form :action="`/attendance/${pesertaAbsen.id}/{{pertemuan.id}}?_method=DELETE`" method="post" class="inline">
+              <form :action="`/attendance/${pesertaAbsen.id}/{{session.id}}?_method=DELETE`" method="post" class="inline">
                 <button type="submit" 
             onclick="confirmDelete(this)" 
             class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition" 
@@ -123,7 +123,7 @@ function absenData() {
     amount: 0,
 
     async fetchAbsens() {
-      const res = await fetch('/session/attendance/{{pertemuan.id}}');
+      const res = await fetch('/session/attendance/{{session.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },

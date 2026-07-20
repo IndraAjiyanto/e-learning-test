@@ -3,8 +3,8 @@
     class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
     x-data="{ 
     no: `{{gambar_benefit.no}}`,
-    previewUrl: `{{gambar_benefit.gambar}}`,
-    oldImage: `{{gambar_benefit.gambar}}`,
+    previewUrl: `{{gambar_benefit.image}}`,
+    oldImage: `{{gambar_benefit.image}}`,
     errorMessage: '',
     isValid: true,
     fileName: '',
@@ -33,7 +33,7 @@
       if (!allowedTypes.includes(file.type)) {
         this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
         this.isValid = false;
-        this.previewUrl = `{{gambar_benefit.gambar}}`;
+        this.previewUrl = `{{gambar_benefit.image}}`;
         return;
       }
 
@@ -42,11 +42,11 @@
       if (file.size > maxSize) {
         this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 3MB`;
         this.isValid = false;
-        this.previewUrl = `{{gambar_benefit.gambar}}`;
+        this.previewUrl = `{{gambar_benefit.image}}`;
         return;
       }
 
-      // Validasi dimensi gambar
+      // Validasi dimensi image
       const img = new Image();
       const objectUrl = URL.createObjectURL(file);
       
@@ -57,7 +57,7 @@
         if (img.width < 700 || img.width > 4000 || img.height < 700 || img.height > 1500) {
           this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: Width 700-4000px, Height 700-1500px`;
           this.isValid = false;
-          this.previewUrl = `{{gambar_benefit.gambar}}`;
+          this.previewUrl = `{{gambar_benefit.image}}`;
           URL.revokeObjectURL(objectUrl);
         } else {
           this.previewUrl = objectUrl;
@@ -69,14 +69,14 @@
       img.onerror = () => {
         this.errorMessage = 'Failed to load image';
         this.isValid = false;
-        this.previewUrl = `{{gambar_benefit.gambar}}`;
+        this.previewUrl = `{{gambar_benefit.image}}`;
         URL.revokeObjectURL(objectUrl);
       };
       
       img.src = objectUrl;
     },
     clearFile() {
-      this.previewUrl = `{{gambar_benefit.gambar}}`;
+      this.previewUrl = `{{gambar_benefit.image}}`;
       this.errorMessage = '';
       this.isValid = true;
       this.fileName = '';
@@ -101,7 +101,7 @@
       if (this.hasNewFile) {
         return this.isValid && this.no.trim() && Object.keys(this.errors).length === 0;
       }
-      // Jika tidak ada file baru, tetap bisa submit (gunakan gambar lama) tapi number harus ada
+      // Jika tidak ada file baru, tetap bisa submit (gunakan image lama) tapi number harus ada
       return this.no.trim() && Object.keys(this.errors).length === 0;
     }
   }"

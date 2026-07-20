@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateTeknologiDto {
   @IsString()
   @IsNotEmpty()
-  nama: string;
+  name: string;
 
   @IsString()
   @IsOptional()

@@ -4,27 +4,27 @@ import { Repository } from 'typeorm';
 import { BenefitCategory } from '../entities/benefit_category.entity';
 import { CreateBenefitCategoryDto } from './dto/create-benefit_category.dto';
 import { UpdateBenefitCategoryDto } from './dto/update-benefit_category.dto';
-import { Kategori } from '../entities/kategori.entity';
+import { Category } from '../entities/category.entity';
 
 @Injectable()
 export class BenefitCategoryService {
   constructor(
     @InjectRepository(BenefitCategory)
     private benefitCategoryRepository: Repository<BenefitCategory>,
-    @InjectRepository(Kategori)
-    private kategoriRepository: Repository<Kategori>,
+    @InjectRepository(Category)
+    private kategoriRepository: Repository<Category>,
   ) {}
 
   async create(createBenefitCategoryDto: CreateBenefitCategoryDto) {
-    const kategori = await this.kategoriRepository.findOne({
-      where: { id: createBenefitCategoryDto.kategoriId },
+    const category = await this.kategoriRepository.findOne({
+      where: { id: createBenefitCategoryDto.categoryId },
     });
-    if (!kategori) {
-      throw new NotFoundException('Kategori not found');
+    if (!category) {
+      throw new NotFoundException('Category not found');
     }
     const benefitCategory = await this.benefitCategoryRepository.create({
       ...createBenefitCategoryDto,
-      kategori,
+      category: category,
     });
     return await this.benefitCategoryRepository.save(benefitCategory);
   }
@@ -32,7 +32,7 @@ export class BenefitCategoryService {
   async findOne(id: number) {
     const benefitCategory = await this.benefitCategoryRepository.findOne({
       where: { id },
-      relations: ['kategori'],
+      relations: ['category'],
     });
     if (!benefitCategory) {
       throw new NotFoundException('BenefitCategory not found');
@@ -42,14 +42,14 @@ export class BenefitCategoryService {
 
   async update(id: number, updateBenefitCategoryDto: UpdateBenefitCategoryDto) {
     const benefitCategory = await this.findOne(id);
-    if (updateBenefitCategoryDto.kategoriId) {
-      const kategori = await this.kategoriRepository.findOne({
-        where: { id: updateBenefitCategoryDto.kategoriId },
+    if (updateBenefitCategoryDto.categoryId) {
+      const category = await this.kategoriRepository.findOne({
+        where: { id: updateBenefitCategoryDto.categoryId },
       });
-      if (!kategori) {
-        throw new NotFoundException('Kategori not found');
+      if (!category) {
+        throw new NotFoundException('Category not found');
       }
-      benefitCategory.kategori = kategori;
+      benefitCategory.category = category;
     }
     Object.assign(benefitCategory, updateBenefitCategoryDto);
     return await this.benefitCategoryRepository.save(benefitCategory);

@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('team')
 export class Team {
   @PrimaryGeneratedColumn()
   id: number;
@@ -14,14 +14,14 @@ export class Team {
   @Column()
   profile: string;
 
-  @Column()
-  nama: string;
+  @Column({ name: 'nama' })
+  name: string;
 
   @Column()
-  team_ke: number;
+  teamOrder: number;
 
-  @Column('jsonb', { nullable: true })
-  posisi: string[];
+  @Column('jsonb', { name: 'posisi', nullable: true })
+  position: string[];
 
   @Column()
   linkedin: string;
@@ -29,8 +29,8 @@ export class Team {
   @Column({ nullable: true })
   instagram: string;
 
-  @Column('jsonb', { nullable: true })
-  deskripsi: string[];
+  @Column('jsonb', { name: 'deskripsi', nullable: true })
+  description: string[];
 
   @CreateDateColumn()
   createdAt: Date;

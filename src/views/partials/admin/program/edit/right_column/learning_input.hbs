@@ -3,7 +3,7 @@
                                         <label
             class='block text-sm font-semibold text-gray-700 my-2'
           >Learning Targets</label>
-                    <div x-data="{ targets_id: {{json kelas.target_pembelajaran_id}} || [''] }">
+                    <div x-data="{ targets_id: {{json course.target_pembelajaran_id}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >ID</label>
@@ -35,7 +35,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ targets_en: {{json kelas.target_pembelajaran_en}} || [''] }">
+                    <div x-data="{ targets_en: {{json course.target_pembelajaran_en}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >EN</label>
@@ -67,7 +67,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ targets_ja: {{json kelas.target_pembelajaran_ja}} || [''] }">
+                    <div x-data="{ targets_ja: {{json course.target_pembelajaran_ja}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >JP</label>

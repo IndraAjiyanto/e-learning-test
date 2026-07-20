@@ -27,7 +27,7 @@
           />
 
         </div>
-                          <a href="/alumni/category/formCreate/{{kategori.id}}"
+                          <a href="/alumni/category/formCreate/{{category.id}}"
            class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition">
           Add Alumni
         </a>
@@ -56,30 +56,30 @@
           <tr class="hover:bg-gray-50 transition">
             <td class="px-6 py-4 text-sm text-gray-800" x-text="pageNumber * size + index + 1"></td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <img :src="alumni.profile" :alt="alumni.nama" class="w-10 h-10 rounded-full object-cover">
+              <img :src="alumni.profile" :alt="alumni.name" class="w-10 h-10 rounded-full object-cover">
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="nama in alumni.nama">
-              <div x-text="nama"></div>
+              <template x-for="name in alumni.name">
+              <div x-text="name"></div>
               </template>
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="pesan in alumni.pesan">
-              <div x-text="pesan.length > 50 ? pesan.substring(0, 50) + '...' : pesan"></div>
+              <template x-for="message in alumni.message">
+              <div x-text="message.length > 50 ? message.substring(0, 50) + '...' : message"></div>
               </template>
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="alumniStatus in alumni.alumni">
+              <template x-for="alumniStatus in alumni.program">
                 <div x-text="alumniStatus.length > 50 ? alumniStatus.substring(0, 50) + '...' : alumniStatus"></div>
                 </template>
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="posisi in alumni.posisi_sekarang">
-                <div x-text="posisi.length > 50 ? posisi.substring(0, 50) + '...' : posisi">
+              <template x-for="position in alumni.currentPosition">
+                <div x-text="position.length > 50 ? position.substring(0, 50) + '...' : position">
                 </div>
               </template>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-800" x-text="alumni.kelas.nama_kelas">
+            <td class="px-6 py-4 text-sm text-gray-800" x-text="alumni.course.name">
             </td>
                         <td class="px-6 py-4 text-sm flex items-center gap-3">
               <!-- Edit -->
@@ -101,7 +101,7 @@
               </a>
 
               <!-- Delete -->
-              <form :action="`/alumni/category/${alumni.id}/{{kategori.id}}?_method=DELETE`" method="post" class="inline">
+              <form :action="`/alumni/category/${alumni.id}/{{category.id}}?_method=DELETE`" method="post" class="inline">
                 <button type="button"
                         onclick="confirmDelete(this)"
                         class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition"
@@ -154,7 +154,7 @@
     amount: 0,
 
         async fetchAlumni() {
-      const res = await fetch('/category/alumni/{{kategori.id}}');
+      const res = await fetch('/category/alumni/{{category.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },
@@ -162,7 +162,7 @@
 
     get filteredData() {
       let filtered = this.data.filter(a =>
-        (`${a.nama} ${a.pesan} ${a.alumni} ${a.posisi_sekarang} ${a.kelas.nama_kelas}`).toLowerCase()
+        (`${a.name} ${a.message} ${a.program} ${a.currentPosition} ${a.course.name}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
       this.amount = filtered.length;

@@ -73,17 +73,17 @@ KODE ASLI LOOPING
       </p>
     </div>
     <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
-      {{#each kategori.jenis_kelas}}
+      {{#each category.jenis_kelas}}
       <div class='flex flex-col items-start justify-center text-left px-8 transition-transform duration-300 hover:-translate-y-1' 
            style='width: 360px; height: 360px; border-radius: 12px; background: linear-gradient(180deg, rgba(240, 240, 240, 0.5) 33.18%, rgba(224, 241, 249, 0.5) 94.72%); backdrop-filter: blur(6.6px); box-shadow: 0px 0px 6px 0px #00000080; margin: 0 auto;'>
         <div class='w-14 h-14 rounded-full flex items-center justify-center text-white mb-6 shadow-sm' style='background-color: #0B1F3B;'>
            <i class='{{computeIcon this.icon}} text-2xl'></i>
         </div>
         <h3 class='text-xl font-semibold font-montserrat leading-snug mb-4' style='color: #0B1F3B;'>
-          {{this.nama_jenis_kelas}}
+          {{this.name_clasess_type}}
         </h3>
         <p class='text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 2.2;">
-          {{getByLang this.deskripsi ../lang}}
+          {{getByLang this.description ../lang}}
         </p>
       </div>
       {{/each}}

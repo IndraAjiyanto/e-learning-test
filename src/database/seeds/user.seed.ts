@@ -3,22 +3,22 @@ import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
 import { AppModule } from 'src/app.module';
-import { Kategori } from 'src/entities/kategori.entity';
-import { Kelas, Metode, Proses } from 'src/entities/kelas.entity';
-import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import { Teknologi } from 'src/entities/teknologi.entity';
-import { Mentoring } from 'src/entities/mentoring.entity';
+import { Category } from 'src/entities/category.entity';
+import { Course, Method, ProcessState } from 'src/entities/course.entity';
+import { CourseType } from 'src/entities/course_type.entity';
+import { Technology } from 'src/entities/technology.entity';
+import { Mentorings } from 'src/entities/mentoring.entity';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const dataSource = app.get(DataSource);
 
   const userRepository = dataSource.getRepository(User);
-  const kategoriRepository = dataSource.getRepository(Kategori);
-  const kelassRepository = dataSource.getRepository(Kelas);
-  const jenisKelasRepository = dataSource.getRepository(JenisKelas);
-  const teknologiRepository = dataSource.getRepository(Teknologi);
-  const mentoringRepository = dataSource.getRepository(Mentoring);
+  const kategoriRepository = dataSource.getRepository(Category);
+  const kelassRepository = dataSource.getRepository(Course);
+  const courseTypeRepository = dataSource.getRepository(CourseType);
+  const teknologiRepository = dataSource.getRepository(Technology);
+  const mentoringRepository = dataSource.getRepository(Mentorings);
 
   const hashedPassword = await bcrypt.hash('12345678', 10);
 
@@ -93,11 +93,11 @@ async function bootstrap() {
     },
   ]);
 
-  await jenisKelasRepository.save([
+  await courseTypeRepository.save([
     {
-      nama_jenis_kelas: 'Web Development',
+      name_clasess_type: 'Web Development',
       icon: 'web_development.png',
-      deskripsi: ['development', 'development', 'development'],
+      description: ['development', 'development', 'development'],
     },
   ]);
 
@@ -123,8 +123,8 @@ async function bootstrap() {
       grup: 'grup whatsapp',
       lokasi: ['kantor wiratek'],
       link_lokasi: 'disini',
-      metode: 'offline' as Metode,
-      proses: 'acc' as Proses,
+      method: 'offline' as Method,
+      proses: 'acc' as ProcessState,
       kriteria_id: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
       launch: false,
       check_paid: true,

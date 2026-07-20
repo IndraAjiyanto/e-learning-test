@@ -6,12 +6,12 @@
             availableCategories: {{json categories}},
             get filteredCategories() {
               return this.availableCategories.filter(c =>
-                c.nama.en.toLowerCase().includes(this.search.toLowerCase())
+                c.name.en.toLowerCase().includes(this.search.toLowerCase())
               );
             },
             selectCategory(category) {
               this.selectedCategory = category;
-              this.search = category.nama.en;
+              this.search = category.name.en;
               this.showDropdown = false;
               $dispatch('category-selected', { category });
             },
@@ -55,7 +55,7 @@
                 >
                   <span
                     class='text-sm font-medium text-gray-700'
-                    x-text='category.nama.en'
+                    x-text='category.name.en'
                   ></span>
                 </button>
               </template>

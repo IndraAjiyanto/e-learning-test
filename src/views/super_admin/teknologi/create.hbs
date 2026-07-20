@@ -9,12 +9,12 @@
   class='space-y-6'
   x-data="{
     loading: false,
-    nama: '',
+    name: '',
     svg: '',
     svgPreview: '',
     svgError: '',
-    errors: { nama: null, svg: null, image: null },
-    success: { nama: false, svg: false, image: false },
+    errors: { name: null, svg: null, image: null },
+    success: { name: false, svg: false, image: false },
     dragover: false,
     imagePreview: null,
     
@@ -66,15 +66,15 @@
     },
 
     validateNama() {
-      if (!this.nama.trim()) {
-        this.errors.nama = 'Technology name is required';
-        this.success.nama = false;
-      } else if (this.nama.trim().length < 2) {
-        this.errors.nama = 'Technology name must be at least 2 characters';
-        this.success.nama = false;
+      if (!this.name.trim()) {
+        this.errors.name = 'Technology name is required';
+        this.success.name = false;
+      } else if (this.name.trim().length < 2) {
+        this.errors.name = 'Technology name must be at least 2 characters';
+        this.success.name = false;
       } else {
-        this.errors.nama = null;
-        this.success.nama = true;
+        this.errors.name = null;
+        this.success.name = true;
       }
     },
     validateSVG(text) {
@@ -98,7 +98,7 @@
       this.success.svg = true;
     },
     get canSubmit() {
-      return this.success.nama && (this.success.svg || this.success.image);
+      return this.success.name && (this.success.svg || this.success.image);
     }
   }"
   @submit.prevent="if (canSubmit) { loading = true; $el.submit(); } else { alert('Please fix validation errors, and ensure at least SVG or Image is provided.'); }"
@@ -180,7 +180,7 @@
 </form>
 
     <!-- Submit Warning -->
-    <template x-if='errors.nama || errors.svg || svgError'>
+    <template x-if='errors.name || errors.svg || svgError'>
       <div
         class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
       >

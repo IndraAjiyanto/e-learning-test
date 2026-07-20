@@ -4,7 +4,7 @@ import { UpdateAlumnusDto } from './dto/update-alumnus.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Repository } from 'typeorm';
-import { Kelas } from 'src/entities/kelas.entity';
+import { Course } from 'src/entities/course.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -13,41 +13,41 @@ export class AlumniService {
   constructor(
     @InjectRepository(Alumni)
     private readonly alumniRepository: Repository<Alumni>,
-    @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>,
+    @InjectRepository(Course)
+    private readonly kelasRepository: Repository<Course>,
   ) {}
   async create(createAlumnusDto: CreateAlumnusDto) {
-    const kelas = await this.kelasRepository.findOne({
-      where: { id: createAlumnusDto.kelasId },
+    const course = await this.kelasRepository.findOne({
+      where: { id: createAlumnusDto.courseId },
     });
-    if (!kelas) {
+    if (!course) {
       throw new NotFoundException('Program not found');
     }
     const alumni = await this.alumniRepository.create({
       ...createAlumnusDto,
-      kelas: kelas,
+      course: course,
     });
     await this.alumniRepository.save(alumni);
   }
 
   async findAll() {
-    return await this.alumniRepository.find({ relations: ['kelas'] });
+    return await this.alumniRepository.find({ relations: ['course'] });
   }
 
   async findAllKelas() {
     return await this.kelasRepository.find();
   }
 
-  async findKelasByKategori(kategoriId: number) {
+  async findKelasByKategori(categoryId: number) {
     return await this.kelasRepository.find({
-      where: { kategori: { id: kategoriId } },
+      where: { category: { id: categoryId } },
     });
   }
 
   async findOne(alumniId: number) {
     const alumni = await this.alumniRepository.findOne({
       where: { id: alumniId },
-      relations: ['kelas', 'kelas.kategori'],
+      relations: ['course', 'course.category'],
     });
     if (!alumni) {
       throw new NotFoundException('Alumni not found');

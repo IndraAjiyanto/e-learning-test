@@ -3,7 +3,7 @@
                                         <label
             class='block text-sm font-semibold text-gray-700 my-2'
           >Criteria</label>
-                    <div x-data="{ kriterias_id: {{json kelas.kriteria_id}} || [''] }">
+                    <div x-data="{ kriterias_id: {{json course.kriteria_id}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >ID</label>
@@ -35,7 +35,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ kriterias_en: {{json kelas.kriteria_en}} || [''] }">
+                    <div x-data="{ kriterias_en: {{json course.kriteria_en}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >EN</label>
@@ -67,7 +67,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ kriterias_ja: {{json kelas.kriteria_ja}} || [''] }">
+                    <div x-data="{ kriterias_ja: {{json course.kriteria_ja}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >JP</label>

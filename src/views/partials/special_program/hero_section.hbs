@@ -8,15 +8,15 @@
 
 
   <div class='w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#70B4E3] flex items-center justify-center mb-6 shadow-lg'>
-      <img src='{{kategori.icon}}' alt='{{kategori.nama_kategori}}' class='w-10 h-10 md:w-12 md:h-12 object-contain filter brightness-0 contrast-200'>
+      <img src="/{{category.icon}}" alt='{{category.name}}' class='w-10 h-10 md:w-12 md:h-12 object-contain filter brightness-0 contrast-200'>
     </div>
 
     <h1 class='w-full mx-auto text-center text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-bold text-white mb-4 font-montserrat tracking-tight leading-tight'>
-      {{kategori.nama_kategori}}
+      {{category.name}}
     </h1>
 
     <p class='w-full mx-auto text-center text-base md:text-lg lg:text-xl text-gray-200 max-w-2xl leading-relaxed mb-12'>
-      {{getByLang kategori.deskripsi lang}}
+      {{getByLang category.description lang}}
     </p>
 
   <button

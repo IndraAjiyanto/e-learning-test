@@ -43,14 +43,14 @@
             </p>
             <div class='flex items-center gap-6'>
               <img
-                src='{{profile}}'
+                src="/{{profile}}"
                 alt='Alumni'
                 class='w-16 h-16 rounded-full border-4 border-white/20'
               />
               <div>
-                <p class='font-bold text-white text-lg'>{{getByLang nama ../lang}}</p>
+                <p class='font-bold text-white text-lg'>{{getByLang name ../lang}}</p>
                 <p class='text-slate-300'>{{getByLang posisi_sekarang ../lang}}</p>
-                <p class='text-slate-400 text-sm'>{{getByLang kelas.nama_kelas ../lang}}</p>
+                <p class='text-slate-400 text-sm'>{{getByLang course.name ../lang}}</p>
               </div>
             </div>
           </div>

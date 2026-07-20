@@ -2,62 +2,56 @@ import { Module } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Kelas } from 'src/entities/kelas.entity';
-import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
+import { Course } from 'src/entities/course.entity';
 import { Alumni } from 'src/entities/alumni.entity';
-import { Portfolio } from 'src/entities/portfolio.entity';
-import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
-import { Kategori } from 'src/entities/kategori.entity';
-import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import { KerjaSama } from 'src/entities/kerja_sama.entity';
+import { Portofolios } from 'src/entities/portofolios.entity';
+import { ImageBenefit } from 'src/entities/image_benefit.entity';
+import { Category } from 'src/entities/category.entity';
+import { CourseType } from 'src/entities/course_type.entity';
+import { Collaboration } from 'src/entities/collaboration.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
-import { Blog } from 'src/entities/blog.entity';
-import { Tentang } from 'src/entities/tentang.entity';
+import { About } from 'src/entities/about.entity';
 import { Value } from 'src/entities/value.entity';
-import { Visi } from 'src/entities/visi.entity';
+import { Vision } from 'src/entities/visions.entity';
 import { TeamLead } from 'src/entities/team_lead.entity';
 import { Commitment } from 'src/entities/commitment.entity';
-import { Misi } from 'src/entities/misi.entity';
+import { Mission } from 'src/entities/mision.entity';
 import { Experience } from 'src/entities/experience.entity';
 import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
-import { Paragraf } from 'src/entities/paragraf.entity';
 import { Faq } from 'src/entities/faq.entity';
 import { TranslationModule } from 'src/translation/translation.module';
 import { OurExperience } from 'src/entities/our_experience.entity';
-import { KategoriBlog } from 'src/entities/kategori_blog.entity';
+import { Paragraph } from 'src/entities/paragraph.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Commitment,
       TeamLead,
-      Visi,
+      Vision,
       Value,
-      Tentang,
-      Blog,
-      Social,
+      About,
       Team,
       Benefit,
-      Kelas,
-      PertanyaanUmum,
+      Course,
+      Social,
+      Faq,
       Alumni,
-      Portfolio,
-      GambarBenefit,
-      Kategori,
-      JenisKelas,
-      KerjaSama,
-      Misi,
+      Portofolios,
+      ImageBenefit,
+      Category,
+      CourseType,
+      Collaboration,
+      Mission,
       Experience,
       Award,
       Background,
-      Paragraf,
+      Paragraph,
       Faq,
       OurExperience,
-      Blog,
-      KategoriBlog,
     ]),
     TranslationModule, // Import TranslationModule
   ],
@@ -65,4 +59,4 @@ import { KategoriBlog } from 'src/entities/kategori_blog.entity';
   providers: [DashboardService],
   exports: [DashboardService],
 })
-export class DashboardModule {}
+export class DashboardModule { }

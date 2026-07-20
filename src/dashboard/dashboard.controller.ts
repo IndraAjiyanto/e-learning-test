@@ -6,13 +6,13 @@ import { Request, Response } from 'express';
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
-  @Get('kelas/filter')
+  @Get('course/filter')
   async kelasFilter(
     @Req() req: Request,
     @Res() res: Response,
     @Query('userId') userId?: number,
-    @Query('kategori') kategori?: string,
-    @Query('jenis_kelas') jenisKelas?: string,
+    @Query('category') category?: string,
+    @Query('courseType') jenisKelas?: string,
     @Query('metode') metode?: string,
     @Query('search') search?: string,
     @Query('page') page?: string,
@@ -21,9 +21,9 @@ export class DashboardController {
     const currentPage = parseInt(page || '1', 10);
     const itemsPerPage = parseInt(limit || '6', 10);
 
-    const result = await this.dashboardService.findKelasPaginated({
+    const result = await this.dashboardService.findCoursesPaginated({
       userId: userId || undefined,
-      kategori: kategori || undefined,
+      category: category || undefined,
       jenisKelas: jenisKelas || undefined,
       metode: metode || undefined,
       search: search || undefined,
@@ -41,7 +41,7 @@ export class DashboardController {
 
   @Get()
   async getProtected(@Req() req: Request, @Res() res: Response) {
-    // const kelas = await this.dashboardService.findAllKelas();
+    // const course = await this.dashboardService.findAllCourses();
 
     if (req.user) {
       if (req.user.role === 'super_admin') {
@@ -53,30 +53,30 @@ export class DashboardController {
         const special_program =
           await this.dashboardService.findSpecialProgram();
         const faq = await this.dashboardService.findFAQ();
-        const gambar_benefit_1 = await this.dashboardService.findGambar1();
-        const gambar_benefit_2 = await this.dashboardService.findGambar2();
-        const gambar_benefit_3 = await this.dashboardService.findGambar3();
-        const gambar_benefit_4 = await this.dashboardService.findGambar4();
-        const jenis_kelas = await this.dashboardService.findJenisKelas();
-        const kategori = await this.dashboardService.findKategori();
+        const gambar_benefit_1 = await this.dashboardService.findImage1();
+        const gambar_benefit_2 = await this.dashboardService.findImage2();
+        const gambar_benefit_3 = await this.dashboardService.findImage3();
+        const gambar_benefit_4 = await this.dashboardService.findImage4();
+        const courseType = await this.dashboardService.findCourseTypes();
+        const category = await this.dashboardService.findCategories();
         const alumni = await this.dashboardService.findAllAlumni();
-        const kerja_sama = await this.dashboardService.findKerjaSama();
+        const kerja_sama = await this.dashboardService.findCollaborations();
         const benefit_1 = await this.dashboardService.findBenefit1();
         const benefit_2 = await this.dashboardService.findBenefit2();
         const benefit_3 = await this.dashboardService.findBenefit3();
-        const tentang = await this.dashboardService.findTentang();
+        const tentang = await this.dashboardService.findAbout();
         const social = await this.dashboardService.findSocial();
         res.render('dashboard', {
           special_program,
           user: req.user,
-          // kelas,
+          // course,
           faq,
           gambar_benefit_1,
           gambar_benefit_2,
           gambar_benefit_3,
           gambar_benefit_4,
-          jenis_kelas,
-          kategori,
+          courseType,
+          category,
           alumni,
           kerja_sama,
           benefit_1,
@@ -91,30 +91,30 @@ export class DashboardController {
       const our_experience = await this.dashboardService.findOurExperience();
       const special_program = await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
-      const gambar_benefit_1 = await this.dashboardService.findGambar1();
-      const gambar_benefit_2 = await this.dashboardService.findGambar2();
-      const gambar_benefit_3 = await this.dashboardService.findGambar3();
-      const gambar_benefit_4 = await this.dashboardService.findGambar4();
-      const jenis_kelas = await this.dashboardService.findJenisKelas();
-      const kategori = await this.dashboardService.findKategori();
+      const gambar_benefit_1 = await this.dashboardService.findImage1();
+      const gambar_benefit_2 = await this.dashboardService.findImage2();
+      const gambar_benefit_3 = await this.dashboardService.findImage3();
+      const gambar_benefit_4 = await this.dashboardService.findImage4();
+      const courseType = await this.dashboardService.findCourseTypes();
+      const category = await this.dashboardService.findCategories();
       const alumni = await this.dashboardService.findAllAlumni();
-      const kerja_sama = await this.dashboardService.findKerjaSama();
+      const kerja_sama = await this.dashboardService.findCollaborations();
       const benefit_1 = await this.dashboardService.findBenefit1();
       const benefit_2 = await this.dashboardService.findBenefit2();
       const benefit_3 = await this.dashboardService.findBenefit3();
-      const tentang = await this.dashboardService.findTentang();
+      const tentang = await this.dashboardService.findAbout();
       const social = await this.dashboardService.findSocial();
       res.render('dashboard', {
         special_program,
         user: req.user,
-        // kelas,
+        // course,
         faq,
         gambar_benefit_1,
         gambar_benefit_2,
         gambar_benefit_3,
         gambar_benefit_4,
-        jenis_kelas,
-        kategori,
+        courseType,
+        category,
         alumni,
         kerja_sama,
         benefit_1,
@@ -127,13 +127,13 @@ export class DashboardController {
     }
   }
 
-  @Get('portofolio/filter')
+  @Get('portofolios/filter')
   async portfolioFilter(
     @Req() req: Request,
     @Res() res: Response,
     @Query('userId') userId?: number,
-    @Query('kategori_id') kategoriId?: string,
-    @Query('jenis_kelas_id') jenisKelasId?: string,
+    @Query('kategori_id') categoryId?: string,
+    @Query('jenis_kelas_id') courseTypeId?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -142,8 +142,8 @@ export class DashboardController {
   
     const portfolioList = await this.dashboardService.findPortfolio({
       userId: userId || null,
-      kategoriId: kategoriId || null,
-      jenisKelasId: jenisKelasId || null,
+      categoryId: categoryId || null,
+      courseTypeId: courseTypeId || null,
       page: currentPage,
       limit: itemsPerPage,
     });
@@ -157,17 +157,17 @@ export class DashboardController {
     });
   }
 
-  @Get('portofolio')
+  @Get('portofolios')
   async portfolio(@Req() req: Request, @Res() res: Response) {
     // const portfolioList = await this.dashboardService.findPortfolio();
-    const kategoriList = await this.dashboardService.findKategori();
-    const jenisKelasList = await this.dashboardService.findJenisKelas();
+    const kategoriList = await this.dashboardService.findCategories();
+    const jenisKelasList = await this.dashboardService.findCourseTypes();
 
-    res.render('portofolio', {
+    res.render('portofolios', {
       user: req.user,
       // portfolio: portfolioList,
-      kategori: kategoriList,
-      jenis_kelas: jenisKelasList,
+      category: kategoriList,
+      courseType: jenisKelasList,
     });
   }
 
@@ -186,7 +186,7 @@ export class DashboardController {
     @Req() req: Request,
     @Res() res: Response,
     @Query('search') search?: string,         
-    @Query('kelas_id') kelasId?: string,
+    @Query('kelas_id') courseId?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -194,7 +194,7 @@ export class DashboardController {
     const itemsPerPage = parseInt(limit || '6', 10);
 
     const result = await this.dashboardService.findAlumni({
-      kelasId: kelasId || null,
+      courseId: courseId || null,
       search: search || null, 
       page: currentPage,
       limit: itemsPerPage,
@@ -210,36 +210,12 @@ export class DashboardController {
 
   @Get('alumni')
   async alumni(@Req() req: Request, @Res() res: Response) {
-    const kelasList = await this.dashboardService.findKelas();
- const kategoriList = await this.dashboardService.findAllKategori();
+    const kelasList = await this.dashboardService.findCourses();
 
     res.render('alumni', {
       user: req.user,
-      kelas: kelasList,
-       kategoriList: kategoriList 
-    });
-  }
-
-  @Get('blog')
-  async blog(@Req() req: Request, @Res() res: Response) {
-    const blog_tranding = await this.dashboardService.findBlogTrending(req.user?.id);
-    const kategori_tranding = await this.dashboardService.findKategoriTrending(req.user?.id);
-
-    const excludeIds = [
-      blog_tranding?.id,
-      ...kategori_tranding.map(k => k.blog?.id),
-    ].filter(Boolean) as number[];
-
-    // const blog = await this.dashboardService.findBlog(excludeIds);
-    const kategori_blog = await this.dashboardService.findBlogCategory();
-
-    res.render('blog', {
-      user: req.user,
-      // blog,
-      excludeIds,
-      kategori_blog,
-      blog_tranding,
-      kategori_tranding
+      course: kelasList,
+      // kategoriList: kategoriList 
     });
   }
 
@@ -247,15 +223,15 @@ export class DashboardController {
   async about(@Req() req: Request, @Res() res: Response) {
     const team = await this.dashboardService.findTeam();
     const social = await this.dashboardService.findSocial();
-    const visi = await this.dashboardService.findVisiMisi();
+    const visi = await this.dashboardService.findVisionsMissions();
     const commitment = await this.dashboardService.findCommitment();
     const value = await this.dashboardService.findValue();
     const teamLead = await this.dashboardService.findTeamLead();
-    const misi = await this.dashboardService.findMisi();
+    const mission = await this.dashboardService.findMission();
     const experience = await this.dashboardService.findExperience();
     const award = await this.dashboardService.findAward();
     const background = await this.dashboardService.findBackground();
-    const paragraf = await this.dashboardService.findTentangParagraf();
+    const paragraf = await this.dashboardService.findAboutParagraphs();
     res.render('tentang', {
       user: req.user,
       team,
@@ -264,7 +240,7 @@ export class DashboardController {
       commitment,
       value,
       teamLead,
-      misi,
+      mission,
       experience,
       award,
       background,
@@ -272,9 +248,9 @@ export class DashboardController {
     });
   }
 
-  @Get('api/kategori')
+  @Get('api/category')
   async getKategori(@Res() res: Response) {
-    const kategori = await this.dashboardService.findKategori();
-    res.json(kategori);
+    const category = await this.dashboardService.findCategories();
+    res.json(category);
   }
 }

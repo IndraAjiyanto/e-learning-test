@@ -1,62 +1,62 @@
 <div
   class='py-10'
   x-data='{ 
-    bulan: `{{cicilan.bulan}}`, 
-    hargaValues: {{json cicilan.harga}}, 
-    hargaDisplays: [], 
-    dpValue: `{{cicilan.dp}}`, 
-    dpDisplay: "",
+    month: `{{cicilan.month}}`, 
+    priceValues: {{json cicilan.price}}, 
+    priceDisplays: [], 
+    downPaymentValue: `{{cicilan.down_payment}}`, 
+    downPaymentDisplay: "",
 
     // Form validation states
     formData: {
-      bulan: `{{cicilan.bulan}}`,
-      dp: `{{cicilan.dp}}`,
-      harga: {{json cicilan.harga}}
+      month: `{{cicilan.month}}`,
+      down_payment: `{{cicilan.down_payment}}`,
+      price: {{json cicilan.price}}
     },
     formErrors: {
-      bulan: "",
-      dp: "",
-      harga: []
+      month: "",
+      down_payment: "",
+      price: []
     },
     formValid: {
-      bulan: false,
-      dp: false,
-      harga: []
+      month: false,
+      down_payment: false,
+      price: []
     },
 
     validateField(field, value, index = null) {
-      if (field === "harga") {
-        this.formData.harga[index] = value;
+      if (field === "price") {
+        this.formData.price[index] = value;
         const numValue = parseInt(value);
         if (!value || isNaN(numValue)) {
-          this.formErrors.harga[index] = "Valid payment amount required";
-          this.formValid.harga[index] = false;
+          this.formErrors.price[index] = "Valid payment amount required";
+          this.formValid.price[index] = false;
         } else {
-          this.formErrors.harga[index] = "";
-          this.formValid.harga[index] = true;
+          this.formErrors.price[index] = "";
+          this.formValid.price[index] = true;
         }
       } else {
         this.formData[field] = value;
         
         switch(field) {
-          case "bulan":
+          case "month":
             if (!value) {
-              this.formErrors.bulan = "Installment period is required";
-              this.formValid.bulan = false;
+              this.formErrors.month = "Installment period is required";
+              this.formValid.month = false;
             } else {
-              this.formErrors.bulan = "";
-              this.formValid.bulan = true;
+              this.formErrors.month = "";
+              this.formValid.month = true;
             }
             break;
             
-          case "dp":
+          case "down_payment":
             const dpNumValue = parseInt(value);
             if (!value || isNaN(dpNumValue) || dpNumValue <= 0) {
-              this.formErrors.dp = "Valid down payment amount required";
-              this.formValid.dp = false;
+              this.formErrors.down_payment = "Valid down payment amount required";
+              this.formValid.down_payment = false;
             } else {
-              this.formErrors.dp = "";
-              this.formValid.dp = true;
+              this.formErrors.down_payment = "";
+              this.formValid.down_payment = true;
             }
             break;
         }
@@ -64,9 +64,9 @@
     },
 
     get canSubmit() {
-      const bulanCount = parseInt(this.bulan);
-      const allHargaValid = Array.from({length: bulanCount}, (_, i) => this.formValid.harga[i] || false).every(valid => valid);
-      return this.formValid.bulan && this.formValid.dp && allHargaValid;
+      const monthCount = parseInt(this.month);
+      const allPriceValid = Array.from({length: monthCount}, (_, i) => this.formValid.price[i] || false).every(valid => valid);
+      return this.formValid.month && this.formValid.down_payment && allPriceValid;
     },
 
     hasFormErrors() {
@@ -83,17 +83,17 @@
     formatNumber(event, index = null) { 
       let angka = event.target.value.replace(/\D/g, ""); 
       if (index !== null) { 
-        this.hargaValues[index] = angka; 
-        this.hargaDisplays[index] = new Intl.NumberFormat("id-ID").format(angka);
-        this.validateField("harga", angka, index);
+        this.priceValues[index] = angka; 
+        this.priceDisplays[index] = new Intl.NumberFormat("id-ID").format(angka);
+        this.validateField("price", angka, index);
       } else { 
-        this.dpValue = angka; 
-        this.dpDisplay = new Intl.NumberFormat("id-ID").format(angka);
-        this.validateField("dp", angka);
+        this.downPaymentValue = angka; 
+        this.downPaymentDisplay = new Intl.NumberFormat("id-ID").format(angka);
+        this.validateField("down_payment", angka);
       } 
     }
   }'
-  x-init="hargaDisplays = hargaValues.map(h => new Intl.NumberFormat('id-ID').format(h)); dpDisplay = new Intl.NumberFormat('id-ID').format(dpValue); formValid.harga = Array(parseInt(bulan)).fill(true); formErrors.harga = Array(parseInt(bulan)).fill('')"
+  x-init="priceDisplays = priceValues.map(h => new Intl.NumberFormat('id-ID').format(h)); downPaymentDisplay = new Intl.NumberFormat('id-ID').format(downPaymentValue); formValid.price = Array(parseInt(month)).fill(true); formErrors.price = Array(parseInt(month)).fill('')"
 >
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Installment</h2>
@@ -121,7 +121,7 @@
         <span x-show="!loading">Update</span>
         </button>
         <a
-          href='/program/detail/program/admin/{{cicilan.kelas.id}}'
+          href='/program/detail/program/admin/{{cicilan.course.id}}'
         :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>

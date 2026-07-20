@@ -39,7 +39,7 @@
         <!-- Tombol Tambah Cicilan -->
 <template x-if="availableMonths.length > 0">
   <a
-    href='/installment/formCreate/{{kelas.id}}'
+    href='/installment/formCreate/{{course.id}}'
     class='text-white px-4 py-2 rounded-lg shadow transition bg-gray-900 hover:bg-gray-700'
   >
     Add Installment
@@ -196,7 +196,7 @@ function installmentData() {
     amount: 0,
 
 async fetchInstallment() {
-  const res = await fetch('/program/installment/{{kelas.id}}');
+  const res = await fetch('/program/installment/{{course.id}}');
   const result = await res.json();
   this.data = result.cicilan;           // ✅ simpan cicilan saja ke data
   this.availableMonths = result.availableMonths;  // ✅ simpan availableMonths

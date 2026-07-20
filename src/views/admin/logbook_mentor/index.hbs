@@ -1,7 +1,7 @@
 <div
   class='max-w-5xl mx-auto px-6 py-10'
   x-data='logbookTable({ logbooks: {{json logbook_mentor}}, classes: {{json
-    kelas
+    course
   }} })'
 >
 
@@ -21,8 +21,8 @@
           class='w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 appearance-none cursor-pointer'
         >
           <option value=''>All Classes</option>
-          <template x-for='kelas in classes' :key='kelas.id'>
-            <option :value='kelas.id' x-text='kelas.nama_kelas'></option>
+          <template x-for='course in classes' :key='course.id'>
+            <option :value='course.id' x-text='course.name'></option>
           </template>
         </select>
         <i
@@ -123,21 +123,21 @@
             x-show="filteredLogbooks.includes('{{id}}')"
           >
             <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kegiatan}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{activity}}</td>
             <td
               class='px-6 py-4 text-sm text-gray-800'
-            >{{rincian_kegiatan}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{kendala}}</td>
+            >{{activity_detail}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{obstacle}}</td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               <img
-                src='{{dokumentasi}}'
-                alt='Dokumentasi'
+                src='{{documentation}}'
+                alt='documentation'
                 class='w-16 h-16 object-cover rounded border'
               />
             </td>
             <td
               class='px-6 py-4 text-sm text-gray-800'
-            >{{pertemuan.minggu.kelas.nama_kelas}}</td>
+            >{{session.weeks.course.name}}</td>
             <td class='px-6 py-4 text-sm text-gray-800'>{{user.username}}</td>
 
           </tr>
@@ -193,9 +193,9 @@
         const filtered = this.logbooks.filter((log) => {
           const kelasMatch =
             !this.selectedKelas ||
-            log.pertemuan?.minggu?.kelas?.id?.toString() === this.selectedKelas;
+            log.session?.weeks?.course?.id?.toString() === this.selectedKelas;
 
-          const searchText = `${log.kegiatan} ${log.rincian_kegiatan} ${log.kendala}`.toLowerCase();
+          const searchText = `${log.activity} ${log.activiy_detail} ${log.obstacle}`.toLowerCase();
           const searchMatch = searchText.includes(this.search.toLowerCase());
 
           return kelasMatch && searchMatch;
@@ -213,9 +213,9 @@
           const filtered = this.logbooks.filter((log) => {
             const kelasMatch =
               !this.selectedKelas ||
-              log.pertemuan?.minggu?.kelas?.id?.toString() === this.selectedKelas;
+              log.session?.weeks?.course?.id?.toString() === this.selectedKelas;
 
-            const searchText = `${log.kegiatan} ${log.rincian_kegiatan} ${log.kendala}`.toLowerCase();
+            const searchText = `${log.activity} ${log.activiy_detail} ${log.obstacle}`.toLowerCase();
             const searchMatch = searchText.includes(this.search.toLowerCase());
 
             return kelasMatch && searchMatch;
@@ -223,11 +223,11 @@
 
           const dataToExport = filtered.map((log, index) => ({
             No: index + 1,
-            Kegiatan: log.kegiatan || "-",
-            Rincian: log.rincian_kegiatan || "-",
-            Kendala: log.kendala || "-",
-            Dokumentasi: log.dokumentasi || "-",
-            Kelas: log.pertemuan?.minggu?.kelas?.nama_kelas || "-",
+            Kegiatan: log.activity || "-",
+            Rincian: log.activity_detail || "-",
+            Kendala: log.obstacle || "-",
+            Dokumentasi: log.documentation || "-",
+            Kelas: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",
             Tanggal: this.formatDate(log.createdAt),
           }));

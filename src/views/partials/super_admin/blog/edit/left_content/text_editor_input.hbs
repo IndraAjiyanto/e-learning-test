@@ -1,17 +1,17 @@
 <!-- Editor ID -->
 <label class="mb-2 block font-medium text-gray-700 mt-6">Content ID</label>
 <div id="editor-id" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
-<input type="hidden" name="isi[id]" id="isi-id">
+<input type="hidden" name="details[id]" id="details-id">
 
 <!-- Editor EN -->
 <label class="mb-2 block font-medium text-gray-700 mt-6">Content EN</label>
 <div id="editor-en" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
-<input type="hidden" name="isi[en]" id="isi-en">
+<input type="hidden" name="details[en]" id="details-en">
 
 <!-- Editor JA -->
 <label class="mb-2 block font-medium text-gray-700 mt-6">Content JP</label>
 <div id="editor-ja" class="text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4"></div>
-<input type="hidden" name="isi[ja]" id="isi-ja">
+<input type="hidden" name="details[ja]" id="details-ja">
 
 <script>
 function tagInput(initialTags = '[]') {
@@ -30,9 +30,9 @@ function tagInput(initialTags = '[]') {
 document.addEventListener('DOMContentLoaded', async () => {
   // Load existing content per bahasa
   const existingData = {
-    id: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.id}}}`); } catch { return {}; } })(),
-    en: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.en}}}`); } catch { return {}; } })(),
-    ja: (() => { try { return JSON.parse(`{{{blog.isi_editorjs.ja}}}`); } catch { return {}; } })(),
+    id: (() => { try { return JSON.parse(`{{{blog.editor_data.id}}}`); } catch { return {}; } })(),
+    en: (() => { try { return JSON.parse(`{{{blog.editor_data.en}}}`); } catch { return {}; } })(),
+    ja: (() => { try { return JSON.parse(`{{{blog.editor_data.ja}}}`); } catch { return {}; } })(),
   };
 
   const editorConfig = (holderId, lang) => ({
@@ -93,9 +93,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       editors.ja.save(),
     ]);
 
-    document.getElementById('isi-id').value = JSON.stringify(outputId);
-    document.getElementById('isi-en').value = JSON.stringify(outputEn);
-    document.getElementById('isi-ja').value = JSON.stringify(outputJa);
+    document.getElementById('details-id').value = JSON.stringify(outputId);
+    document.getElementById('details-en').value = JSON.stringify(outputEn);
+    document.getElementById('details-ja').value = JSON.stringify(outputJa);
 
     form.submit();
   });

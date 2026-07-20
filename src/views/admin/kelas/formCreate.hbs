@@ -4,8 +4,8 @@
     x-data='{ 
             coverValid: true,
             coverHasFile: false,
-            categorySelected: {{json kategori}},
-            formData: { deskripsi: { id: "", en: "", ja: "" },
+            categorySelected: {{json category}},
+            formData: { description: { id: "", en: "", ja: "" },
                         lokasi: { id: "", en: "", ja: "" } },
             updateCoverValidation(isValid, hasFile) {
                 this.coverValid = isValid;
@@ -29,7 +29,7 @@
 
     <form
       method='POST'
-      action='/program/{{kategori.id}}'
+      action='/program/{{category.id}}'
       class='grid grid-cols-1 lg:grid-cols-2 gap-8'
       enctype='multipart/form-data'
       x-data='{loading:false}'
@@ -202,13 +202,13 @@
         <!-- Class Name -->
         <div>
           <label
-            for='nama_kelas'
+            for='name'
             class='block text-sm font-semibold text-gray-700 mb-1'
           >Program Name</label>
           <input
             type='text'
-            id='nama_kelas'
-            name='nama_kelas'
+            id='name'
+            name='name'
             placeholder='Enter class name'
             required
             class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
@@ -240,19 +240,19 @@
           <!-- ID Description -->
           <div>
             <label
-              for='deskripsi_id'
+              for='description_id'
               class='block text-xs text-gray-600 mb-1'
             >ID</label>
             <textarea
-              id='deskripsi_id'
-              x-model='formData.deskripsi.id'
-              @blur="validateField('deskripsi', 'id')"
+              id='description_id'
+              x-model='formData.description.id'
+              @blur="validateField('description', 'id')"
               rows='3'
-              placeholder='Tulis deskripsi dalam bahasa Indonesia...'
+              placeholder='Tulis description dalam bahasa Indonesia...'
               class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
             ></textarea>
             <div
-              id='deskripsi_id_error'
+              id='description_id_error'
               class='hidden text-red-500 text-xs mt-1'
             >Deskripsi bahasa Indonesia wajib diisi</div>
           </div>
@@ -260,19 +260,19 @@
           <!-- EN Description -->
           <div>
             <label
-              for='deskripsi_en'
+              for='description_en'
               class='block text-xs text-gray-600 mb-1'
             >EN</label>
             <textarea
-              id='deskripsi_en'
-              x-model='formData.deskripsi.en'
-              @blur="validateField('deskripsi', 'en')"
+              id='description_en'
+              x-model='formData.description.en'
+              @blur="validateField('description', 'en')"
               rows='3'
               placeholder='Write description in English...'
               class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
             ></textarea>
             <div
-              id='deskripsi_en_error'
+              id='description_en_error'
               class='hidden text-red-500 text-xs mt-1'
             >English description is required</div>
           </div>
@@ -280,19 +280,19 @@
           <!-- JP Description -->
           <div>
             <label
-              for='deskripsi_ja'
+              for='description_ja'
               class='block text-xs text-gray-600 mb-1'
             >JP</label>
             <textarea
-              id='deskripsi_ja'
-              x-model='formData.deskripsi.ja'
-              @blur="validateField('deskripsi', 'ja')"
+              id='description_ja'
+              x-model='formData.description.ja'
+              @blur="validateField('description', 'ja')"
               rows='3'
               placeholder='日本語で説明を書いてください...'
               class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
             ></textarea>
             <div
-              id='deskripsi_ja_error'
+              id='description_ja_error'
               class='hidden text-red-500 text-xs mt-1'
             >日本語の説明が必要です</div>
           </div>
@@ -300,18 +300,18 @@
           <!-- Hidden inputs for form submission -->
           <input
             type='hidden'
-            name='deskripsi[id]'
-            x-model='formData.deskripsi.id'
+            name='description[id]'
+            x-model='formData.description.id'
           />
           <input
             type='hidden'
-            name='deskripsi[en]'
-            x-model='formData.deskripsi.en'
+            name='description[en]'
+            x-model='formData.description.en'
           />
           <input
             type='hidden'
-            name='deskripsi[ja]'
-            x-model='formData.deskripsi.ja'
+            name='description[ja]'
+            x-model='formData.description.ja'
           />
         </div>
 
@@ -544,12 +544,12 @@
           availableJenisKelas: {{json jenis_kelas}},
           get filteredJenisKelas() {
             return this.availableJenisKelas.filter(j => 
-              j.nama_jenis_kelas.toLowerCase().includes(this.search.toLowerCase())
+              j.name_clasess_type.toLowerCase().includes(this.search.toLowerCase())
             );
           },
           selectJenisKelas(jenisKelas) {
             this.selectedJenisKelas = jenisKelas;
-            this.search = jenisKelas.nama_jenis_kelas;
+            this.search = jenisKelas.name_clasess_type;
             this.showDropdown = false;
           },
           clearJenisKelas() {
@@ -593,7 +593,7 @@
                 >
                   <span
                     class='text-sm font-medium text-gray-700'
-                    x-text='jenisKelas.nama_jenis_kelas'
+                    x-text='jenisKelas.name_clasess_type'
                   ></span>
                 </button>
               </template>
@@ -609,7 +609,7 @@
 
         <!-- Month -->
         <div
-          x-show="!categorySelected || categorySelected.nama_kategori !== 'Short Class'"
+          x-show="!categorySelected || categorySelected.name !== 'Short Class'"
         >
           <label
             for='bulan'
@@ -644,7 +644,7 @@
 
         <!-- Day -->
         <div
-          x-show="categorySelected && categorySelected.nama_kategori === 'Short Class'"
+          x-show="categorySelected && categorySelected.name === 'Short Class'"
         >
           <label
             for='hari'
@@ -792,7 +792,7 @@
           availableTechs: {{json teknologi}},
           get filteredTechs() {
             return this.availableTechs.filter(t => 
-              t.nama.toLowerCase().includes(this.search.toLowerCase()) &&
+              t.name.toLowerCase().includes(this.search.toLowerCase()) &&
               !this.selectedTechs.find(s => s.id === t.id)
             );
           },
@@ -836,7 +836,7 @@
                 </div>
                 <span
                   class='text-sm font-medium text-gray-700'
-                  x-text='tech.nama'
+                  x-text='tech.name'
                 ></span>
                 <button
                   type='button'
@@ -888,7 +888,7 @@
                   </div>
                   <span
                     class='text-sm font-medium text-gray-700'
-                    x-text='tech.nama'
+                    x-text='tech.name'
                   ></span>
                 </button>
               </template>
@@ -1235,7 +1235,7 @@
           <span x-show='!loading'>Create</span>
         </button>
         <a
-          href='/category/{{kategori.id}}'
+          href='/category/{{category.id}}'
           :disabled='loading'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300 transition'

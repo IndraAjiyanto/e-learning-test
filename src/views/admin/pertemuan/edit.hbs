@@ -5,7 +5,7 @@
 
     <form
       method='POST'
-      action='/session/{{pertemuan.id}}?_method=PATCH'
+      action='/session/{{session.id}}?_method=PATCH'
       class='space-y-8'
       x-data='{ loading: false }'
       @submit="loading = true;"
@@ -25,7 +25,7 @@
             id='lokasi'
             name='lokasi'
             required
-            value='{{pertemuan.lokasi}}'
+            value='{{session.lokasi}}'
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
           />
         </div>
@@ -41,7 +41,7 @@
             id='tanggal'
             name='tanggal'
             required
-            value='{{formDate pertemuan.tanggal}}'
+            value='{{formDate session.tanggal}}'
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
             style='color-scheme: light;'
           />
@@ -58,7 +58,7 @@
             id='waktu_awal'
             name='waktu_awal'
             required
-            value='{{formatTime pertemuan.waktu_awal}}'
+            value='{{formatTime session.waktu_awal}}'
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
             style='color-scheme: light;'
           />
@@ -75,7 +75,7 @@
             id='waktu_akhir'
             name='waktu_akhir'
             required
-            value='{{formatTime pertemuan.waktu_akhir}}'
+            value='{{formatTime session.waktu_akhir}}'
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
             style='color-scheme: light;'
           />
@@ -93,12 +93,12 @@
           name='topik'
           rows='3'
           class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        >{{pertemuan.topik}}</textarea>
+        >{{session.topik}}</textarea>
       </div>
 
       <!-- Toggle Pertemuan Terakhir -->
       <div
-        x-data='{ launch: {{pertemuan.akhir}} }'
+        x-data='{ launch: {{session.akhir}} }'
         class='flex items-center gap-3'
       >
         <label class='relative inline-flex items-center cursor-pointer'>
@@ -129,7 +129,7 @@
           <span x-show='!loading'>Update</span>
         </button>
         <a
-          href='/session/{{pertemuan.id}}'
+          href='/session/{{session.id}}'
         :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>

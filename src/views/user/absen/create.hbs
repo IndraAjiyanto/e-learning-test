@@ -9,7 +9,7 @@
 
       <form
         @submit='loading = true'
-        action='/attendance/{{pertemuan.id}}/{{user.id}}/{{pertemuan.minggu.kelas.id}}'
+        action='/attendance/{{session.id}}/{{user.id}}/{{session.weeks.course.id}}'
         method='POST'
         class='space-y-8'
         x-data="{
@@ -147,7 +147,7 @@
               }}</span>
           </button>
           <a
-            href='/program/{{pertemuan.minggu.kelas.id}}'
+            href='/program/{{session.weeks.course.id}}'
             :disabled='loading'
             :class="loading ? 'opacity-50 cursor-not-allowed'"
             class='btn bg-white rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'

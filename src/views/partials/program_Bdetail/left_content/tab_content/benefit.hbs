@@ -10,7 +10,7 @@
         {{t "test.detailProgram.benefitProgram.tittle"}}
       </h3>
       <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        <template x-for="item in (benefit?.benefit_kelas || [])" :key="item.id">
+        <template x-for="item in (benefit?.program_benefit || [])" :key="item.id">
           <div class='bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-200 hover:shadow-md hover:border-gray-300 transition-all'>
             <div class='flex items-start gap-4'>
               <div class='bg-gray-100 p-3 rounded-full ring-1 ring-gray-200 w-12 h-12 flex items-center justify-center'>
@@ -18,7 +18,7 @@
               </div>
               <div>
                 <h4 class='font-semibold text-gray-900 text-lg mb-2' x-text="getByLang(item.benefit, lang)"></h4>
-                <p class='text-gray-700 leading-relaxed' x-text="getByLang(item.isi, lang)"></p>
+                <p class='text-gray-700 leading-relaxed' x-text="getByLang(item.description, lang)"></p>
               </div>
             </div>
           </div>

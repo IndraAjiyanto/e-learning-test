@@ -16,7 +16,7 @@
       </p>
     </div>
     <a
-      href='/gallery/formCreate/{{kategori.id}}'
+      href='/gallery/formCreate/{{category.id}}'
       class='bg-gray-900 text-white px-6 py-2.5 rounded-lg shadow hover:bg-gray-700 transition flex items-center gap-2'
     >
       <svg
@@ -89,7 +89,7 @@ function galleryData() {
     data: JSON.parse(localStorage.getItem('galleryData')) || [],
     async fetchGallery() {
       try {
-        const response = await fetch('/gallery/kategori/{{kategori.id}}');
+        const response = await fetch('/gallery/category/{{category.id}}');
         if (!response.ok) {
           throw new Error('Failed fetch gallery');
         }

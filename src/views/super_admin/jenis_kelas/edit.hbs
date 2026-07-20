@@ -4,23 +4,23 @@
     x-data="{
     // Form validation states
     formData: {
-      nama_jenis_kelas: `{{jenis_kelas.nama_jenis_kelas}}`,
-      deskripsi: { id: `{{jenis_kelas.deskripsi.id}}`, en: `{{jenis_kelas.deskripsi.en}}`, ja: `{{jenis_kelas.deskripsi.ja}}` },
+      name_clasess_type: `{{jenis_kelas.name_clasess_type}}`,
+      description: { id: `{{jenis_kelas.description.id}}`, en: `{{jenis_kelas.description.en}}`, ja: `{{jenis_kelas.description.ja}}` },
       icon: `{{jenis_kelas.icon}}`
     },
     formErrors: {
-      nama_jenis_kelas: '',
-      deskripsi: { id: '', en: '', ja: '' },
+      name_clasess_type: '',
+      description: { id: '', en: '', ja: '' },
       icon: ''
     },
     formValid: {
-      nama_jenis_kelas: true,
-      deskripsi: { id: true, en: true, ja: true },
+      name_clasess_type: true,
+      description: { id: true, en: true, ja: true },
       icon: true
     },
     formTouched: {
-      nama_jenis_kelas: false,
-      deskripsi: { id: false, en: false, ja: false },
+      name_clasess_type: false,
+      description: { id: false, en: false, ja: false },
       icon: false
     },
 
@@ -47,29 +47,29 @@
       }
       
       switch(field) {
-        case 'nama_jenis_kelas':
+        case 'name_clasess_type':
           if (!value.trim()) {
-            this.formErrors.nama_jenis_kelas = 'Class type name is required';
-            this.formValid.nama_jenis_kelas = false;
+            this.formErrors.name_clasess_type = 'Class type name is required';
+            this.formValid.name_clasess_type = false;
           } else if (value.trim().length < 2) {
-            this.formErrors.nama_jenis_kelas = 'Class type name must be at least 2 characters';
-            this.formValid.nama_jenis_kelas = false;
+            this.formErrors.name_clasess_type = 'Class type name must be at least 2 characters';
+            this.formValid.name_clasess_type = false;
           } else {
-            this.formErrors.nama_jenis_kelas = '';
-            this.formValid.nama_jenis_kelas = true;
+            this.formErrors.name_clasess_type = '';
+            this.formValid.name_clasess_type = true;
           }
           break;
           
-        case 'deskripsi':
+        case 'description':
           if (!value.trim()) {
-            this.formErrors.deskripsi[lang] = 'Description is required';
-            this.formValid.deskripsi[lang] = false;
+            this.formErrors.description[lang] = 'Description is required';
+            this.formValid.description[lang] = false;
           } else if (value.trim().length < 10) {
-            this.formErrors.deskripsi[lang] = 'Description must be at least 10 characters';
-            this.formValid.deskripsi[lang] = false;
+            this.formErrors.description[lang] = 'Description must be at least 10 characters';
+            this.formValid.description[lang] = false;
           } else {
-            this.formErrors.deskripsi[lang] = '';
-            this.formValid.deskripsi[lang] = true;
+            this.formErrors.description[lang] = '';
+            this.formValid.description[lang] = true;
           }
           break;
           
@@ -82,13 +82,13 @@
     },
 
     canSubmit() {
-      const deskripsiValid = Object.values(this.formValid.deskripsi).every(v => v);
-      return this.formValid.nama_jenis_kelas && deskripsiValid && this.formValid.icon;
+      const deskripsiValid = Object.values(this.formValid.description).every(v => v);
+      return this.formValid.name_clasess_type && deskripsiValid && this.formValid.icon;
     },
 
     hasFormErrors() {
-      return this.formErrors.nama_jenis_kelas !== '' ||
-             Object.values(this.formErrors.deskripsi).some(e => e !== '') ||
+      return this.formErrors.name_clasess_type !== '' ||
+             Object.values(this.formErrors.description).some(e => e !== '') ||
              this.formErrors.icon !== '';
     }
   }"

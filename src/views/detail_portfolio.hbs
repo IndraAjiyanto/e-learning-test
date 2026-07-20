@@ -4,7 +4,7 @@
     <div class="text-center mb-10">
         <div class="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full mb-6 shadow-lg border border-[#68BBE3]">
             <i class="fas fa-graduation-cap text-[#055C90]"></i>
-            <span class="text-[#003060] font-semibold">{{portfolio.kelas.nama_kelas}}</span>
+            <span class="text-[#003060] font-semibold">{{portfolio.course.name}}</span>
         </div>
         
         <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight font-montserrat">
@@ -94,7 +94,7 @@
                 <h2 class="text-2xl font-bold text-gray-900 mb-6 font-montserrat">{{t "test.detailPortfolio.projectDescription"}}</h2>
                 <div class="space-y-4 text-gray-700 leading-relaxed">
                     <p>
-            {{portfolio.deskripsi}}
+            {{portfolio.description}}
 
                        </p>
                 </div>
@@ -121,7 +121,7 @@
                 <div class="flex items-center gap-4 mb-6">
                     <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center overflow-hidden ring-4 ring-gray-100">
                         {{#if portfolio.user.profile}}
-                        <img src="{{portfolio.user.profile}}" alt="{{portfolio.user.username}}" class="w-full h-full object-cover">
+                        <img src="/{{portfolio.user.profile}}" alt="{{portfolio.user.username}}" class="w-full h-full object-cover">
                         {{else}}
                                       <div
                 class='w-full h-full bg-gray-600 flex items-center justify-center'
@@ -147,7 +147,7 @@
                         </svg>
                         <div>
                             <p class="text-sm font-semibold text-gray-700 font-montserrat">{{t "test.detailPortfolio.programCompleted"}}</p>
-                            <p class="text-gray-900 font-medium ">{{portfolio.kelas.nama_kelas}}</p>
+                            <p class="text-gray-900 font-medium ">{{portfolio.course.name}}</p>
                         </div>
                     </div>
                     
@@ -157,7 +157,7 @@
                         </svg>
                         <div>
                             <p class="text-sm font-semibold text-gray-700 font-montserrat">{{t "test.detailPortfolio.completionDate"}}</p>
-                            <p class="text-gray-900 font-medium ">{{formatTanggal portfolio.kelas.tanggal_selesai lang}}</p>
+                            <p class="text-gray-900 font-medium ">{{formatTanggal portfolio.course.tanggal_selesai lang}}</p>
                         </div>
                     </div>
                     
@@ -167,7 +167,7 @@
                         </svg>
                         <div>
                             <p class="text-sm font-semibold text-gray-700 font-montserrat">{{t "test.detailPortfolio.projectDuration"}}</p>
-                            <p class="text-gray-900 font-medium ">{{portfolio.kelas.bulan}} {{t "test.detailPortfolio.months"}}</p>
+                            <p class="text-gray-900 font-medium ">{{portfolio.course.bulan}} {{t "test.detailPortfolio.months"}}</p>
                         </div>
                     </div>
                 </div>
@@ -177,14 +177,14 @@
             <div class="bg-white rounded-2xl p-8 shadow-xl">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6 font-montserrat">{{t "test.detailPortfolio.technologiesUsed"}}</h2>
                 <div class="flex flex-wrap gap-3">
-                    {{#each portfolio.kelas.teknologi}}
+                    {{#each portfolio.course.teknologi}}
                     <div class='flex items-center gap-2'>
                         {{#if this.svg}}
                         <div class='w-6 h-6 flex items-center justify-center'>{{{this.svg}}}</div>
                         {{/if}}
                         {{#if this.img_url}}
                         <div class='w-6 h-6 flex items-center justify-center'>
-                            <img src="{{this.img_url}}" alt="{{this.nama}}" class="w-full h-full object-contain">
+                            <img src="{{this.img_url}}" alt="{{this.name}}" class="w-full h-full object-contain">
                         </div>
                         {{/if}}
                     </div>

@@ -3,7 +3,7 @@
 
   <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
     <div class="mb-4">
-      <a href="/week/{{pertemuan.minggu.id}}" 
+      <a href="/week/{{session.weeks.id}}" 
          class="inline-flex items-center text-gray-700 text-base font-semibold hover:underline">
         <svg xmlns="http://www.w3.org/2000/svg" 
              class="h-5 w-5 mr-1" fill="none" 
@@ -19,29 +19,29 @@
 
     <div class="flex items-start justify-between">
       <div>
-        <h1 class="text-3xl font-bold mb-2 text-gray-900">Session {{pertemuan.pertemuan_ke}}</h1>
+        <h1 class="text-3xl font-bold mb-2 text-gray-900">Session {{session.pertemuan_ke}}</h1>
 
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Program:</span> {{pertemuan.minggu.kelas.nama_kelas}}
+          <span class="font-semibold">Program:</span> {{session.weeks.course.name}}
         </p>
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Location:</span> {{pertemuan.lokasi}}
+          <span class="font-semibold">Location:</span> {{session.lokasi}}
         </p class="text-gray-600">
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Topic:</span> {{pertemuan.topik}}
+          <span class="font-semibold">Topic:</span> {{session.topik}}
         </p>
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Date:</span> {{formatTanggal pertemuan.tanggal}}
+          <span class="font-semibold">Date:</span> {{formatTanggal session.tanggal}}
         </p>
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Time :</span> {{formatTime pertemuan.waktu_awal}} - {{formatTime pertemuan.waktu_akhir}}
+          <span class="font-semibold">Time :</span> {{formatTime session.waktu_awal}} - {{formatTime session.waktu_akhir}}
         </p>
 
       </div>
 
 <div class="flex items-center gap-4">
   <!-- Tombol Edit -->
-  <a href="/session/formEdit/{{pertemuan.id}}"
+  <a href="/session/formEdit/{{session.id}}"
      class="p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
      title="Edit Pertemuan">
     <!-- Icon Edit (Pencil) -->
@@ -60,7 +60,7 @@
   </a>
 
   <!-- Tombol Delete -->
-  <form action="/session/{{pertemuan.id}}/{{pertemuan.minggu.id}}?_method=DELETE" method="post">
+  <form action="/session/{{session.id}}/{{session.weeks.id}}?_method=DELETE" method="post">
     <button 
       type="button"
       onclick="confirmDelete(this)"
@@ -86,8 +86,8 @@
 <div class="w-full mx-auto" x-data="tabData()">
 
   <div class="flex space-x-4 mb-6">
-    <button @click="toggleFetch('/session/attendance/{{pertemuan.id}}', 'absen')" 
-            :class="tab === 'absen' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+    <button @click="toggleFetch('/session/attendance/{{session.id}}', 'attendance')" 
+            :class="tab === 'attendance' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Attendance
     </button>
@@ -96,17 +96,17 @@
             class="px-4 py-2 rounded-lg shadow transition">
       Materi
     </button>
-    <button @click="toggleFetch('/session/task/{{pertemuan.id}}', 'tugas')" 
-            :class="tab === 'tugas' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+    <button @click="toggleFetch('/session/task/{{session.id}}', 'assignment')" 
+            :class="tab === 'assignment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Assignment
     </button>
-    <button @click="toggleFetch('/session/logbook/{{pertemuan.id}}', 'logbook')" 
+    <button @click="toggleFetch('/session/logbook/{{session.id}}', 'logbook')" 
             :class="tab === 'logbook' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log book user
     </button>
-    <button @click="toggleFetch('/session/logbook-mentor/{{pertemuan.id}}', 'logbook_mentor')" 
+    <button @click="toggleFetch('/session/logbook-mentor/{{session.id}}', 'logbook_mentor')" 
             :class="tab === 'logbook_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log book mentor
@@ -114,23 +114,23 @@
   </div>
 
   <div x-show="tab === 'logbook'" x-data="logbookData()" x-init="fetchLogBook()">
-    {{> pertemuan/logbook_tab}}
+    {{> session/logbook_tab}}
   </div>
 
   <div x-show="tab === 'logbook_mentor'" x-data="logBookMentorData()" x-init="fetchLogBookMentor()">
-    {{> pertemuan/logbook_mentor_tab}}
+    {{> session/logbook_mentor_tab}}
   </div>
 
-  <div x-show="tab === 'absen'" x-data="absenData()" x-init="fetchAbsens()">
-    {{> pertemuan/absen_tab}}
+  <div x-show="tab === 'attendance'" x-data="absenData()" x-init="fetchAbsens()">
+    {{> session/absen_tab}}
   </div>  
 
   <div x-show="tab === 'materi'" x-data="materiData()" x-init="fetchMateris()">
-    {{> pertemuan/materi_tab}}
+    {{> session/materi_tab}}
   </div>
 
-  <div x-show="tab === 'tugas'" x-data="tugasData()" x-init="fetchTugas()">
-    {{> pertemuan/tugas_tab}}
+  <div x-show="tab === 'assignment'" x-data="tugasData()" x-init="fetchTugas()">
+    {{> session/tugas_tab}}
   </div>
 
 </div>
@@ -152,8 +152,8 @@ function tabData() {
 
     async init() {
       if(!this.tab) {
-          this.tab = 'absen';
-          localStorage.setItem('activeTabSession', 'absen');
+          this.tab = 'attendance';
+          localStorage.setItem('activeTabSession', 'attendance');
       }
     },
     

@@ -36,7 +36,7 @@ export class GambarBenefitController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -54,7 +54,7 @@ export class GambarBenefitController {
     @Req() req: Request,
   ) {
     try {
-      createGambarBenefitDto.gambar = req.body.uploadedImageUrls?.[0];
+      createGambarBenefitDto.image = req.body.uploadedImageUrls?.[0];
       await this.gambarBenefitService.create(createGambarBenefitDto);
       req.flash('success', 'Image Benefit successfully created');
       res.redirect('/benefit-image');
@@ -98,7 +98,7 @@ export class GambarBenefitController {
   @Roles('super_admin')
   @Patch(':id')
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -111,7 +111,7 @@ export class GambarBenefitController {
     folder: 'gambar_benefit',
   })
   async update(
-    @UploadedFile() gambar: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
     @Param('id') id: number,
     @Body() updateGambarBenefitDto: UpdateGambarBenefitDto,
     @Res() res: Response,
@@ -119,9 +119,9 @@ export class GambarBenefitController {
   ) {
     try {
       const gambar_benefit = await this.gambarBenefitService.findOne(+id);
-      if (gambar) {
-        await this.gambarBenefitService.deleteFile(gambar_benefit.gambar);
-        updateGambarBenefitDto.gambar = req.body.uploadedImageUrls?.[0];
+      if (image) {
+        await this.gambarBenefitService.deleteFile(gambar_benefit.image);
+        updateGambarBenefitDto.image = req.body.uploadedImageUrls?.[0];
       }
       await this.gambarBenefitService.update(+id, updateGambarBenefitDto);
       req.flash('success', 'Image Benefit successfully updated');
@@ -145,7 +145,7 @@ export class GambarBenefitController {
         req.flash('error', 'Image Benefit not found');
         res.redirect('/benefit-image');
       }
-      await this.gambarBenefitService.deleteFile(gambar_benefit.gambar);
+      await this.gambarBenefitService.deleteFile(gambar_benefit.image);
       await this.gambarBenefitService.remove(id);
       req.flash('success', 'Image Benefit successfully removed');
       res.redirect('/benefit-image');

@@ -1,10 +1,10 @@
-{{> sub_partials/pertemuan/logbook_mentor_tab/header}}
+{{> sub_partials/session/logbook_mentor_tab/header}}
 
-{{> sub_partials/pertemuan/logbook_mentor_tab/table}}
+{{> sub_partials/session/logbook_mentor_tab/table}}
 
-{{> sub_partials/pertemuan/logbook_mentor_tab/modal_information}}
+{{> sub_partials/session/logbook_mentor_tab/modal_information}}
 
-{{> sub_partials/pertemuan/logbook_mentor_tab/pagination}}
+{{> sub_partials/session/logbook_mentor_tab/pagination}}
 
 <script>
   function logBookMentorData() {
@@ -20,7 +20,7 @@
       selectedLogbook: null,
 
       async fetchLogBookMentor() {
-      const res = await fetch('/session/logbook-mentor/{{pertemuan.id}}');
+      const res = await fetch('/session/logbook-mentor/{{session.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },
@@ -28,7 +28,7 @@
       get filteredData() {
         const filtered = this.data.filter(l =>
           (
-            `${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`
+            `${l.activity} ${l.activity_detail} ${l.obstacle}`
           ).toLowerCase()
           .includes(this.search.toLowerCase())
         );
@@ -45,7 +45,7 @@
 
           const filtered = this.data.filter(l =>
             (
-              `${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`
+              `${l.activity} ${l.activity_detail} ${l.obstacle}`
             ).toLowerCase().includes(s)
           );
 
@@ -55,7 +55,7 @@
             Details: log.rincian_kegiatan || "-",
             Obstacle: log.kendala || "-",
             Documentation: log.dokumentasi || "-",
-            Program: log.pertemuan?.minggu?.kelas?.nama_kelas || "-",
+            Program: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",
             Date: this.formatDate(log.createdAt),
           }));

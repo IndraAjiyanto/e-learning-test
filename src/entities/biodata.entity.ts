@@ -10,8 +10,8 @@ import {
 import { User } from './user.entity';
 import { Exclude } from 'class-transformer';
 
-export type JenisKelamin = 'Laki laki' | 'Perempuan';
-export type Pendidikan =
+export type Gender = 'Laki laki' | 'Perempuan';
+export type Education =
   | 'SMP/Sederajat'
   | 'SMA/SMK/Sederajat'
   | 'Diploma(D3/D4)'
@@ -23,22 +23,22 @@ export class Biodata {
   id: number;
 
   @Column()
-  nama_lengkap: string;
+  full_name: string;
 
   @Column()
   no: string;
 
   @Column()
-  jenis_kelamin: JenisKelamin;
+  gender: Gender;
 
   @Column()
-  kota: string;
+  city: string;
 
   @Column()
-  pendidikan: Pendidikan;
+  education: Education;
 
   @Column()
-  program_studi: string;
+  study_program: string;
 
   @CreateDateColumn()
   createdAt: Date;

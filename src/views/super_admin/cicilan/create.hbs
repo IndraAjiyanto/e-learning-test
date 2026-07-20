@@ -1,62 +1,62 @@
 <div
   class='py-10'
   x-data="{ 
-    bulan: {{availableMonths.[0]}}, 
-    hargaDisplays: Array({{availableMonths.[0]}}).fill(''), 
-    hargaValues: Array({{availableMonths.[0]}}).fill(''), 
-    dpDisplay: '', 
-    dpValue: '',
+    month: {{availableMonths.[0]}}, 
+    priceDisplays: Array({{availableMonths.[0]}}).fill(''), 
+    priceValues: Array({{availableMonths.[0]}}).fill(''), 
+    downPaymentDisplay: '', 
+    downPaymentValue: '',
 
     // Form validation states
     formData: {
-      bulan: '{{availableMonths.[0]}}',
-      dp: '',
-      harga: []
+      month: '{{availableMonths.[0]}}',
+      down_payment: '',
+      price: []
     },
     formErrors: {
-      bulan: '',
-      dp: '',
-      harga: []
+      month: '',
+      down_payment: '',
+      price: []
     },
     formValid: {
-      bulan: false,
-      dp: false,
-      harga: []
+      month: false,
+      down_payment: false,
+      price: []
     },
 
     validateField(field, value, index = null) {
-      if (field === 'harga') {
-        this.formData.harga[index] = value;
+      if (field === 'price') {
+        this.formData.price[index] = value;
         const numValue = parseInt(value);
         if (!value || isNaN(numValue)) {
-          this.formErrors.harga[index] = 'Valid payment amount required';
-          this.formValid.harga[index] = false;
+          this.formErrors.price[index] = 'Valid payment amount required';
+          this.formValid.price[index] = false;
         } else {
-          this.formErrors.harga[index] = '';
-          this.formValid.harga[index] = true;
+          this.formErrors.price[index] = '';
+          this.formValid.price[index] = true;
         }
       } else {
         this.formData[field] = value;
         
         switch(field) {
-          case 'bulan':
+          case 'month':
             if (!value) {
-              this.formErrors.bulan = 'Installment period is required';
-              this.formValid.bulan = false;
+              this.formErrors.month = 'Installment period is required';
+              this.formValid.month = false;
             } else {
-              this.formErrors.bulan = '';
-              this.formValid.bulan = true;
+              this.formErrors.month = '';
+              this.formValid.month = true;
             }
             break;
             
-          case 'dp':
+          case 'down_payment':
             const dpNumValue = parseInt(value);
             if (!value || isNaN(dpNumValue) || dpNumValue <= 0) {
-              this.formErrors.dp = 'Valid down payment amount required';
-              this.formValid.dp = false;
+              this.formErrors.down_payment = 'Valid down payment amount required';
+              this.formValid.down_payment = false;
             } else {
-              this.formErrors.dp = '';
-              this.formValid.dp = true;
+              this.formErrors.down_payment = '';
+              this.formValid.down_payment = true;
             }
             break;
         }
@@ -64,9 +64,9 @@
     },
 
     get canSubmit() {
-      const bulanCount = parseInt(this.bulan);
-      const allHargaValid = Array.from({length: bulanCount}, (_, i) => this.formValid.harga[i] || false).every(valid => valid);
-      return this.formValid.bulan && this.formValid.dp && allHargaValid;
+      const monthCount = parseInt(this.month);
+      const allPriceValid = Array.from({length: monthCount}, (_, i) => this.formValid.price[i] || false).every(valid => valid);
+      return this.formValid.month && this.formValid.down_payment && allPriceValid;
     },
     hasFormErrors() {
       return Object.values(this.formErrors).some(error => error !== '' || (Array.isArray(error) && error.some(e => e !== '')));
@@ -85,13 +85,13 @@
     formatNumber(event, index = null) { 
       let angka = event.target.value.replace(/\D/g, ''); 
       if (index !== null) { 
-        this.hargaValues[index] = angka; 
-        this.hargaDisplays[index] = new Intl.NumberFormat('id-ID').format(angka);
-        this.validateField('harga', angka, index);
+        this.priceValues[index] = angka; 
+        this.priceDisplays[index] = new Intl.NumberFormat('id-ID').format(angka);
+        this.validateField('price', angka, index);
       } else { 
-        this.dpValue = angka; 
-        this.dpDisplay = new Intl.NumberFormat('id-ID').format(angka);
-        this.validateField('dp', angka);
+        this.downPaymentValue = angka; 
+        this.downPaymentDisplay = new Intl.NumberFormat('id-ID').format(angka);
+        this.validateField('down_payment', angka);
       } 
     }
   }"

@@ -4,13 +4,13 @@ import { LogbookMentorController } from './logbook_mentor.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { User } from 'src/entities/user.entity';
-import { Pertemuan } from 'src/entities/pertemuan.entity';
-import { Kelas } from 'src/entities/kelas.entity';
+import { Session } from 'src/entities/session.entity';
+import { Course } from 'src/entities/course.entity';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([LogbookMentor, User, Pertemuan, Kelas]),
+    TypeOrmModule.forFeature([LogbookMentor, User, Session, Course]),
     CommonModule,
   ],
   controllers: [LogbookMentorController],

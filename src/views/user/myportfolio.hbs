@@ -15,7 +15,7 @@
 <script>
   function portfolioApp() {
     return {
-      allKategori: {{{json kategori}}},
+      allKategori: {{{json category}}},
       allJenisKelas: {{{json jenis_kelas}}},
       filteredKategoriList: [],
       filteredJenisKelasList: [],
@@ -34,10 +34,10 @@
 
       async init() {
         this.allKategori = this.allKategori.sort((a, b) =>
-          a.nama_kategori.localeCompare(b.nama_kategori)
+          a.name.localeCompare(b.name)
         );
         this.allJenisKelas = this.allJenisKelas.sort((a, b) =>
-          a.nama_jenis_kelas.localeCompare(b.nama_jenis_kelas)
+          a.name_clasess_type.localeCompare(b.name_clasess_type)
         );
         this.filteredKategoriList = [...this.allKategori];
         this.filteredJenisKelasList = [...this.allJenisKelas];
@@ -52,7 +52,7 @@
       filterKategori() {
         const query = this.searchKategoriQuery.toLowerCase().trim();
         this.filteredKategoriList = query
-          ? this.allKategori.filter(k => k.nama_kategori.toLowerCase().includes(query))
+          ? this.allKategori.filter(k => k.name.toLowerCase().includes(query))
           : [...this.allKategori];
       },
 
@@ -60,7 +60,7 @@
         const query = this.searchJenisKelasQuery.toLowerCase().trim();
         this.filteredJenisKelasList = query
           ? this.allJenisKelas.filter(j =>
-              this.getByLang(j.nama_jenis_kelas, this.lang).toLowerCase().includes(query)
+              this.getByLang(j.name_clasess_type, this.lang).toLowerCase().includes(query)
             )
           : [...this.allJenisKelas];
       },
@@ -94,7 +94,7 @@
         this.currentPage = 1;
         if (kategoriId) {
           const kat = this.allKategori.find(k => k.id == kategoriId);
-          this.selectedKategori = kat ? kat.nama_kategori : '';
+          this.selectedKategori = kat ? kat.name : '';
         } else {
           this.selectedKategori = '';
         }
@@ -106,7 +106,7 @@
         this.currentPage = 1;
         if (jenisKelasId) {
           const jenis = this.allJenisKelas.find(j => j.id == jenisKelasId);
-          this.selectedJenisKelas = jenis ? jenis.nama_jenis_kelas : '';
+          this.selectedJenisKelas = jenis ? jenis.name_clasess_type : '';
         } else {
           this.selectedJenisKelas = '';
         }
@@ -132,16 +132,15 @@
       },
 
       getCategoryName(item) {
-        return item.kelas?.kategori?.nama_kategori
-          || item.kategori?.nama_kategori
-          || item.kelas?.nama_kategori
+        return item.course?.category?.name
+          || item.category?.name
+          || item.course?.name
           || null;
       },
 
       getJenisKelasName(item) {
-        return item.kelas?.jenis_kelas?.nama_jenis_kelas
-          || item.jenis_kelas?.nama_jenis_kelas
-          || item.kelas?.nama_jenis_kelas
+        return item.course?.jenis_kelas?.name_clasess_type
+          || item.jenis_kelas?.name_clasess_type
           || null;
       }
     };

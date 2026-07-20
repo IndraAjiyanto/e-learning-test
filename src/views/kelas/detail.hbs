@@ -17,13 +17,13 @@
       </div>
 
       <div class='space-y-4'>
-        {{#each minggu}}
+        {{#each weeks}}
           {{#if progres_minggu.[0].proses}}
             <!-- Week Design (Completed or In Progress) -->
             <div
               x-data="{
-                openMinggu: localStorage.getItem(`open-minggu-{{this.id}}`) === 'true',
-                pertemuanData: localStorage.getItem(`pertemuan-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`pertemuan-data-{{this.id}}`)) : [],
+                openMinggu: localStorage.getItem(`open-weeks-{{this.id}}`) === 'true',
+                pertemuanData: localStorage.getItem(`session-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`session-data-{{this.id}}`)) : [],
                 quizData: localStorage.getItem(`quiz-data-{{this.id}}`) ? JSON.parse(localStorage.getItem(`quiz-data-{{this.id}}`)) : [],
                 loading: false,
                 error: null,
@@ -34,7 +34,7 @@
           const quizResponse = await fetch('/program/quiz/{{this.id}}');
 
           this.pertemuanData = await pertemuanResponse.json();
-      localStorage.setItem(`pertemuan-data-{{this.id}}`, JSON.stringify(this.pertemuanData));
+      localStorage.setItem(`session-data-{{this.id}}`, JSON.stringify(this.pertemuanData));
 
           this.quizData = await quizResponse.json();
       localStorage.setItem(`quiz-data-{{this.id}}`, JSON.stringify(this.quizData));
@@ -43,7 +43,7 @@
                 
                 async toggleAndFetch() {
                   this.openMinggu = !this.openMinggu;
-                  localStorage.setItem(`open-minggu-{{this.id}}`, this.openMinggu);
+                  localStorage.setItem(`open-weeks-{{this.id}}`, this.openMinggu);
                   
                   // Fetch data hanya jika dibuka dan belum pernah di-load
                   if (this.openMinggu && !this.dataLoaded) {
@@ -56,7 +56,7 @@
                   this.error = null;
                   
                   try {
-                    // Fetch pertemuan dan quiz secara parallel
+                    // Fetch session dan quiz secara parallel
                     const [pertemuanResponse, quizResponse] = await Promise.all([
                       fetch('/program/session/{{this.id}}'),
                       fetch('/program/quiz/{{this.id}}')
@@ -68,7 +68,7 @@
                     
                     this.pertemuanData = await pertemuanResponse.json();
                     this.quizData = await quizResponse.json();
-                    localStorage.setItem(`pertemuan-data-{{this.id}}`, JSON.stringify(this.pertemuanData));
+                    localStorage.setItem(`session-data-{{this.id}}`, JSON.stringify(this.pertemuanData));
                     localStorage.setItem(`quiz-data-{{this.id}}`, JSON.stringify(this.quizData));
                     this.dataLoaded = true;
                   } catch (err) {
@@ -150,19 +150,19 @@
                 >
                   <!-- Sessions List -->
                   <template
-                    x-for='pertemuan in pertemuanData'
-                    :key='pertemuan.id'
+                    x-for='session in pertemuanData'
+                    :key='session.id'
                   >
                     <div>
 
                       <template
-                        x-if='pertemuan.progres_pertemuan.length > 0 && pertemuan.progres_pertemuan[0].absen === true'
+                        x-if='session.progres_pertemuan.length > 0 && session.progres_pertemuan[0].attendance === true'
                       >
                         <div
                           x-data="{
-    open: localStorage.getItem(`open-pertemuan-${pertemuan.id}`) === 'true'
+    open: localStorage.getItem(`open-session-${session.id}`) === 'true'
   }"
-                          @click.away='open = false; localStorage.setItem(`open-pertemuan-${pertemuan.id}`, false)'
+                          @click.away='open = false; localStorage.setItem(`open-session-${session.id}`, false)'
                           class='border border-gray-200 rounded-lg shadow-md bg-white overflow-hidden'
                         >
 
@@ -174,7 +174,7 @@
                             class='px-4 pb-4 bg-gradient-to-b from-white to-gray-50/50'
                           >
                             <!-- Attendance Check -->
-                            <template x-if='pertemuan.absen.length > 0'>
+                            <template x-if='session.attendance.length > 0'>
                               <div>
 
 {{> program_detail/right_content/week/session/attendance_status}}

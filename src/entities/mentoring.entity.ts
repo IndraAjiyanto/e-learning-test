@@ -4,13 +4,14 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Kelas } from './kelas.entity';
+import { Course } from './course.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
-export class Mentoring {
+@Entity('mentoring')
+export class Mentorings {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,9 +19,10 @@ export class Mentoring {
   @Exclude()
   user: User;
 
-  @ManyToOne(() => Kelas, (kelas) => kelas.mentoring, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.mentorings, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'kelasId' })
   @Exclude()
-  kelas: Kelas;
+  course: Course;
 
   @CreateDateColumn()
   createdAt: Date;

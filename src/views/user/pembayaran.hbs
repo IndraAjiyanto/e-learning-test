@@ -154,9 +154,9 @@
           <i data-lucide='upload' class='w-6 h-6 mr-2'></i>
           Upload Bukti Pembayaran
         </h3>
-        {{#if (roles kelas.kategori.nama_kategori 'free class')}}
+        {{#if (roles course.category.name 'free class')}}
           <form
-            action='/payment/{{user.id}}/{{kelas.id}}'
+            action='/payment/{{user.id}}/{{course.id}}'
             method='post'
             class='space-y-6'
           >
@@ -165,9 +165,9 @@
               Daftar
             </button>
           </form>
-        {{else if (roles kelas.kategori.nama_kategori 'course')}}
+        {{else if (roles course.category.name 'course')}}
           <form
-            action='/payment/{{user.id}}/{{kelas.id}}'
+            action='/payment/{{user.id}}/{{course.id}}'
             method='post'
             enctype='multipart/form-data'
             class='space-y-6'
@@ -188,9 +188,9 @@
               Kirim Bukti Pembayaran
             </button>
           </form>
-        {{else if (roles kelas.kategori.nama_kategori 'bootcamp')}}
+        {{else if (roles course.category.name 'bootcamp')}}
           <form
-            action='/payment/{{user.id}}/{{kelas.id}}'
+            action='/payment/{{user.id}}/{{course.id}}'
             method='post'
             enctype='multipart/form-data'
             class='space-y-6'

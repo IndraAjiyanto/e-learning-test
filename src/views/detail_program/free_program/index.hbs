@@ -30,10 +30,10 @@
       this.loading[tab] = true;
       try {
         const map = {
-          benefit: '/program/api/detail/{{kelas.id}}/benefit',
-          faq:     '/program/api/detail/{{kelas.id}}/faq',
-          flow:    '/program/api/detail/{{kelas.id}}/flow',
-          mentor:  '/program/api/detail/{{kelas.id}}/mentor'
+          benefit: '/program/api/detail/{{course.id}}/benefit',
+          faq:     '/program/api/detail/{{course.id}}/faq',
+          flow:    '/program/api/detail/{{course.id}}/flow',
+          mentor:  '/program/api/detail/{{course.id}}/mentor'
         };
         const res = await fetch(map[tab]);
         this[tab] = await res.json();

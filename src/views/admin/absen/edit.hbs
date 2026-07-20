@@ -3,7 +3,7 @@
     <h2 class='text-2xl font-bold mb-6 text-gray-900'>Edit Attendance</h2>
 
     <form
-      action='/attendance/{{absen.id}}/{{absen.pertemuan.id}}?_method=PATCH'
+      action='/attendance/{{attendance.id}}/{{attendance.session.id}}?_method=PATCH'
       method='POST'
       class='space-y-6'
       @submit="loading = true"
@@ -16,19 +16,19 @@
         { value: 'absent', label: 'Absent' },
         { value: 'no_information', label: 'No Information' }
       ],
-      searchStatus: '{{absen.status}}' === 'present' ? 'Present' : 
-                    '{{absen.status}}' === 'permission' ? 'Permission' : 
-                    '{{absen.status}}' === 'sick' ? 'Sick' : 
-                    '{{absen.status}}' === 'absent' ? 'Absent' : 
-                    '{{absen.status}}' === 'no_information' ? 'No Information' : '',
+      searchStatus: '{{attendance.status}}' === 'present' ? 'Present' : 
+                    '{{attendance.status}}' === 'permission' ? 'Permission' : 
+                    '{{attendance.status}}' === 'sick' ? 'Sick' : 
+                    '{{attendance.status}}' === 'absent' ? 'Absent' : 
+                    '{{attendance.status}}' === 'no_information' ? 'No Information' : '',
       showStatusDropdown: false,
       selectedStatus: { 
-        value: '{{absen.status}}',
-        label: '{{absen.status}}' === 'present' ? 'Present' : 
-               '{{absen.status}}' === 'permission' ? 'Permission' : 
-               '{{absen.status}}' === 'sick' ? 'Sick' : 
-               '{{absen.status}}' === 'absent' ? 'Absent' : 
-               '{{absen.status}}' === 'no_information' ? 'No Information' : ''
+        value: '{{attendance.status}}',
+        label: '{{attendance.status}}' === 'present' ? 'Present' : 
+               '{{attendance.status}}' === 'permission' ? 'Permission' : 
+               '{{attendance.status}}' === 'sick' ? 'Sick' : 
+               '{{attendance.status}}' === 'absent' ? 'Absent' : 
+               '{{attendance.status}}' === 'no_information' ? 'No Information' : ''
       },
       get filteredStatuses() {
         if (!this.searchStatus) return this.statuses;
@@ -97,7 +97,7 @@
           type='date'
           id='waktu_absen'
           name='waktu_absen'
-          value='{{formDate absen.waktu_absen}}'
+          value='{{formDate attendance.waktu_absen}}'
           required
           class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
           style='color-scheme: light;'
@@ -116,7 +116,7 @@
           rows='3'
           placeholder='Enter additional note...'
           class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        >{{absen.keterangan}}</textarea>
+        >{{attendance.keterangan}}</textarea>
       </div>
 
       <!-- Buttons -->
@@ -131,7 +131,7 @@
         <span x-show="loading" class="loading loading-spinner loading-sm"></span>
         </button>
         <a
-          href='/session/{{absen.pertemuan.id}}'
+          href='/session/{{attendance.session.id}}'
         :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>

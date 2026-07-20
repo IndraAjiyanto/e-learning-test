@@ -4,9 +4,9 @@ import { UpdateLogbookMentorDto } from './dto/update-logbook_mentor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { Repository } from 'typeorm';
-import { Pertemuan } from 'src/entities/pertemuan.entity';
+import { Session } from 'src/entities/session.entity';
 import { User } from 'src/entities/user.entity';
-import { Kelas } from 'src/entities/kelas.entity';
+import { Course } from 'src/entities/course.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -14,47 +14,47 @@ import * as path from 'path';
 export class LogbookMentorService {
   @InjectRepository(LogbookMentor)
   private readonly logBookMentorRepository: Repository<LogbookMentor>;
-  @InjectRepository(Pertemuan)
-  private readonly pertemuanRepository: Repository<Pertemuan>;
+  @InjectRepository(Session)
+  private readonly sessionRepository: Repository<Session>;
   @InjectRepository(User)
   private readonly userRepository: Repository<User>;
-  @InjectRepository(Kelas)
-  private readonly kelasRepository: Repository<Kelas>;
+  @InjectRepository(Course)
+  private readonly kelasRepository: Repository<Course>;
 
   async create(createLogbookMentorDto: CreateLogbookMentorDto) {
     const user = await this.userRepository.findOne({
       where: { id: createLogbookMentorDto.userId },
     });
-    const pertemuan = await this.pertemuanRepository.findOne({
-      where: { id: createLogbookMentorDto.pertemuanId },
+    const session = await this.sessionRepository.findOne({
+      where: { id: createLogbookMentorDto.sessionId },
     });
     if (!user) {
       throw new Error('User tidak ada');
     }
-    if (!pertemuan) {
-      throw new Error('pertemuan tidak ada');
+    if (!session) {
+      throw new Error('session tidak ada');
     }
-    const logbook = await this.logBookMentorRepository.create({
+    const logbooks = await this.logBookMentorRepository.create({
       ...createLogbookMentorDto,
       user: user,
-      pertemuan: pertemuan,
+      session: session,
     });
-    return await this.logBookMentorRepository.save(logbook);
+    return await this.logBookMentorRepository.save(logbooks);
   }
 
   async getKelasList(userId: number) {
     return await this.kelasRepository.find({
-      where: { mentoring: { user: { id: userId } } },
+      where: { mentorings: { user: { id: userId } } },
     });
   }
 
   async findOne(logbook_mentorId: number) {
     const logbook_mentor = await this.logBookMentorRepository.findOne({
       where: { id: logbook_mentorId },
-      relations: ['pertemuan', 'user'],
+      relations: ['session', 'user'],
     });
     if (!logbook_mentor) {
-      throw new NotFoundException('logbook not found');
+      throw new NotFoundException('logbooks not found');
     }
     return logbook_mentor;
   }
@@ -73,19 +73,19 @@ export class LogbookMentorService {
     logbook_mentorId: number,
     updateLogbookMentorDto: UpdateLogbookMentorDto,
   ) {
-    const logbook = await this.findOne(logbook_mentorId);
-    if (!logbook) {
-      throw new NotFoundException('logbook not found');
+    const logbooks = await this.findOne(logbook_mentorId);
+    if (!logbooks) {
+      throw new NotFoundException('logbooks not found');
     }
-    Object.assign(logbook, updateLogbookMentorDto);
-    return await this.logBookMentorRepository.save(logbook);
+    Object.assign(logbooks, updateLogbookMentorDto);
+    return await this.logBookMentorRepository.save(logbooks);
   }
 
   async remove(id: number) {
-    const logbook = await this.findOne(id);
-    if (!logbook) {
-      throw new NotFoundException('logbook not found');
+    const logbooks = await this.findOne(id);
+    if (!logbooks) {
+      throw new NotFoundException('logbooks not found');
     }
-    await this.logBookMentorRepository.remove(logbook);
+    await this.logBookMentorRepository.remove(logbooks);
   }
 }

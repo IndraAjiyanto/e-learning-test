@@ -87,19 +87,19 @@
             <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               <img
-                src='{{profile}}'
-                alt='{{nama}}'
+                src="/{{profile}}"
+                alt='{{name}}'
                 class='w-full h-full rounded-full object-cover border'
               />
             </td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{nama}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{name}}</td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#each posisi}}
+              {{#each position}}
                 <div class='line-clamp-3'>{{this}}</div>
               {{/each}}
             </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#each deskripsi}}
+              {{#each description}}
                 <div class='line-clamp-3'>{{this}}</div>
               {{/each}}
               </td>
@@ -226,7 +226,7 @@
       get filteredTeam() {
         let filtered = this.team.filter(t =>
           (
-            `${t.nama} ${t.posisi} ${t.linkedin}`
+            `${t.name} ${t.position} ${t.linkedin}`
           )
             .toLowerCase()
             .includes(this.search.toLowerCase())

@@ -3,7 +3,7 @@
                                         <label
             class='block text-sm font-semibold text-gray-700 my-2'
           >Lessons</label>
-                    <div x-data="{ materis_id: {{json kelas.materi_id}} || [''] }">
+                    <div x-data="{ materis_id: {{json course.materi_id}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >ID</label>
@@ -35,7 +35,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ materis_en: {{json kelas.materi_en}} || [''] }">
+                    <div x-data="{ materis_en: {{json course.materi_en}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >EN</label>
@@ -67,7 +67,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ materis_ja: {{json kelas.materi_ja}} || [''] }">
+                    <div x-data="{ materis_ja: {{json course.materi_ja}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >JP</label>

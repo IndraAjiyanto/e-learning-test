@@ -2,7 +2,7 @@
   <!-- Header Quiz -->
   <div class="mb-8 text-center">
     <!-- Enhanced header with gradient text and better spacing -->
-    <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent mb-4 font-montserrat">{{quiz.nama_quiz}}</h1>
+    <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent mb-4 font-montserrat">{{quiz.title}}</h1>
   </div>
 
   <!-- Info Quiz -->
@@ -33,7 +33,7 @@
   <!-- Tombol Kembali + Mulai Quiz -->
   <!-- Enhanced buttons with better styling and hover effects -->
   <div class="mb-8 flex flex-row justify-between items-center gap-4">
-      <a href="/program/{{quiz.minggu.kelas.id}}" 
+      <a href="/program/{{quiz.weeks.course.id}}" 
      class="btn btn-lg bg-white inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>

@@ -82,7 +82,7 @@
           >Durasi</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Harga/Bulan</th>
+          >Price/Month</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Action</th>
@@ -97,12 +97,12 @@
             <td class='px-6 py-4 text-sm text-gray-800'>{{addOne @index}}</td>
             <td
               class='px-6 py-4 text-sm font-semibold text-gray-800'
-            >{{kelas.nama_kelas}}</td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{bulan}} Bulan</td>
+            >{{course.name}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{month}} Months</td>
             <td class='px-6 py-4 text-sm text-gray-700'>
               <div class='flex flex-col'>
-                <span>DP: Rp {{formatRupiah cicilan.dp}}</span>
-                <span>Per month: Rp {{formatRupiah cicilan.harga}}</span>
+                <span>DP: Rp {{formatRupiah cicilan.down_payment}}</span>
+                <span>Per month: Rp {{formatRupiah cicilan.price}}</span>
               </div>
             </td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
@@ -204,8 +204,8 @@
 <script>
   function cicilanTable({ cicilan }) { return { searchInput: "", search: "",
   pageNumber: 0, size: 5, cicilan, amount: 0, get filteredCicilan() { let
-  filtered = this.cicilan.filter(c => (`${c.kelas.nama_kelas}
-  ${c.bulan}`).toLowerCase() .includes(this.search.toLowerCase()) ); this.amount
+  filtered = this.cicilan.filter(c => (`${c.course.name}
+  ${c.month}`).toLowerCase() .includes(this.search.toLowerCase()) ); this.amount
   = filtered.length; const start = this.pageNumber * this.size; const end =
   start + this.size; return filtered.slice(start, end).map(c =>
   c.id.toString()); }, pages() { return Array.from({ length: this.pageCount()

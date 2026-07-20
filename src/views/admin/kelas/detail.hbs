@@ -39,15 +39,15 @@
     <!-- Tombol Aksi (Top Right Corner) - Sejajar dengan Back Button -->
     <div class="absolute top-0 right-6 flex flex-col items-end gap-1 z-10">
       <!-- Tombol Launch/Toggle di Atas -->
-      {{#if (roles kelas.proses "acc")}}
-      <form action="/program/{{kelas.id}}/toggle-status?_method=PATCH" method="POST">
+      {{#if (roles course.proses "acc")}}
+      <form action="/program/{{course.id}}/toggle-status?_method=PATCH" method="POST">
         <button type="button" 
-                onclick="confirmAction(this, '{{#if kelas.launch}}Are you sure cancel launch this program?{{else}}Are you sure launch this program?{{/if}}')"
+                onclick="confirmAction(this, '{{#if course.launch}}Are you sure cancel launch this program?{{else}}Are you sure launch this program?{{/if}}')"
                 class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none
-                  {{#if kelas.launch}} bg-green-500 {{else}} bg-gray-300 {{/if}}">
+                  {{#if course.launch}} bg-green-500 {{else}} bg-gray-300 {{/if}}">
           <span 
             class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform
-              {{#if kelas.launch}} translate-x-5 {{else}} translate-x-1 {{/if}}">
+              {{#if course.launch}} translate-x-5 {{else}} translate-x-1 {{/if}}">
           </span>
         </button>
       </form>
@@ -56,7 +56,7 @@
       <!-- Tombol Edit dan Delete di Bawah (Samping Kanan Kiri) -->
       <div class="flex items-center gap-2">
         <!-- Tombol Edit (Kiri) -->
-        <a href="/program/edit/{{kelas.id}}"
+        <a href="/program/edit/{{course.id}}"
            class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
            title="Edit Class">
           <svg xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +74,7 @@
         </a>
 
         <!-- Tombol Delete (Kanan) -->
-        <form action="/program/{{kelas.id}}?_method=DELETE" method="post" class="inline" x-data>
+        <form action="/program/{{course.id}}?_method=DELETE" method="post" class="inline" x-data>
           <input type="hidden" name="previous" :value="prev">
           <button
             type="button"
@@ -98,8 +98,8 @@
 
       <!-- Gambar Kelas -->
       <div class="flex-shrink-0">
-        <img src="{{kelas.gambar}}"
-             alt="Cover {{kelas.nama_kelas}}"
+        <img src="/{{course.gambar}}"
+             alt="Cover {{course.name}}"
              class="w-48 h-32 lg:w-56 lg:h-40 object-cover rounded-lg shadow-md">
       </div>
 
@@ -111,9 +111,9 @@
           </svg>
           Description
         </h3>
-        <p class="text-gray-700 leading-relaxed text-sm">{{kelas.deskripsi.id}}</p>
-        <p class="text-gray-700 leading-relaxed text-sm">{{kelas.deskripsi.en}}</p>
-        <p class="text-gray-700 leading-relaxed text-sm">{{kelas.deskripsi.ja}}</p>
+        <p class="text-gray-700 leading-relaxed text-sm">{{course.description.id}}</p>
+        <p class="text-gray-700 leading-relaxed text-sm">{{course.description.en}}</p>
+        <p class="text-gray-700 leading-relaxed text-sm">{{course.description.ja}}</p>
       </div>
     </div>
 
@@ -128,19 +128,19 @@
             Basic Information
           </h3>
           <div class="space-y-1 text-xs">
-            <p><span class="font-medium text-gray-600">Program Name:</span> <span class="text-gray-800">{{kelas.nama_kelas}}</span></p>
-            <p><span class="font-medium text-gray-600">Category:</span> <span class="text-gray-800">{{kelas.kategori.nama_kategori}}</span></p>
-            <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{ kelas.jenis_kelas.nama_jenis_kelas}}</span></p>
-            <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (eq kelas.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
-            <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{#each kelas.lokasi}}{{this}}{{/each}}</span></p>
-            <p><span class="font-medium text-gray-600">Location:</span> <a href="{{kelas.link_lokasi}}" target="_blank" class="text-blue-500 underline truncate block">{{kelas.link_lokasi}}</a></p>
-            {{#if (eq kelas.kategori.nama_kategori "Short Class")}}
-            <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.hari}} day</span></p>
+            <p><span class="font-medium text-gray-600">Program Name:</span> <span class="text-gray-800">{{course.name}}</span></p>
+            <p><span class="font-medium text-gray-600">Category:</span> <span class="text-gray-800">{{course.category.name}}</span></p>
+            <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{ course.jenis_kelas.name_clasess_type}}</span></p>
+            <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (eq course.metode 'online')}}Online{{else}}Offline{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{#each course.lokasi}}{{this}}{{/each}}</span></p>
+            <p><span class="font-medium text-gray-600">Location:</span> <a href="{{course.link_lokasi}}" target="_blank" class="text-blue-500 underline truncate block">{{course.link_lokasi}}</a></p>
+            {{#if (eq course.category.name "Short Class")}}
+            <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{course.hari}} day</span></p>
             {{else}}
-            <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{kelas.bulan}} month</span></p>
+            <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{course.bulan}} month</span></p>
             {{/if}}
-            <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if kelas.tanggal_mulai}}{{formatTanggal kelas.tanggal_mulai}}{{else}}Not set{{/if}}</span></p>
-            <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if kelas.tanggal_selesai}}{{formatTanggal kelas.tanggal_selesai}}{{else}}Not set{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if course.tanggal_mulai}}{{formatTanggal course.tanggal_mulai}}{{else}}Not set{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if course.tanggal_selesai}}{{formatTanggal course.tanggal_selesai}}{{else}}Not set{{/if}}</span></p>
           </div>
         </div>
 
@@ -153,16 +153,16 @@
             Capacity & Enrollment
           </h3>
           <div class="space-y-1 text-xs">
-            <p><span class="font-medium text-gray-600">Capacity:</span> <span class="text-gray-800">{{kelas.kuota}} students</span></p>
+            <p><span class="font-medium text-gray-600">Capacity:</span> <span class="text-gray-800">{{course.kuota}} students</span></p>
             <p><span class="font-medium text-gray-600">Enrolled:</span> <span class="text-gray-800">{{user_kelas.length}} students</span></p>
             <div class="mt-2">
               <div class="flex justify-between text-xs text-gray-600 mb-1">
                 <span>Progress</span>
-                <span>{{kelas.user_kelas.length}}/{{kelas.kuota}}</span>
+                <span>{{course.user_kelas.length}}/{{course.kuota}}</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div class="bg-green-500 h-2 rounded-full transition-all duration-300"
-                     style="width: {{#if kelas.kuota}}{{multiply (divide kelas.user_kelas.length kelas.kuota) 100}}%{{else}}0%{{/if}}"></div>
+                     style="width: {{#if course.kuota}}{{multiply (divide course.user_kelas.length course.kuota) 100}}%{{else}}0%{{/if}}"></div>
               </div>
             </div>
           </div>
@@ -174,15 +174,15 @@
             <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
             </svg>
-            {{#if kelas.check_paid}}Pricing Information{{else}}Form Information{{/if}}
+            {{#if course.check_paid}}Pricing Information{{else}}Form Information{{/if}}
           </h3>
           <div class="space-y-1 text-xs">
-            {{#if kelas.check_paid}}
-            <p><span class="font-medium text-gray-600">Price:</span> <span class="text-gray-800 font-semibold">Rp {{formatRupiah kelas.harga}}</span></p>
-            <p><span class="font-medium text-gray-600">Promo:</span> <span class="text-green-600 font-semibold">Rp {{formatRupiah kelas.promo}}</span></p>
+            {{#if course.check_paid}}
+            <p><span class="font-medium text-gray-600">Price:</span> <span class="text-gray-800 font-semibold">Rp {{formatRupiah course.harga}}</span></p>
+            <p><span class="font-medium text-gray-600">Promo:</span> <span class="text-green-600 font-semibold">Rp {{formatRupiah course.promo}}</span></p>
             <p><span class="font-medium text-gray-600">Type:</span> <span class="text-green-600">Paid</span></p>
             {{else}}
-            <p><span class="font-medium text-gray-600">Form:</span> <a href="{{kelas.form}}" target="_blank" class="text-blue-500 underline truncate block">{{#if kelas.form}}{{kelas.form}}{{else}}No form required{{/if}}</a></p>
+            <p><span class="font-medium text-gray-600">Form:</span> <a href="{{course.form}}" target="_blank" class="text-blue-500 underline truncate block">{{#if course.form}}{{course.form}}{{else}}No form required{{/if}}</a></p>
             <p><span class="font-medium text-gray-600">Type:</span> <span class="text-blue-600">Free</span></p>
             {{/if}}
           </div>
@@ -197,14 +197,14 @@
             Learning Details
           </h3>
           <div class="space-y-1 text-xs">
-            <p><span class="font-medium text-gray-600">Account Mentor:</span> <span class="text-gray-800">{{#each kelas.mentoring}}{{this.user.username}}{{/each}}</span></p>
-            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_id 40}}</span></p>
-            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_en 40}}</span></p>
-            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate kelas.target_pembelajaran_ja 40}}</span></p>
+            <p><span class="font-medium text-gray-600">Account Mentor:</span> <span class="text-gray-800">{{#each course.mentoring}}{{this.user.username}}{{/each}}</span></p>
+            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate course.target_pembelajaran_id 40}}</span></p>
+            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate course.target_pembelajaran_en 40}}</span></p>
+            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate course.target_pembelajaran_ja 40}}</span></p>
             <div class="mt-2">
               <p class="font-medium text-gray-600 mb-1">Technologies:</p>
               <div class="flex flex-wrap gap-1">
-                {{#each kelas.teknologi}}
+                {{#each course.teknologi}}
                 <div class='flex items-center gap-2'>
                   {{#if this.svg}}
                   <div class='w-6 h-6 flex items-center justify-center'>
@@ -213,7 +213,7 @@
                   {{/if}}
                   {{#if this.img_url}}
                   <div class='w-6 h-6 flex items-center justify-center'>
-                    <img src="{{this.img_url}}" alt="{{this.nama}}" class="w-full h-full object-contain">
+                    <img src="{{this.img_url}}" alt="{{this.name}}" class="w-full h-full object-contain">
                   </div>
                   {{/if}}
                 </div>
@@ -232,13 +232,13 @@
   <!-- Tab Navigation -->
   <div class="flex space-x-4 mb-6">
     {{#if (eq user.role "admin")}}
-    <button @click="toggleFetch('/program/week/{{kelas.id}}', 'week')" 
+    <button @click="toggleFetch('/program/week/{{course.id}}', 'week')" 
             :class="tab === 'week' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Week
     </button>
 
-    <button @click="toggleFetch('/program/userProgram/{{kelas.id}}', 'user')" 
+    <button @click="toggleFetch('/program/userProgram/{{course.id}}', 'user')" 
             :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       User
@@ -246,26 +246,26 @@
 
     {{else if (eq user.role "super_admin")}}
 
-    <button @click="toggleFetch('/program/benefit/{{kelas.id}}', 'benefit')" 
+    <button @click="toggleFetch('/program/benefit/{{course.id}}', 'benefit')" 
             :class="tab === 'benefit' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Benefit
     </button>
 
-    <button @click="toggleFetch('/program/flow/{{kelas.id}}', 'flow')" 
+    <button @click="toggleFetch('/program/flow/{{course.id}}', 'flow')" 
             :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Flow
     </button>
 
-    <button @click="toggleFetch('/program/faq/{{kelas.id}}', 'faq')" 
+    <button @click="toggleFetch('/program/faq/{{course.id}}', 'faq')" 
             :class="tab === 'faq' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       FAQ
     </button>
 
-    {{#if kelas.check_paid}}
-    <button @click="toggleFetch('/program/installment/{{kelas.id}}', 'installment')" 
+    {{#if course.check_paid}}
+    <button @click="toggleFetch('/program/installment/{{course.id}}', 'installment')" 
             :class="tab === 'installment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Installment
@@ -278,32 +278,32 @@
       Payment
     </button>
 
-    <button @click="toggleFetch('/program/alumni/{{kelas.id}}', 'alumni')" 
+    <button @click="toggleFetch('/program/alumni/{{course.id}}', 'alumni')" 
             :class="tab === 'alumni' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Alumni
     </button>
 
-    <button @click="toggleFetch('/program/userProgram/{{kelas.id}}', 'user')" 
+    <button @click="toggleFetch('/program/userProgram/{{course.id}}', 'user')" 
             :class="tab === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       User
     </button>
 
     {{/if}}
-        <button @click="toggleFetch('/program/logbookUser/{{kelas.id}}', 'log_book_user')" 
+        <button @click="toggleFetch('/program/logbookUser/{{course.id}}', 'log_book_user')" 
             :class="tab === 'log_book_user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log Book User
     </button>
 
-    <button @click="toggleFetch('/program/logbookMentor/{{kelas.id}}', 'log_book_mentor')" 
+    <button @click="toggleFetch('/program/logbookMentor/{{course.id}}', 'log_book_mentor')" 
             :class="tab === 'log_book_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log Book Mentor
     </button>
     
-    <button @click="toggleFetch('/program/mentorProgram/{{kelas.id}}', 'mentor')" 
+    <button @click="toggleFetch('/program/mentorProgram/{{course.id}}', 'mentor')" 
             :class="tab === 'mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Mentor
@@ -312,47 +312,47 @@
 
   <!-- Tab Content Areas -->
   <div x-show="tab === 'week'" x-data="weekData()" x-init="fetchWeeks()">
-    {{> kelas/week_tab }}
+    {{> course/week_tab }}
   </div>
 
   <div x-show="tab === 'mentor'" x-data="mentorData()" x-init="fetchMentors()">
-    {{> kelas/mentor_tab}}
+    {{> course/mentor_tab}}
   </div>
 
   <div x-show="tab === 'flow'" x-data="flowData()" x-init="fetchFlow()">
-    {{> kelas/flow_tab}}
+    {{> course/flow_tab}}
   </div>
 
   <div x-show="tab === 'benefit'" x-data="benefitData()" x-init="fetchBenefit()">
-    {{> kelas/benefit_tab}}
+    {{> course/benefit_tab}}
   </div>
 
   <div x-show="tab === 'faq'" x-data="faqData()" x-init="fetchFaqs()">
-    {{> kelas/faq_tab}}
+    {{> course/faq_tab}}
   </div>
 
   <div x-show="tab === 'installment'" x-data="installmentData()" x-init="fetchInstallment()">
-    {{> kelas/installment_tab}}
+    {{> course/installment_tab}}
   </div>
 
   <div x-show="tab === 'alumni'" x-data="alumniData()" x-init="fetchAlumni()">
-    {{> kelas/alumni_tab}}
+    {{> course/alumni_tab}}
   </div>
 
   <div x-show="tab === 'user'" x-data="userData()" x-init="fetchUsers()">
-    {{> kelas/user_tab}}
+    {{> course/user_tab}}
   </div>
 
   <div x-show="tab === 'log_book_user'" x-data="logBookUserData()" x-init="fetchLogBookUsers()">
-    {{> kelas/log_book_user_tab}}
+    {{> course/log_book_user_tab}}
   </div>
 
   <div x-show="tab === 'log_book_mentor'" x-data="logBookMentorData()" x-init="fetchLogBookMentors()">
-    {{> kelas/log_book_mentor_tab}}
+    {{> course/log_book_mentor_tab}}
   </div>
 
   <div x-show="tab === 'payment'" x-data="paymentData()" x-init="fetchPayments()">
-    {{> kelas/payment_tab}}
+    {{> course/payment_tab}}
   </div>
 </div>
 </div>

@@ -30,7 +30,7 @@ export class ExperienceController {
     @Req() req: Request,
   ) {
     try {
-      createExperienceDto.experience_ke =
+      createExperienceDto.experience_order =
         await this.experienceService.noExperience();
       await this.experienceService.create(createExperienceDto);
       req.flash('success', 'experience successfully created');

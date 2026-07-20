@@ -2,7 +2,7 @@
   <div class="max-w-7xl mx-auto px-6">
     <div class="bg-white rounded-2xl shadow-2xl p-10 border border-slate-200">
 <div class="flex justify-start mb-8">
-  <a href="/program/{{tugas.pertemuan.minggu.kelas.id}}" 
+  <a href="/program/{{assignment.session.weeks.course.id}}" 
      class="btn bg-white inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-base transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -21,7 +21,7 @@
             <div class="overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
               <iframe
                   class="w-full h-[500px] border-0" 
-  src="{{tugas.file}}"
+  src="{{assignment.file}}"
   type="application/pdf"
 ></iframe>
             </div>
@@ -122,7 +122,7 @@
                       <form 
                             x-data="{ loading: false }"
   @submit="loading = true"
-                        action="/answer-assigment/{{../tugas.id}}/{{this.id}}?_method=PATCH" 
+                        action="/answer-assigment/{{../assignment.id}}/{{this.id}}?_method=PATCH" 
                         method="POST" 
                         class="space-y-4"
                       >
@@ -163,7 +163,7 @@
             <form 
                   x-data="{ loading: false }"
   @submit="loading = true"
-              action="/answer-assigment/{{tugas.id}}/{{tugas.pertemuan.id}}" 
+              action="/answer-assigment/{{assignment.id}}/{{assignment.session.id}}" 
               method="POST" 
               class="space-y-4"
             >

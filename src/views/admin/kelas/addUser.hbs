@@ -43,7 +43,7 @@
           <p class="text-gray-600 text-sm mt-1">Select the student to add to this program</p>
         </div>
 
-        <form action="/program/addStudent/{{kelas.id}}" method="POST" class="space-y-4" x-data="{loading: false}" @submit="loading = true">
+        <form action="/program/addStudent/{{course.id}}" method="POST" class="space-y-4" x-data="{loading: false}" @submit="loading = true">
           <div>
             <div class="relative">
               <input type="hidden" name="userId" x-model="selected" required>
@@ -119,7 +119,7 @@
            x-data="{ searchMurid: '' }">
         
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg text-gray-900">List user program <span class="font-bold">{{kelas.nama_kelas}}</span></h3>
+          <h3 class="text-lg text-gray-900">List user program <span class="font-bold">{{course.name}}</span></h3>
           <div class="relative w-full md:w-64">
             <input type="text" 
                    placeholder="Search user..." 
@@ -141,7 +141,7 @@
                   x-show="'{{username}}'.toLowerCase().includes(searchMurid.toLowerCase()) || searchMurid === ''">
                 <div class="flex items-center space-x-3">
                   {{#if this.profile}}
-                  <img src="{{profile}}" 
+                  <img src="/{{profile}}" 
                        alt="{{username}}"
                        class="w-10 h-10 bg-gray-200 rounded-full border border-gray-300 object-cover"
                        onerror="this.src='https://via.placeholder.com/40/gray/white?text={{username.[0]}}'">
@@ -160,7 +160,7 @@
                     <p class="text-gray-500 text-sm">{{email}}</p>
                   </div>
                 </div>
-                <form action="/program/{{id}}/program/{{../kelas.id}}?_method=DELETE" method="post" class="inline">
+                <form action="/program/{{id}}/program/{{../course.id}}?_method=DELETE" method="post" class="inline">
                   <button type="button"
                           onclick="confirmDelete(this)"
                           class="p-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition"

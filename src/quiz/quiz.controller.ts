@@ -23,32 +23,32 @@ export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
   @Roles('admin')
-  @Post(':mingguId')
+  @Post(':weeksId')
   async create(
-    @Param('mingguId') mingguId: number,
+    @Param('weeksId') weeksId: number,
     @Body() createQuizDto: CreateQuizDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createQuizDto.mingguId = mingguId;
+      createQuizDto.weeksId = weeksId;
       await this.quizService.create(createQuizDto);
       req.flash('success', 'Quiz created successfully');
-      res.redirect(`/week/${mingguId}`);
+      res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to create quiz');
-      res.redirect(`/week/${mingguId}`);
+      res.redirect(`/week/${weeksId}`);
     }
   }
 
   @Roles('admin')
-  @Get('formCreate/:mingguId')
+  @Get('formCreate/:weeksId')
   async formCreate(
-    @Param('mingguId') mingguId: number,
+    @Param('weeksId') weeksId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    res.render('admin/quiz/create', { mingguId, user: req.user });
+    res.render('admin/quiz/create', { weeksId, user: req.user });
   }
 
   @Roles('admin')
@@ -59,13 +59,13 @@ export class QuizController {
     @Req() req: Request,
   ) {
     const quiz = await this.quizService.findOne(quizId);
-    const nilai = await this.quizService.findNilai(quizId);
-    const pertanyaan = await this.quizService.findPertanyaan(quizId);
+    const scores = await this.quizService.findNilai(quizId);
+    const questions = await this.quizService.findPertanyaan(quizId);
     res.render('admin/quiz/detail', {
       user: req.user,
       quiz,
-      nilai,
-      pertanyaan,
+      scores,
+      questions,
     });
   }
 
@@ -88,9 +88,9 @@ export class QuizController {
     @Req() req: Request,
   ) {
     const quiz = await this.quizService.findOne(quizId);
-    const nilai = await this.quizService.findNilaiUser(req.user!.id, quizId);
-    const pertanyaan = await this.quizService.findPertanyaan(quizId);
-    res.render('user/quiz/quiz', { user: req.user, quiz, nilai, pertanyaan });
+    const scores = await this.quizService.findNilaiUser(req.user!.id, quizId);
+    const questions = await this.quizService.findPertanyaan(quizId);
+    res.render('user/quiz/quiz', { user: req.user, quiz, scores, questions });
   }
 
   @Roles('user')
@@ -104,12 +104,12 @@ export class QuizController {
       req.user!.id,
       quizId,
     );
-    const pertanyaan = await this.quizService.findPertanyaan(quizId);
+    const questions = await this.quizService.findPertanyaan(quizId);
     if (check) {
       res.render('user/quiz/start', {
         user: req.user,
         quizId,
-        pertanyaan,
+        questions,
         check,
       });
     } else {
@@ -120,7 +120,7 @@ export class QuizController {
       res.render('user/quiz/start', {
         user: req.user,
         quizId,
-        pertanyaan,
+        questions,
         remainingTime,
         check,
       });
@@ -146,9 +146,9 @@ export class QuizController {
   }
 
   @Roles('admin')
-  @Delete(':quizId/:mingguId')
+  @Delete(':quizId/:weeksId')
   async remove(
-    @Param('mingguId') mingguId: number,
+    @Param('weeksId') weeksId: number,
     @Param('quizId') quizId: number,
     @Res() res: Response,
     @Req() req: Request,
@@ -156,10 +156,10 @@ export class QuizController {
     try {
       await this.quizService.remove(quizId);
       req.flash('success', 'Quiz deleted successfully');
-      res.redirect(`/week/${mingguId}`);
+      res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Quiz Failed to deleted');
-      res.redirect(`/week/${mingguId}`);
+      res.redirect(`/week/${weeksId}`);
     }
   }
 }

@@ -27,7 +27,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsOptional()
-  verifikasiToken: string;
+  verificationToken: string;
 
   @IsDate()
   @IsOptional()
@@ -39,7 +39,7 @@ export class CreateUserDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  kelasId?: number[];
+  courseId?: number[];
 
   @IsEnum(['super_admin', 'admin', 'user'])
   @IsOptional()

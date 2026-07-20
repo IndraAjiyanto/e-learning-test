@@ -14,14 +14,14 @@
         fileName: '',
         fileSize: 0,
         hasFile: false,
-        previewUrl: '{{logbook_mentor.dokumentasi}}',
+        previewUrl: '{{logbook_mentor.documentation}}',
         maxSize: 5 * 1024 * 1024,
         allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
         allowedExtensions: ['.jpg', '.jpeg', '.png'],
         validateFile(file) {
           if (!file) {
             this.hasFile = false;
-            this.previewUrl = '{{logbook_mentor.dokumentasi}}';
+            this.previewUrl = '{{logbook_mentor.documentation}}';
             return;
           }
           
@@ -35,7 +35,7 @@
           if (file.size > this.maxSize) {
             this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum ${(this.maxSize / 1024 / 1024).toFixed(0)}MB`;
             this.isValid = false;
-            this.previewUrl = '{{logbook_mentor.dokumentasi}}';
+            this.previewUrl = '{{logbook_mentor.documentation}}';
             return;
           }
           
@@ -43,7 +43,7 @@
           if (!this.allowedTypes.includes(file.type)) {
             this.errorMessage = `File type not allowed. Allowed: JPG, JPEG, PNG`;
             this.isValid = false;
-            this.previewUrl = '{{logbook_mentor.dokumentasi}}';
+            this.previewUrl = '{{logbook_mentor.documentation}}';
             return;
           }
           
@@ -54,7 +54,7 @@
           if (!hasValidExtension) {
             this.errorMessage = `File extension not allowed. Allowed: ${this.allowedExtensions.join(', ')}`;
             this.isValid = false;
-            this.previewUrl = '{{logbook_mentor.dokumentasi}}';
+            this.previewUrl = '{{logbook_mentor.documentation}}';
             return;
           }
           
@@ -67,7 +67,7 @@
           this.fileName = '';
           this.fileSize = 0;
           this.hasFile = false;
-          this.previewUrl = '{{logbook_mentor.dokumentasi}}';
+          this.previewUrl = '{{logbook_mentor.documentation}}';
           $refs.fileInput.value = null;
         },
         canSubmit() {
@@ -79,52 +79,52 @@
 
       <div>
         <label
-          for='kegiatan'
+          for='activity'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Activity</label>
         <input
           type='text'
-          id='kegiatan'
-          name='kegiatan'
+          id='activity'
+          name='activity'
           required
           placeholder='Enter activity...'
-          value='{{logbook_mentor.kegiatan}}'
+          value='{{logbook_mentor.activity}}'
           class='w-full border text-gray-700 bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
         />
       </div>
 
       <div>
         <label
-          for='rincian_kegiatan'
+          for='rincian_activity'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Activity Details</label>
         <textarea
-          name='rincian_kegiatan'
-          id='rincian_kegiatan'
+          name='rincian_activity'
+          id='rincian_activity'
           placeholder='Enter activity details...'
           class='w-full text-gray-700 bg-white border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
-        >{{logbook_mentor.rincian_kegiatan}}</textarea>
+        >{{logbook_mentor.activity_detail}}</textarea>
       </div>
 
       <div>
         <label
-          for='kendala'
+          for='obstacle'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Obstacle</label>
         <input
           type='text'
-          id='kendala'
-          name='kendala'
+          id='obstacle'
+          name='obstacle'
           required
           placeholder='Enter obstacle...'
-          value='{{logbook_mentor.kendala}}'
+          value='{{logbook_mentor.obstacle}}'
           class='w-full border text-gray-700 bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
         />
       </div>
 
       <div class='space-y-3'>
         <label
-          for='dokumentasi'
+          for='documentation'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >
           Photo Documentation
@@ -134,8 +134,8 @@
 
         <input
           type='file'
-          id='dokumentasi'
-          name='dokumentasi'
+          id='documentation'
+          name='documentation'
           accept='.jpg,.jpeg,.png'
           x-ref='fileInput'
           :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
@@ -228,7 +228,7 @@
 <span x-show="!loading">Update Log Book</span>
         </button>
         <a
-          href='/session/{{logbook_mentor.pertemuan.id}}'
+          href='/session/{{logbook_mentor.session.id}}'
         :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>

@@ -14,10 +14,10 @@ export class Benefit {
   id: number;
 
   @Column('jsonb', { nullable: true })
-  judul: string[];
+  title: string[];
 
   @Column('jsonb', { nullable: true })
-  text: string[];
+  description: string[];
 
   @Column()
   icon: string;

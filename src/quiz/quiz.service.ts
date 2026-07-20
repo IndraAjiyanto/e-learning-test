@@ -4,52 +4,52 @@ import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quiz } from 'src/entities/quiz.entity';
 import { Repository } from 'typeorm';
-import { Minggu } from 'src/entities/minggu.entity';
-import { Nilai } from 'src/entities/nilai.entity';
+import { Weeks } from 'src/entities/weeks.entity';
+import { Score } from 'src/entities/score.entity';
 import { User } from 'src/entities/user.entity';
-import { Pertanyaan } from 'src/entities/pertanyaan.entity';
-import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
-import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
-import { JawabanUser } from 'src/entities/jawaban_user.entity';
+import { Question } from 'src/entities/question.entity';
+import { QuizProgress } from 'src/entities/quiz_progress.entity';
+import { SessionProgress } from 'src/entities/session_progress.entity';
+import { UserAnswer } from 'src/entities/user_answer.entity';
 
 @Injectable()
 export class QuizService {
   constructor(
     @InjectRepository(Quiz)
     private readonly quizRepository: Repository<Quiz>,
-    @InjectRepository(Minggu)
-    private readonly mingguRepository: Repository<Minggu>,
-    @InjectRepository(Nilai)
-    private readonly nilaiRepository: Repository<Nilai>,
+    @InjectRepository(Weeks)
+    private readonly mingguRepository: Repository<Weeks>,
+    @InjectRepository(Score)
+    private readonly nilaiRepository: Repository<Score>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Pertanyaan)
-    private readonly pertanyaanRepository: Repository<Pertanyaan>,
-    @InjectRepository(ProgresQuiz)
-    private readonly progresQuizRepository: Repository<ProgresQuiz>,
-    @InjectRepository(ProgresPertemuan)
-    private readonly progresPertemuanRepository: Repository<ProgresPertemuan>,
-    @InjectRepository(JawabanUser)
-    private readonly jawabanUserRepository: Repository<JawabanUser>,
+    @InjectRepository(Question)
+    private readonly pertanyaanRepository: Repository<Question>,
+    @InjectRepository(QuizProgress)
+    private readonly progresQuizRepository: Repository<QuizProgress>,
+    @InjectRepository(SessionProgress)
+    private readonly progresPertemuanRepository: Repository<SessionProgress>,
+    @InjectRepository(UserAnswer)
+    private readonly jawabanUserRepository: Repository<UserAnswer>,
   ) {}
 
   async create(createQuizDto: CreateQuizDto) {
-    const minggu = await this.mingguRepository.findOne({
-      where: { id: createQuizDto.mingguId },
-      relations: ['pertemuan'],
+    const weeks = await this.mingguRepository.findOne({
+      where: { id: createQuizDto.weeksId },
+      relations: ['session'],
     });
-    if (!minggu) {
-      throw new Error('Minggu not found');
+    if (!weeks) {
+      throw new Error('Weeks not found');
     }
     const quiz = await this.quizRepository.create({
       ...createQuizDto,
-      minggu: minggu,
+      weeks: weeks,
     });
     const newQuiz = await this.quizRepository.save(quiz);
     const progres_pertemuan_akhir = await this.progresPertemuanRepository.find({
       where: {
-        pertemuan: { akhir: true, minggu: { id: minggu.id } },
-        absen: true,
+        session: { isFinal: true, weeks: { id: weeks.id } },
+        isAttended: true,
         logbook: true,
       },
       relations: ['user'],
@@ -95,7 +95,7 @@ export class QuizService {
   async findOne(quizId: number) {
     return await this.quizRepository.findOne({
       where: { id: quizId },
-      relations: ['minggu', 'minggu.kelas'],
+      relations: ['weeks', 'weeks.course'],
     });
   }
 
@@ -112,7 +112,7 @@ export class QuizService {
     if(user.countdownQuiz !== null) {
 
     const startTime = user.countdownQuiz.getTime();
-    const durasi = quiz.durasi * 60000;
+    const durasi = quiz.duration * 60000;
 
     if(startTime + durasi <= Date.now() && user.quizStart === true) {
       return true;
@@ -145,7 +145,7 @@ export class QuizService {
 
     if(user.quizStart){
 const now = Date.now();
-const durationMs = quiz.durasi * 60000;
+const durationMs = quiz.duration * 60000;
 
 let startTime = user.countdownQuiz?.getTime();
 
@@ -165,7 +165,7 @@ const remainingSecond = Math.ceil(remainingMs / 1000);
 
       await this.userRepository.save(user)
 
-      return quiz.durasi * 60;
+      return quiz.duration * 60;
 
     }
 
@@ -178,12 +178,12 @@ const remainingSecond = Math.ceil(remainingMs / 1000);
         quiz: { id: quizId },
       },
       relations: {
-        jawaban: true,
+        answers: true,
         quiz: true,
       },
       order: {
         id: 'ASC',
-        jawaban: {
+        answers: {
           id: 'ASC',
         },
       },

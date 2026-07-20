@@ -30,11 +30,11 @@ export class AuthController {
     @Res() res: Response,
     @Req() req: any,
   ) {
-    const kelas = await this.authService.findKelas(id);
+    const course = await this.authService.findKelas(id);
     if (!req.user) {
       res.render('login');
     } else {
-      res.render('user/daftarKelas', { user: req.user, kelas });
+      res.render('user/daftarKelas', { user: req.user, course });
     }
   }
 
@@ -52,7 +52,7 @@ export class AuthController {
     try {
       const user = await this.authService.createAcount(createUserDto);
       req.flash('success', 'success regis, please verify your email');
-      res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
+      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
     } catch (error: any) {
       req.flash('error', error.message || 'failed to regis');
       res.redirect('/login');
@@ -68,7 +68,7 @@ export class AuthController {
       );
 
       if (user!.isVerified === false) {
-        res.redirect('/users/send-verify-email?token=' + user!.verifikasiToken);
+        res.redirect('/users/send-verify-email?token=' + user!.verificationToken);
       } else {
         req.login(user, (err) => {
           if (err) {

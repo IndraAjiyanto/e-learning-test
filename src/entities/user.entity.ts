@@ -10,26 +10,24 @@ import {
   OneToOne,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Absen } from './absen.entity';
+import { Attendance } from './attendance.entity';
 import { Biodata } from './biodata.entity';
-import { Portfolio } from './portfolio.entity';
-import { Pembayaran } from './pembayaran.entity';
-import { JawabanUser } from './jawaban_user.entity';
-import { BiodataMentor } from './biodata_mentor.entity';
-import { JawabanTugas } from './jawaban_tugas.entity';
+import { Portofolios } from './portofolios.entity';
+import { Payment } from './payment.entity';
+import { UserAnswer } from './user_answer.entity';
+import { MentorBiodata } from './mentor_biodata.entity';
+import { AnswerTask } from './answer_task.entity';
 import { Logbook } from './logbook.entity';
-import { Nilai } from './nilai.entity';
-import { ProgresMinggu } from './progres_minggu.entity';
-import { ProgresPertemuan } from './progres_pertemuan.entity';
-import { Sertifikat } from './sertifikat.entity';
-import { UserKelas } from './user_kelas.entity';
+import { Score } from './score.entity';
+import { WeekProgress } from './week_progress.entity';
+import { SessionProgress } from './session_progress.entity';
+import { Certificates } from './certificate.entity';
+import { UserCourse } from './user_course.entity';
 import { LogbookMentor } from './logbook_mentor.entity';
-import { ProgresQuiz } from './progres_quiz.entity';
-import { Mentoring } from './mentoring.entity';
-import { Pendaftaran } from './pendaftaran.entity';
+import { QuizProgress } from './quiz_progress.entity';
+import { Mentorings } from './mentoring.entity';
+import { Registration } from './registration.entity';
 import { Exclude } from 'class-transformer';
-import { Likes } from './likes.entity';
-import { Coment } from './coment.entity';
 
 export type UserRole = 'super_admin' | 'admin' | 'user';
 
@@ -67,10 +65,10 @@ export class User {
   isVerified: boolean;
 
   @Column({ type: 'varchar', nullable: true })
-  verifikasiToken: string | null;
+  verificationToken: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  verifikasiTokenExpires: Date | null;
+  verificationTokenExpires: Date | null;
 
   @Column({ type: 'timestamp', nullable: true })
   countdownQuiz: Date | null;
@@ -96,20 +94,12 @@ export class User {
     }
   }
 
-  @OneToMany(() => Absen, (absen) => absen.user, {
+  @OneToMany(() => Attendance, (attendance) => attendance.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  absen: Absen[];
-
-  @OneToMany(() => Likes, (likes) => likes.user)
-  @Exclude()
-  likes: Likes[];
-
-  @OneToMany(() => Coment, (coment) => coment.user)
-  @Exclude()
-  coment: Coment[];
+  absent: Attendance[];
 
   @OneToMany(() => Logbook, (logbook) => logbook.user, {
     cascade: true,
@@ -125,90 +115,90 @@ export class User {
   @Exclude()
   logbook_mentor: LogbookMentor[];
 
-  @OneToMany(() => Portfolio, (portfolio) => portfolio.user, {
+  @OneToMany(() => Portofolios, (portfolio) => portfolio.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  portfolio: Portfolio[];
+  portfolio: Portofolios[];
 
-  @OneToMany(() => Pembayaran, (pembayaran) => pembayaran.user, {
+  @OneToMany(() => Payment, (payment) => payment.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  pembayaran: Pembayaran[];
+  payments: Payment[];
 
-  @OneToMany(() => JawabanUser, (jawaban_user) => jawaban_user.user, {
+  @OneToMany(() => UserAnswer, (userAnswer) => userAnswer.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  jawaban_user: JawabanUser[];
+  userAnswers: UserAnswer[];
 
-  @OneToMany(() => JawabanTugas, (jawaban_tugas) => jawaban_tugas.user, {
+  @OneToMany(() => AnswerTask, (answerTask) => answerTask.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  jawaban_tugas: JawabanTugas[];
+  answer_task: AnswerTask[];
 
-  @OneToMany(() => UserKelas, (user_kelas) => user_kelas.user, {
+  @OneToMany(() => UserCourse, (userCourse) => userCourse.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  user_kelas: UserKelas[];
+  userCourses: UserCourse[];
 
-  @OneToMany(() => Nilai, (nilai) => nilai.user, {
+  @OneToMany(() => Score, (score) => score.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  nilai: Nilai[];
+  scores: Score[];
 
-  @OneToMany(() => ProgresMinggu, (progres_minggu) => progres_minggu.user, {
+  @OneToMany(() => WeekProgress, (weekProgress) => weekProgress.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  progres_minggu: ProgresMinggu[];
+  weekProgress: WeekProgress[];
 
   @OneToMany(
-    () => ProgresPertemuan,
-    (progres_pertemuan) => progres_pertemuan.user,
+    () => SessionProgress,
+    (sessionProgress) => sessionProgress.user,
     { cascade: true, onDelete: 'CASCADE' },
   )
   @Exclude()
-  progres_pertemuan: ProgresPertemuan[];
+  sessionProgress: SessionProgress[];
 
-  @OneToMany(() => ProgresQuiz, (progres_quiz) => progres_quiz.user, {
+  @OneToMany(() => QuizProgress, (quizProgress) => quizProgress.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  progres_quiz: ProgresQuiz[];
+  quizProgress: QuizProgress[];
 
-  @OneToMany(() => Sertifikat, (sertifikat) => sertifikat.user, {
+  @OneToMany(() => Certificates, (certificate) => certificate.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  sertifikat: Sertifikat[];
+  certificates: Certificates[];
 
-  @OneToMany(() => Mentoring, (mentoring) => mentoring.user, {
+  @OneToMany(() => Mentorings, (mentoring) => mentoring.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  mentoring: Mentoring[];
+  mentoring: Mentorings[];
 
-  @OneToMany(() => Pendaftaran, (pendaftaran) => pendaftaran.user, {
+  @OneToMany(() => Registration, (registration) => registration.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  pendaftaran: Pendaftaran[];
+  registrations: Registration[];
 
   @OneToOne(() => Biodata, (biodata) => biodata.user, {
     cascade: true,
@@ -217,10 +207,10 @@ export class User {
   @Exclude()
   biodata: Biodata;
 
-  @OneToOne(() => BiodataMentor, (biodata_mentor) => biodata_mentor.user, {
+  @OneToOne(() => MentorBiodata, (mentor_biodata) => mentor_biodata.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  biodata_mentor: BiodataMentor;
+  mentor_biodata: MentorBiodata;
 }

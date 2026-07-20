@@ -26,11 +26,11 @@
     <div class='flex flex-col lg:flex-row gap-8 lg:gap-12'>
       <div class='lg:w-2/3'>
         <div
-          x-data='{ currentSlide: 0, totalSlides: {{blog.gambar.length}} }'
+          x-data='{ currentSlide: 0, totalSlides: {{blog.image.length}} }'
           class='relative mb-12'
         >
           <div class='relative rounded-2xl overflow-hidden shadow-2xl'>
-            {{#each blog.gambar}}
+            {{#each blog.image}}
               <div
                 x-show='currentSlide === {{@index}}'
                 x-transition:enter='transition ease-out duration-300'
@@ -88,7 +88,7 @@
           </div>
 
           <div class='flex gap-2 mt-4 overflow-x-auto pb-2'>
-            {{#each blog.gambar}}
+            {{#each blog.image}}
               <button
                 @click='currentSlide = {{@index}}'
                 :class='currentSlide === {{@index}} ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
@@ -104,7 +104,7 @@
           </div>
 
           <div class='flex justify-center gap-2 mt-4'>
-            {{#each blog.gambar}}
+            {{#each blog.image}}
               <button
                 @click='currentSlide = {{@index}}'
                 :class='currentSlide === {{@index}} ? "bg-gray-900 w-8" : "bg-gray-300 w-2"'
@@ -115,7 +115,7 @@
         </div>
 
         <div class='max-w-none bg-white p-10 rounded-lg shadow-xl'>
-          {{{blog.isi}}}
+          {{{blog.details}}}
         </div>
 
       </div>
@@ -123,7 +123,7 @@
         <div class='lg:sticky lg:top-24 space-y-6'>
           <div class='flex flex-col gap-2'>
             <h1 class='text-xl font-bold text-gray-900'>
-              {{blog.judul}}
+              {{blog.title}}
             </h1>
 
             <div
@@ -133,7 +133,7 @@
               <span
                 class='font-semibold whitespace-nowrap md:whitespace-normal'
               >
-                {{blog.kategori_blog.nama}}
+                {{blog.kategori_blog.name}}
               </span>
             </div>
           </div>
@@ -200,7 +200,7 @@
             }}</h4>
           <div class='flex justify-between items-center'>
             <span class='text-gray-600'>{{t 'test.detailBlog.topic'}}</span>
-            <span class='font-medium text-gray-900'>{{blog.topic.nama}}</span>
+            <span class='font-medium text-gray-900'>{{blog.topic.name}}</span>
           </div>
           <div class='flex justify-between items-center'>
             <span class='text-gray-600'>{{t 'test.detailBlog.keyword'}}</span>
@@ -252,9 +252,9 @@
   const shareData = (platform, blog) => {
 
     const url = window.location.href;
-    const title = blog.judul;
-    const description = blog.isi || "";
-    const image = blog.gambar?.[0] || "";
+    const title = blog.title;
+    const description = blog.details || "";
+    const image = blog.image?.[0] || "";
 
     switch (platform) {
 

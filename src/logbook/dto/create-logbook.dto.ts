@@ -4,14 +4,14 @@ import { Proses } from 'src/entities/logbook.entity';
 
 export class CreateLogbookDto {
   @IsString()
-  kegiatan: string;
+  activity: string;
 
   @IsString()
-  rincian_kegiatan: string;
+  activityDetails: string;
 
   @IsOptional()
   @IsString()
-  dokumentasi?: string | null;
+  documentation?: string | null;
 
   @IsUrl({require_protocol: true})
   dokumentasi_lain: string;
@@ -31,5 +31,5 @@ export class CreateLogbookDto {
  @IsOptional() // Tambahkan opsional untuk update
   @Type(() => Number) // <--- 3. Tambahkan ini juga
   @IsInt()
-  pertemuanId: number;
+  sessionId: number;
 }

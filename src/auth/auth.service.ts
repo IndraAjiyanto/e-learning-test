@@ -3,17 +3,17 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { User } from '../entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { KelassService } from 'src/kelass/kelass.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { EmailService } from 'src/common/email/email.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CoursesService } from 'src/courses/courses.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
-    private kelasService: KelassService,
+    private kelasService: CoursesService,
     private emailService: EmailService,
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
@@ -39,7 +39,7 @@ export class AuthService {
       .createHash('sha256')
       .update(resetToken)
       .digest('hex');
-    createUserDto.verifikasiToken = hashedToken;
+    createUserDto.verificationToken = hashedToken;
     createUserDto.verifikasiTokenExpires = new Date(Date.now() + 60000);
 
     if (!isMatch) {

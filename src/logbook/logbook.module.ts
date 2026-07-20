@@ -2,28 +2,27 @@ import { Module } from '@nestjs/common';
 import { LogbookService } from './logbook.service';
 import { LogbookController } from './logbook.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Kelas } from 'src/entities/kelas.entity';
+import { Course } from 'src/entities/course.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { User } from 'src/entities/user.entity';
-import { Pertemuan } from 'src/entities/pertemuan.entity';
+import { Session } from 'src/entities/session.entity';
 import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
-import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { SessionProgress } from 'src/entities/session_progress.entity';
 import { CommonModule } from 'src/common/common.module';
 import { Quiz } from 'src/entities/quiz.entity';
-import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
+import { QuizProgress} from 'src/entities/quiz_progress.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      ProgresPertemuan,
-      Kelas,
+      SessionProgress,
+      Course,
       Logbook,
       User,
-      Pertemuan,
+      Session,
       LogbookMentor,
       Quiz,
-      ProgresQuiz,
-    ]),
+      QuizProgress]),
     CommonModule,
   ],
   controllers: [LogbookController],

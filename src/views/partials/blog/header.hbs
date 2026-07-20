@@ -29,14 +29,14 @@
           <i class="fas fa-home"></i>
           <span>{{t 'test.blog.allCategory' }}</span>
         </button>
-        <template x-for='kategori in allKategori' :key='kategori.id'>
+        <template x-for='category in allKategori' :key='category.id'>
           <button
-            @click='selectKategori(kategori.id)'
-            :class="selectedKategoriId == kategori.id ? 'text-gray-900 font-semibold border-b-2 border-gray-900' : 'text-gray-600 hover:text-gray-900'"
+            @click='selectKategori(category.id)'
+            :class="selectedKategoriId == category.id ? 'text-gray-900 font-semibold border-b-2 border-gray-900' : 'text-gray-600 hover:text-gray-900'"
             class="pb-2 text-sm whitespace-nowrap transition-all duration-200 flex items-center space-x-2"
           >
-            <i :class="computeIcon(kategori.icon)"></i>
-            <span x-text='getLocalizedText(kategori.nama)'></span>
+            <i :class="computeIcon(category.icon)"></i>
+            <span x-text='getLocalizedText(category.name)'></span>
           </button>
         </template>
       </div>

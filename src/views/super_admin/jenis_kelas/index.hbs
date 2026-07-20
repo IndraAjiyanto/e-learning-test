@@ -47,9 +47,9 @@
         <template x-for="(jenis, idx) in filteredJenisKelas" :key="jenis.id">
           <tr class='hover:bg-gray-50 transition'>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + idx + 1"></td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text="jenis.nama_jenis_kelas"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="jenis.name_clasess_type"></td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              <template x-for="desc in jenis.deskripsi">
+              <template x-for="desc in jenis.description">
                 <div class='line-clamp-3' x-text="desc"></div>
               </template>
             </td>
@@ -111,7 +111,7 @@
       // ✅ Kembalikan object LENGKAP, bukan hanya ID
       get filteredJenisKelas() {
         const filtered = this.jenisKelas.filter((j) =>
-          `${j.nama_jenis_kelas}`
+          `${j.name_clasess_type}`
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

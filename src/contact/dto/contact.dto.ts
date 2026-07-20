@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 export class ContactDto {
   @IsNotEmpty()
   @IsString()
-  nama: string;
+  name: string;
 
   @IsEmail()
   email: string;

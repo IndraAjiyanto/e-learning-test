@@ -14,19 +14,19 @@
           <div class='flex items-center gap-3'>
             <div class='relative flex-shrink-0'>
               <img
-                :src="alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + alumni.nama"
-                :alt='alumni.nama'
+                :src="alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + alumni.name"
+                :alt='alumni.name'
                 class='w-12 h-12 rounded-full border-4 border-white shadow-md object-cover'
               />
             </div>
             <div class='flex-1 min-w-0'>
               <h3
                 class='font-bold text-gray-900 text-lg truncate'
-                x-text='getByLang(alumni.nama, lang)'
+                x-text='getByLang(alumni.name, lang)'
               ></h3>
                <p
                   class='text-gray-900 text-sm'
-                  x-text='getByLang(alumni.posisi_sekarang, lang)'
+                  x-text='getByLang(alumni.currentPosition, lang)'
                 ></p>
              
             </div>
@@ -52,7 +52,7 @@
                
                 <p
                   class='text-xs text-gray-500 mt-1'
-                  x-text="getByLang(alumni.alumni, lang) || 'Unknown'"
+                  x-text="getByLang(alumni.program, lang) || 'Unknown'"
                 ></p>
               </div>
             </div>
@@ -71,7 +71,7 @@
               <div class='flex-1 min-w-0'>
                 <p
                   class='text-sm text-gray-700 leading-relaxed'
-                  x-text='getByLang(alumni.pesan, lang)'
+                  x-text='getByLang(alumni.message, lang)'
                 ></p>
               </div>
             </div>

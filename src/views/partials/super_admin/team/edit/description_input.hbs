@@ -9,21 +9,21 @@
             <div class='space-y-2'>
               <label class='block text-xs font-medium text-gray-600'>ID</label>
               <textarea
-                x-model='formData.deskripsi.id'
-                @input='validateField("deskripsi", $event.target.value, "id")'
-                name='deskripsi[id]'
+                x-model='formData.description.id'
+                @input='validateField("description", $event.target.value, "id")'
+                name='description[id]'
                 rows='4'
-                :class="formErrors.deskripsi.id ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+                :class="formErrors.description.id ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
                 placeholder='Deskripsi (ID)...'
-                x-init="$el.value = formData.deskripsi.id"
+                x-init="$el.value = formData.description.id"
               ></textarea>
-              <template x-if='formErrors.deskripsi.id'>
+              <template x-if='formErrors.description.id'>
                 <div
                   class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
                 >
                   <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                  <p class='text-xs text-red-700' x-text='formErrors.deskripsi.id'></p>
+                  <p class='text-xs text-red-700' x-text='formErrors.description.id'></p>
                 </div>
               </template>
             </div>
@@ -32,21 +32,21 @@
             <div class='space-y-2'>
               <label class='block text-xs font-medium text-gray-600'>EN</label>
               <textarea
-                x-model='formData.deskripsi.en'
-                @input='validateField("deskripsi", $event.target.value, "en")'
-                name='deskripsi[en]'
+                x-model='formData.description.en'
+                @input='validateField("description", $event.target.value, "en")'
+                name='description[en]'
                 rows='4'
-                :class="formErrors.deskripsi.en ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+                :class="formErrors.description.en ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
                 placeholder='Description (EN)...'
-                x-init="$el.value = formData.deskripsi.en"
+                x-init="$el.value = formData.description.en"
               ></textarea>
-              <template x-if='formErrors.deskripsi.en'>
+              <template x-if='formErrors.description.en'>
                 <div
                   class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
                 >
                   <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                  <p class='text-xs text-red-700' x-text='formErrors.deskripsi.en'></p>
+                  <p class='text-xs text-red-700' x-text='formErrors.description.en'></p>
                 </div>
               </template>
             </div>
@@ -55,21 +55,21 @@
             <div class='space-y-2'>
               <label class='block text-xs font-medium text-gray-600'>JP</label>
               <textarea
-                x-model='formData.deskripsi.ja'
-                @input='validateField("deskripsi", $event.target.value, "ja")'
-                name='deskripsi[ja]'
+                x-model='formData.description.ja'
+                @input='validateField("description", $event.target.value, "ja")'
+                name='description[ja]'
                 rows='4'
-                :class="formErrors.deskripsi.ja ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+                :class="formErrors.description.ja ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
                 placeholder='説明 (JP)...'
-                x-init="$el.value = formData.deskripsi.ja"
+                x-init="$el.value = formData.description.ja"
               ></textarea>
-              <template x-if='formErrors.deskripsi.ja'>
+              <template x-if='formErrors.description.ja'>
                 <div
                   class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
                 >
                   <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                  <p class='text-xs text-red-700' x-text='formErrors.deskripsi.ja'></p>
+                  <p class='text-xs text-red-700' x-text='formErrors.description.ja'></p>
                 </div>
               </template>
             </div>

@@ -5,11 +5,12 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
-import { Kategori } from './kategori.entity';
+import { Category } from './category.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity('superiority')
 export class Superiority {
   @PrimaryGeneratedColumn()
   id: number;
@@ -26,9 +27,10 @@ export class Superiority {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Kategori, (kategori) => kategori.superiority, {
+  @ManyToOne(() => Category, (category) => category.superiority, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'kategoriId' })
   @Exclude()
-  kategori: Kategori;
+  category: Category;
 }

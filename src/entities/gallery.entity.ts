@@ -1,8 +1,8 @@
 import { Exclude } from "class-transformer";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Kategori } from "./kategori.entity";
+import { Category } from "./category.entity";
 
-@Entity()
+@Entity('gallery')
 export class Gallery {
     @PrimaryGeneratedColumn()
     id: number 
@@ -16,11 +16,11 @@ export class Gallery {
     @Column({nullable:true})
     description: string
 
-     @ManyToOne(() => Kategori, (kategori) => kategori.gallery, {
+     @ManyToOne(() => Category, (category) => category.gallery, {
     nullable: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'kategori_id' })
   @Exclude()
-  kategori: Kategori;
+  category: Category;
 }

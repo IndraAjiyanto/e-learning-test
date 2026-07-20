@@ -9,7 +9,7 @@
         >
           <div class='flex justify-between items-start'>
             <div>
-              <p class='font-semibold text-gray-900 mb-1' x-text="'quiz :' + quiz.nama_quiz"></p>
+              <p class='font-semibold text-gray-900 mb-1' x-text="'quiz :' + quiz.title"></p>
               </p>
             </div>
             <a
@@ -74,7 +74,7 @@
   <!-- Add New Question -->
   <template x-if="!data || data.length === 0">
     <a
-      href='/quiz/formCreate/{{minggu.id}}'
+      href='/quiz/formCreate/{{weeks.id}}'
       class='flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-lg hover:bg-gray-100 transition'
     >
       <svg
@@ -102,7 +102,7 @@ function quizData() {
     data: JSON.parse(localStorage.getItem('activeData')) || [],
 
     async fetchQuizzes() {
-      const res = await fetch('/week/quiz/{{minggu.id}}');
+      const res = await fetch('/week/quiz/{{weeks.id}}');
       this.data = await res.json();
 
       localStorage.setItem('activeData', JSON.stringify(this.data));

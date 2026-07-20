@@ -1,10 +1,10 @@
-{{> sub_partials/pertemuan/logbook_tab/header}}
+{{> sub_partials/session/logbook_tab/header}}
 
-{{> sub_partials/pertemuan/logbook_tab/table}}
+{{> sub_partials/session/logbook_tab/table}}
 
-{{> sub_partials/pertemuan/logbook_tab/modal_information}}
+{{> sub_partials/session/logbook_tab/modal_information}}
 
-{{> sub_partials/pertemuan/logbook_tab/pagination}}
+{{> sub_partials/session/logbook_tab/pagination}}
 
 <script>
   // Alpine.js Component: Logbook Table
@@ -21,7 +21,7 @@
       selectedLogbook: null,
 
             async fetchLogBook() {
-      const res = await fetch('/session/logbook/{{pertemuan.id}}');
+      const res = await fetch('/session/logbook/{{session.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },
@@ -61,7 +61,7 @@
             Obstacle: log.kendala || "-",
             Documentation: log.dokumentasi || "-",
             AdditionalDocumentation: log.dokumentasi_lain || "-",
-            Program: log.pertemuan?.minggu?.kelas?.nama_kelas || "-",
+            Program: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",
             Status:
               log.proses === "acc"

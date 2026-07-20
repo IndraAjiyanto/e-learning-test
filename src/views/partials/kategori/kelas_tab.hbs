@@ -1,5 +1,5 @@
 <!-- ===================== TAB KELAS ===================== -->
-<div x-show="tab === 'kelas'" class='space-y-4' x-data="kelasData()" x-init="fetchKelas()">
+<div x-show="tab === 'course'" class='space-y-4' x-data="kelasData()" x-init="fetchKelas()">
   
   <!-- Header dengan Search dan Create Button -->
   <div class='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6'>
@@ -29,7 +29,7 @@
       </div>
     </div>
     
-    <a href="/program/formCreate/{{kategori.id}}"
+    <a href="/program/formCreate/{{category.id}}"
        class="bg-gray-900 text-white px-6 py-2.5 rounded-lg shadow hover:bg-gray-700 transition flex items-center gap-2 whitespace-nowrap">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -48,16 +48,16 @@
           <div class='flex items-center mb-3'>
             <img
               :src="kelasItem.gambar"
-              :alt="kelasItem.nama_kelas"
+              :alt="kelasItem.name"
               class='w-12 h-12 rounded-lg object-cover mr-3'
             />
             <div>
               <h4
-                class='font-semibold text-gray-800 text-sm' x-text="kelasItem.nama_kelas"
+                class='font-semibold text-gray-800 text-sm' x-text="kelasItem.name"
               ></h4>
               <p
                 class='text-xs text-gray-500'
-                x-text="kelasItem.jenis_kelas.nama_jenis_kelas"></p>
+                x-text="kelasItem.jenis_kelas.name_clasess_type"></p>
             </div>
           </div>
           
@@ -152,7 +152,7 @@
 
       async fetchKelas() {
         try {
-          const res = await fetch('/category/admin/program/{{kategori.id}}');
+          const res = await fetch('/category/admin/program/{{category.id}}');
           this.data = await res.json();
           this.filteredData = this.data;
           localStorage.setItem('activeData', JSON.stringify(this.data));
@@ -169,8 +169,8 @@
           this.filteredData = this.data;
         } else {
           this.filteredData = this.data.filter(item => 
-            item.nama_kelas.toLowerCase().includes(query) ||
-            item.jenis_kelas.nama_jenis_kelas.toLowerCase().includes(query) ||
+            item.name.toLowerCase().includes(query) ||
+            item.jenis_kelas.name_clasess_type.toLowerCase().includes(query) ||
             item.metode.toLowerCase().includes(query)
           );
         }

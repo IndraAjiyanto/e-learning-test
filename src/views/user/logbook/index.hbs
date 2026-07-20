@@ -44,7 +44,7 @@
             (log.kegiatan || "").toLowerCase().includes(s) ||
             (log.rincian_kegiatan || "").toLowerCase().includes(s) ||
             (log.kendala || "").toLowerCase().includes(s) ||
-            (log.pertemuan?.minggu?.kelas?.nama_kelas || "")
+            (log.session?.weeks?.course?.name || "")
               .toLowerCase()
               .includes(s)
           );
@@ -95,7 +95,7 @@
             Activity: log.kegiatan || "-",
             "Activity Details": log.rincian_kegiatan || "-",
             Issues: log.kendala || "-",
-            Class: log.pertemuan?.minggu?.kelas?.nama_kelas || "-",
+            Class: log.session?.weeks?.course?.name || "-",
             Status:
               log.proses === "acc"
                 ? "Approved"

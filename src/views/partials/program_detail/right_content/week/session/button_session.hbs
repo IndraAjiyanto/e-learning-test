@@ -1,7 +1,7 @@
                           <button
                             @click='
     open = !open;
-    localStorage.setItem(`open-pertemuan-${pertemuan.id}`, open);
+    localStorage.setItem(`open-session-${session.id}`, open);
   '
                             class='w-full flex justify-between items-center px-4 py-3 text-left'
                           >
@@ -13,10 +13,10 @@
                                     class='font-semibold text-sm text-gray-800 group-hover:text-slate-700 transition-colors'
                                     x-text='`{{t
                                       "test.startLearning.session"
-                                    }} ${pertemuan.pertemuan_ke} - ${pertemuan.topik}`'
+                                    }} ${session.pertemuan_ke} - ${session.topik}`'
                                   ></h3>
                                   <span
-                                    x-show='pertemuan.progres_pertemuan?.[0]?.logbook'
+                                    x-show='session.progres_pertemuan?.[0]?.logbook'
                                     class='bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-1.5 py-0.5 rounded-full font-semibold'
                                   >
                                     {{t 'test.startLearning.completed'}}
@@ -40,7 +40,7 @@
                                       />
                                     </svg>
                                     <span
-                                      x-text='new Date(pertemuan.tanggal).toLocaleDateString()'
+                                      x-text='new Date(session.tanggal).toLocaleDateString()'
                                     ></span>
                                   </p>
                                   <p
@@ -60,7 +60,7 @@
                                       />
                                     </svg>
                                     <span
-                                      x-text='`${pertemuan.waktu_awal} - ${pertemuan.waktu_akhir}`'
+                                      x-text='`${session.waktu_awal} - ${session.waktu_akhir}`'
                                     ></span>
                                   </p>
                                 </div>

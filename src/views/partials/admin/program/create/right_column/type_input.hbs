@@ -7,12 +7,12 @@
           availableJenisKelas: {{json jenis_kelas}},
           get filteredJenisKelas() {
             return this.availableJenisKelas.filter(j => 
-              j.nama_jenis_kelas.toLowerCase().includes(this.search.toLowerCase())
+              j.name_clasess_type.toLowerCase().includes(this.search.toLowerCase())
             );
           },
           selectJenisKelas(jenisKelas) {
             this.selectedJenisKelas = jenisKelas;
-            this.search = jenisKelas.nama_jenis_kelas;
+            this.search = jenisKelas.name_clasess_type;
             this.showDropdown = false;
           },
           clearJenisKelas() {
@@ -56,7 +56,7 @@
                 >
                   <span
                     class='text-sm font-medium text-gray-700'
-                    x-text='jenisKelas.nama_jenis_kelas'
+                    x-text='jenisKelas.name_clasess_type'
                   ></span>
                 </button>
               </template>

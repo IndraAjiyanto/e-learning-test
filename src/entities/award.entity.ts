@@ -15,10 +15,10 @@ export class Award {
   content: string[];
 
   @Column('jsonb', { nullable: true })
-  isi: string[];
+  details: string[];
 
   @Column()
-  award_ke: number;
+  award_order: number;
 
   @CreateDateColumn()
   createdAt: Date;

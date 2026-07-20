@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TeknologiService } from './teknologi.service';
 import { TeknologiController } from './teknologi.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Teknologi } from 'src/entities/teknologi.entity';
+import { Technology } from 'src/entities/technology.entity';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Teknologi]), CommonModule],
+  imports: [TypeOrmModule.forFeature([Technology]), CommonModule],
   controllers: [TeknologiController],
   providers: [TeknologiService],
   exports: [TeknologiService],

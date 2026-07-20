@@ -112,30 +112,30 @@
             class='hover:bg-gray-50 transition'>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.kelas.mentor[0].nama"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.session.weeks.course.mentor[0].name"
             ></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="formatTanggal(logbook_mentor.createdAt)"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.pertemuan_ke"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.session.pertemuan_ke"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.minggu_ke"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.session.weeks.minggu_ke"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.kelas.nama_kelas"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.session.weeks.course.name"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.session.weeks.course.jenis_kelas.name_clasess_type"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.pertemuan.minggu.kelas.kategori.nama_kategori"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.session.weeks.course.category.name"
             ></td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.kegiatan"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.activity"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.rincian_kegiatan"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.activity_detail"
             ></td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.dokumentasi"></td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.kendala"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.documentation"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook_mentor.obstacle"></td>
           </tr>
           </template>
       </tbody>
@@ -190,7 +190,7 @@ function logBookMentorData() {
     amount: 0,
 
     async fetchLogBookMentors() {
-      const res = await fetch('/program/logbookMentor/{{kelas.id}}');
+      const res = await fetch('/program/logbookMentor/{{course.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },
@@ -198,16 +198,16 @@ function logBookMentorData() {
     get filteredData() {
       let filtered = this.data.filter(l =>
           (
-            `${l.pertemuan.minggu.kelas.mentor[0].nama}
-             ${l.pertemuan.pertemuan_ke}
-             ${l.pertemuan.minggu.minggu_ke}
-             ${l.pertemuan.minggu.kelas.nama_kelas}
-             ${l.pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas}
-             ${l.pertemuan.minggu.kelas.kategori.nama_kategori}
-             ${l.kegiatan}
-             ${l.rincian_kegiatan}
-             ${l.dokumentasi}
-             ${l.kendala}`
+            `${l.session.weeks.course.mentor[0].name}
+             ${l.session.pertemuan_ke}
+             ${l.session.weeks.minggu_ke}
+             ${l.session.weeks.course.name}
+             ${l.session.weeks.course.jenis_kelas.name_clasess_type}
+             ${l.session.weeks.course.category.name}
+             ${l.activity}
+             ${l.activity_detail}
+             ${l.documentation}
+             ${l.obstacle}`
           ).toLowerCase().
           includes(this.search.toLowerCase())
       );
@@ -247,13 +247,13 @@ function logBookMentorData() {
         try {
           const dataToExport = this.filteredData.map((l, index) => ({
             No: index + 1,
-            Mentor: l.pertemuan.minggu.kelas.mentor[0].nama,
+            Mentor: l.session.weeks.course.mentor[0].name,
             "Created At": new Date(l.createdAt).toLocaleDateString(),
-            "Meeting No": l.pertemuan.pertemuan_ke,
-            "Week No": l.pertemuan.minggu.minggu_ke,
-            "Program Name": l.pertemuan.minggu.kelas.nama_kelas,
-            "Program Type": l.pertemuan.minggu.kelas.jenis_kelas.nama_jenis_kelas,
-            Category: l.pertemuan.minggu.kelas.kategori.nama_kategori,
+            "Meeting No": l.session.pertemuan_ke,
+            "Week No": l.session.weeks.minggu_ke,
+            "Program Name": l.session.weeks.course.name,
+            "Program Type": l.session.weeks.course.jenis_kelas.name_clasess_type,
+            Category: l.session.weeks.course.category.name,
             Activity: l.kegiatan,
             "Activity Details": l.rincian_kegiatan,
             Documentation: l.dokumentasi,

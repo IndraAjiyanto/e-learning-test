@@ -24,14 +24,14 @@ import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { Request, Response } from 'express';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('logbook-mentor')
+@Controller('logbooks-mentor')
 export class LogbookMentorController {
   constructor(private readonly logbookMentorService: LogbookMentorService) {}
 
   @Roles('admin')
-  @Post(':pertemuanId')
+  @Post(':sessionId')
   @UseInterceptors(
-    FileInterceptor('dokumentasi', multerConfigMemoryOnly),
+    FileInterceptor('documentation', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -40,21 +40,21 @@ export class LogbookMentorController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('sessionId') sessionId: number,
     @Body() createLogbookMentorDto: CreateLogbookMentorDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createLogbookMentorDto.dokumentasi = req.body.uploadedImageUrls?.[0];
+      createLogbookMentorDto.documentation = req.body.uploadedImageUrls?.[0];
       createLogbookMentorDto.userId = req.user!.id;
-      createLogbookMentorDto.pertemuanId = pertemuanId;
+      createLogbookMentorDto.sessionId = sessionId;
       await this.logbookMentorService.create(createLogbookMentorDto);
       req.flash('success', 'Log book added successfully');
-      res.redirect(`/session/${pertemuanId}`);
+      res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Log book failed to create');
-      res.redirect(`/session/${pertemuanId}`);
+      res.redirect(`/session/${sessionId}`);
     }
   }
 
@@ -74,13 +74,13 @@ export class LogbookMentorController {
   }
 
   @Roles('admin')
-  @Get('formCreate/:pertemuanId')
+  @Get('formCreate/:sessionId')
   async formCreate(
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('sessionId') sessionId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    res.render('admin/logbook_mentor/create', { user: req.user, pertemuanId });
+    res.render('admin/logbook_mentor/create', { user: req.user, sessionId });
   }
 
   @Roles('admin')
@@ -98,7 +98,7 @@ export class LogbookMentorController {
   @Roles('admin')
   @Patch(':logbook_mentorId')
   @UseInterceptors(
-    FileInterceptor('dokumentasi', multerConfigMemoryOnly),
+    FileInterceptor('documentation', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -108,47 +108,47 @@ export class LogbookMentorController {
   })
   async update(
     @Param('logbook_mentorId') logbook_mentorId: number,
-    @UploadedFile() dokumentasi: Express.Multer.File,
+    @UploadedFile() documentation: Express.Multer.File,
     @Body() updateLogbookMentorDto: UpdateLogbookMentorDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const logbook = await this.logbookMentorService.findOne(logbook_mentorId);
-      if (dokumentasi) {
-        await this.logbookMentorService.deleteFile(logbook.dokumentasi);
-        updateLogbookMentorDto.dokumentasi = req.body.uploadedImageUrls?.[0];
+      const logbooks = await this.logbookMentorService.findOne(logbook_mentorId);
+      if (documentation) {
+        await this.logbookMentorService.deleteFile(logbooks.documentation);
+        updateLogbookMentorDto.documentation = req.body.uploadedImageUrls?.[0];
       }
       await this.logbookMentorService.update(
         logbook_mentorId,
         updateLogbookMentorDto,
       );
-      req.flash('success', 'logbook successfully updated');
-      res.redirect(`/session/${logbook.pertemuan.id}`);
+      req.flash('success', 'logbooks successfully updated');
+      res.redirect(`/session/${logbooks.session.id}`);
     } catch (error: any) {
-      const logbook = await this.logbookMentorService.findOne(logbook_mentorId);
-      req.flash('error', error.message || 'logbook failed to updated');
-      res.redirect(`/session/${logbook.pertemuan.id}`);
+      const logbooks = await this.logbookMentorService.findOne(logbook_mentorId);
+      req.flash('error', error.message || 'logbooks failed to updated');
+      res.redirect(`/session/${logbooks.session.id}`);
     }
   }
 
   @Roles('admin')
-  @Delete(':pertemuanId/:logbook_mentorId')
+  @Delete(':sessionId/:logbook_mentorId')
   async remove(
     @Param('logbook_mentorId') logbook_mentorId: number,
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('sessionId') sessionId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const logbook = await this.logbookMentorService.findOne(logbook_mentorId);
-      await this.logbookMentorService.deleteFile(logbook.dokumentasi);
+      const logbooks = await this.logbookMentorService.findOne(logbook_mentorId);
+      await this.logbookMentorService.deleteFile(logbooks.documentation);
       await this.logbookMentorService.remove(logbook_mentorId);
-      req.flash('success', 'logbook successfully deleted');
-      res.redirect(`/session/${pertemuanId}`);
+      req.flash('success', 'logbooks successfully deleted');
+      res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'logbook failed to delete');
-      res.redirect(`/session/${pertemuanId}`);
+      req.flash('error', error.message || 'logbooks failed to delete');
+      res.redirect(`/session/${sessionId}`);
     }
   }
 }

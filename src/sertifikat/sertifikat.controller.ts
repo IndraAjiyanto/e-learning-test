@@ -8,9 +8,9 @@ export class SertifikatController {
   constructor(private readonly sertifikatService: SertifikatService) {}
 
   @Roles('user')
-  @Get(':kelasId')
+  @Get(':courseId')
   async generate(
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -21,7 +21,7 @@ export class SertifikatController {
         res.redirect('/users/profile');
       } else {
         const sertifikat = await this.sertifikatService.generateCertificate(
-          kelasId,
+          courseId,
           req.user.id,
         );
         res.render('user/sertifikat/detail', { user: req.user, sertifikat });

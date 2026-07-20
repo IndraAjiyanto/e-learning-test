@@ -4,9 +4,9 @@ import fontkit from '@pdf-lib/fontkit';
 import * as fs from 'fs';
 import * as path from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Kelas } from 'src/entities/kelas.entity';
+import { Course } from 'src/entities/course.entity';
 import { Repository } from 'typeorm';
-import { Sertifikat } from 'src/entities/sertifikat.entity';
+import { Certificates } from 'src/entities/certificate.entity';
 import { User } from 'src/entities/user.entity';
 import cloudinary from 'src/common/config/multer.config';
 import { Biodata } from 'src/entities/biodata.entity';
@@ -14,17 +14,17 @@ import { Biodata } from 'src/entities/biodata.entity';
 @Injectable()
 export class SertifikatService {
   constructor(
-    @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>,
-    @InjectRepository(Sertifikat)
-    private readonly sertifikatRepository: Repository<Sertifikat>,
+    @InjectRepository(Course)
+    private readonly kelasRepository: Repository<Course>,
+    @InjectRepository(Certificates)
+    private readonly sertifikatRepository: Repository<Certificates>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Biodata)
     private readonly biodataRepository: Repository<Biodata>,
   ) {}
 
-  async generateCertificate(kelasId: number, userId: number) {
+  async generateCertificate(courseId: number, userId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['biodata'],
@@ -32,17 +32,17 @@ export class SertifikatService {
     if (!user) {
       throw new NotFoundException('user not found');
     }
-    const kelas = await this.kelasRepository.findOne({
-      where: { id: kelasId },
-      relations: ['minggu', 'minggu.quiz', 'jenis_kelas', 'kategori', 'mentor'],
+    const course = await this.kelasRepository.findOne({
+      where: { id: courseId },
+      relations: ['weeks', 'weeks.quiz', 'courseType', 'category', 'mentor'],
     });
-    if (!kelas) {
-      throw new NotFoundException('kelas not found');
+    if (!course) {
+      throw new NotFoundException('course not found');
     }
 
     const sertifikat = await this.sertifikatRepository.findOne({
-      where: { user: { id: userId }, kelas: { id: kelasId } },
-      relations: ['kelas'],
+      where: { user: { id: userId }, course: { id: courseId } },
+      relations: ['course'],
     });
     if (!sertifikat) {
       const templatePath = path.join(
@@ -69,12 +69,12 @@ export class SertifikatService {
       // Hitung lebar text untuk center alignment
       const nameSize = 43.8;
       const nameWidth = openSauceBold.widthOfTextAtSize(
-        user.biodata.nama_lengkap,
+        user.biodata.full_name,
         nameSize,
       );
       const nameCenterX = (width - nameWidth) / 2;
 
-      page.drawText(user.biodata.nama_lengkap, {
+      page.drawText(user.biodata.full_name, {
         x: nameCenterX,
         y: 349,
         size: nameSize,
@@ -82,9 +82,9 @@ export class SertifikatService {
         color: rgb(0, 0, 0),
       });
 
-      const text1 = `Has completed from the Private ${kelas.kategori.nama_kategori} Program ${kelas.nama_kelas} at`;
+      const text1 = `Has completed from the Private ${course.category.name} Program ${course.name} at`;
       const text2 = `the  Kesatria Academy, from December 7 to March 7, having successfully learned and`;
-      const text3 = `practiced ${kelas.nama_kelas} materials and is ready to become a professional in the field.`;
+      const text3 = `practiced ${course.name} materials and is ready to become a professional in the field.`;
 
       const openSauceRegularBytes = fs.readFileSync(
         'src/common/font/OpenSauceSans-Regular.ttf',
@@ -132,8 +132,8 @@ export class SertifikatService {
       });
 
       // Tambahkan nama mentor jika ada
-      if (kelas.mentor && kelas.mentor.length > 0) {
-        const mentorName = kelas.mentor[0].nama; // Ambil mentor pertama
+      if (course.mentors && course.mentors.length > 0) {
+        const mentorName = course.mentors[0].name; // Ambil mentor pertama
         const mentorSize = 12;
         const mentorWidth = openSauceBold.widthOfTextAtSize(
           mentorName,
@@ -144,7 +144,7 @@ export class SertifikatService {
         // Center align di area kanan (sekitar kolom mentor)
         const mentorAreaCenterX = 590; // Pusat area tanda tangan mentor
         const mentorX = mentorAreaCenterX - mentorWidth / 2; // Center text
-        const mentorY = 106; // Posisi vertikal (di atas tulisan "Mentor")
+        const mentorY = 106; // Posisi vertikal (di atas tulisan "Mentors")
 
         page.drawText(mentorName, {
           x: mentorX,
@@ -158,9 +158,9 @@ export class SertifikatService {
       const rows: any[] = [];
 
       const headers = ['Material', 'Interval', 'Predicate'];
-      for (const m of kelas.minggu) {
+      for (const m of course.weeks) {
         for (const q of m.quiz) {
-          rows.push([q.nama_quiz]);
+          rows.push([q.quizName]);
         }
       }
 
@@ -234,9 +234,9 @@ export class SertifikatService {
 
       // sekarang result sudah berisi object Cloudinary
       const cert = this.sertifikatRepository.create({
-        sertif: result.secure_url, // ⬅️ pake secure_url biar bisa langsung diakses public
+        certificate: result.secure_url, // ⬅️ pake secure_url biar bisa langsung diakses public
         user: user,
-        kelas: kelas,
+        course: course,
       });
 
       return await this.sertifikatRepository.save(cert);

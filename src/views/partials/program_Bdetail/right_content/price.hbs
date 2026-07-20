@@ -1,6 +1,6 @@
         <!-- Harga -->
         {{#if check_user}}{{else}}
-          {{#if kelas.check_paid}}
+          {{#if course.check_paid}}
             <div class='space-y-4'>
               <!-- Payment Type Toggle -->
               <div class='flex gap-2 p-1 bg-gray-100 rounded-xl'>
@@ -31,14 +31,14 @@
               >
                 <!-- Harga coret -->
                 <p class='text-lg text-gray-400 line-through'>
-                  {{formatRupiah kelas.promo}}
+                  {{formatRupiah course.promo}}
                 </p>
 
                 <!-- Harga promo -->
                 <p
                   class='text-4xl font-bold bg-gradient-to-r animate-pulse from-slate-700 to-slate-900 bg-clip-text text-transparent'
                 >
-                  {{formatRupiah kelas.harga}}
+                  {{formatRupiah course.harga}}
                 </p>
                 <p class='text-sm text-gray-600'>{{t "test.detailProgram.fullPayment.oneTimePayment"}}</p>
               </div>

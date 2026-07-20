@@ -78,11 +78,11 @@
                 {{#if svg}}
                   {{{svg}}}
                 {{else if img_url}}
-                  <img src="{{img_url}}" alt="{{nama}}" class="w-10 h-10 object-contain">
+                  <img src="{{img_url}}" alt="{{name}}" class="w-10 h-10 object-contain">
                 {{/if}}
               </div>
             </td>
-            <td class='px-6 py-4 text-sm text-gray-800'>{{nama}}</td>
+            <td class='px-6 py-4 text-sm text-gray-800'>{{name}}</td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
               <!-- Edit Button -->
               <form action='/technology/formEdit/{{id}}' method='get'>
@@ -192,7 +192,7 @@
       // ============================
       get filteredTeknologi() {
         let filtered = this.teknologi.filter(t =>
-          t.nama.toLowerCase().includes(this.search.toLowerCase())
+          t.name.toLowerCase().includes(this.search.toLowerCase())
         );
 
         this.amount = filtered.length;

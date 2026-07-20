@@ -11,27 +11,27 @@
               class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
             >ID</label>
             <textarea
-              x-model='formData.isi.id'
-              @input='validateField("isi", "id", $event.target.value)'
+              x-model='formData.description.id'
+              @input='validateField("description", "id", $event.target.value)'
               id='isi_id'
-              name='isi[id]'
+              name='description[id]'
               rows='4'
               placeholder='Deskripsi benefit dalam bahasa Indonesia'
-              :class="formErrors.isi.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.description.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.description.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-              x-init='$el.value = formData.isi.id'
+              x-init='$el.value = formData.description.id'
             ></textarea>
-            <template x-if='formErrors.isi.id'>
+            <template x-if='formErrors.description.id'>
               <div
                 class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
               >
                 <i
                   class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
                 ></i>
-                <p class='text-xs text-red-700' x-text='formErrors.isi.id'></p>
+                <p class='text-xs text-red-700' x-text='formErrors.description.id'></p>
               </div>
             </template>
-            <template x-if='formValid.isi.id && !formErrors.isi.id'>
+            <template x-if='formValid.description.id && !formErrors.description.id'>
               <div
                 class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
               >
@@ -48,27 +48,27 @@
               class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
             >EN</label>
             <textarea
-              x-model='formData.isi.en'
-              @input='validateField("isi", "en", $event.target.value)'
+              x-model='formData.description.en'
+              @input='validateField("description", "en", $event.target.value)'
               id='isi_en'
-              name='isi[en]'
+              name='description[en]'
               rows='4'
               placeholder='Benefit description in English'
-              :class="formErrors.isi.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.description.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.description.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-              x-init='$el.value = formData.isi.en'
+              x-init='$el.value = formData.description.en'
             ></textarea>
-            <template x-if='formErrors.isi.en'>
+            <template x-if='formErrors.description.en'>
               <div
                 class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
               >
                 <i
                   class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
                 ></i>
-                <p class='text-xs text-red-700' x-text='formErrors.isi.en'></p>
+                <p class='text-xs text-red-700' x-text='formErrors.description.en'></p>
               </div>
             </template>
-            <template x-if='formValid.isi.en && !formErrors.isi.en'>
+            <template x-if='formValid.description.en && !formErrors.description.en'>
               <div
                 class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
               >
@@ -85,27 +85,27 @@
               class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
             >JP</label>
             <textarea
-              x-model='formData.isi.ja'
-              @input='validateField("isi", "ja", $event.target.value)'
+              x-model='formData.description.ja'
+              @input='validateField("description", "ja", $event.target.value)'
               id='isi_ja'
-              name='isi[ja]'
+              name='description[ja]'
               rows='4'
               placeholder='ベネフィットの説明（日本語）'
-              :class="formErrors.isi.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.isi.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.description.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.description.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-              x-init='$el.value = formData.isi.ja'
+              x-init='$el.value = formData.description.ja'
             ></textarea>
-            <template x-if='formErrors.isi.ja'>
+            <template x-if='formErrors.description.ja'>
               <div
                 class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
               >
                 <i
                   class='fas fa-exclamation-circle text-red-500 text-xs mt-0.5'
                 ></i>
-                <p class='text-xs text-red-700' x-text='formErrors.isi.ja'></p>
+                <p class='text-xs text-red-700' x-text='formErrors.description.ja'></p>
               </div>
             </template>
-            <template x-if='formValid.isi.ja && !formErrors.isi.ja'>
+            <template x-if='formValid.description.ja && !formErrors.description.ja'>
               <div
                 class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
               >

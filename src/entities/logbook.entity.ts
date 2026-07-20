@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Pertemuan } from './pertemuan.entity';
+import { Session } from './session.entity';
 import { Exclude } from 'class-transformer';
 
 export type Proses = 'acc' | 'proces' | 'rejected';
@@ -17,11 +17,11 @@ export class Logbook {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  kegiatan: string;
+  @Column({ name: 'kegiatan' })
+  activity: string;
 
-  @Column()
-  rincian_kegiatan: string;
+  @Column({ name: 'rincian_kegiatan' })
+  activityDetails: string;
 
   @Column({ type:'varchar', nullable: true })
   dokumentasi?: string| null;
@@ -31,13 +31,13 @@ export class Logbook {
     enum: ['acc', 'proces', 'rejected'],
     default: 'rejected',
   })
-  proses: Proses;
+  process: Proses;
 
-  @Column()
-  kendala: string;
+  @Column({ name: 'kendala' })
+  obstacles: string;
 
-  @Column()
-  dokumentasi_lain: string;
+  @Column({ name: 'dokumentasi_lain' })
+  otherDocumentation: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -49,9 +49,9 @@ export class Logbook {
   @Exclude()
   user: User;
 
-  @ManyToOne(() => Pertemuan, (pertemuan) => pertemuan.logbook, {
+  @ManyToOne(() => Session, (session) => session.logbooks, {
     onDelete: 'CASCADE',
   })
   @Exclude()
-  pertemuan: Pertemuan;
+  session: Session;
 }

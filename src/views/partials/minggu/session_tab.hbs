@@ -87,7 +87,7 @@
 
       {{else}}
                 <a
-    href='/session/formCreate/{{minggu.id}}'
+    href='/session/formCreate/{{weeks.id}}'
     class='flex flex-col items-center justify-center text-center py-12 bg-gray-50 border-2 border-dashed rounded-xl hover:bg-gray-100 transition'
   >
     <svg
@@ -109,7 +109,7 @@ function sessionData() {
     data: JSON.parse(localStorage.getItem('activeData')) || [],
 
     async fetchSessions() {
-      const res = await fetch(`/week/session/{{minggu.id}}`);
+      const res = await fetch(`/week/session/{{weeks.id}}`);
       this.data = await res.json();
 
       localStorage.setItem('activeData', JSON.stringify(this.data));

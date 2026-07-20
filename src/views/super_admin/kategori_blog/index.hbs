@@ -91,7 +91,7 @@
             <!-- Nama -->
             <td class='px-6 py-4 text-sm text-gray-800'>
               <div class='font-semibold'>
-                {{#each nama}}
+                {{#each name}}
                   <p>{{this}}</p>
                 {{/each}}
               </div>
@@ -99,7 +99,7 @@
 
             <!-- Deskripsi -->
             <td class='px-6 py-4 text-sm text-gray-600 max-w-md'>
-              <div class='line-clamp-2'>{{#each deskripsi}}
+              <div class='line-clamp-2'>{{#each description}}
                 <p>{{this}}</p>
               {{/each}}
               </div>
@@ -223,7 +223,7 @@
 
       get filteredCategories() {
         let filtered = this.categories.filter(c =>
-          (`${c.nama} ${c.deskripsi}`)
+          (`${c.name} ${c.description}`)
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

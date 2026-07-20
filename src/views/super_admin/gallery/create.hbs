@@ -123,11 +123,11 @@
 
       <input
         type='text'
-        value='{{kategori.nama_kategori}}'
+        value='{{category.name}}'
         class='w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-100'
         disabled
       />
-      <input type='hidden' name='kategori_id' value='{{kategori.id}}' />
+      <input type='hidden' name='kategori_id' value='{{category.id}}' />
     </div>
 
     <div class='flex items-center gap-3 pt-2'>
@@ -140,7 +140,7 @@
         Save Gallery
       </button>
       <a
-        href='/category/{{kategori.id}}'
+        href='/category/{{category.id}}'
         class='text-sm text-gray-500 hover:text-gray-900'
       >Cancel</a>
     </div>

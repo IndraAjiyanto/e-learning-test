@@ -7,26 +7,27 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
-import { Kelas } from './kelas.entity';
-import { Teknologi } from './teknologi.entity';
+import { Course } from './course.entity';
+import { Technology } from './technology.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
-export class Mentor {
+export class Mentors {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  nama: string;
+  @Column({ name: 'nama' })
+  name: string;
 
-  @Column('jsonb', { nullable: true })
-  posisi: string[];
+  @Column('jsonb', { name: 'posisi', nullable: true })
+  position: string[];
 
   @Column()
   linkedin: string;
 
-  @ManyToMany(() => Teknologi, (teknologi) => teknologi.mentors, {
+  @ManyToMany(() => Technology, (teknologi) => teknologi.mentors, {
     cascade: true,
     onDelete: 'CASCADE',
   })
@@ -36,13 +37,13 @@ export class Mentor {
     inverseJoinColumn: { name: 'teknologiId', referencedColumnName: 'id' },
   })
   @Exclude()
-  teknologi: Teknologi[];
+  teknologi: Technology[];
 
   @Column()
   profile: string;
 
-  @Column('jsonb', { nullable: true })
-  deskripsi: string[];
+  @Column('jsonb', { name: 'deskripsi', nullable: true })
+  description: string[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -50,7 +51,8 @@ export class Mentor {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Kelas, (kelas) => kelas.mentor, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.mentors, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'kelasId' })
   @Exclude()
-  kelas: Kelas;
+  course: Course;
 }
