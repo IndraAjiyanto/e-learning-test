@@ -21,7 +21,7 @@
       
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allTypes"}}', desc: '{{t "test.home.programSection.deskripsiAllTypes"}}' },
-        {{#each jenis_kelas}}
+        {{#each courseType}}
         { value: `{{this.name_clasess_type }}`, icon: '/{{computeIcon this.icon}}', title: `{{this.name_clasess_type}}`, desc: `{{truncate (getByLang this.description ../lang) 10}}` },
         {{/each}}
       ],
@@ -51,7 +51,7 @@
         const params = new URLSearchParams();
         params.set('userId', `{{user.id}}`)
         if (this.tab !== 'all') params.set('category', this.tab);
-        if (this.selectedCategory !== 'all') params.set('jenis_kelas', this.selectedCategory);
+        if (this.selectedCategory !== 'all') params.set('courseType', this.selectedCategory);
         if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);
         if (this.searchQuery) params.set('search', this.searchQuery);
         params.set('page', this.currentPage);
@@ -100,7 +100,7 @@
       return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
     },
   }"
-  class='bg-gradient-to-br from-white via-gray-50 to-white py-20 px-6 lg:px-20 relative overflow-visible'
+  class='bg-gradient-to-br from-white via-gray-50 to-white py-20 px-6 lg:px-20 relative overflow-visionsble'
   x-init="$watch('tab', () => currentPage = 1); $watch('selectedMethod', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
   id='courses-section'
 >

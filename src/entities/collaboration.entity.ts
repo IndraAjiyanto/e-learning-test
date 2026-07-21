@@ -11,7 +11,7 @@ export class Collaboration {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'gambar' })
+  @Column({ name: 'image' })
   image: string;
 
   @CreateDateColumn()

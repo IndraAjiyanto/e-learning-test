@@ -52,7 +52,7 @@
               >
             <td class="px-6 py-4 text-sm text-gray-800" x-text="pageNumber * size + index + 1"></td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="question in faq.pertanyaan">
+              <template x-for="question in faq.question">
               <div class="line-clamp-3" x-text="question"></div>
               </template>
               </td>
@@ -140,7 +140,7 @@
 
     get filteredData() {
       let filtered = this.data.filter(f =>
-        (`${f.pertanyaan} ${f.answer}`).toLowerCase()
+        (`${f.question} ${f.answer}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
      this.amount = filtered.length;

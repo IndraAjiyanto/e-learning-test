@@ -16,7 +16,7 @@
   function portfolioApp() {
     return {
       allKategori: {{{json category}}},
-      allJenisKelas: {{{json jenis_kelas}}},
+      allJenisKelas: {{{json courseType}}},
       filteredKategoriList: [],
       filteredJenisKelasList: [],
       selectedKategori: '',
@@ -139,8 +139,8 @@
       },
 
       getJenisKelasName(item) {
-        return item.course?.jenis_kelas?.name_clasess_type
-          || item.jenis_kelas?.name_clasess_type
+        return item.course?.courseType?.name_clasess_type
+          || item.courseType?.name_clasess_type
           || null;
       }
     };

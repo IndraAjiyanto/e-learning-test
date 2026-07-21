@@ -32,7 +32,7 @@ export class Answer {
   @ManyToOne(() => Question, (question) => question.answers, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'pertanyaanId' })
+  @JoinColumn({ name: 'questionId' })
   @Exclude()
   question: Question;
 

@@ -13,7 +13,7 @@
 
             courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
-        {{#each category.jenis_kelas}}
+        {{#each category.courseType}}
         { value: '{{this.name_clasess_type }}', icon: '/{{computeIcon this.icon}}', title: '{{ this.name_clasess_type }}', desc: '{{truncate (getByLang this.description ../lang) 10}}' },
         {{/each}}
       ],
@@ -45,7 +45,7 @@
       try {
         const params = new URLSearchParams();
         params.set('category', `{{category.name}}`);
-        if (this.selectedType !== 'all') params.set('jenis_kelas', this.selectedType);
+        if (this.selectedType !== 'all') params.set('courseType', this.selectedType);
         if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);
         if (this.searchQuery) params.set('search', this.searchQuery);
         params.set('page', this.currentPage);

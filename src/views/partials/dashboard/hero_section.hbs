@@ -67,7 +67,7 @@
         <div class='absolute bottom-12 right-8 w-6 h-6 bg-slate-400/20 rounded-full animate-bounce-subtle animation-delay-2000 pointer-events-none z-10'></div>
 
         <img
-          src='{{#if tentang.[0].gambar}}{{tentang.[0].gambar}}{{else}}/public/image/orang.png{{/if}}'
+          src='{{#if about.[0].image}}{{about.[0].image}}{{else}}/public/image/orang.png{{/if}}'
           class='relative w-full transform transition-transform duration-300 z-10'
         />
 
@@ -91,10 +91,10 @@
         <div 
           class='bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 bg-clip-text text-transparent'
           data-texttype
-          data-texts='["{{getByLang tentang.[0].judul lang }}"]'
+          data-texts='["{{getByLang about.[0].title lang }}"]'
         >
-          {{#if tentang.[0].judul}}
-            {{getByLang tentang.[0].judul lang}}
+          {{#if about.[0].title}}
+            {{getByLang about.[0].title lang}}
           {{else}}
             Kesatria Academy Empowering Future Digital Tech Talent's
           {{/if}}
@@ -102,8 +102,8 @@
       </h1>
 
       <p class='py-6 text-lg text-gray-700 leading-relaxed  mb-6'>
-        {{#if tentang.[0].text}}
-          {{{nl2br (getByLang tentang.[0].text lang)}}}
+        {{#if about.[0].text}}
+          {{{nl2br (getByLang about.[0].text lang)}}}
         {{else}}
         Be part of the next generation of digital talents. Kesatria Academy helps you learn technology in an interactive, relevant and engaging way. 
         {{/if}}

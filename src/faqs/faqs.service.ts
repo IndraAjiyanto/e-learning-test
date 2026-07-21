@@ -35,18 +35,18 @@ export class FaqsService {
     });
   }
 
-  async findOne(pertanyaan_umumId: number) {
+  async findOne(faqsId: number) {
     return await this.pertanyaanUmumRepository.findOne({
-      where: { id: pertanyaan_umumId },
+      where: { id: faqsId },
       relations: ['category'],
     });
   }
 
   async update(
-    pertanyaan_umumId: number,
+    faqsId: number,
     updatePertanyaanUmumDto: UpdateFaqsDto,
   ) {
-    const faqs = await this.findOne(pertanyaan_umumId);
+    const faqs = await this.findOne(faqsId);
     if (!faqs) {
       throw new NotFoundException('FAQ Not Found');
     }
@@ -65,8 +65,8 @@ export class FaqsService {
     return await this.pertanyaanUmumRepository.save(faqs);
   }
 
-  async remove(pertanyaan_umumId: number) {
-    const faqs = await this.findOne(pertanyaan_umumId);
+  async remove(faqsId: number) {
+    const faqs = await this.findOne(faqsId);
     if (!faqs) {
       throw new NotFoundException('FAQ Not Found');
     }

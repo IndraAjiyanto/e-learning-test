@@ -18,13 +18,13 @@ export class Weeks {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'minggu_ke' })
+  @Column({ name: 'week_number' })
   weekNumber: number;
 
-  @Column({ name: 'keterangan' })
+  @Column({ name: 'description' })
   description: string;
 
-  @Column({ name: 'akhir', default: false })
+  @Column({ name: 'is_final', default: false })
   isFinal: boolean;
 
   @CreateDateColumn()
@@ -56,6 +56,6 @@ export class Weeks {
 
   @ManyToOne(() => Course, (course) => course.weeks, { onDelete: 'CASCADE' })
   @Exclude()
-  @JoinColumn({ name: 'kelasId' })
+  @JoinColumn({ name: 'courseId' })
   course: Course;
 }

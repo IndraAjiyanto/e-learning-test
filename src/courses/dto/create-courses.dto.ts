@@ -75,7 +75,7 @@ export class CreateCoursesDto {
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
-  teknologiIds?: number[];
+  technologiesIds?: number[];
 
   @IsArray()
   materials: string[];

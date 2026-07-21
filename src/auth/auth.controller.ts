@@ -34,7 +34,7 @@ export class AuthController {
     if (!req.user) {
       res.render('login');
     } else {
-      res.render('user/daftarKelas', { user: req.user, course });
+      res.render('user/mycourse', { user: req.user, course });
     }
   }
 

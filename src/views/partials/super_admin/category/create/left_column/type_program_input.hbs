@@ -23,8 +23,8 @@
 
         if (!alreadySelected) {
             this.selectedJenisKelas.push(jk);
-            this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
-            this.validateField('jenis_kelas', this.formData.jenis_kelas);
+            this.formData.courseType = this.selectedJenisKelas.map(s => s.id);
+            this.validateField('courseType', this.formData.courseType);
         }
 
         this.searchJenisKelas = '';
@@ -34,8 +34,8 @@
     // Hapus jenis course terpilih
     removeJenisKelas(jkId) {
         this.selectedJenisKelas = this.selectedJenisKelas.filter(s => s.id !== jkId);
-        this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
-        this.validateField('jenis_kelas', this.formData.jenis_kelas);
+        this.formData.courseType = this.selectedJenisKelas.map(s => s.id);
+        this.validateField('courseType', this.formData.courseType);
     }
 }"
             @click.away='showJenisKelasDropdown = false'
@@ -107,29 +107,29 @@
               </div>
             </div>
 
-            <!-- Hidden inputs for selected jenis_kelas IDs -->
-            <template x-for='id in formData.jenis_kelas' :key='id'>
+            <!-- Hidden inputs for selected courseType IDs -->
+            <template x-for='id in formData.courseType' :key='id'>
               <input type='hidden' name='courseType[]' :value='id' />
             </template>
 
             <p class='text-xs text-gray-500 mt-2'>Click to select program types</p>
 
             <!-- Error Message -->
-            <template x-if='formErrors.jenis_kelas'>
+            <template x-if='formErrors.courseType'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.jenis_kelas'
+                  x-text='formErrors.courseType'
                 ></p>
               </div>
             </template>
 
             <!-- Success Message -->
             <template
-              x-if='formTouched.jenis_kelas && formValid.jenis_kelas && !formErrors.jenis_kelas'
+              x-if='formTouched.courseType && formValid.courseType && !formErrors.courseType'
             >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'

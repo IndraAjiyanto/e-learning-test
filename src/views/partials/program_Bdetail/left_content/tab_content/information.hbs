@@ -87,12 +87,12 @@
                     {{#if (eq course.metode 'online')}}
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      ><a href="{{course.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang course.lokasi lang}}</a></h4>
+                      ><a href="{{course.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang course.location lang}}</a></h4>
                     {{else}}
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                        title='{{course.lokasi}}'
-                      ><a href="{{course.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang course.lokasi lang}}</a></h4>
+                        title='{{course.location}}'
+                      ><a href="{{course.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang course.location lang}}</a></h4>
                     {{/if}}
                   </div>
                 </div>
@@ -100,7 +100,7 @@
               </div>
 
               <!-- Capacity Card -->
-              {{#if course.kuota}}
+              {{#if course.quota}}
                 <div
                   class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
                 >
@@ -116,7 +116,7 @@
                       >{{t "test.detailProgram.infoProgram.capacity"}}</p>
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{course.kuota}} {{t "test.detailProgram.infoProgram.students"}}</h4>
+                      >{{course.quota}} {{t "test.detailProgram.infoProgram.students"}}</h4>
                     </div>
                   </div>
                 </div>
@@ -344,7 +344,7 @@
                 {{t "test.detailProgram.infoProgram.technology"}}
               </h4>
               <div class='ml-8 flex gap-2 flex-wrap'>
-                {{#each teknologi}}
+                {{#each technologies}}
                   <div class='flex items-center gap-2'>
                     {{#if this.svg}}
                       <div class='w-6 h-6 flex items-center justify-center'>

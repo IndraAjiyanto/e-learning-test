@@ -6,7 +6,7 @@ import { Course } from 'src/entities/course.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { User } from 'src/entities/user.entity';
 import { Session } from 'src/entities/session.entity';
-import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
+import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { CommonModule } from 'src/common/common.module';
 import { Quiz } from 'src/entities/quiz.entity';
@@ -20,7 +20,7 @@ import { QuizProgress} from 'src/entities/quiz_progress.entity';
       Logbook,
       User,
       Session,
-      LogbookMentor,
+      MentorLogbook,
       Quiz,
       QuizProgress]),
     CommonModule,

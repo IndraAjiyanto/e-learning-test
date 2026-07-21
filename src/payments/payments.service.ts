@@ -32,7 +32,7 @@ export class PaymentsService {
     @InjectRepository(Registration)
     private readonly pendaftaranRepository: Repository<Registration>,
     @InjectRepository(Installment)
-    private readonly cicilanRepository: Repository<Installment>,
+    private readonly installmentsRepository: Repository<Installment>,
     @InjectRepository(UserCourse)
     private readonly userKelasRepository: Repository<UserCourse>,
     @InjectRepository(WeekProgress)
@@ -60,9 +60,9 @@ export class PaymentsService {
       return;
     }
 
-    if (createPembayaranDto.cicilanId) {
-      const installments = await this.cicilanRepository.findOne({
-        where: { id: createPembayaranDto.cicilanId },
+    if (createPembayaranDto.installmentsId) {
+      const installments = await this.installmentsRepository.findOne({
+        where: { id: createPembayaranDto.installmentsId },
       });
       if (!installments) {
         return;

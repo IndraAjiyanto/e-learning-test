@@ -232,13 +232,13 @@ export class CoursesController {
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const category = await this.kelassService.findKategori();
     const courseType = await this.kelassService.findJenisKelas();
-    const teknologi = await this.kelassService.findTeknologi();
+    const technologies = await this.kelassService.findTechnologies();
     const mentorings = await this.kelassService.findMentoring();
     return res.render('admin/course/create', {
       user: req.user,
       category,
       courseType,
-      teknologi,
+      technologies,
       mentorings,
     });
   }
@@ -252,12 +252,12 @@ export class CoursesController {
   ) {
     const category = await this.kelassService.findOneKategori(categoryId);
     const courseType = await this.kelassService.findJenisKelas();
-    const teknologi = await this.kelassService.findTeknologi();
+    const technologies = await this.kelassService.findTechnologies();
     const mentorings = await this.kelassService.findMentoring();
     return res.render('admin/course/formCreate', {
       user: req.user,
       courseType,
-      teknologi,
+      technologies,
       mentorings,
       category,
       categoryId,
@@ -292,7 +292,7 @@ export class CoursesController {
     const course = await this.kelassService.findOne(courseId);
     const category = await this.kelassService.findKategori();
     const courseType = await this.kelassService.findJenisKelas();
-    const teknologi = await this.kelassService.findTeknologi();
+    const technologies = await this.kelassService.findTechnologies();
     const mentorings = await this.kelassService.findMentoring();
 
     return res.render('admin/course/edit', {
@@ -300,18 +300,18 @@ export class CoursesController {
       course,
       category,
       courseType,
-      teknologi,
+      technologies,
       mentorings,
     });
   }
 
   @Roles('admin', 'super_admin')
   @Get('/logbookMentor/:courseId')
-  async getLogbookMentor(
+  async getMentorLogbook(
     @Param('courseId') courseId: number,
     @Res() res: Response,
   ) {
-    const logbookMentor = await this.kelassService.findLogbookMentor(courseId);
+    const logbookMentor = await this.kelassService.findMentorLogbook(courseId);
     res.json(logbookMentor);
   }
 
@@ -384,8 +384,8 @@ export class CoursesController {
     @Param('courseId') courseId: number,
     @Res() res: Response,
   ) {
-    const benefit_kelas = await this.kelassService.findProgramBenefit(courseId);
-    res.json(benefit_kelas);
+    const course_benefits = await this.kelassService.findProgramBenefit(courseId);
+    res.json(course_benefits);
   }
 
   @Roles('super_admin')
@@ -402,8 +402,8 @@ export class CoursesController {
   @Roles('super_admin')
   @Get('/flow/:courseId')
   async getAlurKelas(@Param('courseId') courseId: number, @Res() res: Response) {
-    const alur_kelas = await this.kelassService.findAlurKelas(courseId);
-    res.json(alur_kelas);
+    const course_flows = await this.kelassService.findAlurKelas(courseId);
+    res.json(course_flows);
   }
 
   @Roles('super_admin')
@@ -478,10 +478,10 @@ export class CoursesController {
     );
     const kelass = await this.kelassService.allClassExcept(course.id);
     // const courseQuestions = await this.kelassService.findPertanyaanKelas(courseId);
-    // const alur_kelas = await this.kelassService.findAlurKelas(courseId);
+    // const course_flows = await this.kelassService.findAlurKelas(courseId);
     // const mentor = await this.kelassService.findMentorKelas(courseId);
-    // const benefit_kelas = await this.kelassService.findProgramBenefit(courseId);
-    const teknologi = await this.kelassService.findTeknologiKelas(courseId);
+    // const course_benefits = await this.kelassService.findProgramBenefit(courseId);
+    const technologies = await this.kelassService.findTechnologiesKelas(courseId);
     const installments = await this.kelassService.findCicilanKelas(courseId);
 
     if (course.check_paid === false) {
@@ -492,10 +492,10 @@ export class CoursesController {
         kelass,
         check_user,
         // courseQuestions,
-        // alur_kelas,
+        // course_flows,
         // mentor,
-        // benefit_kelas,
-        teknologi,
+        // course_benefits,
+        technologies,
         installments,
       });
     } else {
@@ -505,10 +505,10 @@ export class CoursesController {
         kelass,
         check_user,
         // courseQuestions,
-        // alur_kelas,
+        // course_flows,
         // mentor,
-        // benefit_kelas,
-        teknologi,
+        // course_benefits,
+        technologies,
         installments,
       });
     }
@@ -524,10 +524,10 @@ export class CoursesController {
     if (!req.user) {
       const course = await this.kelassService.findOneKelasUser(id);
       // const courseQuestions = await this.kelassService.findPertanyaanKelas(id);
-      // const alur_kelas = await this.kelassService.findAlurKelas(id);
+      // const course_flows = await this.kelassService.findAlurKelas(id);
       // const mentor = await this.kelassService.findMentorKelas(id);
-      // const benefit_kelas = await this.kelassService.findProgramBenefit(id);
-      const teknologi = await this.kelassService.findTeknologiKelas(id);
+      // const course_benefits = await this.kelassService.findProgramBenefit(id);
+      const technologies = await this.kelassService.findTechnologiesKelas(id);
       const installments = await this.kelassService.findCicilanKelas(id);
       const userCourses = await this.kelassService.findUserKelas(id);
       const kelass = await this.kelassService.allClassExcept(course.id);
@@ -537,7 +537,7 @@ export class CoursesController {
           course,
           kelass,
           daftar,
-          teknologi,
+          technologies,
           installments,
           userCourses,
         });
@@ -547,10 +547,10 @@ export class CoursesController {
           kelass,
           daftar,
           // courseQuestions,
-          // alur_kelas,
+          // course_flows,
           // mentor,
-          // benefit_kelas,
-          teknologi,
+          // course_benefits,
+          technologies,
           installments,
           userCourses,
         });
@@ -586,10 +586,10 @@ export class CoursesController {
       } else {
         const course = await this.kelassService.findOneKelasUser(id);
         // const courseQuestions = await this.kelassService.findPertanyaanKelas(id);
-        // const alur_kelas = await this.kelassService.findAlurKelas(id);
+        // const course_flows = await this.kelassService.findAlurKelas(id);
         // const mentor = await this.kelassService.findMentorKelas(id);
-        // const benefit_kelas = await this.kelassService.findProgramBenefit(id);
-        const teknologi = await this.kelassService.findTeknologiKelas(id);
+        // const course_benefits = await this.kelassService.findProgramBenefit(id);
+        const technologies = await this.kelassService.findTechnologiesKelas(id);
         const installments = await this.kelassService.findCicilanKelas(id);
         const userCourses = await this.kelassService.findUserKelas(id);
         const kelass = await this.kelassService.allClassExcept(course.id);
@@ -600,7 +600,7 @@ export class CoursesController {
             course,
             kelass,
             daftar,
-            teknologi,
+            technologies,
             userCourses,
             installments,
           });
@@ -611,10 +611,10 @@ export class CoursesController {
             kelass,
             daftar,
             // courseQuestions,
-            // alur_kelas,
+            // course_flows,
             // mentor,
-            // benefit_kelas,
-            teknologi,
+            // course_benefits,
+            technologies,
             userCourses,
             installments,
           });
@@ -625,8 +625,8 @@ export class CoursesController {
 
   @Get('api/detail/:id/benefit')
   async getBenefit(@Param('id') id: number, @Res() res: Response) {
-    const benefit_kelas = await this.kelassService.findProgramBenefit(id);
-    return res.json({ benefit_kelas });
+    const course_benefits = await this.kelassService.findProgramBenefit(id);
+    return res.json({ course_benefits });
   }
 
   @Get('api/detail/:id/faq')
@@ -637,8 +637,8 @@ export class CoursesController {
 
   @Get('api/detail/:id/flow')
   async getFlow(@Param('id') id: number, @Res() res: Response) {
-    const alur_kelas = await this.kelassService.findAlurKelas(id);
-    return res.json({ alur_kelas });
+    const course_flows = await this.kelassService.findAlurKelas(id);
+    return res.json({ course_flows });
   }
 
   @Get('api/detail/:id/mentor')
@@ -698,8 +698,8 @@ export class CoursesController {
         updateKelassDto.process = 'acc';
       }
 
-      if (req.body.teknologiIds_sent !== undefined && updateKelassDto.teknologiIds === undefined) {
-        updateKelassDto.teknologiIds = [];
+      if (req.body.technologiesIds_sent !== undefined && updateKelassDto.technologiesIds === undefined) {
+        updateKelassDto.technologiesIds = [];
       }
 
       await this.kelassService.update(courseId, updateKelassDto);

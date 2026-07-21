@@ -21,7 +21,7 @@
       
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allTypes"}}', desc: '{{t "test.home.programSection.deskripsiAllTypes"}}' },
-        {{#each jenis_kelas}}
+        {{#each courseType}}
         { value: `{{this.name_clasess_type }}`, icon: '/{{computeIcon this.icon}}', title: `{{this.name_clasess_type}}`, desc: `{{truncate (getByLang this.description ../lang) 10}}` },
         {{/each}}
       ],
@@ -50,7 +50,7 @@
       try {
         const params = new URLSearchParams();
         if (this.tab !== 'all') params.set('category', this.tab);
-        if (this.selectedCategory !== 'all') params.set('jenis_kelas', this.selectedCategory);
+        if (this.selectedCategory !== 'all') params.set('courseType', this.selectedCategory);
         if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);
         if (this.searchQuery) params.set('search', this.searchQuery);
         params.set('page', this.currentPage);
@@ -99,7 +99,7 @@
       return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
     },
   }"
-  class='bg-gradient-to-br from-primary via-secondary to-gray-900 py-20 px-6 lg:px-20 relative overflow-visible'
+  class='bg-gradient-to-br from-primary via-secondary to-gray-900 py-20 px-6 lg:px-20 relative overflow-visionsble'
   x-init="$watch('tab', () => currentPage = 1); $watch('selectedMethod', () => currentPage = 1); $watch('selectedCategory', () => currentPage = 1); $watch('searchQuery', () => currentPage = 1)"
   id='courses-section'
 >
@@ -114,7 +114,7 @@
   </div>
 
   <!-- Filter Section -->
-  <div class='max-w-6xl mx-auto mb-16 relative z-10 overflow-visible'>
+  <div class='max-w-6xl mx-auto mb-16 relative z-10 overflow-visionsble'>
     <div
       class='bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl'
     >
@@ -434,7 +434,7 @@
       class="group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
     >
       <img
-        :src="course.gambar"
+        :src="course.image"
         :alt="course.name"
         class="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300 drop-shadow-lg"
       />
@@ -446,7 +446,7 @@
             x-text="course.category?.name">
           </span>
           <span class="badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-full"
-            x-text="course.jenis_kelas?.name_clasess_type">
+            x-text="course.courseType?.name_clasess_type">
           </span>
         </div>
 
@@ -468,7 +468,7 @@
           </div>
           <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
             <i class="fas fa-user-tie text-slate-500"></i>
-            <span x-text="getByLang(course.lokasi, lang)"></span>
+            <span x-text="getByLang(course.location, lang)"></span>
           </div>
         </div>
 
@@ -487,12 +487,12 @@
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
               <i class="fas fa-users text-slate-600 animate-pulse"></i>
-              <span class="text-sm font-medium text-slate-600">{{t "test.home.programSection.kuota"}}</span>
+              <span class="text-sm font-medium text-slate-600">{{t "test.home.programSection.quota"}}</span>
             </div>
             <span class="text-sm font-bold text-slate-800 bg-white px-3 py-1 rounded-full shadow-sm">
-              <span x-text="course.user_kelas?.length ?? 0"></span>
+              <span x-text="course.userCourses?.length ?? 0"></span>
               /
-              <span x-text="course.kuota"></span>
+              <span x-text="course.quota"></span>
               {{t "test.home.programSection.student"}}
             </span>
           </div>
@@ -500,7 +500,7 @@
           <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2">
             <div
               class="h-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 ease-out"
-              :style="`width: ${((course.user_kelas?.length ?? 0) / course.kuota) * 100}%`"
+              :style="`width: ${((course.userCourses?.length ?? 0) / course.quota) * 100}%`"
             ></div>
           </div>
         </div>

@@ -1,0 +1,144 @@
+<div class='py-10'>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-bold mb-6 text-gray-900'>Edit Attendance</h2>
+
+    <form
+      action='/attendance/{{attendance.id}}/{{attendance.session.id}}?_method=PATCH'
+      method='POST'
+      class='space-y-6'
+      @submit="loading = true"
+      x-data="{
+      loading: false,
+      statuses: [
+        { value: 'present', label: 'Present' },
+        { value: 'permission', label: 'Permission' },
+        { value: 'sick', label: 'Sick' },
+        { value: 'absent', label: 'Absent' },
+        { value: 'no_information', label: 'No Information' }
+      ],
+      searchStatus: '{{attendance.status}}' === 'present' ? 'Present' : 
+                    '{{attendance.status}}' === 'permission' ? 'Permission' : 
+                    '{{attendance.status}}' === 'sick' ? 'Sick' : 
+                    '{{attendance.status}}' === 'absent' ? 'Absent' : 
+                    '{{attendance.status}}' === 'no_information' ? 'No Information' : '',
+      showStatusDropdown: false,
+      selectedStatus: { 
+        value: '{{attendance.status}}',
+        label: '{{attendance.status}}' === 'present' ? 'Present' : 
+               '{{attendance.status}}' === 'permission' ? 'Permission' : 
+               '{{attendance.status}}' === 'sick' ? 'Sick' : 
+               '{{attendance.status}}' === 'absent' ? 'Absent' : 
+               '{{attendance.status}}' === 'no_information' ? 'No Information' : ''
+      },
+      get filteredStatuses() {
+        if (!this.searchStatus) return this.statuses;
+        return this.statuses.filter(s => 
+          s.label.toLowerCase().includes(this.searchStatus.toLowerCase())
+        );
+      },
+      selectStatus(status) {
+        this.selectedStatus = status;
+        this.searchStatus = status.label;
+        this.showStatusDropdown = false;
+      }
+    }"
+    >
+
+      <!-- Status -->
+      <div class='relative'>
+        <label
+          for='status'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Status</label>
+        <input
+          type='hidden'
+          name='status'
+          :value='selectedStatus?.value'
+          required
+        />
+        <input
+          type='text'
+          x-model='searchStatus'
+          @focus='showStatusDropdown = true'
+          @input='showStatusDropdown = true'
+          placeholder='Search status...'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          autocomplete='off'
+        />
+        <div
+          x-show='showStatusDropdown'
+          @click.away='showStatusDropdown = false'
+          class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+        >
+          <template x-for='status in filteredStatuses' :key='status.value'>
+            <div
+              @click='selectStatus(status)'
+              class='px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700'
+              x-text='status.label'
+            >
+            </div>
+          </template>
+          <div
+            x-show='filteredStatuses.length === 0'
+            class='px-4 py-2 text-gray-500 text-sm'
+          >
+            No status found
+          </div>
+        </div>
+      </div>
+
+      <!-- Date -->
+      <div>
+        <label
+          for='waktu_absen'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Attendance Date</label>
+        <input
+          type='date'
+          id='waktu_absen'
+          name='waktu_absen'
+          value='{{formDate attendance.waktu_absen}}'
+          required
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
+          style='color-scheme: light;'
+        />
+      </div>
+
+      <!-- Note -->
+      <div>
+        <label
+          for="description"
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Note</label>
+        <textarea
+          id="description"
+          name="description"
+          rows='3'
+          placeholder='Enter additional note...'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        >{{attendance.description}}</textarea>
+      </div>
+
+      <!-- Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='loading'
+          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600 '"
+          class=' text-white px-6 py-2 rounded-lg shadow  transition'
+        >
+        <span x-show="!loading">Update</span>
+        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+        </button>
+        <a
+          href='/session/{{attendance.session.id}}'
+        :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>

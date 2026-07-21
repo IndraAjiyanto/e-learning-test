@@ -21,7 +21,7 @@ export class Comment {
   @ManyToOne(() => AnswerTask, (answerTask) => answerTask.comment, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'jawaban_tugasId' })
+  @JoinColumn({ name: 'assignment_answerId' })
   @Exclude()
   answer_task: AnswerTask;
 

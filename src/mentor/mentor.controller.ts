@@ -76,11 +76,11 @@ export class MentorController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const teknologi = await this.mentorService.findTeknologi();
+    const technologies = await this.mentorService.findTechnologies();
     res.render('super_admin/mentor/create', {
       user: req.user,
       courseId,
-      teknologi,
+      technologies,
     });
   }
 
@@ -92,11 +92,11 @@ export class MentorController {
     @Req() req: Request,
   ) {
     const mentor = await this.mentorService.findOne(mentorId);
-    const teknologi = await this.mentorService.findTeknologi();
+    const technologies = await this.mentorService.findTechnologies();
     res.render('super_admin/mentor/detail', {
       user: req.user,
       mentor,
-      teknologi,
+      technologies,
     });
   }
 
@@ -108,11 +108,11 @@ export class MentorController {
     @Req() req: Request,
   ) {
     const mentor = await this.mentorService.findOne(mentorId);
-    const teknologi = await this.mentorService.findTeknologi();
+    const technologies = await this.mentorService.findTechnologies();
     res.render('super_admin/mentor/edit', {
       user: req.user,
       mentor,
-      teknologi,
+      technologies,
     });
   }
 

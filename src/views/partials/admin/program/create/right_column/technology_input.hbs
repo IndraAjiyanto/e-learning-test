@@ -4,7 +4,7 @@
           search: '',
           selectedTechs: [],
           showDropdown: false,
-          availableTechs: {{json teknologi}},
+          availableTechs: {{json technologies}},
           get filteredTechs() {
             return this.availableTechs.filter(t => 
               t.name.toLowerCase().includes(this.search.toLowerCase()) &&
@@ -60,7 +60,7 @@
                 >
                   <i class='fas fa-times'></i>
                 </button>
-                <input type='hidden' name='teknologiIds[]' :value='tech.id' />
+                <input type='hidden' name='technologiesIds[]' :value='tech.id' />
               </div>
             </template>
           </div>

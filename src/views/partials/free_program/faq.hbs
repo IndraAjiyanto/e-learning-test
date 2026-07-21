@@ -20,12 +20,12 @@
         currentPage: 1,
         itemsPerPage: 5,
         faqs: [
-          {{#if pertanyaan_umum.length}}
-            {{#each pertanyaan_umum}}
+          {{#if faqs.length}}
+            {{#each faqs}}
               { question: `{{getByLang pertanyaan ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
             {{/each}}
           {{else}}
-            // DUMMY DATA: Tampil otomatis jika database/tabel pertanyaan_umum kosong
+            // DUMMY DATA: Tampil otomatis jika database/tabel faqs kosong
             { question: 'How long in house training program?', answer: 'Our bootcamp program typically runs for 4 months with intensive weekend classes. You\'ll learn through hands-on projects and mentorship from industry experts.' },
             { question: 'Do I need prior programming experience?', answer: 'No prior experience is required! We welcome beginners and will guide you from the basics to advanced concepts step by step.' },
             { question: 'What is the payment method?', answer: 'We offer flexible payment options including full payment, installments, and early bird discounts. Contact us for more details.' }

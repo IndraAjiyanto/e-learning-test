@@ -114,9 +114,9 @@ export class SessionController {
     @Param('sessionId') sessionId: number,
     @Res() res: Response,
   ) {
-    const logbook_mentor =
+    const mentor_logbook =
       await this.sessionService.findLogBookMentor(sessionId);
-    res.json(logbook_mentor);
+    res.json(mentor_logbook);
   }
 
   @Roles('admin')

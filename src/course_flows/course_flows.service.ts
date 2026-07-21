@@ -40,22 +40,22 @@ export class CourseFlowsService {
   }
 
   async findAlurKelas(courseId: number) {
-    const alur_kelas = await this.alurKelasRepository.findOne({
+    const course_flows = await this.alurKelasRepository.findOne({
       where: { course: { id: courseId } },
       order: { sequence: 'DESC' },
     });
-    if (!alur_kelas) {
+    if (!course_flows) {
       return 0;
     }
-    return alur_kelas.sequence;
+    return course_flows.sequence;
   }
 
   async findAll() {
-    const alur_kelas = await this.alurKelasRepository.find({
+    const course_flows = await this.alurKelasRepository.find({
       relations: ['course'],
       order: { course: { id: 'ASC' }, sequence: 'ASC' },
     });
-    return alur_kelas;
+    return course_flows;
   }
 
   async findAllKelas() {
@@ -66,14 +66,14 @@ export class CourseFlowsService {
   }
 
   async findOne(alurKelasId: number) {
-    const alur_kelas = await this.alurKelasRepository.findOne({
+    const course_flows = await this.alurKelasRepository.findOne({
       where: { id: alurKelasId },
       relations: ['course'],
     });
-    if (!alur_kelas) {
+    if (!course_flows) {
       throw new NotFoundException('Flow Program not found');
     }
-    return alur_kelas;
+    return course_flows;
   }
 
   async update(alurKelasId: number, updateAlurKelaDto: UpdateAlurKelaDto) {
@@ -92,14 +92,14 @@ export class CourseFlowsService {
       throw new NotFoundException('Flow Program not found');
     }
     await this.alurKelasRepository.remove(courseFlow);
-    const semua_alur_kelas = await this.alurKelasRepository.find({
+    const semua_course_flows = await this.alurKelasRepository.find({
       where: { course: { id: courseId } },
       order: { createdAt: 'ASC' },
     });
 
-    for (let i = 0; i < semua_alur_kelas.length; i++) {
-      semua_alur_kelas[i].sequence = i + 1;
-      await this.alurKelasRepository.save(semua_alur_kelas[i]);
+    for (let i = 0; i < semua_course_flows.length; i++) {
+      semua_course_flows[i].sequence = i + 1;
+      await this.alurKelasRepository.save(semua_course_flows[i]);
     }
   }
 }

@@ -11,22 +11,22 @@ import * as path from 'path';
 export class AboutService {
   constructor(
     @InjectRepository(About)
-    private tentangRepository: Repository<About>,
+    private aboutRepository: Repository<About>,
   ) {}
 
   async create(createTentangDto: CreateAboutDto) {
-    const about = await this.tentangRepository.create({
+    const about = await this.aboutRepository.create({
       ...createTentangDto,
     });
-    return await this.tentangRepository.save(about);
+    return await this.aboutRepository.save(about);
   }
 
   async findAll() {
-    return await this.tentangRepository.find();
+    return await this.aboutRepository.find();
   }
 
   async findOne(id: number) {
-    const about = await this.tentangRepository.findOne({ where: { id } });
+    const about = await this.aboutRepository.findOne({ where: { id } });
     if (!about) {
       throw new NotFoundException('Header not found');
     }
@@ -39,7 +39,7 @@ export class AboutService {
       throw new NotFoundException('Header not found');
     }
     Object.assign(about, updateTentangDto);
-    return await this.tentangRepository.save(about);
+    return await this.aboutRepository.save(about);
   }
 
   async remove(id: number) {
@@ -47,7 +47,7 @@ export class AboutService {
     if (!about) {
       throw new NotFoundException('Header not found');
     }
-    return await this.tentangRepository.remove(about);
+    return await this.aboutRepository.remove(about);
   }
 
   async deleteFile(url: string) {

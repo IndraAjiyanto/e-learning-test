@@ -18,31 +18,31 @@ export class Mentors {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'nama' })
+  @Column({ name: 'name' })
   name: string;
 
-  @Column('jsonb', { name: 'posisi', nullable: true })
+  @Column('jsonb', { name: 'position', nullable: true })
   position: string[];
 
   @Column()
   linkedin: string;
 
-  @ManyToMany(() => Technology, (teknologi) => teknologi.mentors, {
+  @ManyToMany(() => Technology, (technologies) => technologies.mentors, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @JoinTable({
-    name: 'mentor_teknologi',
+    name: 'mentor_technologies',
     joinColumn: { name: 'mentorId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'teknologiId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'technologiesId', referencedColumnName: 'id' },
   })
   @Exclude()
-  teknologi: Technology[];
+  technologies: Technology[];
 
   @Column()
   profile: string;
 
-  @Column('jsonb', { name: 'deskripsi', nullable: true })
+  @Column('jsonb', { name: 'description', nullable: true })
   description: string[];
 
   @CreateDateColumn()
@@ -52,7 +52,7 @@ export class Mentors {
   updatedAt: Date;
 
   @ManyToOne(() => Course, (course) => course.mentors, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'kelasId' })
+  @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: Course;
 }

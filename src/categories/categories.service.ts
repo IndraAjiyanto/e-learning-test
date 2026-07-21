@@ -81,14 +81,14 @@ export class CategoriesService {
   async findKelasByKategori(categoryId: number) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId }, launch: true },
-      relations: ['courseTypes', 'category', 'userCourses'],
+      relations: ['courseType', 'category', 'userCourses'],
     });
   }
 
   async findKelasByKategoriAll(categoryId: number) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId } },
-      relations: ['courseTypes', 'category', 'userCourses'],
+      relations: ['courseType', 'category', 'userCourses'],
       order: { launch: 'DESC' },
     });
   }

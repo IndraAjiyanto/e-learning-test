@@ -22,19 +22,19 @@ export class ProgramBenefitService {
     if (!course) {
       throw new NotFoundException('Program not found');
     }
-    const benefit_kelas = await this.programBenefitRepository.create({
+    const course_benefits = await this.programBenefitRepository.create({
       ...createProgramBenefitDto,
       course: course,
     });
-    return await this.programBenefitRepository.save(benefit_kelas);
+    return await this.programBenefitRepository.save(course_benefits);
   }
 
   async findAll() {
-    const benefit_kelas = await this.programBenefitRepository.find({
+    const course_benefits = await this.programBenefitRepository.find({
       relations: ['course'],
       order: { id: 'ASC' },
     });
-    return benefit_kelas;
+    return course_benefits;
   }
 
   async findAllKelas() {
@@ -49,34 +49,34 @@ export class ProgramBenefitService {
   }
 
   async findOne(programBenefitId: number) {
-    const benefit_kelas = await this.programBenefitRepository.findOne({
+    const course_benefits = await this.programBenefitRepository.findOne({
       where: { id: programBenefitId },
       relations: ['course'],
     });
-    if (!benefit_kelas) {
+    if (!course_benefits) {
       throw new NotFoundException('Benefit Program not found');
     }
-    return benefit_kelas;
+    return course_benefits;
   }
 
   async update(
     programBenefitId: number,
     updateProgramBenefitDto: UpdateProgramBenefitDto,
   ) {
-    const benefit_kelas = await this.findOne(programBenefitId);
-    if (!benefit_kelas) {
+    const course_benefits = await this.findOne(programBenefitId);
+    if (!course_benefits) {
       throw new NotFoundException('Benefit Program not found');
     }
 
-    Object.assign(benefit_kelas, updateProgramBenefitDto);
-    return await this.programBenefitRepository.save(benefit_kelas);
+    Object.assign(course_benefits, updateProgramBenefitDto);
+    return await this.programBenefitRepository.save(course_benefits);
   }
 
   async remove(programBenefitId: number) {
-    const benefit_kelas = await this.findOne(programBenefitId);
-    if (!benefit_kelas) {
+    const course_benefits = await this.findOne(programBenefitId);
+    if (!course_benefits) {
       throw new NotFoundException('Benefit Program not found');
     }
-    return await this.programBenefitRepository.remove(benefit_kelas);
+    return await this.programBenefitRepository.remove(course_benefits);
   }
 }

@@ -19,7 +19,7 @@
                       }"
                       @click.away='showDropdown = false'
                     >
-                      <label for='kategoriId' class='block text-sm font-semibold text-gray-700 mb-1'>Category</label>
+                      <label for="categoryId" class='block text-sm font-semibold text-gray-700 mb-1'>Category</label>
                       
                       <div class='relative'>
                         <input
@@ -47,6 +47,6 @@
                           </template>
                         </div>
                         
-                        <input type='hidden' name='kategoriId' x-model='selectedCategory ? selectedCategory.id : ""' />
+                        <input type='hidden' name="categoryId" x-model='selectedCategory ? selectedCategory.id : ""' />
                       </div>
                     </div>

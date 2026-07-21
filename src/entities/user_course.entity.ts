@@ -3,12 +3,12 @@ import { User } from './user.entity';
 import { Course } from './course.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity('user_kelas')
+@Entity('user_courses')
 export class UserCourse {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'progres', default: false })
+  @Column({ name: 'progress', default: false })
   progress: boolean;
 
   @ManyToOne(() => User, (user) => user.userCourses, { onDelete: 'CASCADE' })

@@ -137,8 +137,8 @@
               <span
                 class='inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold'
               >
-                <i class="{{computeIcon kategori_blog.icon}}"></i>
-                {{kategori_blog.name.en}}
+                <i class="{{computeIcon blog_categories.icon}}"></i>
+                {{blog_categories.name.en}}
               </span>
             </td>
             
@@ -302,7 +302,7 @@
 
       get filteredBlogs() {
         let filtered = this.blogs.filter(b =>
-          (`${b.title} ${b.kategori_blog.name}`)
+          (`${b.title} ${b.blog_categories.name}`)
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

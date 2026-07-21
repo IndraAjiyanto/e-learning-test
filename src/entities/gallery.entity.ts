@@ -20,7 +20,7 @@ export class Gallery {
     nullable: true,
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'kategori_id' })
+  @JoinColumn({ name: 'categoryId' })
   @Exclude()
   category: Category;
 }

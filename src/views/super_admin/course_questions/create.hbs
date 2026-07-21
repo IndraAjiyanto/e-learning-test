@@ -1,0 +1,107 @@
+<div class='py-10'>
+  <div
+    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+    // Form validation states
+    formData: {
+      pertanyaan: { id: '', en: '', ja: '' },
+      answer: { id: '', en: '', ja: '' }
+    },
+    formErrors: {
+      pertanyaan: { id: '', en: '', ja: '' },
+      answer: { id: '', en: '', ja: '' }
+    },
+    formValid: {
+      pertanyaan: { id: false, en: false, ja: false },
+      answer: { id: false, en: false, ja: false }
+    },
+    formTouched: {
+      pertanyaan: { id: false, en: false, ja: false },
+      answer: { id: false, en: false, ja: false }
+    },
+
+    validateField(field, value, lang = null) {
+      if (lang) {
+        this.formData[field][lang] = value;
+        this.formTouched[field][lang] = true;
+      } else {
+        this.formData[field] = value;
+        this.formTouched[field] = true;
+      }
+      
+      switch(field) {
+        case 'pertanyaan':
+          if (!value.trim()) {
+            this.formErrors.question[lang] = 'Question is required';
+            this.formValid.question[lang] = false;
+          } else if (value.trim().length < 10) {
+            this.formErrors.question[lang] = 'Question must be at least 10 characters';
+            this.formValid.question[lang] = false;
+          } else {
+            this.formErrors.question[lang] = '';
+            this.formValid.question[lang] = true;
+          }
+          break;
+          
+        case 'answer':
+          if (!value.trim()) {
+            this.formErrors.answer[lang] = 'Answer is required';
+            this.formValid.answer[lang] = false;
+          } else if (value.trim().length < 20) {
+            this.formErrors.answer[lang] = 'Answer must be at least 20 characters';
+            this.formValid.answer[lang] = false;
+          } else {
+            this.formErrors.answer[lang] = '';
+            this.formValid.answer[lang] = true;
+          }
+          break;
+      }
+    },
+
+    canSubmit() {
+      const pertanyaanValid = Object.values(this.formValid.question).every(v => v);
+      const jawabanValid = Object.values(this.formValid.answer).every(v => v);
+      return pertanyaanValid && jawabanValid;
+    },
+
+    hasFormErrors() {
+      return Object.values(this.formErrors.question).some(e => e !== '') ||
+             Object.values(this.formErrors.answer).some(e => e !== '');
+    }
+  }"
+  >
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New FAQ</h2>
+
+    <form
+      action='/question-program/{{courseId}}'
+      method='post'
+      class='space-y-6'
+      x-data='{ loading: false }'
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+    >
+
+{{> super_admin/course_questions/create/question_input}}
+{{> super_admin/course_questions/create/answer_input}}
+
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='!canSubmit () || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
+        >
+          <span x-show='loading'><i
+              class='loading loading-spinner loading-sm'
+            ></i></span>
+          <span x-show='!loading'>Create</span>
+        </button>
+        <a
+          href='/program/detail/program/admin/{{courseId}}'
+:class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Course } from 'src/entities/course.entity';
 import { Session } from 'src/entities/session.entity';
-import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
+import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { Quiz } from 'src/entities/quiz.entity';
 import * as fs from 'fs/promises';
@@ -24,8 +24,8 @@ export class LogbookService {
   private readonly sessionRepository: Repository<Session>;
   @InjectRepository(Course)
   private readonly kelasRepository: Repository<Course>;
-  @InjectRepository(LogbookMentor)
-  private readonly logBookMentorRepository: Repository<LogbookMentor>;
+  @InjectRepository(MentorLogbook)
+  private readonly logBookMentorRepository: Repository<MentorLogbook>;
   @InjectRepository(SessionProgress)
   private readonly progresPertemuanRepository: Repository<SessionProgress>;
   @InjectRepository(Quiz)

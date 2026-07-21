@@ -25,7 +25,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { Technology } from 'src/entities/technology.entity';
 import { Mentorings } from 'src/entities/mentoring.entity';
 import { Registration } from 'src/entities/registration.entity';
-import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
+import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { Installment } from 'src/entities/installment.entity';
 import { CourseQuestions } from 'src/entities/course_question.entity';
 import { ProgramBenefits } from 'src/entities/course_benefit.entity';
@@ -60,7 +60,7 @@ import { QuestionsModule } from 'src/questions/questions.module';
       Mentorings,
       Registration,
       WeekProgress,
-      LogbookMentor,
+      MentorLogbook,
       CourseQuestions,
       ProgramBenefits,
       CourseFlow,

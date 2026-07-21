@@ -18,19 +18,19 @@
   formData: {
     icon: '',
     title: { id: '', en: '', ja: '' },
-    text: { id: '', en: '', ja: '' },
+    description: { id: '', en: '', ja: '' },
     no: ''
   },
   formErrors: {
     icon: '',
     title: { id: '', en: '', ja: '' },
-    text: { id: '', en: '', ja: '' },
+    description: { id: '', en: '', ja: '' },
     no: ''
   },
   formValid: {
     icon: false,
     title: { id: false, en: false, ja: false },
-    text: { id: false, en: false, ja: false },
+    description: { id: false, en: false, ja: false },
     no: false
   },
 
@@ -129,16 +129,16 @@
           type='submit'
           :disabled='!canSubmit() || loading'
           :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           <span x-show="loading" class="loading loading-spinner loading-sm"></span>
           <span x-show="!loading">Create</span>
         </button>
         <a
           href='/benefit'
-        :disabled='loading'
-        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
+          :disabled='loading'
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100'"
+          class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white transition'>
           Cancel
         </a>
       </div>

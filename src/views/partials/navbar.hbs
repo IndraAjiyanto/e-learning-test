@@ -974,7 +974,7 @@ isProgramActive() {
                               >
                             <div class='w-[56px] h-[56px] rounded-full bg-[#70B4E3] flex-shrink-0 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:bg-[#5CA5D7] transition-all duration-300'
                     >
-                      <img :src="/kat.icon" class='w-7 h-7 object-contain' alt='' />
+                      <img :src="kat.icon ? (kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon) : ''" class='w-7 h-7 object-contain' alt='' />
                     </div>
                             <div class='ml-4 flex-1'>
                       <p

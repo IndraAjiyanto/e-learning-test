@@ -6,7 +6,7 @@
      * STATE
      * ============================================================ */
 
-    previewUrl: `{{category.icon}}` || null,
+    previewUrl: `{{category.icon}}` ? (`{{category.icon}}`.startsWith('/') ? `{{category.icon}}` : '/' + `{{category.icon}}`) : null,
     errorMessage: '',
     isValid: true,
     fileName: `{{category.icon}}` ? 'Current Icon' : '',
@@ -36,13 +36,13 @@
         ja: `{{category.for.ja}}`
       },
       courseTypes: [],
-      info_id: {{{json category.info_id}}} || [''],
-      info_en: {{{json category.info_en}}} || [''],
-      info_ja: {{{json category.info_ja}}} || [''],
+      info_id: {{#if category.info_id}}{{{json category.info_id}}}{{else}}['']{{/if}},
+      info_en: {{#if category.info_en}}{{{json category.info_en}}}{{else}}['']{{/if}},
+      info_ja: {{#if category.info_ja}}{{{json category.info_ja}}}{{else}}['']{{/if}},
       type: `{{category.type}}`,
     },
 
-    selectedJenisKelas: {{{json category.courseTypes}}} || [],
+    selectedJenisKelas: {{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}},
     searchJenisKelas: '',
     showJenisKelasDropdown: false,
     availableJenisKelas: {{{json courseTypes}}},
@@ -80,10 +80,10 @@
       text:      { id: false, en: false, ja: false },
       contact: false,
       for:       { id: false, en: false, ja: false },
-      courseTypes: ({{{json category.courseTypes}}} || []).length > 0,
-      info_id: {{{json category.info_id}}} && {{{json category.info_id}}}.some(info => info.trim()),
-      info_en: {{{json category.info_en}}} && {{{json category.info_en}}}.some(info => info.trim()),
-      info_ja: {{{json category.info_ja}}} && {{{json category.info_ja}}}.some(info => info.trim()),
+      courseTypes: ({{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}}).length > 0,
+      info_id: ({{#if category.info_id}}{{{json category.info_id}}}{{else}}[]{{/if}}).some(info => info.trim()),
+      info_en: ({{#if category.info_en}}{{{json category.info_en}}}{{else}}[]{{/if}}).some(info => info.trim()),
+      info_ja: ({{#if category.info_ja}}{{{json category.info_ja}}}{{else}}[]{{/if}}).some(info => info.trim()),
       type: true,
     },
 
@@ -97,7 +97,7 @@
       text:      { id: false, en: false, ja: false },
       contact: false,
       for:       { id: false, en: false, ja: false },
-      courseTypes: ({{{json category.courseTypes}}} || []).length > 0,
+      courseTypes: ({{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}}).length > 0,
       info_id: true,
       info_en: true,
       info_ja: true,
@@ -246,7 +246,7 @@ case 'contact':
           this.formErrors.for[lang] = '';
           break;
 
-        case 'jenis_kelas':
+        case 'courseType':
           this.formValid.courseTypes = Array.isArray(value) && value.length > 0;
           this.formErrors.courseTypes = '';
           break;
@@ -261,7 +261,7 @@ case 'contact':
       if (!this.selectedJenisKelas.some(s => s.id === jk.id)) {
         this.selectedJenisKelas.push(jk);
         this.formData.courseTypes = this.selectedJenisKelas.map(s => s.id);
-        this.validateField('jenis_kelas', this.formData.courseTypes);
+        this.validateField('courseType', this.formData.courseTypes);
       }
       this.searchJenisKelas = '';
       this.showJenisKelasDropdown = false;
@@ -270,7 +270,7 @@ case 'contact':
     removeJenisKelas(id) {
       this.selectedJenisKelas = this.selectedJenisKelas.filter(s => s.id !== id);
       this.formData.courseTypes = this.selectedJenisKelas.map(s => s.id);
-      this.validateField('jenis_kelas', this.formData.courseTypes);
+      this.validateField('courseType', this.formData.courseTypes);
     },
 
     get filteredJenisKelas() {
@@ -384,7 +384,7 @@ case 'contact':
           type='submit'
           :disabled='!canSubmit() || loading'
           :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           <span
             x-show='loading'
@@ -395,7 +395,7 @@ case 'contact':
         <a
           href='/category/{{category.id}}'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
+          class='px-6 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 transition'
         >
           Cancel
         </a>

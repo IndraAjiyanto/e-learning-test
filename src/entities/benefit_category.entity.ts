@@ -33,7 +33,7 @@ export class BenefitCategory {
   @ManyToOne(() => Category, (category) => category.benefit_category, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'kategoriId' })
+  @JoinColumn({ name: 'categoryId' })
   @Exclude()
   category: Category;
 }

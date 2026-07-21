@@ -1,0 +1,156 @@
+{{> sub_partials/session/logbook_tab/header}}
+
+{{> sub_partials/session/logbook_tab/table}}
+
+{{> sub_partials/session/logbook_tab/modal_information}}
+
+{{> sub_partials/session/logbook_tab/pagination}}
+
+<script>
+  // Alpine.js Component: Logbook Table
+  function logbookData() {
+    return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+      searchInput: "",
+      search: "",
+      pageNumber: 0,
+      size: 5,
+      amount: 0,
+
+      showModal: false,
+      selectedLogbook: null,
+
+            async fetchLogBook() {
+      const res = await fetch('/session/logbook/{{session.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
+   
+      get filteredData() {
+        let filtered = this.data.filter(l =>
+          (
+            `${l.activity} ${l.activity_details} ${l.obstacles} ${l.other_documentation} ${l.user?.username}`
+          ).toLowerCase()
+          .includes(this.search.toLowerCase())
+        );
+
+        this.amount = filtered.length;
+
+   const start = this.pageNumber * this.size;
+      return filtered.slice(start, start + this.size);
+      },
+
+      // ============================
+      // EXPORT EXCEL
+      // ============================
+      exportExcel() {
+        try {
+          const filtered = this.data.filter(l =>
+            (
+              `${l.activity} ${l.activity_details} ${l.obstacles}`
+            )
+              .toLowerCase()
+              .includes(this.search.toLowerCase())
+          );
+
+          const dataToExport = filtered.map((log, index) => ({
+            No: index + 1,
+            Activity: log.activity || "-",
+            Details: log.activity_details || "-",
+            Obstacle: log.obstacles || "-",
+            Documentation: log.dokumentasi || "-",
+            AdditionalDocumentation: log.other_documentation || "-",
+            Program: log.session?.weeks?.course?.name || "-",
+            User: log.user?.username || "-",
+            Status:
+              log.proses === "acc"
+                ? "Approved"
+                : log.proses === "proces"
+                ? "Process"
+                : "Rejected",
+            Date: this.formatDate(log.createdAt)
+          }));
+
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+          ws["!cols"] = [
+            { wch: 5 },
+            { wch: 30 },
+            { wch: 50 },
+            { wch: 40 },
+            { wch: 60 },
+            { wch: 25 },
+            { wch: 20 },
+            { wch: 12 },
+            { wch: 20 }
+          ];
+
+          XLSX.utils.book_append_sheet(wb, ws, "Logbook");
+
+          XLSX.writeFile(
+            wb,
+            `Logbook_User_${new Date().toISOString().slice(0, 10)}.xlsx`
+          );
+        } catch (error) {
+          alert("Failed to export data to Excel");
+        }
+      },
+
+      // ============================
+      // DATE FORMATTER
+      // ============================
+      formatDate(date) {
+        if (!date) return "-";
+        return new Date(date).toLocaleDateString("id-ID", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      },
+
+      // ============================
+      // PAGINATION
+      // ============================
+      pages() {
+        return Array.from({ length: this.pageCount() });
+      },
+
+      pageCount() {
+        return Math.ceil(this.amount / this.size);
+      },
+
+      nextPage() {
+        if (this.pageNumber < this.pageCount() - 1) {
+          this.pageNumber++;
+        }
+      },
+
+      prevPage() {
+        if (this.pageNumber > 0) {
+          this.pageNumber--;
+        }
+      },
+
+      viewPage(index) {
+        this.pageNumber = index;
+      },
+
+      // ============================
+      // MODAL HANDLER
+      // ============================
+      openModal(id) {
+        this.selectedLogbook = this.data.find(l => l.id == id);
+        this.showModal = true;
+      },
+
+      closeModal() {
+        this.showModal = false;
+        this.selectedLogbook = null;
+      }
+    };
+  }
+</script>

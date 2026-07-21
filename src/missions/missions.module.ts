@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Mission } from '../entities/mision.entity';
+import { Mission } from '../entities/mission.entity';
 import { MissionService } from './missions.service';
 import { MissionController } from './mission.controller';
 

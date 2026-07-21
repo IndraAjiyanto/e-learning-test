@@ -16,10 +16,10 @@ export class Portofolios {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb', { name: 'gambar' })
+  @Column('jsonb', { name: 'image' })
   image: string[];
 
-  @Column({ name: 'judul' })
+  @Column({ name: 'title' })
   title: string;
 
   @Column({ type: 'text' })
@@ -28,7 +28,7 @@ export class Portofolios {
   @Column({ type: 'text' })
   content_html: string;
 
-  @Column({ name: 'deskripsi' })
+  @Column({ name: 'description' })
   description: string;
 
   @Column()
@@ -51,7 +51,7 @@ export class Portofolios {
   user: User;
 
   @ManyToOne(() => Course, (course) => course.portofolios, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'kelasId' })
+  @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: Course;
 }

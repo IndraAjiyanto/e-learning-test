@@ -39,7 +39,7 @@
           </div>
           <div>
             <h3 class='text-2xl font-extrabold text-gray-900 mb-2'>
-              {{#if benefit_1.judul}}{{getByLang benefit_1.judul lang}}{{else}}Job/Internship Placement{{/if}}
+              {{#if benefit_1.title}}{{getByLang benefit_1.title lang}}{{else}}Job/Internship Placement{{/if}}
             </h3>
             <p class='text-gray-700 text-lg leading-relaxed'>
               {{#if benefit_1.text}}{{getByLang benefit_1.text lang}}{{else}}Get the opportunity for job or internship placement through our hiring partner network after completing the bootcamp. We’ll help you start your career with strong industry connections.{{/if}}
@@ -61,7 +61,7 @@
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{#if benefit_2.judul}}{{getByLang benefit_2.judul lang}}{{else}}Capstone Project{{/if}}
+            {{#if benefit_2.title}}{{getByLang benefit_2.title lang}}{{else}}Capstone Project{{/if}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
             {{#if benefit_2.text}}{{getByLang benefit_2.text lang}}{{else}}Apply everything you’ve learned through a real-world capstone project that reflects real industry challenges — a strong proof of your technical and problem-solving skills.{{/if}}
@@ -81,7 +81,7 @@
         </div>
         <div>
           <h3 class='text-xl font-bold text-gray-900 mb-2'>
-            {{#if benefit_3.judul}}{{getByLang benefit_3.judul lang}}{{else}}Portfolio Building{{/if}}
+            {{#if benefit_3.title}}{{getByLang benefit_3.title lang}}{{else}}Portfolio Building{{/if}}
           </h3>
           <p class='text-gray-600 leading-relaxed'>
             {{#if benefit_3.text}}{{getByLang benefit_3.text lang}}{{else}}Build a powerful portfolio showcasing your best work and projects throughout the bootcamp — your professional identity and key to standing out in the job market.{{/if}}
@@ -95,28 +95,28 @@
       <img
         data-animate="scale-up"
         data-delay="100"
-        src='{{#if gambar_benefit_1.gambar}}{{gambar_benefit_1.gambar}}{{else}}https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800{{/if}}'
+        src='{{#if benefit_images_1.image}}{{benefit_images_1.image}}{{else}}https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800{{/if}}'
         class='rounded-2xl shadow-2xl col-span-2 h-64 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Teamwork'
       />
       <img
         data-animate="scale-up"
         data-delay="100"
-        src='{{#if gambar_benefit_2.gambar}}{{gambar_benefit_2.gambar}}{{else}}https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800{{/if}}'
+        src='{{#if benefit_images_2.image}}{{benefit_images_2.image}}{{else}}https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800{{/if}}'
         class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Laptop Work'
       />
       <img
         data-animate="scale-up"
         data-delay="100"
-        src='{{#if gambar_benefit_3.gambar}}{{gambar_benefit_3.gambar}}{{else}}https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800{{/if}}'
+        src='{{#if benefit_images_3.image}}{{benefit_images_3.image}}{{else}}https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800{{/if}}'
         class='rounded-2xl shadow-2xl h-48 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Meeting'
       />
       <img
         data-animate="scale-up"
         data-delay="100"
-        src='{{#if gambar_benefit_4.gambar}}{{gambar_benefit_4.gambar}}{{else}}https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800{{/if}}'
+        src='{{#if benefit_images_4.image}}{{benefit_images_4.image}}{{else}}https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800{{/if}}'
         class='rounded-2xl shadow-2xl col-span-2 h-60 object-cover border-4 border-white hover:scale-105 transition-transform duration-300'
         alt='Coding'
       />

@@ -58,7 +58,7 @@
                     {{t "test.detailProgram.installment.chooseInstallmentPeriod"}}
                   </label>
                   <div class='grid grid-cols-3 gap-2'>
-                    {{#each cicilan}}
+                    {{#each installments}}
                       <button
                         @click='installmentMonths = {{this.bulan}}'
                         :class="installmentMonths === {{this.bulan}} ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 border-gray-300'"

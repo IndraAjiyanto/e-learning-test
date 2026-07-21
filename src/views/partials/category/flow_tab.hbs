@@ -144,7 +144,7 @@
     
     get filteredData() {
       let filtered = this.data.filter(f =>
-        (`${f.judul} ${f.description} ${f.number}`).toLowerCase()
+        (`${f.title} ${f.description} ${f.number}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
   this.amount = filtered.length;

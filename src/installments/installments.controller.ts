@@ -20,7 +20,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 @UseGuards(AuthenticatedGuard)
 @Controller('installment')
 export class InstallmentsController {
-  constructor(private readonly cicilanService: InstallmentsService) {}
+  constructor(private readonly installmentsService: InstallmentsService) {}
 
   @Roles('super_admin')
   @Get('formCreate/:courseId')
@@ -29,7 +29,7 @@ export class InstallmentsController {
     @Res() res: Response,
     @Param('courseId') courseId: number,
   ) {
-    const availableMonths = await this.cicilanService.findNo(courseId);
+    const availableMonths = await this.installmentsService.findNo(courseId);
     res.render('super_admin/installments/create', { user: req.user, courseId, availableMonths });
   }
 
@@ -40,8 +40,8 @@ export class InstallmentsController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const installments = await this.cicilanService.findOne(id);
-    const availableMonths = await this.cicilanService.findNo(installments.course.id);
+    const installments = await this.installmentsService.findOne(id);
+    const availableMonths = await this.installmentsService.findNo(installments.course.id);
     res.render('super_admin/installments/edit', { user: req.user, installments, availableMonths });
   }
 
@@ -65,7 +65,7 @@ export class InstallmentsController {
       createCicilanDto.courseId = Number(courseId);
       createCicilanDto.month = Number(createCicilanDto.month) as 3 | 6 | 12;
 
-      await this.cicilanService.create(createCicilanDto);
+      await this.installmentsService.create(createCicilanDto);
       req.flash('success', 'Installment created successfully');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -95,11 +95,11 @@ export class InstallmentsController {
         updateCicilanDto.month = Number(updateCicilanDto.month) as 3 | 6 | 12;
       }
 
-      const installments = await this.cicilanService.update(id, updateCicilanDto);
+      const installments = await this.installmentsService.update(id, updateCicilanDto);
       req.flash('success', 'Installment updated successfully');
       res.redirect(`/program/detail/program/admin/${installments.course.id}`);
     } catch (error: any) {
-      const installments = await this.cicilanService.findOne(id);
+      const installments = await this.installmentsService.findOne(id);
       req.flash('error', error.message || 'Failed to update installment');
       res.redirect(`/program/detail/program/admin/${installments.course.id}`);
     }
@@ -113,13 +113,13 @@ export class InstallmentsController {
     @Res() res: Response,
   ) {
     try {
-      const installments = await this.cicilanService.findOne(id);
+      const installments = await this.installmentsService.findOne(id);
       const courseId = installments.course.id;
-      await this.cicilanService.remove(id);
+      await this.installmentsService.remove(id);
       req.flash('success', 'Installment deleted successfully');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
-      const installments = await this.cicilanService.findOne(id);
+      const installments = await this.installmentsService.findOne(id);
       const courseId = installments.course.id;
       req.flash('error', error.message || 'Failed to delete installment');
       res.redirect(`/program/detail/program/admin/${courseId}`);

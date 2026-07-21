@@ -19,12 +19,12 @@
           
           <!-- Thumbnail -->
           <div class="w-full bg-[#EAF4F9] overflow-hidden relative flex-shrink-0 flex items-center justify-center" style="height: 225px;">
-            <div x-show="!course.gambar" class="flex flex-col items-center justify-center text-[#6EB6E5]/70">
+            <div x-show="!course.image" class="flex flex-col items-center justify-center text-[#6EB6E5]/70">
               <i class="fa-solid fa-image text-[40px] mb-2"></i>
               <span class="text-[13px] font-semibold tracking-wide">No Image Available</span>
             </div>
-            <div x-show="course.gambar" class="absolute inset-0 w-full h-full">
-              <img :src="course.gambar ? course.gambar : ''" alt="Class Thumbnail" @error="$event.target.src = 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=800&auto=format&fit=crop'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+            <div x-show="course.image" class="absolute inset-0 w-full h-full">
+              <img :src="course.image ? course.image : ''" alt="Class Thumbnail" @error="$event.target.src = 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=800&auto=format&fit=crop'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
             </div>
           </div>
           
@@ -39,7 +39,7 @@
               </div>
               <div class="flex items-center gap-1.5 bg-white/70 backdrop-blur-sm border border-white/50 text-[#0B1F3B] px-3 py-1 rounded-[6px] text-[12px] font-semibold">
                 <i class="fa-regular fa-clock text-[#6EB6E5] text-[12px]"></i>
-                <span x-text="course.durasi || '1 Day'"></span>
+                <span x-text="course.duration || '1 Day'"></span>
               </div>
               <div class="flex items-center gap-1.5 bg-white/70 backdrop-blur-sm border border-white/50 text-[#0B1F3B] px-3 py-1 rounded-[6px] text-[12px] font-semibold">
                 <i class="fa-solid fa-location-dot text-[#6EB6E5] text-[12px]"></i>
@@ -47,7 +47,7 @@
               </div>
               <div class="flex items-center gap-1.5 bg-white/70 backdrop-blur-sm border border-white/50 text-[#0B1F3B] px-3 py-1 rounded-[6px] text-[12px] font-semibold">
                 <i class="fa-solid fa-users text-[#6EB6E5] text-[12px]"></i>
-                <span x-text="(course.kuota || 100) + ' Students'"></span>
+                <span x-text="(course.quota || 100) + ' Students'"></span>
               </div>
             </div>
             

@@ -28,7 +28,7 @@ export class CreatePortfolioDto {
   content_html: string;
 
   @IsArray()
-  teknologi: string[];
+  technologies: string[];
 
   @IsNumber()
   userId: number;

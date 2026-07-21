@@ -1,7 +1,6 @@
-<div
-  class='py-10 w-full mx-auto'
-  x-data="{
-        previewUrl: null,
+<script>
+function categoryCreateData() {
+  return {
         errorMessage: '',
         isValid: true,
         fileName: '',
@@ -17,7 +16,7 @@
           text: { id: '', en: '', ja: '' },
           contact: '',
           for: { id: '', en: '', ja: '' },
-          jenis_kelas: [],
+          courseType: [],
           info_id: [''],
           info_en: [''],
           info_ja: [''],
@@ -29,7 +28,7 @@
           text: { id: '', en: '', ja: '' },
           contact: '',
           for: { id: '', en: '', ja: '' },
-          jenis_kelas: '',
+          courseType: '',
           info_id: '',
           info_en: '',
           info_ja: '',
@@ -41,7 +40,7 @@
           text: { id: false, en: false, ja: false },
           contact: false,
           for: { id: false, en: false, ja: false },
-          jenis_kelas: false,
+          courseType: false,
           info_id: false,
           info_en: false,
           info_ja: false,
@@ -54,7 +53,7 @@
           text: { id: false, en: false, ja: false },
           contact: false,
           for: { id: false, en: false, ja: false },
-          jenis_kelas: false,
+          courseType: false,
           info: false,
           type: false
         },
@@ -63,7 +62,7 @@
         searchJenisKelas: '',
         selectedJenisKelas: [],
         showJenisKelasDropdown: false,
-        availableJenisKelas: {{json courseTypes}},
+        availableJenisKelas: {{{json courseTypes}}},
         get filteredJenisKelas() {
           return this.availableJenisKelas.filter(jk =>
             jk.name_clasess_type.toLowerCase().includes(this.searchJenisKelas.toLowerCase()) &&
@@ -73,16 +72,16 @@
         selectJenisKelas(jk) {
           if (!this.selectedJenisKelas.some(selected => selected.id === jk.id)) {
             this.selectedJenisKelas.push(jk);
-            this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
-            this.validateField('jenis_kelas', this.formData.jenis_kelas);
+            this.formData.courseType = this.selectedJenisKelas.map(s => s.id);
+            this.validateField('courseType', this.formData.courseType);
           }
           this.searchJenisKelas = '';
           this.showJenisKelasDropdown = false;
         },
         removeJenisKelas(jkId) {
           this.selectedJenisKelas = this.selectedJenisKelas.filter(s => s.id !== jkId);
-          this.formData.jenis_kelas = this.selectedJenisKelas.map(s => s.id);
-          this.validateField('jenis_kelas', this.formData.jenis_kelas);
+          this.formData.courseType = this.selectedJenisKelas.map(s => s.id);
+          this.validateField('courseType', this.formData.courseType);
         },
 
         validateImage(file) {
@@ -216,10 +215,10 @@
               this.formErrors.for[lang] = '';
               this.formValid.for[lang] = value.trim().length > 0;
               break;
-            case 'jenis_kelas':
+            case 'courseType':
               // Optional array
-              this.formErrors.jenis_kelas = '';
-              this.formValid.jenis_kelas = Array.isArray(value) && value.length > 0;
+              this.formErrors.courseType = '';
+              this.formValid.courseType = Array.isArray(value) && value.length > 0;
               break;
             case 'info_id':
               // Handled by validateInfo
@@ -266,7 +265,13 @@
           };
           return Object.values(this.formErrors).some(error => checkObject(error));
         }
-      }"
+      };
+}
+</script>
+
+<div
+  class='py-10 w-full mx-auto'
+  x-data="categoryCreateData()"
 >
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Category</h2>
@@ -308,7 +313,7 @@
           type='submit'
           :disabled='!canSubmit() || loading'
           :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           <span
             x-show='loading'
@@ -319,7 +324,7 @@
         <a
           href='/category'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
-          class='px-6 py-2 rounded-lg border border-gray-300 transition'
+          class='px-6 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 transition'
         >
           Cancel
         </a>

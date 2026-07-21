@@ -24,7 +24,7 @@
           @click.away='showDropdown = false'
         >
           <label
-            for='kategori_blog'
+            for='blog_categories'
             class='block text-sm font-medium text-gray-700 mb-2'
           >Category</label>
           <div class='relative'>
@@ -63,8 +63,8 @@
 
             <input
               type='hidden'
-              id='kategori_blog'
-              name='kategori_blog'
+              id='blog_categories'
+              name='blog_categories'
               x-model='selectedCategory ? selectedCategory.id : ""'
               required
             />

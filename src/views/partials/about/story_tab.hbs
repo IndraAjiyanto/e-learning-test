@@ -1,0 +1,119 @@
+<!-- Story Section -->
+<div x-transition:enter='transition ease-out duration-300' x-transition:enter-start='opacity-0 transform translate-y-4'
+  x-transition:enter-end='opacity-100 transform translate-y-0'
+  x-data="{ videoUrl: '{{#if social.length}}{{social.[0].video_youtube}}{{else}}https://youtu.be/Ft3UMrgTDpc?si=SkBf4VNA-qL5PG4S{{/if}}' }">
+  <div class='mb-6 sm:mb-8'>
+    <h1 class='text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'>{{t
+      "test.about.ourStory.tittle"}}</h1>
+    <p class='text-base sm:text-lg lg:text-xl text-slate-600 leading-relaxed font-inter'>{{t
+      "test.about.ourStory.description"}}</p>
+  </div>
+
+  <div class='prose prose-lg max-w-none'>
+    {{#if paragraphs.length}}
+    {{#each paragraphs}}
+    <p class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'>
+      {{getByLang this.paragraphs ../lang}}
+    </p>
+    {{/each}}
+
+    {{else}}
+    <p class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'>
+
+      Kesatria Academy is an educational service focused on developing
+      superior digital talent in the information technology sector. Kesatria
+      Academy's services are designed to address real industry needs while
+      supporting digital transformation.
+    </p>
+    <p class='text-sm sm:text-base text-justify text-slate-700 leading-relaxed mb-4 sm:mb-6 font-inter'>
+      Kesatria Academy believes that technology education goes beyond
+      theoretical mastery, but also fosters practical skills, a professional
+      work ethic, and a globally recognized portfolio.
+    </p>
+    {{/if}}
+    <div class='clear-both'></div>
+
+  </div>
+
+  <!-- YouTube Video -->
+  <div class='mt-8 sm:mt-10 lg:mt-12 mb-8 sm:mb-10 lg:mb-12'>
+    <div class='max-w-4xl mx-auto'>
+      <div class='aspect-video bg-slate-200 rounded-lg overflow-hidden shadow-lg'>
+        <iframe width='100%' height='100%' x-bind:src="videoUrl.includes('youtube.com/watch?v=') 
+                ? videoUrl.replace('watch?v=', 'embed/') 
+                : videoUrl.includes('youtu.be/') 
+                  ? videoUrl.replace('youtu.be/', 'youtube.com/embed/') 
+                  : videoUrl" title='Kesatria Academy Introduction' frameborder='0'
+          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+          allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div class='mt-8 sm:mt-10 lg:mt-12'>
+    <h3 class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-4 sm:mb-6 font-montserrat'>{{t
+      "test.about.ourStory.commitment"}}</h3>
+    <div class='grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6'>
+      {{#each commitment}}
+      <div
+        class='flex flex-col items-center text-center p-4 sm:p-5 lg:p-12 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 shadow-lg hover:-translate-y-1 hover:shadow-xl'>
+
+        <div
+          class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-full flex items-center justify-center mb-4'>
+          <i class='{{{computeIcon this.icon}}} text-white text-sm sm:text-base'></i>
+        </div>
+
+        <h4 class='font-semibold text-sm sm:text-base text-slate-800 mb-2 font-montserrat'>
+          {{getByLang judul ../lang}}
+        </h4>
+
+        <div class='w-10 h-1 bg-slate-800 rounded-full mb-3'></div>
+
+        <p class='text-slate-600 text-xs sm:text-sm font-inter'>
+          {{getByLang description ../lang}}
+        </p>
+
+      </div>
+      {{else}}
+      <div
+        class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1'>
+        <div
+          class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'>
+          <i class='fas fa-star text-white text-sm sm:text-base'></i>
+        </div>
+        <div>
+          <h4 class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'>Quality Education
+          </h4>
+          <p class='text-slate-600 text-xs sm:text-sm font-inter'>Committed to
+            delivering top-notch learning experiences.</p>
+        </div>
+      </div>
+      <div
+        class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1'>
+        <div
+          class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'>
+          <i class='fas fa-users text-white text-sm sm:text-base'></i>
+        </div>
+        <div>
+          <h4 class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'>Community Focus
+          </h4>
+          <p class='text-slate-600 text-xs sm:text-sm font-inter'>Building
+            strong learning communities and networks.</p>
+        </div>
+      </div>
+      <div
+        class='flex items-start space-x-3 sm:space-x-4 p-4 sm:p-5 lg:p-6 bg-white border border-slate-200 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1'>
+        <div
+          class='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center flex-shrink-0'>
+          <i class='fas fa-rocket text-white text-sm sm:text-base'></i>
+        </div>
+        <div>
+          <h4 class='font-semibold text-sm sm:text-base text-slate-800 mb-1 sm:mb-2 font-montserrat'>Innovation</h4>
+          <p class='text-slate-600 text-xs sm:text-sm font-inter'>Embracing
+            cutting-edge technologies and methodologies.</p>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</div>

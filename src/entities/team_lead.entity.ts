@@ -14,13 +14,13 @@ export class TeamLead {
   @Column()
   profile: string;
 
-  @Column({ name: 'nama' })
+  @Column({ name: 'name' })
   name: string;
 
-  @Column('jsonb', { name: 'posisi', nullable: true })
+  @Column('jsonb', { name: 'position', nullable: true })
   position: string[];
 
-  @Column('jsonb', { name: 'deskripsi', nullable: true })
+  @Column('jsonb', { name: 'description', nullable: true })
   description: string[];
 
   @Column()

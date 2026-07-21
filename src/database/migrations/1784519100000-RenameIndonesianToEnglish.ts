@@ -5,14 +5,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * ke bahasa Inggris TANPA menghapus data.
  *
  * Menggantikan 2 migration lama yang rusak:
- *   - 1752752288000-MigrateAboutToEnglish.ts   (salah nama tabel: "about" belum ada, masih "tentang")
+ *   - 1752752288000-MigrateAboutToEnglish.ts   (salah nama tabel: "about" belum ada, masih "about")
  *   - 1752752300000-MigrateAllEntitiesToEnglish.ts (timestamp salah tahun, bug no-op rename, tidak lengkap)
  *
  * Kondisi awal database = Initial + RemoveBlog + addGallery
- *   + removeCommentandLikesTables + AddImgUrlToTeknologi.
+ *   + removeCommentandLikesTables + AddImgUrlToTechnologies.
  *
  * Disesuaikan 1:1 dengan entity di src/entities/. Tabel/kolom yang oleh
- * entity SENGAJA dipertahankan memakai nama lama (mis. @Entity('sertifikat'),
+ * entity SENGAJA dipertahankan memakai nama lama (mis. @Entity('certificates'),
  * @JoinColumn({ name: 'kelasId' })) TIDAK di-rename di sini.
  *
  * CATATAN DATA: nilai enum "kategori"."type" berubah:
@@ -59,20 +59,20 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     await queryRunner.query(`DROP TABLE IF EXISTS "portofolios" CASCADE`);
 
     // ================= 1. RENAME TABEL =================
-    await queryRunner.query(`ALTER TABLE "visi" RENAME TO "visions"`);
-    await queryRunner.query(`ALTER TABLE "misi" RENAME TO "mission"`);
-    await queryRunner.query(`ALTER TABLE "tentang" RENAME TO "about"`);
-    await queryRunner.query(`ALTER TABLE "paragraf" RENAME TO "paragraph"`);
-    await queryRunner.query(`ALTER TABLE "kerja_sama" RENAME TO "collaborations"`);
-    await queryRunner.query(`ALTER TABLE "gambar_benefit" RENAME TO "image_benefit"`);
+    await queryRunner.query(`ALTER TABLE "visions" RENAME TO "visions"`);
+    await queryRunner.query(`ALTER TABLE "missions" RENAME TO "mission"`);
+    await queryRunner.query(`ALTER TABLE "about" RENAME TO "about"`);
+    await queryRunner.query(`ALTER TABLE "paragraphs" RENAME TO "paragraph"`);
+    await queryRunner.query(`ALTER TABLE "collaborations" RENAME TO "collaborations"`);
+    await queryRunner.query(`ALTER TABLE "image_benefit" RENAME TO "image_benefit"`);
     await queryRunner.query(`ALTER TABLE "kategori" RENAME TO "category"`);
     await queryRunner.query(`ALTER TABLE "jenis_kelas" RENAME TO "course_type"`);
     await queryRunner.query(`ALTER TABLE "kelas" RENAME TO "course"`);
-    await queryRunner.query(`ALTER TABLE "alur_kelas" RENAME TO "course_flow"`);
-    await queryRunner.query(`ALTER TABLE "benefit_kelas" RENAME TO "program_benefits"`);
-    await queryRunner.query(`ALTER TABLE "pertanyaan_umum" RENAME TO "faqs"`);
+    await queryRunner.query(`ALTER TABLE "course_flows" RENAME TO "course_flow"`);
+    await queryRunner.query(`ALTER TABLE "course_benefits" RENAME TO "program_benefits"`);
+    await queryRunner.query(`ALTER TABLE "faqs" RENAME TO "faqs"`);
     await queryRunner.query(`ALTER TABLE "mentor" RENAME TO "mentors"`);
-    await queryRunner.query(`ALTER TABLE "cicilan" RENAME TO "installment"`);
+    await queryRunner.query(`ALTER TABLE "installments" RENAME TO "installment"`);
     await queryRunner.query(`ALTER TABLE "pembayaran" RENAME TO "payments"`);
     await queryRunner.query(`ALTER TABLE "pendaftaran" RENAME TO "registrations"`);
     await queryRunner.query(`ALTER TABLE "minggu" RENAME TO "weeks"`);
@@ -104,21 +104,21 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     );
 
     // ================= 2. RENAME KOLOM =================
-    // visions (ex "visi")
-    await queryRunner.query(`ALTER TABLE "visions" RENAME COLUMN "visi" TO "visions"`);
+    // visions (ex "visions")
+    await queryRunner.query(`ALTER TABLE "visions" RENAME COLUMN "visions" TO "visions"`);
 
-    // mission (ex "misi")
-    await queryRunner.query(`ALTER TABLE "mission" RENAME COLUMN "misi_ke" TO "mission_order"`);
+    // mission (ex "missions")
+    await queryRunner.query(`ALTER TABLE "mission" RENAME COLUMN "missions_ke" TO "mission_order"`);
     await queryRunner.query(`ALTER TABLE "mission" RENAME COLUMN "isi" TO "items"`);
 
-    // about (ex "tentang")
+    // about (ex "about")
     await queryRunner.query(`ALTER TABLE "about" RENAME COLUMN "judul" TO "title"`);
     await queryRunner.query(`ALTER TABLE "about" RENAME COLUMN "gambar" TO "image"`);
 
-    // paragraph (ex "paragraf") — kolom "paragraf" dipertahankan entity
+    // paragraph (ex "paragraphs") — kolom "paragraphs" dipertahankan entity
     await queryRunner.query(`ALTER TABLE "paragraph" RENAME COLUMN "p_ke" TO "paragraphOrder"`);
 
-    // image_benefit (ex "gambar_benefit")
+    // image_benefit (ex "image_benefit")
     await queryRunner.query(`ALTER TABLE "image_benefit" RENAME COLUMN "gambar" TO "image"`);
 
     // value
@@ -190,17 +190,17 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     await queryRunner.query(`ALTER TABLE "course" RENAME COLUMN "kategoriId" TO "categoryId"`);
     await queryRunner.query(`ALTER TABLE "course" RENAME COLUMN "jenis_kelasId" TO "courseTypeId"`);
 
-    // course_flow (ex "alur_kelas")
+    // course_flow (ex "course_flows")
     await queryRunner.query(`ALTER TABLE "course_flow" RENAME COLUMN "alur_ke" TO "sequence"`);
     await queryRunner.query(`ALTER TABLE "course_flow" RENAME COLUMN "judul" TO "title"`);
     await queryRunner.query(`ALTER TABLE "course_flow" RENAME COLUMN "isi" TO "content"`);
     await queryRunner.query(`ALTER TABLE "course_flow" RENAME COLUMN "kelasId" TO "courseId"`);
 
-    // program_benefits (ex "benefit_kelas")
+    // program_benefits (ex "course_benefits")
     await queryRunner.query(`ALTER TABLE "program_benefits" RENAME COLUMN "isi" TO "description"`);
     await queryRunner.query(`ALTER TABLE "program_benefits" RENAME COLUMN "kelasId" TO "courseId"`);
 
-    // faqs (ex "pertanyaan_umum")
+    // faqs (ex "faqs")
     await queryRunner.query(`ALTER TABLE "faqs" RENAME COLUMN "pertanyaan" TO "question"`);
     await queryRunner.query(`ALTER TABLE "faqs" RENAME COLUMN "jawaban" TO "answer"`);
     await queryRunner.query(`ALTER TABLE "faqs" RENAME COLUMN "kategoriId" TO "categoryId"`);
@@ -212,7 +212,7 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     await queryRunner.query(`ALTER TABLE "alumni" RENAME COLUMN "posisi_sekarang" TO "currentPosition"`);
     await queryRunner.query(`ALTER TABLE "alumni" RENAME COLUMN "kelasId" TO "courseId"`);
 
-    // installment (ex "cicilan")
+    // installment (ex "installments")
     await queryRunner.query(`ALTER TABLE "installment" RENAME COLUMN "dp" TO "down_payment"`);
     await queryRunner.query(`ALTER TABLE "installment" RENAME COLUMN "harga" TO "price"`);
     await queryRunner.query(`ALTER TABLE "installment" RENAME COLUMN "bulan" TO "month"`);
@@ -221,7 +221,7 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     // payments (ex "pembayaran")
     await queryRunner.query(`ALTER TABLE "payments" RENAME COLUMN "proses" TO "process"`);
     await queryRunner.query(`ALTER TABLE "payments" RENAME COLUMN "kelasId" TO "courseId"`);
-    await queryRunner.query(`ALTER TABLE "payments" RENAME COLUMN "cicilanId" TO "installmentId"`);
+    await queryRunner.query(`ALTER TABLE "payments" RENAME COLUMN "installmentsId" TO "installmentId"`);
 
     // registrations (ex "pendaftaran")
     await queryRunner.query(`ALTER TABLE "registrations" RENAME COLUMN "proses" TO "process"`);
@@ -281,12 +281,12 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     await queryRunner.query(`ALTER TABLE "logbook" RENAME COLUMN "proses" TO "process"`);
     await queryRunner.query(`ALTER TABLE "logbook" RENAME COLUMN "pertemuanId" TO "sessionId"`);
 
-    // logbook_mentor
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "kegiatan" TO "activity"`);
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "rincian_kegiatan" TO "activity_detail"`);
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "dokumentasi" TO "documentation"`);
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "kendala" TO "obstacle"`);
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "pertemuanId" TO "sessionId"`);
+    // mentor_logbook
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "kegiatan" TO "activity"`);
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "rincian_kegiatan" TO "activity_detail"`);
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "dokumentasi" TO "documentation"`);
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "kendala" TO "obstacle"`);
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "pertemuanId" TO "sessionId"`);
 
     // biodata
     await queryRunner.query(`ALTER TABLE "biodata" RENAME COLUMN "nama_lengkap" TO "full_name"`);
@@ -303,14 +303,14 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     // Nama tipe enum mengikuti pola TypeORM: {tabel}_{kolom}_enum
     await queryRunner.query(`ALTER TYPE "public"."materi_jenis_file_enum" RENAME TO "material_filetype_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."jawaban_tugas_proses_enum" RENAME TO "answer_task_process_enum"`);
-    await queryRunner.query(`ALTER TYPE "public"."cicilan_bulan_enum" RENAME TO "installment_month_enum"`);
+    await queryRunner.query(`ALTER TYPE "public"."installments_bulan_enum" RENAME TO "installment_month_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."pembayaran_proses_enum" RENAME TO "payments_process_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."pendaftaran_proses_enum" RENAME TO "registrations_process_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."kelas_metode_enum" RENAME TO "course_method_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."kelas_proses_enum" RENAME TO "course_process_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."logbook_proses_enum" RENAME TO "logbook_process_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."absen_status_enum" RENAME TO "attendance_status_enum"`);
-    await queryRunner.query(`ALTER TYPE "public"."gambar_benefit_no_enum" RENAME TO "image_benefit_no_enum"`);
+    await queryRunner.query(`ALTER TYPE "public"."image_benefit_no_enum" RENAME TO "image_benefit_no_enum"`);
 
     // ================= 4. UBAH NILAI ENUM category.type =================
     // ('Special Program','Program') -> ('Special Program','Paid Program','Free Program')
@@ -339,14 +339,14 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     await queryRunner.query(`DROP TYPE "public"."category_type_enum_old"`);
 
     // ================= 3. KEMBALIKAN TIPE ENUM =================
-    await queryRunner.query(`ALTER TYPE "public"."image_benefit_no_enum" RENAME TO "gambar_benefit_no_enum"`);
+    await queryRunner.query(`ALTER TYPE "public"."image_benefit_no_enum" RENAME TO "image_benefit_no_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."attendance_status_enum" RENAME TO "absen_status_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."logbook_process_enum" RENAME TO "logbook_proses_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."course_process_enum" RENAME TO "kelas_proses_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."course_method_enum" RENAME TO "kelas_metode_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."registrations_process_enum" RENAME TO "pendaftaran_proses_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."payments_process_enum" RENAME TO "pembayaran_proses_enum"`);
-    await queryRunner.query(`ALTER TYPE "public"."installment_month_enum" RENAME TO "cicilan_bulan_enum"`);
+    await queryRunner.query(`ALTER TYPE "public"."installment_month_enum" RENAME TO "installments_bulan_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."answer_task_process_enum" RENAME TO "jawaban_tugas_proses_enum"`);
     await queryRunner.query(`ALTER TYPE "public"."material_filetype_enum" RENAME TO "materi_jenis_file_enum"`);
 
@@ -360,11 +360,11 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     await queryRunner.query(`ALTER TABLE "biodata" RENAME COLUMN "gender" TO "jenis_kelamin"`);
     await queryRunner.query(`ALTER TABLE "biodata" RENAME COLUMN "full_name" TO "nama_lengkap"`);
 
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "sessionId" TO "pertemuanId"`);
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "obstacle" TO "kendala"`);
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "documentation" TO "dokumentasi"`);
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "activity_detail" TO "rincian_kegiatan"`);
-    await queryRunner.query(`ALTER TABLE "logbook_mentor" RENAME COLUMN "activity" TO "kegiatan"`);
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "sessionId" TO "pertemuanId"`);
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "obstacle" TO "kendala"`);
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "documentation" TO "dokumentasi"`);
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "activity_detail" TO "rincian_kegiatan"`);
+    await queryRunner.query(`ALTER TABLE "mentor_logbook" RENAME COLUMN "activity" TO "kegiatan"`);
 
     await queryRunner.query(`ALTER TABLE "logbook" RENAME COLUMN "sessionId" TO "pertemuanId"`);
     await queryRunner.query(`ALTER TABLE "logbook" RENAME COLUMN "process" TO "proses"`);
@@ -409,7 +409,7 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     await queryRunner.query(`ALTER TABLE "registrations" RENAME COLUMN "courseId" TO "kelasId"`);
     await queryRunner.query(`ALTER TABLE "registrations" RENAME COLUMN "process" TO "proses"`);
 
-    await queryRunner.query(`ALTER TABLE "payments" RENAME COLUMN "installmentId" TO "cicilanId"`);
+    await queryRunner.query(`ALTER TABLE "payments" RENAME COLUMN "installmentId" TO "installmentsId"`);
     await queryRunner.query(`ALTER TABLE "payments" RENAME COLUMN "courseId" TO "kelasId"`);
     await queryRunner.query(`ALTER TABLE "payments" RENAME COLUMN "process" TO "proses"`);
 
@@ -501,9 +501,9 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     await queryRunner.query(`ALTER TABLE "about" RENAME COLUMN "title" TO "judul"`);
 
     await queryRunner.query(`ALTER TABLE "mission" RENAME COLUMN "items" TO "isi"`);
-    await queryRunner.query(`ALTER TABLE "mission" RENAME COLUMN "mission_order" TO "misi_ke"`);
+    await queryRunner.query(`ALTER TABLE "mission" RENAME COLUMN "mission_order" TO "missions_ke"`);
 
-    await queryRunner.query(`ALTER TABLE "visions" RENAME COLUMN "visions" TO "visi"`);
+    await queryRunner.query(`ALTER TABLE "visions" RENAME COLUMN "visions" TO "visions"`);
 
     // ================= 1. KEMBALIKAN NAMA TABEL =================
     await queryRunner.query(
@@ -534,19 +534,19 @@ export class RenameIndonesianToEnglish1784519100000 implements MigrationInterfac
     await queryRunner.query(`ALTER TABLE "weeks" RENAME TO "minggu"`);
     await queryRunner.query(`ALTER TABLE "registrations" RENAME TO "pendaftaran"`);
     await queryRunner.query(`ALTER TABLE "payments" RENAME TO "pembayaran"`);
-    await queryRunner.query(`ALTER TABLE "installment" RENAME TO "cicilan"`);
+    await queryRunner.query(`ALTER TABLE "installment" RENAME TO "installments"`);
     await queryRunner.query(`ALTER TABLE "mentors" RENAME TO "mentor"`);
-    await queryRunner.query(`ALTER TABLE "faqs" RENAME TO "pertanyaan_umum"`);
-    await queryRunner.query(`ALTER TABLE "program_benefits" RENAME TO "benefit_kelas"`);
-    await queryRunner.query(`ALTER TABLE "course_flow" RENAME TO "alur_kelas"`);
+    await queryRunner.query(`ALTER TABLE "faqs" RENAME TO "faqs"`);
+    await queryRunner.query(`ALTER TABLE "program_benefits" RENAME TO "course_benefits"`);
+    await queryRunner.query(`ALTER TABLE "course_flow" RENAME TO "course_flows"`);
     await queryRunner.query(`ALTER TABLE "course" RENAME TO "kelas"`);
     await queryRunner.query(`ALTER TABLE "course_type" RENAME TO "jenis_kelas"`);
     await queryRunner.query(`ALTER TABLE "category" RENAME TO "kategori"`);
-    await queryRunner.query(`ALTER TABLE "image_benefit" RENAME TO "gambar_benefit"`);
-    await queryRunner.query(`ALTER TABLE "collaborations" RENAME TO "kerja_sama"`);
-    await queryRunner.query(`ALTER TABLE "paragraph" RENAME TO "paragraf"`);
-    await queryRunner.query(`ALTER TABLE "about" RENAME TO "tentang"`);
-    await queryRunner.query(`ALTER TABLE "mission" RENAME TO "misi"`);
-    await queryRunner.query(`ALTER TABLE "visions" RENAME TO "visi"`);
+    await queryRunner.query(`ALTER TABLE "image_benefit" RENAME TO "image_benefit"`);
+    await queryRunner.query(`ALTER TABLE "collaborations" RENAME TO "collaborations"`);
+    await queryRunner.query(`ALTER TABLE "paragraph" RENAME TO "paragraphs"`);
+    await queryRunner.query(`ALTER TABLE "about" RENAME TO "about"`);
+    await queryRunner.query(`ALTER TABLE "mission" RENAME TO "missions"`);
+    await queryRunner.query(`ALTER TABLE "visions" RENAME TO "visions"`);
   }
 }

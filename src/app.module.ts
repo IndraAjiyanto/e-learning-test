@@ -27,10 +27,10 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { AlumniModule } from './alumni/alumni.module';
 import { CourseTypesModule } from './course_types/course_types.module';
-import { SertifikatModule } from './sertifikat/sertifikat.module';
+import { CertificatesModule } from './certificates/certificates.module';
 import { CollaborationsModule } from './collaborations/collaborations.module';
 import { CourseQuestionsModule } from './course_questions/course_questions.module';
-import { LogbookMentorModule } from './logbook_mentor/logbook_mentor.module';
+import { MentorLogbookModule } from './mentor_logbook/mentor_logbook.module';
 import { BenefitModule } from './benefit/benefit.module';
 import { MentorModule } from './mentor/mentor.module';
 import { CourseFlowsModule } from './course_flows/course_flows.module';
@@ -39,14 +39,14 @@ import { TeamModule } from './team/team.module';
 import { VisionsModule } from './visions/visions.module';
 import { SocialModule } from './social/social.module';
 import { InstallmentsModule } from './installments/installments.module';
-import { GambarBenefitModule } from './gambar_benefit/gambar_benefit.module';
+import { ImageBenefitModule } from './image_benefit/image_benefit.module';
 import { AboutModule } from './about/about.module';
-import { TeknologiModule } from './teknologi/teknologi.module';
+import { TechnologiesModule } from './technologies/technologies.module';
 import { TeamLeadModule } from './team_lead/team_lead.module';
 import { ValueModule } from './value/value.module';
 import { CommitmentModule } from './commitment/commitment.module';
 import { RegistrationsModule } from './registrations/registrations.module';
-import { ParagrafModule } from './paragraf/paragraf.module';
+import { ParagraphsModule } from './paragraphs/paragraphs.module';
 import { ContactModule } from './contact/contact.module';
 import { AwardModule } from './award/award.module';
 import { ExperienceModule } from './experience/experience.module';
@@ -110,10 +110,10 @@ import path from 'path';
     FaqsModule,
     AlumniModule,
     CourseTypesModule,
-    SertifikatModule,
+    CertificatesModule,
     CollaborationsModule,
     CourseQuestionsModule,
-    LogbookMentorModule,
+    MentorLogbookModule,
     BenefitModule,
     MentorModule,
     CourseFlowsModule,
@@ -122,14 +122,14 @@ import path from 'path';
     VisionsModule,
     SocialModule,
     InstallmentsModule,
-    GambarBenefitModule,
+    ImageBenefitModule,
     AboutModule,
-    TeknologiModule,
+    TechnologiesModule,
     TeamLeadModule,
     ValueModule,
     CommitmentModule,
     RegistrationsModule,
-    ParagrafModule,
+    ParagraphsModule,
     ContactModule,
     AwardModule,
     ExperienceModule,

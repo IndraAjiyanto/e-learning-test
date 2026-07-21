@@ -72,7 +72,7 @@ export class PaymentsController {
   }
 
   @Roles('user')
-  @Post(':userId/:courseId/:cicilanId')
+  @Post(':userId/:courseId/:installmentsId')
   @UseInterceptors(
     FileInterceptor('file', multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -83,7 +83,7 @@ export class PaymentsController {
     folder: 'payment',
   })
   async createPembayaranCicilan(
-    @Param('cicilanId') cicilanId: number,
+    @Param('installmentsId') installmentsId: number,
     @Param('userId') userId: number,
     @Param('courseId') courseId: number,
     @Body() createPembayaranDto: CreatePembayaranDto,
@@ -91,7 +91,7 @@ export class PaymentsController {
     @Req() req: Request,
   ) {
     try {
-      createPembayaranDto.cicilanId = cicilanId;
+      createPembayaranDto.installmentsId = installmentsId;
       createPembayaranDto.file = req.body.uploadedImageUrls?.[0];
       createPembayaranDto.courseId = courseId;
       createPembayaranDto.userId = userId;
@@ -161,7 +161,7 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
     @Req() req: Request,
   ) {
     const course = await this.pembayaransService.findKelas(courseId);
-    res.render('user/pembayaran', { user: req.user, course });
+    res.render('user/payment', { user: req.user, course });
   }
 
   @Roles('super_admin')
@@ -170,7 +170,7 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
     const pembayaran = await this.pembayaransService.findAll();
     const pendaftaran = await this.pembayaransService.findAllPendaftaran();
     const installments = await this.pembayaransService.findAllCicilan();
-    res.render('super_admin/pembayaran/index', {
+    res.render('super_admin/payments/index', {
       user: req.user,
       pembayaran,
       pendaftaran,
@@ -180,13 +180,13 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
 
   @Roles('super_admin')
   @Get(':pembayaranId')
-  async findOne(
+  async detailPembayaran(
     @Param('pembayaranId') pembayaranId: number,
+    @Req() req: Request,
     @Res() res: Response,
-    @Req() req: any,
   ) {
     const pembayaran = await this.pembayaransService.findOne(pembayaranId);
-    res.render('super_admin/pembayaran/detail', { user: req.user, pembayaran });
+    res.render('super_admin/payments/detail', { user: req.user, pembayaran });
   }
 
   @Roles('super_admin')

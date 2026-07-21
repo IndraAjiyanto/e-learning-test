@@ -19,7 +19,7 @@
                 <h4 class='font-montserrat font-bold text-gray-800 text-lg' x-text="item.name"></h4>
                 <p class='text-gray-600 mb-2' x-text="getByLang(item.position, lang)"></p>
                 <div class='flex justify-center sm:justify-start gap-2 mb-3 flex-wrap'>
-                  <template x-for="tech in (item.teknologi || [])" :key="tech.id">
+                  <template x-for="tech in (item.technologies || [])" :key="tech.id">
                     <span class='w-6 h-6' x-html="tech.svg"></span>
                   </template>
                 </div>

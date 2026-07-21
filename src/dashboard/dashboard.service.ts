@@ -16,7 +16,7 @@ import { Value } from 'src/entities/value.entity';
 import { TeamLead } from 'src/entities/team_lead.entity';
 import { Vision } from 'src/entities/visions.entity';
 import { Commitment } from 'src/entities/commitment.entity';
-import { Mission } from 'src/entities/mision.entity';
+import { Mission } from 'src/entities/mission.entity';
 import { Experience } from 'src/entities/experience.entity';
 import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
@@ -298,7 +298,7 @@ async findAlumni(options?: {
   async findOnePortfolio(portfolioId: number) {
     return await this.portfolioRepository.findOne({
       where: { id: portfolioId },
-      relations: ['course', 'course.category', 'course.teknologi', 'user'],
+      relations: ['course', 'course.category', 'course.technologies', 'user'],
     });
   }
 

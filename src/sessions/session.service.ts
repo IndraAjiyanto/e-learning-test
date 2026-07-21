@@ -9,7 +9,7 @@ import { User } from 'src/entities/user.entity';
 import { Question } from 'src/entities/question.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { Logbook } from 'src/entities/logbook.entity';
-import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
+import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { Assignment } from 'src/entities/assignment.entity';
@@ -35,8 +35,8 @@ export class SessionService {
     @InjectRepository(Question)
     private readonly pertanyaanRepository: Repository<Question>,
 
-    @InjectRepository(LogbookMentor)
-    private readonly logbookMentorRepository: Repository<LogbookMentor>,
+    @InjectRepository(MentorLogbook)
+    private readonly logbookMentorRepository: Repository<MentorLogbook>,
 
     @InjectRepository(SessionProgress)
     private readonly progresPertemuanRepository: Repository<SessionProgress>,

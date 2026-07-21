@@ -25,7 +25,7 @@ export class CourseQuestionsController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const pertanyaanKelas = await this.pertanyaanKelasService.findAll();
-    res.render('super_admin/courseQuestions/index', {
+    res.render('super_admin/course_questions/index', {
       user: req.user,
       pertanyaanKelas,
     });
@@ -39,7 +39,7 @@ export class CourseQuestionsController {
     @Req() req: Request,
   ) {
     const kelass = await this.pertanyaanKelasService.findAllKelas();
-    res.render('super_admin/courseQuestions/create', {
+    res.render('super_admin/course_questions/create', {
       user: req.user,
       kelass,
       courseId,
@@ -74,7 +74,7 @@ export class CourseQuestionsController {
   ) {
     const pertanyaanKelas = await this.pertanyaanKelasService.findOne(id);
     const kelass = await this.pertanyaanKelasService.findAllKelas();
-    res.render('super_admin/courseQuestions/edit', {
+    res.render('super_admin/course_questions/edit', {
       user: req.user,
       pertanyaanKelas,
       kelass,

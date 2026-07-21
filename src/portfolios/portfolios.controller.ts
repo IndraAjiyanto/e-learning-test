@@ -220,7 +220,7 @@ export class PortfoliosController {
       const updateData = {
         judul: updatePortfolioDto.title,
         deskripsi: updatePortfolioDto.description,
-        teknologi: updatePortfolioDto.teknologi,
+        technologies: updatePortfolioDto.technologies,
         gambar: newImageUrls,
         content: updatePortfolioDto.content,
         content_html: updatePortfolioDto.content_html,

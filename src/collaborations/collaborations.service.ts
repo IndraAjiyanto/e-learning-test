@@ -15,40 +15,40 @@ export class CollaborationsService {
   ) {}
 
   async create(createCollaborationsDto: CreateCollaborationsDto) {
-    const kerja_sama =
+    const collaborations =
       await this.kerjaSamaRepository.create(createCollaborationsDto);
-    return await this.kerjaSamaRepository.save(kerja_sama);
+    return await this.kerjaSamaRepository.save(collaborations);
   }
 
   async findAll() {
     return await this.kerjaSamaRepository.find();
   }
 
-  async findOne(kerja_samaId: number) {
-    const kerja_sama = await this.kerjaSamaRepository.findOne({
-      where: { id: kerja_samaId },
+  async findOne(collaborationsId: number) {
+    const collaborations = await this.kerjaSamaRepository.findOne({
+      where: { id: collaborationsId },
     });
-    if (!kerja_sama) {
+    if (!collaborations) {
       throw new NotFoundException('partnership not found');
     }
-    return kerja_sama;
+    return collaborations;
   }
 
-  async update(kerja_samaId: number, updateKerjaSamaDto: UpdateCollaborationsDto) {
-    const kerja_sama = await this.findOne(kerja_samaId);
-    if (!kerja_sama) {
+  async update(collaborationsId: number, updateKerjaSamaDto: UpdateCollaborationsDto) {
+    const collaborations = await this.findOne(collaborationsId);
+    if (!collaborations) {
       throw new NotFoundException('partnership not found');
     }
-    Object.assign(kerja_sama, updateKerjaSamaDto);
-    return await this.kerjaSamaRepository.save(kerja_sama);
+    Object.assign(collaborations, updateKerjaSamaDto);
+    return await this.kerjaSamaRepository.save(collaborations);
   }
 
-  async remove(kerja_samaId: number) {
-    const kerja_sama = await this.findOne(kerja_samaId);
-    if (!kerja_sama) {
+  async remove(collaborationsId: number) {
+    const collaborations = await this.findOne(collaborationsId);
+    if (!collaborations) {
       throw new NotFoundException('partnership not found');
     }
-    return await this.kerjaSamaRepository.remove(kerja_sama);
+    return await this.kerjaSamaRepository.remove(collaborations);
   }
 
   async deleteFile(url: string) {

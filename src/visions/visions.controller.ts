@@ -32,7 +32,7 @@ export class VisionsController {
     try {
       await this.visionService.create(createVisionDto);
 
-      req.flash('success', 'visi successfully created');
+      req.flash('success', 'visions successfully created');
       res.redirect('/vision');
     } catch (error: any) {
       req.flash('error', error.message || 'vision failed to create');
@@ -44,7 +44,7 @@ export class VisionsController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const vision = await this.visionService.findAll();
-    res.render('super_admin/visi/index', {
+    res.render('super_admin/visions/index', {
       user: req.user,
       vision,
     });
@@ -53,18 +53,18 @@ export class VisionsController {
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    res.render('super_admin/visi/create', { user: req.user });
+    res.render('super_admin/visions/create', { user: req.user });
   }
 
   @Roles('super_admin')
-  @Get('formEdit/:visiId')
+  @Get('formEdit/:visionsId')
   async findOne(
     @Param('visionId') visionId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const vision = await this.visionService.findOne(visionId);
-    res.render('super_admin/visi/edit', { user: req.user, vision });
+    res.render('super_admin/visions/edit', { user: req.user, vision });
   }
 
   @Roles('super_admin')
@@ -77,10 +77,10 @@ export class VisionsController {
   ) {
     try {
       await this.visionService.update(visionId, updateVisionDto);
-      req.flash('success', 'visi successfully updated');
+      req.flash('success', 'visions successfully updated');
       res.redirect('/vision');
     } catch (error: any) {
-      req.flash('error', error.message || 'visi failed to update');
+      req.flash('error', error.message || 'visions failed to update');
       res.redirect('/vision');
     }
   }
@@ -94,10 +94,10 @@ export class VisionsController {
   ) {
     try {
       await this.visionService.remove(visionId);
-      req.flash('success', 'visi successfully remove');
+      req.flash('success', 'visions successfully remove');
       res.redirect('/vision');
     } catch (error: any) {
-      req.flash('error', error.message || 'visi failed to remove');
+      req.flash('error', error.message || 'visions failed to remove');
       res.redirect('/vision');
     }
   }

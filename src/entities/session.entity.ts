@@ -13,7 +13,7 @@ import { Assignment } from './assignment.entity';
 import { Weeks } from './weeks.entity';
 import { SessionProgress } from './session_progress.entity';
 import { Logbook } from './logbook.entity';
-import { LogbookMentor } from './logbook_mentor.entity';
+import { MentorLogbook } from './mentor_logbook.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
@@ -21,25 +21,25 @@ export class Session {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'topik' })
+  @Column({ name: 'topic' })
   topic: string;
 
   @Column()
   sessionOrder: number;
 
-  @Column({ name: 'tanggal' })
+  @Column({ name: 'date' })
   date: Date;
 
-  @Column({ name: 'lokasi' })
+  @Column({ name: 'location' })
   location: string;
 
-  @Column({ name: 'waktu_awal', type: 'time' })
+  @Column({ name: 'start_time', type: 'time' })
   startTime: string;
 
-  @Column({ name: 'waktu_akhir', type: 'time' })
+  @Column({ name: 'end_time', type: 'time' })
   endTime: string;
 
-  @Column({ name: 'akhir', default: false })
+  @Column({ name: 'is_final', default: false })
   isFinal: boolean;
 
   @OneToMany(() => Attendance, (attendance) => attendance.session, {
@@ -85,12 +85,12 @@ export class Session {
   logbooks: Logbook[];
 
   @OneToMany(
-    () => LogbookMentor,
+    () => MentorLogbook,
     (logbookMentor) => logbookMentor.session,
     { cascade: true, onDelete: 'CASCADE' },
   )
   @Exclude()
-  logbookMentors: LogbookMentor[];
+  logbookMentors: MentorLogbook[];
 
   @CreateDateColumn()
   createdAt: Date;

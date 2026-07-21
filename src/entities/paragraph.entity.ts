@@ -12,7 +12,7 @@ export class Paragraph {
   id: number;
 
   @Column('jsonb', { nullable: true })
-  paragraf: string[];
+  paragraphs: string[];
 
   @Column()
   paragraphOrder: number;

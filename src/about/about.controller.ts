@@ -31,7 +31,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('about')
 export class AboutController {
-  constructor(private readonly tentangService: AboutService) {}
+  constructor(private readonly aboutService: AboutService) {}
 
   @Roles('super_admin')
   @Post()
@@ -46,7 +46,7 @@ export class AboutController {
     maxHeight: 4000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'tentang',
+    folder: 'about',
   })
   async create(
     @Body() createTentangDto: CreateAboutDto,
@@ -55,7 +55,7 @@ export class AboutController {
   ) {
     try {
       createTentangDto.image = req.body.uploadedImageUrls?.[0];
-      await this.tentangService.create(createTentangDto);
+      await this.aboutService.create(createTentangDto);
       req.flash('success', 'Header successfully created');
       res.redirect('/about');
     } catch (error: any) {
@@ -67,14 +67,14 @@ export class AboutController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const tentang = await this.tentangService.findAll();
-    res.render('super_admin/tentang/index', { user: req.user, tentang });
+    const about = await this.aboutService.findAll();
+    res.render('super_admin/about/index', { user: req.user, about });
   }
 
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    res.render('super_admin/tentang/create', { user: req.user });
+    res.render('super_admin/about/create', { user: req.user });
   }
 
   @Roles('super_admin')
@@ -84,8 +84,8 @@ export class AboutController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const tentang = await this.tentangService.findOne(id);
-    res.render('super_admin/tentang/detail', { user: req.user, tentang });
+    const about = await this.aboutService.findOne(id);
+    res.render('super_admin/about/detail', { user: req.user, about });
   }
 
   @Roles('super_admin')
@@ -95,8 +95,8 @@ export class AboutController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const tentang = await this.tentangService.findOne(id);
-    res.render('super_admin/tentang/edit', { user: req.user, tentang });
+    const about = await this.aboutService.findOne(id);
+    res.render('super_admin/about/edit', { user: req.user, about });
   }
 
   @Roles('super_admin')
@@ -112,7 +112,7 @@ export class AboutController {
     maxHeight: 4000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'tentang',
+    folder: 'about',
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
@@ -122,12 +122,12 @@ export class AboutController {
     @Req() req: Request,
   ) {
     try {
-      const tentang = await this.tentangService.findOne(id);
+      const about = await this.aboutService.findOne(id);
       if (gambar) {
-        await this.tentangService.deleteFile(tentang.image);
+        await this.aboutService.deleteFile(about.image);
         updateTentangDto.image = req.body.uploadedImageUrls?.[0];
       }
-      await this.tentangService.update(id, updateTentangDto);
+      await this.aboutService.update(id, updateTentangDto);
       req.flash('success', 'Header successfully updated');
       res.redirect('/about');
     } catch (error: any) {
@@ -144,9 +144,9 @@ export class AboutController {
     @Req() req: Request,
   ) {
     try {
-      const tentang = await this.tentangService.findOne(id);
-      await this.tentangService.deleteFile(tentang.image);
-      await this.tentangService.remove(id);
+      const about = await this.aboutService.findOne(id);
+      await this.aboutService.deleteFile(about.image);
+      await this.aboutService.remove(id);
       req.flash('success', 'Header successfully deleted');
       res.redirect('/about');
     } catch (error: any) {

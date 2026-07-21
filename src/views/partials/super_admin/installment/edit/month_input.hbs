@@ -16,7 +16,7 @@
           :class="formErrors.month ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.month ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
         >
-        <option value='{{cicilan.month}}' selected>{{cicilan.month}} Months</option>
+        <option value='{{installments.month}}' selected>{{installments.month}} Months</option>
         {{#each availableMonths}}
           <option value='{{this}}'>{{this}} Months</option>
         {{/each}}

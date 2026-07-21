@@ -47,7 +47,7 @@
         <div class='p-4'>
           <div class='flex items-center mb-3'>
             <img
-              :src="kelasItem.gambar"
+              :src="kelasItem.image"
               :alt="kelasItem.name"
               class='w-12 h-12 rounded-lg object-cover mr-3'
             />
@@ -70,7 +70,7 @@
           </div>
           
           <div class='flex justify-between items-center'>
-            <span class='text-xs text-gray-500' x-text="kelasItem.metode"></span>
+            <span class='text-xs text-gray-500' x-text="kelasItem.method"></span>
             <a
               :href="`/program/detail/program/admin/${kelasItem.id}`"
               @click.prevent="
@@ -120,7 +120,7 @@
         Previous
       </button>
       
-      <template x-for="page in visiblePages" :key="page">
+      <template x-for="page in visionsblePages" :key="page">
         <button
           @click="changePage(page)"
           :class="page === currentPage ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
@@ -171,7 +171,7 @@
           this.filteredData = this.data.filter(item => 
             item.name.toLowerCase().includes(query) ||
             item.courseType.name_clasess_type.toLowerCase().includes(query) ||
-            item.metode.toLowerCase().includes(query)
+            item.method.toLowerCase().includes(query)
           );
         }
         this.currentPage = 1; // Reset to first page after search
@@ -202,7 +202,7 @@
         return end > this.filteredData.length ? this.filteredData.length : end;
       },
 
-      get visiblePages() {
+      get visionsblePages() {
         const pages = [];
         const total = this.totalPages;
         const current = this.currentPage;

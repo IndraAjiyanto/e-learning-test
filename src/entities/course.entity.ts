@@ -75,14 +75,14 @@ export class Course {
   @Column({ default: false })
   launch: boolean;
 
-  @ManyToMany(() => Technology, (teknologi) => teknologi.course)
+  @ManyToMany(() => Technology, (technologies) => technologies.course)
   @JoinTable({
-    name: 'kelas_teknologi',
+    name: 'kelas_technologies',
     joinColumn: { name: 'kelasId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'teknologiId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'technologiesId', referencedColumnName: 'id' },
   })
   @Exclude()
-  teknologi: Technology[];
+  technologies: Technology[];
 
   @Column({
     type: 'enum',
@@ -200,7 +200,7 @@ export class Course {
 
   @OneToMany(
     () => CourseQuestions,
-    (pertanyaan_kelas) => pertanyaan_kelas.course,
+    (course_questions) => course_questions.course,
   )
   @Exclude()
   courseQuestions: CourseQuestions[];

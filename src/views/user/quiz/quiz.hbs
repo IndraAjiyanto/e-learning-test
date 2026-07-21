@@ -24,7 +24,7 @@
         </svg>
         <div>
           <p class="text-slate-600 text-sm font-medium">{{t "test.quiz.minimumScore"}}</p>
-          <p class="text-2xl font-bold text-slate-900">{{quiz.nilai_minimal}}</p>
+          <p class="text-2xl font-bold text-slate-900">{{quiz.minimum_score}}</p>
         </div>
       </div>
     </div>
@@ -76,7 +76,7 @@
                 <span class="text-2xl font-bold text-slate-900">{{this.nilai}}</span>
               </td>
               <td class="px-6 py-4">
-                {{#if (gte this.nilai ../quiz.nilai_minimal)}}
+                {{#if (gte this.nilai ../quiz.minimum_score)}}
                   <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border border-emerald-200">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>

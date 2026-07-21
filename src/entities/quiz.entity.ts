@@ -18,13 +18,13 @@ export class Quiz {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'nama_quiz' })
+  @Column({ name: 'quiz_name' })
   quizName: string;
 
-  @Column({ name: 'nilai_minimal' })
+  @Column({ name: 'minimum_score' })
   minScore: number;
 
-  @Column({ name: 'durasi', type: 'int' })
+  @Column({ name: 'duration', type: 'int' })
   duration: number;
 
   @CreateDateColumn()

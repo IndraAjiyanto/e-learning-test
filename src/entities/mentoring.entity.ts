@@ -20,7 +20,7 @@ export class Mentorings {
   user: User;
 
   @ManyToOne(() => Course, (course) => course.mentorings, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'kelasId' })
+  @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: Course;
 

@@ -32,11 +32,11 @@ export class MissionController {
     try {
       createMissionDto.mission_order = await this.missionService.noPertemuan();
       await this.missionService.create(createMissionDto);
-      req.flash('success', 'misi successfully created');
-      res.redirect('/misi');
+      req.flash('success', 'missions successfully created');
+      res.redirect('/missions');
     } catch (error: any) {
-      req.flash('error', 'misi failed to create');
-      res.redirect('/misi');
+      req.flash('error', 'missions failed to create');
+      res.redirect('/missions');
     }
   }
 
@@ -44,7 +44,7 @@ export class MissionController {
   @Get()
   async index(@Res() res: Response, @Req() req: Request) {
     const mission = await this.missionService.findAll();
-    res.render('super_admin/misi/index', { user: req.user, mission });
+    res.render('super_admin/missions/index', { user: req.user, mission });
   }
 
   @Roles('super_admin')
@@ -55,7 +55,7 @@ export class MissionController {
     @Req() req: Request,
   ) {
     const mission = await this.missionService.findOne(id);
-    res.render('super_admin/misi/edit', { user: req.user, mission });
+    res.render('super_admin/missions/edit', { user: req.user, mission });
   }
 
   @Roles('super_admin')
@@ -68,11 +68,11 @@ export class MissionController {
   ) {
     try {
       await this.missionService.update(id, updateMissionDto);
-      req.flash('success', 'misi successfully updated');
-      res.redirect('/misi');
+      req.flash('success', 'missions successfully updated');
+      res.redirect('/missions');
     } catch (error: any) {
-      req.flash('error', 'misi failed to update');
-      res.redirect('/misi');
+      req.flash('error', 'missions failed to update');
+      res.redirect('/missions');
     }
   }
 
@@ -85,17 +85,17 @@ export class MissionController {
   ) {
     try {
       await this.missionService.remove(id);
-      req.flash('success', 'misi successfully deleted');
-      res.redirect('/misi');
+      req.flash('success', 'missions successfully deleted');
+      res.redirect('/missions');
     } catch (error: any) {
-      req.flash('error', 'misi failed to delete');
-      res.redirect('/misi');
+      req.flash('error', 'missions failed to delete');
+      res.redirect('/missions');
     }
   }
 
   @Roles('super_admin')
   @Get('formCreate')
   formCreate(@Res() res: Response, @Req() req: Request) {
-    res.render('super_admin/misi/create', { user: req.user });
+    res.render('super_admin/missions/create', { user: req.user });
   }
 }

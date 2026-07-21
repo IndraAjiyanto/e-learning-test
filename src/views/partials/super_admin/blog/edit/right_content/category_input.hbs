@@ -1,7 +1,7 @@
         <!-- Category -->
         <div x-data="{
-          search: '{{blog.kategori_blog.name.en}}',
-          selectedCategory: {{json blog.kategori_blog}},
+          search: '{{blog.blog_categories.name.en}}',
+          selectedCategory: {{json blog.blog_categories}},
           showDropdown: false,
           availableCategories: {{json categories}},
           get filteredCategories() {
@@ -21,7 +21,7 @@
             $dispatch('category-selected', { category: null });
           }
         }" @click.away='showDropdown = false'>
-          <label for='kategori_blog' class='block text-sm font-medium text-gray-700 mb-2'>Category</label>
+          <label for='blog_categories' class='block text-sm font-medium text-gray-700 mb-2'>Category</label>
           <div class='relative'>
             <input
               type='text'
@@ -43,6 +43,6 @@
               </template>
             </div>
 
-            <input type='hidden' id='kategori_blog' name='kategori_blog' x-model='selectedCategory ? selectedCategory.id : ""' required />
+            <input type='hidden' id='blog_categories' name='blog_categories' x-model='selectedCategory ? selectedCategory.id : ""' required />
           </div>
         </div>

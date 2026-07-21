@@ -12,7 +12,7 @@ export class UserAnswer {
   @ManyToOne(() => Question, (question) => question.userAnswers, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'pertanyaanId' })
+  @JoinColumn({ name: 'questionId' })
   @Exclude()
   question: Question;
 
@@ -20,7 +20,7 @@ export class UserAnswer {
     onDelete: 'CASCADE',
     nullable: true
   })
-  @JoinColumn({ name: 'jawabanId' })
+  @JoinColumn({ name: 'answerId' })
   @Exclude()
   answer: Answer | null;
 

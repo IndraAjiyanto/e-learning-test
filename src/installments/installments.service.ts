@@ -10,7 +10,7 @@ import { Course } from '../entities/course.entity';
 export class InstallmentsService {
   constructor(
     @InjectRepository(Installment)
-    private cicilanRepository: Repository<Installment>,
+    private installmentsRepository: Repository<Installment>,
     @InjectRepository(Course)
     private kelasRepository: Repository<Course>,
   ) {}
@@ -24,23 +24,23 @@ export class InstallmentsService {
       throw new NotFoundException(`Program not found`);
     }
 
-    const installments = this.cicilanRepository.create({
+    const installments = this.installmentsRepository.create({
       ...createCicilanDto,
       course,
     });
 
-    return await this.cicilanRepository.save(installments);
+    return await this.installmentsRepository.save(installments);
   }
 
   async findAll() {
-    return await this.cicilanRepository.find({
+    return await this.installmentsRepository.find({
       relations: ['course'],
       order: { month: 'ASC' },
     });
   }
 
   async findOne(id: number) {
-    const installments = await this.cicilanRepository.findOne({
+    const installments = await this.installmentsRepository.findOne({
       where: { id },
       relations: ['course'],
     });
@@ -53,7 +53,7 @@ export class InstallmentsService {
   }
 
   async findByKelas(courseId: number) {
-    return await this.cicilanRepository.find({
+    return await this.installmentsRepository.find({
       where: { course: { id: courseId } },
       relations: ['course'],
       order: { month: 'ASC' },
@@ -97,11 +97,11 @@ export class InstallmentsService {
       installments.down_payment = updateCicilanDto.down_payment;
     }
 
-    return await this.cicilanRepository.save(installments);
+    return await this.installmentsRepository.save(installments);
   }
 
   async remove(id: number) {
     const installments = await this.findOne(id);
-    return await this.cicilanRepository.remove(installments);
+    return await this.installmentsRepository.remove(installments);
   }
 }

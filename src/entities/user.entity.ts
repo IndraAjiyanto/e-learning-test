@@ -23,7 +23,7 @@ import { WeekProgress } from './week_progress.entity';
 import { SessionProgress } from './session_progress.entity';
 import { Certificates } from './certificate.entity';
 import { UserCourse } from './user_course.entity';
-import { LogbookMentor } from './logbook_mentor.entity';
+import { MentorLogbook } from './mentor_logbook.entity';
 import { QuizProgress } from './quiz_progress.entity';
 import { Mentorings } from './mentoring.entity';
 import { Registration } from './registration.entity';
@@ -108,12 +108,12 @@ export class User {
   @Exclude()
   logbook: Logbook[];
 
-  @OneToMany(() => LogbookMentor, (logbook_mentor) => logbook_mentor.user, {
+  @OneToMany(() => MentorLogbook, (mentor_logbook) => mentor_logbook.user, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  logbook_mentor: LogbookMentor[];
+  mentor_logbook: MentorLogbook[];
 
   @OneToMany(() => Portofolios, (portfolio) => portfolio.user, {
     cascade: true,

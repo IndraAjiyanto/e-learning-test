@@ -30,7 +30,7 @@ export class Superiority {
   @ManyToOne(() => Category, (category) => category.superiority, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'kategoriId' })
+  @JoinColumn({ name: 'categoryId' })
   @Exclude()
   category: Category;
 }

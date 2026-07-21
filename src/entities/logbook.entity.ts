@@ -17,10 +17,10 @@ export class Logbook {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'kegiatan' })
+  @Column({ name: 'activity' })
   activity: string;
 
-  @Column({ name: 'rincian_kegiatan' })
+  @Column({ name: 'activity_details' })
   activityDetails: string;
 
   @Column({ type:'varchar', nullable: true })
@@ -33,10 +33,10 @@ export class Logbook {
   })
   process: Proses;
 
-  @Column({ name: 'kendala' })
+  @Column({ name: 'obstacles' })
   obstacles: string;
 
-  @Column({ name: 'dokumentasi_lain' })
+  @Column({ name: 'other_documentation' })
   otherDocumentation: string;
 
   @CreateDateColumn()

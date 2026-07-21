@@ -1,0 +1,195 @@
+<div class='py-10'>
+  <div
+    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+        previewUrl: null,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        fileSize: 0,
+        imageWidth: 0,
+        imageHeight: 0,
+        hasFile: false,
+
+        // Form validation states
+        formData: {
+          judul: { id: '', en: '', ja: '' },
+          text: { id: '', en: '', ja: '' }
+        },
+        formErrors: {
+          judul: { id: '', en: '', ja: '' },
+          text: { id: '', en: '', ja: '' }
+        },
+        formValid: {
+          judul: { id: false, en: false, ja: false },
+          text: { id: false, en: false, ja: false }
+        },
+
+        validateImage(file) {
+          if (!file) {
+            this.hasFile = false;
+            return;
+          }
+
+          this.hasFile = true;
+          this.fileName = file.name;
+          this.fileSize = file.size;
+          this.errorMessage = '';
+          this.isValid = true;
+
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+
+          const maxSize = 5 * 1024 * 1024; // 5MB
+          if (file.size > maxSize) {
+            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+
+          // Create preview with dimension validation
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+
+          img.onload = () => {
+            this.imageWidth = img.width;
+            this.imageHeight = img.height;
+
+            // Check dimensions
+            const minDim = 700;
+            const maxDim = 4000;
+            if (this.imageWidth < minDim || this.imageWidth > maxDim || this.imageHeight < minDim || this.imageHeight > maxDim) {
+              this.errorMessage = `Image dimensions must be between ${minDim}-${maxDim}px for both width and height. Current: ${this.imageWidth}x${this.imageHeight}px`;
+              this.isValid = false;
+              this.previewUrl = null;
+              URL.revokeObjectURL(objectUrl);
+              return;
+            }
+
+            this.previewUrl = objectUrl;
+            this.isValid = true;
+            this.errorMessage = '';
+          };
+
+          img.onerror = () => {
+            this.errorMessage = 'Failed to load image';
+            this.isValid = false;
+            this.previewUrl = null;
+            URL.revokeObjectURL(objectUrl);
+          };
+
+          img.src = objectUrl;
+        },
+
+        validateField(field, lang, value) {
+          this.formData[field][lang] = value;
+          
+          if (field === 'judul') {
+            if (!value.trim()) {
+              this.formErrors.title[lang] = 'Title is required';
+              this.formValid.title[lang] = false;
+            } else if (value.trim().length < 2) {
+              this.formErrors.title[lang] = 'Title must be at least 2 characters';
+              this.formValid.title[lang] = false;
+            } else {
+              this.formErrors.title[lang] = '';
+              this.formValid.title[lang] = true;
+            }
+          } else if (field === 'text') {
+            if (!value.trim()) {
+              this.formErrors.text[lang] = 'Text is required';
+              this.formValid.text[lang] = false;
+            } else if (value.trim().length < 10) {
+              this.formErrors.text[lang] = 'Text must be at least 10 characters';
+              this.formValid.text[lang] = false;
+            } else {
+              this.formErrors.text[lang] = '';
+              this.formValid.text[lang] = true;
+            }
+          }
+        },
+
+        clearFile() {
+          this.previewUrl = null;
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.fileSize = 0;
+          this.imageWidth = 0;
+          this.imageHeight = 0;
+          this.hasFile = false;
+          this.$refs.fileInput.value = null;
+        },
+
+        canSubmit() {
+          const imageValid = !this.hasFile || this.isValid;
+          const judulValid = this.formValid.title.id && this.formValid.title.en && this.formValid.title.ja;
+          const textValid = this.formValid.text.id && this.formValid.text.en && this.formValid.text.ja;
+          return imageValid && judulValid && textValid;
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors.title).some(error => error !== '') || 
+                 Object.values(this.formErrors.text).some(error => error !== '');
+        }
+      }"
+  >
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Header</h2>
+
+    <form
+      action='/about'
+      method='post'
+      x-data='{ loading: false }'
+      enctype='multipart/form-data'
+      class='space-y-6'
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+    >
+
+    {{> super_admin/header/create/image_input}}
+    {{> super_admin/header/create/title_input}}
+    {{> super_admin/header/create/text_input}}
+
+      <!-- Tombol aksi -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='!canSubmit() || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+        >
+          <span
+            x-show='loading'
+            class='loading loading-spinner loading-sm'
+          ></span>
+          <span x-show='!loading'>Create</span>
+        </button>
+        <a
+          href='/about'
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300 transition'
+        >
+          Cancel
+        </a>
+      </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
+    </form>
+  </div>
+</div>

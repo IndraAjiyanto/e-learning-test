@@ -1,10 +1,10 @@
                     <!-- Class Type -->
                     <div
                       x-data="{
-                        search: '{{course.jenis_kelas.name_clasess_type}}',
-                        selectedJenisKelas: {{json course.jenis_kelas}},
+                        search: '{{course.courseType.name_clasess_type}}',
+                        selectedJenisKelas: {{json course.courseType}},
                         showDropdown: false,
-                        availableJenisKelas: {{json jenis_kelas}},
+                        availableJenisKelas: {{json courseType}},
                         get filteredJenisKelas() {
                           return this.availableJenisKelas.filter(j => 
                             j.name_clasess_type.toLowerCase().includes(this.search.toLowerCase())

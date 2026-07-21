@@ -23,7 +23,7 @@ import { Logbook } from 'src/entities/logbook.entity';
 import { Technology } from 'src/entities/technology.entity';
 import { Mentorings } from 'src/entities/mentoring.entity';
 import { Registration } from 'src/entities/registration.entity';
-import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
+import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { CourseQuestions } from 'src/entities/course_question.entity';
 import { ProgramBenefits } from 'src/entities/course_benefit.entity';
 import { CourseFlow } from 'src/entities/course_flow.entity';
@@ -60,10 +60,10 @@ export class CoursesService {
     private readonly mentorRepository: Repository<Mentors>,
     @InjectRepository(Logbook)
     private readonly logbookRepository: Repository<Logbook>,
-    @InjectRepository(LogbookMentor)
-    private readonly logbookMentorRepository: Repository<LogbookMentor>,
+    @InjectRepository(MentorLogbook)
+    private readonly logbookMentorRepository: Repository<MentorLogbook>,
     @InjectRepository(Technology)
-    private readonly teknologiRepository: Repository<Technology>,
+    private readonly technologiesRepository: Repository<Technology>,
     @InjectRepository(Mentorings)
     private readonly mentoringRepository: Repository<Mentorings>,
     @InjectRepository(Registration)
@@ -77,7 +77,7 @@ export class CoursesService {
     @InjectRepository(Alumni)
     private readonly alumniRepository: Repository<Alumni>,
     @InjectRepository(Installment)
-    private readonly cicilanRepository: Repository<Installment>,
+    private readonly installmentsRepository: Repository<Installment>,
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
     @InjectRepository(Portofolios)
@@ -123,13 +123,13 @@ export class CoursesService {
       throw new NotFoundException('type program not Found');
     }
 
-    let teknologi: Technology[] = [];
+    let technologies: Technology[] = [];
     if (
-      createKelassDto.teknologiIds &&
-      createKelassDto.teknologiIds.length > 0
+      createKelassDto.technologiesIds &&
+      createKelassDto.technologiesIds.length > 0
     ) {
-      teknologi = await this.teknologiRepository.findBy({
-        id: In(createKelassDto.teknologiIds),
+      technologies = await this.technologiesRepository.findBy({
+        id: In(createKelassDto.technologiesIds),
       });
     }
 
@@ -137,7 +137,7 @@ export class CoursesService {
       ...createKelassDto,
       category: category,
       courseType: courseType,
-      teknologi: teknologi,
+      technologies: technologies,
     });
     return await this.kelasRepository.save(course);
   }
@@ -466,7 +466,7 @@ export class CoursesService {
   async findMentor(courseId) {
     return await this.mentorRepository.find({
       where: { course: { id: courseId } },
-      relations: ['teknologi'],
+      relations: ['technologies'],
     });
   }
 
@@ -567,14 +567,14 @@ export class CoursesService {
     }
   }
 
-  async findLogbookMentor(courseId: number) {
+  async findMentorLogbook(courseId: number) {
     return await this.logbookMentorRepository.find({
       where: { session: { weeks: { course: { id: courseId } } } },
       relations: [
         'session',
         'session.weeks',
         'session.weeks.course',
-        'session.weeks.course.mentor',
+        'session.weeks.course.mentorings',
         'session.weeks.course.courseType',
         'session.weeks.course.category',
       ],
@@ -615,7 +615,7 @@ export class CoursesService {
         'session',
         'session.weeks',
         'session.weeks.course',
-        'session.weeks.course.mentor',
+        'session.weeks.course.mentorings',
         'session.weeks.course.courseType',
         'session.weeks.course.category',
       ],
@@ -700,13 +700,13 @@ export class CoursesService {
 
 if (params.search) {
   query.andWhere(
-    '(course.nama_kelas ILIKE :search OR category.nama_kategori ILIKE :search)',
+    '(course.name ILIKE :search OR category.name ILIKE :search)',
     { search: `%${params.search}%` }
   );
 }
 
   if (params.alphabet) {
-    query.andWhere('course.nama_kelas ILIKE :alphabet', {
+    query.andWhere('course.name ILIKE :alphabet', {
       alphabet: `${params.alphabet}%`,
     });
   }
@@ -822,12 +822,12 @@ async allClassExcept(courseId: number) {
     });
   }
 
-  async findTeknologi() {
-    return await this.teknologiRepository.find();
+  async findTechnologies() {
+    return await this.technologiesRepository.find();
   }
 
-  async findTeknologiKelas(courseId: number) {
-    return await this.teknologiRepository.find({
+  async findTechnologiesKelas(courseId: number) {
+    return await this.technologiesRepository.find({
       where: { course: { id: courseId } },
     });
   }
@@ -855,7 +855,7 @@ async allClassExcept(courseId: number) {
   async findOneKelas(courseId: number) {
     const course = await this.kelasRepository.findOne({
       where: { id: courseId },
-      relations: ['category', 'courseType', 'teknologi', 'userCourses'],
+      relations: ['category', 'courseType', 'technologies', 'userCourses'],
     });
     if (!course) {
       throw new NotFoundException('Program not found');
@@ -903,7 +903,7 @@ async allClassExcept(courseId: number) {
       relations: [
         'category',
         'courseType',
-        'teknologi',
+        'technologies',
         'mentorings',
         'mentorings.user',
         'userCourses',
@@ -922,7 +922,7 @@ async allClassExcept(courseId: number) {
   async findMentorKelas(courseId: number) {
     return await this.mentorRepository.find({
       where: { course: { id: courseId } },
-      relations: ['teknologi'],
+      relations: ['technologies'],
     });
   }
 
@@ -955,7 +955,7 @@ async allClassExcept(courseId: number) {
   }
 
   async findCicilanKelas(courseId: number) {
-    return await this.cicilanRepository.find({
+    return await this.installmentsRepository.find({
       where: { course: { id: courseId } },
       order: { month: 'ASC' },
     });
@@ -979,7 +979,7 @@ async allClassExcept(courseId: number) {
       relations: [
         'category',
         'courseType',
-        'teknologi',
+        'technologies',
         'mentorings',
         'mentorings.user',
         'userCourses',
@@ -1035,17 +1035,17 @@ async allClassExcept(courseId: number) {
       course.courseType = courseType;
     }
 
-    if (updateKelassDto.teknologiIds !== undefined) {
-      if (updateKelassDto.teknologiIds.length > 0) {
-        course.teknologi = await this.teknologiRepository.findBy({
-          id: In(updateKelassDto.teknologiIds),
+    if (updateKelassDto.technologiesIds !== undefined) {
+      if (updateKelassDto.technologiesIds.length > 0) {
+        course.technologies = await this.technologiesRepository.findBy({
+          id: In(updateKelassDto.technologiesIds),
         });
       } else {
-        course.teknologi = [];
+        course.technologies = [];
       }
     }
 
-    const { courseTypeId, categoryId, teknologiIds, ...otherProperties } =
+    const { courseTypeId, categoryId, technologiesIds, ...otherProperties } =
       updateKelassDto;
     Object.assign(course, otherProperties);
 

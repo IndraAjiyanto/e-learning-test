@@ -25,8 +25,8 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const alur_kelas = await this.alurKelasService.findAll();
-    res.render('super_admin/alur_kelas/index', { user: req.user, alur_kelas });
+    const course_flows = await this.alurKelasService.findAll();
+    res.render('super_admin/course_flows/index', { user: req.user, course_flows });
   }
 
   @Roles('super_admin')
@@ -36,15 +36,15 @@ export class CourseFlowsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const alur_kelas = await this.alurKelasService.findOne(alurKelasId);
-    res.render('super_admin/alur_kelas/detail', { user: req.user, alur_kelas });
+    const course_flows = await this.alurKelasService.findOne(alurKelasId);
+    res.render('super_admin/course_flows/detail', { user: req.user, course_flows });
   }
 
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const course = await this.alurKelasService.findAllKelas();
-    res.render('super_admin/alur_kelas/create', { user: req.user, course });
+    res.render('super_admin/course_flows/create', { user: req.user, course });
   }
 
   @Roles('super_admin')
@@ -92,7 +92,7 @@ export class CourseFlowsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    res.render('super_admin/alur_kelas/create', { user: req.user, courseId });
+    res.render('super_admin/course_flows/create', { user: req.user, courseId });
   }
 
   @Roles('super_admin')
@@ -102,8 +102,8 @@ export class CourseFlowsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const alur_kelas = await this.alurKelasService.findOne(alurKelasId);
-    res.render('super_admin/alur_kelas/edit', { user: req.user, alur_kelas });
+    const course_flows = await this.alurKelasService.findOne(alurKelasId);
+    res.render('super_admin/course_flows/edit', { user: req.user, course_flows });
   }
 
   @Roles('super_admin')

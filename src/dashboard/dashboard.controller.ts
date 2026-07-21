@@ -53,36 +53,36 @@ export class DashboardController {
         const special_program =
           await this.dashboardService.findSpecialProgram();
         const faq = await this.dashboardService.findFAQ();
-        const gambar_benefit_1 = await this.dashboardService.findImage1();
-        const gambar_benefit_2 = await this.dashboardService.findImage2();
-        const gambar_benefit_3 = await this.dashboardService.findImage3();
-        const gambar_benefit_4 = await this.dashboardService.findImage4();
+        const image_benefit_1 = await this.dashboardService.findImage1();
+        const image_benefit_2 = await this.dashboardService.findImage2();
+        const image_benefit_3 = await this.dashboardService.findImage3();
+        const image_benefit_4 = await this.dashboardService.findImage4();
         const courseType = await this.dashboardService.findCourseTypes();
         const category = await this.dashboardService.findCategories();
         const alumni = await this.dashboardService.findAllAlumni();
-        const kerja_sama = await this.dashboardService.findCollaborations();
+        const collaborations = await this.dashboardService.findCollaborations();
         const benefit_1 = await this.dashboardService.findBenefit1();
         const benefit_2 = await this.dashboardService.findBenefit2();
         const benefit_3 = await this.dashboardService.findBenefit3();
-        const tentang = await this.dashboardService.findAbout();
+        const about = await this.dashboardService.findAbout();
         const social = await this.dashboardService.findSocial();
         res.render('dashboard', {
           special_program,
           user: req.user,
           // course,
           faq,
-          gambar_benefit_1,
-          gambar_benefit_2,
-          gambar_benefit_3,
-          gambar_benefit_4,
+          image_benefit_1,
+          image_benefit_2,
+          image_benefit_3,
+          image_benefit_4,
           courseType,
           category,
           alumni,
-          kerja_sama,
+          collaborations,
           benefit_1,
           benefit_2,
           benefit_3,
-          tentang,
+          about,
           social,
           our_experience,
         });
@@ -91,36 +91,36 @@ export class DashboardController {
       const our_experience = await this.dashboardService.findOurExperience();
       const special_program = await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
-      const gambar_benefit_1 = await this.dashboardService.findImage1();
-      const gambar_benefit_2 = await this.dashboardService.findImage2();
-      const gambar_benefit_3 = await this.dashboardService.findImage3();
-      const gambar_benefit_4 = await this.dashboardService.findImage4();
+      const image_benefit_1 = await this.dashboardService.findImage1();
+      const image_benefit_2 = await this.dashboardService.findImage2();
+      const image_benefit_3 = await this.dashboardService.findImage3();
+      const image_benefit_4 = await this.dashboardService.findImage4();
       const courseType = await this.dashboardService.findCourseTypes();
       const category = await this.dashboardService.findCategories();
       const alumni = await this.dashboardService.findAllAlumni();
-      const kerja_sama = await this.dashboardService.findCollaborations();
+      const collaborations = await this.dashboardService.findCollaborations();
       const benefit_1 = await this.dashboardService.findBenefit1();
       const benefit_2 = await this.dashboardService.findBenefit2();
       const benefit_3 = await this.dashboardService.findBenefit3();
-      const tentang = await this.dashboardService.findAbout();
+      const about = await this.dashboardService.findAbout();
       const social = await this.dashboardService.findSocial();
       res.render('dashboard', {
         special_program,
         user: req.user,
         // course,
         faq,
-        gambar_benefit_1,
-        gambar_benefit_2,
-        gambar_benefit_3,
-        gambar_benefit_4,
+        image_benefit_1,
+        image_benefit_2,
+        image_benefit_3,
+        image_benefit_4,
         courseType,
         category,
         alumni,
-        kerja_sama,
+        collaborations,
         benefit_1,
         benefit_2,
         benefit_3,
-        tentang,
+        about,
         social,
         our_experience,
       });
@@ -223,7 +223,7 @@ export class DashboardController {
   async about(@Req() req: Request, @Res() res: Response) {
     const team = await this.dashboardService.findTeam();
     const social = await this.dashboardService.findSocial();
-    const visi = await this.dashboardService.findVisionsMissions();
+    const visions = await this.dashboardService.findVisionsMissions();
     const commitment = await this.dashboardService.findCommitment();
     const value = await this.dashboardService.findValue();
     const teamLead = await this.dashboardService.findTeamLead();
@@ -231,12 +231,12 @@ export class DashboardController {
     const experience = await this.dashboardService.findExperience();
     const award = await this.dashboardService.findAward();
     const background = await this.dashboardService.findBackground();
-    const paragraf = await this.dashboardService.findAboutParagraphs();
-    res.render('tentang', {
+    const paragraphs = await this.dashboardService.findAboutParagraphs();
+    res.render('about', {
       user: req.user,
       team,
       social,
-      visi,
+      visions,
       commitment,
       value,
       teamLead,
@@ -244,7 +244,7 @@ export class DashboardController {
       experience,
       award,
       background,
-      paragraf,
+      paragraphs,
     });
   }
 

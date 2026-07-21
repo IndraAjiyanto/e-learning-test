@@ -21,7 +21,7 @@
   function portfolioApp() {
     return {
       allKategori: {{{json category}}},
-      allJenisKelas: {{{json jenis_kelas}}},
+      allJenisKelas: {{{json courseType}}},
       filteredKategoriList: [],
       filteredJenisKelasList: [],
       selectedKategori: '',
@@ -55,9 +55,9 @@
       },
 
           getImages(item) {
-      return Array.isArray(item.gambar)
-        ? item.gambar
-        : [item.gambar || 'https://placehold.co/400x300?text=No+Image'];
+      return Array.isArray(item.image)
+        ? item.image
+        : [item.image || 'https://placehold.co/400x300?text=No+Image'];
     },
 
       filterKategori() {
@@ -148,8 +148,8 @@
       },
 
       getJenisKelasName(item) {
-        return item.course?.jenis_kelas?.name_clasess_type
-          || item.jenis_kelas?.name_clasess_type
+        return item.course?.courseType?.name_clasess_type
+          || item.courseType?.name_clasess_type
           || item.course?.name_clasess_type
       }
     };

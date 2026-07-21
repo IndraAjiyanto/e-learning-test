@@ -52,14 +52,14 @@ export class FaqsController {
   }
 
   @Roles('super_admin')
-  @Get('formEdit/:pertanyaan_umumId')
+  @Get('formEdit/:faqsId')
   async formEdit(
-    @Param('pertanyaan_umumId') pertanyaan_umumId: number,
+    @Param('faqsId') faqsId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     const faqs =
-      await this.pertanyaanUmumService.findOne(pertanyaan_umumId);
+      await this.pertanyaanUmumService.findOne(faqsId);
     res.render('super_admin/faqs/edit', {
       user: req.user,
       faqs,
@@ -67,9 +67,9 @@ export class FaqsController {
   }
 
   @Roles('super_admin')
-  @Patch(':pertanyaan_umumId/:categoryId')
+  @Patch(':faqsId/:categoryId')
   async update(
-    @Param('pertanyaan_umumId') pertanyaan_umumId: number,
+    @Param('faqsId') faqsId: number,
     @Param('categoryId') categoryId: number,
     @Body() updatePertanyaanUmumDto: UpdateFaqsDto,
     @Req() req: Request,
@@ -77,7 +77,7 @@ export class FaqsController {
   ) {
     try {
       await this.pertanyaanUmumService.update(
-        pertanyaan_umumId,
+        faqsId,
         updatePertanyaanUmumDto,
       );
       req.flash('success', 'FAQ successfully updated');
@@ -89,15 +89,15 @@ export class FaqsController {
   }
 
   @Roles('super_admin')
-  @Delete(':pertanyaan_umumId/:categoryId')
+  @Delete(':faqsId/:categoryId')
   async remove(
-    @Param('pertanyaan_umumId') pertanyaan_umumId: number,
+    @Param('faqsId') faqsId: number,
     @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      await this.pertanyaanUmumService.remove(pertanyaan_umumId);
+      await this.pertanyaanUmumService.remove(faqsId);
       req.flash('success', 'FAQ successfully deleted');
       res.redirect('/category/' + categoryId);
     } catch (error: any) {

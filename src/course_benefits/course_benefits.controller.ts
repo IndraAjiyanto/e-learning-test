@@ -48,7 +48,7 @@ export class ProgramBenefitController {
     @Req() req: Request,
     @Param('courseId') courseId: number,
   ) {
-    res.render('super_admin/benefit_kelas/create', { user: req.user, courseId });
+    res.render('super_admin/course_benefits/create', { user: req.user, courseId });
   }
 
   @Roles('super_admin')
@@ -60,7 +60,7 @@ export class ProgramBenefitController {
   ) {
     const program_benefit =
       await this.programBenefitService.findOne(programBenefitId);
-    res.render('super_admin/benefit_kelas/edit', {
+    res.render('super_admin/course_benefits/edit', {
       user: req.user,
       program_benefit,
     });

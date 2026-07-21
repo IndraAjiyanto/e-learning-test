@@ -11,12 +11,12 @@ import { Course } from './course.entity';
 import { User } from './user.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity('sertifikat')
+@Entity('certificates')
 export class Certificates {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'sertif' })
+  @Column({ name: 'certificate_file' })
   certificate: string;
 
   @CreateDateColumn()
@@ -28,7 +28,7 @@ export class Certificates {
   @ManyToOne(() => Course, (course) => course.certificates, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'kelasId' })
+  @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: Course;
   @ManyToOne(() => User, (user) => user.certificates, { onDelete: 'CASCADE' })

@@ -15,7 +15,7 @@ export class MentorService {
     @InjectRepository(Mentors)
     private readonly mentorRepository: Repository<Mentors>,
     @InjectRepository(Technology)
-    private readonly teknologiRepository: Repository<Technology>,
+    private readonly technologiesRepository: Repository<Technology>,
     @InjectRepository(Course)
     private readonly kelasRepository: Repository<Course>,
   ) {}
@@ -27,31 +27,31 @@ export class MentorService {
     if (!course) {
       throw new NotFoundException('Program not found');
     }
-    let teknologi: Technology[] = [];
+    let technologies: Technology[] = [];
     if (
       createMentorDto.technologyId &&
       createMentorDto.technologyId.length > 0
     ) {
-      teknologi = await this.teknologiRepository.findBy({
+      technologies = await this.technologiesRepository.findBy({
         id: In(createMentorDto.technologyId),
       });
     }
     const mentor = await this.mentorRepository.create({
       ...createMentorDto,
       course: course,
-      teknologi: teknologi,
+      technologies: technologies,
     });
     return await this.mentorRepository.save(mentor);
   }
 
-  async findTeknologi() {
-    return await this.teknologiRepository.find();
+  async findTechnologies() {
+    return await this.technologiesRepository.find();
   }
 
   async findOne(mentorId: number) {
     const mentor = await this.mentorRepository.findOne({
       where: { id: mentorId },
-      relations: ['course', 'teknologi'],
+      relations: ['course', 'technologies'],
     });
     if (!mentor) {
       throw new NotFoundException('mentor not found');
@@ -66,11 +66,11 @@ export class MentorService {
     }
     if (updateMentorDto.technologyId !== undefined) {
       if (updateMentorDto.technologyId.length > 0) {
-        mentor.teknologi = await this.teknologiRepository.findBy({
+        mentor.technologies = await this.technologiesRepository.findBy({
           id: In(updateMentorDto.technologyId),
         });
       } else {
-        mentor.teknologi = [];
+        mentor.technologies = [];
       }
     }
 

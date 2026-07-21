@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Mission } from '../entities/mision.entity';
+import { Mission } from '../entities/mission.entity';
 import { CreateMissionDto } from './dto/create-mission.dto';
 import { UpdateMissionDto } from './dto/update-mission.dto';
 
@@ -43,14 +43,14 @@ export class MissionService {
   }
 
   async remove(id: number): Promise<void> {
-    const mision = await this.findOne(id);
-    if (!mision) {
+    const mission = await this.findOne(id);
+    if (!mission) {
       throw new Error('Mision not found');
     }
-    await this.missionRepository.remove(mision);
+    await this.missionRepository.remove(mission);
     const allMission = await this.missionRepository.find();
     for (const item of allMission) {
-      if (item.mission_order > mision.mission_order) {
+      if (item.mission_order > mission.mission_order) {
         item.mission_order -= 1;
         await this.missionRepository.save(item);
       }

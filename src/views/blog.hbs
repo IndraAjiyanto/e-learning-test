@@ -13,7 +13,7 @@
 <script>
   function blogApp() {
   return {
-    allKategori: {{{json kategori_blog}}},
+    allKategori: {{{json blog_categories}}},
     excludeIds: {{{json excludeIds}}},
     filteredKategoriList: [],
     selectedKategori: '',
@@ -93,12 +93,12 @@
     },
 
     nextSlide(item) {
-      const len = Array.isArray(item.gambar) ? item.gambar.length : 1;
+      const len = Array.isArray(item.image) ? item.image.length : 1;
       this.slideStates[item.id] = (this.getSlide(item.id) + 1) % len;
     },
 
     prevSlide(item) {
-      const len = Array.isArray(item.gambar) ? item.gambar.length : 1;
+      const len = Array.isArray(item.image) ? item.image.length : 1;
       this.slideStates[item.id] = this.getSlide(item.id) === 0 ? len - 1 : this.getSlide(item.id) - 1;
     },
 
@@ -153,7 +153,7 @@
     },
 
     getCategoryName(item) {
-      return this.getLocalizedText(item.kategori_blog?.name) || null;
+      return this.getLocalizedText(item.blog_categories?.name) || null;
     },
 
     viewBlog(id) {

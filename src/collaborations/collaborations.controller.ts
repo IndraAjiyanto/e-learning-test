@@ -46,7 +46,7 @@ export class CollaborationsController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'kerja_sama',
+    folder: 'collaborations',
   })
   async create(
     @Body() createKerjaSamaDto: CreateCollaborationsDto,
@@ -67,40 +67,40 @@ export class CollaborationsController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const kerja_sama = await this.kerjaSamaService.findAll();
-    res.render('super_admin/kerja_sama/index', { user: req.user, kerja_sama });
+    const collaborations = await this.kerjaSamaService.findAll();
+    res.render('super_admin/collaborations/index', { user: req.user, collaborations });
   }
 
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    res.render('super_admin/kerja_sama/create', { user: req.user });
+    res.render('super_admin/collaborations/create', { user: req.user });
   }
 
   @Roles('super_admin')
-  @Get(':kerja_samaId')
+  @Get(':collaborationsId')
   async findOne(
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('collaborationsId') collaborationsId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
-    res.render('super_admin/kerja_sama/detail', { user: req.user, kerja_sama });
+    const collaborations = await this.kerjaSamaService.findOne(collaborationsId);
+    res.render('super_admin/collaborations/detail', { user: req.user, collaborations });
   }
 
   @Roles('super_admin')
-  @Get('formEdit/:kerja_samaId')
+  @Get('formEdit/:collaborationsId')
   async formEdit(
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('collaborationsId') collaborationsId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
-    res.render('super_admin/kerja_sama/edit', { user: req.user, kerja_sama });
+    const collaborations = await this.kerjaSamaService.findOne(collaborationsId);
+    res.render('super_admin/collaborations/edit', { user: req.user, collaborations });
   }
 
   @Roles('super_admin')
-  @Patch(':kerja_samaId')
+  @Patch(':collaborationsId')
   @UseInterceptors(
     FileInterceptor('gambar', multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -112,22 +112,22 @@ export class CollaborationsController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'kerja_sama',
+    folder: 'collaborations',
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('collaborationsId') collaborationsId: number,
     @Body() updateKerjaSamaDto: UpdateCollaborationsDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
+      const collaborations = await this.kerjaSamaService.findOne(collaborationsId);
       if (gambar) {
-        await this.kerjaSamaService.deleteFile(kerja_sama.image);
+        await this.kerjaSamaService.deleteFile(collaborations.image);
         updateKerjaSamaDto.image = req.body.uploadedImageUrls?.[0];
       }
-      await this.kerjaSamaService.update(kerja_samaId, updateKerjaSamaDto);
+      await this.kerjaSamaService.update(collaborationsId, updateKerjaSamaDto);
       req.flash('success', 'partnership successfully updated');
       res.redirect('/partnership');
     } catch (error: any) {
@@ -137,20 +137,20 @@ export class CollaborationsController {
   }
 
   @Roles('super_admin')
-  @Delete(':kerja_samaId')
+  @Delete(':collaborationsId')
   async remove(
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('collaborationsId') collaborationsId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const kerja_sama = await this.kerjaSamaService.findOne(kerja_samaId);
-      if (!kerja_sama) {
+      const collaborations = await this.kerjaSamaService.findOne(collaborationsId);
+      if (!collaborations) {
         req.flash('error', 'partnership not found');
         res.redirect('/partnership');
       }
-      await this.kerjaSamaService.deleteFile(kerja_sama.image);
-      await this.kerjaSamaService.remove(kerja_samaId);
+      await this.kerjaSamaService.deleteFile(collaborations.image);
+      await this.kerjaSamaService.remove(collaborationsId);
       req.flash('success', 'partnership successfully remove');
       res.redirect('/partnership');
     } catch (error: any) {

@@ -1,0 +1,474 @@
+<!-- ===================== TAB LOG BOOK USER ===================== -->
+
+  <!-- Header: Search + Export -->
+  <div
+    class='mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4'
+  >
+    <div class='flex items-center gap-3'>
+      <!-- Search -->
+      <div class='relative w-full md:w-64'>
+        <button
+          @click='search = searchInput; pageNumber=0'
+          class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900'
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            class='h-5 w-5'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5
+                     0 016.15 13.65z'
+            />
+          </svg>
+        </button>
+        <input
+          type='text'
+          placeholder='Search user logbook...'
+          x-model='searchInput'
+          @input='search = searchInput; pageNumber=0'
+          class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
+        />
+      </div>
+    </div>
+
+    <!-- Export Button -->
+
+    <button
+      @click='exportToExcel()'
+      class='flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition whitespace-nowrap'
+    >
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        viewBox='0 0 48 48'
+        class='h-5 w-5 rounded shadow'
+      >
+        <path
+          fill='#185C37'
+          d='M42 6H14a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z'
+        />
+        <path fill='#21A366' d='M14 6H8a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h6V6z' />
+        <path fill='#107C41' d='M22 14H8v20h14V14z' />
+        <path
+          fill='#fff'
+          d='M19 31h-2.1l-2.9-5-2.9 5H9l4.2-7-4.1-7h2.1l2.9 5 2.9-5H19l-4.2 7 4.2 7z'
+        />
+      </svg>
+      Export Excel
+    </button>
+
+  </div>
+
+  <!-- Table -->
+  <div x-show="data && data.length > 0" class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+    <table class='min-w-full divide-y divide-gray-200'>
+      <thead class='bg-gray-100'>
+        <tr>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >No</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >User</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Email</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Created At</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Meeting No</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Week No</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Program Name</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Program Type</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Category</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Mentor</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Activity</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Activity Details</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Documentation</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Status</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Issues</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Additional Documentation</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Actions</th>
+        </tr>
+      </thead>
+      <tbody class='divide-y divide-gray-200'>
+        <template x-for="(logbookUser, index) in filteredData" :key="logbookUser.id">
+          <tr
+            class='hover:bg-gray-50 transition'
+          >
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.user.username"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.user.email"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="formatTanggal(logbookUser.createdAt)"></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session.pertemuan_ke"
+            ></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session.weeks.week_number"
+            ></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session.weeks.course.name"
+            ></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session.weeks.course.courseType.name_clasess_type"
+            ></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session.weeks.course.category.name"
+            ></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session.weeks.course.mentor[0]?.name || ''"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.activity"></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.activity_details"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              <template x-if="logbookUser.dokumentasi">
+                <img :src="logbookUser.dokumentasi" 
+                     class="w-12 h-12 object-cover rounded-lg shadow-sm hover:scale-110 transition cursor-pointer" 
+                     @click="viewDetail(logbookUser)" alt="Doc">
+              </template>
+            </td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.proses"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.obstacles"></td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              <template x-if="logbookUser.other_documentation">
+                <a :href="logbookUser.other_documentation" 
+                   target="_blank" 
+                   class="text-blue-600 hover:underline break-all text-xs" 
+                   x-text="logbookUser.other_documentation"></a>
+              </template>
+            </td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              
+              <!-- View / Detail -->
+              <button @click="viewDetail(logbookUser)"
+                class="p-2 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800 transition"
+                title="View">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                    fill="none" viewBox="0 0 24 24" 
+                    stroke-width="1.5" stroke="currentColor" 
+                    class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" 
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+            </td>
+          </tr>
+          </template>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center'
+    x-show='pageCount() > 1'
+  >
+    <button
+      @click='prevPage'
+      :disabled='pageNumber==0'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }"
+    >
+      Prev
+    </button>
+    <template x-for='(page,index) in pages()' :key='index'>
+      <button
+        @click='viewPage(index)'
+        class='px-3 py-1 rounded'
+        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
+        x-text='index+1'
+      >
+      </button>
+    </template>
+    <button
+      @click='nextPage'
+      :disabled='pageNumber >= pageCount()-1'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
+    >
+      Next
+    </button>
+  </div>
+
+  <!-- Detail Modal -->
+  <div 
+    x-show="showModal" 
+    class="fixed inset-0 z-50 overflow-y-auto" 
+    x-cloak
+    @keydown.escape.window="closeModal()"
+  >
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <div 
+        x-show="showModal" 
+        x-transition:enter="ease-out duration-300" 
+        x-transition:enter-start="opacity-0" 
+        x-transition:enter-end="opacity-100" 
+        x-transition:leave="ease-in duration-200" 
+        x-transition:leave-start="opacity-100" 
+        x-transition:leave-end="opacity-0" 
+        class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" 
+        @click="closeModal()"
+      ></div>
+
+      <span class="hidden sm:inline-block sm:align-middle sm:min-h-screen">&#8203;</span>
+
+      <div 
+        x-show="showModal" 
+        x-transition:enter="ease-out duration-300" 
+        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+        x-transition:leave="ease-in duration-200" 
+        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+        class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
+      >
+        <div class="bg-white px-6 py-6">
+          <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h3 class="text-xl font-bold text-gray-900">Logbook Detail</h3>
+            <button @click="closeModal()" class="text-gray-400 hover:text-gray-500">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+
+          <template x-if="selectedLogbook">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- User Info Section -->
+              <div class="space-y-4">
+                <div>
+                  <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">User Information</label>
+                  <p class="text-sm font-medium text-gray-900" x-text="selectedLogbook.user.username"></p>
+                  <p class="text-sm text-gray-600" x-text="selectedLogbook.user.email"></p>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Program Details</label>
+                  <p class="text-sm text-gray-900"><span class="font-medium">Name:</span> <span x-text="selectedLogbook.session.weeks.course.name"></span></p>
+                  <p class="text-sm text-gray-900"><span class="font-medium">Type:</span> <span x-text="selectedLogbook.session.weeks.course.courseType.name_clasess_type"></span></p>
+                  <p class="text-sm text-gray-900"><span class="font-medium">Mentor:</span> <span x-text="selectedLogbook.session.weeks.course.mentor[0]?.name || '-'"></span></p>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Timeline</label>
+                  <p class="text-sm text-gray-900">Week <span x-text="selectedLogbook.session.weeks.week_number"></span>, Meeting <span x-text="selectedLogbook.session.pertemuan_ke"></span></p>
+                  <p class="text-sm text-gray-600" x-text="formatTanggal(selectedLogbook.createdAt)"></p>
+                </div>
+              </div>
+
+              <!-- Activity Content Section -->
+              <div class="space-y-4">
+                <div>
+                  <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Activity & Details</label>
+                  <p class="text-sm font-bold text-gray-900" x-text="selectedLogbook.activity"></p>
+                  <div class="mt-1 p-3 bg-gray-50 rounded-lg text-sm text-gray-700 whitespace-pre-line" x-text="selectedLogbook.activity_details"></div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Issues (Kendala)</label>
+                  <p class="text-sm text-red-600" x-text="selectedLogbook.obstacles || 'None'"></p>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</label>
+                  <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800" x-text="selectedLogbook.proses"></span>
+                </div>
+              </div>
+
+              <!-- Documentation Section -->
+              <div class="md:col-span-2 border-t pt-4">
+                <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Documentation Photos</label>
+                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <p class="text-sm font-medium text-gray-700">Main Documentation:</p>
+                    <template x-if="selectedLogbook.dokumentasi">
+                      <img :src="selectedLogbook.dokumentasi" class="w-full h-auto max-h-80 object-contain rounded-xl border bg-gray-50 shadow-sm cursor-zoom-in" @click="window.open(selectedLogbook.dokumentasi, '_blank')" alt="Main Doc">
+                    </template>
+                  </div>
+                  <div class="space-y-2">
+                    <p class="text-sm font-medium text-gray-700">Additional Documentation:</p>
+                    <template x-if="selectedLogbook.other_documentation">
+                      <a :href="selectedLogbook.other_documentation" 
+                         target="_blank" 
+                         class="text-blue-600 hover:underline break-all text-sm block" 
+                         x-text="selectedLogbook.other_documentation"></a>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- SheetJS Library for Excel Export -->
+<script
+  src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
+></script>
+
+<script>
+function logBookUserData() {
+  return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    searchInput: '',
+    search: '',
+    pageNumber: 0,
+    size: 5,
+    amount: 0,
+    showModal: false,
+    selectedLogbook: null,
+
+    async fetchLogBookUsers() {
+      const res = await fetch('/program/logbookUser/{{course.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
+    get filteredData() {
+      let filtered = this.data.filter(l =>
+          (
+            `${l.user.username}
+             ${l.session.pertemuan_ke}
+             ${l.session.weeks.week_number}
+             ${l.session.weeks.course.name}
+             ${l.session.weeks.course.courseType.name_clasess_type}
+             ${l.session.weeks.course.category.name}
+             ${l.session.weeks.course.mentor[0]?.name || ""}
+             ${l.activity}
+             ${l.activity_details}
+             ${l.dokumentasi}
+             ${l.proses}
+             ${l.obstacles}
+             ${l.other_documentation}`
+          ).toLowerCase().
+          includes(this.search.toLowerCase())
+      );
+
+      this.amount = filtered.length;
+
+      const start = this.pageNumber * this.size;
+      return filtered.slice(start, start + this.size);
+    },
+
+    pageCount() {
+      return Math.ceil(this.amount / this.size);
+    },
+
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
+
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
+
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
+
+    viewPage(i) {
+      this.pageNumber = i;
+    },
+
+    viewDetail(logbook) {
+      this.selectedLogbook = logbook;
+      this.showModal = true;
+    },
+
+    closeModal() {
+      this.showModal = false;
+      this.selectedLogbook = null;
+    },
+
+    formatTanggal(value) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(value).toLocaleDateString('id-ID', options);
+    },
+
+    exportToExcel() {
+        try {
+          const dataToExport = this.filteredData.map((l, index) => ({
+            No: index + 1,
+            User: l.user.username,
+            Email: l.user.email,
+            "Created At": new Date(l.createdAt).toLocaleDateString(),
+            "Meeting No": l.session.pertemuan_ke,
+            "Week No": l.session.weeks.week_number,
+            "Program Name": l.session.weeks.course.name,
+            "Program Type": l.session.weeks.course.courseType.name_clasess_type,
+            Category: l.session.weeks.course.category.name,
+            Mentor: l.session.weeks.course.mentor[0]?.name || "",
+            Activity: l.activity,
+            "Activity Details": l.activity_details,
+            Documentation: l.dokumentasi,
+            Status: l.proses,
+            Issues: l.obstacles,
+            "Additional Documentation": l.other_documentation
+          }));
+
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+          ws["!cols"] = [
+            { wch: 5 },   // No
+            { wch: 20 },  // User
+            { wch: 15 },  // Email
+            { wch: 10 },  // Created At
+            { wch: 8 },   // Meeting No
+            { wch: 25 },  // Program Name
+            { wch: 15 },  // Program Type
+            { wch: 15 },  // Category
+            { wch: 20 },  // Mentor
+            { wch: 30 },  // Activity
+            { wch: 50 },  // Activity Details
+            { wch: 60 },  // Documentation
+            { wch: 12 },  // Status
+            { wch: 40 },  // Issues
+            { wch: 60 }   // Additional Documentation
+          ];
+
+          XLSX.utils.book_append_sheet(wb, ws, "Log Book User");
+
+          XLSX.writeFile(
+            wb,
+            `Log_Book_User_${new Date().toISOString().slice(0, 10)}.xlsx`
+          );
+        } catch (err) {
+          alert("Failed to export data to Excel");
+          console.error(err);
+        }
+      },
+  }
+}
+</script>

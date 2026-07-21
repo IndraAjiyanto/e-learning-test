@@ -10,15 +10,15 @@ import {
 import { Course } from './course.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity('pertanyaan_kelas')
+@Entity('course_questions')
 export class CourseQuestions {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb', { name: 'pertanyaan', nullable: true })
+  @Column('jsonb', { name: 'question', nullable: true })
   questions: string[];
 
-  @Column('jsonb', { name: 'jawaban', nullable: true })
+  @Column('jsonb', { name: 'answer', nullable: true })
   answers: string[];
 
   @CreateDateColumn()
@@ -30,7 +30,7 @@ export class CourseQuestions {
   @ManyToOne(() => Course, (course) => course.courseQuestions, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'kelasId' })
+  @JoinColumn({ name: 'courseId' })
   @Exclude()
   course: Course;
 }

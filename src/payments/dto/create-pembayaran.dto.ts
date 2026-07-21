@@ -18,7 +18,7 @@ export class CreatePembayaranDto {
 
   @IsInt()
   @IsOptional()
-  cicilanId: number;
+  installmentsId: number;
 
   @IsString()
   @IsOptional()
