@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { KategorisService } from './kategoris.service';
 import { KategorisController } from './kategoris.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,6 +12,8 @@ import { Alumni } from 'src/entities/alumni.entity';
 import { PertanyaanUmum } from 'src/entities/pertanyaan_umum.entity';
 import { FlowCategory } from 'src/entities/flow_category.entity';
 import { Superiority } from 'src/entities/superiority.entity';
+import { GalleryModule } from 'src/gallery/gallery.module';
+import { LogbookModule } from 'src/logbook/logbook.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { Superiority } from 'src/entities/superiority.entity';
       FlowCategory,
     ]),
     CommonModule,
+    forwardRef(() => GalleryModule),
+    LogbookModule, 
   ],
   controllers: [KategorisController],
   providers: [KategorisService],
