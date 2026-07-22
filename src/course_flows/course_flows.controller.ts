@@ -11,8 +11,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { CourseFlowsService } from './course_flows.service';
-import { CreateAlurKelaDto } from './dto/create-alur_kela.dto';
-import { UpdateAlurKelaDto } from './dto/update-alur_kela.dto';
+import { CreateCourseFlowDto } from './dto/create-course_flow.dto';
+import { UpdateCourseFlowDto } from './dto/update-course_flow.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
@@ -43,14 +43,14 @@ export class CourseFlowsController {
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    const course = await this.alurKelasService.findAllKelas();
+    const course = await this.alurKelasService.findAllCourses();
     res.render('super_admin/course_flows/create', { user: req.user, course });
   }
 
   @Roles('super_admin')
   @Post()
   async createFromIndex(
-    @Body() createAlurKelaDto: CreateAlurKelaDto,
+    @Body() createAlurKelaDto: CreateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -70,7 +70,7 @@ export class CourseFlowsController {
   @Post(':courseId')
   async create(
     @Param('courseId') courseId: number,
-    @Body() createAlurKelaDto: CreateAlurKelaDto,
+    @Body() createAlurKelaDto: CreateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -111,7 +111,7 @@ export class CourseFlowsController {
   async update(
     @Param('alurKelasId') alurKelasId: number,
     @Param('courseId') courseId: number,
-    @Body() updateAlurKelaDto: UpdateAlurKelaDto,
+    @Body() updateAlurKelaDto: UpdateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {

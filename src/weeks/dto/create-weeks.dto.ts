@@ -2,14 +2,14 @@ import { IsBooleanString, IsInt, IsString } from 'class-validator';
 
 export class CreateWeeksDto {
   @IsString()
-  keterangan: string;
+  description: string;
 
   @IsInt()
-  minggu_ke: number;
+  weekNumber: number;
 
   @IsBooleanString()
-  akhir: boolean;
+  isFinal: boolean;
 
   @IsString()
-  akhir_check: string;
+  isFinalCheck: string;
 }

@@ -94,7 +94,7 @@ export class SessionController {
     @Param('id') id: number,
   ) {
     const session = await this.sessionService.findOne(id);
-    const course = await this.sessionService.findAllKelas();
+    const course = await this.sessionService.findAllCourses();
     res.render('admin/session/edit', { user: req.user, course, session });
   }
 
@@ -126,7 +126,7 @@ export class SessionController {
     @Res() res: Response,
   ) {
     const session = await this.sessionService.findOne(sessionId);
-    const attendances = await this.sessionService.findMuridInKelas(
+    const attendances = await this.sessionService.findStudentsInCourse(
       session.weeks.course.id,
       sessionId,
     );

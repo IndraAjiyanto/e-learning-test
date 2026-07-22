@@ -62,7 +62,7 @@
             {{/each}}
             </td>
           <td class="px-6 py-4 text-sm text-gray-800">
-            {{#each isi}}
+            {{#each items}}
               <div class="line-clamp-3">{{this}}</div>
             {{/each}}
           </td>
@@ -152,7 +152,7 @@ function missionsTable({ missions }) {
 
     get filteredMisi() {
       const filtered = this.missions.filter(m =>
-        (`${m.content.en} ${m.isi.en} ${m.content.id} ${m.isi.id} ${m.content.ja} ${m.isi.ja}`)
+        (`${m.content?.en ?? ''} ${m.items?.en ?? ''} ${m.content?.id ?? ''} ${m.items?.id ?? ''} ${m.content?.ja ?? ''} ${m.items?.ja ?? ''}`)
           .toLowerCase()
           .includes(this.search.toLowerCase())
       );

@@ -1,6 +1,6 @@
 import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
 
-export class CreatePertanyaanKelaDto {
+export class CreateCourseQuestionDto {
   @IsArray()
   @IsNotEmpty()
   questions: string[];

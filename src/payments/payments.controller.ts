@@ -11,8 +11,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
-import { CreatePembayaranDto } from './dto/create-pembayaran.dto';
-import { UpdatePembayaranDto } from './dto/update-pembayaran.dto';
+import { CreatePaymentDto } from './dto/create-payment.dto';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -40,7 +40,7 @@ export class PaymentsController {
   async create(
     @Param('userId') userId: number,
     @Param('courseId') courseId: number,
-    @Body() createPembayaranDto: CreatePembayaranDto,
+    @Body() createPembayaranDto: CreatePaymentDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -48,7 +48,7 @@ export class PaymentsController {
       createPembayaranDto.file = req.body.uploadedImageUrls?.[0];
       createPembayaranDto.courseId = courseId;
       createPembayaranDto.userId = userId;
-      createPembayaranDto.proses = 'proces';
+      createPembayaranDto.process = 'proces';
       const pembayaran =
         await this.pembayaransService.create(createPembayaranDto);
       if (pembayaran == false) {
@@ -82,20 +82,20 @@ export class PaymentsController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'payment',
   })
-  async createPembayaranCicilan(
+  async createInstallmentPayment(
     @Param('installmentsId') installmentsId: number,
     @Param('userId') userId: number,
     @Param('courseId') courseId: number,
-    @Body() createPembayaranDto: CreatePembayaranDto,
+    @Body() createPembayaranDto: CreatePaymentDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createPembayaranDto.installmentsId = installmentsId;
+      createPembayaranDto.installmentId = installmentsId;
       createPembayaranDto.file = req.body.uploadedImageUrls?.[0];
       createPembayaranDto.courseId = courseId;
       createPembayaranDto.userId = userId;
-      createPembayaranDto.proses = 'proces';
+      createPembayaranDto.process = 'proces';
       const pembayaran =
         await this.pembayaransService.create(createPembayaranDto);
       if (pembayaran == false) {
@@ -136,7 +136,7 @@ async getRegistration(@Param('userId') userId: number, @Res() res: Response) {
 @Roles('user')
 @Get('api/installment/:userId')
 async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
-  const installments = await this.pembayaransService.findCicilan(userId);
+  const installments = await this.pembayaransService.findInstallments(userId);
   return res.json({ data: installments });
 }
 
@@ -160,7 +160,7 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const course = await this.pembayaransService.findKelas(courseId);
+    const course = await this.pembayaransService.findCourse(courseId);
     res.render('user/payment', { user: req.user, course });
   }
 
@@ -169,7 +169,7 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
   async findAll(@Res() res: Response, @Req() req: Request) {
     const pembayaran = await this.pembayaransService.findAll();
     const pendaftaran = await this.pembayaransService.findAllPendaftaran();
-    const installments = await this.pembayaransService.findAllCicilan();
+    const installments = await this.pembayaransService.findAllInstallments();
     res.render('super_admin/payments/index', {
       user: req.user,
       pembayaran,
@@ -180,7 +180,7 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
 
   @Roles('super_admin')
   @Get(':pembayaranId')
-  async detailPembayaran(
+  async findPaymentDetails(
     @Param('pembayaranId') pembayaranId: number,
     @Req() req: Request,
     @Res() res: Response,
@@ -194,7 +194,7 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
   async update(
     @Param('pembayaranId') pembayaranId: number,
     @Param('proses') proses: string,
-    @Body() updatePembayaranDto: UpdatePembayaranDto,
+    @Body() updatePembayaranDto: UpdatePaymentDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -207,10 +207,10 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
         updatePembayaranDto.file = pembayaran['file'];
         updatePembayaranDto.userId = pembayaran['user']['id'];
         updatePembayaranDto.courseId = pembayaran['course']['id'];
-        updatePembayaranDto.proses = 'acc';
+        updatePembayaranDto.process = 'acc';
         await this.pembayaransService.update(pembayaranId, updatePembayaranDto);
         try {
-          await this.pembayaransService.addUserToKelas(
+          await this.pembayaransService.addUserToCourse(
             pembayaran['user']['id'],
             pembayaran['course']['id'],
           );
@@ -222,10 +222,10 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
         updatePembayaranDto.file = pembayaran['file'];
         updatePembayaranDto.userId = pembayaran['user']['id'];
         updatePembayaranDto.courseId = pembayaran['course']['id'];
-        updatePembayaranDto.proses = 'rejected';
+        updatePembayaranDto.process = 'rejected';
         await this.pembayaransService.update(pembayaranId, updatePembayaranDto);
         try {
-          await this.pembayaransService.removeUserKelas(
+          await this.pembayaransService.removeCourseUser(
             pembayaran['user']['id'],
             pembayaran['course']['id'],
           );

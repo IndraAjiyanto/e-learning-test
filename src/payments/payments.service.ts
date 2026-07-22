@@ -3,8 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreatePembayaranDto } from './dto/create-pembayaran.dto';
-import { UpdatePembayaranDto } from './dto/update-pembayaran.dto';
+import { CreatePaymentDto } from './dto/create-payment.dto';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from 'src/entities/payment.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -36,7 +36,7 @@ export class PaymentsService {
     @InjectRepository(UserCourse)
     private readonly userKelasRepository: Repository<UserCourse>,
     @InjectRepository(WeekProgress)
-    private readonly progresMingguRepository: Repository<WeekProgress>,
+    private readonly weekProgressRepository: Repository<WeekProgress>,
     @InjectRepository(SessionProgress)
     private readonly progresPertemuanRepository: Repository<SessionProgress>,
     @InjectRepository(Weeks)
@@ -45,7 +45,7 @@ export class PaymentsService {
     private readonly sessionRepository: Repository<Session>,
   ) {}
 
-  async create(createPembayaranDto: CreatePembayaranDto) {
+  async create(createPembayaranDto: CreatePaymentDto) {
     const user = await this.userRepository.findOne({
       where: { id: createPembayaranDto.userId },
     });
@@ -60,14 +60,14 @@ export class PaymentsService {
       return;
     }
 
-    if (createPembayaranDto.installmentsId) {
+    if (createPembayaranDto.installmentId) {
       const installments = await this.installmentsRepository.findOne({
-        where: { id: createPembayaranDto.installmentsId },
+        where: { id: createPembayaranDto.installmentId },
       });
       if (!installments) {
         return;
       }
-      const check = await this.checkPembayaran(
+      const check = await this.checkPayment(
         createPembayaranDto.userId,
         createPembayaranDto.courseId,
       );
@@ -84,7 +84,7 @@ export class PaymentsService {
       }
     }
 
-    const check = await this.checkPembayaran(
+    const check = await this.checkPayment(
       createPembayaranDto.userId,
       createPembayaranDto.courseId,
     );
@@ -100,7 +100,7 @@ export class PaymentsService {
     }
   }
 
-  async addUserToKelas(userId: number, courseId: number) {
+  async addUserToCourse(userId: number, courseId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: [],
@@ -143,14 +143,14 @@ export class PaymentsService {
       });
       if (weeks) {
         const existingProgresMinggu =
-          await this.progresMingguRepository.findOne({
+          await this.weekProgressRepository.findOne({
             where: {
               week: { id: weeks.id },
               user: { id: userId },
             },
           });
         if (existingProgresMinggu) {
-          await this.progresMingguRepository.save({
+          await this.weekProgressRepository.save({
             id: existingProgresMinggu.id,
             weeks: weeks,
             user: user,
@@ -158,7 +158,7 @@ export class PaymentsService {
             quiz: false,
           });
         } else {
-          await this.progresMingguRepository.save({
+          await this.weekProgressRepository.save({
             weeks: weeks,
             user: user,
             proses: true,
@@ -193,7 +193,7 @@ export class PaymentsService {
           }
         }
       } else if (minggu_akhir) {
-        const progresMingguAkhir = await this.progresMingguRepository.findOne({
+        const weekProgressAkhir = await this.weekProgressRepository.findOne({
           where: {
             week: { id: minggu_akhir.id },
             user: { id: userId },
@@ -201,7 +201,7 @@ export class PaymentsService {
             quiz: true,
           },
         });
-        if (progresMingguAkhir) {
+        if (weekProgressAkhir) {
           await this.userKelasRepository.update(userCourses.id, {
             progress: true,
           });
@@ -210,7 +210,7 @@ export class PaymentsService {
     }
   }
 
-  async removeUserKelas(userId: number, courseId: number): Promise<UserCourse> {
+  async removeCourseUser(userId: number, courseId: number): Promise<UserCourse> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -236,7 +236,7 @@ export class PaymentsService {
     return await this.userKelasRepository.remove(userKelas);
   }
 
-  async checkPembayaran(userId: number, courseId: number) {
+  async checkPayment(userId: number, courseId: number) {
     const pembayaran = await this.pembayaranRepository.find({
       where: {
         user: { id: userId },
@@ -251,7 +251,7 @@ export class PaymentsService {
     }
   }
 
-  async findKelas(courseId: number) {
+  async findCourse(courseId: number) {
     const course = await this.kelasRepository.findOne({
       where: { id: courseId },
       relations: ['weeks', 'category'],
@@ -279,7 +279,7 @@ export class PaymentsService {
     }
   }
 
-  async findCicilan(userId: number) {
+  async findInstallments(userId: number) {
     return await this.pembayaranRepository.find({
       where: {
         user: { id: userId },
@@ -303,7 +303,7 @@ export class PaymentsService {
     });
   }
 
-  async findAllCicilan() {
+  async findAllInstallments() {
     return await this.pembayaranRepository.find({
       where: { installment: Not(IsNull()) },
       relations: ['user', 'course', 'course.category', 'installments'],
@@ -328,7 +328,7 @@ export class PaymentsService {
     }
   }
 
-  async update(pembayaranId: number, updatePembayaranDto: UpdatePembayaranDto) {
+  async update(pembayaranId: number, updatePembayaranDto: UpdatePaymentDto) {
     const pembayaran = await this.findOne(pembayaranId);
     if (!pembayaran) {
       return;

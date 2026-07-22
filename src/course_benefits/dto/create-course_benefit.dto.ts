@@ -1,6 +1,6 @@
 import { IsArray, IsInt, IsString } from 'class-validator';
 
-export class CreateProgramBenefitDto {
+export class CreateCourseBenefitDto {
   @IsArray()
   benefit: string[];
 

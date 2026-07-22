@@ -1,0 +1,121 @@
+      <!-- Benefit Title per Bahasa -->
+      <div class='space-y-4'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
+          Benefit Title
+        </label>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <input
+              x-model='formData.title.id'
+              @input='validateField("title", "id", $event.target.value)'
+              type='text'
+              name='benefit[id]'
+              required
+              :class="formErrors.title.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='Judul benefit (ID)'
+            />
+
+            <!-- Error Message -->
+            <template x-if='formErrors.title.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.title.id'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.title.id && !formErrors.title.id'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid title</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <input
+              x-model='formData.title.en'
+              @input='validateField("title", "en", $event.target.value)'
+              type='text'
+              name='benefit[en]'
+              required
+              :class="formErrors.title.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='Benefit title (EN)'
+            />
+
+            <!-- Error Message -->
+            <template x-if='formErrors.title.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.title.en'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.title.en && !formErrors.title.en'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid title</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- JP -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
+            <input
+              x-model='formData.title.ja'
+              @input='validateField("title", "ja", $event.target.value)'
+              type='text'
+              name='benefit[ja]'
+              required
+              :class="formErrors.title.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
+              placeholder='ベネフィットタイトル (JA)'
+            />
+
+            <!-- Error Message -->
+            <template x-if='formErrors.title.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.title.ja'
+                ></p>
+              </div>
+            </template>
+
+            <!-- Success Message -->
+            <template x-if='formValid.title.ja && !formErrors.title.ja'>
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>タイトルが有効です</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>

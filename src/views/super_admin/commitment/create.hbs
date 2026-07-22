@@ -17,7 +17,7 @@
   // Form validation states
   formData: {
     icon: '',
-    judul: { id: '', en: '', ja: '' },
+    title: { id: '', en: '', ja: '' },
     description: { id: '', en: '', ja: '' }
   },
   formErrors: {
@@ -30,6 +30,7 @@
     title: { id: false, en: false, ja: false },
     description: { id: false, en: false, ja: false }
   },
+  loading: false,
 
   validateField(field, lang, value) {
     if (lang) {
@@ -98,7 +99,6 @@
       action='/commitment'
       method='POST'
       class='space-y-6'
-      x-data="{ loading: false }"
       @submit='if (!isFormValid) { $event.preventDefault(); return false; } loading = true;'
     >
 

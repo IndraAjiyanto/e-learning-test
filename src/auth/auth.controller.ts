@@ -30,7 +30,7 @@ export class AuthController {
     @Res() res: Response,
     @Req() req: any,
   ) {
-    const course = await this.authService.findKelas(id);
+    const course = await this.authService.findCourse(id);
     if (!req.user) {
       res.render('login');
     } else {

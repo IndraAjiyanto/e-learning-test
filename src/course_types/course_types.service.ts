@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateJenisKelaDto } from './dto/create-jenis_kela.dto';
-import { UpdateJenisKelaDto } from './dto/update-jenis_kela.dto';
+import { CreateCourseTypeDto } from './dto/create-course_type.dto';
+import { UpdateCourseTypeDto } from './dto/update-course_type.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Repository } from 'typeorm';
@@ -11,7 +11,7 @@ export class CourseTypesService {
     @InjectRepository(CourseType)
     private readonly courseTypeRepository: Repository<CourseType>,
   ) {}
-  async create(createJenisKelaDto: CreateJenisKelaDto) {
+  async create(createJenisKelaDto: CreateCourseTypeDto) {
     const courseType =
       await this.courseTypeRepository.create(createJenisKelaDto);
     return await this.courseTypeRepository.save(courseType);
@@ -21,9 +21,9 @@ export class CourseTypesService {
     return await this.courseTypeRepository.find();
   }
 
-  async findOne(jenis_kelasId: number) {
+  async findOne(courseTypeId: number) {
     const courseType = await this.courseTypeRepository.findOne({
-      where: { id: jenis_kelasId },
+      where: { id: courseTypeId },
     });
     if (!courseType) {
       throw new NotFoundException('Program type not found');
@@ -31,8 +31,8 @@ export class CourseTypesService {
     return courseType;
   }
 
-  async update(jenis_kelasId: number, updateJenisKelaDto: UpdateJenisKelaDto) {
-    const courseType = await this.findOne(jenis_kelasId);
+  async update(courseTypeId: number, updateJenisKelaDto: UpdateCourseTypeDto) {
+    const courseType = await this.findOne(courseTypeId);
     if (!courseType) {
       throw new NotFoundException('Program type not found');
     }
@@ -40,8 +40,8 @@ export class CourseTypesService {
     return await this.courseTypeRepository.save(courseType);
   }
 
-  async remove(jenis_kelasId: number) {
-    const courseType = await this.findOne(jenis_kelasId);
+  async remove(courseTypeId: number) {
+    const courseType = await this.findOne(courseTypeId);
     if (!courseType) {
       throw new NotFoundException('Program type not found');
     }

@@ -11,7 +11,7 @@ import { UserAnswersService } from './user_answers.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
-import { CreateJawabanUserDto, JawabanUserDto } from './dto/create-jawaban_user.dto';
+import { CreateUserAnswerDto, UserAnswerDto } from './dto/create-user_answer.dto';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('answer-users')
@@ -20,7 +20,7 @@ export class UserAnswersController {
 
     @Roles('user')
   @Post('chose-answer')
-  async choseAnswer(@Body() jawabanUserDto: JawabanUserDto) {
+  async choseAnswer(@Body() jawabanUserDto: UserAnswerDto) {
     try {
     await this.jawabanUsersService.createAnswer(jawabanUserDto);
       
@@ -34,7 +34,7 @@ export class UserAnswersController {
     @Param('quizId') quizId: number,
     @Req() req: Request,
     @Res() res: Response,
-    @Body() createJawabanUserDto: CreateJawabanUserDto,
+    @Body() createUserAnswerDto: CreateUserAnswerDto,
   ) {
     try {
       const jawabanUser = await this.jawabanUsersService.searchAnswerUser(quizId, req.user!.id);

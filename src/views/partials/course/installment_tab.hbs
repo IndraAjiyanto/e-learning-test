@@ -187,8 +187,8 @@
 <script>
 function installmentData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
-    availableMonths: JSON.parse(localStorage.getItem('activeData'))?.availableMonths || [],
+    data: [],
+    availableMonths: [],
     searchInput: '',
     search: '',
     pageNumber: 0,
@@ -198,9 +198,8 @@ function installmentData() {
 async fetchInstallment() {
   const res = await fetch('/program/installment/{{course.id}}');
   const result = await res.json();
-  this.data = result.installments;           // ✅ simpan installments saja ke data
-  this.availableMonths = result.availableMonths;  // ✅ simpan availableMonths
-  localStorage.setItem('activeData', JSON.stringify(result));
+  this.data = result.installments;
+  this.availableMonths = result.availableMonths;
 },
     get filteredData() {
       let filtered = this.data.filter(i =>

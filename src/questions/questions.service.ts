@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePertanyaanDto } from './dto/create-pertanyaan.dto';
-import { UpdatePertanyaanDto } from './dto/update-pertanyaan.dto';
+import { CreateQuestionDto } from './dto/create-question.dto';
+import { UpdateQuestionDto } from './dto/update-question.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from 'src/entities/question.entity';
 import { Repository } from 'typeorm';
@@ -21,7 +21,7 @@ export class QuestionsService {
   @InjectRepository(Quiz)
   private readonly quizRepository: Repository<Quiz>;
 
-  async create(createPertanyaanDto: CreatePertanyaanDto) {
+  async create(createPertanyaanDto: CreateQuestionDto) {
     const quiz = await this.quizRepository.findOne({
       where: { id: createPertanyaanDto.quizId },
     });
@@ -36,16 +36,16 @@ export class QuestionsService {
     return await this.pertanyaanRepository.save(questions);
   }
 
-  async findPertanyaan(quizId: number) {
+  async findQuestions(quizId: number) {
     return await this.pertanyaanRepository.find({
       where: { quiz: { id: quizId } },
       relations: ['answers.userAnswers'],
     });
   }
 
-  async findOne(pertanyaanId: number) {
+  async findOne(questionId: number) {
     const questions = await this.pertanyaanRepository.findOne({
-      where: { id: pertanyaanId },
+      where: { id: questionId },
       relations: ['answers', 'quiz'],
     });
     if (!questions) {
@@ -54,8 +54,8 @@ export class QuestionsService {
     return questions;
   }
 
-  async update(pertanyaanId: number, updatePertanyaanDto: UpdatePertanyaanDto) {
-    const questions = await this.findOne(pertanyaanId);
+  async update(questionId: number, updatePertanyaanDto: UpdateQuestionDto) {
+    const questions = await this.findOne(questionId);
     if (!questions) {
       throw new NotFoundException('Question not found');
     }
@@ -65,7 +65,7 @@ export class QuestionsService {
     await this.pertanyaanRepository.save(questions);
 
     const jawabanLama = await this.jawabanRepository.find({
-      where: { question: { id: pertanyaanId } },
+      where: { question: { id: questionId } },
     });
 
     if (!jawabanLama || jawabanLama.length === 0) {
@@ -85,10 +85,10 @@ export class QuestionsService {
     return await this.jawabanRepository.save(jawabanBaru);
   }
 
-  async remove(pertanyaanId: number) {
-    const questions = await this.findOne(pertanyaanId);
+  async remove(questionId: number) {
+    const questions = await this.findOne(questionId);
     const answers = await this.jawabanRepository.find({
-      where: { question: { id: pertanyaanId } },
+      where: { question: { id: questionId } },
     });
     if (!answers) {
       throw new NotFoundException('Answer not found');

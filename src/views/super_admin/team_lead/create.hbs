@@ -179,7 +179,8 @@
 
         canSubmit() {
           const imageValid = !this.hasFile || this.isValid;
-          const formValid = this.formValid.name && this.formValid.position && 
+          const positionValid = Object.values(this.formValid.position).every(v => v);
+          const formValid = this.formValid.name && positionValid && 
                            this.formValid.linkedin && this.formValid.instagram && 
                            Object.values(this.formValid.description).every(v => v);
           return imageValid && formValid;

@@ -14,7 +14,7 @@
         <div class="flex-shrink-0">
           <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold">
             {{#if user.profile}}
-              <img src="/{{user.profile}}" alt="{{user.username}}" class="w-full h-full rounded-full object-cover">
+              <img src="{{user.profile}}" alt="{{user.username}}" class="w-full h-full rounded-full object-cover">
             {{else}}
                 {{user.username}}
             {{/if}}
@@ -317,7 +317,7 @@ deleteReply(replyId) {
   <div class="flex-shrink-0">
     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold overflow-hidden">
       {{#if this.user.profile}}
-        <img src="/{{this.user.profile}}" alt="{{this.user.username}}" class="w-full h-full object-cover">
+        <img src="{{this.user.profile}}" alt="{{this.user.username}}" class="w-full h-full object-cover">
       {{else}}
         {{#if this.user.name}}{{this.user.name}}{{else}}{{this.user.username}}{{/if}}
       {{/if}}

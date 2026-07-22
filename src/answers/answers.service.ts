@@ -28,9 +28,9 @@ export class AnswersService {
     return await this.jawabanRepository.save(answers);
   }
 
-  async findJawabanBenar(pertanyaanId: number) {
+  async findJawabanBenar(questionId: number) {
     return await this.jawabanRepository.find({
-      where: { question: { id: pertanyaanId } },
+      where: { question: { id: questionId } },
     });
   }
 }

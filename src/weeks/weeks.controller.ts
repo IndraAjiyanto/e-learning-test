@@ -28,7 +28,7 @@ export class WeeksController {
     @Req() req: Request,
   ) {
     try {
-      createMingguDto.minggu_ke = await this.mingguService.noPertemuan(courseId);
+      createMingguDto.weekNumber = await this.mingguService.noPertemuan(courseId);
       await this.mingguService.create(createMingguDto, courseId);
       req.flash('success', 'session succesfuly create');
       res.redirect(`/program/detail/program/admin/${courseId}`);

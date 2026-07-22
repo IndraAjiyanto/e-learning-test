@@ -60,7 +60,7 @@ export class QuizController {
   ) {
     const quiz = await this.quizService.findOne(quizId);
     const scores = await this.quizService.findNilai(quizId);
-    const questions = await this.quizService.findPertanyaan(quizId);
+    const questions = await this.quizService.findQuestions(quizId);
     res.render('admin/quiz/detail', {
       user: req.user,
       quiz,
@@ -89,7 +89,7 @@ export class QuizController {
   ) {
     const quiz = await this.quizService.findOne(quizId);
     const scores = await this.quizService.findNilaiUser(req.user!.id, quizId);
-    const questions = await this.quizService.findPertanyaan(quizId);
+    const questions = await this.quizService.findQuestions(quizId);
     res.render('user/quiz/quiz', { user: req.user, quiz, scores, questions });
   }
 
@@ -104,7 +104,7 @@ export class QuizController {
       req.user!.id,
       quizId,
     );
-    const questions = await this.quizService.findPertanyaan(quizId);
+    const questions = await this.quizService.findQuestions(quizId);
     if (check) {
       res.render('user/quiz/start', {
         user: req.user,

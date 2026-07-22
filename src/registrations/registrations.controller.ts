@@ -48,7 +48,7 @@ export class RegistrationsController {
       createPendaftaranDto.file = req.body.uploadedImageUrls?.[0];
       createPendaftaranDto.courseId = courseId;
       createPendaftaranDto.userId = userId;
-      createPendaftaranDto.proses = 'proces';
+      createPendaftaranDto.process = 'proces';
       const pendaftaran =
         await this.pendaftaranService.create(createPendaftaranDto);
       if (pendaftaran == false) {
@@ -95,13 +95,13 @@ export class RegistrationsController {
         updatePendaftaranDto.file = pendaftaran['file'];
         updatePendaftaranDto.userId = pendaftaran['user']['id'];
         updatePendaftaranDto.courseId = pendaftaran['course']['id'];
-        updatePendaftaranDto.proses = 'acc';
+        updatePendaftaranDto.process = 'acc';
         await this.pendaftaranService.update(
           pendaftaranId,
           updatePendaftaranDto,
         );
         try {
-          await this.pendaftaranService.addUserToKelas(
+          await this.pendaftaranService.addUserToCourse(
             pendaftaran['user']['id'],
             pendaftaran['course']['id'],
           );
@@ -115,13 +115,13 @@ export class RegistrationsController {
         updatePendaftaranDto.file = pendaftaran['file'];
         updatePendaftaranDto.userId = pendaftaran['user']['id'];
         updatePendaftaranDto.courseId = pendaftaran['course']['id'];
-        updatePendaftaranDto.proses = 'rejected';
+        updatePendaftaranDto.process = 'rejected';
         await this.pendaftaranService.update(
           pendaftaranId,
           updatePendaftaranDto,
         );
         try {
-          await this.pendaftaranService.removeUserKelas(
+          await this.pendaftaranService.removeCourseUser(
             pendaftaran['user']['id'],
             pendaftaran['course']['id'],
           );

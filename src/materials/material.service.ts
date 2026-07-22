@@ -64,7 +64,7 @@ export class MaterialService {
     });
   }
 
-  async findPertemuanByKelas(weeksId: number) {
+  async findSessionsByCourse(weeksId: number) {
     const session = await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },
       relations: ['materi'],
@@ -79,7 +79,7 @@ export class MaterialService {
     }));
   }
 
-  async findMateriByJenisAndPertemuan(weeksId: number, fileType: FileType) {
+  async findMaterialsByTypeAndSession(weeksId: number, fileType: FileType) {
     return await this.materialRepository.find({
       where: {
         fileType: fileType,

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateAlurKelaDto } from './dto/create-alur_kela.dto';
-import { UpdateAlurKelaDto } from './dto/update-alur_kela.dto';
+import { CreateCourseFlowDto } from './dto/create-course_flow.dto';
+import { UpdateCourseFlowDto } from './dto/update-course_flow.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseFlow } from 'src/entities/course_flow.entity';
 import { Repository } from 'typeorm';
@@ -15,7 +15,7 @@ export class CourseFlowsService {
     private readonly kelasRepository: Repository<Course>,
   ) {}
 
-  async create(createAlurKelaDto: CreateAlurKelaDto) {
+  async create(createAlurKelaDto: CreateCourseFlowDto) {
     const course = await this.kelasRepository.findOne({
       where: { id: createAlurKelaDto.courseId },
     });
@@ -23,7 +23,7 @@ export class CourseFlowsService {
       throw new NotFoundException('Program not found');
     }
 
-    const finalFlow = await this.findAlurKelas(createAlurKelaDto.courseId);
+    const finalFlow = await this.findCourseFlows(createAlurKelaDto.courseId);
     createAlurKelaDto.sequence = finalFlow + 1;
 
     const courseFlow = this.alurKelasRepository.create({
@@ -34,12 +34,12 @@ export class CourseFlowsService {
   }
 
   async noAlur(courseId: number) {
-    const finalFlow = await this.findAlurKelas(courseId);
+    const finalFlow = await this.findCourseFlows(courseId);
     const startFlow = finalFlow + 1;
     return startFlow;
   }
 
-  async findAlurKelas(courseId: number) {
+  async findCourseFlows(courseId: number) {
     const course_flows = await this.alurKelasRepository.findOne({
       where: { course: { id: courseId } },
       order: { sequence: 'DESC' },
@@ -58,7 +58,7 @@ export class CourseFlowsService {
     return course_flows;
   }
 
-  async findAllKelas() {
+  async findAllCourses() {
     const course = await this.kelasRepository.find({
       order: { id: 'ASC' },
     });
@@ -76,7 +76,7 @@ export class CourseFlowsService {
     return course_flows;
   }
 
-  async update(alurKelasId: number, updateAlurKelaDto: UpdateAlurKelaDto) {
+  async update(alurKelasId: number, updateAlurKelaDto: UpdateCourseFlowDto) {
     const courseFlow = await this.findOne(alurKelasId);
     if (!courseFlow) {
       throw new NotFoundException('Flow Program not found');

@@ -73,7 +73,7 @@
 
           <td class="px-6 py-4 text-sm text-gray-800">
             <img
-              src="/{{profile}}"
+              src="{{profile}}"
               alt="{{name}}"
               class="w-12 h-12 rounded-full object-cover border"
             />
@@ -81,14 +81,22 @@
 
           <td class="px-6 py-4 text-sm text-gray-800">{{name}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">
-            {{#each position}}
-              <div class="line-clamp-3">{{this}}</div>
-            {{/each}}
+            {{#if position}}
+              {{#each position}}
+                <div class="line-clamp-3">{{this}}</div>
+              {{/each}}
+            {{else}}
+              <span class="text-gray-400">-</span>
+            {{/if}}
           </td>
           <td class="px-6 py-4 text-sm text-gray-800">
-            {{#each description}}
-              <div class="line-clamp-3">{{this}}</div>
-            {{/each}}
+            {{#if description}}
+              {{#each description}}
+                <div class="line-clamp-3">{{this}}</div>
+              {{/each}}
+            {{else}}
+              <span class="text-gray-400">-</span>
+            {{/if}}
           </td>
 
           <!-- LINKEDIN -->
@@ -187,11 +195,13 @@
       amount: 0,
 
       get filteredTeamLeads() {
-        const filtered = this.teamLeads.filter(t =>
-          `${t.name} ${t.position} ${t.email ?? ''} ${t.phone ?? ''}`
+        const filtered = this.teamLeads.filter(t => {
+          const pos = t.position || {};
+          const desc = t.description || {};
+          return `${t.name} ${pos.id ?? ''} ${pos.en ?? ''} ${pos.ja ?? ''} ${desc.id ?? ''} ${desc.en ?? ''} ${desc.ja ?? ''}`
             .toLowerCase()
-            .includes(this.search.toLowerCase())
-        );
+            .includes(this.search.toLowerCase());
+        });
 
         this.amount = filtered.length;
 

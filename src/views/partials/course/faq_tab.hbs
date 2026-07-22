@@ -51,14 +51,14 @@
           <tr class="hover:bg-gray-50 transition">
             <td class="px-6 py-4 text-sm text-gray-800" x-text="pageNumber * size + index + 1"></td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="q in faq.question">
-              <div class="line-clamp-3" x-text="q"></div>
-              </template>
+              <div class="line-clamp-3" x-text="faq.questions?.id"></div>
+              <div class="line-clamp-3" x-text="faq.questions?.en"></div>
+              <div class="line-clamp-3" x-text="faq.questions?.ja"></div>
               </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="a in faq.answer">
-              <div class="line-clamp-3" x-text="a"></div>
-              </template>
+              <div class="line-clamp-3" x-text="faq.answers?.id"></div>
+              <div class="line-clamp-3" x-text="faq.answers?.en"></div>
+              <div class="line-clamp-3" x-text="faq.answers?.ja"></div>
             </td> 
             <td class="px-6 py-4 text-sm flex items-center gap-3">
 
@@ -125,7 +125,7 @@
 <script>
 function faqData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
     searchInput: '',
     search: '',
     pageNumber: 0,
@@ -135,12 +135,11 @@ function faqData() {
     async fetchFaqs() {
       const res = await fetch('/program/faq/{{course.id}}');
       this.data = await res.json();
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     },
 
     get filteredData() {
       let filtered = this.data.filter(f =>
-        (`${f.question.id}  ${f.answer.id} ${f.question.en} ${f.answer.en} ${f.question.ja} ${f.answer.ja}`)
+        (`${f.questions?.id || ''}  ${f.answers?.id || ''} ${f.questions?.en || ''} ${f.answers?.en || ''} ${f.questions?.ja || ''} ${f.answers?.ja || ''}`)
           .toLowerCase()
           .includes(this.search.toLowerCase())
       );

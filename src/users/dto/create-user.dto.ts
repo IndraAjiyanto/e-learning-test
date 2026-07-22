@@ -31,7 +31,7 @@ export class CreateUserDto {
 
   @IsDate()
   @IsOptional()
-  verifikasiTokenExpires: Date;
+  verificationTokenExpires: Date;
 
   @IsString()
   profile: string;

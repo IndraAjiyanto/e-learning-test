@@ -172,7 +172,7 @@ const remainingSecond = Math.ceil(remainingMs / 1000);
 
   }
 
-  async findPertanyaan(quizId: number) {
+  async findQuestions(quizId: number) {
     return await this.pertanyaanRepository.find({
       where: {
         quiz: { id: quizId },

@@ -141,7 +141,7 @@
                   x-show="'{{username}}'.toLowerCase().includes(searchMurid.toLowerCase()) || searchMurid === ''">
                 <div class="flex items-center space-x-3">
                   {{#if this.profile}}
-                  <img src="/{{profile}}" 
+                  <img src="{{profile}}" 
                        alt="{{username}}"
                        class="w-10 h-10 bg-gray-200 rounded-full border border-gray-300 object-cover"
                        onerror="this.src='https://via.placeholder.com/40/gray/white?text={{username.[0]}}'">

@@ -64,6 +64,14 @@
         register: '/program/register/{{course.id}}'
       }
 
+      if (!this.tab || !urlMap[this.tab]) {
+        {{#if course.check_paid}}
+        this.tab = 'payment';
+        {{else}}
+        this.tab = 'register';
+        {{/if}}
+      }
+
       await this.toggleFetchMateri(urlMap[this.tab], this.tab);
     },
 

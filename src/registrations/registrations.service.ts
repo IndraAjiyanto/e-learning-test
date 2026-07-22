@@ -104,7 +104,7 @@ export class RegistrationsService {
     return pendaftaran;
   }
 
-  async addUserToKelas(userId: number, courseId: number) {
+  async addUserToCourse(userId: number, courseId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['userCourses', 'userCourses.course'],
@@ -138,7 +138,7 @@ export class RegistrationsService {
     return await this.userKelasRepository.save(userCourses);
   }
 
-  async removeUserKelas(userId: number, courseId: number): Promise<UserCourse> {
+  async removeCourseUser(userId: number, courseId: number): Promise<UserCourse> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });

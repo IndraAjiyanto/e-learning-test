@@ -19,26 +19,26 @@ export class CommentsController {
   constructor(private readonly komentarService: CommentsService) {}
 
   @Roles('admin')
-  @Post(':tugasId/:jawaban_tugasId')
+  @Post(':assignmentId/:assignment_answerId')
   async create(
-    @Param('tugasId') tugasId: number,
-    @Param('jawaban_tugasId') jawaban_tugasId: number,
+    @Param('assignmentId') assignmentId: number,
+    @Param('assignment_answerId') assignment_answerId: number,
     @Body() createKomentarDto: CreateCommentsDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      createKomentarDto.answerTaskId = jawaban_tugasId;
+      createKomentarDto.answerTaskId = assignment_answerId;
       await this.komentarService.create(createKomentarDto);
       await this.komentarService.updateJawabanTugas(
-        jawaban_tugasId,
+        assignment_answerId,
         createKomentarDto.process,
       );
       req.flash('success', 'comment successfuly send');
-      res.redirect(`/answer-assigment/${tugasId}`);
+      res.redirect(`/answer-assigment/${assignmentId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'comment unsuccess send');
-      res.redirect(`/answer-assigment/${tugasId}`);
+      res.redirect(`/answer-assigment/${assignmentId}`);
     }
   }
 }

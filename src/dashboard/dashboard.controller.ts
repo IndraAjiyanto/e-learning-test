@@ -53,10 +53,10 @@ export class DashboardController {
         const special_program =
           await this.dashboardService.findSpecialProgram();
         const faq = await this.dashboardService.findFAQ();
-        const image_benefit_1 = await this.dashboardService.findImage1();
-        const image_benefit_2 = await this.dashboardService.findImage2();
-        const image_benefit_3 = await this.dashboardService.findImage3();
-        const image_benefit_4 = await this.dashboardService.findImage4();
+        const benefit_images_1 = await this.dashboardService.findImage1();
+        const benefit_images_2 = await this.dashboardService.findImage2();
+        const benefit_images_3 = await this.dashboardService.findImage3();
+        const benefit_images_4 = await this.dashboardService.findImage4();
         const courseType = await this.dashboardService.findCourseTypes();
         const category = await this.dashboardService.findCategories();
         const alumni = await this.dashboardService.findAllAlumni();
@@ -71,10 +71,10 @@ export class DashboardController {
           user: req.user,
           // course,
           faq,
-          image_benefit_1,
-          image_benefit_2,
-          image_benefit_3,
-          image_benefit_4,
+          benefit_images_1,
+          benefit_images_2,
+          benefit_images_3,
+          benefit_images_4,
           courseType,
           category,
           alumni,
@@ -91,10 +91,10 @@ export class DashboardController {
       const our_experience = await this.dashboardService.findOurExperience();
       const special_program = await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
-      const image_benefit_1 = await this.dashboardService.findImage1();
-      const image_benefit_2 = await this.dashboardService.findImage2();
-      const image_benefit_3 = await this.dashboardService.findImage3();
-      const image_benefit_4 = await this.dashboardService.findImage4();
+      const benefit_images_1 = await this.dashboardService.findImage1();
+      const benefit_images_2 = await this.dashboardService.findImage2();
+      const benefit_images_3 = await this.dashboardService.findImage3();
+      const benefit_images_4 = await this.dashboardService.findImage4();
       const courseType = await this.dashboardService.findCourseTypes();
       const category = await this.dashboardService.findCategories();
       const alumni = await this.dashboardService.findAllAlumni();
@@ -109,10 +109,10 @@ export class DashboardController {
         user: req.user,
         // course,
         faq,
-        image_benefit_1,
-        image_benefit_2,
-        image_benefit_3,
-        image_benefit_4,
+        benefit_images_1,
+        benefit_images_2,
+        benefit_images_3,
+        benefit_images_4,
         courseType,
         category,
         alumni,
@@ -132,7 +132,7 @@ export class DashboardController {
     @Req() req: Request,
     @Res() res: Response,
     @Query('userId') userId?: number,
-    @Query('kategori_id') categoryId?: string,
+    @Query('categoryId') categoryId?: string,
     @Query('jenis_kelas_id') courseTypeId?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,

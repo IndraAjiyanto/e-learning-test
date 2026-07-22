@@ -56,9 +56,9 @@ export class LogbookController {
       createLogbookDto.documentation = req.body.uploadedImageUrls?.[0] ?? null;
       if (req.user?.role === 'user') {
         createLogbookDto.userId = req.user!.id;
-        createLogbookDto.proses = 'proces';
+        createLogbookDto.process = 'proces';
       } else if (req.user?.role === 'admin') {
-        createLogbookDto.proses = 'acc';
+        createLogbookDto.process = 'acc';
       }
       createLogbookDto.sessionId = sessionId;
       await this.logbookService.create(createLogbookDto);
@@ -174,7 +174,7 @@ export class LogbookController {
         updateLogbookDto.documentation =
           req.body.uploadedImageUrls?.[0] || dokumentasi.path;
       }
-      updateLogbookDto.proses = 'proces';
+      updateLogbookDto.process = 'proces';
       await this.logbookService.update(logbookId, updateLogbookDto);
       req.flash('success', 'logbooks successfully updated');
       if (req.user?.role === 'admin') {
@@ -209,7 +209,7 @@ export class LogbookController {
   ) {
     try {
       const logbooks = await this.logbookService.findOne(logbookId);
-      updateLogbookDto.proses = proses;
+      updateLogbookDto.process = proses;
       await this.logbookService.update(logbookId, updateLogbookDto);
       req.flash('success', 'logbooks successfully update proses');
       res.redirect(`/session/${logbooks.session.id}`);

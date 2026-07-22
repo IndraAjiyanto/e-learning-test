@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateJawabanUserDto, JawabanUserDto } from './dto/create-jawaban_user.dto';
+import { CreateUserAnswerDto, UserAnswerDto } from './dto/create-user_answer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserAnswer } from 'src/entities/user_answer.entity';
 import { In, Repository } from 'typeorm';
@@ -29,7 +29,7 @@ export class UserAnswersService {
   @InjectRepository(Quiz)
   private readonly quizRepository: Repository<Quiz>;
   @InjectRepository(WeekProgress)
-  private readonly progresMingguRepository: Repository<WeekProgress>;
+  private readonly weekProgressRepository: Repository<WeekProgress>;
   @InjectRepository(Weeks)
   private readonly mingguRepository: Repository<Weeks>;
   @InjectRepository(UserCourse)
@@ -39,10 +39,10 @@ export class UserAnswersService {
   @InjectRepository(Session)
   private readonly sessionRepository: Repository<Session>;
 
-  async create(createJawabanUserDto: CreateJawabanUserDto) {
+  async create(createUserAnswerDto: CreateUserAnswerDto) {
     const jawabanToInsert: UserAnswer[] = [];
 
-    for (const j of createJawabanUserDto.answerUser) {
+    for (const j of createUserAnswerDto.answerUser) {
       const questions = await this.pertanyaanRepository.findOne({
         where: { id: j.questionsId },
       });
@@ -83,7 +83,7 @@ export class UserAnswersService {
   }
 
 
-  async createAnswer(jawabanUserDto: JawabanUserDto) {
+  async createAnswer(jawabanUserDto: UserAnswerDto) {
     const userIsAnswered = await this.jawabanUserRepository.findOne({
       where: {
         user: { id: jawabanUserDto.userId },
@@ -177,8 +177,8 @@ if (!user) {
     }
 
     if (scores >= quiz.minScore) {
-      await this.progresMinggu(quiz.weeks.id, userId);
-      await this.updateProgresMinggu(quiz.weeks.id, userId);
+      await this.weekProgress(quiz.weeks.id, userId);
+      await this.updateWeekProgress(quiz.weeks.id, userId);
     }
 
     user.quizStart = false;
@@ -193,8 +193,8 @@ if (!user) {
 
   }
 
-  async updateProgresMinggu(weeksId: number, userId: number) {
-    const weekProgresses = await this.progresMingguRepository.findOne({
+  async updateWeekProgress(weeksId: number, userId: number) {
+    const weekProgresses = await this.weekProgressRepository.findOne({
       where: { week: { id: weeksId }, user: { id: userId } },
     });
     if (!weekProgresses) {
@@ -202,12 +202,12 @@ if (!user) {
     }
 
     weekProgresses.quiz = true;
-    await this.progresMingguRepository.save(weekProgresses);
+    await this.weekProgressRepository.save(weekProgresses);
 
     return weekProgresses;
   }
 
-  async progresMinggu(weeksId: number, userId: number) {
+  async weekProgress(weeksId: number, userId: number) {
     const minggu_sebelum = await this.mingguRepository.findOne({
       where: { id: weeksId },
       relations: ['course'],
@@ -273,15 +273,15 @@ if (!user) {
             }
           }
         }
-        const existingProgres = await this.progresMingguRepository.findOne({
+        const existingProgres = await this.weekProgressRepository.findOne({
           where: { week: { id: weeks.id }, user: { id: userId } },
         });
         if (existingProgres) {
-          await this.progresMingguRepository.update(existingProgres.id, {
+          await this.weekProgressRepository.update(existingProgres.id, {
             process: true,
           });
         } else {
-          await this.progresMingguRepository.save({
+          await this.weekProgressRepository.save({
             week: weeks,
             user: { id: userId },
             process: true,
@@ -292,14 +292,14 @@ if (!user) {
     }
   }
 
-  async findByUserAndPertanyaan(userId: number, pertanyaanId: number) {
+  async findByUserAndQuestion(userId: number, questionId: number) {
     return await this.jawabanUserRepository.find({
-      where: { user: { id: userId }, question: { id: pertanyaanId } },
+      where: { user: { id: userId }, question: { id: questionId } },
       relations: ['answers'],
     });
   }
 
-  async findJawabanByUser(userId: number) {
+  async findAnswersByUser(userId: number) {
     return await this.jawabanUserRepository.find({
       where: { user: { id: userId } },
       relations: ['answers'],

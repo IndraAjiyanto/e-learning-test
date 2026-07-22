@@ -105,7 +105,7 @@ export class PortfoliosController {
   async findAll(@Req() req: Request, @Res() res: Response) {
     const portfolio = await this.portfoliosService.findAll();
     const category = await this.portfoliosService.findKategori();
-    const courseType = await this.portfoliosService.findJenisKelas();
+    const courseType = await this.portfoliosService.findCourseTypes();
     res.render('portfolio', {
       user: req.user,
       portfolio,
@@ -122,7 +122,7 @@ export class PortfoliosController {
     @Param('userId') userId: number,
   ) {
     const category = await this.portfoliosService.findKategoriMyPortfolio(userId);
-    const courseType = await this.portfoliosService.findJenisKelasMyPortfolio(userId);
+    const courseType = await this.portfoliosService.findMyPortfolioCourseTypes(userId);
     // const portfolio = await this.portfoliosService.findByUser(userId);
     res.render('user/myportfolio', {
       user: req.user,
@@ -218,10 +218,10 @@ export class PortfoliosController {
       );
 
       const updateData = {
-        judul: updatePortfolioDto.title,
-        deskripsi: updatePortfolioDto.description,
+        title: updatePortfolioDto.title,
+        description: updatePortfolioDto.description,
         technologies: updatePortfolioDto.technologies,
-        gambar: newImageUrls,
+        image: newImageUrls,
         content: updatePortfolioDto.content,
         content_html: updatePortfolioDto.content_html,
       };

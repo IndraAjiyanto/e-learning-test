@@ -176,7 +176,7 @@ async formEdit(
       error.message || 'Gallery failed to update'
     );
 
-    res.redirect('/kategori_id');
+    res.redirect('/categoryId');
   }
 }
 

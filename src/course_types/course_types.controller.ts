@@ -12,8 +12,8 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { CourseTypesService } from './course_types.service';
-import { CreateJenisKelaDto } from './dto/create-jenis_kela.dto';
-import { UpdateJenisKelaDto } from './dto/update-jenis_kela.dto';
+import { CreateCourseTypeDto } from './dto/create-course_type.dto';
+import { UpdateCourseTypeDto } from './dto/update-course_type.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -21,17 +21,17 @@ import { multerConfigImage } from 'src/common/config/multer.config';
 
 @Controller('type-program')
 export class CourseTypesController {
-  constructor(private readonly jenisKelasService: CourseTypesService) {}
+  constructor(private readonly courseTypeService: CourseTypesService) {}
 
   @Roles('super_admin')
   @Post()
   async create(
-    @Body() createJenisKelaDto: CreateJenisKelaDto,
+    @Body() createJenisKelaDto: CreateCourseTypeDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.jenisKelasService.create(createJenisKelaDto);
+      await this.courseTypeService.create(createJenisKelaDto);
       req.flash('success', 'Program type successfully created');
       res.redirect('/type-program');
     } catch (error: any) {
@@ -43,7 +43,7 @@ export class CourseTypesController {
   @Roles('super_admin')
   @Get()
   async findAll(@Req() req: Request, @Res() res: Response) {
-    const courseType = await this.jenisKelasService.findAll();
+    const courseType = await this.courseTypeService.findAll();
     res.render('super_admin/courseType/index', {
       user: req.user,
       courseType,
@@ -57,29 +57,29 @@ export class CourseTypesController {
   }
 
   @Roles('super_admin')
-  @Get('formEdit/:jenis_kelasId')
+  @Get('formEdit/:courseTypeId')
   async formEdit(
-    @Param('jenis_kelasId') jenis_kelasId: number,
+    @Param('courseTypeId') courseTypeId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const courseType = await this.jenisKelasService.findOne(jenis_kelasId);
+    const courseType = await this.courseTypeService.findOne(courseTypeId);
     res.render('super_admin/courseType/edit', { user: req.user, courseType });
   }
 
   @Roles('super_admin')
-  @Patch(':jenis_kelasId')
+  @Patch(':courseTypeId')
   @UseInterceptors(FileInterceptor('icon', multerConfigImage))
   async update(
-    @Param('jenis_kelasId') jenis_kelasId: number,
+    @Param('courseTypeId') courseTypeId: number,
     @UploadedFile() icon: Express.Multer.File,
-    @Body() updateJenisKelaDto: UpdateJenisKelaDto,
+    @Body() updateJenisKelaDto: UpdateCourseTypeDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      const courseType = await this.jenisKelasService.findOne(jenis_kelasId);
-      await this.jenisKelasService.update(jenis_kelasId, updateJenisKelaDto);
+      const courseType = await this.courseTypeService.findOne(courseTypeId);
+      await this.courseTypeService.update(courseTypeId, updateJenisKelaDto);
       req.flash('success', 'Program type successfully update');
       res.redirect('/type-program');
     } catch (error: any) {
@@ -89,19 +89,19 @@ export class CourseTypesController {
   }
 
   @Roles('super_admin')
-  @Delete(':jenis_kelasId')
+  @Delete(':courseTypeId')
   async remove(
-    @Param('jenis_kelasId') jenis_kelasId: number,
+    @Param('courseTypeId') courseTypeId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      const courseType = await this.jenisKelasService.findOne(jenis_kelasId);
+      const courseType = await this.courseTypeService.findOne(courseTypeId);
       if (!courseType) {
         req.flash('error', 'courseType not found');
         return res.redirect('/type-program');
       }
-      await this.jenisKelasService.remove(jenis_kelasId);
+      await this.courseTypeService.remove(courseTypeId);
       req.flash('success', 'Program type successfully delete');
       res.redirect('/type-program');
     } catch (error: any) {

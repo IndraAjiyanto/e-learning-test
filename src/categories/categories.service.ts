@@ -59,7 +59,7 @@ export class CategoriesService {
     return category;
   }
 
-  async findJenisKelas() {
+  async findCourseTypes() {
     return await this.courseTypeRepository.find();
   }
 
@@ -78,14 +78,14 @@ export class CategoriesService {
     return category;
   }
 
-  async findKelasByKategori(categoryId: number) {
+  async findCourseByKategori(categoryId: number) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId }, launch: true },
       relations: ['courseType', 'category', 'userCourses'],
     });
   }
 
-  async findKelasByKategoriAll(categoryId: number) {
+  async findCourseByKategoriAll(categoryId: number) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId } },
       relations: ['courseType', 'category', 'userCourses'],

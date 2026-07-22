@@ -67,10 +67,10 @@ export class ImageBenefitController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const image_benefit = await this.gambarBenefitService.findAll();
-    res.render('super_admin/image_benefit/index', {
+    const benefit_images = await this.gambarBenefitService.findAll();
+    res.render('super_admin/benefit_images/index', {
       user: req.user,
-      image_benefit,
+      benefit_images,
     });
   }
 
@@ -78,7 +78,7 @@ export class ImageBenefitController {
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const availableNumbers = await this.gambarBenefitService.findNo();
-    res.render('super_admin/image_benefit/create', { user: req.user, availableNumbers });
+    res.render('super_admin/benefit_images/create', { user: req.user, availableNumbers });
   }
 
   @Roles('super_admin')
@@ -88,10 +88,10 @@ export class ImageBenefitController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const image_benefit = await this.gambarBenefitService.findOne(+id);
-    res.render('super_admin/image_benefit/edit', {
+    const benefit_images = await this.gambarBenefitService.findOne(+id);
+    res.render('super_admin/benefit_images/edit', {
       user: req.user,
-      image_benefit,
+      benefit_images,
     });
   }
 

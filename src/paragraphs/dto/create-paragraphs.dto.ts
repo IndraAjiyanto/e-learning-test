@@ -5,5 +5,5 @@ export class CreateParagraphsDto {
   paragraphs: string[];
 
   @IsNumber()
-  p_ke: number;
+  paragraphOrder: number;
 }

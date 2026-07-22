@@ -77,9 +77,9 @@ export class Course {
 
   @ManyToMany(() => Technology, (technologies) => technologies.course)
   @JoinTable({
-    name: 'kelas_technologies',
-    joinColumn: { name: 'kelasId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'technologiesId', referencedColumnName: 'id' },
+    name: 'course_technologies',
+    joinColumn: { name: 'courseId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'technologyId', referencedColumnName: 'id' },
   })
   @Exclude()
   technologies: Technology[];

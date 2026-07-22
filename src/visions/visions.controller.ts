@@ -46,7 +46,7 @@ export class VisionsController {
     const vision = await this.visionService.findAll();
     res.render('super_admin/visions/index', {
       user: req.user,
-      vision,
+      visions: vision,
     });
   }
 
@@ -59,7 +59,7 @@ export class VisionsController {
   @Roles('super_admin')
   @Get('formEdit/:visionsId')
   async findOne(
-    @Param('visionId') visionId: number,
+    @Param('visionsId') visionId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -68,9 +68,9 @@ export class VisionsController {
   }
 
   @Roles('super_admin')
-  @Patch(':visionId')
+  @Patch(':visionsId')
   async update(
-    @Param('visionId') visionId: number,
+    @Param('visionsId') visionId: number,
     @Res() res: Response,
     @Req() req: Request,
     @Body() updateVisionDto: UpdateVisionsDto,
@@ -86,9 +86,9 @@ export class VisionsController {
   }
 
   @Roles('super_admin')
-  @Delete(':visionId')
+  @Delete(':visionsId')
   async remove(
-    @Param('visionId') visionId: number,
+    @Param('visionsId') visionId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

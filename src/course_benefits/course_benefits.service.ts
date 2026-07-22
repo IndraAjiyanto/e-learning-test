@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProgramBenefitDto } from './dto/create-benefit_kela.dto';
-import { UpdateProgramBenefitDto } from './dto/update-benefit_kela.dto';
+import { CreateCourseBenefitDto } from './dto/create-course_benefit.dto';
+import { UpdateCourseBenefitDto } from './dto/update-course_benefit.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProgramBenefits } from 'src/entities/course_benefit.entity';
 import { Repository } from 'typeorm';
@@ -15,7 +15,7 @@ export class ProgramBenefitService {
     private readonly kelasRepository: Repository<Course>,
   ) {}
 
-  async create(createProgramBenefitDto: CreateProgramBenefitDto) {
+  async create(createProgramBenefitDto: CreateCourseBenefitDto) {
     const course = await this.kelasRepository.findOne({
       where: { id: createProgramBenefitDto.courseId },
     });
@@ -37,14 +37,14 @@ export class ProgramBenefitService {
     return course_benefits;
   }
 
-  async findAllKelas() {
+  async findAllCourses() {
     const course = await this.kelasRepository.find({
       order: { id: 'ASC' },
     });
     return course;
   }
 
-  async findKelas(courseId: number) {
+  async findCourse(courseId: number) {
     return await this.kelasRepository.findOne({ where: { id: courseId } });
   }
 
@@ -61,7 +61,7 @@ export class ProgramBenefitService {
 
   async update(
     programBenefitId: number,
-    updateProgramBenefitDto: UpdateProgramBenefitDto,
+    updateProgramBenefitDto: UpdateCourseBenefitDto,
   ) {
     const course_benefits = await this.findOne(programBenefitId);
     if (!course_benefits) {

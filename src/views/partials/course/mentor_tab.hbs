@@ -136,7 +136,7 @@
 <script>
 function mentorData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
     searchInput: '',
     search: '',
     pageNumber: 0,
@@ -146,7 +146,6 @@ function mentorData() {
     async fetchMentors() {
       const res = await fetch('/program/mentorProgram/{{course.id}}');
       this.data = await res.json();
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     },
 
     get filteredData() {

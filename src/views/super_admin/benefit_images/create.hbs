@@ -11,6 +11,7 @@
     imageWidth: 0,
     imageHeight: 0,
     hasFile: false,
+    loading: false,
     errors: {},
     success: {},
     validateImage(file) {
@@ -106,7 +107,6 @@
       method='post'
       enctype='multipart/form-data'
       class='space-y-6'
-      x-data='{ loading: false }'
       @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please upload a valid image before submitting.'); }"
     >
 {{> super_admin/image_benefit/create/no_input }}
@@ -117,8 +117,7 @@
         <button
           type='submit'
           :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          class='bg-[#111827] text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed'
         >
           <span
             x-show='loading'

@@ -30,7 +30,7 @@ export class ParagraphsController {
     @Res() res: Response,
   ) {
     try {
-      createParagraphsDto.p_ke = await this.paragraphsService.noPertemuan();
+      createParagraphsDto.paragraphOrder = await this.paragraphsService.noPertemuan();
       await this.paragraphsService.create(createParagraphsDto);
       req.flash('success', 'paragraph succesfuly create');
       res.redirect('/paragraphs');

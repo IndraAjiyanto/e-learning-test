@@ -28,7 +28,7 @@ export class CreateSessionDto {
   isFinal: boolean;
 
   @IsString()
-  akhir_check: string;
+  isFinalCheck: string;
 
   @IsInt()
   weeksId: number;

@@ -9,7 +9,7 @@
             <label class='block text-xs font-medium text-gray-600'>ID</label>
             <input
               x-model='formData.title.id'
-              @input='validateField("judul", "id", $event.target.value)'
+              @input='validateField("title", "id", $event.target.value)'
               type='text'
               name='judul[id]'
               required
@@ -45,7 +45,7 @@
             <label class='block text-xs font-medium text-gray-600'>EN</label>
             <input
               x-model='formData.title.en'
-              @input='validateField("judul", "en", $event.target.value)'
+              @input='validateField("title", "en", $event.target.value)'
               type='text'
               name='judul[en]'
               required
@@ -81,7 +81,7 @@
             <label class='block text-xs font-medium text-gray-600'>JP</label>
             <input
               x-model='formData.title.ja'
-              @input='validateField("judul", "ja", $event.target.value)'
+              @input='validateField("title", "ja", $event.target.value)'
               type='text'
               name='judul[ja]'
               required

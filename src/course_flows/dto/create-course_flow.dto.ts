@@ -1,6 +1,6 @@
 import { IsArray, IsInt, IsOptional } from 'class-validator';
 
-export class CreateAlurKelaDto {
+export class CreateCourseFlowDto {
   @IsInt()
   @IsOptional()
   sequence?: number;

@@ -4,18 +4,18 @@
     x-data="{
         // Form validation states
         formData: {
-          benefit: { id: '', en: '', ja: '' },
-          isi: { id: '', en: '', ja: '' },
+          title: { id: '', en: '', ja: '' },
+          description: { id: '', en: '', ja: '' },
           icon: ''
         },
         formErrors: {
-          benefit: { id: '', en: '', ja: '' },
-          isi: { id: '', en: '', ja: '' },
+          title: { id: '', en: '', ja: '' },
+          description: { id: '', en: '', ja: '' },
           icon: ''
         },
         formValid: {
-          benefit: { id: false, en: false, ja: false },
-          isi: { id: false, en: false, ja: false },
+          title: { id: false, en: false, ja: false },
+          description: { id: false, en: false, ja: false },
           icon: false
         },
 
@@ -47,22 +47,22 @@
             }
           } else {
             this.formData[field][lang] = value;
-            
+
             switch(field) {
-              case 'benefit':
+              case 'title':
                 if (!value.trim()) {
-                  this.formErrors.benefit[lang] = 'Benefit title is required';
-                  this.formValid.benefit[lang] = false;
+                  this.formErrors.title[lang] = 'Benefit title is required';
+                  this.formValid.title[lang] = false;
                 } else if (value.trim().length < 3) {
-                  this.formErrors.benefit[lang] = 'Benefit title must be at least 3 characters';
-                  this.formValid.benefit[lang] = false;
+                  this.formErrors.title[lang] = 'Benefit title must be at least 3 characters';
+                  this.formValid.title[lang] = false;
                 } else {
-                  this.formErrors.benefit[lang] = '';
-                  this.formValid.benefit[lang] = true;
+                  this.formErrors.title[lang] = '';
+                  this.formValid.title[lang] = true;
                 }
                 break;
-                
-              case 'isi':
+
+              case 'description':
                 if (!value.trim()) {
                   this.formErrors.description[lang] = 'Description is required';
                   this.formValid.description[lang] = false;
@@ -79,15 +79,15 @@
         },
 
         canSubmit() {
-          return this.formValid.icon && 
-                 Object.values(this.formValid.benefit).every(v => v) && 
-                 Object.values(this.formValid.isi).every(v => v);
+          return this.formValid.icon &&
+                 Object.values(this.formValid.title).every(v => v) &&
+                 Object.values(this.formValid.description).every(v => v);
         },
 
         hasFormErrors() {
-          return this.formErrors.icon !== '' || 
-                 Object.values(this.formErrors.benefit).some(e => e !== '') || 
-                 Object.values(this.formErrors.isi).some(e => e !== '');
+          return this.formErrors.icon !== '' ||
+                 Object.values(this.formErrors.title).some(e => e !== '') ||
+                 Object.values(this.formErrors.description).some(e => e !== '');
         }
       }"
   >
@@ -95,7 +95,7 @@
       Class</h2>
 
     <form
-      action='/benefit-program/{{kelasId}}'
+      action='/benefit-program/{{courseId}}'
       method='POST'
       class='space-y-6'
       x-data="{ loading: false }"
@@ -118,7 +118,7 @@
           <span x-show="!loading">Create</span>
         </button>
         <a
-          href='/program/detail/program/admin/{{kelasId}}'
+          href='/program/detail/program/admin/{{courseId}}'
         :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>

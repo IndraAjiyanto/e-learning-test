@@ -10,8 +10,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { CourseQuestionsService } from './course_questions.service';
-import { CreatePertanyaanKelaDto } from './dto/create-pertanyaan_kela.dto';
-import { UpdatePertanyaanKelaDto } from './dto/update-pertanyaan_kela.dto';
+import { CreateCourseQuestionDto } from './dto/create-course_question.dto';
+import { UpdateCourseQuestionDto } from './dto/update-course_question.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 
@@ -38,7 +38,7 @@ export class CourseQuestionsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kelass = await this.pertanyaanKelasService.findAllKelas();
+    const kelass = await this.pertanyaanKelasService.findAllCourses();
     res.render('super_admin/course_questions/create', {
       user: req.user,
       kelass,
@@ -50,7 +50,7 @@ export class CourseQuestionsController {
   @Post(':courseId')
   async create(
     @Param('courseId') courseId: number,
-    @Body() createPertanyaanKelaDto: CreatePertanyaanKelaDto,
+    @Body() createPertanyaanKelaDto: CreateCourseQuestionDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -73,7 +73,7 @@ export class CourseQuestionsController {
     @Req() req: Request,
   ) {
     const pertanyaanKelas = await this.pertanyaanKelasService.findOne(id);
-    const kelass = await this.pertanyaanKelasService.findAllKelas();
+    const kelass = await this.pertanyaanKelasService.findAllCourses();
     res.render('super_admin/course_questions/edit', {
       user: req.user,
       pertanyaanKelas,
@@ -86,7 +86,7 @@ export class CourseQuestionsController {
   async update(
     @Param('id') id: number,
     @Param('courseId') courseId: number,
-    @Body() updatePertanyaanKelaDto: UpdatePertanyaanKelaDto,
+    @Body() updatePertanyaanKelaDto: UpdateCourseQuestionDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {

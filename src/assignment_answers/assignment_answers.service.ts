@@ -41,9 +41,9 @@ export class AnswerTasksService {
     return await this.jawabanTugasRepository.save(taskAnswers);
   }
 
-  async createKomentar(komentarText: string, jawaban_tugasId: number) {
+  async createKomentar(komentarText: string, assignment_answerId: number) {
     const answersTask = await this.jawabanTugasRepository.findOne({
-      where: { id: jawaban_tugasId },
+      where: { id: assignment_answerId },
     });
     if (!answersTask) {
       throw new NotFoundException('answer not found');
@@ -55,9 +55,9 @@ export class AnswerTasksService {
     return await this.komentarRepository.save(komentar);
   }
 
-  async findTugas(tugasId: number) {
+  async findTugas(assignmentId: number) {
     const assignments = await this.tugasRepository.findOne({
-      where: { id: tugasId },
+      where: { id: assignmentId },
       relations: ['session', 'session.weeks', 'session.weeks.course'],
     });
     if (!assignments) {
@@ -66,26 +66,26 @@ export class AnswerTasksService {
     return assignments;
   }
 
-  async findJawabanTugas(userId: number, tugasId: number) {
+  async findJawabanTugas(userId: number, assignmentId: number) {
     return await this.jawabanTugasRepository.find({
-      where: { user: { id: userId }, task: { id: tugasId } },
+      where: { user: { id: userId }, task: { id: assignmentId } },
       relations: ['komentar'],
     });
   }
 
-  async findJawabanExists(userId: number, tugasId: number) {
+  async findJawabanExists(userId: number, assignmentId: number) {
     return await this.jawabanTugasRepository.find({
       where: {
         user: { id: userId },
-        task: { id: tugasId },
+        task: { id: assignmentId },
         process: Not('rejected'),
       },
     });
   }
 
-  async findAllJawabanTugas(tugasId: number) {
+  async findAllJawabanTugas(assignmentId: number) {
     return await this.jawabanTugasRepository.find({
-      where: { task: { id: tugasId } },
+      where: { task: { id: assignmentId } },
       relations: ['user', 'komentar', 'assignments'],
     });
   }

@@ -1,0 +1,118 @@
+      <!-- Jawaban per Bahasa -->
+      <div class='space-y-4'>
+        <label class='block text-sm font-semibold text-gray-700 mb-1'>
+          Answer
+        </label>
+        <div class='grid grid-cols-1 gap-4'>
+          <!-- ID -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>ID</label>
+            <textarea
+              x-model='formData.answer.id'
+              @input='validateField("answer", $event.target.value, "id")'
+              name='answer[id]'
+              rows='5'
+              required
+              maxlength='1000'
+              :class="formErrors.answer.id ? 'border-red-500 focus:ring-red-500' : (formValid.answer.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 resize-none'
+              placeholder='Jawaban (ID)'
+            ></textarea>
+            <template x-if='formErrors.answer.id'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.answer.id'
+                ></p>
+              </div>
+            </template>
+            <template
+              x-if='formTouched.answer.id && formValid.answer.id && !formErrors.answer.id'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- EN -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>EN</label>
+            <textarea
+              x-model='formData.answer.en'
+              @input='validateField("answer", $event.target.value, "en")'
+              name='answer[en]'
+              rows='5'
+              required
+              maxlength='1000'
+              :class="formErrors.answer.en ? 'border-red-500 focus:ring-red-500' : (formValid.answer.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 resize-none'
+              placeholder='Answer (EN)'
+            ></textarea>
+            <template x-if='formErrors.answer.en'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.answer.en'
+                ></p>
+              </div>
+            </template>
+            <template
+              x-if='formTouched.answer.en && formValid.answer.en && !formErrors.answer.en'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- JP -->
+          <div class='space-y-2'>
+            <label class='block text-xs font-medium text-gray-600'>JP</label>
+            <textarea
+              x-model='formData.answer.ja'
+              @input='validateField("answer", $event.target.value, "ja")'
+              name='answer[ja]'
+              rows='5'
+              required
+              maxlength='1000'
+              :class="formErrors.answer.ja ? 'border-red-500 focus:ring-red-500' : (formValid.answer.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 resize-none'
+              placeholder='回答 (JA)'
+            ></textarea>
+            <template x-if='formErrors.answer.ja'>
+              <div
+                class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+              >
+                <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+                <p
+                  class='text-xs text-red-700'
+                  x-text='formErrors.answer.ja'
+                ></p>
+              </div>
+            </template>
+            <template
+              x-if='formTouched.answer.ja && formValid.answer.ja && !formErrors.answer.ja'
+            >
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <p class='text-xs text-green-700'>Valid</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>

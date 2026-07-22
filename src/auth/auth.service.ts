@@ -40,7 +40,7 @@ export class AuthService {
       .update(resetToken)
       .digest('hex');
     createUserDto.verificationToken = hashedToken;
-    createUserDto.verifikasiTokenExpires = new Date(Date.now() + 60000);
+    createUserDto.verificationTokenExpires = new Date(Date.now() + 60000);
 
     if (!isMatch) {
       try {
@@ -60,11 +60,11 @@ export class AuthService {
     }
   }
 
-  async findAllKelas() {
+  async findAllCourses() {
     return await this.kelasService.findAllLaunch();
   }
 
-  async findKelas(id: number) {
+  async findCourse(id: number) {
     return await this.kelasService.findOne(id);
   }
 }

@@ -14,10 +14,10 @@ export class CreateLogbookDto {
   documentation?: string | null;
 
   @IsUrl({require_protocol: true})
-  dokumentasi_lain: string;
+  otherDocumentation: string;
 
   @IsString()
-  kendala: string;
+  obstacles: string;
   
 @IsOptional() // Tambahkan opsional untuk update
   @Type(() => Number) // <--- 2. Tambahkan ini agar string "1" jadi angka 1
@@ -26,7 +26,7 @@ export class CreateLogbookDto {
 
   @IsOptional() // Tambahkan opsional untuk update
   @IsEnum(['acc', 'proces', 'rejected'])
-  proses: Proses;
+  process: Proses;
 
  @IsOptional() // Tambahkan opsional untuk update
   @Type(() => Number) // <--- 3. Tambahkan ini juga

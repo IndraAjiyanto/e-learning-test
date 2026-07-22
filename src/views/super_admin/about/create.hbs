@@ -10,18 +10,19 @@
         imageWidth: 0,
         imageHeight: 0,
         hasFile: false,
+        loading: false,
 
         // Form validation states
         formData: {
-          judul: { id: '', en: '', ja: '' },
+          title: { id: '', en: '', ja: '' },
           text: { id: '', en: '', ja: '' }
         },
         formErrors: {
-          judul: { id: '', en: '', ja: '' },
+          title: { id: '', en: '', ja: '' },
           text: { id: '', en: '', ja: '' }
         },
         formValid: {
-          judul: { id: false, en: false, ja: false },
+          title: { id: false, en: false, ja: false },
           text: { id: false, en: false, ja: false }
         },
 
@@ -90,7 +91,7 @@
         validateField(field, lang, value) {
           this.formData[field][lang] = value;
           
-          if (field === 'judul') {
+          if (field === 'title') {
             if (!value.trim()) {
               this.formErrors.title[lang] = 'Title is required';
               this.formValid.title[lang] = false;
@@ -145,7 +146,6 @@
     <form
       action='/about'
       method='post'
-      x-data='{ loading: false }'
       enctype='multipart/form-data'
       class='space-y-6'
       @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
@@ -160,8 +160,7 @@
         <button
           type='submit'
           :disabled='!canSubmit() || loading'
-          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
-          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+          class='bg-[#111827] text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed'
         >
           <span
             x-show='loading'

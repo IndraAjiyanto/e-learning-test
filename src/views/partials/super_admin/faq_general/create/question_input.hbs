@@ -11,8 +11,8 @@
             <label class='block text-xs font-medium text-gray-600'>ID</label>
             <textarea
               x-model='formData.question.id'
-              @input='validateField("pertanyaan", $event.target.value, "id")'
-              name='pertanyaan[id]'
+              @input='validateField("question", $event.target.value, "id")'
+              name='question[id]'
               rows='3'
               required
               maxlength='500'
@@ -48,8 +48,8 @@
             <label class='block text-xs font-medium text-gray-600'>EN</label>
             <textarea
               x-model='formData.question.en'
-              @input='validateField("pertanyaan", $event.target.value, "en")'
-              name='pertanyaan[en]'
+              @input='validateField("question", $event.target.value, "en")'
+              name='question[en]'
               rows='3'
               required
               maxlength='500'
@@ -85,8 +85,8 @@
             <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
               x-model='formData.question.ja'
-              @input='validateField("pertanyaan", $event.target.value, "ja")'
-              name='pertanyaan[ja]'
+              @input='validateField("question", $event.target.value, "ja")'
+              name='question[ja]'
               rows='3'
               required
               maxlength='500'

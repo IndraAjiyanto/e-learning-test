@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePertanyaanKelaDto } from './dto/create-pertanyaan_kela.dto';
-import { UpdatePertanyaanKelaDto } from './dto/update-pertanyaan_kela.dto';
+import { CreateCourseQuestionDto } from './dto/create-course_question.dto';
+import { UpdateCourseQuestionDto } from './dto/update-course_question.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CourseQuestions } from 'src/entities/course_question.entity';
 import { Repository } from 'typeorm';
@@ -15,7 +15,7 @@ export class CourseQuestionsService {
     private kelasRepository: Repository<Course>,
   ) {}
 
-  async create(createPertanyaanKelaDto: CreatePertanyaanKelaDto) {
+  async create(createPertanyaanKelaDto: CreateCourseQuestionDto) {
     const course = await this.kelasRepository.findOne({
       where: { id: createPertanyaanKelaDto.courseId },
     });
@@ -40,7 +40,7 @@ export class CourseQuestionsService {
     });
   }
 
-  async findAllKelas() {
+  async findAllCourses() {
     return await this.kelasRepository.find({
       order: { id: 'DESC' },
     });
@@ -59,7 +59,7 @@ export class CourseQuestionsService {
     return pertanyaanKelas;
   }
 
-  async update(id: number, updatePertanyaanKelaDto: UpdatePertanyaanKelaDto) {
+  async update(id: number, updatePertanyaanKelaDto: UpdateCourseQuestionDto) {
     const pertanyaanKelas = await this.findOne(id);
 
     if (updatePertanyaanKelaDto.courseId) {

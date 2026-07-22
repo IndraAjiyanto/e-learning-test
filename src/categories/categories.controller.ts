@@ -63,7 +63,7 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    const courseTypes = await this.categoriesService.findJenisKelas();
+    const courseTypes = await this.categoriesService.findCourseTypes();
     res.render('super_admin/category/create', { user: req.user, courseTypes });
   }
 
@@ -96,7 +96,7 @@ export class CategoriesController {
     const alumni = await this.categoriesService.findAlumniByKategori(
       category.id,
     );
-    // const courses = await this.categoriesService.findKelasByKategori(category.id);
+    // const courses = await this.categoriesService.findCourseByKategori(category.id);
     if (category?.type === 'Special Program') {
       res.render('special_program', {
         category,
@@ -163,12 +163,12 @@ export class CategoriesController {
 
   @Roles('super_admin')
   @Get('admin/program/:categoryId')
-  async findKelasByKategori(
+  async findCourseByKategori(
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
     const courses =
-      await this.categoriesService.findKelasByKategoriAll(categoryId);
+      await this.categoriesService.findCourseByKategoriAll(categoryId);
     res.json(courses);
   }
 
@@ -205,7 +205,7 @@ export class CategoriesController {
     @Req() req: Request,
   ) {
     const category = await this.categoriesService.findOne(categoryId);
-    const courseTypes = await this.categoriesService.findJenisKelas();
+    const courseTypes = await this.categoriesService.findCourseTypes();
     res.render('super_admin/category/edit', {
       user: req.user,
       category,

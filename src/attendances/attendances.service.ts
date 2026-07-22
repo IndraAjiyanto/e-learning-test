@@ -76,7 +76,7 @@ export class AttendanceService {
     });
   }
 
-  async findKelas() {
+  async findCourse() {
     return await this.kelasRepository.find({ relations: ['session'] });
   }
 

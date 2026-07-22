@@ -111,7 +111,7 @@ export class UsersService {
 
   async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
     if (
-      updatePaaswordDto.password_baru !== updatePaaswordDto.confirm_password
+      updatePaaswordDto.newPassword !== updatePaaswordDto.confirmPassword
     ) {
       throw new BadRequestException('confirm password wrong');
     }
@@ -121,21 +121,21 @@ export class UsersService {
     }
 
     const isMatch = await bcrypt.compare(
-      updatePaaswordDto.password_lama,
+      updatePaaswordDto.currentPassword,
       user.password,
     );
     if (!isMatch) {
       throw new BadRequestException('Old password is incorrect');
     }
 
-    if (updatePaaswordDto.password_baru.length < 6) {
+    if (updatePaaswordDto.newPassword.length < 6) {
       throw new BadRequestException(
         'New password must be at least 6 characters',
       );
     }
 
     const hashedPassword = await bcrypt.hash(
-      updatePaaswordDto.password_baru,
+      updatePaaswordDto.newPassword,
       10,
     );
     user.password = hashedPassword;
@@ -280,8 +280,8 @@ export class UsersService {
 
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.verifikasiToken = :hashedToken', { hashedToken })
-      .andWhere('user.verifikasiTokenExpires > :now', { now: new Date() })
+      .where('user.verificationToken = :hashedToken', { hashedToken })
+      .andWhere('user.verificationTokenExpires > :now', { now: new Date() })
       .getOne();
 
     if (!user) {

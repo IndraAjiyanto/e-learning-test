@@ -76,14 +76,14 @@ export class LogbookService {
     });
   }
 
-  async findKelasByUser(userId: number) {
+  async findCourseByUser(userId: number) {
     return await this.kelasRepository.find({
       where: { userCourses: { user: { id: userId } } },
       relations: ['userCourses', 'userCourses.user', 'weeks'],
     });
   }
 
-  async findAllKelas() {
+  async findAllCourses() {
     return await this.kelasRepository.find({
       order: { id: 'DESC' },
     });
@@ -166,7 +166,7 @@ export class LogbookService {
     }
     Object.assign(logbooks, updateLogbookDto);
 
-    if (updateLogbookDto.proses === 'acc') {
+    if (updateLogbookDto.process === 'acc') {
       const existingProgres = await this.progresPertemuanRepository.findOne({
         where: {
           user: { id: logbooks.user.id },
@@ -254,7 +254,7 @@ export class LogbookService {
           }
         }
       }
-    } else if (updateLogbookDto.proses === 'rejected') {
+    } else if (updateLogbookDto.process === 'rejected') {
       const existingProgres = await this.progresPertemuanRepository.findOne({
         where: {
           user: { id: logbooks.user.id },

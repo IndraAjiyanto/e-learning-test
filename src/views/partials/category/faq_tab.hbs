@@ -52,14 +52,14 @@
               >
             <td class="px-6 py-4 text-sm text-gray-800" x-text="pageNumber * size + index + 1"></td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="question in faq.question">
-              <div class="line-clamp-3" x-text="question"></div>
-              </template>
+              <div class="line-clamp-3" x-text="faq.question?.id"></div>
+              <div class="line-clamp-3" x-text="faq.question?.en"></div>
+              <div class="line-clamp-3" x-text="faq.question?.ja"></div>
               </td>
             <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="answer in faq.answer">
-              <div class="line-clamp-3" x-text="answer"></div>
-              </template>
+              <div class="line-clamp-3" x-text="faq.answer?.id"></div>
+              <div class="line-clamp-3" x-text="faq.answer?.en"></div>
+              <div class="line-clamp-3" x-text="faq.answer?.ja"></div>
             </td>
             <td class="px-6 py-4 text-sm flex items-center gap-3">
               <!-- Edit -->
@@ -125,7 +125,7 @@
 <script>
     function faqData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
     searchInput: "",
     search: "",
     pageNumber: 0,
@@ -135,12 +135,11 @@
                 async fetchFaq() {
       const res = await fetch('/category/faq/{{category.id}}');
       this.data = await res.json();
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     },
 
     get filteredData() {
       let filtered = this.data.filter(f =>
-        (`${f.question} ${f.answer}`).toLowerCase()
+        (`${f.question?.id || ''} ${f.answer?.id || ''} ${f.question?.en || ''} ${f.answer?.en || ''} ${f.question?.ja || ''} ${f.answer?.ja || ''}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
      this.amount = filtered.length;

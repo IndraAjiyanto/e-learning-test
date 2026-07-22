@@ -1,13 +1,13 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreatePertanyaanDto } from './create-pertanyaan.dto';
+import { CreateQuestionDto } from './create-question.dto';
 import { IsArray, IsString } from 'class-validator';
 
-export class UpdatePertanyaanDto extends PartialType(CreatePertanyaanDto) {
+export class UpdateQuestionDto extends PartialType(CreateQuestionDto) {
   @IsString()
   questionText: string;
 
   @IsString()
-  gambar?: string;
+  image?: string;
 
   @IsArray()
   @IsString({ each: true })

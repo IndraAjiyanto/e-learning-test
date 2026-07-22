@@ -42,7 +42,7 @@ export class MentorLogbookService {
     return await this.logBookMentorRepository.save(logbooks);
   }
 
-  async getKelasList(userId: number) {
+  async getCourseList(userId: number) {
     return await this.kelasRepository.find({
       where: { mentorings: { user: { id: userId } } },
     });

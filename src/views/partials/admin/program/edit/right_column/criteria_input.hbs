@@ -3,7 +3,7 @@
                                         <label
             class='block text-sm font-semibold text-gray-700 my-2'
           >Criteria</label>
-                    <div x-data="{ kriterias_id: {{json course.kriteria_id}} || [''] }">
+                    <div x-data="{ kriterias_id: {{json course.criteriaId}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >ID</label>
@@ -12,7 +12,7 @@
                           <input
                             type='text'
                             x-model='kriterias_id[index]'
-                            name='kriteria_id[]'
+                            name='criteriaId[]'
                             placeholder='Enter criteria'
                             class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                           />
@@ -35,7 +35,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ kriterias_en: {{json course.kriteria_en}} || [''] }">
+                    <div x-data="{ kriterias_en: {{json course.criteriaEn}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >EN</label>
@@ -44,7 +44,7 @@
                           <input
                             type='text'
                             x-model='kriterias_en[index]'
-                            name='kriteria_en[]'
+                            name='criteriaEn[]'
                             placeholder='Enter criteria'
                             class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                           />
@@ -67,7 +67,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ kriterias_ja: {{json course.kriteria_ja}} || [''] }">
+                    <div x-data="{ kriterias_ja: {{json course.criteriaJa}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >JP</label>
@@ -76,7 +76,7 @@
                           <input
                             type='text'
                             x-model='kriterias_ja[index]'
-                            name='kriteria_ja[]'
+                            name='criteriaJa[]'
                             placeholder='Enter criteria'
                             class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                           />

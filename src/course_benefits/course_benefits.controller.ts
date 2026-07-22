@@ -11,8 +11,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { ProgramBenefitService } from './course_benefits.service';
-import { CreateProgramBenefitDto } from './dto/create-benefit_kela.dto';
-import { UpdateProgramBenefitDto } from './dto/update-benefit_kela.dto';
+import { CreateCourseBenefitDto } from './dto/create-course_benefit.dto';
+import { UpdateCourseBenefitDto } from './dto/update-course_benefit.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
@@ -26,7 +26,7 @@ export class ProgramBenefitController {
   @Post(':courseId')
   async create(
     @Param('courseId') courseId: number,
-    @Body() createProgramBenefitDto: CreateProgramBenefitDto,
+    @Body() createProgramBenefitDto: CreateCourseBenefitDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -71,7 +71,7 @@ export class ProgramBenefitController {
   async update(
     @Param('programBenefitId') programBenefitId: number,
     @Param('courseId') courseId: number,
-    @Body() updateProgramBenefitDto: UpdateProgramBenefitDto,
+    @Body() updateProgramBenefitDto: UpdateCourseBenefitDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {

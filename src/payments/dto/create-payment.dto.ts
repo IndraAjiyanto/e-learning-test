@@ -1,14 +1,14 @@
 import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { Proses } from 'src/entities/payment.entity';
 
-export class CreatePembayaranDto {
+export class CreatePaymentDto {
   @IsString()
   @IsOptional()
   file: string;
 
   @IsEnum(['acc', 'proces', 'rejected'])
   @IsOptional()
-  proses: Proses;
+  process: Proses;
 
   @IsInt()
   userId: number;
@@ -18,7 +18,7 @@ export class CreatePembayaranDto {
 
   @IsInt()
   @IsOptional()
-  installmentsId: number;
+  installmentId: number;
 
   @IsString()
   @IsOptional()

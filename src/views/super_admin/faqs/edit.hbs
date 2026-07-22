@@ -4,7 +4,7 @@
     x-data="{
     // Form validation states
     formData: {
-      pertanyaan: {
+      question: {
         id: `{{faqs.question.id}}`,
         en: `{{faqs.question.en}}`,
         ja: `{{faqs.question.ja}}`
@@ -16,15 +16,15 @@
       }
     },
     formErrors: {
-      pertanyaan: { id: '', en: '', ja: '' },
+      question: { id: '', en: '', ja: '' },
       answer: { id: '', en: '', ja: '' }
     },
     formValid: {
-      pertanyaan: { id: true, en: true, ja: true },
+      question: { id: true, en: true, ja: true },
       answer: { id: true, en: true, ja: true }
     },
     formTouched: {
-      pertanyaan: { id: false, en: false, ja: false },
+      question: { id: false, en: false, ja: false },
       answer: { id: false, en: false, ja: false }
     },
 
@@ -38,7 +38,7 @@
       }
       
       switch(field) {
-        case 'pertanyaan':
+        case 'question':
           if (!value.trim()) {
             this.formErrors.question[lang] = 'Question is required';
             this.formValid.question[lang] = false;
@@ -67,9 +67,9 @@
     },
 
     canSubmit() {
-      const pertanyaanValid = Object.values(this.formValid.question).every(v => v);
+      const questionValid = Object.values(this.formValid.question).every(v => v);
       const jawabanValid = Object.values(this.formValid.answer).every(v => v);
-      return pertanyaanValid && jawabanValid;
+      return questionValid && jawabanValid;
     },
 
     hasFormErrors() {

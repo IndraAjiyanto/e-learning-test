@@ -34,11 +34,11 @@ export class AlumniService {
     return await this.alumniRepository.find({ relations: ['course'] });
   }
 
-  async findAllKelas() {
+  async findAllCourses() {
     return await this.kelasRepository.find();
   }
 
-  async findKelasByKategori(categoryId: number) {
+  async findCourseByKategori(categoryId: number) {
     return await this.kelasRepository.find({
       where: { category: { id: categoryId } },
     });

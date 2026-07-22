@@ -12,8 +12,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
-import { CreatePertanyaanDto } from './dto/create-pertanyaan.dto';
-import { UpdatePertanyaanDto } from './dto/update-pertanyaan.dto';
+import { CreateQuestionDto } from './dto/create-question.dto';
+import { UpdateQuestionDto } from './dto/update-question.dto';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -50,7 +50,7 @@ export class QuestionsController {
   async create(
     @Res() res: Response,
     @Req() req: Request,
-    @Body() createPertanyaanDto: CreatePertanyaanDto,
+    @Body() createPertanyaanDto: CreateQuestionDto,
     @Param('quizId') quizId: number,
   ) {
     try {
@@ -59,10 +59,10 @@ export class QuestionsController {
 
       const questions =
         await this.pertanyaansService.create(createPertanyaanDto);
-      for (let i = 0; i < createPertanyaanDto.pilihan.length; i++) {
+      for (let i = 0; i < createPertanyaanDto.options.length; i++) {
         await this.jawabansService.create({
           questionsId: questions['id'],
-          answer: createPertanyaanDto.pilihan[i],
+          answer: createPertanyaanDto.options[i],
           is_correct: i === Number(createPertanyaanDto.answers),
         });
       }
@@ -87,19 +87,19 @@ export class QuestionsController {
   }
 
   @Roles('admin')
-  @Get('FormEdit/:pertanyaanId')
-  async findPertanyaan(
+  @Get('FormEdit/:questionId')
+  async findQuestions(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('pertanyaanId') pertanyaanId: number,
+    @Param('questionId') questionId: number,
   ) {
-    const questions = await this.pertanyaansService.findOne(pertanyaanId);
+    const questions = await this.pertanyaansService.findOne(questionId);
     res.render('admin/questions/edit', { user: req.user, questions });
   }
 
   @Roles('user')
   @Get('quiz/:sessionId/:courseId')
-  async findPertanyaanByPertemuan(
+  async findQuestionsBySession(
     @Param('sessionId') sessionId: number,
     @Param('courseId') courseId: number,
     @Req() req: any,
@@ -107,7 +107,7 @@ export class QuestionsController {
   ) {
     const session = await this.sessionService.findOne(sessionId);
     const questions =
-      await this.pertanyaansService.findPertanyaan(sessionId);
+      await this.pertanyaansService.findQuestions(sessionId);
     res.render('user/quiz/quiz', {
       user: req.user,
       questions,
@@ -118,7 +118,7 @@ export class QuestionsController {
 
   @Roles('user')
   @Get('quiz/user/:sessionId/:userId')
-  async findDetailPertanyaanByPertemuan(
+  async findQuestionDetailsBySession(
     @Param('sessionId') sessionId: number,
     @Param('userId') userId: number,
     @Req() req: any,
@@ -126,9 +126,9 @@ export class QuestionsController {
   ) {
     const session = await this.sessionService.findOne(sessionId);
     const questions =
-      await this.pertanyaansService.findPertanyaan(sessionId);
+      await this.pertanyaansService.findQuestions(sessionId);
     const userAnswers =
-      await this.jawabanUsersService.findJawabanByUser(userId);
+      await this.jawabanUsersService.findAnswersByUser(userId);
     const scores = await this.jawabanUsersService.AmountNilai(
       sessionId,
       userId,
@@ -143,7 +143,7 @@ export class QuestionsController {
   }
 
   @Roles('admin')
-  @Patch(':pertanyaanId/:quizId')
+  @Patch(':questionId/:quizId')
   @UseInterceptors(
     FileInterceptor('profile', multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -154,21 +154,21 @@ export class QuestionsController {
     folder: 'quiz_question',
   })
   async update(
-    @Param('pertanyaanId') pertanyaanId: number,
+    @Param('questionId') questionId: number,
     @Param('quizId') quizId: number,
-    @Body() updatePertanyaanDto: UpdatePertanyaanDto,
+    @Body() updatePertanyaanDto: UpdateQuestionDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      const questions = await this.pertanyaansService.findOne(pertanyaanId);
+      const questions = await this.pertanyaansService.findOne(questionId);
       if (req.body.uploadedImageUrls?.length) {
-        updatePertanyaanDto.gambar = req.body.uploadedImageUrls[0];
+        updatePertanyaanDto.image = req.body.uploadedImageUrls[0];
         if (questions.image) {
           await this.pertanyaansService.deleteFile(questions.image);
         }
       }
-      await this.pertanyaansService.update(pertanyaanId, updatePertanyaanDto);
+      await this.pertanyaansService.update(questionId, updatePertanyaanDto);
       req.flash('success', 'successfuly update question');
       res.redirect(`/quiz/${quizId}`);
     } catch (error: any) {
@@ -178,19 +178,19 @@ export class QuestionsController {
   }
 
   @Roles('admin')
-  @Delete(':pertanyaanId/:quizId')
+  @Delete(':questionId/:quizId')
   async remove(
     @Param('quizId') quizId: number,
-    @Param('pertanyaanId') pertanyaanId: number,
+    @Param('questionId') questionId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      const questions = await this.pertanyaansService.findOne(pertanyaanId);
+      const questions = await this.pertanyaansService.findOne(questionId);
       if (questions.image) {
         await this.pertanyaansService.deleteFile(questions.image);
       }
-      await this.pertanyaansService.remove(pertanyaanId);
+      await this.pertanyaansService.remove(questionId);
       req.flash('success', 'successfuly delete question');
       res.redirect(`/quiz/${quizId}`);
     } catch (error: any) {

@@ -20,7 +20,7 @@ export class WeeksService {
     private readonly kelasRepository: Repository<Course>,
 
     @InjectRepository(WeekProgress)
-    private readonly progresMingguRepository: Repository<WeekProgress>,
+    private readonly weekProgressRepository: Repository<WeekProgress>,
 
     @InjectRepository(UserCourse)
     private readonly userKelasRepository: Repository<UserCourse>,
@@ -39,7 +39,7 @@ export class WeeksService {
     if (!course) {
       throw new NotFoundException('course Not Found');
     }
-    if (createMingguDto.minggu_ke === 1) {
+    if (createMingguDto.weekNumber === 1) {
       const data = await this.mingguRepository.create({
         ...createMingguDto,
         course: course,
@@ -53,14 +53,14 @@ export class WeeksService {
       if (userKelass.length > 0) {
         for (const userKelas of userKelass) {
           const existingProgresMinggu =
-            await this.progresMingguRepository.findOne({
+            await this.weekProgressRepository.findOne({
               where: {
                 week: { id: weeks.id },
                 user: { id: userKelas.user.id },
               },
             });
           if (existingProgresMinggu) {
-            await this.progresMingguRepository.save({
+            await this.weekProgressRepository.save({
               id: existingProgresMinggu.id,
               week: weeks,
               user: userKelas.user,
@@ -68,7 +68,7 @@ export class WeeksService {
               proses: true,
             });
           } else {
-            await this.progresMingguRepository.save({
+            await this.weekProgressRepository.save({
               week: weeks,
               user: userKelas.user,
               quiz: false,
@@ -81,7 +81,7 @@ export class WeeksService {
     } else {
       const weeks = await this.mingguRepository.findOne({
         where: {
-          weekNumber: createMingguDto.minggu_ke - 1,
+          weekNumber: createMingguDto.weekNumber - 1,
           course: { id: course.id },
         },
         relations: ['weekProgresses'],
@@ -92,8 +92,8 @@ export class WeeksService {
           'weeks sebelumnya harus dibuat terlebih dahulu',
         );
       } else if (!weeks.isFinal) {
-        if (createMingguDto.akhir_check === 'true') {
-          createMingguDto.akhir = true;
+        if (createMingguDto.isFinalCheck === 'true') {
+          createMingguDto.isFinal = true;
         }
         const data = await this.mingguRepository.create({
           ...createMingguDto,
@@ -102,14 +102,14 @@ export class WeeksService {
         const newMinggu = await this.mingguRepository.save(data);
 
         if (weeks.weekProgresses.length > 0) {
-          const progresMinggu = await this.progresMingguRepository.find({
+          const weekProgress = await this.weekProgressRepository.find({
             where: { week: { id: weeks.id }, process: true, quiz: true },
             relations: ['user'],
           });
 
-          if (progresMinggu.length > 0) {
-            for (const progres of progresMinggu) {
-              await this.progresMingguRepository.save({
+          if (weekProgress.length > 0) {
+            for (const progres of weekProgress) {
+              await this.weekProgressRepository.save({
                 week: newMinggu,
                 user: progres.user,
                 quiz: false,
@@ -124,12 +124,12 @@ export class WeeksService {
   }
 
   async noPertemuan(courseId: number) {
-    const mingguTerakhir = await this.findMingguKelas(courseId);
+    const mingguTerakhir = await this.findCourseWeeks(courseId);
     const mingguBaru = mingguTerakhir + 1;
     return mingguBaru;
   }
 
-  async findMingguKelas(courseId: number) {
+  async findCourseWeeks(courseId: number) {
     const weeks = await this.mingguRepository.findOne({
       where: { course: { id: courseId } },
       order: { weekNumber: 'DESC' },
@@ -172,10 +172,10 @@ export class WeeksService {
       throw new NotFoundException('week not found');
     }
 
-    if (updateMingguDto.akhir_check === 'true') {
-      updateMingguDto.akhir = true;
+    if (updateMingguDto.isFinalCheck === 'true') {
+      updateMingguDto.isFinal = true;
     } else {
-      updateMingguDto.akhir = false;
+      updateMingguDto.isFinal = false;
     }
     Object.assign(weeks, updateMingguDto);
     return await this.mingguRepository.save(weeks);

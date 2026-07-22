@@ -8,7 +8,7 @@ export class CreateRegistrationsDto {
 
   @IsEnum(['acc', 'proces', 'rejected'])
   @IsOptional()
-  proses: Proses;
+  process: Proses;
 
   @IsInt()
   userId: number;

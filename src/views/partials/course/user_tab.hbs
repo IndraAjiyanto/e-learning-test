@@ -122,7 +122,7 @@
 <script>
 function userData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
     searchInput: '',
     search: '',
     pageNumber: 0,
@@ -132,7 +132,6 @@ function userData() {
     async fetchUsers() {
       const res = await fetch('/program/userProgram/{{course.id}}');
       this.data = await res.json();
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     },
 
     get filteredData() {

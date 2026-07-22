@@ -8,23 +8,23 @@
       en: `{{missions.content.en}}`,
       ja: `{{missions.content.ja}}`
     },
-    isi: {
-      id: `{{missions.isi.id}}`,
-      en: `{{missions.isi.en}}`,
-      ja: `{{missions.isi.ja}}`
+    items: {
+      id: `{{missions.items.id}}`,
+      en: `{{missions.items.en}}`,
+      ja: `{{missions.items.ja}}`
     }
   },
   formErrors: {
     content: { id: '', en: '', ja: '' },
-    isi: { id: '', en: '', ja: '' }
+    items: { id: '', en: '', ja: '' }
   },
   formValid: {
     content: { id: true, en: true, ja: true },
-    isi: { id: true, en: true, ja: true }
+    items: { id: true, en: true, ja: true }
   },
   formTouched: {
     content: { id: false, en: false, ja: false },
-    isi: { id: false, en: false, ja: false }
+    items: { id: false, en: false, ja: false }
   },
 
   validateField(field, value, lang = null) {
@@ -47,13 +47,13 @@
         }
         break;
         
-      case 'isi':
+      case 'items':
         if (!value.trim()) {
-          this.formErrors.isi[lang] = 'Text is required';
-          this.formValid.isi[lang] = false;
+          this.formErrors.items[lang] = 'Text is required';
+          this.formValid.items[lang] = false;
         } else {
-          this.formErrors.isi[lang] = '';
-          this.formValid.isi[lang] = true;
+          this.formErrors.items[lang] = '';
+          this.formValid.items[lang] = true;
         }
         break;
     }
@@ -61,13 +61,13 @@
 
   canSubmit() {
     const contentValid = Object.values(this.formValid.content).every(v => v);
-    const isiValid = Object.values(this.formValid.isi).every(v => v);
-    return contentValid && isiValid;
+    const itemsValid = Object.values(this.formValid.items).every(v => v);
+    return contentValid && itemsValid;
   },
 
   hasFormErrors() {
     return Object.values(this.formErrors.content).some(e => e !== '') ||
-           Object.values(this.formErrors.isi).some(e => e !== '');
+           Object.values(this.formErrors.items).some(e => e !== '');
   }
 }"
 >

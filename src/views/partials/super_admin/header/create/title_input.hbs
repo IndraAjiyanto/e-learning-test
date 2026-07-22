@@ -20,7 +20,7 @@
                 required
                 :class="formErrors.title.id ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-                @input='validateField("judul", "id", $event.target.value)'
+                @input='validateField("title", "id", $event.target.value)'
               />
               <template x-if='formErrors.title.id'>
                 <div
@@ -54,7 +54,7 @@
                 required
                 :class="formErrors.title.en ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-                @input='validateField("judul", "en", $event.target.value)'
+                @input='validateField("title", "en", $event.target.value)'
               />
               <template x-if='formErrors.title.en'>
                 <div
@@ -88,7 +88,7 @@
                 required
                 :class="formErrors.title.ja ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-                @input='validateField("judul", "ja", $event.target.value)'
+                @input='validateField("title", "ja", $event.target.value)'
               />
               <template x-if='formErrors.title.ja'>
                 <div

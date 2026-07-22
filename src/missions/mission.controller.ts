@@ -33,10 +33,10 @@ export class MissionController {
       createMissionDto.mission_order = await this.missionService.noPertemuan();
       await this.missionService.create(createMissionDto);
       req.flash('success', 'missions successfully created');
-      res.redirect('/missions');
+      res.redirect('/mission');
     } catch (error: any) {
       req.flash('error', 'missions failed to create');
-      res.redirect('/missions');
+      res.redirect('/mission');
     }
   }
 
@@ -44,7 +44,7 @@ export class MissionController {
   @Get()
   async index(@Res() res: Response, @Req() req: Request) {
     const mission = await this.missionService.findAll();
-    res.render('super_admin/missions/index', { user: req.user, mission });
+    res.render('super_admin/missions/index', { user: req.user, missions: mission });
   }
 
   @Roles('super_admin')
@@ -55,7 +55,7 @@ export class MissionController {
     @Req() req: Request,
   ) {
     const mission = await this.missionService.findOne(id);
-    res.render('super_admin/missions/edit', { user: req.user, mission });
+    res.render('super_admin/missions/edit', { user: req.user, missions: mission });
   }
 
   @Roles('super_admin')
@@ -69,10 +69,10 @@ export class MissionController {
     try {
       await this.missionService.update(id, updateMissionDto);
       req.flash('success', 'missions successfully updated');
-      res.redirect('/missions');
+      res.redirect('/mission');
     } catch (error: any) {
       req.flash('error', 'missions failed to update');
-      res.redirect('/missions');
+      res.redirect('/mission');
     }
   }
 
@@ -86,10 +86,10 @@ export class MissionController {
     try {
       await this.missionService.remove(id);
       req.flash('success', 'missions successfully deleted');
-      res.redirect('/missions');
+      res.redirect('/mission');
     } catch (error: any) {
       req.flash('error', 'missions failed to delete');
-      res.redirect('/missions');
+      res.redirect('/mission');
     }
   }
 

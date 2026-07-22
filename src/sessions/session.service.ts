@@ -42,14 +42,14 @@ export class SessionService {
     private readonly progresPertemuanRepository: Repository<SessionProgress>,
 
     @InjectRepository(WeekProgress)
-    private readonly progresMingguRepository: Repository<WeekProgress>,
+    private readonly weekProgressRepository: Repository<WeekProgress>,
 
     @InjectRepository(Assignment)
     private readonly tugasRepository: Repository<Assignment>,
   ) {}
 
   async create(createSessionDto: CreateSessionDto) {
-    if (createSessionDto.akhir_check === 'true') {
+    if (createSessionDto.isFinalCheck === 'true') {
       createSessionDto.isFinal = true;
     } else {
       createSessionDto.isFinal = false;
@@ -67,12 +67,12 @@ export class SessionService {
         weeks: weeks,
       });
       const new_pertemuan = await this.sessionRepository.save(data);
-      const progresMinggu = await this.progresMingguRepository.find({
+      const weekProgress = await this.weekProgressRepository.find({
         where: { week: { id: weeks.id }, process: true },
         relations: ['user'],
       });
-      if (progresMinggu.length > 0) {
-        for (const progres of progresMinggu) {
+      if (weekProgress.length > 0) {
+        for (const progres of weekProgress) {
           const existingProgresPertemuan =
             await this.progresPertemuanRepository.findOne({
               where: {
@@ -111,7 +111,7 @@ export class SessionService {
           'session sebelumnya harus dibuat terlebih dahulu',
         );
       } else if (!session.isFinal) {
-        if (createSessionDto.akhir_check === 'true') {
+        if (createSessionDto.isFinalCheck === 'true') {
           createSessionDto.isFinal = true;
         }
         const user = await this.sessionRepository.create({
@@ -141,11 +141,11 @@ export class SessionService {
     }
   }
 
-  async findAllKelas() {
+  async findAllCourses() {
     return await this.kelasRepository.find();
   }
 
-  async findPertemuanMinggu(weeksId: number) {
+  async findWeekSessions(weeksId: number) {
     const session = await this.sessionRepository.findOne({
       where: { weeks: { id: weeksId } },
       order: { createdAt: 'DESC' },
@@ -157,12 +157,12 @@ export class SessionService {
   }
 
   async noPertemuan(weeksId: number) {
-    const pertemuanTerakhir = await this.findPertemuanMinggu(weeksId);
+    const pertemuanTerakhir = await this.findWeekSessions(weeksId);
     const pertemuanBaru = pertemuanTerakhir + 1;
     return pertemuanBaru;
   }
 
-  async findMuridInKelas(courseId: number, sessionId: number) {
+  async findStudentsInCourse(courseId: number, sessionId: number) {
     return await this.userRepository.find({
       where: {
         userCourses: { course: { id: courseId } },
@@ -172,7 +172,7 @@ export class SessionService {
     });
   }
 
-  async findPertanyaan(sessionId: number) {
+  async findQuestions(sessionId: number) {
     return await this.pertanyaanRepository.find({
       where: { quiz: { id: sessionId } },
       relations: ['answers'],
@@ -231,7 +231,7 @@ export class SessionService {
       throw new NotFoundException('session tidak ditemukan');
     }
 
-    if (updateSessionDto.akhir_check === 'true') {
+    if (updateSessionDto.isFinalCheck === 'true') {
       updateSessionDto.isFinal = true;
     } else {
       updateSessionDto.isFinal = false;

@@ -4,7 +4,7 @@
       <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden group cursor-pointer">
         <div class="relative h-80">
           <a href="/blog/detail/{{blog_tranding.id}}" @click="viewBlog({{blog_tranding.id}})">
-            <img src="/{{blog_tranding.image.[0]}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <img src="{{blog_tranding.image.[0]}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
             <div class="absolute bottom-0 left-0 p-6 text-white">
               <span class="bg-red-600 text-xs px-3 py-1 rounded-full mb-3 inline-block">{{t 'test.blog.trending'}}</span>
@@ -23,7 +23,7 @@
       <div class="space-y-4">
         {{#each kategori_tranding}}
         <div class="bg-white rounded-xl shadow-lg p-4 flex space-x-4 group cursor-pointer">
-          <img src="/{{this.blog.image.[0]}}" class="w-20 h-20 object-cover rounded-lg">
+          <img src="{{this.blog.image.[0]}}" class="w-20 h-20 object-cover rounded-lg">
           <div>
             <i class="{{computeIcon this.icon}}"></i>
             <span class="text-xs text-blue-600 font-semibold">{{getByLang this.name lang}}</span>

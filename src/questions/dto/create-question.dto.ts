@@ -1,6 +1,6 @@
 import { IsArray, IsInt, IsNumber, IsString } from 'class-validator';
 
-export class CreatePertanyaanDto {
+export class CreateQuestionDto {
   @IsString()
   questionText: string;
 
@@ -9,7 +9,7 @@ export class CreatePertanyaanDto {
 
   @IsArray()
   @IsString({ each: true })
-  pilihan: string[];
+  options: string[];
 
   @IsString()
   image?: string;

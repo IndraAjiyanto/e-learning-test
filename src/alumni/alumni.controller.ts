@@ -115,7 +115,7 @@ export class AlumniController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const course = await this.alumniService.findKelasByKategori(categoryId);
+    const course = await this.alumniService.findCourseByKategori(categoryId);
     res.render('super_admin/alumni/createAlumni', {
       user: req.user,
       categoryId,

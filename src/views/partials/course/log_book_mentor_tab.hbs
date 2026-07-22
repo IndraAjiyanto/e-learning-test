@@ -112,23 +112,23 @@
             class='hover:bg-gray-50 transition'>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session.weeks.course.mentor[0].name"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.mentor?.[0]?.name"
             ></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="formatTanggal(logbookMentors.createdAt)"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session.pertemuan_ke"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.sessionOrder"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session.weeks.week_number"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.weekNumber"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session.weeks.course.name"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.name"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session.weeks.course.courseType.name_clasess_type"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.courseType?.name_clasess_type"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session.weeks.course.category.name"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.category?.name"
             ></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.activity"></td>
             <td
@@ -182,7 +182,7 @@
 <script>
 function logBookMentorData() {
   return {
-    data: JSON.parse(localStorage.getItem('activeData')) || [],
+    data: [],
     searchInput: '',
     search: '',
     pageNumber: 0,
@@ -192,22 +192,21 @@ function logBookMentorData() {
     async fetchLogBookMentors() {
       const res = await fetch('/program/logbookMentor/{{course.id}}');
       this.data = await res.json();
-      localStorage.setItem('activeData', JSON.stringify(this.data));
     },
 
     get filteredData() {
       let filtered = this.data.filter(l =>
           (
-            `${l.session.weeks.course.mentor[0].name}
-             ${l.session.pertemuan_ke}
-             ${l.session.weeks.week_number}
-             ${l.session.weeks.course.name}
-             ${l.session.weeks.course.courseType.name_clasess_type}
-             ${l.session.weeks.course.category.name}
-             ${l.activity}
-             ${l.activity_detail}
-             ${l.documentation}
-             ${l.obstacle}`
+            `${l.session?.weeks?.course?.mentor?.[0]?.name || ""}
+             ${l.session?.sessionOrder || ""}
+             ${l.session?.weeks?.weekNumber || ""}
+             ${l.session?.weeks?.course?.name || ""}
+             ${l.session?.weeks?.course?.courseType?.name_clasess_type || ""}
+             ${l.session?.weeks?.course?.category?.name || ""}
+             ${l.activity || ""}
+             ${l.activity_detail || ""}
+             ${l.documentation || ""}
+             ${l.obstacle || ""}`
           ).toLowerCase().
           includes(this.search.toLowerCase())
       );
@@ -247,13 +246,13 @@ function logBookMentorData() {
         try {
           const dataToExport = this.filteredData.map((l, index) => ({
             No: index + 1,
-            Mentor: l.session.weeks.course.mentor[0].name,
+            Mentor: l.session?.weeks?.course?.mentor?.[0]?.name,
             "Created At": new Date(l.createdAt).toLocaleDateString(),
-            "Meeting No": l.session.pertemuan_ke,
-            "Week No": l.session.weeks.week_number,
-            "Program Name": l.session.weeks.course.name,
-            "Program Type": l.session.weeks.course.courseType.name_clasess_type,
-            Category: l.session.weeks.course.category.name,
+            "Meeting No": l.session.sessionOrder,
+            "Week No": l.session?.weeks?.weekNumber,
+            "Program Name": l.session?.weeks?.course?.name,
+            "Program Type": l.session?.weeks?.course?.courseType?.name_clasess_type,
+            Category: l.session?.weeks?.course?.category?.name,
             Activity: l.activity,
             "Activity Details": l.activity_details,
             Documentation: l.dokumentasi,

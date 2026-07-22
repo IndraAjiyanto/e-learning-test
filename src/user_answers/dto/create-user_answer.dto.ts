@@ -1,7 +1,7 @@
 import { ValidateNested, IsArray, IsInt, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class JawabanUserDto {
+export class UserAnswerDto {
   @IsOptional()
   @IsInt()
   answersId?: number | null;
@@ -13,9 +13,9 @@ export class JawabanUserDto {
   userId: number;
 }
 
-export class CreateJawabanUserDto {
+export class CreateUserAnswerDto {
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => JawabanUserDto)
-  answerUser: JawabanUserDto[];
+  @Type(() => UserAnswerDto)
+  answerUser: UserAnswerDto[];
 }

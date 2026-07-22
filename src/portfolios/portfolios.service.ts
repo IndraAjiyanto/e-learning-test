@@ -70,7 +70,7 @@ export class PortfoliosService {
     return await this.kategoriRepository.find();
   }
 
-  async findJenisKelas() {
+  async findCourseTypes() {
     return await this.courseTypeRepository.find();
   }
 
@@ -78,7 +78,7 @@ export class PortfoliosService {
     return await this.kategoriRepository.find({where: { courses: { userCourses: { user: { id: userId } } } } });
   }
 
-  async findJenisKelasMyPortfolio(userId: number) {
+  async findMyPortfolioCourseTypes(userId: number) {
     return await this.courseTypeRepository.find({where: { classes: { userCourses: { user: { id: userId } } } } });
   }
 

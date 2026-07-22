@@ -170,14 +170,14 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Post('addStudent/:courseId')
-  async addUserToKelas(
+  async addUserToCourse(
     @Param('courseId') courseId: number,
     @Res() res: Response,
     @Req() req: Request,
     @Body('userId') userId: number,
   ) {
     try {
-      await this.kelassService.addUserToKelas(userId, courseId);
+      await this.kelassService.addUserToCourse(userId, courseId);
       req.flash('success', 'user successfuly add to program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
@@ -190,10 +190,10 @@ export class CoursesController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     if (req.user!.role === 'super_admin') {
-      // const course = await this.kelassService.allKelas();
+      // const course = await this.kelassService.findAllCourses();
       res.render('admin/course/index', { user: req.user });
     } else if (req.user!.role === 'admin') {
-      // const course = await this.kelassService.findKelasByMentoring(req.user!.id);
+      // const course = await this.kelassService.findCourseByMentoring(req.user!.id);
       res.render('admin/course/index', { user: req.user });
     }
   }
@@ -211,7 +211,7 @@ export class CoursesController {
     const currentPage = parseInt(page || '1', 10);
     const itemsPerPage = parseInt(limit || '5', 10);
 
-    const result = await this.kelassService.findKelasPaginated({
+    const result = await this.kelassService.findPaginatedCourses({
       search: search || undefined,
       alphabet: alphabet || undefined,
       page: currentPage,
@@ -231,7 +231,7 @@ export class CoursesController {
   @Get('/create')
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const category = await this.kelassService.findKategori();
-    const courseType = await this.kelassService.findJenisKelas();
+    const courseType = await this.kelassService.findCourseTypes();
     const technologies = await this.kelassService.findTechnologies();
     const mentorings = await this.kelassService.findMentoring();
     return res.render('admin/course/create', {
@@ -251,7 +251,7 @@ export class CoursesController {
     @Param('categoryId') categoryId: number,
   ) {
     const category = await this.kelassService.findOneKategori(categoryId);
-    const courseType = await this.kelassService.findJenisKelas();
+    const courseType = await this.kelassService.findCourseTypes();
     const technologies = await this.kelassService.findTechnologies();
     const mentorings = await this.kelassService.findMentoring();
     return res.render('admin/course/formCreate', {
@@ -291,7 +291,7 @@ export class CoursesController {
   ) {
     const course = await this.kelassService.findOne(courseId);
     const category = await this.kelassService.findKategori();
-    const courseType = await this.kelassService.findJenisKelas();
+    const courseType = await this.kelassService.findCourseTypes();
     const technologies = await this.kelassService.findTechnologies();
     const mentorings = await this.kelassService.findMentoring();
 
@@ -331,54 +331,54 @@ export class CoursesController {
     @Param('courseId') courseId: number,
     @Res() res: Response,
   ) {
-    const mentor = await this.kelassService.findMentorKelas(courseId);
+    const mentor = await this.kelassService.findCourseMentors(courseId);
     res.json(mentor);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'super_admin')
   @Get('/week/:courseId')
   async getMinggu(@Param('courseId') courseId: number, @Res() res: Response) {
-    const weeks = await this.kelassService.findMingguKelas(courseId);
+    const weeks = await this.kelassService.findCourseWeeks(courseId);
     res.json(weeks);
   }
 
   @Roles('super_admin', 'admin')
   @Get('/userProgram/:courseId')
   async getUserKelas(@Param('courseId') courseId: number, @Res() res: Response) {
-    const userCourses = await this.kelassService.findUserKelas(courseId);
+    const userCourses = await this.kelassService.findCourseUsers(courseId);
     res.json(userCourses);
   }
 
-  @Roles('super_admin')
+  @Roles('admin', 'super_admin')
   @Get('/installment/:courseId')
   async getCicilan(@Param('courseId') courseId: number, @Res() res: Response) {
     const availableMonths = await this.kelassService.findNo(courseId);
-    const installments = await this.kelassService.findCicilanKelas(courseId);
+    const installments = await this.kelassService.findCourseInstallments(courseId);
     res.json({ availableMonths, installments });
   }
 
-  @Roles('super_admin')
+  @Roles('admin', 'super_admin')
   @Get('/register/:courseId')
   async getPendaftaran(
     @Param('courseId') courseId: number,
     @Res() res: Response,
   ) {
-    const pendaftaran = await this.kelassService.findPendaftaranKelas(courseId);
+    const pendaftaran = await this.kelassService.findCourseRegistrations(courseId);
     res.json(pendaftaran);
   }
 
-  @Roles('super_admin')
+  @Roles('admin', 'super_admin')
   @Get('/paymentInstallment/:courseId')
   async getPaymentInstallment(
     @Param('courseId') courseId: number,
     @Res() res: Response,
   ) {
     const paymentInstallment =
-      await this.kelassService.findPaymentInstallmentKelas(courseId);
+      await this.kelassService.findCoursePaymentInstallments(courseId);
     res.json(paymentInstallment);
   }
 
-  @Roles('super_admin')
+  @Roles('admin', 'super_admin')
   @Get('/benefit/:courseId')
   async getProgramBenefit(
     @Param('courseId') courseId: number,
@@ -388,35 +388,35 @@ export class CoursesController {
     res.json(course_benefits);
   }
 
-  @Roles('super_admin')
+  @Roles('admin', 'super_admin')
   @Get('/faq/:courseId')
   async getPertanyaanKelas(
     @Param('courseId') courseId: number,
     @Res() res: Response,
   ) {
     const courseQuestions =
-      await this.kelassService.findPertanyaanKelas(courseId);
+      await this.kelassService.findCourseQuestions(courseId);
     res.json(courseQuestions);
   }
 
-  @Roles('super_admin')
+  @Roles('admin', 'super_admin')
   @Get('/flow/:courseId')
   async getAlurKelas(@Param('courseId') courseId: number, @Res() res: Response) {
-    const course_flows = await this.kelassService.findAlurKelas(courseId);
+    const course_flows = await this.kelassService.findCourseFlows(courseId);
     res.json(course_flows);
   }
 
-  @Roles('super_admin')
+  @Roles('admin', 'super_admin')
   @Get('/payment/:courseId')
   async getPembayaran(@Param('courseId') courseId: number, @Res() res: Response) {
-    const pembayaran = await this.kelassService.findPembayaranKelas(courseId);
+    const pembayaran = await this.kelassService.findCoursePayments(courseId);
     res.json(pembayaran);
   }
 
-  @Roles('super_admin')
+  @Roles('admin', 'super_admin')
   @Get('/alumni/:courseId')
   async getAlumni(@Param('courseId') courseId: number, @Res() res: Response) {
-    const alumni = await this.kelassService.findAlumniKelas(courseId);
+    const alumni = await this.kelassService.findCourseAlumni(courseId);
     res.json(alumni);
   }
 
@@ -429,9 +429,9 @@ export class CoursesController {
     @Req() req: Request,
   ) {
     if (req.user!.role === 'admin') {
-      const course = await this.kelassService.findOneKelasAdmin(courseId);
+      const course = await this.kelassService.findOneAdminCourse(courseId);
       const mingguTerakhir =
-        await this.kelassService.findMingguTerakhir(courseId);
+        await this.kelassService.findLastWeek(courseId);
       res.render('admin/course/detail', {
         user: req.user,
         course,
@@ -455,7 +455,7 @@ export class CoursesController {
   ) {
     // const course = await this.kelassService.findMyCourse(id);
     const category = await this.kelassService.findKategoriMyProgram(id);
-    const courseType = await this.kelassService.findJenisKelasMyProgram(id);
+    const courseType = await this.kelassService.findMyProgramCourseTypes(id);
     res.render('user/mycourse', {
       // course,
       user: req.user,
@@ -471,18 +471,18 @@ export class CoursesController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const course = await this.kelassService.findOneKelas(courseId);
-    const check_user = await this.kelassService.checkUserInKelas(
+    const course = await this.kelassService.findOneCourse(courseId);
+    const check_user = await this.kelassService.checkUserInCourse(
       course.id,
       req.user!.id,
     );
     const kelass = await this.kelassService.allClassExcept(course.id);
-    // const courseQuestions = await this.kelassService.findPertanyaanKelas(courseId);
-    // const course_flows = await this.kelassService.findAlurKelas(courseId);
-    // const mentor = await this.kelassService.findMentorKelas(courseId);
+    // const courseQuestions = await this.kelassService.findCourseQuestions(courseId);
+    // const course_flows = await this.kelassService.findCourseFlows(courseId);
+    // const mentor = await this.kelassService.findCourseMentors(courseId);
     // const course_benefits = await this.kelassService.findProgramBenefit(courseId);
-    const technologies = await this.kelassService.findTechnologiesKelas(courseId);
-    const installments = await this.kelassService.findCicilanKelas(courseId);
+    const technologies = await this.kelassService.findCourseTechnologies(courseId);
+    const installments = await this.kelassService.findCourseInstallments(courseId);
 
     if (course.check_paid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
@@ -522,14 +522,14 @@ export class CoursesController {
   ) {
     let isUserInKelas = false;
     if (!req.user) {
-      const course = await this.kelassService.findOneKelasUser(id);
-      // const courseQuestions = await this.kelassService.findPertanyaanKelas(id);
-      // const course_flows = await this.kelassService.findAlurKelas(id);
-      // const mentor = await this.kelassService.findMentorKelas(id);
+      const course = await this.kelassService.findOneUserCourse(id);
+      // const courseQuestions = await this.kelassService.findCourseQuestions(id);
+      // const course_flows = await this.kelassService.findCourseFlows(id);
+      // const mentor = await this.kelassService.findCourseMentors(id);
       // const course_benefits = await this.kelassService.findProgramBenefit(id);
-      const technologies = await this.kelassService.findTechnologiesKelas(id);
-      const installments = await this.kelassService.findCicilanKelas(id);
-      const userCourses = await this.kelassService.findUserKelas(id);
+      const technologies = await this.kelassService.findCourseTechnologies(id);
+      const installments = await this.kelassService.findCourseInstallments(id);
+      const userCourses = await this.kelassService.findCourseUsers(id);
       const kelass = await this.kelassService.allClassExcept(course.id);
       const daftar = await this.kelassService.sumStudent(course.id);
       if (course.check_paid === false) {
@@ -556,7 +556,7 @@ export class CoursesController {
         });
       }
     } else {
-      const course = await this.kelassService.findOneKelasUserLaunch(id);
+      const course = await this.kelassService.findOneUserLaunchCourse(id);
       for (const u of course.userCourses) {
         if (u.user.id === req.user.id) {
           isUserInKelas = true;
@@ -564,11 +564,11 @@ export class CoursesController {
         }
       }
       if (isUserInKelas) {
-        const mingguUpdated = await this.kelassService.findMinggu(
+        const mingguUpdated = await this.kelassService.findWeeks(
           id,
           req.user.id,
         );
-        const userCourses = await this.kelassService.findOneUserKelas(
+        const userCourses = await this.kelassService.getUserCourseRelation(
           req.user.id,
           course.id,
         );
@@ -584,14 +584,14 @@ export class CoursesController {
           weeks: mingguUpdated,
         });
       } else {
-        const course = await this.kelassService.findOneKelasUser(id);
-        // const courseQuestions = await this.kelassService.findPertanyaanKelas(id);
-        // const course_flows = await this.kelassService.findAlurKelas(id);
-        // const mentor = await this.kelassService.findMentorKelas(id);
+        const course = await this.kelassService.findOneUserCourse(id);
+        // const courseQuestions = await this.kelassService.findCourseQuestions(id);
+        // const course_flows = await this.kelassService.findCourseFlows(id);
+        // const mentor = await this.kelassService.findCourseMentors(id);
         // const course_benefits = await this.kelassService.findProgramBenefit(id);
-        const technologies = await this.kelassService.findTechnologiesKelas(id);
-        const installments = await this.kelassService.findCicilanKelas(id);
-        const userCourses = await this.kelassService.findUserKelas(id);
+        const technologies = await this.kelassService.findCourseTechnologies(id);
+        const installments = await this.kelassService.findCourseInstallments(id);
+        const userCourses = await this.kelassService.findCourseUsers(id);
         const kelass = await this.kelassService.allClassExcept(course.id);
         const daftar = await this.kelassService.sumStudent(course.id);
         if (course.check_paid === false) {
@@ -631,19 +631,19 @@ export class CoursesController {
 
   @Get('api/detail/:id/faq')
   async getFaq(@Param('id') id: number, @Res() res: Response) {
-    const courseQuestions = await this.kelassService.findPertanyaanKelas(id);
+    const courseQuestions = await this.kelassService.findCourseQuestions(id);
     return res.json({ courseQuestions });
   }
 
   @Get('api/detail/:id/flow')
   async getFlow(@Param('id') id: number, @Res() res: Response) {
-    const course_flows = await this.kelassService.findAlurKelas(id);
+    const course_flows = await this.kelassService.findCourseFlows(id);
     return res.json({ course_flows });
   }
 
   @Get('api/detail/:id/mentor')
   async getMentor(@Param('id') id: number, @Res() res: Response) {
-    const mentor = await this.kelassService.findMentorKelas(id);
+    const mentor = await this.kelassService.findCourseMentors(id);
     return res.json({ mentor });
   }
 
@@ -774,14 +774,14 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Delete(':userId/program/:courseId')
-  async removeUserKelas(
+  async removeCourseUser(
     @Param('userId') userId: number,
     @Param('courseId') courseId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.kelassService.removeUserKelas(userId, courseId);
+      await this.kelassService.removeCourseUser(userId, courseId);
       req.flash('success', 'User successfully removed from program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
