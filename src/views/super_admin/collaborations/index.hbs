@@ -58,6 +58,9 @@
           >Image</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Category</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Action</th>
         </tr>
       </thead>
@@ -76,6 +79,17 @@
                 alt='Partnership Image'
                 class='w-12 h-12 rounded-full object-cover border'
               />
+            </td>
+
+            <!-- Category -->
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              {{#if categoryPartner}}
+                <span
+                  class='inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold'
+                >{{categoryPartner.category}}</span>
+              {{else}}
+                <span class='text-gray-400'>-</span>
+              {{/if}}
             </td>
 
             <!-- Action -->

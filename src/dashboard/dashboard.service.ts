@@ -1,4 +1,4 @@
-import { ILike, Like, Raw, Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
@@ -257,7 +257,15 @@ async findAlumni(options?: {
   const limit = options?.limit || 6;
   const skip = (page - 1) * limit;
 
-  const where: any = {};
+  const qb = this.alumniRepository
+    .createQueryBuilder('alumni')
+    .leftJoinAndSelect('alumni.kelas', 'kelas')
+    .leftJoinAndSelect('kelas.kategori', 'kategori')
+    .orderBy('alumni.createdAt', 'DESC')
+    .skip(skip)
+    .take(limit);
+
+    const where: any = {};
 
   // Logika filter course atau category global
   if (options?.courseId) {
@@ -345,6 +353,10 @@ async findAlumni(options?: {
 
   async findCategories() {
     return await this.categoryRepository.find();
+  }
+
+  async findAllBenefits() {
+    return await this.benefitRepository.find({ order: { no: 'ASC' } });
   }
 
   async findBenefit1() {

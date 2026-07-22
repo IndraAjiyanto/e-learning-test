@@ -331,15 +331,10 @@ export class UsersService {
         resetToken,
         user.username,
       );
-      return newUser;
     } catch (error) {
-      user.verificationToken = null;
-      user.verificationTokenExpires = null;
-      await this.userRepository.save(user);
-      throw new BadRequestException(
-        'Failed to send reset email. Please try again later.',
-      );
+      console.error('Failed to send verification email:', error.message);
     }
+    return newUser;
   }
 
   async findUserByTokenPassword(token: string) {

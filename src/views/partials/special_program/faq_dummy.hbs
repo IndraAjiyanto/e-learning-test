@@ -1,0 +1,22 @@
+<section id="faq" class="py-16 bg-gray-50/50">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <div class="flex items-center justify-center mx-auto rounded-full border border-[#003060] bg-[#6EB6E5]/20 text-[#003060] font-semibold text-lg font-montserrat" style="width: 305px; height: 49px;">
+        Frequently Asked Questions
+      </div>
+    </div>
+    
+    <div class="space-y-4">
+      {{#each pertanyaan_kelas}}
+      <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+        <h3 class="font-semibold text-gray-900">{{getByLang this.pertanyaan ../lang}}</h3>
+        <p class="text-gray-600 mt-2 text-sm">{{getByLang this.jawaban ../lang}}</p>
+      </div>
+      {{else}}
+      <div class="text-center text-gray-500 py-8">
+        No frequently asked questions available at this time.
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>

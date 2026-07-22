@@ -35,10 +35,19 @@ export class BenefitService {
         const benefit = await this.findAll();
       const usedNumbers = benefit.map((b) => Number(b.no));
       
-      const availableNumbers = [1, 2, 3].filter(
+      const availableNumbers = [1, 2, 3, 4, 5].filter(
         (n) => !usedNumbers.includes(n)
       );
       return availableNumbers;
+  }
+
+  async findNoForEdit(benefitId: number) {
+    const benefit = await this.findOne(benefitId);
+    const available = await this.findNo();
+    // slot kosong + nomor milik benefit ini, lalu urutkan
+    return [...new Set([...available, Number(benefit.no)])].sort(
+      (a, b) => a - b,
+    );
   }
 
   async update(benefitId: number, updateBenefitDto: UpdateBenefitDto) {

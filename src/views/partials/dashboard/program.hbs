@@ -106,9 +106,17 @@
 
   <!-- Header Section -->
   <div class='text-center mb-16 relative'>
-       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-white">{{t "test.home.programSection.tittle"}}</h2>
+    <div class='flex flex-col items-center text-center justify-center mb-6 '>
+      <h1 class='text-l border bg-[#6EB6E533] border-gray-400 w-36 rounded-full text-gray-900 font-montserrat'>{{{t
+          'test.home.programSection.ourProgram'
+        }}}</h1>
+      </div>
+       <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">{{{t "test.home.programSection.tittle"}}}</h2>
+         <div
+        class='border border-b-2 border-slate-900 w-16 mx-auto mt-4 rounded'
+      ></div>
 
-    <p class='text-lg mt-4 text-slate-300 max-w-2xl mx-auto relative z-10'>
+    <p class='text-lg mt-4 text-slate-900 max-w-2xl mx-auto relative z-10'>
       {{t "test.home.programSection.description"}}
     </p>
   </div>
@@ -419,7 +427,7 @@
     {{t "test.home.programSection.program"}}
   </p>
 </div>
-  </div>
+  </div> --}}
 
   <!-- Classes Grid -->
   <div
@@ -431,7 +439,7 @@
     <div
       data-animate="scale-up"
       data-delay="100"
-      class="group card bg-white shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
+      class="group card bg-[#E0F1F9] shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-3xl"
     >
       <img
         :src="course.image"
@@ -441,17 +449,17 @@
 
       <div class="card-body p-6">
         <!-- Badge -->
-        <div class="flex gap-2 mb-3">
+        {{!-- <div class="flex gap-2 mb-3">
           <span class="badge flex justify-center h-fit items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full"
             x-text="course.category?.name">
           </span>
           <span class="badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-full"
             x-text="course.courseType?.name_clasess_type">
           </span>
-        </div>
+        </div> --}}
 
         <!-- Metode & Lokasi -->
-        <div class="flex flex-wrap gap-2 mb-4 text-sm text-gray-700">
+        {{!-- <div class="flex flex-wrap gap-2 mb-4 text-sm text-gray-700">
           <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
             <template x-if="course.metode === 'online'">
               <span class="flex items-center gap-2">
@@ -470,7 +478,7 @@
             <i class="fas fa-user-tie text-slate-500"></i>
             <span x-text="getByLang(course.location, lang)"></span>
           </div>
-        </div>
+        </div> --}}
 
         <!-- Nama -->
         <h2 class="card-title text-gray-900 text-xl font-bold mb-3"
@@ -483,7 +491,7 @@
         </p>
 
         <!-- Kuota -->
-        <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200">
+        {{!-- <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 mb-4 border border-slate-200">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
               <i class="fas fa-users text-slate-600 animate-pulse"></i>
@@ -503,14 +511,18 @@
               :style="`width: ${((course.userCourses?.length ?? 0) / course.quota) * 100}%`"
             ></div>
           </div>
-        </div>
+        </div> --}}
 
         <!-- Button -->
         <div class="card-actions">
           <a :href="`/program/${course.id}`"
             class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-base px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex justify-center items-center text-center"
           >
-            {{t "test.home.programSection.buttonViewProgram"}}
+          <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+</svg>
+
+            {{!-- {{t "test.home.programSection.buttonViewProgram"}} --}}
           </a>
         </div>
       </div>

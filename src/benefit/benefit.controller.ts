@@ -62,7 +62,12 @@ export class BenefitController {
     @Req() req: Request,
   ) {
     const benefit = await this.benefitService.findOne(benefitId);
-    res.render('super_admin/benefit/edit', { user: req.user, benefit });
+    const availableNumbers = await this.benefitService.findNoForEdit(benefitId);
+    res.render('super_admin/benefit/edit', {
+      user: req.user,
+      benefit,
+      availableNumbers,
+    });
   }
 
   @Roles('super_admin')

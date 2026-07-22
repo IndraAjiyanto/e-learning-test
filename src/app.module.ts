@@ -65,6 +65,7 @@ import {
 } from 'nestjs-i18n';
 import { OurExperienceModule } from './our_experience/our_experience.module';
 import { GalleryModule } from './gallery/gallery.module';
+import { CategoryPartnerModule } from './category_partner/category_partner.module';
 import path from 'path';
 import { DataSource } from 'typeorm';
 
@@ -153,6 +154,7 @@ const TABLES_WITH_SEQUENCE = [
     SuperiorityModule,
     OurExperienceModule,
     GalleryModule,
+    CategoryPartnerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -206,6 +208,7 @@ export class AppModule implements OnApplicationBootstrap {
             '/public/*path',
             '/asset/*path',
             '/uploads/*path',
+            '/alumni/filter',
             '/dashboard',
             '/dashboard/*path',
             )

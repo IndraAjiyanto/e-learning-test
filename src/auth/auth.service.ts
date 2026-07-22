@@ -29,10 +29,17 @@ export class AuthService {
   }
 
   async createAcount(createUserDto: CreateUserDto) {
-    const isMatch = await bcrypt.compare(
-      createUserDto.password,
-      createUserDto.confirm_password,
-    );
+    if (createUserDto.password !== createUserDto.confirm_password) {
+      throw new BadRequestException('Password does not match');
+    }
+
+    const existingUser = await this.userRepository.findOne({
+      where: { email: createUserDto.email },
+    });
+    if (existingUser) {
+      throw new BadRequestException('Email is already registered');
+    }
+
     const resetToken = crypto.randomBytes(32).toString('hex');
 
     const hashedToken = crypto
@@ -42,21 +49,21 @@ export class AuthService {
     createUserDto.verificationToken = hashedToken;
     createUserDto.verificationTokenExpires = new Date(Date.now() + 60000);
 
-    if (!isMatch) {
+    try {
+      const user_data = await this.userRepository.create({ ...createUserDto, isVerified: false });
+      const user = await this.userRepository.save(user_data);
       try {
-        const user_data = await this.userRepository.create({ ...createUserDto, isVerified: false });
-        const user = await this.userRepository.save(user_data);
         await this.emailService.sendVerificationEmail(
           createUserDto.email,
           resetToken,
           createUserDto.username,
         );
-        return user;
-      } catch (error) {
-        throw new BadRequestException(error.message);
+      } catch (emailError) {
+        console.error('Failed to send verification email:', emailError.message);
       }
-    } else {
-      throw new BadRequestException('Password no match');
+      return user;
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 

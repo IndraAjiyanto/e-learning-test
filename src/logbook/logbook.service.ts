@@ -159,6 +159,27 @@ export class LogbookService {
     return logbooks;
   }
 
+  async findCapstoneProjects(kategoriId?: number) {
+    const query = this.logBookRepository
+      .createQueryBuilder('logbook')
+      .where('logbook.dokumentasi IS NOT NULL')
+      .andWhere('logbook.dokumentasi != :empty', { empty: '' })
+      .orderBy('logbook.createdAt', 'DESC');
+
+    // Join necessary relations to filter by kategoriId
+    query.leftJoin('logbook.pertemuan', 'pertemuan')
+         .leftJoin('pertemuan.minggu', 'minggu')
+         .leftJoin('minggu.kelas', 'kelas');
+
+    if (kategoriId) {
+      query.andWhere('kelas.id = :kategoriId', {
+        kategoriId,
+      });
+    }
+
+    return query.getMany();
+  }
+
   async update(logbookId: number, updateLogbookDto: UpdateLogbookDto) {
     const logbooks = await this.findOne(logbookId);
     if (!logbooks) {

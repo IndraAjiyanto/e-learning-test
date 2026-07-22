@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
-import { GalleryController } from './gallery.controller';
+import { GalleryController, PublicGalleryController } from './gallery.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Gallery } from '../entities/gallery.entity';
 import { CommonModule } from 'src/common/common.module';

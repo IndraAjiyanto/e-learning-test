@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export type No = 1 | 2 | 3;
+export type No = 1 | 2 | 3 | 4 | 5;
 
 @Entity()
 export class Benefit {
@@ -22,7 +22,7 @@ export class Benefit {
   @Column()
   icon: string;
 
-  @Column({ type: 'enum', enum: [1, 2, 3] })
+  @Column({ type: 'enum', enum: [1, 2, 3, 4, 5] })
   no: No;
 
   @CreateDateColumn()

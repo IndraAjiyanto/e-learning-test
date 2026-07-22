@@ -1,10 +1,14 @@
 import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
+import { GalleryService } from '../gallery/gallery.service';
 import { Request, Response } from 'express';
 
 @Controller('dashboard')
 export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) {}
+  constructor(
+    private readonly dashboardService: DashboardService,
+    private readonly galleryService: GalleryService,
+  ) {}
 
   @Get('course/filter')
   async kelasFilter(
@@ -61,15 +65,17 @@ export class DashboardController {
         const category = await this.dashboardService.findCategories();
         const alumni = await this.dashboardService.findAllAlumni();
         const collaborations = await this.dashboardService.findCollaborations();
-        const benefit_1 = await this.dashboardService.findBenefit1();
-        const benefit_2 = await this.dashboardService.findBenefit2();
-        const benefit_3 = await this.dashboardService.findBenefit3();
+        const benefits = await this.dashboardService.findAllBenefits();
         const about = await this.dashboardService.findAbout();
         const social = await this.dashboardService.findSocial();
+        const gallery = await this.galleryService.findAll();
+        const programs = await this.dashboardService.findAllCategories();
         res.render('dashboard', {
           special_program,
           user: req.user,
-          // course,
+          gallery,
+          programs,
+          // kelas,
           faq,
           benefit_images_1,
           benefit_images_2,
@@ -79,9 +85,7 @@ export class DashboardController {
           category,
           alumni,
           collaborations,
-          benefit_1,
-          benefit_2,
-          benefit_3,
+          benefits,
           about,
           social,
           our_experience,
@@ -99,15 +103,17 @@ export class DashboardController {
       const category = await this.dashboardService.findCategories();
       const alumni = await this.dashboardService.findAllAlumni();
       const collaborations = await this.dashboardService.findCollaborations();
-      const benefit_1 = await this.dashboardService.findBenefit1();
-      const benefit_2 = await this.dashboardService.findBenefit2();
-      const benefit_3 = await this.dashboardService.findBenefit3();
+      const benefits = await this.dashboardService.findAllBenefits();
       const about = await this.dashboardService.findAbout();
       const social = await this.dashboardService.findSocial();
+      const gallery = await this.galleryService.findAll();
+      const programs = await this.dashboardService.findAllCategories();
       res.render('dashboard', {
         special_program,
         user: req.user,
-        // course,
+        gallery,
+        programs,
+        // kelas,
         faq,
         benefit_images_1,
         benefit_images_2,
@@ -117,9 +123,7 @@ export class DashboardController {
         category,
         alumni,
         collaborations,
-        benefit_1,
-        benefit_2,
-        benefit_3,
+        benefits,
         about,
         social,
         our_experience,

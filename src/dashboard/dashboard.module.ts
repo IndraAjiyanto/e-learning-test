@@ -25,6 +25,7 @@ import { Faq } from 'src/entities/faq.entity';
 import { TranslationModule } from 'src/translation/translation.module';
 import { OurExperience } from 'src/entities/our_experience.entity';
 import { Paragraph } from 'src/entities/paragraph.entity';
+import { GalleryModule } from 'src/gallery/gallery.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { Paragraph } from 'src/entities/paragraph.entity';
       OurExperience,
     ]),
     TranslationModule, // Import TranslationModule
+    GalleryModule,
   ],
   controllers: [DashboardController],
   providers: [DashboardService],

@@ -1,6 +1,14 @@
-<section class='bg-white py-20 px-6 lg:px-20'>
+<section class='bg-transparant py-20 px-6 lg:px-20'>
+  <div class='flex flex-col items-center text-center justify-center mb-12'>
+    <h1 class='text-l border bg-[#6EB6E533] border-gray-400 w-36 rounded-full -mb-12 text-gray-900 font-montserrat'>{{{t
+        'test.home.partnerSection.ourPartners'
+      }}}</h1>
+  </div>
   <div class='text-center mb-16'>
-    <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">{{t "test.home.partnerSection.tittle"}}</h2>
+    <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">{{{t "test.home.partnerSection.tittle"}}}</h2>
+    <div
+        class='border border-b-2 border-slate-900 w-24 mx-auto mt-8 my-2 rounded'
+      ></div>
     <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
       {{t "test.home.partnerSection.description"}}
     </p>
@@ -44,19 +52,31 @@
   </div>
 </section>
 
+<script>
+  function partnerFilter({ partners }) {
+    return {
+      partners,
+      // 'all' by default → semua logo tampil saat halaman dibuka / di-refresh
+      selected: 'all',
 
-<style>
-@keyframes scroll-seamless {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-200%);
-  }
-}
+      get categories() {
+        const seen = {};
+        this.partners.forEach((p) => {
+          if (p.categoryPartner) {
+            seen[p.categoryPartner.id] = p.categoryPartner.category;
+          }
+        });
+        return Object.keys(seen).map((id) => ({ id, category: seen[id] }));
+      },
 
-.animate-scroll-seamless {
-  animation: scroll-seamless 30s linear infinite;
-  will-change: transform;
-}
-</style>
+      get filtered() {
+        if (this.selected === 'all') return this.partners;
+        return this.partners.filter(
+          (p) =>
+            p.categoryPartner &&
+            String(p.categoryPartner.id) === String(this.selected),
+        );
+      },
+    };
+  }
+</script>
