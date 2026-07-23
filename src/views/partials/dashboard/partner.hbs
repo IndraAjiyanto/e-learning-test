@@ -14,80 +14,42 @@
     </p>
   </div>
 
-  {{#if kerja_sama}}
-    <div x-data='partnerFilter({ partners: {{json kerja_sama}} })'>
-
-
-      <!-- Filter Buttons -->
-      <div class='flex flex-wrap items-center justify-center gap-3 mb-10'>
-        <button
-          type='button'
-          @click="selected = 'all'"
-          :class="selected === 'all'
-            ? 'bg-[#6EB6E5] text-white border-gray-900'
-            : 'bg-secondary text-white border-gray-300 hover:bg-[#6EB6E5]'"
-          class='px-5 py-2 rounded-full border text-sm font-semibold transition'
-        >
-          All
-        </button>
-        <template x-for='cat in categories' :key='cat.id'>
-          <button
-            type='button'
-            @click="selected = cat.id"
-            :class="String(selected) === String(cat.id)
-              ? 'bg-[#6EB6E5] text-white border-gray-900'
-              : 'bg-secondary text-white border-gray-300 hover:bg-[#6EB6E5]'"
-            class='px-5 py-2 rounded-full border text-sm font-semibold transition'
-            x-text='cat.category'
-          ></button>
-        </template>
+  <div class='overflow-hidden whitespace-nowrap bg-white rounded-2xl shadow-lg py-8 relative'>
+    {{#if collaborations}}
+    <div class=' inline-flex animate-scroll-seamless'>
+      {{#each collaborations}}
+      <img
+        src="{{gambar}}"
+        alt='Partner Logo'
+        class='h-24 w-auto inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300 flex-shrink-0'
+      />
+      {{/each}}
+    </div>
+    {{else}}
+    <div class='flex items-center justify-center gap-8 px-8'>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-building text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 1</p>
       </div>
-
-      <!-- Partner Logos -->
-      <div class='flex flex-wrap items-center justify-center gap-8 bg-transparant rounded-2xl max-w-6xl mx-auto py-8'>
-        <template x-for='partner in filtered' :key='partner.id'>
-          <div class='w-[201px] h-[132px] border shadow-lg  border-gray-300 flex items-center justify-center flex-shrink-0 rounded-lg'>
-            <img
-              :src='partner.gambar'
-              alt='Partner Logo'
-              class='h-24 w-auto inline-block'
-            />
-          </div>
-        </template>
-
-        <!-- Empty state when a filter has no partners -->
-        <p
-          x-show='filtered.length === 0'
-          class='text-gray-400 text-sm py-8'
-        >No partners in this category.</p>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-industry text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 2</p>
+      </div>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-store text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 3</p>
+      </div>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-landmark text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 4</p>
+      </div>
+      <div class='text-center text-slate-400 py-4'>
+        <i class='fas fa-university text-4xl mb-2'></i>
+        <p class='text-sm'>Partner Logo 5</p>
       </div>
     </div>
-  {{else}}
-    <div class='overflow-hidden justify-center flex bg-transparant rounded-2xl py-8 relative'>
-      <div class='flex items-center justify-center gap-8 px-8'>
-        <div class='text-center text-slate-400 py-4'>
-          <i class='fas fa-building text-4xl mb-2'></i>
-          <p class='text-sm'>Partner Logo 1</p>
-        </div>
-        <div class='text-center text-slate-400 py-4'>
-          <i class='fas fa-industry text-4xl mb-2'></i>
-          <p class='text-sm'>Partner Logo 2</p>
-        </div>
-        <div class='text-center text-slate-400 py-4'>
-          <i class='fas fa-store text-4xl mb-2'></i>
-          <p class='text-sm'>Partner Logo 3</p>
-        </div>
-        <div class='text-center text-slate-400 py-4'>
-          <i class='fas fa-landmark text-4xl mb-2'></i>
-          <p class='text-sm'>Partner Logo 4</p>
-        </div>
-        <div class='text-center text-slate-400 py-4'>
-          <i class='fas fa-university text-4xl mb-2'></i>
-          <p class='text-sm'>Partner Logo 5</p>
-        </div>
-      </div>
-    </div>
-  {{/if}}
+    {{/if}}
+  </div>
 </section>
 
 <script>

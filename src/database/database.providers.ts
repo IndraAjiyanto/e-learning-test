@@ -12,7 +12,7 @@ export const databaseProviders = [
         password: '',
         database: 'e-learning',
         entities: [__dirname + '/src/entities/*.entity{.ts,.js}'],
-        synchronize: true,
+        synchronize: false,
         logging: true,
       });
 

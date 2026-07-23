@@ -8,9 +8,9 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>ID</label>
             <textarea
-              x-model='formData.isi.id'
-              @input='validateField("isi", $event.target.value, "id")'
-              name='isi[id]'
+              x-model='formData.items.id'
+              @input='validateField("items", $event.target.value, "id")'
+              name='items[id]'
               rows='5'
               required
               maxlength='1000'
@@ -42,9 +42,9 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>EN</label>
             <textarea
-              x-model='formData.isi.en'
-              @input='validateField("isi", $event.target.value, "en")'
-              name='isi[en]'
+              x-model='formData.items.en'
+              @input='validateField("items", $event.target.value, "en")'
+              name='items[en]'
               rows='5'
               required
               maxlength='1000'
@@ -76,9 +76,9 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
-              x-model='formData.isi.ja'
-              @input='validateField("isi", $event.target.value, "ja")'
-              name='isi[ja]'
+              x-model='formData.items.ja'
+              @input='validateField("items", $event.target.value, "ja")'
+              name='items[ja]'
               rows='5'
               required
               maxlength='1000'

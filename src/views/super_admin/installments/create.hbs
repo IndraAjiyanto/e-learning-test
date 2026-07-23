@@ -1,0 +1,133 @@
+<div
+  class='py-10'
+  x-data="{ 
+    month: {{availableMonths.[0]}}, 
+    priceDisplays: Array({{availableMonths.[0]}}).fill(''), 
+    priceValues: Array({{availableMonths.[0]}}).fill(''), 
+    downPaymentDisplay: '', 
+    downPaymentValue: '',
+
+    // Form validation states
+    formData: {
+      month: '{{availableMonths.[0]}}',
+      down_payment: '',
+      price: []
+    },
+    formErrors: {
+      month: '',
+      down_payment: '',
+      price: []
+    },
+    formValid: {
+      month: false,
+      down_payment: false,
+      price: []
+    },
+
+    validateField(field, value, index = null) {
+      if (field === 'price') {
+        this.formData.price[index] = value;
+        const numValue = parseInt(value);
+        if (!value || isNaN(numValue)) {
+          this.formErrors.price[index] = 'Valid payment amount required';
+          this.formValid.price[index] = false;
+        } else {
+          this.formErrors.price[index] = '';
+          this.formValid.price[index] = true;
+        }
+      } else {
+        this.formData[field] = value;
+        
+        switch(field) {
+          case 'month':
+            if (!value) {
+              this.formErrors.month = 'Installment period is required';
+              this.formValid.month = false;
+            } else {
+              this.formErrors.month = '';
+              this.formValid.month = true;
+            }
+            break;
+            
+          case 'down_payment':
+            const dpNumValue = parseInt(value);
+            if (!value || isNaN(dpNumValue) || dpNumValue <= 0) {
+              this.formErrors.down_payment = 'Valid down payment amount required';
+              this.formValid.down_payment = false;
+            } else {
+              this.formErrors.down_payment = '';
+              this.formValid.down_payment = true;
+            }
+            break;
+        }
+      }
+    },
+
+    get canSubmit() {
+      const monthCount = parseInt(this.month);
+      const allPriceValid = Array.from({length: monthCount}, (_, i) => this.formValid.price[i] || false).every(valid => valid);
+      return this.formValid.month && this.formValid.down_payment && allPriceValid;
+    },
+    hasFormErrors() {
+      return Object.values(this.formErrors).some(error => error !== '' || (Array.isArray(error) && error.some(e => e !== '')));
+    },
+
+    handleSubmit() {
+      if (!this.canSubmit) {
+        return false;
+      }
+      return true;
+    },
+
+    formatNumber(event, index = null) {
+    },
+
+    formatNumber(event, index = null) { 
+      let angka = event.target.value.replace(/\D/g, ''); 
+      if (index !== null) { 
+        this.priceValues[index] = angka; 
+        this.priceDisplays[index] = new Intl.NumberFormat('id-ID').format(angka);
+        this.validateField('price', angka, index);
+      } else { 
+        this.downPaymentValue = angka; 
+        this.downPaymentDisplay = new Intl.NumberFormat('id-ID').format(angka);
+        this.validateField('down_payment', angka);
+      } 
+    }
+  }"
+>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Installment</h2>
+    <form
+      action='/installment/{{courseId}}'
+      method='POST'
+      x-data="{ loading: false }"
+      @submit='handleSubmit(); loading = true'
+      class='space-y-6'
+    >
+
+{{> super_admin/installment/create/month_input }}
+
+{{> super_admin/installment/create/price_input }}
+
+      <!-- Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='loading'
+          class='text-white px-6 py-2 rounded-lg shadow transition bg-gray-900 hover:bg-gray-600'
+        >
+          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+          <span x-show="!loading">Create</span>
+        </button>
+        <a
+          href='/program/detail/program/admin/{{courseId}}'
+        :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

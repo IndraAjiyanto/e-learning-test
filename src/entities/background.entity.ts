@@ -15,10 +15,10 @@ export class Background {
   content: string[];
 
   @Column('jsonb', { nullable: true })
-  isi: string[];
+  details: string[];
 
   @Column()
-  background_ke: number;
+  background_order: number;
 
   @CreateDateColumn()
   createdAt: Date;

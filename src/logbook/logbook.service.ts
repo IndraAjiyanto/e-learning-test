@@ -5,14 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Logbook } from 'src/entities/logbook.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
-import { Kelas } from 'src/entities/kelas.entity';
-import { Pertemuan } from 'src/entities/pertemuan.entity';
-import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
-import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
+import { Course } from 'src/entities/course.entity';
+import { Session } from 'src/entities/session.entity';
+import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
+import { SessionProgress } from 'src/entities/session_progress.entity';
 import { Quiz } from 'src/entities/quiz.entity';
-import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { QuizProgress } from 'src/entities/quiz_progress.entity';
 
 @Injectable()
 export class LogbookService {
@@ -20,39 +20,38 @@ export class LogbookService {
   private readonly logBookRepository: Repository<Logbook>;
   @InjectRepository(User)
   private readonly userRepository: Repository<User>;
-  @InjectRepository(Pertemuan)
-  private readonly pertemuanRepository: Repository<Pertemuan>;
-  @InjectRepository(Kelas)
-  private readonly kelasRepository: Repository<Kelas>;
-  @InjectRepository(LogbookMentor)
-  private readonly logBookMentorRepository: Repository<LogbookMentor>;
-  @InjectRepository(ProgresPertemuan)
-  private readonly progresPertemuanRepository: Repository<ProgresPertemuan>;
+  @InjectRepository(Session)
+  private readonly sessionRepository: Repository<Session>;
+  @InjectRepository(Course)
+  private readonly kelasRepository: Repository<Course>;
+  @InjectRepository(MentorLogbook)
+  private readonly logBookMentorRepository: Repository<MentorLogbook>;
+  @InjectRepository(SessionProgress)
+  private readonly progresPertemuanRepository: Repository<SessionProgress>;
   @InjectRepository(Quiz)
   private readonly quizRepository: Repository<Quiz>;
-  @InjectRepository(ProgresQuiz)
-  private readonly progresQuizRepository: Repository<ProgresQuiz>;
-
+  @InjectRepository(QuizProgress)
+  private readonly progresQuizRepository: Repository<QuizProgress>;
   async create(createLogbookDto: CreateLogbookDto) {
     const user = await this.userRepository.findOne({
       where: { id: createLogbookDto.userId },
     });
-    const pertemuan = await this.pertemuanRepository.findOne({
-      where: { id: createLogbookDto.pertemuanId },
+    const session = await this.sessionRepository.findOne({
+      where: { id: createLogbookDto.sessionId },
     });
     if (!user) {
       throw new Error('User tidak ada');
     }
-    if (!pertemuan) {
-      throw new Error('pertemuan tidak ada');
+    if (!session) {
+      throw new Error('session tidak ada');
     }
 
-    const logbook = await this.logBookRepository.create({
+    const logbooks = await this.logBookRepository.create({
       ...createLogbookDto,
       user: user,
-      pertemuan: pertemuan,
+      session: session,
     });
-    return await this.logBookRepository.save(logbook);
+    return await this.logBookRepository.save(logbooks);
   }
 
   async findByUser(userId: number) {
@@ -62,29 +61,29 @@ export class LogbookService {
     });
   }
 
-  async findLogBook(userId: number, kelasId: number) {
+  async findLogBook(userId: number, courseId: number) {
     return await this.logBookRepository.find({
       where: {
         user: { id: userId },
-        pertemuan: { minggu: { kelas: { id: kelasId } } },
+        session: { weeks: { course: { id: courseId } } },
       },
       relations: [
         'user',
-        'pertemuan',
-        'pertemuan.minggu',
-        'pertemuan.minggu.kelas',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
       ],
     });
   }
 
-  async findKelasByUser(userId: number) {
+  async findCourseByUser(userId: number) {
     return await this.kelasRepository.find({
-      where: { user_kelas: { user: { id: userId } } },
-      relations: ['user_kelas', 'user_kelas.user', 'minggu'],
+      where: { userCourses: { user: { id: userId } } },
+      relations: ['userCourses', 'userCourses.user', 'weeks'],
     });
   }
 
-  async findAllKelas() {
+  async findAllCourses() {
     return await this.kelasRepository.find({
       order: { id: 'DESC' },
     });
@@ -94,9 +93,9 @@ export class LogbookService {
     return await this.logBookRepository.find({
       relations: [
         'user',
-        'pertemuan',
-        'pertemuan.minggu',
-        'pertemuan.minggu.kelas',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
       ],
     });
   }
@@ -105,33 +104,33 @@ export class LogbookService {
     return await this.logBookMentorRepository.find({
       relations: [
         'user',
-        'pertemuan',
-        'pertemuan.minggu',
-        'pertemuan.minggu.kelas',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
       ],
     });
   }
 
-  async findUsers(pertemuanId: number) {
+  async findUsers(sessionId: number) {
     return await this.userRepository.find({
       where: {
-        user_kelas: {
-          kelas: { minggu: { pertemuan: { id: pertemuanId } } },
+        userCourses: {
+          course: { weeks: { session: { id: sessionId } } },
         },
       },
-      relations: ['user_kelas', 'user_kelas.user', 'user_kelas.kelas'],
+      relations: ['userCourses', 'userCourses.user', 'userCourses.course'],
     });
   }
 
-  async findPertemuan(pertemuanId: number) {
-    const pertemuan = await this.pertemuanRepository.findOne({
-      where: { id: pertemuanId },
-      relations: ['minggu', 'minggu.kelas'],
+  async findSession(sessionId: number) {
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['weeks', 'weeks.course'],
     });
-    if (!pertemuan) {
+    if (!session) {
       throw new NotFoundException('Session not found');
     }
-    return pertemuan;
+    return session;
   }
 
   async deleteFile(url: string) {
@@ -145,19 +144,19 @@ export class LogbookService {
   }
 
   async findOne(logbookId: number) {
-    const logbook = await this.logBookRepository.findOne({
+    const logbooks = await this.logBookRepository.findOne({
       where: { id: logbookId },
       relations: [
-        'pertemuan',
-        'pertemuan.minggu',
-        'pertemuan.minggu.kelas',
+        'session',
+        'session.weeks',
+        'session.weeks.course',
         'user',
       ],
     });
-    if (!logbook) {
+    if (!logbooks) {
       throw new NotFoundException('log book not found');
     }
-    return logbook;
+    return logbooks;
   }
 
   async findCapstoneProjects(kategoriId?: number) {
@@ -182,19 +181,19 @@ export class LogbookService {
   }
 
   async update(logbookId: number, updateLogbookDto: UpdateLogbookDto) {
-    const logbook = await this.findOne(logbookId);
-    if (!logbook) {
-      throw new NotFoundException('logbook not found');
+    const logbooks = await this.findOne(logbookId);
+    if (!logbooks) {
+      throw new NotFoundException('logbooks not found');
     }
-    Object.assign(logbook, updateLogbookDto);
+    Object.assign(logbooks, updateLogbookDto);
 
-    if (updateLogbookDto.proses === 'acc') {
+    if (updateLogbookDto.process === 'acc') {
       const existingProgres = await this.progresPertemuanRepository.findOne({
         where: {
-          user: { id: logbook.user.id },
-          pertemuan: { id: logbook.pertemuan.id },
+          user: { id: logbooks.user.id },
+          session: { id: logbooks.session.id },
         },
-        relations: ['pertemuan', 'pertemuan.minggu'],
+        relations: ['session', 'session.weeks'],
       });
 
       if (existingProgres) {
@@ -203,49 +202,49 @@ export class LogbookService {
         });
       } else {
         await this.progresPertemuanRepository.save({
-          user: { id: logbook.user.id },
-          pertemuan: { id: logbook.pertemuan.id },
+          user: { id: logbooks.user.id },
+          session: { id: logbooks.session.id },
           logbook: true,
-          absen: true,
+          attendances: true,
         });
       }
 
-      const pertemuan = await this.pertemuanRepository.findOne({
-        where: { id: logbook.pertemuan.id },
-        relations: ['minggu', 'minggu.kelas'],
+      const session = await this.sessionRepository.findOne({
+        where: { id: logbooks.session.id },
+        relations: ['weeks', 'weeks.course'],
       });
-      if (pertemuan) {
-        if (pertemuan.akhir) {
+      if (session) {
+        if (session.isFinal) {
           const quiz = await this.quizRepository.findOne({
             where: {
-              minggu: { id: pertemuan.minggu.id },
+              weeks: { id: session.weeks.id },
             },
           });
           if (quiz) {
             const existingProgresQuiz =
               await this.progresQuizRepository.findOne({
-                where: { quiz: { id: quiz.id }, user: { id: logbook.user.id } },
+                where: { quiz: { id: quiz.id }, user: { id: logbooks.user.id } },
               });
             if (existingProgresQuiz) {
               await this.progresQuizRepository.save({
                 id: existingProgresQuiz.id,
                 quiz: { id: quiz.id },
-                user: { id: logbook.user.id },
+                user: { id: logbooks.user.id },
                 proses: true,
               });
             } else {
               await this.progresQuizRepository.save({
                 quiz: { id: quiz.id },
-                user: { id: logbook.user.id },
+                user: { id: logbooks.user.id },
                 proses: true,
               });
             }
           }
         } else {
-          const pertemuan_selanjutnya = await this.pertemuanRepository.findOne({
+          const pertemuan_selanjutnya = await this.sessionRepository.findOne({
             where: {
-              pertemuan_ke: pertemuan.pertemuan_ke + 1,
-              minggu: { id: pertemuan.minggu.id },
+              sessionOrder: session.sessionOrder + 1,
+              weeks: { id: session.weeks.id },
             },
           });
 
@@ -253,34 +252,34 @@ export class LogbookService {
             const existingProgresPertemuan =
               await this.progresPertemuanRepository.findOne({
                 where: {
-                  user: { id: logbook.user.id },
-                  pertemuan: { id: pertemuan_selanjutnya.id },
+                  user: { id: logbooks.user.id },
+                  session: { id: pertemuan_selanjutnya.id },
                 },
               });
             if (existingProgresPertemuan) {
               await this.progresPertemuanRepository.save({
                 id: existingProgresPertemuan.id,
-                pertemuan: { id: pertemuan_selanjutnya.id },
-                user: { id: logbook.user.id },
-                absen: true,
+                session: { id: pertemuan_selanjutnya.id },
+                user: { id: logbooks.user.id },
+                attendances: true,
                 logbook: false,
               });
             } else {
               await this.progresPertemuanRepository.save({
-                pertemuan: { id: pertemuan_selanjutnya.id },
-                user: { id: logbook.user.id },
-                absen: true,
+                session: { id: pertemuan_selanjutnya.id },
+                user: { id: logbooks.user.id },
+                attendances: true,
                 logbook: false,
               });
             }
           }
         }
       }
-    } else if (updateLogbookDto.proses === 'rejected') {
+    } else if (updateLogbookDto.process === 'rejected') {
       const existingProgres = await this.progresPertemuanRepository.findOne({
         where: {
-          user: { id: logbook.user.id },
-          pertemuan: { id: logbook.pertemuan.id },
+          user: { id: logbooks.user.id },
+          session: { id: logbooks.session.id },
         },
       });
 
@@ -290,21 +289,21 @@ export class LogbookService {
         });
       } else {
         await this.progresPertemuanRepository.save({
-          user: { id: logbook.user.id },
-          pertemuan: { id: logbook.pertemuan.id },
+          user: { id: logbooks.user.id },
+          session: { id: logbooks.session.id },
           logbook: false,
         });
       }
     }
 
-    return await this.logBookRepository.save(logbook);
+    return await this.logBookRepository.save(logbooks);
   }
 
   async remove(logbookId: number) {
-    const logbook = await this.findOne(logbookId);
-    if (!logbook) {
-      throw new NotFoundException('logbook not found');
+    const logbooks = await this.findOne(logbookId);
+    if (!logbooks) {
+      throw new NotFoundException('logbooks not found');
     }
-    await this.logBookRepository.remove(logbook);
+    await this.logBookRepository.remove(logbooks);
   }
 }

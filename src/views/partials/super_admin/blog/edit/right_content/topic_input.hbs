@@ -1,17 +1,17 @@
         <!-- Topic -->
         <div x-data="{
-          search: '{{blog.topic.nama.en}}',
+          search: '{{blog.topic.name.en}}',
           selectedTopic: {{json blog.topic}},
           showDropdown: false,
           availableTopics: {{json topics}},
           get filteredTopics() {
             return this.availableTopics.filter(c =>
-              c.nama.en.toLowerCase().includes(this.search.toLowerCase())
+              c.name.en.toLowerCase().includes(this.search.toLowerCase())
             );
           },
           selectTopic(topic) {
             this.selectedTopic = topic;
-            this.search = topic.nama.en;
+            this.search = topic.name.en;
             this.showDropdown = false;
             $dispatch('topic-selected', { topic });
           },
@@ -38,7 +38,7 @@
               <template x-for='topic in filteredTopics' :key='topic.id'>
                 <button type='button' @click='selectTopic(topic)'
                         class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'>
-                  <span class='text-sm font-medium text-gray-700' x-text='topic.nama.en'></span>
+                  <span class='text-sm font-medium text-gray-700' x-text='topic.name.en'></span>
                 </button>
               </template>
             </div>

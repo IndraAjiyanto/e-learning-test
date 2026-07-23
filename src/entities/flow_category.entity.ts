@@ -5,11 +5,12 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
-import { Kategori } from './kategori.entity';
+import { Category } from './category.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity('flow_category')
 export class FlowCategory {
   @PrimaryGeneratedColumn()
   id: number;
@@ -29,9 +30,10 @@ export class FlowCategory {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Kategori, (kategori) => kategori.flow_category, {
+  @ManyToOne(() => Category, (category) => category.flow_category, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'categoryId' })
   @Exclude()
-  kategori: Kategori;
+  category: Category;
 }

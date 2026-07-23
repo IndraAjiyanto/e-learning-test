@@ -19,20 +19,20 @@ export class ContactService {
   }
 
   async sendContactEmail(contactData: {
-    nama: string;
+    name: string;
     email: string;
     subject: string;
     message: string;
   }) {
     const mailOptions = {
-      from: `"${contactData.nama}" <${contactData.email}>`,
+      from: `"${contactData.name}" <${contactData.email}>`,
       to: this.configService.get('CONTACT_EMAIL', 'info@kesatriaacademy.com'),
       subject: `Contact Form: ${contactData.subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1f2937;">New Contact Form Submission</h2>
           <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Name:</strong> ${contactData.nama}</p>
+            <p><strong>Name:</strong> ${contactData.name}</p>
             <p><strong>Email:</strong> ${contactData.email}</p>
             <p><strong>Subject:</strong> ${contactData.subject}</p>
             <p><strong>Message:</strong></p>

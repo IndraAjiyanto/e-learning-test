@@ -140,7 +140,7 @@ async function bootstrap() {
             return false;
           }
           return absenList.some(
-            (absen) => absen.user && absen.user.id === userId,
+            (attendances) => attendances.user && attendances.user.id === userId,
           );
         },
         roles: (userRole: string, ...roles: string[]) => {
@@ -257,7 +257,7 @@ async function bootstrap() {
                 password: process.env.DB_PASSWORD,
                 database: process.env.DB_NAME,
             },
-            tableName: 'session',
+            tableName: 'web_sessions',
             createTableIfMissing: true,
         }),
       secret: 'rahasia-super',

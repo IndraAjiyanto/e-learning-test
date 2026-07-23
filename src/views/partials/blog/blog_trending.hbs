@@ -1,14 +1,14 @@
-    <!-- Featured Stories Section - Hanya tampil jika tidak ada kategori yang dipilih dan tidak ada pencarian -->
+    <!-- Featured Stories Section - Hanya tampil jika tidak ada category yang dipilih dan tidak ada pencarian -->
     <div x-show="selectedKategoriId === '' && searchQuery === ''" class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       <!-- Main Featured -->
       <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden group cursor-pointer">
         <div class="relative h-80">
           <a href="/blog/detail/{{blog_tranding.id}}" @click="viewBlog({{blog_tranding.id}})">
-            <img src="{{blog_tranding.gambar.[0]}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <img src="{{blog_tranding.image.[0]}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
             <div class="absolute bottom-0 left-0 p-6 text-white">
               <span class="bg-red-600 text-xs px-3 py-1 rounded-full mb-3 inline-block">{{t 'test.blog.trending'}}</span>
-              <h2 class="text-3xl font-bold mb-2">{{blog_tranding.judul}}</h2>
+              <h2 class="text-3xl font-bold mb-2">{{blog_tranding.title}}</h2>
               <p class="text-gray-200 mb-4">{{blog_tranding.description}}</p>
               <div class="flex items-center space-x-4 text-sm">
                 <span class="flex items-center space-x-4 text-sm"><i class="far fa-heart mr-2" :class="{'fas text-red-500': {{blog_tranding.isLiked}} }"></i>{{blog_tranding.likesCount}}</span>
@@ -23,12 +23,12 @@
       <div class="space-y-4">
         {{#each kategori_tranding}}
         <div class="bg-white rounded-xl shadow-lg p-4 flex space-x-4 group cursor-pointer">
-          <img src="{{this.blog.gambar.[0]}}" class="w-20 h-20 object-cover rounded-lg">
+          <img src="{{this.blog.image.[0]}}" class="w-20 h-20 object-cover rounded-lg">
           <div>
             <i class="{{computeIcon this.icon}}"></i>
-            <span class="text-xs text-blue-600 font-semibold">{{getByLang this.nama lang}}</span>
+            <span class="text-xs text-blue-600 font-semibold">{{getByLang this.name lang}}</span>
             <h3 class="font-semibold group-hover:text-blue-600">
-              <a href="/blog/detail/{{this.blog.id}}" @click="viewBlog({{this.blog.id}})">{{this.blog.judul}}</a>
+              <a href="/blog/detail/{{this.blog.id}}" @click="viewBlog({{this.blog.id}})">{{this.blog.title}}</a>
             </h3>
             <p class="text-xs text-gray-600 line-clamp-2 mb-3 text-justify">{{this.blog.description}}</p>
             <div class="flex items-center space-x-2 text-xs text-gray-500 mt-2">

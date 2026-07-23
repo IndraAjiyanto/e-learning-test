@@ -6,12 +6,12 @@
             availableCategories: {{json categories}},
             get filteredCategories() {
               return this.availableCategories.filter(c =>
-                c.nama.en.toLowerCase().includes(this.search.toLowerCase())
+                c.name.en.toLowerCase().includes(this.search.toLowerCase())
               );
             },
             selectCategory(category) {
               this.selectedCategory = category;
-              this.search = category.nama.en;
+              this.search = category.name.en;
               this.showDropdown = false;
               $dispatch('category-selected', { category });
             },
@@ -24,7 +24,7 @@
           @click.away='showDropdown = false'
         >
           <label
-            for='kategori_blog'
+            for='blog_categories'
             class='block text-sm font-medium text-gray-700 mb-2'
           >Category</label>
           <div class='relative'>
@@ -55,7 +55,7 @@
                 >
                   <span
                     class='text-sm font-medium text-gray-700'
-                    x-text='category.nama.en'
+                    x-text='category.name.en'
                   ></span>
                 </button>
               </template>
@@ -63,8 +63,8 @@
 
             <input
               type='hidden'
-              id='kategori_blog'
-              name='kategori_blog'
+              id='blog_categories'
+              name='blog_categories'
               x-model='selectedCategory ? selectedCategory.id : ""'
               required
             />

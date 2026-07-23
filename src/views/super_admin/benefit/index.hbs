@@ -92,7 +92,7 @@
             <td
               class='px-6 py-4 text-sm font-semibold text-gray-800'
             >
-            {{#each judul}}
+            {{#each title}}
               <div class='line-clamp-3'>{{this}}</div>
             {{/each}}
             </td>
@@ -213,7 +213,7 @@
       get filteredBenefits() {
         let filtered = this.benefits.filter(b =>
           (
-            `${b.judul.en} ${b.text.en} ${b.judul.id} ${b.text.id} ${b.judul.ja} ${b.text.ja}`
+            `${b.title.en} ${b.description.en} ${b.title.id} ${b.description.id} ${b.title.ja} ${b.description.ja}`
           )
             .toLowerCase()
             .includes(this.search.toLowerCase())

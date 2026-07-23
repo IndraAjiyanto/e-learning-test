@@ -10,20 +10,20 @@
     </p>
 
     <div class="space-y-2">
-      {{#each jawaban}}
+      {{#each answer}}
       <div
         class="px-4 py-2 rounded-lg
         {{#each ../../jawaban_user}}
-            {{#if (roles jawaban.id ../id)}}
-                {{#if this.jawaban.jawaban_benar }} 
+            {{#if (roles answer.id ../id)}}
+                {{#if this.answer.is_correct }} 
                 bg-green-100 text-green-800 font-semibold 
                 {{else}}
                  bg-red-100 text-red-800 font-semibold 
                  {{/if}}
             {{/if}}
         {{/each}}
-            {{#if jawaban_benar }} bg-green-100 text-green-800 font-semibold{{/if}}">
-        {{jawaban}}
+            {{#if is_correct }} bg-green-100 text-green-800 font-semibold{{/if}}">
+        {{answer}}
       </div>
       {{/each}}
     </div>

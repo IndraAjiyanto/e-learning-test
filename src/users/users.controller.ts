@@ -56,7 +56,7 @@ export class UsersController {
       return res.render('forgot-password', { remainingMs: remainingMs });
     } else {
       req.flash('error', 'Please verify your email first');
-      res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
+      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
     }
   }
 
@@ -136,7 +136,7 @@ export class UsersController {
     try {
       const user = await this.usersService.sendVerificationEmail(token);
       req.flash('success', 'Verification email sent successfully');
-      res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
+      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to send verification email');
       res.redirect('/users/send-verify-email');
@@ -176,7 +176,7 @@ export class UsersController {
     } catch (error: any) {
       const user = await this.usersService.findUserByEmail(email);
       req.flash('error', error.message || 'Email verification failed');
-      res.redirect('/users/send-verify-email?token=' + user.verifikasiToken);
+      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
     }
   }
 

@@ -1,0 +1,347 @@
+<script>
+function categoryCreateData() {
+  return {
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        fileSize: 0,
+        imageWidth: 0,
+        imageHeight: 0,
+        hasFile: false,
+
+        // Form validation states
+        formData: {
+          name: '',
+          description: { id: '', en: '', ja: '' },
+          text: { id: '', en: '', ja: '' },
+          contact: '',
+          for: { id: '', en: '', ja: '' },
+          courseType: [],
+          info_id: [''],
+          info_en: [''],
+          info_ja: [''],
+          type: ''
+        },
+        formErrors: {
+          name: '',
+          description: { id: '', en: '', ja: '' },
+          text: { id: '', en: '', ja: '' },
+          contact: '',
+          for: { id: '', en: '', ja: '' },
+          courseType: '',
+          info_id: '',
+          info_en: '',
+          info_ja: '',
+          type: ''
+        },
+        formValid: {
+          name: false,
+          description: { id: false, en: false, ja: false },
+          text: { id: false, en: false, ja: false },
+          contact: false,
+          for: { id: false, en: false, ja: false },
+          courseType: false,
+          info_id: false,
+          info_en: false,
+          info_ja: false,
+          type: false
+        },
+        
+        formTouched: {
+          name: false,
+          description: { id: false, en: false, ja: false },
+          text: { id: false, en: false, ja: false },
+          contact: false,
+          for: { id: false, en: false, ja: false },
+          courseType: false,
+          info: false,
+          type: false
+        },
+
+        // Jenis Kelas multi-select
+        searchJenisKelas: '',
+        selectedJenisKelas: [],
+        showJenisKelasDropdown: false,
+        availableJenisKelas: {{{json courseTypes}}},
+        get filteredJenisKelas() {
+          return this.availableJenisKelas.filter(jk =>
+            jk.name_clasess_type.toLowerCase().includes(this.searchJenisKelas.toLowerCase()) &&
+            !this.selectedJenisKelas.some(selected => selected.id === jk.id)
+          );
+        },
+        selectJenisKelas(jk) {
+          if (!this.selectedJenisKelas.some(selected => selected.id === jk.id)) {
+            this.selectedJenisKelas.push(jk);
+            this.formData.courseType = this.selectedJenisKelas.map(s => s.id);
+            this.validateField('courseType', this.formData.courseType);
+          }
+          this.searchJenisKelas = '';
+          this.showJenisKelasDropdown = false;
+        },
+        removeJenisKelas(jkId) {
+          this.selectedJenisKelas = this.selectedJenisKelas.filter(s => s.id !== jkId);
+          this.formData.courseType = this.selectedJenisKelas.map(s => s.id);
+          this.validateField('courseType', this.formData.courseType);
+        },
+
+        validateImage(file) {
+          if (!file) {
+            this.hasFile = false;
+            return;
+          }
+
+          this.hasFile = true;
+          this.fileName = file.name;
+          this.fileSize = file.size;
+          this.errorMessage = '';
+          this.isValid = true;
+
+          // Validasi tipe file
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+
+          // Validasi ukuran file (5MB = 5242880 bytes)
+          const maxSize = 5 * 1024 * 1024; // 5MB
+          if (file.size > maxSize) {
+            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
+            this.isValid = false;
+            this.previewUrl = null;
+            return;
+          }
+
+          // Validasi dimensi gambar (sesuaikan dengan BE category, 1000x1000 - 2000x2000)
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(file);
+
+          img.onload = () => {
+            this.imageWidth = img.width;
+            this.imageHeight = img.height;
+
+            if (img.width < 1000 || img.width > 2000 || img.height < 1000 || img.height > 2000) {
+              this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 1000x1000 to 2000x2000 pixels`;
+              this.isValid = false;
+              this.previewUrl = null;
+              URL.revokeObjectURL(objectUrl);
+            } else {
+              this.previewUrl = objectUrl;
+              this.isValid = true;
+              this.errorMessage = '';
+            }
+          };
+
+          img.onerror = () => {
+            this.errorMessage = 'Failed to load image';
+            this.isValid = false;
+            this.previewUrl = null;
+            URL.revokeObjectURL(objectUrl);
+          };
+
+          img.src = objectUrl;
+        },
+
+        validateInfo(lang, infos) {
+          this.formTouched['info_' + lang] = true;
+          const hasValidInfo = infos && infos.some(info => info.trim());
+          if (!hasValidInfo) {
+            this.formErrors['info_' + lang] = 'At least one info item is required for ' + lang.toUpperCase();
+            this.formValid['info_' + lang] = false;
+          } else {
+            this.formErrors['info_' + lang] = '';
+            this.formValid['info_' + lang] = true;
+          }
+        },
+
+        validateField(field, value, lang = null) {
+          if (lang) {
+            // Multi-language field
+            this.formData[field][lang] = value;
+            this.formTouched[field][lang] = true;
+          } else {
+            // Single field
+            this.formData[field] = value;
+            this.formTouched[field] = true;
+          }
+
+          switch(field) {
+            case 'name':
+              if (!value.trim()) {
+                this.formErrors.name = 'Category name is required';
+                this.formValid.name = false;
+              } else {
+                this.formErrors.name = '';
+                this.formValid.name = true;
+              }
+              break;
+            case 'description':
+              if (!value.trim()) {
+                this.formErrors.description[lang] = 'Description is required';
+                this.formValid.description[lang] = false;
+              } else {
+                this.formErrors.description[lang] = '';
+                this.formValid.description[lang] = true;
+              }
+              break;
+            case 'type':
+              if (!value) {
+                this.formErrors.type = 'Type is required';
+                this.formValid.type = false;
+              } else {
+                this.formErrors.type = '';
+                this.formValid.type = true;
+              }
+              break;
+            case 'text':
+              // Optional field
+              this.formErrors.text[lang] = '';
+              this.formValid.text[lang] = value.trim().length > 0;
+              break;
+            case 'contact':
+              // Ubah dari validasi isNaN (tidak cocok untuk string HP)
+              if (value && !/^[0-9+\-\s]+$/.test(value)) {
+                this.formErrors.contact = 'Contact must be a valid phone number';
+                this.formValid.contact = false;
+              } else {
+                this.formErrors.contact = '';
+                this.formValid.contact = value.toString().trim().length > 0;
+              }
+              break;
+            case 'for':
+              // Optional field
+              this.formErrors.for[lang] = '';
+              this.formValid.for[lang] = value.trim().length > 0;
+              break;
+            case 'courseType':
+              // Optional array
+              this.formErrors.courseType = '';
+              this.formValid.courseType = Array.isArray(value) && value.length > 0;
+              break;
+            case 'info_id':
+              // Handled by validateInfo
+              break;
+            case 'info_en':
+              // Handled by validateInfo
+              break;
+            case 'info_ja':
+              // Handled by validateInfo
+              break;
+          }
+        },
+
+        clearFile() {
+          this.previewUrl = null;
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.fileSize = 0;
+          this.imageWidth = 0;
+          this.imageHeight = 0;
+          this.hasFile = false;
+          this.$refs.fileInput.value = null;
+        },
+
+        canSubmit() {
+          const imageValid = this.hasFile && this.isValid;
+          // Required fields: name, description (all languages), type
+          // At least one info language must have valid info
+          const namaKategoriValid = this.formValid.name;
+          const deskripsiValid = Object.values(this.formValid.description).every(v => v);
+          const typeValid = this.formValid.type;
+          const infoValid = this.formValid.info_id || this.formValid.info_en || this.formValid.info_ja;
+          
+          return imageValid && namaKategoriValid && deskripsiValid && typeValid && infoValid;
+        },
+
+        hasFormErrors() {
+          const checkObject = (obj) => {
+            if (typeof obj === 'object' && obj !== null) {
+              return Object.values(obj).some(val => typeof val === 'object' ? checkObject(val) : val !== '');
+            }
+            return obj !== '';
+          };
+          return Object.values(this.formErrors).some(error => checkObject(error));
+        }
+      };
+}
+</script>
+
+<div
+  class='py-10 w-full mx-auto'
+  x-data="categoryCreateData()"
+>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Category</h2>
+
+    <form
+      action='/category'
+      method='post'
+      enctype='multipart/form-data'
+      class='space-y-6'
+      x-data='{ loading: false }'
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+    >
+
+      <!-- Form Fields Grid -->
+      <div class='grid grid-cols-2 gap-6'>
+        <!-- Left Column -->
+        <div class='space-y-6'>
+
+        {{> super_admin/category/create/left_column/name_input }}
+        {{> super_admin/category/create/left_column/text_input }}
+        {{> super_admin/category/create/left_column/contact_input }}
+        {{> super_admin/category/create/left_column/for_input }}
+        {{> super_admin/category/create/left_column/type_program_input }}
+
+        </div>
+
+        <!-- Right Column -->
+        <div class='space-y-6'>
+        {{> super_admin/category/create/right_column/type_input }}
+        {{> super_admin/category/create/right_column/image_input }}
+        {{> super_admin/category/create/right_column/description_input }}
+        {{> super_admin/category/create/right_column/info_input }}
+
+        </div>
+      </div>
+
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='!canSubmit() || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='bg-gray-900 text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+        >
+          <span
+            x-show='loading'
+            class='loading loading-spinner loading-sm'
+          ></span>
+          <span x-show='!loading'>Create</span>
+        </button>
+        <a
+          href='/category'
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 transition'
+        >
+          Cancel
+        </a>
+      </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors() || (hasFile && !isValid)'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
+    </form>
+  </div>
+</div>

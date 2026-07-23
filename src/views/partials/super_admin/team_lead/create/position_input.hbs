@@ -9,30 +9,30 @@
                 class='block text-sm font-semibold text-gray-700 mb-1'
               >ID</label>
               <input
-                x-model='formData.posisi.id'
+                x-model='formData.position.id'
                 type='text'
-                name='posisi[id]'
+                name='position[id]'
                 required
-                :class="formErrors.posisi.id ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+                :class="formErrors.position.id ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-                @input='validateField("posisi", $event.target.value , "id")'
+                @input='validateField("position", $event.target.value , "id")'
               />
 
               <!-- Error Message -->
-              <template x-if='formErrors.posisi.id'>
+              <template x-if='formErrors.position.id'>
                 <div
                   class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
                 >
                   <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                   <p
                     class='text-xs text-red-700'
-                    x-text='formErrors.posisi.id'
+                    x-text='formErrors.position.id'
                   ></p>
                 </div>
               </template>
 
               <!-- Success Message -->
-              <template x-if='formValid.posisi.id && !formErrors.posisi.id'>
+              <template x-if='formValid.position.id && !formErrors.position.id'>
                 <div
                   class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
                 >
@@ -46,30 +46,30 @@
                 class='block text-sm font-semibold text-gray-700 mb-1'
               >ID</label>
               <input
-                x-model='formData.posisi.en'
+                x-model='formData.position.en'
                 type='text'
-                name='posisi[en]'
+                name='position[en]'
                 required
-                :class="formErrors.posisi.en ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+                :class="formErrors.position.en ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-                @input='validateField("posisi", $event.target.value , "en")'
+                @input='validateField("position", $event.target.value , "en")'
               />
 
               <!-- Error Message -->
-              <template x-if='formErrors.posisi.en'>
+              <template x-if='formErrors.position.en'>
                 <div
                   class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
                 >
                   <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                   <p
                     class='text-xs text-red-700'
-                    x-text='formErrors.posisi.en'
+                    x-text='formErrors.position.en'
                   ></p>
                 </div>
               </template>
 
               <!-- Success Message -->
-              <template x-if='formValid.posisi.en && !formErrors.posisi.en'>
+              <template x-if='formValid.position.en && !formErrors.position.en'>
                 <div
                   class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
                 >
@@ -83,30 +83,30 @@
                 class='block text-sm font-semibold text-gray-700 mb-1'
               >JP</label>
               <input
-                x-model='formData.posisi.ja'
+                x-model='formData.position.ja'
                 type='text'
-                name='posisi[ja]'
+                name='position[ja]'
                 required
-                :class="formErrors.posisi.ja ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+                :class="formErrors.position.ja ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-                @input='validateField("posisi", $event.target.value , "ja")'
+                @input='validateField("position", $event.target.value , "ja")'
               />
 
               <!-- Error Message -->
-              <template x-if='formErrors.posisi.ja'>
+              <template x-if='formErrors.position.ja'>
                 <div
                   class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
                 >
                   <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                   <p
                     class='text-xs text-red-700'
-                    x-text='formErrors.posisi.ja'
+                    x-text='formErrors.position.ja'
                   ></p>
                 </div>
               </template>
 
               <!-- Success Message -->
-              <template x-if='formValid.posisi.ja && !formErrors.posisi.ja'>
+              <template x-if='formValid.position.ja && !formErrors.position.ja'>
                 <div
                   class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
                 >

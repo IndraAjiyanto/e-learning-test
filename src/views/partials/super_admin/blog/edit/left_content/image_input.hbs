@@ -1,7 +1,7 @@
         <!-- Upload Images Section with Split Concept -->
         <div class="space-y-6">
           <!-- Existing Images Section -->
-          <div x-data="{ existingImages: {{#if blog.gambar}}{{json blog.gambar}}{{else}}[]{{/if}} }" class="space-y-4">
+          <div x-data="{ existingImages: {{#if blog.image}}{{json blog.image}}{{else}}[]{{/if}} }" class="space-y-4">
             <label class="block text-lg font-semibold text-gray-700 mb-3">
               Current Images
             </label>
@@ -25,7 +25,7 @@
                       <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">Saved</span>
                     </div>
                   </div>
-                  <input type="hidden" name="gambar[]" :value="url">
+                  <input type="hidden" name="image[]" :value="url">
                   <button type="button" @click="existingImages.splice(index, 1)" 
                   class="w-12 h-12 bg-red-500 hover:bg-red-600 text-white rounded-xl flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@
                   <div class="flex-1">
                     <input 
                       type="file" 
-                      :name="'gambar'"
+                      :name="'image'"
                       accept="image/jpeg,image/jpg,image/png"
                       @change="
                         file.error = '';

@@ -5,17 +5,17 @@ export class CreateAlumnusDto {
   profile: string;
 
   @IsArray()
-  nama: string[];
+  name: string[];
 
   @IsArray()
-  pesan: string[];
+  message: string[];
 
   @IsArray()
-  alumni: string[];
+  program: string[];
 
   @IsArray()
-  posisi_sekarang: string[];
+  currentPosition: string[];
 
   @IsInt()
-  kelasId: number;
+  courseId: number;
 }

@@ -7,29 +7,29 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>ID</label>
             <input
-              x-model='formData.posisi_sekarang.id'
-              @input='validateField("posisi_sekarang", "id", $event.target.value)'
+              x-model='formData.currentPosition.id'
+              @input='validateField("currentPosition", "id", $event.target.value)'
               type='text'
-              name='posisi_sekarang[id]'
+              name='currentPosition[id]'
               required
               maxlength='255'
-              :class="formErrors.posisi_sekarang.id ? 'border-red-500 focus:ring-red-500' : (formValid.posisi_sekarang.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.currentPosition.id ? 'border-red-500 focus:ring-red-500' : (formValid.currentPosition.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               placeholder='Posisi Sekarang (ID)'
             />
-            <template x-if='formErrors.posisi_sekarang.id'>
+            <template x-if='formErrors.currentPosition.id'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.posisi_sekarang.id'
+                  x-text='formErrors.currentPosition.id'
                 ></p>
               </div>
             </template>
             <template
-              x-if='formValid.posisi_sekarang.id && !formErrors.posisi_sekarang.id'
+              x-if='formValid.currentPosition.id && !formErrors.currentPosition.id'
             >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
@@ -44,29 +44,29 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>EN</label>
             <input
-              x-model='formData.posisi_sekarang.en'
-              @input='validateField("posisi_sekarang", "en", $event.target.value)'
+              x-model='formData.currentPosition.en'
+              @input='validateField("currentPosition", "en", $event.target.value)'
               type='text'
-              name='posisi_sekarang[en]'
+              name='currentPosition[en]'
               required
               maxlength='255'
-              :class="formErrors.posisi_sekarang.en ? 'border-red-500 focus:ring-red-500' : (formValid.posisi_sekarang.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.currentPosition.en ? 'border-red-500 focus:ring-red-500' : (formValid.currentPosition.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               placeholder='Current Position (EN)'
             />
-            <template x-if='formErrors.posisi_sekarang.en'>
+            <template x-if='formErrors.currentPosition.en'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.posisi_sekarang.en'
+                  x-text='formErrors.currentPosition.en'
                 ></p>
               </div>
             </template>
             <template
-              x-if='formValid.posisi_sekarang.en && !formErrors.posisi_sekarang.en'
+              x-if='formValid.currentPosition.en && !formErrors.currentPosition.en'
             >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
@@ -81,29 +81,29 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>JP</label>
             <input
-              x-model='formData.posisi_sekarang.ja'
-              @input='validateField("posisi_sekarang", "ja", $event.target.value)'
+              x-model='formData.currentPosition.ja'
+              @input='validateField("currentPosition", "ja", $event.target.value)'
               type='text'
-              name='posisi_sekarang[ja]'
+              name='currentPosition[ja]'
               required
               maxlength='255'
-              :class="formErrors.posisi_sekarang.ja ? 'border-red-500 focus:ring-red-500' : (formValid.posisi_sekarang.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.currentPosition.ja ? 'border-red-500 focus:ring-red-500' : (formValid.currentPosition.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               placeholder='現在のポジション (JA)'
             />
-            <template x-if='formErrors.posisi_sekarang.ja'>
+            <template x-if='formErrors.currentPosition.ja'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.posisi_sekarang.ja'
+                  x-text='formErrors.currentPosition.ja'
                 ></p>
               </div>
             </template>
             <template
-              x-if='formValid.posisi_sekarang.ja && !formErrors.posisi_sekarang.ja'
+              x-if='formValid.currentPosition.ja && !formErrors.currentPosition.ja'
             >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'

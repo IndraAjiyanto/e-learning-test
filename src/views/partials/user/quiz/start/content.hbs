@@ -168,7 +168,7 @@ timer.addEventListener('targetAchieved', function () {
 
                             <!-- Answer Options -->
                             <div class="space-y-3 ml-12">
-                                {{#each jawaban}}
+                                {{#each answer}}
                                 <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-slate-50 hover:to-white hover:border-slate-300 transition-all duration-200 group/option">
                                     <input 
                                         type="radio" 
@@ -178,7 +178,7 @@ timer.addEventListener('targetAchieved', function () {
                                         class="w-5 h-5 radio border-gray-700 checked:text-gray-700 checked:bg-white"
                                     >
                                     <span class="ml-4 text-slate-800 font-medium group-hover/option:text-slate-900 transition-colors">
-                                        {{jawaban}}
+                                        {{answer}}
                                     </span>
                                 </label>
                                 {{/each}}

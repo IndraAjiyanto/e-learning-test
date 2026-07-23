@@ -6,11 +6,11 @@
       <form action="/biodata/{{biodata.id}}?_method=PATCH"
   @submit="loading = true" method="POST" x-data="{
   loading: false,
-        pendidikanOpen: false,
-        selectedPendidikan: '{{biodata.pendidikan}}',
-        selectPendidikan(value) {
-          this.selectedPendidikan = value;
-          this.pendidikanOpen = false;
+        educationOpen: false,
+        selectedEducation: '{{biodata.education}}',
+        selectEducation(value) {
+          this.selectedEducation = value;
+          this.educationOpen = false;
         }
       }">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -19,8 +19,8 @@
           <div class="space-y-6">
             <!-- Nama Lengkap -->
             <div>
-              <label for="nama_lengkap" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.fullName"}}</label>
-              <input type="text" id="nama_lengkap" name="nama_lengkap" value="{{biodata.nama_lengkap}}" required
+              <label for="full_name" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.fullName"}}</label>
+              <input type="text" id="full_name" name="full_name" value="{{biodata.full_name}}" required
                 placeholder="{{t "test.profile.editBiodata.placeholderFullName"}}"
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
@@ -37,14 +37,14 @@
               <label class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.gender"}}</label>
               <div class="flex flex-col gap-3">
                 <label class="inline-flex items-center gap-3 cursor-pointer group">
-                  <input type="radio" name="jenis_kelamin" value="Laki laki" 
-                    {{#if (roles biodata.jenis_kelamin "Laki laki")}}checked{{/if}} required
+                  <input type="radio" name="gender" value="Laki laki" 
+                    {{#if (roles biodata.gender "Laki laki")}}checked{{/if}} required
                     class="radio border-gray-700 checked:text-gray-700 checked:bg-white">
                   <span class="text-gray-700 text-lg group-hover:text-slate-900 transition-colors">{{t "test.profile.editBiodata.male"}}</span>
                 </label>
                 <label class="inline-flex items-center gap-3 cursor-pointer group">
-                  <input type="radio" name="jenis_kelamin" value="Perempuan"
-                    {{#if (roles biodata.jenis_kelamin "Perempuan")}}checked{{/if}} required
+                  <input type="radio" name="gender" value="Perempuan"
+                    {{#if (roles biodata.gender "Perempuan")}}checked{{/if}} required
                     class="radio border-gray-700 checked:text-gray-700 checked:bg-white">
                   <span class="text-gray-700 text-lg group-hover:text-slate-900 transition-colors">{{t "test.profile.editBiodata.female"}}</span>
                 </label>
@@ -56,8 +56,8 @@
           <div class="space-y-6">
             <!-- Kota -->
             <div>
-              <label for="kota" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.city"}}</label>
-              <input type="text" id="kota" name="kota" value="{{biodata.kota}}" required
+              <label for="city" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.city"}}</label>
+              <input type="text" id="city" name="city" value="{{biodata.city}}" required
                 placeholder="{{t "test.profile.editBiodata.placeholderCity"}}"
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>
@@ -67,17 +67,17 @@
               <label class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.education"}}</label>
               <div class="relative" x-data="{ open: false }">
                 <!-- Hidden Input untuk Form -->
-                <input type="hidden" name="pendidikan" :value="selectedPendidikan" required>
+                <input type="hidden" name="education" :value="selectedEducation" required>
                 
                 <!-- Dropdown Trigger -->
                 <button 
                   type="button"
                   @click="open = !open"
-                  :class="selectedPendidikan ? 'text-gray-700' : 'text-gray-400'"
+                  :class="selectedEducation ? 'text-gray-700' : 'text-gray-400'"
                   class="w-full border border-slate-300 rounded-xl px-5 py-4 bg-white hover:bg-white transition-all duration-300 text-left flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400"
                 >
                                     <span
-                    x-text="if(selectedPendidikan == 'Junior High School') { return '{{t 'test.profile.editBiodata.juniorHighSchool'}}'; } else if(selectedPendidikan == 'Senior High School') { return '{{t 'test.profile.editBiodata.seniorHighSchool'}}'; } else if(selectedPendidikan == 'Diploma (D3/D4)') { return '{{t 'test.profile.editBiodata.diploma'}}'; } else if(selectedPendidikan == 'Bachelor Degree (S1)') { return '{{t 'test.profile.editBiodata.bachelorDegree'}}'; } else { return '{{t 'test.profile.editBiodata.placeholderEducation'}}'; }"
+                    x-text="if(selectedEducation == 'Junior High School') { return '{{t 'test.profile.editBiodata.juniorHighSchool'}}'; } else if(selectedEducation == 'Senior High School') { return '{{t 'test.profile.editBiodata.seniorHighSchool'}}'; } else if(selectedEducation == 'Diploma (D3/D4)') { return '{{t 'test.profile.editBiodata.diploma'}}'; } else if(selectedEducation == 'Bachelor Degree (S1)') { return '{{t 'test.profile.editBiodata.bachelorDegree'}}'; } else { return '{{t 'test.profile.editBiodata.placeholderEducation'}}'; }"
                   ></span>
                   <svg 
                     viewBox="0 0 20 20" 
@@ -104,28 +104,28 @@
                   <div class="py-2">
                     <button 
                       type="button"
-                      @click="selectedPendidikan = 'Junior High School'; open = false;"
+                      @click="selectedEducation = 'Junior High School'; open = false;"
                       class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg"
                     >
                       {{t "test.profile.editBiodata.juniorHighSchool"}}
                     </button>
                     <button 
                       type="button"
-                      @click="selectedPendidikan = 'Senior High School'; open = false;"
+                      @click="selectedEducation = 'Senior High School'; open = false;"
                       class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg"
                     >
                       {{t "test.profile.editBiodata.seniorHighSchool"}}
                     </button>
                     <button 
                       type="button"
-                      @click="selectedPendidikan = 'Diploma (D3/D4)'; open = false;"
+                      @click="selectedEducation = 'Diploma (D3/D4)'; open = false;"
                       class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg"
                     >
                       {{t "test.profile.editBiodata.diploma"}}
                     </button>
                     <button 
                       type="button"
-                      @click="selectedPendidikan = 'Bachelor Degree (S1)'; open = false;"
+                      @click="selectedEducation = 'Bachelor Degree (S1)'; open = false;"
                       class="w-full text-left px-5 py-3 hover:bg-slate-50 transition-colors duration-200 text-gray-700 text-lg"
                     >
                       {{t "test.profile.editBiodata.bachelorDegree"}}
@@ -137,8 +137,8 @@
 
             <!-- Program Studi -->
             <div>
-              <label for="program_studi" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.studyProgram"}}</label>
-              <input type="text" id="program_studi" name="program_studi" value="{{biodata.program_studi}}" required
+              <label for="study_program" class="block text-lg font-semibold text-gray-700 mb-3">{{t "test.profile.editBiodata.studyProgram"}}</label>
+              <input type="text" id="study_program" name="study_program" value="{{biodata.study_program}}" required
                 placeholder="{{t "test.profile.editBiodata.placeholderStudyProgram"}}"
                 class="w-full border text-gray-700 border-slate-300 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-400 transition-all duration-300 bg-white/70 hover:bg-white">
             </div>

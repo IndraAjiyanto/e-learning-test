@@ -25,12 +25,12 @@ import { Proses } from 'src/entities/logbook.entity';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('logbook')
+@Controller('logbooks')
 export class LogbookController {
   constructor(private readonly logbookService: LogbookService) {}
 
   @Roles('user', 'admin')
-  @Post(':pertemuanId')
+  @Post(':sessionId')
   @UseInterceptors(
     FileInterceptor('dokumentasi', multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -41,7 +41,7 @@ export class LogbookController {
     folder: 'logbook_user',
   })
   async create(
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('sessionId') sessionId: number,
     @Body() createLogbookDto: CreateLogbookDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -53,60 +53,60 @@ export class LogbookController {
       //   throw new Error('Image upload failed. Please try again.');
       // }
 
-      createLogbookDto.dokumentasi = req.body.uploadedImageUrls?.[0] ?? null;
+      createLogbookDto.documentation = req.body.uploadedImageUrls?.[0] ?? null;
       if (req.user?.role === 'user') {
         createLogbookDto.userId = req.user!.id;
-        createLogbookDto.proses = 'proces';
+        createLogbookDto.process = 'proces';
       } else if (req.user?.role === 'admin') {
-        createLogbookDto.proses = 'acc';
+        createLogbookDto.process = 'acc';
       }
-      createLogbookDto.pertemuanId = pertemuanId;
+      createLogbookDto.sessionId = sessionId;
       await this.logbookService.create(createLogbookDto);
-      const pertemuan = await this.logbookService.findPertemuan(pertemuanId);
+      const session = await this.logbookService.findSession(sessionId);
       req.flash('success', 'Log book added successfully');
       if (req.user?.role === 'admin') {
-        res.redirect(`/session/${pertemuanId}`);
+        res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${pertemuan.minggu.kelas.id}`);
+        res.redirect(`/program/${session.weeks.course.id}`);
       }
     } catch (error: any) {
-      const pertemuan = await this.logbookService.findPertemuan(pertemuanId);
+      const session = await this.logbookService.findSession(sessionId);
       const errorMessage = error.message || 'Failed to add log book';
       req.flash('error', errorMessage);
       if (req.user?.role === 'admin') {
-        res.redirect(`/session/${pertemuanId}`);
+        res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${pertemuan.minggu.kelas.id}`);
+        res.redirect(`/program/${session.weeks.course.id}`);
       }
     }
   }
 
   @Roles('user')
-  @Get('user/:kelasId')
+  @Get('user/:courseId')
   async findLogBook(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
   ) {
-    const logbook = await this.logbookService.findLogBook(
+    const logbooks = await this.logbookService.findLogBook(
       req.user!.id,
-      kelasId,
+      courseId,
     );
-    res.render('user/logbook/index', { user: req.user, logbook, kelasId });
+    res.render('user/logbooks/index', { user: req.user, logbooks, courseId });
   }
 
   @Roles('user')
-  @Get('formCreate/:pertemuanId/:kelasId')
+  @Get('formCreate/:sessionId/:courseId')
   async createLogbook(
-    @Param('pertemuanId') pertemuanId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('sessionId') sessionId: number,
+    @Param('courseId') courseId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    res.render('user/logbook/createLog', {
+    res.render('user/logbooks/createLog', {
       user: req.user,
-      pertemuanId,
-      kelasId,
+      sessionId,
+      courseId,
     });
   }
 
@@ -117,11 +117,11 @@ export class LogbookController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const logbook = await this.logbookService.findOne(logbookId);
+    const logbooks = await this.logbookService.findOne(logbookId);
     if (req.user!.role === 'admin') {
-      res.render('admin/logbook/edit', { user: req.user, logbook });
+      res.render('admin/logbooks/edit', { user: req.user, logbooks });
     } else {
-      res.render('user/logbook/edit', { user: req.user, logbook });
+      res.render('user/logbooks/edit', { user: req.user, logbooks });
     }
   }
 
@@ -132,19 +132,19 @@ export class LogbookController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const logbook = await this.logbookService.findOne(logbookId);
-    res.render('user/logbook/detail', { user: req.user, logbook });
+    const logbooks = await this.logbookService.findOne(logbookId);
+    res.render('user/logbooks/detail', { user: req.user, logbooks });
   }
 
   @Roles('admin')
-  @Get('create/:pertemuanId')
+  @Get('create/:sessionId')
   async createLogbookUser(
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('sessionId') sessionId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const users = await this.logbookService.findUsers(pertemuanId);
-    res.render('admin/logbook/create', { user: req.user, pertemuanId, users });
+    const users = await this.logbookService.findUsers(sessionId);
+    res.render('admin/logbooks/create', { user: req.user, sessionId, users });
   }
 
   @Roles('admin', 'user')
@@ -166,21 +166,21 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     try {
-      const logbook = await this.logbookService.findOne(logbookId);
+      const logbooks = await this.logbookService.findOne(logbookId);
       if (dokumentasi && dokumentasi.size > 0) {
-        if (logbook.dokumentasi) {
-        await this.logbookService.deleteFile(logbook.dokumentasi);
+        if (logbooks.dokumentasi) {
+        await this.logbookService.deleteFile(logbooks.dokumentasi);
       }
-        updateLogbookDto.dokumentasi =
+        updateLogbookDto.documentation =
           req.body.uploadedImageUrls?.[0] || dokumentasi.path;
       }
-      updateLogbookDto.proses = 'proces';
+      updateLogbookDto.process = 'proces';
       await this.logbookService.update(logbookId, updateLogbookDto);
-      req.flash('success', 'logbook successfully updated');
+      req.flash('success', 'logbooks successfully updated');
       if (req.user?.role === 'admin') {
-        res.redirect(`/session/${logbook.pertemuan.id}`);
+        res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${logbook.pertemuan.minggu.kelas.id}`);
+        res.redirect(`/program/${logbooks.session.weeks.course.id}`);
       }
     } catch (error: any) {
 
@@ -188,12 +188,12 @@ export class LogbookController {
       console.error(error.response || error.message || error);
 
 
-      const logbook = await this.logbookService.findOne(logbookId);
-      req.flash('error', error.message || 'logbook failed to update');
+      const logbooks = await this.logbookService.findOne(logbookId);
+      req.flash('error', error.message || 'logbooks failed to update');
       if (req.user?.role === 'admin') {
-        res.redirect(`/session/${logbook.pertemuan.id}`);
+        res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${logbook.pertemuan.minggu.kelas.id}`);
+        res.redirect(`/program/${logbooks.session.weeks.course.id}`);
       }
     }
   }
@@ -208,37 +208,37 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     try {
-      const logbook = await this.logbookService.findOne(logbookId);
-      updateLogbookDto.proses = proses;
+      const logbooks = await this.logbookService.findOne(logbookId);
+      updateLogbookDto.process = proses;
       await this.logbookService.update(logbookId, updateLogbookDto);
-      req.flash('success', 'logbook successfully update proses');
-      res.redirect(`/session/${logbook.pertemuan.id}`);
+      req.flash('success', 'logbooks successfully update proses');
+      res.redirect(`/session/${logbooks.session.id}`);
     } catch (error: any) {
-      const logbook = await this.logbookService.findOne(logbookId);
-      req.flash('error', error.message || 'logbook failed to update proses');
-      res.redirect(`/session/${logbook.pertemuan.id}`);
+      const logbooks = await this.logbookService.findOne(logbookId);
+      req.flash('error', error.message || 'logbooks failed to update proses');
+      res.redirect(`/session/${logbooks.session.id}`);
     }
   }
 
   @Roles('admin')
-  @Delete(':pertemuanId/:logbookId')
+  @Delete(':sessionId/:logbookId')
   async remove(
     @Param('logbookId') logbookId: number,
-    @Param('pertemuanId') pertemuanId: number,
+    @Param('sessionId') sessionId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      const logbook = await this.logbookService.findOne(logbookId);
-      if (logbook && logbook.dokumentasi) {
-        await this.logbookService.deleteFile(logbook.dokumentasi);
+      const logbooks = await this.logbookService.findOne(logbookId);
+      if (logbooks && logbooks.dokumentasi) {
+        await this.logbookService.deleteFile(logbooks.dokumentasi);
       }
       await this.logbookService.remove(logbookId);
-      req.flash('success', 'logbook successfully deleted');
-      res.redirect(`/session/${pertemuanId}`);
+      req.flash('success', 'logbooks successfully deleted');
+      res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'logbook failed to delete');
-      res.redirect(`/session/${pertemuanId}`);
+      req.flash('error', error.message || 'logbooks failed to delete');
+      res.redirect(`/session/${sessionId}`);
     }
   }
 }

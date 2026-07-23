@@ -1,0 +1,228 @@
+<!-- ===================== TAB KELAS ===================== -->
+<div x-show="tab === 'course'" class='space-y-4' x-data="kelasData()" x-init="fetchKelas()">
+  
+  <!-- Header dengan Search dan Create Button -->
+  <div class='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6'>
+    <div class="flex-1 max-w-md">
+      <h3 class='text-lg font-semibold text-gray-800 mb-2'>Program in this Category</h3>
+      <div class="relative">
+          <button
+            @click="handleSearch()"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5
+                       0 016.15 13.65z" />
+            </svg>
+          </button>
+        <input
+          type="text"
+          x-model="searchQuery"
+          @input="handleSearch()"
+          placeholder="Search program..."
+          class="border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full"
+        />
+
+      </div>
+    </div>
+    
+    <a href="/program/formCreate/{{category.id}}"
+       class="bg-gray-900 text-white px-6 py-2.5 rounded-lg shadow hover:bg-gray-700 transition flex items-center gap-2 whitespace-nowrap">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Add Program
+    </a>
+  </div>
+
+  <!-- Grid Program -->
+  <div x-show="filteredData && filteredData.length > 0" class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+    <template x-for="kelasItem in paginatedData" :key="kelasItem.id">
+      <div
+        class='bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition'
+      >
+        <div class='p-4'>
+          <div class='flex items-center mb-3'>
+            <img
+              :src="kelasItem.image"
+              :alt="kelasItem.name"
+              class='w-12 h-12 rounded-lg object-cover mr-3'
+            />
+            <div>
+              <h4
+                class='font-semibold text-gray-800 text-sm' x-text="kelasItem.name"
+              ></h4>
+              <p
+                class='text-xs text-gray-500'
+                x-text="kelasItem.courseType.name_clasess_type"></p>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <span 
+              :class="kelasItem.launch ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'"
+              class='text-xs px-2 py-1 rounded-full font-medium'>
+              <span x-text="kelasItem.launch ? 'Active' : 'Inactive'"></span>
+            </span>
+          </div>
+          
+          <div class='flex justify-between items-center'>
+            <span class='text-xs text-gray-500' x-text="kelasItem.method"></span>
+            <a
+              :href="`/program/detail/program/admin/${kelasItem.id}`"
+              @click.prevent="
+                localStorage.setItem('kelasPrevUrl', window.location.href);
+                window.location.href = `/program/detail/program/admin/${kelasItem.id}`;
+              "
+              class='text-xs text-blue-600 hover:text-blue-800 font-medium'
+            >
+              View Details →
+            </a>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- Empty State -->
+  <div x-show="!filteredData || filteredData.length === 0" class='text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300'>
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>
+    <h3 class='mt-2 text-sm font-medium text-gray-900'>
+      <span x-show="searchQuery">No programs found</span>
+      <span x-show="!searchQuery">No programs</span>
+    </h3>
+    <p class='mt-1 text-sm text-gray-500'>
+      <span x-show="searchQuery">Try adjusting your search terms</span>
+      <span x-show="!searchQuery">Get started by creating a new program.</span>
+    </p>
+  </div>
+
+  <!-- Pagination -->
+  <div x-show="filteredData && filteredData.length > itemsPerPage" class='flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200'>
+    <div class="text-sm text-gray-700">
+      Showing <span class="font-medium" x-text="startItem"></span> to 
+      <span class="font-medium" x-text="endItem"></span> of 
+      <span class="font-medium" x-text="filteredData.length"></span> results
+    </div>
+    
+    <div class="flex items-center gap-2">
+      <button
+        @click="changePage(currentPage - 1)"
+        :disabled="currentPage === 1"
+        :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+        class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 transition"
+      >
+        Previous
+      </button>
+      
+      <template x-for="page in visionsblePages" :key="page">
+        <button
+          @click="changePage(page)"
+          :class="page === currentPage ? 'bg-gray-900 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+          class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium transition"
+          x-text="page"
+        ></button>
+      </template>
+      
+      <button
+        @click="changePage(currentPage + 1)"
+        :disabled="currentPage === totalPages"
+        :class="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
+        class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 transition"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function kelasData() {
+    return {
+      data: JSON.parse(localStorage.getItem('activeData')) || [],
+      filteredData: [],
+      searchQuery: '',
+      currentPage: 1,
+      itemsPerPage: 6,
+
+      async fetchKelas() {
+        try {
+          const res = await fetch('/category/admin/program/{{category.id}}');
+          this.data = await res.json();
+          this.filteredData = this.data;
+          localStorage.setItem('activeData', JSON.stringify(this.data));
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          this.data = [];
+          this.filteredData = [];
+        }
+      },
+
+      handleSearch() {
+        const query = this.searchQuery.toLowerCase().trim();
+        if (!query) {
+          this.filteredData = this.data;
+        } else {
+          this.filteredData = this.data.filter(item => 
+            item.name.toLowerCase().includes(query) ||
+            item.courseType.name_clasess_type.toLowerCase().includes(query) ||
+            item.method.toLowerCase().includes(query)
+          );
+        }
+        this.currentPage = 1; // Reset to first page after search
+      },
+
+      changePage(page) {
+        if (page >= 1 && page <= this.totalPages) {
+          this.currentPage = page;
+        }
+      },
+
+      get totalPages() {
+        return Math.ceil(this.filteredData.length / this.itemsPerPage);
+      },
+
+      get paginatedData() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        return this.filteredData.slice(start, end);
+      },
+
+      get startItem() {
+        return this.filteredData.length === 0 ? 0 : (this.currentPage - 1) * this.itemsPerPage + 1;
+      },
+
+      get endItem() {
+        const end = this.currentPage * this.itemsPerPage;
+        return end > this.filteredData.length ? this.filteredData.length : end;
+      },
+
+      get visionsblePages() {
+        const pages = [];
+        const total = this.totalPages;
+        const current = this.currentPage;
+        
+        if (total <= 5) {
+          for (let i = 1; i <= total; i++) {
+            pages.push(i);
+          }
+        } else {
+          if (current <= 3) {
+            for (let i = 1; i <= 5; i++) pages.push(i);
+          } else if (current >= total - 2) {
+            for (let i = total - 4; i <= total; i++) pages.push(i);
+          } else {
+            for (let i = current - 2; i <= current + 2; i++) pages.push(i);
+          }
+        }
+        
+        return pages;
+      }
+    };
+  }
+</script>

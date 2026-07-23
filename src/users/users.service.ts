@@ -14,7 +14,7 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { Portfolio } from 'src/entities/portfolio.entity';
+import { Portofolios } from 'src/entities/portofolios.entity';
 import { EmailService } from 'src/common/email/email.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -25,8 +25,8 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    @InjectRepository(Portfolio)
-    private readonly portfolioRepository: Repository<Portfolio>,
+    @InjectRepository(Portofolios)
+    private readonly portfolioRepository: Repository<Portofolios>,
 
     private readonly emailService: EmailService,
   ) { }
@@ -47,10 +47,10 @@ export class UsersService {
     return await this.userRepository.findOne({
       where: { email },
       relations: {
-        user_kelas: {
-          kelas: true,
+        userCourses: {
+          course: true,
         },
-        absen: true,
+        absent: true,
       },
     });
   }
@@ -79,7 +79,7 @@ export class UsersService {
   async findPortfolio(userId: number) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
-      relations: ['user', 'kelas', 'kelas.jenis_kelas', 'kelas.kategori'],
+      relations: ['user', 'course', 'course.courseType', 'course.category'],
     });
   }
 
@@ -111,7 +111,7 @@ export class UsersService {
 
   async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
     if (
-      updatePaaswordDto.password_baru !== updatePaaswordDto.confirm_password
+      updatePaaswordDto.newPassword !== updatePaaswordDto.confirmPassword
     ) {
       throw new BadRequestException('confirm password wrong');
     }
@@ -121,21 +121,21 @@ export class UsersService {
     }
 
     const isMatch = await bcrypt.compare(
-      updatePaaswordDto.password_lama,
+      updatePaaswordDto.currentPassword,
       user.password,
     );
     if (!isMatch) {
       throw new BadRequestException('Old password is incorrect');
     }
 
-    if (updatePaaswordDto.password_baru.length < 6) {
+    if (updatePaaswordDto.newPassword.length < 6) {
       throw new BadRequestException(
         'New password must be at least 6 characters',
       );
     }
 
     const hashedPassword = await bcrypt.hash(
-      updatePaaswordDto.password_baru,
+      updatePaaswordDto.newPassword,
       10,
     );
     user.password = hashedPassword;
@@ -280,8 +280,8 @@ export class UsersService {
 
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.verifikasiToken = :hashedToken', { hashedToken })
-      .andWhere('user.verifikasiTokenExpires > :now', { now: new Date() })
+      .where('user.verificationToken = :hashedToken', { hashedToken })
+      .andWhere('user.verificationTokenExpires > :now', { now: new Date() })
       .getOne();
 
     if (!user) {
@@ -289,8 +289,8 @@ export class UsersService {
     }
 
     user.isVerified = true;
-    user.verifikasiToken = null;
-    user.verifikasiTokenExpires = null;
+    user.verificationToken = null;
+    user.verificationTokenExpires = null;
 
     await this.userRepository.save(user);
 
@@ -299,16 +299,16 @@ export class UsersService {
 
   async sendVerificationEmail(token: string) {
     const user = await this.userRepository.findOne({
-      where: { verifikasiToken: token },
+      where: { verificationToken: token },
     });
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
     if (
-      user.verifikasiToken &&
-      user.verifikasiTokenExpires &&
-      user.verifikasiTokenExpires > new Date()
+      user.verificationToken &&
+      user.verificationTokenExpires &&
+      user.verificationTokenExpires > new Date()
     ) {
       throw new BadRequestException(
         'Verification email already sent. Please check your inbox or wait until token expires.',
@@ -320,8 +320,8 @@ export class UsersService {
       .createHash('sha256')
       .update(resetToken)
       .digest('hex');
-    user.verifikasiToken = hashedToken;
-    user.verifikasiTokenExpires = new Date(Date.now() + 120000);
+    user.verificationToken = hashedToken;
+    user.verificationTokenExpires = new Date(Date.now() + 120000);
 
     const newUser = await this.userRepository.save(user);
 
@@ -331,15 +331,10 @@ export class UsersService {
         resetToken,
         user.username,
       );
-      return newUser;
     } catch (error) {
-      user.verifikasiToken = null;
-      user.verifikasiTokenExpires = null;
-      await this.userRepository.save(user);
-      throw new BadRequestException(
-        'Failed to send reset email. Please try again later.',
-      );
+      console.error('Failed to send verification email:', error.message);
     }
+    return newUser;
   }
 
   async findUserByTokenPassword(token: string) {
@@ -354,7 +349,7 @@ export class UsersService {
 
   async tokenExpired(token: string) {
     const user = await this.userRepository.findOne({
-      where: { verifikasiToken: token },
+      where: { verificationToken: token },
     });
 
     if (!user) {
@@ -364,18 +359,18 @@ export class UsersService {
       throw new BadRequestException('User already verified');
     }
     if (
-      user.verifikasiToken &&
-      user.verifikasiTokenExpires &&
-      user.verifikasiTokenExpires > new Date()
+      user.verificationToken &&
+      user.verificationTokenExpires &&
+      user.verificationTokenExpires > new Date()
     ) {
-      const remainingMs = user.verifikasiTokenExpires.getTime() - Date.now();
+      const remainingMs = user.verificationTokenExpires.getTime() - Date.now();
       return remainingMs;
     }
   }
 
   async findUserByToken(token: string) {
     const user = await this.userRepository.findOne({
-      where: { verifikasiToken: token },
+      where: { verificationToken: token },
     });
     if (!user) {
       throw new NotFoundException('User not found');

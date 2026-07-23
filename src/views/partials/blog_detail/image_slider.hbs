@@ -1,7 +1,7 @@
         <!-- Image Slider -->
-        <div x-data='{ currentSlide: 0, totalSlides: {{blog.gambar.length}} }' class='relative mb-12'>
+        <div x-data='{ currentSlide: 0, totalSlides: {{blog.image.length}} }' class='relative mb-12'>
           <div class='relative rounded-2xl overflow-hidden shadow-2xl'>
-            {{#each blog.gambar}}
+            {{#each blog.image}}
               <div
                 x-show='currentSlide === {{@index}}'
                 x-transition:enter='transition ease-out duration-300'
@@ -37,7 +37,7 @@
 
           <!-- Thumbnails -->
           <div class='flex gap-2 mt-4 overflow-x-auto pb-2'>
-            {{#each blog.gambar}}
+            {{#each blog.image}}
               <button
                 @click='currentSlide = {{@index}}'
                 :class='currentSlide === {{@index}} ? "ring-4 ring-gray-900" : "ring-2 ring-gray-300"'
@@ -50,7 +50,7 @@
 
           <!-- Dots Indicator -->
           <div class='flex justify-center gap-2 mt-4'>
-            {{#each blog.gambar}}
+            {{#each blog.image}}
               <button
                 @click='currentSlide = {{@index}}'
                 :class='currentSlide === {{@index}} ? "bg-gray-900 w-8" : "bg-gray-300 w-2"'

@@ -14,5 +14,6 @@ import { CategoryPartnerModule } from 'src/category_partner/category_partner.mod
   ],
   controllers: [PartnerController],
   providers: [PartnerService],
+  exports: [PartnerService],
 })
 export class PartnerModule {}

@@ -21,17 +21,17 @@ export class TeamService {
 
   async noPertemuan() {
     const team_old = await this.teamRepository.find({
-      order: { team_ke: 'DESC' },
+      order: { teamOrder: 'DESC' },
       take: 1,
     });
     if (!team_old || team_old.length === 0) {
       return 0;
     }
-    const team_new = team_old[0].team_ke + 1;
+    const team_new = team_old[0].teamOrder + 1;
     return team_new;
   }
   async findAll() {
-    return await this.teamRepository.find({ order: { team_ke: 'ASC' } });
+    return await this.teamRepository.find({ order: { teamOrder: 'ASC' } });
   }
 
   async findOne(teamId: number) {
@@ -59,8 +59,8 @@ export class TeamService {
     await this.teamRepository.remove(team);
     const allTeam = await this.teamRepository.find();
     for (const member of allTeam) {
-      if (member.team_ke > team.team_ke) {
-        member.team_ke -= 1;
+      if (member.teamOrder > team.teamOrder) {
+        member.teamOrder -= 1;
         await this.teamRepository.save(member);
       }
     }

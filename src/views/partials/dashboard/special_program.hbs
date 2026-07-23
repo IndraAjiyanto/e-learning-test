@@ -16,7 +16,7 @@
       
       <!-- WIP Card -->
 {{#each special_program}}
-<a href='category/program/{{nama_kategori}}' class='group block h-full' data-animate="slide-right" data-delay="100">
+<a href='category/program/{{name}}' class='group block h-full' data-animate="slide-right" data-delay="100">
   <div class='relative bg-white rounded-3xl p-8 border-2 border-gray-300 hover:border-secondary shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden h-full flex flex-col'>
     <!-- Background Pattern -->
     <div class='absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-gray-100/50 to-gray-200/50 rounded-full blur-3xl -z-0'></div>
@@ -25,7 +25,7 @@
       <!-- Icon - Fixed height -->
       <div class='mb-6 flex items-center justify-between flex-shrink-0'>
         <div class='w-20 h-20 bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300'>
-          <img src='{{icon}}' alt='{{nama_kategori}}' class='w-12 h-12'>
+          <img src="{{icon}}" alt='{{name}}' class='w-12 h-12'>
         </div>
 <span class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1.5 rounded-2xl text-xs font-bold max-w-[160px] text-center leading-tight'>
   {{getByLang for ../lang}}
@@ -34,12 +34,12 @@
 
       <!-- Title - Fixed height with line clamp -->
       <h3 class='text-3xl font-bold text-gray-900 mb-4 font-montserrat group-hover:text-gray-700 transition-colors min-h-[4rem] line-clamp-2'>
-        {{nama_kategori}}
+        {{name}}
       </h3>
       
       <!-- Description - Fixed height with line clamp -->
       <p class='text-gray-600 text-lg leading-relaxed mb-6 min-h-[6rem] line-clamp-3'>
-        {{getByLang deskripsi ../lang}}
+        {{getByLang description ../lang}}
       </p>
 
       <!-- Features List - Fixed height with scroll if needed -->

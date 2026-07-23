@@ -1,0 +1,292 @@
+<!-- ===================== TAB LOG BOOK MENTOR ===================== -->
+
+  <!-- Header: Search + Export -->
+  <div
+    class='mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4'
+  >
+    <div class='flex items-center gap-3'>
+      <!-- Search -->
+      <div class='relative w-full md:w-64'>
+        <button
+          @click='search = searchInput; pageNumber=0'
+          class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900'
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            class='h-5 w-5'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5
+                     0 016.15 13.65z'
+            />
+          </svg>
+        </button>
+        <input
+          type='text'
+          placeholder='Search mentor logbook...'
+          x-model='searchInput'
+          @input='search = searchInput; pageNumber=0'
+          class='border border-gray-300 bg-white text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
+        />
+      </div>
+    </div>
+
+    <!-- Export Button -->
+    <button
+      @click='exportToExcel()'
+      class='flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition whitespace-nowrap'
+    >
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        viewBox='0 0 48 48'
+        class='h-5 w-5 rounded shadow'
+      >
+        <path
+          fill='#185C37'
+          d='M42 6H14a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z'
+        />
+        <path fill='#21A366' d='M14 6H8a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h6V6z' />
+        <path fill='#107C41' d='M22 14H8v20h14V14z' />
+        <path
+          fill='#fff'
+          d='M19 31h-2.1l-2.9-5-2.9 5H9l4.2-7-4.1-7h2.1l2.9 5 2.9-5H19l-4.2 7 4.2 7z'
+        />
+      </svg>
+      Export Excel
+    </button>
+
+  </div>
+
+  <!-- Table -->
+  <div x-show="data && data.length > 0" class='overflow-x-auto bg-white shadow-lg rounded-xl'>
+    <table class='min-w-full divide-y divide-gray-200'>
+      <thead class='bg-gray-100'>
+        <tr>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >No</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Mentor</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Created At</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Meeting No</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Week No</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Program Name</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Program Type</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Category</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Activity</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Activity Details</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Documentation</th>
+          <th
+            class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
+          >Issues</th>
+        </tr>
+      </thead>
+      <tbody class='divide-y divide-gray-200'>
+        <template x-for='(logbookMentors, index) in filteredData' :key='logbookMentors.id'>
+          <tr
+            class='hover:bg-gray-50 transition'>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.mentor?.[0]?.name"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="formatTanggal(logbookMentors.createdAt)"></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.sessionOrder"
+            ></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.weekNumber"
+            ></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.name"
+            ></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.courseType?.name_clasess_type"
+            ></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.category?.name"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.activity"></td>
+            <td
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.activity_detail"
+            ></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.documentation"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.obstacle"></td>
+          </tr>
+          </template>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class='w-full md:w-1/2 mx-auto py-6 flex justify-center gap-2 items-center'
+    x-show='pageCount() > 1'
+  >
+    <button
+      @click='prevPage'
+      :disabled='pageNumber==0'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber==0 }"
+    >
+      Prev
+    </button>
+    <template x-for='(page,index) in pages()' :key='index'>
+      <button
+        @click='viewPage(index)'
+        class='px-3 py-1 rounded'
+        :class="{ 'bg-gray-900 text-white font-bold': index===pageNumber }"
+        x-text='index+1'
+      >
+      </button>
+    </template>
+    <button
+      @click='nextPage'
+      :disabled='pageNumber >= pageCount()-1'
+      class='px-3 py-1 rounded border border-gray-900 text-gray-900'
+      :class="{ 'opacity-50 cursor-not-allowed': pageNumber >= pageCount()-1 }"
+    >
+      Next
+    </button>
+  </div>
+
+<!-- SheetJS Library for Excel Export -->
+<script
+  src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
+></script>
+
+<script>
+function logBookMentorData() {
+  return {
+    data: [],
+    searchInput: '',
+    search: '',
+    pageNumber: 0,
+    size: 5,
+    amount: 0,
+
+    async fetchLogBookMentors() {
+      const res = await fetch('/program/logbookMentor/{{course.id}}');
+      this.data = await res.json();
+    },
+
+    get filteredData() {
+      let filtered = this.data.filter(l =>
+          (
+            `${l.session?.weeks?.course?.mentor?.[0]?.name || ""}
+             ${l.session?.sessionOrder || ""}
+             ${l.session?.weeks?.weekNumber || ""}
+             ${l.session?.weeks?.course?.name || ""}
+             ${l.session?.weeks?.course?.courseType?.name_clasess_type || ""}
+             ${l.session?.weeks?.course?.category?.name || ""}
+             ${l.activity || ""}
+             ${l.activity_detail || ""}
+             ${l.documentation || ""}
+             ${l.obstacle || ""}`
+          ).toLowerCase().
+          includes(this.search.toLowerCase())
+      );
+
+      this.amount = filtered.length;
+
+      const start = this.pageNumber * this.size;
+      return filtered.slice(start, start + this.size);
+    },
+
+    pageCount() {
+      return Math.ceil(this.amount / this.size);
+    },
+
+    pages() {
+      return Array.from({ length: this.pageCount() });
+    },
+
+    nextPage() {
+      if (this.pageNumber < this.pageCount() - 1) this.pageNumber++;
+    },
+
+    prevPage() {
+      if (this.pageNumber > 0) this.pageNumber--;
+    },
+
+    viewPage(i) {
+      this.pageNumber = i;
+    },
+
+    formatTanggal(value) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(value).toLocaleDateString('id-ID', options);
+    },
+
+    exportToExcel() {
+        try {
+          const dataToExport = this.filteredData.map((l, index) => ({
+            No: index + 1,
+            Mentor: l.session?.weeks?.course?.mentor?.[0]?.name,
+            "Created At": new Date(l.createdAt).toLocaleDateString(),
+            "Meeting No": l.session.sessionOrder,
+            "Week No": l.session?.weeks?.weekNumber,
+            "Program Name": l.session?.weeks?.course?.name,
+            "Program Type": l.session?.weeks?.course?.courseType?.name_clasess_type,
+            Category: l.session?.weeks?.course?.category?.name,
+            Activity: l.activity,
+            "Activity Details": l.activity_details,
+            Documentation: l.dokumentasi,
+            Issues: l.obstacles,
+          }));
+
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+          ws["!cols"] = [
+            { wch: 5 },  // No
+            { wch: 20 }, // Mentor
+            { wch: 15 }, // Created At
+            { wch: 10 }, // Meeting No
+            { wch: 8 },  // Week No
+            { wch: 25 }, // Program Name
+            { wch: 15 }, // Program Type
+            { wch: 15 }, // Category
+            { wch: 30 }, // Activity
+            { wch: 50 }, // Activity Details
+            { wch: 60 }, // Documentation
+            { wch: 40 }  // Issues
+          ];
+
+          XLSX.utils.book_append_sheet(wb, ws, "Log Book Mentor");
+          XLSX.writeFile(
+            wb,
+            `Log_Book_Mentor_${new Date().toISOString().slice(0, 10)}.xlsx`
+          );
+        } catch (err) {
+          alert("Failed to export data to Excel");
+          console.error(err);
+        }
+      },
+  }
+}
+</script>

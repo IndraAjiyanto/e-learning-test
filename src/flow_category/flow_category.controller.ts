@@ -23,34 +23,34 @@ export class FlowCategoryController {
   constructor(private readonly flowCategoryService: FlowCategoryService) {}
 
   @Roles('super_admin')
-  @Get('formCreate/:kategoriId')
+  @Get('formCreate/:categoryId')
   async formCreate(
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     res.render('super_admin/flow_category/create', {
       user: req.user,
-      kategoriId,
+      categoryId,
     });
   }
 
   @Roles('super_admin')
-  @Post(':kategoriId')
+  @Post(':categoryId')
   async createFromForm(
     @Body() createFlowCategoryDto: CreateFlowCategoryDto,
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      createFlowCategoryDto.kategoriId = kategoriId;
+      createFlowCategoryDto.categoryId = categoryId;
       await this.flowCategoryService.create(createFlowCategoryDto);
       req.flash('success', 'flow category successfully created');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to create flow category');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     }
   }
 
@@ -69,10 +69,10 @@ export class FlowCategoryController {
   }
 
   @Roles('super_admin')
-  @Patch('formEdit/:id/:kategoriId')
+  @Patch('formEdit/:id/:categoryId')
   async updateFromForm(
     @Param('id') id: number,
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Body() updateFlowCategoryDto: UpdateFlowCategoryDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -80,28 +80,28 @@ export class FlowCategoryController {
     try {
       await this.flowCategoryService.update(id, updateFlowCategoryDto);
       req.flash('success', 'Flow category successfully updated');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to update flow category');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     }
   }
 
   @Roles('super_admin')
-  @Delete(':id/:kategoriId')
+  @Delete(':id/:categoryId')
   async deleteFromForm(
     @Param('id') id: number,
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
       await this.flowCategoryService.remove(id);
       req.flash('success', 'Flow category successfully deleted');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to delete flow category');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     }
   }
 }

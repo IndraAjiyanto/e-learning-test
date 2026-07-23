@@ -4,15 +4,15 @@
   // Form validation states
   formData: {
     content: { id: '', en: '', ja: '' },
-    isi: { id: '', en: '', ja: '' }
+    details: { id: '', en: '', ja: '' }
   },
   formErrors: {
     content: { id: '', en: '', ja: '' },
-    isi: { id: '', en: '', ja: '' }
+    details: { id: '', en: '', ja: '' }
   },
   formValid: {
     content: { id: false, en: false, ja: false },
-    isi: { id: false, en: false, ja: false }
+    details: { id: false, en: false, ja: false }
   },
 
   validateField(field, lang, value) {
@@ -29,13 +29,13 @@
         }
         break;
         
-      case 'isi':
+      case 'details':
         if (!value.trim()) {
-          this.formErrors.isi[lang] = 'Text is required';
-          this.formValid.isi[lang] = false;
+          this.formErrors.details[lang] = 'Text is required';
+          this.formValid.details[lang] = false;
         } else {
-          this.formErrors.isi[lang] = '';
-          this.formValid.isi[lang] = true;
+          this.formErrors.details[lang] = '';
+          this.formValid.details[lang] = true;
         }
         break;
     }
@@ -43,13 +43,13 @@
 
   canSubmit() {
     const contentValid = Object.values(this.formValid.content).every(v => v);
-    const isiValid = Object.values(this.formValid.isi).every(v => v);
+    const isiValid = Object.values(this.formValid.details).every(v => v);
     return contentValid && isiValid;
   },
 
   hasFormErrors() {
     return Object.values(this.formErrors.content).some(e => e !== '') || 
-           Object.values(this.formErrors.isi).some(e => e !== '');
+           Object.values(this.formErrors.details).some(e => e !== '');
   }
 }"
 >

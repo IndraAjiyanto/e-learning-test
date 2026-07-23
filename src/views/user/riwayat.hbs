@@ -6,17 +6,17 @@
     statusTab: localStorage.getItem('activeStatusTab') || 'all',
 
     pembayaran: [],
-    cicilan: [],
+    installments: [],
     pendaftaran: [],
 
     loading: {
       pembayaran: false,
-      cicilan: false,
+      installments: false,
       pendaftaran: false
     },
     fetched: {
       pembayaran: false,
-      cicilan: false,
+      installments: false,
       pendaftaran: false
     },
 
@@ -27,7 +27,7 @@
         const map = {
           pembayaran: '/payment/api/payment/{{userId}}',
           pendaftaran: '/payment/api/registration/{{userId}}',
-          cicilan: '/payment/api/installment/{{userId}}'
+          installments: '/payment/api/installment/{{userId}}'
         };
         const res = await fetch(map[tab]);
         const json = await res.json();

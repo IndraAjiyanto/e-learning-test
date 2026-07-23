@@ -17,5 +17,5 @@ export class CreateGalleryDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  kategori_id?: number;
+  category_id?: number;
 }

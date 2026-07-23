@@ -152,14 +152,14 @@ export class LibreOfficeService {
   async convertAndUploadPptToCloudinary(
     inputPath: string,
     outputDir: string,
-    pertemuanId: number,
+    sessionId: number,
   ): Promise<{ pptUrl: string; slideUrls: string[] }> {
     try {
       const slidePaths = await this.convertPptToPng(inputPath, outputDir);
 
       const pptUpload = await cloudinary.uploader.upload(inputPath, {
         folder: 'nestjs/ppt/files',
-        public_id: `ppt-${pertemuanId}-${Date.now()}`,
+        public_id: `ppt-${sessionId}-${Date.now()}`,
         resource_type: 'raw',
       });
 
@@ -168,7 +168,7 @@ export class LibreOfficeService {
         try {
           const uploadedSlide = await cloudinary.uploader.upload(slidePath, {
             folder: 'nestjs/ppt/slides',
-            public_id: `slide-${pertemuanId}-${Date.now()}-${index}`,
+            public_id: `slide-${sessionId}-${Date.now()}-${index}`,
             resource_type: 'image',
           });
           return uploadedSlide.secure_url;
