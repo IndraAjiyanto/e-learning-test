@@ -1,17 +1,17 @@
-<div x-show="mainTab === 'cicilan'" x-transition>
+<div x-show="mainTab === 'installments'" x-transition>
 
-  <div x-show="loading.cicilan" class="flex justify-center py-16">
+  <div x-show="loading.installments" class="flex justify-center py-16">
     <div class="flex flex-col items-center gap-4 text-slate-500">
       <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
       <p class="font-semibold">Loading...</p>
     </div>
   </div>
 
-  <div x-show="!loading.cicilan">
+  <div x-show="!loading.installments">
 
-    <div x-show="cicilan.length > 0">
+    <div x-show="installments.length > 0">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        <template x-for="item in cicilan" :key="item.id">
+        <template x-for="item in installments" :key="item.id">
           <div
             x-show="statusTab === 'all'
               || (statusTab === 'acc' && item.proses === 'acc')
@@ -57,7 +57,7 @@
 
                 <h3 class="text-lg md:text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors font-montserrat line-clamp-2">
                   <i class="fas fa-graduation-cap mr-2 text-slate-600 text-sm md:text-base"></i>
-                  <span x-text="item.kelas.nama_kelas"></span>
+                  <span x-text="item.course.name"></span>
                 </h3>
 
                 <div class="flex items-center text-slate-600 text-xs md:text-sm">
@@ -69,7 +69,7 @@
                 <div class="flex items-center text-xs md:text-sm">
                   <i class="fas fa-money-bill-wave mr-2 text-blue-600"></i>
                   <span class="font-medium text-slate-700">{{t "test.historyPayment.installment.installmentMenu"}}</span>
-                  <span class="ml-2 text-blue-700 font-bold" x-text="item.cicilan.nama_cicilan"></span>
+                  <span class="ml-2 text-blue-700 font-bold" x-text="item.installments.name"></span>
                 </div>
 
                 <div class="flex items-center text-xs md:text-sm">
@@ -87,7 +87,7 @@
                   <span>{{t "test.historyPayment.installment.paymentUnderReview"}}</span>
                 </div>
                 <p class="text-amber-700 text-xs md:text-sm">{{t "test.historyPayment.installment.spanPaymentUnderReview"}}</p>
-                <a :href="`https://wa.me/6281234567890?text=Hi,%20I%20have%20a%20question%20about%20my%20installment%20payment%20for%20${item.kelas.nama_kelas}`"
+                <a :href="`https://wa.me/6281234567890?text=Hi,%20I%20have%20a%20question%20about%20my%20installment%20payment%20for%20${item.course.name}`"
                   target="_blank"
                   class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                   <i class="fab fa-whatsapp text-base md:text-lg"></i>
@@ -101,7 +101,7 @@
                   <span>{{t "test.historyPayment.installment.paymentRejected"}}</span>
                 </div>
                 <p class="text-red-700 text-xs md:text-sm">{{t "test.historyPayment.installment.spanPaymentRejected"}}</p>
-                <a :href="`https://wa.me/6281234567890?text=Hi,%20my%20installment%20payment%20for%20${item.kelas.nama_kelas}%20was%20rejected.%20I%20need%20help.`"
+                <a :href="`https://wa.me/6281234567890?text=Hi,%20my%20installment%20payment%20for%20${item.course.name}%20was%20rejected.%20I%20need%20help.`"
                   target="_blank"
                   class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                   <i class="fab fa-whatsapp text-base md:text-lg"></i>
@@ -115,7 +115,7 @@
                   <i class="fas fa-eye"></i>
                   <span>{{t "test.historyPayment.installment.viewProof"}}</span>
                 </button>
-                <a :href="`/program/${item.kelas.id}`"
+                <a :href="`/program/${item.course.id}`"
                   class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-white text-slate-800 border-2 border-slate-200 font-semibold text-xs md:text-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                   <i class="fas fa-external-link-alt"></i>
                   <span>{{t "test.historyPayment.installment.viewProgram"}}</span>
@@ -129,7 +129,7 @@
       </div>
     </div>
 
-    <div x-show="cicilan.length === 0" class="text-center py-12 md:py-16 px-4">
+    <div x-show="installments.length === 0" class="text-center py-12 md:py-16 px-4">
       <div class="p-8 md:p-12 max-w-md mx-auto">
         <i class="fas fa-calendar-check text-5xl md:text-6xl text-blue-400 mb-4 md:mb-6"></i>
         <h3 class="text-lg md:text-xl font-bold text-slate-700 mb-2 md:mb-3 font-montserrat">{{t "test.historyPayment.installment.noInstallment"}}</h3>

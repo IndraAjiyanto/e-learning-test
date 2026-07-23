@@ -4,41 +4,41 @@ import { Repository } from 'typeorm';
 import { FlowCategory } from '../entities/flow_category.entity';
 import { CreateFlowCategoryDto } from './dto/create-flow_category.dto';
 import { UpdateFlowCategoryDto } from './dto/update-flow_category.dto';
-import { Kategori } from '../entities/kategori.entity';
+import { Category } from '../entities/category.entity';
 
 @Injectable()
 export class FlowCategoryService {
   constructor(
     @InjectRepository(FlowCategory)
     private flowCategoryRepository: Repository<FlowCategory>,
-    @InjectRepository(Kategori)
-    private kategoriRepository: Repository<Kategori>,
+    @InjectRepository(Category)
+    private kategoriRepository: Repository<Category>,
   ) {}
 
   async create(createFlowCategoryDto: CreateFlowCategoryDto) {
-    const kategori = await this.kategoriRepository.findOne({
-      where: { id: createFlowCategoryDto.kategoriId },
+    const category = await this.kategoriRepository.findOne({
+      where: { id: createFlowCategoryDto.categoryId },
     });
-    if (!kategori) {
-      throw new NotFoundException('Kategori not found');
+    if (!category) {
+      throw new NotFoundException('Category not found');
     }
     const flowCategory = this.flowCategoryRepository.create({
       ...createFlowCategoryDto,
-      kategori,
+      category: category,
     });
     return this.flowCategoryRepository.save(flowCategory);
   }
 
   async findAll() {
     return this.flowCategoryRepository.find({
-      relations: ['kategori'],
+      relations: ['category'],
     });
   }
 
   async findOne(id: number) {
     const flowCategory = await this.flowCategoryRepository.findOne({
       where: { id },
-      relations: ['kategori'],
+      relations: ['category'],
     });
     if (!flowCategory) {
       throw new NotFoundException('FlowCategory not found');
@@ -48,14 +48,14 @@ export class FlowCategoryService {
 
   async update(id: number, updateFlowCategoryDto: UpdateFlowCategoryDto) {
     const flowCategory = await this.findOne(id);
-    if (updateFlowCategoryDto.kategoriId) {
-      const kategori = await this.kategoriRepository.findOne({
-        where: { id: updateFlowCategoryDto.kategoriId },
+    if (updateFlowCategoryDto.categoryId) {
+      const category = await this.kategoriRepository.findOne({
+        where: { id: updateFlowCategoryDto.categoryId },
       });
-      if (!kategori) {
-        throw new NotFoundException('Kategori not found');
+      if (!category) {
+        throw new NotFoundException('Category not found');
       }
-      flowCategory.kategori = kategori;
+      flowCategory.category = category;
     }
     Object.assign(flowCategory, updateFlowCategoryDto);
     return this.flowCategoryRepository.save(flowCategory);

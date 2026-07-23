@@ -1,20 +1,10 @@
-      <div class="mb-10">
-        <!-- Badge Batch & Start Date -->
-        <div class="flex items-center justify-center border border-slate-200 bg-white rounded-xl shadow-sm mb-3 px-4 mx-auto md:mx-0 w-full" style="width: 100%; max-width: 828px; height: 82px;">
-          <span class="text-[#0B1F3B] font-montserrat font-semibold tracking-wide text-center leading-none" style="font-size: 35px;">
-            {{kelas.grup}} - Start Learning <span x-text="(() => { const d = new Date('{{kelas.tanggal_mulai}}'); return isNaN(d) ? 'TBA' : d.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'}) })()"></span>
-          </span>
-        </div>
-
-        <!-- Title -->
-        <h1 class="font-montserrat font-semibold text-[#0B1F3B] mb-2 leading-tight text-3xl" style="font-size: 45px; margin-left: 6px;">
-          {{kelas.nama_kelas}}
-        </h1>
-
-        <!-- Description -->
-        <div class="font-['Open_Sans',sans-serif] font-normal text-3xl text-black leading-relaxed max-w-3xl" style="margin-left: 6px;" x-html="getByLang({{json kelas.deskripsi}}, lang)">
-          {{#each kelas.deskripsi}}
-            <p class="mb-4">{{this}}</p>
-          {{/each}}
-        </div>
+      <!-- Course Preview -->
+      <div
+        class='group w-full rounded-2xl overflow-hidden shadow-xl ring-1 ring-slate-200 bg-gradient-to-br from-gray-50 to-gray-100 aspect-video cursor-pointer hover:shadow-2xl transition-shadow duration-300'
+      >
+        <img
+          src="{{course.image}}"
+          alt='{{course.name}}'
+          class='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out'
+        />
       </div>

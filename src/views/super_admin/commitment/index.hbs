@@ -80,12 +80,12 @@
               <i class='fas {{icon}} text-gray-700 text-xl'></i>
             </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#each judul}}
+              {{#each title}}
                 <div class="line-clamp-3">{{this}}</div>
               {{/each}}
               </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#each deskripsi}}
+              {{#each description}}
                 <div class="line-clamp-3">{{this}}</div>
               {{/each}}
             </td>
@@ -198,7 +198,7 @@
       // Filter + Pagination
       get filteredCommitments() {
         const filtered = this.commitments.filter(c =>
-          `${c.judul.en} ${c.deskripsi.en} ${c.judul.id} ${c.deskripsi.id} ${c.judul.ja} ${c.deskripsi.ja}`
+          `${c.title.en} ${c.description.en} ${c.title.id} ${c.description.id} ${c.title.ja} ${c.description.ja}`
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

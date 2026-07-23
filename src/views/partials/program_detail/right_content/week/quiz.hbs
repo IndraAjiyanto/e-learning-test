@@ -25,7 +25,7 @@
                       <div>
                         <template x-if='quiz.progres_quiz.length > 0'>
                           <div>
-                            <template x-if='quiz.pertanyaan?.length > 0'>
+                            <template x-if='quiz.question?.length > 0'>
 
                               <a
                                 :href='`/quiz/form/${quiz.id}`'
@@ -51,7 +51,7 @@
                               </a>
 
                             </template>
-                            <template x-if='!quiz.pertanyaan?.length'>
+                            <template x-if='!quiz.question?.length'>
                               <div
                                 class='flex items-center justify-center p-3 bg-gray-100 rounded-lg'
                               >

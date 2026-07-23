@@ -60,40 +60,20 @@
             class='flex-shrink-0 px-3'
             :style='`width: ${100 / perView}%;`'
           >
-            <div
-              class='h-full flex flex-col bg-sky-50/70 border border-sky-200 rounded-2xl p-8 shadow-sm'
-            >
-              <!-- Quote Icon -->
-              <svg
-                class='w-10 h-10 text-blue-600 mb-4'
-                fill='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path d='M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z'></path>
-              </svg>
-
-              <!-- Message -->
-              <p class='text-gray-600 leading-relaxed mb-8 flex-grow'>
-                {{getByLang pesan ../lang}}
-              </p>
-             <div class='border border border-slate-200 w-full mx-auto mt-4 my-2 mb-4 rounded'></div>
-              <!-- Author -->
-              <div class='flex items-center gap-4 mt-auto'>
-                <img
-                  src='{{profile}}'
-                  alt='{{getByLang nama ../lang}}'
-                  class='w-14 h-14 rounded-full object-cover border-4 border-white shadow'
-                />
-                <div>
-                    
-                  <p class='font-bold text-gray-900'>{{getByLang nama ../lang}}</p>
-                
-
-                  <p class='text-sm text-gray-500'>{{getByLang posisi_sekarang ../lang}}</p>
-                  {{#if kelas.nama_kelas}}
-                    <p class='text-xs text-gray-400'>{{getByLang kelas.nama_kelas ../lang}}</p>
-                  {{/if}}
-                </div>
+            <span class='text-6xl text-white/50 font-bold'>❝</span>
+            <p class='text-white text-xl leading-relaxed mb-8 italic'>
+              {{getByLang pesan ../lang}}
+            </p>
+            <div class='flex items-center gap-6'>
+              <img
+                src="{{profile}}"
+                alt='Alumni'
+                class='w-16 h-16 rounded-full border-4 border-white/20'
+              />
+              <div>
+                <p class='font-bold text-white text-lg'>{{getByLang name ../lang}}</p>
+                <p class='text-slate-300'>{{getByLang posisi_sekarang ../lang}}</p>
+                <p class='text-slate-400 text-sm'>{{getByLang course.name ../lang}}</p>
               </div>
             </div>
           </div>

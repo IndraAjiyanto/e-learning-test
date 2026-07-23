@@ -28,7 +28,7 @@ export class MentorController {
   constructor(private readonly mentorService: MentorService) {}
 
   @Roles('super_admin', 'admin')
-  @Post(':kelasId')
+  @Post(':courseId')
   @UseInterceptors(
     FileFieldsInterceptor(
       [{ name: 'profile', maxCount: 1 }],
@@ -46,13 +46,13 @@ export class MentorController {
     folder: 'mentor',
   })
   async create(
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Body() createMentorDto: CreateMentorDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createMentorDto.kelasId = kelasId;
+      createMentorDto.courseId = courseId;
       const uploadedImages = req.body.uploadedImageUrls || [];
 
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -62,25 +62,25 @@ export class MentorController {
 
       await this.mentorService.create(createMentorDto);
       req.flash('success', 'mentor successfully created');
-      res.redirect(`/program/detail/program/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'mentor failed to create');
-      res.redirect(`/program/detail/program/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
 
   @Roles('super_admin', 'admin')
-  @Get('formCreate/:kelasId')
+  @Get('formCreate/:courseId')
   async formCreate(
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const teknologi = await this.mentorService.findTeknologi();
+    const technologies = await this.mentorService.findTechnologies();
     res.render('super_admin/mentor/create', {
       user: req.user,
-      kelasId,
-      teknologi,
+      courseId,
+      technologies,
     });
   }
 
@@ -92,11 +92,11 @@ export class MentorController {
     @Req() req: Request,
   ) {
     const mentor = await this.mentorService.findOne(mentorId);
-    const teknologi = await this.mentorService.findTeknologi();
+    const technologies = await this.mentorService.findTechnologies();
     res.render('super_admin/mentor/detail', {
       user: req.user,
       mentor,
-      teknologi,
+      technologies,
     });
   }
 
@@ -108,16 +108,16 @@ export class MentorController {
     @Req() req: Request,
   ) {
     const mentor = await this.mentorService.findOne(mentorId);
-    const teknologi = await this.mentorService.findTeknologi();
+    const technologies = await this.mentorService.findTechnologies();
     res.render('super_admin/mentor/edit', {
       user: req.user,
       mentor,
-      teknologi,
+      technologies,
     });
   }
 
   @Roles('super_admin', 'admin')
-  @Patch(':kelasId/:mentorId')
+  @Patch(':courseId/:mentorId')
   @UseInterceptors(
     FileFieldsInterceptor(
       [{ name: 'profile', maxCount: 1 }],
@@ -136,7 +136,7 @@ export class MentorController {
   })
   async update(
     @Param('mentorId') mentorId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Body() updateMentorDto: UpdateMentorDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -155,18 +155,18 @@ export class MentorController {
 
       await this.mentorService.update(mentorId, updateMentorDto);
       req.flash('success', 'mentor successfully update');
-      res.redirect(`/program/detail/program/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'mentor failed to update');
-      res.redirect(`/program/detail/program/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
 
   @Roles('super_admin', 'admin')
-  @Delete(':mentorId/:kelasId')
+  @Delete(':mentorId/:courseId')
   async remove(
     @Param('mentorId') mentorId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -174,15 +174,15 @@ export class MentorController {
       const mentor = await this.mentorService.findOne(mentorId);
       if (!mentor) {
         req.flash('error', 'mentor not found');
-        res.redirect(`/program/detail/program/admin/${kelasId}`);
+        res.redirect(`/program/detail/program/admin/${courseId}`);
       }
       await this.mentorService.deleteFile(mentor.profile);
       await this.mentorService.remove(mentorId);
       req.flash('success', 'mentor successfully deleted');
-      res.redirect(`/program/detail/program/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'mentor failed to delete');
-      res.redirect(`/program/detail/program/admin/${kelasId}`);
+      res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
 }

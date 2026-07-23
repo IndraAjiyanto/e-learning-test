@@ -37,15 +37,24 @@ export class AddGallery1782873463849 implements MigrationInterface {
       true
     );
 
-    await queryRunner.createForeignKey(
-      "gallery",
-      new TableForeignKey({
-        columnNames: ["kategori_id"],
-        referencedTableName: "kategori",
-        referencedColumnNames: ["id"],
-        onDelete: "CASCADE",
-      })
+    const table = await queryRunner.getTable("gallery");
+    const foreignKeyExists = table?.foreignKeys.some(
+      (fk) => fk.columnNames.indexOf("kategori_id") !== -1
     );
+
+    if (!foreignKeyExists) {
+      await queryRunner.createForeignKey(
+        "gallery",
+        new TableForeignKey({
+          columnNames: ["kategori_id"],
+          referencedTableName: "kategori",
+          referencedColumnNames: ["id"],
+          onDelete: "CASCADE",
+        })
+      );
+    } else {
+      console.log("Foreign key for gallery already exists, skipping...");
+    }
   }
 
     

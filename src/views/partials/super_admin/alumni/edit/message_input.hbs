@@ -6,22 +6,22 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>ID</label>
             <textarea
-              x-model='formData.pesan.id'
-              @input='validateField("pesan", "id", $event.target.value)'
-              name='pesan[id]'
+              x-model='formData.message.id'
+              @input='validateField("message", "id", $event.target.value)'
+              name='message[id]'
               required
               rows='8'
-              :class="formErrors.pesan.id ? 'border-red-500 focus:ring-red-500' : (formValid.pesan.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.message.id ? 'border-red-500 focus:ring-red-500' : (formValid.message.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-              x-init='$el.value = formData.pesan.id'
+              x-init='$el.value = formData.message.id'
             ></textarea>
-            <template x-if='formErrors.pesan.id'>
+            <template x-if='formErrors.message.id'>
               <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p class='text-xs text-red-700' x-text='formErrors.pesan.id'></p>
+                <p class='text-xs text-red-700' x-text='formErrors.message.id'></p>
               </div>
             </template>
-            <template x-if='formValid.pesan.id && !formErrors.pesan.id'>
+            <template x-if='formValid.message.id && !formErrors.message.id'>
               <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid</p>
@@ -33,22 +33,22 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>EN</label>
             <textarea
-              x-model='formData.pesan.en'
-              @input='validateField("pesan", "en", $event.target.value)'
-              name='pesan[en]'
+              x-model='formData.message.en'
+              @input='validateField("message", "en", $event.target.value)'
+              name='message[en]'
               required
               rows='8'
-              :class="formErrors.pesan.en ? 'border-red-500 focus:ring-red-500' : (formValid.pesan.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.message.en ? 'border-red-500 focus:ring-red-500' : (formValid.message.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-              x-init='$el.value = formData.pesan.en'
+              x-init='$el.value = formData.message.en'
             ></textarea>
-            <template x-if='formErrors.pesan.en'>
+            <template x-if='formErrors.message.en'>
               <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p class='text-xs text-red-700' x-text='formErrors.pesan.en'></p>
+                <p class='text-xs text-red-700' x-text='formErrors.message.en'></p>
               </div>
             </template>
-            <template x-if='formValid.pesan.en && !formErrors.pesan.en'>
+            <template x-if='formValid.message.en && !formErrors.message.en'>
               <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid</p>
@@ -60,22 +60,22 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
-              x-model='formData.pesan.ja'
-              @input='validateField("pesan", "ja", $event.target.value)'
-              name='pesan[ja]'
+              x-model='formData.message.ja'
+              @input='validateField("message", "ja", $event.target.value)'
+              name='message[ja]'
               required
               rows='8'
-              :class="formErrors.pesan.ja ? 'border-red-500 focus:ring-red-500' : (formValid.pesan.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.message.ja ? 'border-red-500 focus:ring-red-500' : (formValid.message.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors resize-none'
-              x-init='$el.value = formData.pesan.ja'
+              x-init='$el.value = formData.message.ja'
             ></textarea>
-            <template x-if='formErrors.pesan.ja'>
+            <template x-if='formErrors.message.ja'>
               <div class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'>
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-                <p class='text-xs text-red-700' x-text='formErrors.pesan.ja'></p>
+                <p class='text-xs text-red-700' x-text='formErrors.message.ja'></p>
               </div>
             </template>
-            <template x-if='formValid.pesan.ja && !formErrors.pesan.ja'>
+            <template x-if='formValid.message.ja && !formErrors.message.ja'>
               <div class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'>
                 <i class='fas fa-check-circle text-green-500'></i>
                 <p class='text-xs text-green-700'>Valid</p>

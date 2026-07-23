@@ -12,13 +12,13 @@ export class Header {
   id: number;
 
   @Column()
-  judul: string;
+  title: string;
 
   @Column()
   text: string;
 
   @Column()
-  gambar: string;
+  image: string;
 
   @CreateDateColumn()
   createdAt: Date;

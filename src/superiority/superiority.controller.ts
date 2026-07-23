@@ -23,34 +23,34 @@ export class SuperiorityController {
   constructor(private readonly superiorityService: SuperiorityService) {}
 
   @Roles('super_admin')
-  @Get('formCreate/:kategoriId')
+  @Get('formCreate/:categoryId')
   async formCreate(
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     res.render('super_admin/superiority/create', {
       user: req.user,
-      kategoriId,
+      categoryId,
     });
   }
 
   @Roles('super_admin')
-  @Post(':kategoriId')
+  @Post(':categoryId')
   async createFromForm(
     @Body() createSuperiorityDto: CreateSuperiorityDto,
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      createSuperiorityDto.kategoriId = kategoriId;
+      createSuperiorityDto.categoryId = categoryId;
       await this.superiorityService.create(createSuperiorityDto);
       req.flash('success', 'superiority successfully created');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to create superiority');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     }
   }
 
@@ -66,10 +66,10 @@ export class SuperiorityController {
   }
 
   @Roles('super_admin')
-  @Patch('formEdit/:id/:kategoriId')
+  @Patch('formEdit/:id/:categoryId')
   async updateFromForm(
     @Param('id') id: number,
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Body() updateSuperiorityDto: UpdateSuperiorityDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -77,28 +77,28 @@ export class SuperiorityController {
     try {
       await this.superiorityService.update(id, updateSuperiorityDto);
       req.flash('success', 'Superiority successfully updated');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to update superiority');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     }
   }
 
   @Roles('super_admin')
-  @Delete(':id/:kategoriId')
+  @Delete(':id/:categoryId')
   async deleteFromForm(
     @Param('id') id: number,
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
       await this.superiorityService.remove(id);
       req.flash('success', 'Superiority successfully deleted');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to delete superiority');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     }
   }
 }

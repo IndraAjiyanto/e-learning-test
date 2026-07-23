@@ -90,7 +90,7 @@
               {{/each}}
               </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#each isi}}
+              {{#each details}}
                 <div class="line-clamp-3">{{this}}</div>
               {{/each}}
             </td>
@@ -201,7 +201,7 @@
 
       get filteredExperience() {
         const filtered = this.experience.filter(e =>
-          (`${e.content.en} ${e.isi.en} ${e.content.id} ${e.isi.id} ${e.content.ja} ${e.isi.ja}`)
+          (`${e.content.en} ${e.details.en} ${e.content.id} ${e.details.id} ${e.content.ja} ${e.details.ja}`)
             .toLowerCase()
             .includes(this.search.toLowerCase())
         );

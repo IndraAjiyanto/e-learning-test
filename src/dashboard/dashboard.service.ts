@@ -1,184 +1,82 @@
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Kelas } from 'src/entities/kelas.entity';
+import { Course } from 'src/entities/course.entity';
 import { Alumni } from 'src/entities/alumni.entity';
-import { Portfolio } from 'src/entities/portfolio.entity';
-import { GambarBenefit } from 'src/entities/gambar_benefit.entity';
-import { Kategori } from 'src/entities/kategori.entity';
-import { JenisKelas } from 'src/entities/jenis_kelas.entity';
-import { Partner } from 'src/entities/partner.entity';
+import { Portofolios } from 'src/entities/portofolios.entity';
+import { ImageBenefit } from 'src/entities/image_benefit.entity';
+import { Category } from 'src/entities/category.entity';
+import { CourseType } from 'src/entities/course_type.entity';
+import { Collaboration } from 'src/entities/collaboration.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
-import { Blog } from 'src/entities/blog.entity';
-import { Tentang } from 'src/entities/tentang.entity';
+import { About } from 'src/entities/about.entity';
 import { Value } from 'src/entities/value.entity';
 import { TeamLead } from 'src/entities/team_lead.entity';
-import { Visi } from 'src/entities/visi.entity';
+import { Vision } from 'src/entities/visions.entity';
 import { Commitment } from 'src/entities/commitment.entity';
-import { Misi } from 'src/entities/misi.entity';
+import { Mission } from 'src/entities/mission.entity';
 import { Experience } from 'src/entities/experience.entity';
 import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
-import { Paragraf } from 'src/entities/paragraf.entity';
+import { Paragraph } from 'src/entities/paragraph.entity';
 import { Faq } from 'src/entities/faq.entity';
 import { OurExperience } from 'src/entities/our_experience.entity';
-import { KategoriBlog } from 'src/entities/kategori_blog.entity';
 
 @Injectable()
 export class DashboardService {
   constructor(
-    @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>,
+    @InjectRepository(Course)
+    private readonly courseRepository: Repository<Course>,
     @InjectRepository(Alumni)
     private readonly alumniRepository: Repository<Alumni>,
-    @InjectRepository(Portfolio)
-    private readonly portfolioRepository: Repository<Portfolio>,
-    @InjectRepository(GambarBenefit)
-    private readonly gambarBenefitRepository: Repository<GambarBenefit>,
-    @InjectRepository(Kategori)
-    private readonly kategoriRepository: Repository<Kategori>,
-    @InjectRepository(JenisKelas)
-    private readonly jenisKelasRepository: Repository<JenisKelas>,
-    @InjectRepository(Partner)
-    private readonly PartnerRepository: Repository<Partner>,
+    @InjectRepository(Portofolios)
+    private readonly portfolioRepository: Repository<Portofolios>,
+    @InjectRepository(ImageBenefit)
+    private readonly imageBenefitRepository: Repository<ImageBenefit>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(CourseType)
+    private readonly courseTypeRepository: Repository<CourseType>,
+    @InjectRepository(Collaboration)
+    private readonly collaborationRepository: Repository<Collaboration>,
     @InjectRepository(Benefit)
     private readonly benefitRepository: Repository<Benefit>,
     @InjectRepository(Team)
     private readonly teamRepository: Repository<Team>,
     @InjectRepository(Social)
     private readonly socialRepository: Repository<Social>,
-    @InjectRepository(Blog)
-    private readonly blogRepository: Repository<Blog>,
-    @InjectRepository(Tentang)
-    private readonly tentangRepository: Repository<Tentang>,
+    @InjectRepository(About)
+    private readonly aboutRepository: Repository<About>,
     @InjectRepository(Value)
     private readonly valueRepository: Repository<Value>,
     @InjectRepository(TeamLead)
     private readonly teamLeadRepository: Repository<TeamLead>,
-    @InjectRepository(Visi)
-    private readonly visiRepository: Repository<Visi>,
+    @InjectRepository(Vision)
+    private readonly visionRepository: Repository<Vision>,
     @InjectRepository(Commitment)
     private readonly commitmentRepository: Repository<Commitment>,
-    @InjectRepository(Misi)
-    private readonly misiRepository: Repository<Misi>,
+    @InjectRepository(Mission)
+    private readonly missionRepository: Repository<Mission>,
     @InjectRepository(Experience)
     private readonly experienceRepository: Repository<Experience>,
     @InjectRepository(Award)
     private readonly awardRepository: Repository<Award>,
     @InjectRepository(Background)
     private readonly backgroundRepository: Repository<Background>,
-    @InjectRepository(Paragraf)
-    private readonly paragrafRepository: Repository<Paragraf>,
+    @InjectRepository(Paragraph)
+    private readonly paragraphRepository: Repository<Paragraph>,
     @InjectRepository(Faq)
     private readonly faqRepository: Repository<Faq>,
     @InjectRepository(OurExperience)
     private readonly ourExperienceRepository: Repository<OurExperience>,
-    @InjectRepository(KategoriBlog)
-    private readonly kategoriBlogRepository: Repository<KategoriBlog>,
   ) {}
 
-async findBlogTrending(userId?: number) {
-  const qb = this.blogRepository
-    .createQueryBuilder('blog')
-    .loadRelationCountAndMap('blog.likesCount', 'blog.likes')
-    .addSelect(
-      'blog.views + (SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id)',
-      'score'
-    )
-    .where('blog.createdAt >= NOW() - INTERVAL \'1 month\'')
-    .orderBy('score', 'DESC');
 
-  if (userId) {
-    qb.addSelect(
-      `CAST(EXISTS(
-        SELECT 1 FROM likes l
-        WHERE l."blogId" = blog.id AND l."userId" = :userId
-      ) AS boolean)`,
-      'isLiked'
-    ).setParameter('userId', userId);
-  }
-
-  const { entities, raw } = await qb.getRawAndEntities();
-  const blog = entities[0];
-  if (!blog) return null;
-
-  return {
-    ...blog,
-    isLiked: userId ? (raw[0]?.isLiked === true) : false,
-  };
+async findAllCategories() {
+  return await this.categoryRepository.find({ order: { id: 'ASC' } });
 }
-
-async findAllKategori() {
-  return await this.kategoriRepository.find({ order: { id: 'ASC' } });
-}
-
-
-async findKategoriTrending(userId?: number) {
-  const kategoriTrending = await this.kategoriBlogRepository
-    .createQueryBuilder('kategori')
-    .leftJoin('kategori.blog', 'blog')
-    .addSelect(
-      `SUM(
-        (blog.views * 1) + 
-        ((SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id) * 2)
-      )`,
-      'score'
-    )
-    .groupBy('kategori.id')
-    .orderBy('score', 'DESC')
-    .take(2)
-    .getRawMany();
-
-  const result = await Promise.all(
-    kategoriTrending.map(async (kategori) => {
-      const qb = this.blogRepository
-        .createQueryBuilder('blog')
-        .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
-        .loadRelationCountAndMap('blog.likesCount', 'blog.likes')
-        .where('kategori_blog.id = :id', { id: kategori.kategori_id })
-        .orderBy(
-          '(blog.views + (SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id))',
-          'DESC'
-        );
-
-      if (userId) {
-        qb.addSelect(
-          `CAST(EXISTS(
-            SELECT 1 FROM likes l
-            WHERE l."blogId" = blog.id AND l."userId" = :userId
-          ) AS boolean)`,
-          'isLiked'
-        ).setParameter('userId', userId);
-      }
-
-      const { entities, raw } = await qb.getRawAndEntities();
-      const topBlog = entities[0];
-
-      return {
-        id: kategori.kategori_id,
-        nama: kategori.kategori_nama,
-        icon: kategori.kategori_icon,
-        deskripsi: kategori.kategori_deskripsi,
-        createdAt: kategori.kategori_createdAt,
-        updatedAt: kategori.kategori_updatedAt,
-        score: kategori.score,
-        blog: topBlog
-          ? { ...topBlog, isLiked: userId ? (raw[0]?.isLiked === true) : false }
-          : null,
-      };
-    })
-  );
-
-  return result;
-}
-
-  async findBlogCategory() {
-    return await this.kategoriBlogRepository.find({
-      order: { nama: 'ASC' },
-    });
-  }
 
   async findOurExperience() {
     return await this.ourExperienceRepository.find({
@@ -186,53 +84,53 @@ async findKategoriTrending(userId?: number) {
     });
   }
 
-  async findAllKelas() {
-    return await this.kelasRepository.find({
+  async findAllCourses() {
+    return await this.courseRepository.find({
       where: { launch: true },
       order: { id: 'DESC' },
       relations: [
-        'kategori',
-        'jenis_kelas',
-        'user_kelas',
-        'mentoring',
-        'mentoring.user',
+        'category',
+        'courseType',
+        'userCourses',
+        'mentorings',
+        'mentorings.user',
       ],
     });
   }
 
-  async findKelasPaginated(params: {
+  async findCoursesPaginated(params: {
     userId?: number;
-  kategori?: string;
+  category?: string;
   jenisKelas?: string;
   metode?: string;
   search?: string;
   page: number;
   limit: number;
 }) {
-  const query = this.kelasRepository.createQueryBuilder('kelas')
-    .leftJoinAndSelect('kelas.kategori', 'kategori')
-    .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas')
-    .leftJoinAndSelect('kelas.user_kelas', 'user_kelas')
-    .where('kelas.launch = :launch', { launch: true });
+  const query = this.courseRepository.createQueryBuilder('course')
+    .leftJoinAndSelect('course.category', 'category')
+    .leftJoinAndSelect('course.courseType', 'courseType')
+    .leftJoinAndSelect('course.userCourses', 'userCourses')
+    .where('course.launch = :launch', { launch: true });
 
     if(params.userId){
-      query.andWhere('user_kelas.user.id = :userId', { userId: params.userId });
+      query.andWhere('userCourses.user.id = :userId', { userId: params.userId });
     }
 
-  if (params.kategori) {
-    query.andWhere('kategori.nama_kategori = :kategori', { kategori: params.kategori });
+  if (params.category) {
+    query.andWhere('category.name = :category', { category: params.category });
   }
   if (params.jenisKelas) {
-    query.andWhere('jenis_kelas.nama_jenis_kelas = :jenisKelas', { jenisKelas: params.jenisKelas });
+    query.andWhere('courseType.name_clasess_type = :jenisKelas', { jenisKelas: params.jenisKelas });
   }
   if (params.metode) {
-    query.andWhere('kelas.metode = :metode', { metode: params.metode });
+    query.andWhere('course.method = :metode', { metode: params.metode });
   }
   if (params.search) {
-    query.andWhere('kelas.nama_kelas ILIKE :search', { search: `%${params.search}%` });
+    query.andWhere('course.name ILIKE :search', { search: `%${params.search}%` });
   }
 
-  query.orderBy('kelas.id', 'DESC')
+  query.orderBy('course.id', 'DESC')
     .skip((params.page - 1) * params.limit)
     .take(params.limit);
 
@@ -240,29 +138,29 @@ async findKategoriTrending(userId?: number) {
   return { data, total };
 }
 
-  async findVisiMisi() {
-    return await this.visiRepository.find();
+  async findVisionsMissions() {
+    return await this.visionRepository.find();
   }
 
   async findCommitment() {
     return await this.commitmentRepository.find({
-      order: { commitment_ke: 'ASC' },
+      order: { commitment_order: 'ASC' },
     });
   }
 
   async findValue() {
-    return await this.valueRepository.find({ order: { value_ke: 'ASC' } });
+    return await this.valueRepository.find({ order: { valueOrder: 'ASC' } });
   }
 
-  async findKelasByMentoring(userId: number) {
-    return await this.kelasRepository.find({
-      where: { mentoring: { user: { id: userId } } },
+  async findCoursesByMentoring(userId: number) {
+    return await this.courseRepository.find({
+      where: { mentorings: { user: { id: userId } } },
       relations: [
-        'user_kelas',
-        'kategori',
-        'jenis_kelas',
-        'mentoring',
-        'mentoring.user',
+        'userCourses',
+        'category',
+        'courseType',
+        'mentorings',
+        'mentorings.user',
       ],
     });
   }
@@ -271,64 +169,45 @@ async findKategoriTrending(userId?: number) {
     return await this.teamLeadRepository.find();
   }
 
-  async findMisi() {
-    return await this.misiRepository.find({ order: { misi_ke: 'ASC' } });
+  async findMission() {
+    return await this.missionRepository.find({ order: { mission_order: 'ASC' } });
   }
 
   async findExperience() {
     return await this.experienceRepository.find({
-      order: { experience_ke: 'ASC' },
+      order: { experience_order: 'ASC' },
     });
   }
 
   async findAward() {
-    return await this.awardRepository.find({ order: { award_ke: 'ASC' } });
+    return await this.awardRepository.find({ order: { award_order: 'ASC' } });
   }
 
-  async findTentang() {
-    return await this.tentangRepository.find({});
+  async findAbout() {
+    return await this.aboutRepository.find({});
   }
 
-  async findTentangParagraf() {
-    return await this.paragrafRepository.find({ order: { p_ke: 'ASC' } });
+  async findAboutParagraphs() {
+    return await this.paragraphRepository.find({ order: { paragraphOrder: 'ASC' } });
   }
 
   async findBackground() {
     return await this.backgroundRepository.find({
-      order: { background_ke: 'ASC' },
+      order: { background_order: 'ASC' },
     });
   }
 
-  async findKelas() {
-    return await this.kelasRepository.find({
+  async findCourses() {
+    return await this.courseRepository.find({
       order: { id: 'DESC' },
-      relations: ['kategori', 'jenis_kelas', 'user_kelas'],
+      relations: ['category', 'courseType', 'userCourses'],
     });
   }
-
-async findBlog(excludeIds: number[] = []) {
-  const qb = this.blogRepository
-    .createQueryBuilder('blog')
-    .leftJoinAndSelect('blog.kategori_blog', 'kategori_blog')
-    .leftJoinAndSelect('blog.likes', 'likes')
-    .leftJoinAndSelect('likes.user', 'user')
-    .orderBy(
-      '(blog.views * 1) + ((SELECT COUNT(*) FROM likes l WHERE l."blogId" = blog.id) * 2)',
-      'DESC'
-    )
-    .addOrderBy('blog.createdAt', 'DESC');
-
-  if (excludeIds.length > 0) {
-    qb.where('blog.id NOT IN (:...excludeIds)', { excludeIds });
-  }
-
-  return await qb.getMany();
-}
 
 async findPortfolio(options?: {
   userId?: number | null;
-  kategoriId?: string | null;
-  jenisKelasId?: string | null;
+  categoryId?: string | null;
+  courseTypeId?: string | null;
   page?: number;
   limit?: number;
 }) {
@@ -342,23 +221,23 @@ async findPortfolio(options?: {
     where.user = { id: options.userId };
   }
 
-  if (options?.kategoriId) {
-    where.kelas = {
-      ...where.kelas,
-      kategori: { id: options.kategoriId }
+  if (options?.categoryId) {
+    where.course = {
+      ...where.course,
+      category: { id: options.categoryId }
     };
   }
 
-  if (options?.jenisKelasId) {
-    where.kelas = {
-      ...where.kelas,
-      jenis_kelas: { id: options.jenisKelasId }
+  if (options?.courseTypeId) {
+    where.course = {
+      ...where.course,
+      courseType: { id: options.courseTypeId }
     };
   }
 
   const [data, total] = await this.portfolioRepository.findAndCount({
     where,
-    relations: ['kelas', 'kelas.kategori', 'kelas.jenis_kelas', 'user'],
+    relations: ['course', 'course.category', 'course.courseType', 'user'],
     skip,
     take: limit,
   });
@@ -368,9 +247,9 @@ async findPortfolio(options?: {
 
 
 async findAlumni(options?: {
-  kelasId?: string | null;
+  courseId?: string | null;
   search?: string | null;
-  kategoriId?: string | null; 
+  categoryId?: string | null; 
   page?: number;
   limit?: number;
 }) {
@@ -386,28 +265,33 @@ async findAlumni(options?: {
     .skip(skip)
     .take(limit);
 
-  // Logika filter kelas atau kategori global
-  if (options?.kelasId) {
-    qb.andWhere('kelas.id = :kelasId', { kelasId: options.kelasId });
-  } else if (options?.kategoriId) {
-    qb.andWhere('kategori.id = :kategoriId', { kategoriId: options.kategoriId });
+    const where: any = {};
+
+  // Logika filter course atau category global
+  if (options?.courseId) {
+    where.course = { id: options.courseId };
+  } else if (options?.categoryId) {
+    where.course = { category: { id: options.categoryId } };
+  }
+ if (options?.search && options.search.trim() !== '') {
+    const keyword = `%${options.search.trim()}%`;
+    where.nama = ILike(keyword);
   }
 
-  // `nama` disimpan sebagai jsonb, jadi cast ke text lalu cari case-insensitive
-  if (options?.search && options.search.trim() !== '') {
-    qb.andWhere('LOWER(alumni.nama::text) LIKE :kw', {
-      kw: `%${options.search.trim().toLowerCase()}%`,
-    });
-  }
-
-  const [data, total] = await qb.getManyAndCount();
+  const [data, total] = await this.alumniRepository.findAndCount({
+    where,
+    relations: ['course', 'course.category'],
+    order: { createdAt: 'DESC' },
+    skip,
+    take: limit,
+  });
 
   return { data, total };
 }
 
   async findAllAlumni() {
     return await this.alumniRepository.find({
-      relations: ['kelas'],
+      relations: ['course'],
       order: { createdAt: 'DESC' },
       take: 6,
     });
@@ -415,14 +299,14 @@ async findAlumni(options?: {
 
   // async findPortfolio() {
   //   return await this.portfolioRepository.find({
-  //     relations: ['kelas', 'kelas.kategori', 'kelas.jenis_kelas', 'user'],
+  //     relations: ['course', 'course.category', 'course.courseType', 'user'],
   //   });
   // }
 
   async findOnePortfolio(portfolioId: number) {
     return await this.portfolioRepository.findOne({
       where: { id: portfolioId },
-      relations: ['kelas', 'kelas.kategori', 'kelas.teknologi', 'user'],
+      relations: ['course', 'course.category', 'course.technologies', 'user'],
     });
   }
 
@@ -432,22 +316,21 @@ async findAlumni(options?: {
 
   // async findAlumni() {
   //   return await this.alumniRepository.find({
-  //     relations: ['kelas'],
+  //     relations: ['course'],
   //     order: { createdAt: 'DESC' },
   //     take: 6,
   //   });
   // }
 
-  async findKerjaSama() {
-    return await this.PartnerRepository.find({
-      relations: ['categoryPartner'],
+  async findCollaborations() {
+    return await this.collaborationRepository.find({
       order: { createdAt: 'ASC' },
     });
   }
 
   async findTeam() {
     return await this.teamRepository.find({
-      order: { team_ke: 'ASC' },
+      order: { teamOrder: 'ASC' },
     });
   }
 
@@ -456,20 +339,24 @@ async findAlumni(options?: {
   }
 
   async findSpecialProgram() {
-    return await this.kategoriRepository.find({
+    return await this.categoryRepository.find({
       where: { type: 'Special Program' },
     });
   }
 
-  async findOneKategori(kategoriName: string) {
-    return await this.kategoriRepository.findOne({
-      where: { nama_kategori: kategoriName },
-      relations: ['kelas', 'alumni', 'pertanyaan_umum'],
+  async findOneCategory(kategoriName: string) {
+    return await this.categoryRepository.findOne({
+      where: { name: kategoriName },
+      relations: ['courses', 'courses.alumni', 'faqs'],
     });
   }
 
-  async findKategori() {
-    return await this.kategoriRepository.find();
+  async findCategories() {
+    return await this.categoryRepository.find();
+  }
+
+  async findAllBenefits() {
+    return await this.benefitRepository.find({ order: { no: 'ASC' } });
   }
 
   async findBenefit1() {
@@ -484,27 +371,23 @@ async findAlumni(options?: {
     return await this.benefitRepository.findOne({ where: { no: 3 } });
   }
 
-  async findBenefits() {
-    return await this.benefitRepository.find({ order: { no: 'ASC' } });
+  async findCourseTypes() {
+    return await this.courseTypeRepository.find();
   }
 
-  async findJenisKelas() {
-    return await this.jenisKelasRepository.find();
+  async findImage1() {
+    return await this.imageBenefitRepository.findOne({ where: { no: 1 } });
   }
 
-  async findGambar1() {
-    return await this.gambarBenefitRepository.findOne({ where: { no: 1 } });
+  async findImage2() {
+    return await this.imageBenefitRepository.findOne({ where: { no: 2 } });
   }
 
-  async findGambar2() {
-    return await this.gambarBenefitRepository.findOne({ where: { no: 2 } });
+  async findImage3() {
+    return await this.imageBenefitRepository.findOne({ where: { no: 3 } });
   }
 
-  async findGambar3() {
-    return await this.gambarBenefitRepository.findOne({ where: { no: 3 } });
-  }
-
-  async findGambar4() {
-    return await this.gambarBenefitRepository.findOne({ where: { no: 4 } });
+  async findImage4() {
+    return await this.imageBenefitRepository.findOne({ where: { no: 4 } });
   }
 }

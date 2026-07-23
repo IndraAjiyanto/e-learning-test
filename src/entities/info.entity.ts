@@ -12,7 +12,7 @@ export class Info {
   id: number;
 
   @Column('jsonb', { nullable: true })
-  judul: string[];
+  title: string[];
 
   @Column('jsonb', { nullable: true })
   text: string[];

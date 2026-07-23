@@ -13,22 +13,22 @@
 
         // Form validation states
         formData: {
-          nama: { id: '', en: '', ja: '' },
-          pesan: { id: '', en: '', ja: '' },
-          alumni: { id: '', en: '', ja: '' },
-          posisi_sekarang: { id: '', en: '', ja: '' }
+          name: { id: '', en: '', ja: '' },
+          message: { id: '', en: '', ja: '' },
+          program: { id: '', en: '', ja: '' },
+          currentPosition: { id: '', en: '', ja: '' }
         },
         formErrors: {
-          nama: { id: '', en: '', ja: '' },
-          pesan: { id: '', en: '', ja: '' },
-          alumni: { id: '', en: '', ja: '' },
-          posisi_sekarang: { id: '', en: '', ja: '' }
+          name: { id: '', en: '', ja: '' },
+          message: { id: '', en: '', ja: '' },
+          program: { id: '', en: '', ja: '' },
+          currentPosition: { id: '', en: '', ja: '' }
         },
         formValid: {
-          nama: { id: false, en: false, ja: false },
-          pesan: { id: false, en: false, ja: false },
-          alumni: { id: false, en: false, ja: false },
-          posisi_sekarang: { id: false, en: false, ja: false }
+          name: { id: false, en: false, ja: false },
+          message: { id: false, en: false, ja: false },
+          program: { id: false, en: false, ja: false },
+          currentPosition: { id: false, en: false, ja: false }
         },
 
         validateImage(file) {
@@ -97,55 +97,55 @@
           this.formData[field][lang] = value;
           
           switch(field) {
-            case 'nama':
+            case 'name':
               if (!value.trim()) {
-                this.formErrors.nama[lang] = 'Name is required';
-                this.formValid.nama[lang] = false;
+                this.formErrors.name[lang] = 'Name is required';
+                this.formValid.name[lang] = false;
               } else if (value.trim().length < 2) {
-                this.formErrors.nama[lang] = 'Name must be at least 2 characters';
-                this.formValid.nama[lang] = false;
+                this.formErrors.name[lang] = 'Name must be at least 2 characters';
+                this.formValid.name[lang] = false;
               } else {
-                this.formErrors.nama[lang] = '';
-                this.formValid.nama[lang] = true;
+                this.formErrors.name[lang] = '';
+                this.formValid.name[lang] = true;
               }
               break;
               
-            case 'pesan':
+            case 'message':
               if (!value.trim()) {
-                this.formErrors.pesan[lang] = 'Message is required';
-                this.formValid.pesan[lang] = false;
+                this.formErrors.message[lang] = 'Message is required';
+                this.formValid.message[lang] = false;
               } else if (value.trim().length < 10) {
-                this.formErrors.pesan[lang] = 'Message must be at least 10 characters';
-                this.formValid.pesan[lang] = false;
+                this.formErrors.message[lang] = 'Message must be at least 10 characters';
+                this.formValid.message[lang] = false;
               } else {
-                this.formErrors.pesan[lang] = '';
-                this.formValid.pesan[lang] = true;
+                this.formErrors.message[lang] = '';
+                this.formValid.message[lang] = true;
               }
               break;
               
-            case 'alumni':
+            case 'program':
               if (!value.trim()) {
-                this.formErrors.alumni[lang] = 'Alumni status is required';
-                this.formValid.alumni[lang] = false;
+                this.formErrors.program[lang] = 'Alumni status is required';
+                this.formValid.program[lang] = false;
               } else if (value.trim().length < 2) {
-                this.formErrors.alumni[lang] = 'Alumni status must be at least 2 characters';
-                this.formValid.alumni[lang] = false;
+                this.formErrors.program[lang] = 'Alumni status must be at least 2 characters';
+                this.formValid.program[lang] = false;
               } else {
-                this.formErrors.alumni[lang] = '';
-                this.formValid.alumni[lang] = true;
+                this.formErrors.program[lang] = '';
+                this.formValid.program[lang] = true;
               }
               break;
               
-            case 'posisi_sekarang':
+            case 'currentPosition':
               if (!value.trim()) {
-                this.formErrors.posisi_sekarang[lang] = 'Current position is required';
-                this.formValid.posisi_sekarang[lang] = false;
+                this.formErrors.currentPosition[lang] = 'Current position is required';
+                this.formValid.currentPosition[lang] = false;
               } else if (value.trim().length < 2) {
-                this.formErrors.posisi_sekarang[lang] = 'Current position must be at least 2 characters';
-                this.formValid.posisi_sekarang[lang] = false;
+                this.formErrors.currentPosition[lang] = 'Current position must be at least 2 characters';
+                this.formValid.currentPosition[lang] = false;
               } else {
-                this.formErrors.posisi_sekarang[lang] = '';
-                this.formValid.posisi_sekarang[lang] = true;
+                this.formErrors.currentPosition[lang] = '';
+                this.formValid.currentPosition[lang] = true;
               }
               break;
           }
@@ -165,25 +165,25 @@
 
         canSubmit() {
           const imageValid = this.hasFile && this.isValid;
-          const namaValid = Object.values(this.formValid.nama).every(v => v);
-          const pesanValid = Object.values(this.formValid.pesan).every(v => v);
-          const alumniValid = Object.values(this.formValid.alumni).every(v => v);
-          const posisiValid = Object.values(this.formValid.posisi_sekarang).every(v => v);
+          const namaValid = Object.values(this.formValid.name).every(v => v);
+          const pesanValid = Object.values(this.formValid.message).every(v => v);
+          const alumniValid = Object.values(this.formValid.program).every(v => v);
+          const posisiValid = Object.values(this.formValid.currentPosition).every(v => v);
           return imageValid && namaValid && pesanValid && alumniValid && posisiValid;
         },
 
         hasFormErrors() {
-          return Object.values(this.formErrors.nama).some(e => e !== '') || 
-                 Object.values(this.formErrors.pesan).some(e => e !== '') ||
-                 Object.values(this.formErrors.alumni).some(e => e !== '') ||
-                 Object.values(this.formErrors.posisi_sekarang).some(e => e !== '');
+          return Object.values(this.formErrors.name).some(e => e !== '') || 
+                 Object.values(this.formErrors.message).some(e => e !== '') ||
+                 Object.values(this.formErrors.program).some(e => e !== '') ||
+                 Object.values(this.formErrors.currentPosition).some(e => e !== '');
         }
       }"
   >
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create Alumni</h2>
 
     <form
-      action='/alumni/{{kelasId}}'
+      action='/alumni/{{courseId}}'
       method='post'
       class='space-y-6'
       enctype='multipart/form-data'
@@ -213,7 +213,7 @@
         <span x-show="!loading">Create</span>
         </button>
         <a
-          href='/program/detail/program/admin/{{kelasId}}'
+          href='/program/detail/program/admin/{{courseId}}'
           :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>

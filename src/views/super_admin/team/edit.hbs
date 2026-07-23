@@ -16,33 +16,33 @@
 
         // Form validation states
         formData: {
-          nama: `{{team.nama}}`,
-          posisi: {
-          id: `{{team.posisi.id}}`,
-          en: `{{team.posisi.en}}`,
-          ja: `{{team.posisi.ja}}`
+          name: `{{team.name}}`,
+          position: {
+          id: `{{team.position.id}}`,
+          en: `{{team.position.en}}`,
+          ja: `{{team.position.ja}}`
           },
           linkedin: `{{team.linkedin}}`,
           instagram: `{{team.instagram}}`,
-          deskripsi: { 
-            id: `{{team.deskripsi.id}}`, 
-            en: `{{team.deskripsi.en}}`, 
-            ja: `{{team.deskripsi.ja}}` 
+          description: { 
+            id: `{{team.description.id}}`, 
+            en: `{{team.description.en}}`, 
+            ja: `{{team.description.ja}}` 
           }
         },
         formErrors: {
-          nama: '',
-          posisi: { id: '', en: '', ja: '' },
+          name: '',
+          position: { id: '', en: '', ja: '' },
           linkedin: '',
           instagram: '',
-          deskripsi: { id: '', en: '', ja: '' }
+          description: { id: '', en: '', ja: '' }
         },
         formValid: {
-          nama: true,
-          posisi: { id: false, en: false, ja: false },
+          name: true,
+          position: { id: false, en: false, ja: false },
           linkedin: true,
           instagram: true,
-          deskripsi: { id: true, en: true, ja: true }
+          description: { id: true, en: true, ja: true }
         },
 
         validateImage(file) {
@@ -150,29 +150,29 @@
           }
           
           switch(field) {
-            case 'nama':
+            case 'name':
               if (!value.trim()) {
-                this.formErrors.nama = 'Name is required';
-                this.formValid.nama = false;
+                this.formErrors.name = 'Name is required';
+                this.formValid.name = false;
               } else if (value.trim().length < 2) {
-                this.formErrors.nama = 'Name must be at least 2 characters';
-                this.formValid.nama = false;
+                this.formErrors.name = 'Name must be at least 2 characters';
+                this.formValid.name = false;
               } else {
-                this.formErrors.nama = '';
-                this.formValid.nama = true;
+                this.formErrors.name = '';
+                this.formValid.name = true;
               }
               break;
               
-            case 'posisi':
+            case 'position':
               if (!value.trim()) {
-                this.formErrors.posisi[lang] = 'Position is required';
-                this.formValid.posisi[lang] = false;
+                this.formErrors.position[lang] = 'Position is required';
+                this.formValid.position[lang] = false;
               } else if (value.trim().length < 2) {
-                this.formErrors.posisi[lang] = 'Position must be at least 2 characters';
-                this.formValid.posisi[lang] = false;
+                this.formErrors.position[lang] = 'Position must be at least 2 characters';
+                this.formValid.position[lang] = false;
               } else {
-                this.formErrors.posisi[lang] = '';
-                this.formValid.posisi[lang] = true;
+                this.formErrors.position[lang] = '';
+                this.formValid.position[lang] = true;
               }
               break;
               
@@ -197,9 +197,9 @@
               this.formValid.instagram = true;
               break;
               
-            case 'deskripsi':
-              this.formErrors.deskripsi[lang] = '';
-              this.formValid.deskripsi[lang] = true;
+            case 'description':
+              this.formErrors.description[lang] = '';
+              this.formValid.description[lang] = true;
               break;
           }
         },
@@ -217,14 +217,14 @@
 
         canSubmit() {
           const imageValid = !this.hasFile || this.isValid;
-          const posisiValid = Object.values(this.formValid.posisi).every(v => v);
-          const formValid = this.formValid.nama && posisiValid && this.formValid.linkedin;
+          const posisiValid = Object.values(this.formValid.position).every(v => v);
+          const formValid = this.formValid.name && posisiValid && this.formValid.linkedin;
           return imageValid && formValid;
         },
 
         hasFormErrors() {
-          const posisiErrors = Object.values(this.formErrors.posisi).some(e => e !== '');
-          const otherErrors = this.formErrors.nama !== '' || posisiErrors || 
+          const posisiErrors = Object.values(this.formErrors.position).some(e => e !== '');
+          const otherErrors = this.formErrors.name !== '' || posisiErrors || 
                              this.formErrors.linkedin !== '';
           return otherErrors;
         },

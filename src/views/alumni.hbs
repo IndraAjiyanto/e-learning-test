@@ -47,7 +47,7 @@ function alumniApp() {
     selectedKategoriId: {{#if kategoriId}}{{kategoriId}}{{else}}null{{/if}},
    kategoriList: {{#if kategoriList}}{{{json kategoriList}}}{{else}}[]{{/if}},
 
-    kelasList: {{#if kelas}}{{{json kelas}}}{{else}}[]{{/if}},
+    kelasList: {{#if course}}{{{json course}}}{{else}}[]{{/if}},
     filteredKelasList: [],
 
     selectedKelas: '',
@@ -63,14 +63,14 @@ function alumniApp() {
 
     async init() {
       this.kelasList = this.kelasList.sort((a, b) =>
-        (a.nama_kelas || '').localeCompare(b.nama_kelas || '')
+        (a.name || '').localeCompare(b.name || '')
       );
        this.filterKelasByKategori();
       await this.fetchAlumni();
     },
     filterKelasByKategori() {
       if (this.selectedKategoriId) {
-        this.filteredKelasList = this.kelasList.filter(k =>  k.kategori?.id  == this.selectedKategoriId);
+        this.filteredKelasList = this.kelasList.filter(k =>  k.category?.id  == this.selectedKategoriId);
       } else {
         this.filteredKelasList = [...this.kelasList];
            }
@@ -102,10 +102,10 @@ function alumniApp() {
     filterPrograms() {
       const query = this.searchQuery.toLowerCase().trim();
        const baseList = this.selectedKategoriId 
-        ? this.kelasList.filter(k => k.kategori?.id == this.selectedKategoriId)
+        ? this.kelasList.filter(k => k.category?.id == this.selectedKategoriId)
         : this.kelasList;
          this.filteredKelasList = query
-        ? baseList.filter(k => k.nama_kelas.toLowerCase().includes(query))
+        ? baseList.filter(k => k.name.toLowerCase().includes(query))
         : [...baseList];
     },
 
@@ -125,7 +125,7 @@ function alumniApp() {
       params.set('kelas_id', this.selectedKelasId);
     }
     
-    // 3. Parameter Kategori ID (Selalu dikirim agar backend tahu kategori aktif saat ini)
+    // 3. Parameter Kategori ID (Selalu dikirim agar backend tahu category aktif saat ini)
     if (this.selectedKategoriId) {
       params.set('kategori_id', this.selectedKategoriId);
     }
@@ -151,12 +151,8 @@ function alumniApp() {
       this.currentPage = 1;
 
       if (kelasId) {
-        const kelas = this.kelasList.find(k => k.id == kelasId);
-        this.selectedKelas = kelas ? kelas.nama_kelas : '';
-        // Auto-set kategori berdasarkan kategori program yang dipilih
-        if (kelas && kelas.kategori) {
-          this.selectedKategoriId = kelas.kategori.id;
-        }
+        const course = this.kelasList.find(k => k.id == kelasId);
+        this.selectedKelas = course ? course.name : '';
       } else {
         this.selectedKelas = '';
         // Jika program dihapus, keep kategori tetap aktif
@@ -179,7 +175,7 @@ function alumniApp() {
     },
 
     getKelasName(alumni) {
-      return alumni.kelas?.nama_kelas || 'Unknown';
+      return alumni.course?.name || 'Unknown';
     }
   };
 }

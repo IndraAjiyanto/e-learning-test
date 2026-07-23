@@ -2,8 +2,8 @@
                     <!-- Mentoring -->
                     <div
                       x-data="{
-                        search: '{{#if kelas.mentoring.[0].user}}{{kelas.mentoring.[0].user.username}}{{/if}}',
-                        selectedMentoring: {{#if kelas.mentoring.[0].user}}{{json kelas.mentoring.[0].user}}{{else}}null{{/if}},
+                        search: '{{#if course.mentoring.[0].user}}{{course.mentoring.[0].user.username}}{{/if}}',
+                        selectedMentoring: {{#if course.mentoring.[0].user}}{{json course.mentoring.[0].user}}{{else}}null{{/if}},
                         showDropdown: false,
                         availableMentoring: {{json mentoring}},
                         get filteredMentoring() {

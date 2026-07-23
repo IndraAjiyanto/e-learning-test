@@ -1,0 +1,104 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Res,
+  Req,
+} from '@nestjs/common';
+import { VisionsService } from './visions.service';
+import { CreateVisionsDto as CreateVisionsDto } from './dto/create-vision.dto';
+import { UpdateVisionsDto as UpdateVisionsDto } from './dto/update-vision.dto';
+import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Request, Response } from 'express';
+
+@UseGuards(AuthenticatedGuard)
+@Controller('vision')
+export class VisionsController {
+  constructor(private readonly visionService: VisionsService) {}
+
+  @Roles('super_admin')
+  @Post()
+  async create(
+    @Body() createVisionDto: CreateVisionsDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.visionService.create(createVisionDto);
+
+      req.flash('success', 'visions successfully created');
+      res.redirect('/vision');
+    } catch (error: any) {
+      req.flash('error', error.message || 'vision failed to create');
+      res.redirect('/vision');
+    }
+  }
+
+  @Roles('super_admin')
+  @Get()
+  async findAll(@Res() res: Response, @Req() req: Request) {
+    const vision = await this.visionService.findAll();
+    res.render('super_admin/visions/index', {
+      user: req.user,
+      visions: vision,
+    });
+  }
+
+  @Roles('super_admin')
+  @Get('formCreate')
+  async formCreate(@Res() res: Response, @Req() req: Request) {
+    res.render('super_admin/visions/create', { user: req.user });
+  }
+
+  @Roles('super_admin')
+  @Get('formEdit/:visionsId')
+  async findOne(
+    @Param('visionsId') visionId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const vision = await this.visionService.findOne(visionId);
+    res.render('super_admin/visions/edit', { user: req.user, vision });
+  }
+
+  @Roles('super_admin')
+  @Patch(':visionsId')
+  async update(
+    @Param('visionsId') visionId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+    @Body() updateVisionDto: UpdateVisionsDto,
+  ) {
+    try {
+      await this.visionService.update(visionId, updateVisionDto);
+      req.flash('success', 'visions successfully updated');
+      res.redirect('/vision');
+    } catch (error: any) {
+      req.flash('error', error.message || 'visions failed to update');
+      res.redirect('/vision');
+    }
+  }
+
+  @Roles('super_admin')
+  @Delete(':visionsId')
+  async remove(
+    @Param('visionsId') visionId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    try {
+      await this.visionService.remove(visionId);
+      req.flash('success', 'visions successfully remove');
+      res.redirect('/vision');
+    } catch (error: any) {
+      req.flash('error', error.message || 'visions failed to remove');
+      res.redirect('/vision');
+    }
+  }
+}

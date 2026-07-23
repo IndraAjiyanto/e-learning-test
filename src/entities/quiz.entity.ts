@@ -1,4 +1,4 @@
-import {
+import { JoinColumn,
   Column,
   CreateDateColumn,
   Entity,
@@ -7,10 +7,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Pertanyaan } from './pertanyaan.entity';
-import { Nilai } from './nilai.entity';
-import { Minggu } from './minggu.entity';
-import { ProgresQuiz } from './progres_quiz.entity';
+import { Question } from './question.entity';
+import { Score } from './score.entity';
+import { Weeks } from './weeks.entity';
+import { QuizProgress } from './quiz_progress.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
@@ -18,14 +18,14 @@ export class Quiz {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  nama_quiz: string;
+  @Column({ name: 'quiz_name' })
+  quizName: string;
 
-  @Column()
-  nilai_minimal: number;
+  @Column({ name: 'minimum_score' })
+  minScore: number;
 
-  @Column({ type: 'int' })
-  durasi: number;
+  @Column({ name: 'duration', type: 'int' })
+  duration: number;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -33,28 +33,28 @@ export class Quiz {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Pertanyaan, (pertanyaan) => pertanyaan.quiz, {
+  @OneToMany(() => Question, (question) => question.quiz, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  pertanyaan: Pertanyaan[];
+  questions: Question[];
 
-  @OneToMany(() => Nilai, (nilai) => nilai.quiz, {
+  @OneToMany(() => Score, (score) => score.quiz, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  nilai: Nilai[];
+  scores: Score[];
 
-  @OneToMany(() => ProgresQuiz, (progres_quiz) => progres_quiz.quiz, {
+  @OneToMany(() => QuizProgress, (quizProgress) => quizProgress.quiz, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @Exclude()
-  progres_quiz: ProgresQuiz[];
+  quizProgresses: QuizProgress[];
 
-  @ManyToOne(() => Minggu, (minggu) => minggu.quiz, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Weeks, (week) => week.quiz, { onDelete: 'CASCADE' })
   @Exclude()
-  minggu: Minggu;
+  weeks: Weeks;
 }

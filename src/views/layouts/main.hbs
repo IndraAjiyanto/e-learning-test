@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  {{#if blog.judul}}
-  <title>{{blog.judul}}</title>
-  <meta property="og:title" content="{{blog.judul}}" />
+  {{#if blog.title}}
+  <title>{{blog.title}}</title>
+  <meta property="og:title" content="{{blog.title}}" />
   <meta property="og:description" content="{{blog.isi}}" />
   <meta property="og:url" content="https://e-learning.inndra.me/blog/detail/{{blog.id}}" />
   <meta property="og:type" content="article" />
-  <meta property="og:image" content="{{blog.gambar.[0]}}" />
+  <meta property="og:image" content="{{blog.image.[0]}}" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="{{blog.judul}}" />
+  <meta name="twitter:title" content="{{blog.title}}" />
   <meta name="twitter:description" content="{{blog.isi}}" />
-  <meta name="twitter:image" content="{{blog.gambar.[0]}}" />
+  <meta name="twitter:image" content="{{blog.image.[0]}}" />
   {{else}}
   <title>Kesatria Academy</title>
   {{/if}}

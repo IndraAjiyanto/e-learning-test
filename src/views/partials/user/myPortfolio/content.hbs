@@ -30,7 +30,7 @@
             x-data='{ currentSlide: 0, autoSlide: null }'
             x-init="
                             // Handle multiple images
-                            const images = Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'];
+                            const images = Array.isArray(item.image) ? item.image : [item.image || 'https://via.placeholder.com/400x300?text=No+Image'];
                             // Auto slide jika ada lebih dari 1 gambar
                             if (images.length > 1) {
                                 autoSlide = setInterval(() => { 
@@ -39,7 +39,7 @@
                             }
                         "
             @mouseenter='if (autoSlide) clearInterval(autoSlide)'
-            @mouseleave='if (Array.isArray(item.gambar) && item.gambar.length > 1) autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1) }, 3000)'
+            @mouseleave='if (Array.isArray(item.image) && item.image.length > 1) autoSlide = setInterval(() => { currentSlide = (currentSlide + 1) % (Array.isArray(item.image) ? item.image.length : 1) }, 3000)'
           >
 
             <div
@@ -49,12 +49,12 @@
               <div class='relative overflow-hidden rounded-t-xl'>
                 <div class='relative h-44 w-full'>
                   <template
-                    x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar || 'https://via.placeholder.com/400x300?text=No+Image'])"
+                    x-for="(image, index) in (Array.isArray(item.image) ? item.image : [item.image || 'https://via.placeholder.com/400x300?text=No+Image'])"
                     :key='index'
                   >
                     <img
                       :src='image'
-                      :alt="item.judul + ' - Image ' + (index + 1)"
+                      :alt="item.title + ' - Image ' + (index + 1)"
                       class='absolute inset-0 w-full h-44 object-cover transition-opacity duration-500'
                       :class="{ 'opacity-100': currentSlide === index, 'opacity-0': currentSlide !== index }"
                     />
@@ -63,11 +63,11 @@
 
                 <!-- Navigation Buttons (jika ada lebih dari 1 gambar) -->
                 <template
-                  x-if='Array.isArray(item.gambar) && item.gambar.length > 1'
+                  x-if='Array.isArray(item.image) && item.image.length > 1'
                 >
                   <div>
                     <button
-                      @click='currentSlide = currentSlide === 0 ? (Array.isArray(item.gambar) ? item.gambar.length : 1) - 1 : currentSlide - 1'
+                      @click='currentSlide = currentSlide === 0 ? (Array.isArray(item.image) ? item.image.length : 1) - 1 : currentSlide - 1'
                       class='absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
                     >
                       <svg
@@ -85,7 +85,7 @@
                       </svg>
                     </button>
                     <button
-                      @click='currentSlide = (currentSlide + 1) % (Array.isArray(item.gambar) ? item.gambar.length : 1)'
+                      @click='currentSlide = (currentSlide + 1) % (Array.isArray(item.image) ? item.image.length : 1)'
                       class='absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 z-10'
                     >
                       <svg
@@ -109,18 +109,18 @@
                 <div
                   class='absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-800 text-xs px-3 py-1 rounded-md shadow-md'
                 >
-                  <span x-text="item.kelas?.nama_kelas || 'No Class'"></span>
+                  <span x-text="item.course?.name || 'No Class'"></span>
                 </div>
 
                 <!-- Dots Indicator (jika ada lebih dari 1 gambar) -->
                 <template
-                  x-if='Array.isArray(item.gambar) && item.gambar.length > 1'
+                  x-if='Array.isArray(item.image) && item.image.length > 1'
                 >
                   <div
                     class='absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2'
                   >
                     <template
-                      x-for='(image, index) in item.gambar'
+                      x-for='(image, index) in item.image'
                       :key='index'
                     >
                       <button
@@ -150,19 +150,19 @@
 
                 <h3
                   class='text-lg font-semibold text-gray-900 leading-tight'
-                  x-text="item.judul || 'No Title'"
+                  x-text="item.title || 'No Title'"
                 ></h3>
 
                 <p
                   class='text-gray-600 text-sm'
-                  x-text="item.deskripsi ? (item.deskripsi.length > 100 ? item.deskripsi.substring(0, 100) + '...' : item.deskripsi) : 'No description'"
+                  x-text="item.description ? (item.description.length > 100 ? item.description.substring(0, 100) + '...' : item.description) : 'No description'"
                 ></p>
 
                 <div
                   class='flex flex-wrap gap-2'
-                  x-show='item.teknologi && item.teknologi.length > 0'
+                  x-show='item.technologies && item.technologies.length > 0'
                 >
-                  <template x-for='tech in item.teknologi' :key='tech'>
+                  <template x-for='tech in item.technologies' :key='tech'>
                     <span
                       class='px-3 py-1 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:from-gray-100 hover:to-gray-200 transition-all'
                       x-text='tech'

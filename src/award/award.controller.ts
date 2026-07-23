@@ -30,7 +30,7 @@ export class AwardController {
     @Req() req: Request,
   ) {
     try {
-      createAwardDto.award_ke = await this.awardService.noAward();
+      createAwardDto.award_order = await this.awardService.noAward();
       await this.awardService.create(createAwardDto);
       req.flash('success', 'award successfully created');
       res.redirect('/award');

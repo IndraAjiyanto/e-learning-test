@@ -10,29 +10,29 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>ID</label>
             <textarea
-              x-model='formData.jawaban.id'
-              @input='validateField("jawaban", $event.target.value, "id")'
-              name='jawaban[id]'
+              x-model='formData.answer.id'
+              @input='validateField("answer", $event.target.value, "id")'
+              name='answer[id]'
               rows='5'
               required
               maxlength='1000'
-              :class="formErrors.jawaban.id ? 'border-red-500 focus:ring-red-500' : (formValid.jawaban.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.answer.id ? 'border-red-500 focus:ring-red-500' : (formValid.answer.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 resize-none'
               placeholder='Jawaban (ID)'
             ></textarea>
-            <template x-if='formErrors.jawaban.id'>
+            <template x-if='formErrors.answer.id'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.jawaban.id'
+                  x-text='formErrors.answer.id'
                 ></p>
               </div>
             </template>
             <template
-              x-if='formTouched.jawaban.id && formValid.jawaban.id && !formErrors.jawaban.id'
+              x-if='formTouched.answer.id && formValid.answer.id && !formErrors.answer.id'
             >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
@@ -47,29 +47,29 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>EN</label>
             <textarea
-              x-model='formData.jawaban.en'
-              @input='validateField("jawaban", $event.target.value, "en")'
-              name='jawaban[en]'
+              x-model='formData.answer.en'
+              @input='validateField("answer", $event.target.value, "en")'
+              name='answer[en]'
               rows='5'
               required
               maxlength='1000'
-              :class="formErrors.jawaban.en ? 'border-red-500 focus:ring-red-500' : (formValid.jawaban.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.answer.en ? 'border-red-500 focus:ring-red-500' : (formValid.answer.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 resize-none'
               placeholder='Answer (EN)'
             ></textarea>
-            <template x-if='formErrors.jawaban.en'>
+            <template x-if='formErrors.answer.en'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.jawaban.en'
+                  x-text='formErrors.answer.en'
                 ></p>
               </div>
             </template>
             <template
-              x-if='formTouched.jawaban.en && formValid.jawaban.en && !formErrors.jawaban.en'
+              x-if='formTouched.answer.en && formValid.answer.en && !formErrors.answer.en'
             >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
@@ -84,29 +84,29 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>JP</label>
             <textarea
-              x-model='formData.jawaban.ja'
-              @input='validateField("jawaban", $event.target.value, "ja")'
-              name='jawaban[ja]'
+              x-model='formData.answer.ja'
+              @input='validateField("answer", $event.target.value, "ja")'
+              name='answer[ja]'
               rows='5'
               required
               maxlength='1000'
-              :class="formErrors.jawaban.ja ? 'border-red-500 focus:ring-red-500' : (formValid.jawaban.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.answer.ja ? 'border-red-500 focus:ring-red-500' : (formValid.answer.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 resize-none'
               placeholder='回答 (JA)'
             ></textarea>
-            <template x-if='formErrors.jawaban.ja'>
+            <template x-if='formErrors.answer.ja'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.jawaban.ja'
+                  x-text='formErrors.answer.ja'
                 ></p>
               </div>
             </template>
             <template
-              x-if='formTouched.jawaban.ja && formValid.jawaban.ja && !formErrors.jawaban.ja'
+              x-if='formTouched.answer.ja && formValid.answer.ja && !formErrors.answer.ja'
             >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'

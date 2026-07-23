@@ -2,11 +2,11 @@ import { IsString } from 'class-validator';
 
 export class UpdatePasswordDto {
   @IsString()
-  password_lama: string;
+  currentPassword: string;
 
   @IsString()
-  password_baru: string;
+  newPassword: string;
 
   @IsString()
-  confirm_password: string;
+  confirmPassword: string;
 }

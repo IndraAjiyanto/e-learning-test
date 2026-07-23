@@ -1,14 +1,42 @@
-        <div>
+        <div class='space-y-2'>
           <label
             for='link_lokasi'
             class='block text-sm font-semibold text-gray-700 mb-1'
-          >Link Location</label>
+          >
+            <i class='fas fa-link text-blue-600 mr-2'></i>Link Location
+          </label>
           <input
-            type='text'
+            type='url'
             id='link_lokasi'
             name='link_lokasi'
-            placeholder='Enter location link'
+            x-model='formData.link_lokasi'
+            @input='validateField("link_lokasi", $event.target.value)'
+            placeholder='https://example.com/...'
             required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            :class="formErrors.link_lokasi ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.link_lokasi ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
           />
+
+          <!-- Error Message -->
+          <template x-if='formErrors.link_lokasi'>
+            <div
+              class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <p
+                class='text-xs text-red-700'
+                x-text='formErrors.link_lokasi'
+              ></p>
+            </div>
+          </template>
+
+          <!-- Success Message -->
+          <template x-if='formValid.link_lokasi && !formErrors.link_lokasi'>
+            <div
+              class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500'></i>
+              <p class='text-xs text-green-700'>Valid link</p>
+            </div>
+          </template>
         </div>

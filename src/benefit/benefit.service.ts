@@ -58,14 +58,14 @@ export class BenefitService {
     }
 
       // Cek apakah no yang diinginkan sudah dipakai data lain
-  const benefit_no_used = await this.benefitRepository.findOne({
+  const no_used = await this.benefitRepository.findOne({
     where: { no: updateBenefitDto.no },
   });
 
   // Kalau sudah dipakai dan bukan data yang sama, swap nomor
-  if (benefit_no_used && benefit_no_used.id !== benefitId) {
-    benefit_no_used.no = benefit.no; // data lain ambil no lama
-    await this.benefitRepository.save(benefit_no_used);
+  if (no_used && no_used.id !== benefitId) {
+    no_used.no = benefit.no; // data lain ambil no lama
+    await this.benefitRepository.save(no_used);
   }
 
     Object.assign(benefit, updateBenefitDto);

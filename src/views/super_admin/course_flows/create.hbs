@@ -1,0 +1,99 @@
+<div class='py-10'>
+  <div
+    class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data="{
+        // Form validation states
+        formData: {
+          title: { id: '', en: '', ja: '' },
+          content: { id: '', en: '', ja: '' }
+        },
+        formErrors: {
+          title: { id: '', en: '', ja: '' },
+          content: { id: '', en: '', ja: '' }
+        },
+        formValid: {
+          title: { id: false, en: false, ja: false },
+          content: { id: false, en: false, ja: false }
+        },
+
+        validateField(field, lang, value) {
+          this.formData[field][lang] = value;
+          
+          switch(field) {
+            case 'title':
+              if (!value.trim()) {
+                this.formErrors.title[lang] = 'Title is required';
+                this.formValid.title[lang] = false;
+              } else if (value.trim().length < 3) {
+                this.formErrors.title[lang] = 'Title must be at least 3 characters';
+                this.formValid.title[lang] = false;
+              } else {
+                this.formErrors.title[lang] = '';
+                this.formValid.title[lang] = true;
+              }
+              break;
+              
+            case 'content':
+              if (!value.trim()) {
+                this.formErrors.content[lang] = 'Description is required';
+                this.formValid.content[lang] = false;
+              } else if (value.trim().length < 10) {
+                this.formErrors.content[lang] = 'Description must be at least 10 characters';
+                this.formValid.content[lang] = false;
+              } else {
+                this.formErrors.content[lang] = '';
+                this.formValid.content[lang] = true;
+              }
+              break;
+          }
+        },
+
+        canSubmit() {
+          return Object.values(this.formValid.title).every(v => v) && Object.values(this.formValid.content).every(v => v);
+        },
+
+        hasFormErrors() {
+          return Object.values(this.formErrors.title).some(e => e !== '') || Object.values(this.formErrors.content).some(e => e !== '');
+        }
+      }"
+  >
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create New Flow</h2>
+
+    <form
+      action='/flow-program/{{courseId}}'
+      method='post'
+      class='space-y-6'
+      x-data="{ loading: false }"
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix all validation errors before submitting.'); }"
+    >
+
+      <!-- Form Fields -->
+      <div class='space-y-6'>
+
+{{> super_admin/flow_program/create/tittle_input }}
+
+{{> super_admin/flow_program/create/description_input }}
+      </div>
+
+      <!-- Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='!canSubmit() || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
+        >
+          <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+          <span x-show="!loading">Create</span>
+        </button>
+        <a
+          href='/program/detail/program/admin/{{courseId}}'
+        :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -19,13 +19,13 @@ export class CommitmentService {
 
   async noCommitment() {
     const commitment_old = await this.commitmentRepository.find({
-      order: { commitment_ke: 'DESC' },
+      order: { commitment_order: 'DESC' },
       take: 1,
     });
     if (!commitment_old || commitment_old.length === 0) {
       return 0;
     }
-    const commitment_new = commitment_old[0].commitment_ke + 1;
+    const commitment_new = commitment_old[0].commitment_order + 1;
     return commitment_new;
   }
 
@@ -59,8 +59,8 @@ export class CommitmentService {
     await this.commitmentRepository.remove(commitment);
     const allCommitment = await this.commitmentRepository.find();
     for (const item of allCommitment) {
-      if (item.commitment_ke > commitment.commitment_ke) {
-        item.commitment_ke -= 1;
+      if (item.commitment_order > commitment.commitment_order) {
+        item.commitment_order -= 1;
         await this.commitmentRepository.save(item);
       }
     }

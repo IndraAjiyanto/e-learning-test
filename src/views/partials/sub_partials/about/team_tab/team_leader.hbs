@@ -19,7 +19,7 @@
                     class='text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 font-montserrat'
                   >
                     {{#if teamLead.[0]}}
-                      {{teamLead.[0].nama}}
+                      {{teamLead.[0].name}}
                     {{else}}
                       Faisal Wirakusuma, S.Kom., M.Sc
                     {{/if}}
@@ -30,7 +30,7 @@
                   class='text-slate-600 font-semibold mb-2 sm:mb-3 text-base sm:text-lg font-inter'
                 >
                   {{#if teamLead.[0]}}
-                    {{getByLang teamLead.[0].posisi lang}}
+                    {{getByLang teamLead.[0].position lang}}
                   {{else}}
                     Founder & Chief Executive Officer
                   {{/if}}
@@ -40,7 +40,7 @@
                                   <p
                   class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'
                 >
-                    {{getByLang teamLead.[0].deskripsi lang}}
+                    {{getByLang teamLead.[0].description lang}}
                 </p>
 
                   {{else}}

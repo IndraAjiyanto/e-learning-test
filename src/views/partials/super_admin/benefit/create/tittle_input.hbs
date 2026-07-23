@@ -7,20 +7,20 @@
           <!-- Indonesian -->
           <div class='space-y-1'>
             <label
-              for='judul_id'
+              for='title_id'
               class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
             >ID</label>
             <input
-              x-model='formData.judul.id'
-              @input='validateField("judul", "id", $event.target.value)'
+              x-model='formData.title.id'
+              @input='validateField("title", "id", $event.target.value)'
               type='text'
-              id='judul_id'
-              name='judul[id]'
+              id='title_id'
+              name='title[id]'
               placeholder='Judul benefit dalam bahasa Indonesia'
-              :class="formErrors.judul.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.title.id ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title.id ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             />
-            <template x-if='formErrors.judul.id'>
+            <template x-if='formErrors.title.id'>
               <div
                 class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
               >
@@ -29,11 +29,11 @@
                 ></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.judul.id'
+                  x-text='formErrors.title.id'
                 ></p>
               </div>
             </template>
-            <template x-if='formValid.judul.id && !formErrors.judul.id'>
+            <template x-if='formValid.title.id && !formErrors.title.id'>
               <div
                 class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
               >
@@ -46,20 +46,20 @@
           <!-- English -->
           <div class='space-y-1'>
             <label
-              for='judul_en'
+              for='title_en'
               class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
             >EN</label>
             <input
-              x-model='formData.judul.en'
-              @input='validateField("judul", "en", $event.target.value)'
+              x-model='formData.title.en'
+              @input='validateField("title", "en", $event.target.value)'
               type='text'
-              id='judul_en'
-              name='judul[en]'
+              id='title_en'
+              name='title[en]'
               placeholder='Benefit title in English'
-              :class="formErrors.judul.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.title.en ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title.en ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             />
-            <template x-if='formErrors.judul.en'>
+            <template x-if='formErrors.title.en'>
               <div
                 class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
               >
@@ -68,11 +68,11 @@
                 ></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.judul.en'
+                  x-text='formErrors.title.en'
                 ></p>
               </div>
             </template>
-            <template x-if='formValid.judul.en && !formErrors.judul.en'>
+            <template x-if='formValid.title.en && !formErrors.title.en'>
               <div
                 class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
               >
@@ -85,20 +85,20 @@
           <!-- Japanese -->
           <div class='space-y-1'>
             <label
-              for='judul_ja'
+              for='title_ja'
               class='block text-xs font-medium text-gray-600 uppercase tracking-wide'
             >JP</label>
             <input
-              x-model='formData.judul.ja'
-              @input='validateField("judul", "ja", $event.target.value)'
+              x-model='formData.title.ja'
+              @input='validateField("title", "ja", $event.target.value)'
               type='text'
-              id='judul_ja'
-              name='judul[ja]'
+              id='title_ja'
+              name='title[ja]'
               placeholder='ベネフィットのタイトル（日本語）'
-              :class="formErrors.judul.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.judul.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.title.ja ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.title.ja ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
             />
-            <template x-if='formErrors.judul.ja'>
+            <template x-if='formErrors.title.ja'>
               <div
                 class='flex items-start gap-1 p-1 bg-red-50 border border-red-300 rounded'
               >
@@ -107,11 +107,11 @@
                 ></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.judul.ja'
+                  x-text='formErrors.title.ja'
                 ></p>
               </div>
             </template>
-            <template x-if='formValid.judul.ja && !formErrors.judul.ja'>
+            <template x-if='formValid.title.ja && !formErrors.title.ja'>
               <div
                 class='flex items-center gap-1 p-1 bg-green-50 border border-green-300 rounded'
               >

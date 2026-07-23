@@ -7,10 +7,10 @@
                         <label for="deskripsi_id" class="block text-xs text-gray-600 my-2">ID</label>
                         <textarea
                           id="deskripsi_id"
-                          x-model="formData.deskripsi.id"
-                          @blur="validateField('deskripsi', 'id')"
+                          x-model="formData.description.id"
+                          @blur="validateField('description', 'id')"
                           rows="3"
-                          placeholder="Tulis deskripsi dalam bahasa Indonesia..."
+                          placeholder="Tulis description dalam bahasa Indonesia..."
                           class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
                         ></textarea>
                         <div id="deskripsi_id_error" class="hidden text-red-500 text-xs mt-1">Deskripsi bahasa Indonesia wajib diisi</div>
@@ -21,8 +21,8 @@
                         <label for="deskripsi_en" class="block text-xs text-gray-600 my-2">EN</label>
                         <textarea
                           id="deskripsi_en"
-                          x-model="formData.deskripsi.en"
-                          @blur="validateField('deskripsi', 'en')"
+                          x-model="formData.description.en"
+                          @blur="validateField('description', 'en')"
                           rows="3"
                           placeholder="Write description in English..."
                           class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
@@ -35,8 +35,8 @@
                         <label for="deskripsi_ja" class="block text-xs text-gray-600 my-2">JP</label>
                         <textarea
                           id="deskripsi_ja"
-                          x-model="formData.deskripsi.ja"
-                          @blur="validateField('deskripsi', 'ja')"
+                          x-model="formData.description.ja"
+                          @blur="validateField('description', 'ja')"
                           rows="3"
                           placeholder="日本語で説明を書いてください..."
                           class="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700"
@@ -45,7 +45,7 @@
                       </div>
                       
                       <!-- Hidden inputs for form submission -->
-                      <input type="hidden" name="deskripsi[id]" x-model="formData.deskripsi.id" />
-                      <input type="hidden" name="deskripsi[en]" x-model="formData.deskripsi.en" />
-                      <input type="hidden" name="deskripsi[ja]" x-model="formData.deskripsi.ja" />
+                      <input type="hidden" name="description[id]" x-model="formData.description.id" />
+                      <input type="hidden" name="description[en]" x-model="formData.description.en" />
+                      <input type="hidden" name="description[ja]" x-model="formData.description.ja" />
                     </div>

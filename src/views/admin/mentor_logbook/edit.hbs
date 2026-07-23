@@ -1,0 +1,240 @@
+<div class='py-10'>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl text-gray-900 font-semibold mb-6'>Edit Log Book</h2>
+
+    <form
+      action='/logbooks-mentor/{{mentor_logbook.id}}?_method=PATCH'
+      method='POST'
+      enctype='multipart/form-data'
+      class='space-y-6'
+      x-data="{
+      loading: false,
+        errorMessage: '',
+        isValid: true,
+        fileName: '',
+        fileSize: 0,
+        hasFile: false,
+        previewUrl: '{{mentor_logbook.documentation}}',
+        maxSize: 5 * 1024 * 1024,
+        allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+        allowedExtensions: ['.jpg', '.jpeg', '.png'],
+        validateFile(file) {
+          if (!file) {
+            this.hasFile = false;
+            this.previewUrl = '{{mentor_logbook.documentation}}';
+            return;
+          }
+          
+          this.hasFile = true;
+          this.fileName = file.name;
+          this.fileSize = file.size;
+          this.errorMessage = '';
+          this.isValid = true;
+          
+          // Validasi ukuran file
+          if (file.size > this.maxSize) {
+            this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum ${(this.maxSize / 1024 / 1024).toFixed(0)}MB`;
+            this.isValid = false;
+            this.previewUrl = '{{mentor_logbook.documentation}}';
+            return;
+          }
+          
+          // Validasi tipe file
+          if (!this.allowedTypes.includes(file.type)) {
+            this.errorMessage = `File type not allowed. Allowed: JPG, JPEG, PNG`;
+            this.isValid = false;
+            this.previewUrl = '{{mentor_logbook.documentation}}';
+            return;
+          }
+          
+          // Validasi extension
+          const fileName = file.name.toLowerCase();
+          const hasValidExtension = this.allowedExtensions.some(ext => fileName.endsWith(ext));
+          
+          if (!hasValidExtension) {
+            this.errorMessage = `File extension not allowed. Allowed: ${this.allowedExtensions.join(', ')}`;
+            this.isValid = false;
+            this.previewUrl = '{{mentor_logbook.documentation}}';
+            return;
+          }
+          
+          // Create preview
+          this.previewUrl = URL.createObjectURL(file);
+        },
+        clearFile() {
+          this.errorMessage = '';
+          this.isValid = true;
+          this.fileName = '';
+          this.fileSize = 0;
+          this.hasFile = false;
+          this.previewUrl = '{{mentor_logbook.documentation}}';
+          $refs.fileInput.value = null;
+        },
+        canSubmit() {
+          return this.isValid;
+        }
+      }"
+      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please ensure all fields are valid before submitting.'); }"
+    >
+
+      <div>
+        <label
+          for='activity'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Activity</label>
+        <input
+          type='text'
+          id='activity'
+          name='activity'
+          required
+          placeholder='Enter activity...'
+          value='{{mentor_logbook.activity}}'
+          class='w-full border text-gray-700 bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+        />
+      </div>
+
+      <div>
+        <label
+          for='activity_detail'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Activity Details</label>
+        <textarea
+          name='activity_detail'
+          id='activity_detail'
+          placeholder='Enter activity details...'
+          class='w-full text-gray-700 bg-white border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+        >{{mentor_logbook.activity_detail}}</textarea>
+      </div>
+
+      <div>
+        <label
+          for='obstacle'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Obstacle</label>
+        <input
+          type='text'
+          id='obstacle'
+          name='obstacle'
+          required
+          placeholder='Enter obstacle...'
+          value='{{mentor_logbook.obstacle}}'
+          class='w-full border text-gray-700 bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
+        />
+      </div>
+
+      <div class='space-y-3'>
+        <label
+          for='documentation'
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >
+          Photo Documentation
+          <span class='text-xs text-gray-500 font-normal'>(max 5MB,
+            JPG/JPEG/PNG)</span>
+        </label>
+
+        <input
+          type='file'
+          id='documentation'
+          name='documentation'
+          accept='.jpg,.jpeg,.png'
+          x-ref='fileInput'
+          :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+          class='w-full border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
+          @change='validateFile($event.target.files[0])'
+        />
+
+        <!-- Error Message -->
+        <template x-if='!isValid && errorMessage'>
+          <div
+            class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+            <div>
+              <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+              <p class='text-xs text-red-700' x-text='errorMessage'></p>
+            </div>
+          </div>
+        </template>
+
+        <!-- Success Message with Preview -->
+        <template x-if='hasFile && isValid && previewUrl'>
+          <div class='space-y-2'>
+            <div
+              class='flex items-start gap-3 p-3 bg-green-50 border border-green-300 rounded-lg'
+            >
+              <i class='fas fa-check-circle text-green-500 mt-0.5'></i>
+              <div class='flex-1'>
+                <p class='text-sm font-semibold text-green-800'>Valid Image</p>
+                <p
+                  class='text-xs text-green-700'
+                  x-text='hasFile ? `${fileName} (${(fileSize / 1024).toFixed(1)}KB)` : "Existing image"'
+                ></p>
+              </div>
+              <button
+                type='button'
+                class='text-red-500 hover:text-red-700 transition-colors'
+                @click='clearFile()'
+                title='Remove image'
+              >
+                <i class='fas fa-times-circle'></i>
+              </button>
+            </div>
+
+            <!-- Image Preview -->
+            <div class='relative w-32 h-32'>
+              <img
+                :src='previewUrl'
+                alt='Photo Preview'
+                class='w-32 h-32 object-cover rounded-lg border border-gray-300'
+              />
+            </div>
+          </div>
+        </template>
+
+        <!-- Existing Image Preview (if no new file) -->
+        <template x-if='!hasFile && previewUrl'>
+          <div class='space-y-2'>
+            <div
+              class='flex items-start gap-3 p-3 bg-blue-50 border border-blue-300 rounded-lg'
+            >
+              <i class='fas fa-image text-blue-500 mt-0.5'></i>
+              <div class='flex-1'>
+                <p class='text-sm font-semibold text-blue-800'>Current Image</p>
+                <p class='text-xs text-blue-700'>Existing image will be kept if
+                  no new file is selected</p>
+              </div>
+            </div>
+
+            <!-- Image Preview -->
+            <div class='relative w-32 h-32'>
+              <img
+                :src='previewUrl'
+                alt='Current Photo'
+                class='w-32 h-32 object-cover rounded-lg border border-gray-300'
+              />
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class='flex space-x-4'>
+        <button
+          type='submit'
+          :disabled='!canSubmit() || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600 '"
+          class=' text-white px-6 py-2 rounded-lg shadow transition'
+        >
+        <span x-show="loading" class="loading loading-spinner loading-sm"></span>
+<span x-show="!loading">Update Log Book</span>
+        </button>
+        <a
+          href='/session/{{mentor_logbook.session.id}}'
+        :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

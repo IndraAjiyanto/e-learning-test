@@ -10,5 +10,5 @@ export class CreateSuperiorityDto {
   description: string[];
 
   @IsNotEmpty()
-  kategoriId: number;
+  categoryId: number;
 }

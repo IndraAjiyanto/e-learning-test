@@ -1,0 +1,107 @@
+<div
+  class='py-10'
+  x-data="{
+    // Form validation states
+    formData: {
+      paragraphs: {
+        id: `{{paragraphs.paragraphs.id}}`,
+        en: `{{paragraphs.paragraphs.en}}`,
+        ja: `{{paragraphs.paragraphs.ja}}`
+      }
+    },
+    formErrors: {
+      paragraphs: { id: '', en: '', ja: '' }
+    },
+    formValid: {
+      paragraphs: { id: true, en: true, ja: true }
+    },
+    formTouched: {
+      paragraphs: { id: false, en: false, ja: false }
+    },
+
+    validateField(field, value, lang = null) {
+      if (lang) {
+        this.formData[field][lang] = value;
+        this.formTouched[field][lang] = true;
+      } else {
+        this.formData[field] = value;
+        this.formTouched[field] = true;
+      }
+      
+      switch(field) {
+        case 'paragraphs':
+          if (!value.trim()) {
+            this.formErrors.paragraphs[lang] = 'Paragraf content is required';
+            this.formValid.paragraphs[lang] = false;
+          } else if (value.trim().length < 10) {
+            this.formErrors.paragraphs[lang] = 'Paragraf content must be at least 10 characters';
+            this.formValid.paragraphs[lang] = false;
+          } else {
+            this.formErrors.paragraphs[lang] = '';
+            this.formValid.paragraphs[lang] = true;
+          }
+          break;
+      }
+    },
+
+    canSubmit() {
+      const paragraphsValid = Object.values(this.formValid.paragraphs).every(v => v);
+      return paragraphsValid;
+    },
+
+    hasFormErrors() {
+      return Object.values(this.formErrors.paragraphs).some(e => e !== '');
+    }
+  }"
+>
+  <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Paragraf</h2>
+
+    <form
+      action='/paragraphs/{{paragraphs.id}}?_method=PATCH'
+      method='post'
+      class='space-y-6'
+      x-data='{ loading: false }'
+      @submit='if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
+    >
+
+{{> super_admin/paragraphs/edit/paragraphs_input }}
+
+      <!-- Buttons -->
+      <div class='flex gap-3'>
+        <button
+          type='submit'
+          :disabled='!canSubmit() || loading'
+          :class="!canSubmit() || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+        >
+          <span x-show='loading'><i
+              class='loading loading-spinner loading-sm'
+            ></i></span>
+          <span x-show='!loading'>Update</span>
+        </button>
+        <a
+          href='/paragraphs'
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300 transition'
+        >
+          Cancel
+        </a>
+      </div>
+
+      <!-- Submit Warning -->
+      <template x-if='hasFormErrors()'>
+        <div
+          class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+        >
+          <i class='fas fa-exclamation-triangle text-red-500'></i>
+          <p class='text-sm text-red-800'>
+            <span class='font-semibold'>Cannot submit:</span>
+            Please fix all validation errors above.
+          </p>
+        </div>
+      </template>
+
+    </form>
+  </div>
+</div>

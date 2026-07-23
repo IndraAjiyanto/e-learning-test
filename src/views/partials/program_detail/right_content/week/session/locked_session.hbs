@@ -1,5 +1,5 @@
                       <template
-                        x-if='pertemuan.progres_pertemuan.length === 0 || pertemuan.progres_pertemuan[0].absen === false'
+                        x-if='session.progres_pertemuan.length === 0 || session.progres_pertemuan[0].attendance === false'
                       >
                         <div
                           class='border border-gray-300 rounded-xl shadow-md bg-gradient-to-r from-gray-100 to-gray-200 overflow-hidden opacity-75'
@@ -13,7 +13,7 @@
                                 class='font-bold text-base text-gray-600'
                                 x-text='`{{t
                                   "test.startLearning.session"
-                                }} ${pertemuan.pertemuan_ke} - ${pertemuan.topik}`'
+                                }} ${session.pertemuan_ke} - ${session.topic}`'
                               ></h3>
                               <p class='text-xs text-gray-500 mt-0.5'>
                                 {{t

@@ -21,7 +21,7 @@ export class Value {
   icon: string;
 
   @Column()
-  value_ke: number;
+  valueOrder: number;
 
   @CreateDateColumn()
   createdAt: Date;

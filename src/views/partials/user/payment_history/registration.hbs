@@ -57,7 +57,7 @@
 
                 <h3 class="text-lg md:text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors font-montserrat line-clamp-2">
                   <i class="fas fa-graduation-cap mr-2 text-slate-600 text-sm md:text-base"></i>
-                  <span x-text="item.kelas.nama_kelas"></span>
+                  <span x-text="item.course.name"></span>
                 </h3>
 
                 <div class="flex items-center text-slate-600 text-xs md:text-sm">
@@ -81,7 +81,7 @@
                   <span>{{t "test.historyPayment.free.registrationUnderReview"}}</span>
                 </div>
                 <p class="text-amber-700 text-xs md:text-sm">{{t "test.historyPayment.free.spanRegistrationUnderReview"}}</p>
-                <a :href="`https://wa.me/6281234567890?text=Hi,%20I%20have%20a%20question%20about%20my%20registration%20for%20${item.kelas.nama_kelas}`"
+                <a :href="`https://wa.me/6281234567890?text=Hi,%20I%20have%20a%20question%20about%20my%20registration%20for%20${item.course.name}`"
                   target="_blank"
                   class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                   <i class="fab fa-whatsapp text-base md:text-lg"></i>
@@ -95,7 +95,7 @@
                   <span>{{t "test.historyPayment.free.registrationRejected"}}</span>
                 </div>
                 <p class="text-red-700 text-xs md:text-sm">{{t "test.historyPayment.free.spanRegistrationRejected"}}</p>
-                <a :href="`https://wa.me/6281234567890?text=Hi,%20my%20registration%20for%20${item.kelas.nama_kelas}%20was%20rejected.%20I%20need%20help.`"
+                <a :href="`https://wa.me/6281234567890?text=Hi,%20my%20registration%20for%20${item.course.name}%20was%20rejected.%20I%20need%20help.`"
                   target="_blank"
                   class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg font-semibold text-xs md:text-sm transition-all duration-300 transform hover:scale-105 shadow-md w-full justify-center">
                   <i class="fab fa-whatsapp text-base md:text-lg"></i>
@@ -109,7 +109,7 @@
                   <i class="fas fa-eye"></i>
                   <span>{{t "test.historyPayment.free.viewRegistrationProof"}}</span>
                 </button>
-                <a :href="`/program/${item.kelas.id}`"
+                <a :href="`/program/${item.course.id}`"
                   class="flex-1 py-2.5 md:py-3 px-3 md:px-4 rounded-xl bg-white text-slate-800 border-2 border-slate-200 font-semibold text-xs md:text-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                   <i class="fas fa-external-link-alt"></i>
                   <span>{{t "test.historyPayment.free.viewProgram"}}</span>
