@@ -39,7 +39,7 @@
 
     <!-- 4. Tombol Pendaftaran -->
     <!-- Catatan: Sesuaikan href="#" dengan link form pendaftaran Anda -->
-    <a href="#" class="flex items-center justify-center w-full max-w-[340px] h-[58px] bg-[#032A55] hover:bg-[#021b3a] text-white font-medium text-[18px] rounded-[10px] transition-colors shadow-sm">
+    <a @click.prevent="openRegistrationModal()" class="flex items-center justify-center w-full max-w-[340px] h-[58px] bg-[#032A55] hover:bg-[#021b3a] text-white font-medium text-[18px] rounded-[10px] transition-colors shadow-sm cursor-pointer">
       Registration Now
     </a>
 

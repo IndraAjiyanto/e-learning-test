@@ -115,15 +115,15 @@ export class MaterialController {
     @Req() req: any,
     @Res() res: Response,
   ) {
-    const materialpdf = await this.materialService.findMaterialPdf(id);
-    const materialvideo = await this.materialService.findMaterialVideo(id);
-    const materialppt = await this.materialService.findMaterialPpt(id);
+    const materipdf = await this.materialService.findMaterialPdf(id);
+    const materivideo = await this.materialService.findMaterialVideo(id);
+    const materippt = await this.materialService.findMaterialPpt(id);
     res.render('admin/materi/index', {
       user: req.user,
       id,
-      materialpdf,
-      materialppt,
-      materialvideo,
+      materipdf,
+      materippt,
+      materivideo,
     });
   }
 
@@ -149,14 +149,14 @@ export class MaterialController {
   ) {
     const session = await this.materialService.findSession(sessionId);
     if (fileType === 'video') {
-      const material = await this.materialService.findMaterialVideo(sessionId);
-      res.render('materi/video', { user: req.user, material, session });
+      const materi = await this.materialService.findMaterialVideo(sessionId);
+      res.render('materi/video', { user: req.user, materi, session });
     } else if (fileType === 'pdf') {
-      const material = await this.materialService.findMaterialPdf(sessionId);
-      res.render('materi/pdf', { user: req.user, material, session });
+      const materi = await this.materialService.findMaterialPdf(sessionId);
+      res.render('materi/pdf', { user: req.user, materi, session });
     } else if (fileType === 'ppt') {
-      const material = await this.materialService.findMaterialPpt(sessionId);
-      res.render('materi/ppt', { user: req.user, material, session });
+      const materi = await this.materialService.findMaterialPpt(sessionId);
+      res.render('materi/ppt', { user: req.user, materi, session });
     }
   }
 

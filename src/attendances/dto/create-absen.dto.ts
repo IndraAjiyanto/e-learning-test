@@ -10,7 +10,7 @@ import { Status } from 'src/entities/attendance.entity';
 export class CreateAttendanceDto {
   @IsEnum(['permission', 'present', 'sick', 'absent', 'no_information'])
   @IsOptional()
-  role?: Status;
+  status?: Status;
 
   @IsDateString()
   attendance_time: Date;

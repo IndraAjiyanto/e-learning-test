@@ -53,7 +53,7 @@ export class AttendanceService {
 
   async findAll() {
     return await this.attendanceRepository.find({
-      relations: ['session', 'user', 'session.course'],
+      relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
     });
   }
 
@@ -83,7 +83,7 @@ export class AttendanceService {
   async findOne(id: number) {
     const attendance = await this.attendanceRepository.findOne({
       where: { id },
-      relations: ['session', 'user'],
+      relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
     });
     if (!attendance) {
       throw new NotFoundException(`attendance tidak ditemukan`);

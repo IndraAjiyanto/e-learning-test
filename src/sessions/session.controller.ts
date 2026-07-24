@@ -38,10 +38,10 @@ export class SessionController {
         await this.sessionService.noPertemuan(CreateSessionDto.weeksId);
       await this.sessionService.create(CreateSessionDto);
       req.flash('success', 'session succesfuly create');
-      res.redirect(`program/detail/program/admin/${CreateSessionDto.weeksId}`);
+      res.redirect(`/week/${CreateSessionDto.weeksId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'session unsucces create');
-      res.redirect(`program/detail/program/admin/${CreateSessionDto.weeksId}`);
+      res.redirect(`/week/${CreateSessionDto.weeksId}`);
     }
   }
 
@@ -198,10 +198,12 @@ export class SessionController {
     try {
       await this.sessionService.update(sessionId, updateSessionDto);
       req.flash('success', 'Session successfuly update');
-      res.redirect(`/session/${sessionId}`);
+      const session = await this.sessionService.findOne(sessionId);
+      res.redirect(`/week/${session.weeks.id}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Session unsuccess update');
-      res.redirect(`/session/${sessionId}`);
+      const session = await this.sessionService.findOne(sessionId);
+      res.redirect(`/week/${session.weeks.id}`);
     }
   }
 

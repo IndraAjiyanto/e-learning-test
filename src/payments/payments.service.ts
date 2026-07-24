@@ -180,14 +180,14 @@ export class PaymentsService {
               id: existingProgresPertemuan.id,
               session: session,
               user: user,
-              attendances: true,
+                isAttended: true,
               logbook: false,
             });
           } else {
             await this.progresPertemuanRepository.save({
               session: session,
               user: user,
-              attendances: true,
+                isAttended: true,
               logbook: false,
             });
           }
@@ -269,7 +269,7 @@ export class PaymentsService {
         user: { id: userId },
         installment: IsNull(),
       },
-      relations: ['course', 'course.category', 'installments'],
+      relations: ['course', 'course.category', 'installment'],
     });
 
     if (!pembayaran) {
@@ -285,15 +285,18 @@ export class PaymentsService {
         user: { id: userId },
         installment: Not(IsNull()),
       },
-      relations: ['course', 'course.category', 'installments'],
+      relations: ['course', 'course.category', 'installment'],
     });
   }
 
   async findPendaftaran(userId: number) {
-    return await this.pendaftaranRepository.find({
+    console.log('🔵 [PaymentsService] findPendaftaran for userId:', userId);
+    const result = await this.pendaftaranRepository.find({
       where: { user: { id: userId } },
       relations: ['course', 'course.category'],
     });
+    console.log('🔵 [PaymentsService] findPendaftaran result:', result);
+    return result;
   }
 
   async findAll() {
@@ -306,7 +309,7 @@ export class PaymentsService {
   async findAllInstallments() {
     return await this.pembayaranRepository.find({
       where: { installment: Not(IsNull()) },
-      relations: ['user', 'course', 'course.category', 'installments'],
+      relations: ['user', 'course', 'course.category', 'installment'],
     });
   }
 

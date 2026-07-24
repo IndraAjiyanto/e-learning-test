@@ -118,17 +118,17 @@
             {{#each materi}}
               <div
                 class='w-full text-left px-4 py-4 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all duration-200 shadow-sm hover:shadow-md group cursor-pointer'
-                @click="pdfSrc = '{{file}}'; materiJudul = '{{judul}}'"
+                @click="pdfSrc = '{{file}}'; materiJudul = '{{title}}'"
               >
                 <div class='flex items-center justify-between'>
                   <div class='flex items-center flex-1'>
                     <span
                       class='font-medium text-slate-900 group-hover:text-slate-700 transition-colors duration-200'
-                    >{{judul}}</span>
+                    >{{title}}</span>
                   </div>
                   <!-- Download Icon -->
                   <button
-                    @click.stop="downloadPDF('{{file}}', '{{judul}}.pdf')"
+                    @click.stop="downloadPDF('{{file}}', '{{title}}.pdf')"
                     class='p-1.5 rounded-lg bg-slate-100 hover:bg-green-600 text-slate-600 hover:text-white transition-all duration-200'
                     title='{{t "test.material.pdf.downloadPDF"}}'
                   >

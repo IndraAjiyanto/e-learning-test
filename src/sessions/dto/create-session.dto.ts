@@ -19,10 +19,10 @@ export class CreateSessionDto {
   date: Date;
 
   @IsString()
-  startDate: string;
+  startTime: string;
 
   @IsString()
-  endDate: string;
+  endTime: string;
 
   @IsBooleanString()
   isFinal: boolean;

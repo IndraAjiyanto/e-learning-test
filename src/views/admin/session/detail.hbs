@@ -19,7 +19,7 @@
 
     <div class="flex items-start justify-between">
       <div>
-        <h1 class="text-3xl font-bold mb-2 text-gray-900">Session {{session.pertemuan_ke}}</h1>
+        <h1 class="text-3xl font-bold mb-2 text-gray-900">Session {{session.sessionOrder}}</h1>
 
         <p class="text-gray-600 mb-1">
           <span class="font-semibold">Program:</span> {{session.weeks.course.name}}
@@ -34,7 +34,7 @@
           <span class="font-semibold">Date:</span> {{formatTanggal session.date}}
         </p>
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Time :</span> {{formatTime session.start_time}} - {{formatTime session.end_time}}
+          <span class="font-semibold">Time :</span> {{formatTime session.startTime}} - {{formatTime session.endTime}}
         </p>
 
       </div>
@@ -101,12 +101,12 @@
             class="px-4 py-2 rounded-lg shadow transition">
       Assignment
     </button>
-    <button @click="toggleFetch('/session/logbook/{{session.id}}', 'logbook')" 
+    <button @click="toggleFetch('/session/logbooks/{{session.id}}', 'logbook')" 
             :class="tab === 'logbook' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log book user
     </button>
-    <button @click="toggleFetch('/session/logbook-mentor/{{session.id}}', 'logbook_mentor')" 
+    <button @click="toggleFetch('/session/logbooks-mentor/{{session.id}}', 'logbook_mentor')" 
             :class="tab === 'logbook_mentor' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
       Log book mentor
@@ -125,7 +125,7 @@
     {{> session/absen_tab}}
   </div>  
 
-  <div x-show="tab === 'materi'" x-data="materiData()" x-init="fetchMateris()">
+  <div x-show="tab === 'materi'" x-data="materiData()" x-init="init()">
     {{> session/materi_tab}}
   </div>
 

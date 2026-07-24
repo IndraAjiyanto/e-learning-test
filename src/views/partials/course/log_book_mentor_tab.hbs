@@ -254,9 +254,9 @@ function logBookMentorData() {
             "Program Type": l.session?.weeks?.course?.courseType?.name_clasess_type,
             Category: l.session?.weeks?.course?.category?.name,
             Activity: l.activity,
-            "Activity Details": l.activity_details,
+            "Activity Details": l.activity_detail,
             Documentation: l.dokumentasi,
-            Issues: l.obstacles,
+            Issues: l.obstacle,
           }));
 
           const wb = XLSX.utils.book_new();

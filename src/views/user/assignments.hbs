@@ -43,7 +43,7 @@
                 {{#each jawaban_tugas}}
                   <div class="p-5 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
                     <div class="flex flex-col gap-3 mb-4">
-                      {{#if (eq this.proses 'acc')}}
+                      {{#if (eq this.process 'acc')}}
                                             <a 
                         href="{{this.file}}" 
                         target="_blank"
@@ -64,31 +64,31 @@
                     
                     <div class="flex flex-wrap items-center gap-3">
                       <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full
-                        {{#if (roles this.proses 'acc')}} 
+                        {{#if (roles this.process 'acc')}} 
                           bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700 border border-emerald-200
-                        {{else if (roles this.proses 'proces')}} 
+                        {{else if (roles this.process 'proces')}} 
                           bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 border border-amber-200
-                        {{else if (roles this.proses 'rejected')}} 
+                        {{else if (roles this.process 'rejected')}} 
                           bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200
                         {{/if}}">
-                        {{#if (roles this.proses 'acc')}}
+                        {{#if (roles this.process 'acc')}}
                           <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                           </svg>
                           {{t "test.assigment.approved"}}
-                        {{else if (roles this.proses 'proces')}}
+                        {{else if (roles this.process 'proces')}}
                           <svg class="w-3 h-3 mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                           </svg>
                           {{t "test.assigment.underReview"}}
-                        {{else if (roles this.proses 'rejected')}}
+                        {{else if (roles this.process 'rejected')}}
                           <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                           </svg>
                           {{t "test.assigment.needsRevision"}}
                         {{/if}}
                       </span>
-                      {{#unless (eq this.proses 'acc')}}
+                      {{#unless (eq this.process 'acc')}}
                         <button 
                           type="button" 
                           onclick="toggleEditForm({{this.id}})"
@@ -102,9 +102,9 @@
                       {{/unless}}
                     </div>
 
-                    {{#if this.komentar}}
+                    {{#if this.comment}}
                       <div class="mt-4 space-y-2">
-                        {{#each komentar}}
+                        {{#each this.comment}}
                           <div class="p-3 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-lg">
                             <div class="flex items-start gap-2">
                               <div class="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>

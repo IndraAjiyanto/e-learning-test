@@ -19,10 +19,10 @@
 
     <div class="flex items-start justify-between">
       <div>
-        <h1 class="text-2xl font-bold mb-2 text-gray-900">Quiz {{quiz.title}}</h1>
+        <h1 class="text-2xl font-bold mb-2 text-gray-900">Quiz {{quiz.quizName}}</h1>
 
         <p class="text-gray-600 mb-1">
-          <span class="font-semibold">Minimum Score :</span> {{quiz.minimum_score}}
+          <span class="font-semibold">Minimum Score :</span> {{quiz.minScore}}
         </p>
         <p class="text-gray-600 mb-1">
           <span class="font-semibold">Duration :</span> {{quiz.duration}} minutes
@@ -111,14 +111,14 @@
   </div>
 
   <div x-show="tab === 'question'">
-    {{#if pertanyaan.length}}
+    {{#if questions.length}}
     <div class="space-y-4 mb-6">
-      {{#each pertanyaan}}
+      {{#each questions}}
       <div x-data="{ open: false }" class="bg-white border rounded-lg shadow">
         
         <button @click="open = !open"
                 class="w-full flex justify-between items-center px-6 py-4 text-left">
-          <span class="font-semibold text-gray-800">{{pertanyaan_soal}}</span>
+          <span class="font-semibold text-gray-800">{{questionText}}</span>
           <svg xmlns="http://www.w3.org/2000/svg"
                :class="{'rotate-180': open}"
                class="h-5 w-5 transform transition-transform"
@@ -130,23 +130,23 @@
 
         <div x-show="open" x-collapse class="px-6 pb-6 space-y-4">
 
-          {{#if gambar}}
+          {{#if image}}
           <div class="flex justify-center">
-            <img src="{{gambar}}" alt="Gambar Soal"
+            <img src="{{image}}" alt="Gambar Soal"
                  class="max-h-64 rounded-lg shadow border object-contain">
           </div>
           {{/if}}
 
           <ul class="space-y-2">
-            {{#each answer}}
+            {{#each answers}}
             <div class="px-4 py-2 rounded-lg border 
-                       {{#if this.is_correct}}
+                       {{#if this.isCorrect}}
                          bg-green-50 border-green-400
                        {{else}}
                          bg-gray-50 border-gray-200
                        {{/if}}">
               <span class="text-gray-700">{{this.answer}}</span>
-              {{#if this.is_correct}}
+              {{#if this.isCorrect}}
                 <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-200 text-green-800">
                   <i class="fas fa-check mr-1"></i> Benar
                 </span>
@@ -201,7 +201,7 @@
   </div>
 
   <div x-show="tab === 'answer'">
-    {{#if nilai.length}}
+    {{#if scores.length}}
     <div class="overflow-hidden bg-white rounded-xl shadow-lg">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -211,17 +211,17 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          {{#each nilai}}
+          {{#each scores}}
           <tr>
             <td class="px-6 py-4 text-gray-900 font-medium">{{this.user.username}}</td>
             <td class="px-6 py-4">
               <span class="px-3 py-1 rounded-lg text-sm font-semibold
-                {{#if (gte this.nilai ../quiz.minimum_score)}}
+                {{#if (gte this.score ../quiz.minScore)}}
                   bg-green-100 text-green-700
                 {{else}}
                   bg-red-100 text-red-700
                 {{/if}}">
-                {{this.nilai}}
+                {{this.score}}
               </span>
             </td>
           </tr>
