@@ -11,6 +11,7 @@ import {
   UploadedFile,
   Res,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { LogbookService } from './logbook.service';
 import { CreateLogbookDto } from './dto/create-logbook.dto';
@@ -86,20 +87,20 @@ export class LogbookController {
   async findLogBook(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
   ) {
     const logbooks = await this.logbookService.findLogBook(
       req.user!.id,
       courseId,
     );
-    res.render('user/logbooks/index', { user: req.user, logbooks, courseId });
+    res.render('user/logbooks/index', { user: req.user, logbooks, logbook: logbooks, courseId });
   }
 
   @Roles('user')
   @Get('formCreate/:sessionId/:courseId')
   async createLogbook(
-    @Param('sessionId') sessionId: number,
-    @Param('courseId') courseId: number,
+    @Param('sessionId', ParseIntPipe) sessionId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -119,9 +120,9 @@ export class LogbookController {
   ) {
     const logbooks = await this.logbookService.findOne(logbookId);
     if (req.user!.role === 'admin') {
-      res.render('admin/logbooks/edit', { user: req.user, logbooks });
+      res.render('admin/logbooks/edit', { user: req.user, logbook: logbooks });
     } else {
-      res.render('user/logbooks/edit', { user: req.user, logbooks });
+      res.render('user/logbooks/edit', { user: req.user, logbook: logbooks });
     }
   }
 
@@ -133,7 +134,7 @@ export class LogbookController {
     @Res() res: Response,
   ) {
     const logbooks = await this.logbookService.findOne(logbookId);
-    res.render('user/logbooks/detail', { user: req.user, logbooks });
+    res.render('user/logbooks/detail', { user: req.user, logbook: logbooks });
   }
 
   @Roles('admin')

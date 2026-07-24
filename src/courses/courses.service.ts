@@ -291,14 +291,14 @@ export class CoursesService {
                 id: existingProgresPertemuan.id,
                 session: session,
                 user: user,
-                attendances: true,
+                isAttended: true,
                 logbook: false,
               });
             } else {
               await this.progresPertemuanRepository.save({
                 session: session,
                 user: user,
-                attendances: true,
+                isAttended: true,
                 logbook: false,
               });
             }
@@ -389,14 +389,14 @@ export class CoursesService {
                 id: existingProgresPertemuan.id,
                 session: session,
                 user: user,
-                attendances: true,
+                isAttended: true,
                 logbook: false,
               });
             } else {
               await this.progresPertemuanRepository.save({
                 session: session,
                 user: user,
-                attendances: true,
+                isAttended: true,
                 logbook: false,
               });
             }
@@ -546,7 +546,7 @@ export class CoursesService {
         { userId },
       )
       .leftJoinAndSelect(
-        'course.portfolio',
+        'course.portofolios',
         'portfolio',
         'portfolio.userId = :userId',
         { userId },

@@ -127,8 +127,8 @@
                 <td class='px-3 py-2 text-xs text-gray-700'>
                   <div
                     class='max-w-xs truncate'
-                    :title='logbook.activity_details'
-                    x-text='logbook.activity_details || "-"'
+                    :title='logbook.activityDetails'
+                    x-text='logbook.activityDetails || "-"'
                   ></div>
                 </td>
                 <td class='px-3 py-2 text-xs text-gray-700'>
@@ -160,21 +160,21 @@
                   <span
                     class='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide'
                     :class="{
-                      'bg-green-100 text-green-700 border border-green-300': logbook.proses === 'acc',
-                      'bg-yellow-100 text-yellow-700 border border-yellow-300': logbook.proses === 'proces',
-                      'bg-red-100 text-red-700 border border-red-300': logbook.proses === 'rejected'
+                      'bg-green-100 text-green-700 border border-green-300': logbook.process === 'acc',
+                      'bg-yellow-100 text-yellow-700 border border-yellow-300': logbook.process === 'proces',
+                      'bg-red-100 text-red-700 border border-red-300': logbook.process === 'rejected'
                     }"
                   >
                     <i
                       class='fas mr-1 text-xs'
                       :class="{
-                      'fa-check-circle': logbook.proses === 'acc',
-                      'fa-clock': logbook.proses === 'proces',
-                      'fa-times-circle': logbook.proses === 'rejected'
+                      'fa-check-circle': logbook.process === 'acc',
+                      'fa-clock': logbook.process === 'proces',
+                      'fa-times-circle': logbook.process === 'rejected'
                     }"
                     ></i>
                     <span
-                      x-text="logbook.proses === 'acc' ? 'Approved' : logbook.proses === 'proces' ? 'Process' : 'Rejected'"
+                      x-text="logbook.process === 'acc' ? 'Approved' : logbook.process === 'proces' ? 'Process' : 'Rejected'"
                     ></span>
                   </span>
                 </td>

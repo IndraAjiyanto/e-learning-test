@@ -205,7 +205,7 @@ export class LogbookService {
           user: { id: logbooks.user.id },
           session: { id: logbooks.session.id },
           logbook: true,
-          attendances: true,
+          isAttended: true,
         });
       }
 
@@ -261,14 +261,14 @@ export class LogbookService {
                 id: existingProgresPertemuan.id,
                 session: { id: pertemuan_selanjutnya.id },
                 user: { id: logbooks.user.id },
-                attendances: true,
+                isAttended: true,
                 logbook: false,
               });
             } else {
               await this.progresPertemuanRepository.save({
                 session: { id: pertemuan_selanjutnya.id },
                 user: { id: logbooks.user.id },
-                attendances: true,
+                isAttended: true,
                 logbook: false,
               });
             }

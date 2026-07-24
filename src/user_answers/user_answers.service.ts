@@ -1,5 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserAnswerDto, UserAnswerDto } from './dto/create-user_answer.dto';
+import {
+  CreateUserAnswerDto,
+  UserAnswerDto,
+} from './dto/create-user_answer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserAnswer } from 'src/entities/user_answer.entity';
 import { In, Repository } from 'typeorm';
@@ -78,10 +81,9 @@ export class UserAnswersService {
   async searchAnswerUser(quizId: number, userId: number) {
     return await this.jawabanUserRepository.find({
       where: { question: { quiz: { id: quizId } }, user: { id: userId } },
-      relations: ['answers','user'],
+      relations: ['answer', 'user'],
     });
   }
-
 
   async createAnswer(jawabanUserDto: UserAnswerDto) {
     const userIsAnswered = await this.jawabanUserRepository.findOne({
@@ -92,30 +94,33 @@ export class UserAnswersService {
     });
 
     if (userIsAnswered) {
-      if(jawabanUserDto.answersId !== null) {
-      const answers = await this.jawabanRepository.findOne({ where: { id: jawabanUserDto.answersId } });
-      userIsAnswered.answer = answers
-      await this.jawabanUserRepository.save(userIsAnswered);
+      if (jawabanUserDto.answersId !== null) {
+        const answers = await this.jawabanRepository.findOne({
+          where: { id: jawabanUserDto.answersId },
+        });
+        userIsAnswered.answer = answers;
+        await this.jawabanUserRepository.save(userIsAnswered);
       }
-
     } else {
       const questions = await this.pertanyaanRepository.findOne({
         where: { id: jawabanUserDto.questionsId },
       });
 
       if (!questions) {
-  throw new NotFoundException('Question not found');
-}
+        throw new NotFoundException('Question not found');
+      }
 
       const user = await this.userRepository.findOne({
         where: { id: jawabanUserDto.userId },
       });
 
-if (!user) {
-  throw new NotFoundException('User not found');
-}
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
       const answers = jawabanUserDto.answersId
-        ? await this.jawabanRepository.findOne({ where: { id: jawabanUserDto.answersId } })
+        ? await this.jawabanRepository.findOne({
+            where: { id: jawabanUserDto.answersId },
+          })
         : null;
 
       const jawabanUser = this.jawabanUserRepository.create({
@@ -126,71 +131,71 @@ if (!user) {
 
       await this.jawabanUserRepository.save(jawabanUser);
     }
-
   }
 
   async nilaiCreate(JawabanUser: UserAnswer[], quizId: number, userId: number) {
-    if(JawabanUser.length === 0) {
+    if (JawabanUser.length === 0) {
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
         throw new NotFoundException('User not found');
       }
-          user.quizStart = false;
-    await this.userRepository.save(user);
+      user.quizStart = false;
+      await this.userRepository.save(user);
 
       await this.nilaiRepository.save({
         user: { id: userId },
         quiz: { id: quizId },
-        scores: 0,
+        score: 0,
       });
-    }else{
+    } else {
+      const jawabanIds = JawabanUser.map((j) => j.answer?.id).filter(
+        (id): id is number => id !== undefined && id !== null,
+      );
+      const jawabanBenar = await this.jawabanRepository.findBy({
+        id: In(jawabanIds),
+      });
 
-    const jawabanIds = JawabanUser.map((j) => j.answer?.id).filter((id): id is number => id !== undefined && id !== null);
-    const jawabanBenar = await this.jawabanRepository.findBy({
-      id: In(jawabanIds),
-    });
+      let benar = 0;
+      jawabanBenar.forEach((j) => {
+        if (j.isCorrect) {
+          benar++;
+        }
+      });
 
+      const questions = await this.pertanyaanRepository.find({
+        where: { quiz: { id: quizId } },
+      });
+      const totalSoal = questions.length;
+      const scores = Math.round((benar / totalSoal) * 100);
 
-    let benar = 0;
-    jawabanBenar.forEach((j) => {
-      if (j.isCorrect) {
-        benar++;
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('user not found');
       }
-    });
 
-    const questions = await this.pertanyaanRepository.find({where: { quiz: { id: quizId } }});
-    const totalSoal = questions.length;
-    const scores = Math.round((benar / totalSoal) * 100);
+      const quiz = await this.quizRepository.findOne({
+        where: { id: quizId },
+        relations: ['weeks'],
+      });
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('user not found');
+      if (!quiz) {
+        throw new NotFoundException('quiz not found');
+      }
+
+      if (scores >= quiz.minScore) {
+        await this.weekProgress(quiz.weeks.id, userId);
+        await this.updateWeekProgress(quiz.weeks.id, userId);
+      }
+
+      user.quizStart = false;
+      await this.userRepository.save(user);
+
+      await this.nilaiRepository.save({
+        user: user,
+        quiz: quiz,
+        score: scores,
+      });
     }
-
-    const quiz = await this.quizRepository.findOne({
-      where: { id: quizId },
-      relations: ['weeks'],
-    });
-
-    if (!quiz) {
-      throw new NotFoundException('quiz not found');
-    }
-
-    if (scores >= quiz.minScore) {
-      await this.weekProgress(quiz.weeks.id, userId);
-      await this.updateWeekProgress(quiz.weeks.id, userId);
-    }
-
-    user.quizStart = false;
-    await this.userRepository.save(user);
-
-    await this.nilaiRepository.save({
-      user: user,
-      quiz: quiz,
-      scores,
-    });
-    }
-
   }
 
   async updateWeekProgress(weeksId: number, userId: number) {
@@ -216,21 +221,24 @@ if (!user) {
       throw new NotFoundException('minggu_sebelum not found');
     } else if (minggu_sebelum.isFinal === true) {
       const existingUserKelas = await this.userKelasRepository.findOne({
-        where: { course: { id: minggu_sebelum.course.id }, user: { id: userId } },
+        where: {
+          course: { id: minggu_sebelum.course.id },
+          user: { id: userId },
+        },
       });
       if (existingUserKelas) {
         await this.userKelasRepository.save({
           id: existingUserKelas.id,
           course: { id: minggu_sebelum.course.id },
           user: { id: userId },
-          progres: true,
+          progress: true,
           quiz: true,
         });
       } else {
         await this.userKelasRepository.save({
           course: { id: minggu_sebelum.course.id },
           user: { id: userId },
-          progres: true,
+          progress: true,
           quiz: true,
         });
       }
@@ -261,14 +269,14 @@ if (!user) {
                 user: { id: userId },
                 session: session_satu,
                 logbook: false,
-                attendances: true,
+                isAttended: true,
               });
             } else {
               await this.progresPertemuanRepository.save({
                 user: { id: userId },
                 session: session_satu,
                 logbook: false,
-                attendances: true,
+                isAttended: true,
               });
             }
           }
@@ -295,21 +303,21 @@ if (!user) {
   async findByUserAndQuestion(userId: number, questionId: number) {
     return await this.jawabanUserRepository.find({
       where: { user: { id: userId }, question: { id: questionId } },
-      relations: ['answers'],
+      relations: ['answer'],
     });
   }
 
   async findAnswersByUser(userId: number) {
     return await this.jawabanUserRepository.find({
       where: { user: { id: userId } },
-      relations: ['answers'],
+      relations: ['answer'],
     });
   }
 
   async AmountNilai(weeksId: number, userId: number) {
     const answers = await this.jawabanUserRepository.find({
       where: { question: { quiz: { id: weeksId } }, user: { id: userId } },
-      relations: ['answers'],
+      relations: ['answer'],
     });
 
     const jumlahSoal = answers.length;
@@ -325,18 +333,17 @@ if (!user) {
     return totalNilai;
   }
 
-  async deleteAnswerUser(userId:number, quizId:number){
-const questions = await this.pertanyaanRepository.find({
-  where: { quiz: { id: quizId } },
-  select: ["id"]
-});
+  async deleteAnswerUser(userId: number, quizId: number) {
+    const questions = await this.pertanyaanRepository.find({
+      where: { quiz: { id: quizId } },
+      select: ['id'],
+    });
 
-const ids = questions.map(p => p.id);
+    const ids = questions.map((p) => p.id);
 
-await this.jawabanUserRepository.delete({
-  user: { id: userId },
-  question: { id: In(ids) }
-});
-
+    await this.jawabanUserRepository.delete({
+      user: { id: userId },
+      question: { id: In(ids) },
+    });
   }
 }

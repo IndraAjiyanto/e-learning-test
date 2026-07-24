@@ -20,7 +20,7 @@
       selectedLogbook: null,
 
       async fetchLogBookMentor() {
-      const res = await fetch('/session/logbook-mentor/{{session.id}}');
+      const res = await fetch('/session/logbooks-mentor/{{session.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },
@@ -52,8 +52,8 @@
           const dataToExport = filtered.map((log, index) => ({
             No: index + 1,
             Activity: log.activity || "-",
-            Details: log.activity_details || "-",
-            Obstacle: log.obstacles || "-",
+            Details: log.activity_detail || "-",
+            Obstacle: log.obstacle || "-",
             Documentation: log.dokumentasi || "-",
             Program: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",

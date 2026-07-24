@@ -68,13 +68,13 @@ export class QuizService {
             id: existingProgresQuiz.id,
             quiz: newQuiz,
             user: progres.user,
-            proses: true,
+            process: true,
           });
         } else {
           await this.progresQuizRepository.save({
             quiz: newQuiz,
             user: progres.user,
-            proses: true,
+            process: true,
           });
         }
       }

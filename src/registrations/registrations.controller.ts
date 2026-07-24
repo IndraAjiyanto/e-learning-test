@@ -45,27 +45,31 @@ export class RegistrationsController {
     @Req() req: Request,
   ) {
     try {
+      console.log('🔵 [Registration] Attempt:', { userId, courseId, file: req.file, body: req.body, uploadedImageUrls: req.body.uploadedImageUrls });
       createPendaftaranDto.file = req.body.uploadedImageUrls?.[0];
+      console.log('🔵 [Registration] File URL:', createPendaftaranDto.file);
       createPendaftaranDto.courseId = courseId;
       createPendaftaranDto.userId = userId;
       createPendaftaranDto.process = 'proces';
       const pendaftaran =
         await this.pendaftaranService.create(createPendaftaranDto);
+      console.log('🔵 [Registration] Result:', pendaftaran);
       if (pendaftaran == false) {
         await this.pendaftaranService.deleteFile(createPendaftaranDto.file);
         req.flash(
           'info',
           'you have already submitted the registration proof, please wait for further information from the admin',
         );
-        res.redirect(`/payment/history/${userId}`);
+        res.redirect(`/payment/history/${userId}#pendaftaran`);
       } else {
         req.flash(
           'success',
           'registration proof successfully sent, please wait for the admin',
         );
-        res.redirect(`/payment/history/${userId}`);
+        res.redirect(`/payment/history/${userId}#pendaftaran`);
       }
     } catch (error: any) {
+      console.error('🔴 [Registration] Error:', error);
       req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
       res.redirect(`/payment/history/${userId}`);
     }

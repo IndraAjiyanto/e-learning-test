@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWeeksDto } from './dto/create-weeks.dto';
 import { UpdateWeeksDto } from './dto/update-weeks.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -65,14 +65,14 @@ export class WeeksService {
               week: weeks,
               user: userKelas.user,
               quiz: false,
-              proses: true,
+              process: true,
             });
           } else {
             await this.weekProgressRepository.save({
               week: weeks,
               user: userKelas.user,
               quiz: false,
-              proses: true,
+              process: true,
             });
           }
         }
@@ -113,12 +113,16 @@ export class WeeksService {
                 week: newMinggu,
                 user: progres.user,
                 quiz: false,
-                proses: true,
+                process: true,
               });
             }
           }
         }
         return newMinggu;
+      } else {
+        throw new BadRequestException(
+          'Minggu sebelumnya sudah final, tidak bisa menambahkan week baru',
+        );
       }
     }
   }
@@ -170,6 +174,10 @@ export class WeeksService {
     const weeks = await this.findOne(id);
     if (!weeks) {
       throw new NotFoundException('week not found');
+    }
+
+    if (weeks.isFinal) {
+      throw new BadRequestException('Week final tidak bisa diupdate');
     }
 
     if (updateMingguDto.isFinalCheck === 'true') {

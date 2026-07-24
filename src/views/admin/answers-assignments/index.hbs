@@ -68,7 +68,7 @@
     {{#if jawaban_tugas.length}}
       <div class="space-y-6">
         {{#each jawaban_tugas}}
-          <div data-status="{{this.proses}}" x-data="cardData()" class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+          <div data-status="{{this.process}}" x-data="cardData()" class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300">
             
             <!-- Card Header -->
             <div @click="isOpen = !isOpen" class="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-4 cursor-pointer">
@@ -87,15 +87,15 @@
                 
                 <div class="flex items-center gap-3">
                   <span class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full
-                    {{#if (roles this.proses 'acc')}} bg-green-100 text-green-700
-                    {{else if (roles this.proses 'rejected')}} bg-red-100 text-red-700
+                    {{#if (roles this.process 'acc')}} bg-green-100 text-green-700
+                    {{else if (roles this.process 'rejected')}} bg-red-100 text-red-700
                     {{else}} bg-yellow-100 text-yellow-700 {{/if}}">
                     <span class="w-2 h-2 rounded-full mr-2 
-                      {{#if (roles this.proses 'acc')}} bg-green-500
-                      {{else if (roles this.proses 'rejected')}} bg-red-500
+                      {{#if (roles this.process 'acc')}} bg-green-500
+                      {{else if (roles this.process 'rejected')}} bg-red-500
                       {{else}} bg-yellow-500 {{/if}}">
                     </span>
-                    {{this.proses}}
+                    {{this.process}}
                   </span>
                   <svg :class="isOpen ? 'rotate-180' : ''" class="w-5 h-5 text-white transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -121,15 +121,15 @@
               </div>
 
               <!-- Comment Form -->
-              <form action="/answer-assigment/{{assignment.id}}/{{this.id}}?_method=PATCH" method="POST" class="space-y-4">
-              <input type="hidden" name="proses" id="prosesValue">
+              <form action="/answer-assigment/{{../assignment.id}}/{{this.id}}?_method=PATCH" method="POST" class="space-y-4">
+              <input type="hidden" name="process" id="prosesValue">
 
                 <div>
                   <label class="block text-sm font-semibold text-gray-900 mb-2">
                     Leave a Comment
                   </label>
                   <textarea 
-                    name="komentar" 
+                    name="comment"
                     rows="3" 
                     class="w-full px-4 py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 text-gray-900 focus:ring-gray-900 focus:border-gray-900 transition-all bg-white"
                     placeholder="Write feedback or comments for this answer..."
@@ -155,7 +155,7 @@
               </form>
 
               <!-- Comment History -->
-              {{#if this.komentar}}
+              {{#if this.comment}}
                 <div class="space-y-3 pt-4 border-t-2 border-gray-100">
                   <div class="flex items-center gap-2 mb-3">
                     <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +163,7 @@
                     </svg>
                     <h5 class="text-sm font-semibold text-gray-900">Comment History</h5>
                   </div>
-                  {{#each komentar}}
+                  {{#each this.comment}}
                     <div class="p-4 bg-gradient-to-r from-gray-50 to-white border-l-4 border-gray-900 rounded-lg">
                       <p class="text-sm text-gray-800 leading-relaxed">{{this.komentar}}</p>
                     </div>

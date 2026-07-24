@@ -93,8 +93,8 @@ export class QuestionsController {
     @Res() res: Response,
     @Param('questionId') questionId: number,
   ) {
-    const questions = await this.pertanyaansService.findOne(questionId);
-    res.render('admin/questions/edit', { user: req.user, questions });
+    const question = await this.pertanyaansService.findOne(questionId);
+    res.render('admin/questions/edit', { user: req.user, question });
   }
 
   @Roles('user')
@@ -145,7 +145,7 @@ export class QuestionsController {
   @Roles('admin')
   @Patch(':questionId/:quizId')
   @UseInterceptors(
-    FileInterceptor('profile', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({

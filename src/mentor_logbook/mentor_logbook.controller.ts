@@ -59,21 +59,6 @@ export class MentorLogbookController {
   }
 
   @Roles('admin')
-  @Get(':mentor_logbookId')
-  async findOne(
-    @Param('mentor_logbookId') mentor_logbookId: number,
-    @Res() res: Response,
-    @Req() req: Request,
-  ) {
-    const mentor_logbook =
-      await this.logbookMentorService.findOne(mentor_logbookId);
-    res.render('admin/mentor_logbook/detail', {
-      user: req.user,
-      mentor_logbook,
-    });
-  }
-
-  @Roles('admin')
   @Get('formCreate/:sessionId')
   async formCreate(
     @Param('sessionId') sessionId: number,
@@ -93,6 +78,21 @@ export class MentorLogbookController {
     const mentor_logbook =
       await this.logbookMentorService.findOne(mentor_logbookId);
     res.render('admin/mentor_logbook/edit', { user: req.user, mentor_logbook });
+  }
+
+  @Roles('admin')
+  @Get(':mentor_logbookId')
+  async findOne(
+    @Param('mentor_logbookId') mentor_logbookId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const mentor_logbook =
+      await this.logbookMentorService.findOne(mentor_logbookId);
+    res.render('admin/mentor_logbook/detail', {
+      user: req.user,
+      mentor_logbook,
+    });
   }
 
   @Roles('admin')

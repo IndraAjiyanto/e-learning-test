@@ -67,7 +67,7 @@ export class MaterialService {
   async findSessionsByCourse(weeksId: number) {
     const session = await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },
-      relations: ['materi'],
+      relations: ['materials'],
       order: { id: 'ASC' },
     });
 

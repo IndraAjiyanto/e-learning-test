@@ -3,7 +3,7 @@
     <h2 class='text-2xl font-semibold mb-8 text-gray-900 text-center'>Create New
       Session</h2>
 
-    <form method='POST' action='/session/{{mingguId}}' class='space-y-8' x-data='{
+    <form method='POST' action='/session/{{weeksId}}' class='space-y-8' x-data='{
   loading: false}' @submit="loading = true;">
 
       <!-- Grid 2 Kolom -->
@@ -43,13 +43,13 @@
         <!-- Waktu Awal -->
         <div>
           <label
-            for="start_time"
+            for="startTime"
             class='block text-sm font-semibold text-gray-700 mb-1'
           >Time Start</label>
           <input
             type='time'
-            id="start_time"
-            name="start_time"
+            id="startTime"
+            name="startTime"
             required
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
             style='color-scheme: light;'
@@ -59,13 +59,13 @@
         <!-- Waktu Akhir -->
         <div>
           <label
-            for="end_time"
+            for="endTime"
             class='block text-sm font-semibold text-gray-700 mb-1'
           >Time End</label>
           <input
             type='time'
-            id="end_time"
-            name="end_time"
+            id="endTime"
+            name="endTime"
             required
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
             style='color-scheme: light;'
@@ -104,7 +104,7 @@
 
         <span class='text-sm text-gray-700'>Click toggle if it’s the last week</span>
 
-        <input type='hidden' name='akhir_check' :value='launch' />
+        <input type='hidden' name='isFinalCheck' :value='launch' />
       </div>
 
       <!-- Tombol Aksi di Kiri -->
@@ -119,7 +119,7 @@
           <span x-show='!loading'>Create</span>
         </button>
         <a
-          href='/week/{{mingguId}}'
+          href='/week/{{weeksId}}'
         :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>

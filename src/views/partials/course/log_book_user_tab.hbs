@@ -163,7 +163,7 @@
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.process"></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.obstacles"></td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              <template x-if="logbookUser.other_documentation">
+              <template x-if="logbookUser.otherDocumentation">
                 <a :href="logbookUser.otherDocumentation" 
                    target="_blank" 
                     class="text-blue-600 hover:underline break-all text-xs" 
@@ -365,7 +365,7 @@ function logBookUserData() {
              ${l.session?.weeks?.course?.category?.name || ""}
              ${l.session?.weeks?.course?.mentor?.[0]?.name || ""}
              ${l.activity || ""}
-             ${l.activity_details || ""}
+             ${l.activityDetails || ""}
              ${l.dokumentasi || ""}
              ${l.process || ""}
              ${l.obstacles || ""}

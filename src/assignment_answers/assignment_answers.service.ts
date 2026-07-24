@@ -69,7 +69,7 @@ export class AnswerTasksService {
   async findJawabanTugas(userId: number, assignmentId: number) {
     return await this.jawabanTugasRepository.find({
       where: { user: { id: userId }, task: { id: assignmentId } },
-      relations: ['komentar'],
+      relations: ['comment'],
     });
   }
 
@@ -86,7 +86,7 @@ export class AnswerTasksService {
   async findAllJawabanTugas(assignmentId: number) {
     return await this.jawabanTugasRepository.find({
       where: { task: { id: assignmentId } },
-      relations: ['user', 'komentar', 'assignments'],
+      relations: ['user', 'comment', 'task'],
     });
   }
 

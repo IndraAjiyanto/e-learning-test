@@ -22,7 +22,8 @@ export class AnswersService {
     }
 
     const answers = this.jawabanRepository.create({
-      ...createJawabanDto,
+      answer: createJawabanDto.answer,
+      isCorrect: createJawabanDto.is_correct,
       question: questions,
     });
     return await this.jawabanRepository.save(answers);

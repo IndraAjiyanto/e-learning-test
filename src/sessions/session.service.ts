@@ -168,7 +168,7 @@ export class SessionService {
         userCourses: { course: { id: courseId } },
         absent: { session: { id: sessionId } },
       },
-      relations: ['attendances'],
+      relations: ['absent'],
     });
   }
 

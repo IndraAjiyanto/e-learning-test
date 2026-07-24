@@ -7,16 +7,16 @@
         >
           <div class='flex justify-between items-start'>
             <div>
-              <p class='font-semibold text-gray-900 mb-1' x-text="'Session ' + session.pertemuan_ke + ': ' + session.topic"></p>
+              <p class='font-semibold text-gray-900 mb-1' x-text="'Session ' + session.sessionOrder + ': ' + session.topic"></p>
               <div
                 class='grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-600'
               >
                 <p><span class='font-medium'>Location :</span>
                   <span x-text="session.location"></span></p>
                 <p><span class='font-medium'>Time:</span>
-                <span x-text="formatTime(session.start_time)"></span>
+                <span x-text="formatTime(session.startTime)"></span>
                   -
-                  <span x-text="formatTime(session.end_time)"></span></p>
+                  <span x-text="formatTime(session.endTime)"></span></p>
                 <p><span class='font-medium'>Date:</span>
                   <span x-text="formatTanggal(session.date)"></span></p>
               </div>

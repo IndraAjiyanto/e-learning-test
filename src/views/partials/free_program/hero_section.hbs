@@ -99,7 +99,7 @@
             <p class="text-[#CC0000] font-bold text-[18px] text-center mb-5">
               Registration is Open Until {{formatTanggal course.tanggal_selesai lang}}
             </p>
-            <a href="#" class="flex items-center justify-center w-full h-[58px] bg-[#032A55] hover:bg-[#021b3a] text-white font-medium text-[17px] rounded-[10px] transition-colors shadow-sm">
+            <a @click.prevent="openRegistrationModal()" class="flex items-center justify-center w-full h-[58px] bg-[#032A55] hover:bg-[#021b3a] text-white font-medium text-[17px] rounded-[10px] transition-colors shadow-sm cursor-pointer">
               Registration Now
             </a>
           </div>
