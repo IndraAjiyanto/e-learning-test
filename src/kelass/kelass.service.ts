@@ -120,7 +120,7 @@ export class KelassService {
 
     let teknologi: Teknologi[] = [];
     if (
-      createKelassDto.teknologiIds &&
+      Array.isArray(createKelassDto.teknologiIds) &&
       createKelassDto.teknologiIds.length > 0
     ) {
       teknologi = await this.teknologiRepository.findBy({
@@ -128,8 +128,9 @@ export class KelassService {
       });
     }
 
+    const { teknologiIds, ...otherProperties } = createKelassDto;
     const kelas = await this.kelasRepository.create({
-      ...createKelassDto,
+      ...otherProperties,
       kategori: kategori,
       jenis_kelas: jenis_kelas,
       teknologi: teknologi,
@@ -1030,14 +1031,15 @@ async allClassExcept(kelasId: number) {
       kelas.jenis_kelas = jenis_kelas;
     }
 
-    if (updateKelassDto.teknologiIds !== undefined) {
-      if (updateKelassDto.teknologiIds.length > 0) {
-        kelas.teknologi = await this.teknologiRepository.findBy({
-          id: In(updateKelassDto.teknologiIds),
-        });
-      } else {
-        kelas.teknologi = [];
-      }
+    if (
+      Array.isArray(updateKelassDto.teknologiIds) &&
+      updateKelassDto.teknologiIds.length > 0
+    ) {
+      kelas.teknologi = await this.teknologiRepository.findBy({
+        id: In(updateKelassDto.teknologiIds),
+      });
+    } else {
+      kelas.teknologi = [];
     }
 
     const { jenis_kelasId, kategoriId, teknologiIds, ...otherProperties } =

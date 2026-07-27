@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -72,6 +73,11 @@ export class CreateKelassDto {
   @IsString()
   paid_check: string;
 
+  @Transform(({ value }) => {
+    if (value === '' || value === null || value === undefined) return [];
+    if (Array.isArray(value)) return value.filter((v) => v !== '' && v !== null && v !== undefined);
+    return [value];
+  })
   @IsArray()
   @IsInt({ each: true })
   @IsOptional()

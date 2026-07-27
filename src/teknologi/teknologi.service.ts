@@ -4,6 +4,8 @@ import { UpdateTeknologiDto } from './dto/update-teknologi.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Teknologi } from 'src/entities/teknologi.entity';
 import { Repository } from 'typeorm';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class TeknologiService {
@@ -49,5 +51,15 @@ export class TeknologiService {
       throw new NotFoundException('Tech not found');
     }
     return await this.teknologiRepository.remove(teknologi);
+  }
+
+  async deleteFile(fileUrl: string) {
+    try {
+      if (!fileUrl) return;
+      const filePath = path.join(process.cwd(), 'public', fileUrl);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch {}
   }
 }

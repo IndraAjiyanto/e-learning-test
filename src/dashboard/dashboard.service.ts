@@ -351,9 +351,9 @@ async findPortfolio(options?: {
     };
   }
 
-  const [data, total] = await this.portfolioRepository.findAndCount({
+    const [data, total] = await this.portfolioRepository.findAndCount({
     where,
-    relations: ['kelas', 'kelas.kategori', 'kelas.jenis_kelas', 'user'],
+    relations: ['kelas', 'kelas.kategori', 'kelas.jenis_kelas', 'kelas.teknologi', 'user'],
     skip,
     take: limit,
   });
