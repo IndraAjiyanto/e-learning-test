@@ -122,13 +122,20 @@
           <!-- Teknologi -->
           <div
             class='flex flex-wrap gap-2'
-            x-show='item.teknologi && item.teknologi.length > 0'
+            x-show='item.kelas && item.kelas.teknologi && item.kelas.teknologi.length > 0'
           >
-            <template x-for='tech in item.teknologi' :key='tech'>
+            <template x-for='tech in (item.kelas ? item.kelas.teknologi : [])' :key='tech.id || tech.nama'>
               <span
-                class='px-3 py-1 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:from-gray-100 hover:to-gray-200 transition-all'
-                x-text='tech'
-              ></span>
+                class='px-3 py-1 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-200 hover:from-gray-100 hover:to-gray-200 transition-all flex items-center gap-1.5'
+              >
+                <template x-if="tech.svg && tech.svg !== 'null' && tech.svg.trim() !== ''">
+                  <span class='w-4 h-4 flex items-center justify-center' x-html="tech.svg"></span>
+                </template>
+                <template x-if="tech.img_url && tech.img_url !== 'null' && tech.img_url.trim() !== ''">
+                  <img :src="tech.img_url" :alt="tech.nama" class='w-4 h-4 object-contain'>
+                </template>
+                <span x-text="tech.nama"></span>
+              </span>
             </template>
           </div>
 

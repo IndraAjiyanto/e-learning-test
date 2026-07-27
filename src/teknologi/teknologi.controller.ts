@@ -9,6 +9,9 @@ import {
   UseGuards,
   Res,
   Req,
+  UseInterceptors,
+  UseFilters,
+  BadRequestException,
 } from '@nestjs/common';
 import { TeknologiService } from './teknologi.service';
 import { CreateTeknologiDto } from './dto/create-teknologi.dto';
@@ -16,20 +19,46 @@ import { UpdateTeknologiDto } from './dto/update-teknologi.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
+import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
+import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
 
 @UseGuards(AuthenticatedGuard)
+@UseInterceptors(MulterErrorInterceptor)
 @Controller('technology')
 export class TeknologiController {
   constructor(private readonly teknologiService: TeknologiService) {}
 
   @Roles('super_admin')
   @Post()
+  @UseInterceptors(
+    FileInterceptor('image', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    folder: 'technology',
+    maxSize: 2 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+  })
   async create(
     @Body() createTeknologiDto: CreateTeknologiDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
+      createTeknologiDto.img_url = req.body.uploadedImageUrls?.[0] || undefined;
+
+      const isSvgEmpty = createTeknologiDto.svg === '';
+      if (isSvgEmpty) {
+        delete createTeknologiDto.svg;
+      }
+
+      if (!createTeknologiDto.svg && !createTeknologiDto.img_url) {
+        throw new BadRequestException('SVG atau Gambar (Image) wajib diisi salah satunya!');
+      }
+
       await this.teknologiService.create(createTeknologiDto);
       req.flash('success', 'Tech successfully created');
       res.redirect('/technology');
@@ -65,6 +94,15 @@ export class TeknologiController {
 
   @Roles('super_admin')
   @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('image', multerConfigMemoryOnly),
+    ValidateImageInterceptor,
+  )
+  @ValidateImage({
+    folder: 'technology',
+    maxSize: 2 * 1024 * 1024,
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+  })
   async update(
     @Param('id') id: number,
     @Body() updateTeknologiDto: UpdateTeknologiDto,
@@ -72,12 +110,35 @@ export class TeknologiController {
     @Req() req: Request,
   ) {
     try {
+      if (req.body.uploadedImageUrls?.[0]) {
+        updateTeknologiDto.img_url = req.body.uploadedImageUrls[0];
+      } else if (req.body.remove_image === 'true') {
+        delete updateTeknologiDto.img_url;
+      }
+
+      const existingTech = await this.teknologiService.findOne(id);
+      if (!existingTech) {
+        throw new BadRequestException('Tech not found');
+      }
+
+      const isSvgEmpty = updateTeknologiDto.svg === '';
+      const finalSvg = updateTeknologiDto.svg !== undefined ? updateTeknologiDto.svg : existingTech.svg;
+      const finalImgUrl = updateTeknologiDto.img_url !== undefined ? updateTeknologiDto.img_url : existingTech.img_url;
+
+      if ((isSvgEmpty || !finalSvg) && !finalImgUrl) {
+        throw new BadRequestException('SVG atau Gambar (Image) wajib diisi salah satunya!');
+      }
+
+      if (isSvgEmpty) {
+        delete updateTeknologiDto.svg;
+      }
+
       await this.teknologiService.update(id, updateTeknologiDto);
       req.flash('success', 'Tech successfully updated');
       res.redirect('/technology');
     } catch (error: any) {
       req.flash('error', error.message || 'Tech failed to update');
-      res.redirect('/technology');
+      res.redirect(`/technology/formEdit/${id}`);
     }
   }
 
@@ -93,9 +154,13 @@ export class TeknologiController {
       if (!teknologi) {
         req.flash('error', 'Tech not found');
         res.redirect('/technology');
+        return;
+      }
+      if (teknologi.img_url) {
+        await this.teknologiService.deleteFile(teknologi.img_url);
       }
       await this.teknologiService.remove(id);
-      req.flash('success', 'Tech   successfully deleted');
+      req.flash('success', 'Tech successfully deleted');
       res.redirect('/technology');
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete tech');

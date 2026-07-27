@@ -85,6 +85,10 @@ async function bootstrap() {
           const escaped = Handlebars.escapeExpression(text);
           return new Handlebars.SafeString(escaped.replace(/\n/g, '<br>'));
         },
+        startsWith: (str: string, prefix: string) => {
+          if (!str || typeof str !== 'string') return false;
+          return str.startsWith(prefix);
+        },
 
         // Helper untuk tanggal dan waktu
         formDate: (date: Date) => new Date(date).toISOString().split('T')[0],

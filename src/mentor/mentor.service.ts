@@ -29,15 +29,16 @@ export class MentorService {
     }
     let teknologi: Teknologi[] = [];
     if (
-      createMentorDto.teknologiIds &&
+      Array.isArray(createMentorDto.teknologiIds) &&
       createMentorDto.teknologiIds.length > 0
     ) {
       teknologi = await this.teknologiRepository.findBy({
         id: In(createMentorDto.teknologiIds),
       });
     }
+    const { teknologiIds, ...otherProperties } = createMentorDto;
     const mentor = await this.mentorRepository.create({
-      ...createMentorDto,
+      ...otherProperties,
       kelas: kelas,
       teknologi: teknologi,
     });

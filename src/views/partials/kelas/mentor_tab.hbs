@@ -68,7 +68,14 @@
               </td>
             <td class="px-6 py-4 text-sm text-gray-800"> <div class="flex flex-wrap gap-1">
               <template x-for="tech in mentor.teknologi" :key="tech.id">
-                <span class="w-4 h-4" x-html="tech.svg"></span>
+                <span class="w-4 h-4 flex items-center gap-1">
+                  <template x-if="tech.svg && tech.svg !== 'null' && tech.svg.trim() !== ''">
+                    <span x-html="tech.svg"></span>
+                  </template>
+                  <template x-if="tech.img_url && tech.img_url !== 'null' && tech.img_url.trim() !== ''">
+                    <img :src="tech.img_url" :alt="tech.nama" class="w-full h-full object-contain">
+                  </template>
+                </span>
               </template>
               </div></td>
             <td class="px-6 py-4 text-sm text-gray-800" x-text="mentor.linkedin"></td>

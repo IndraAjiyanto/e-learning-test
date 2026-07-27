@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateTeknologiDto {
   @IsString()
@@ -6,6 +6,10 @@ export class CreateTeknologiDto {
   nama: string;
 
   @IsString()
-  @IsNotEmpty()
-  svg: string;
+  @IsOptional()
+  svg?: string;
+
+  @IsString()
+  @IsOptional()
+  img_url?: string;
 }
