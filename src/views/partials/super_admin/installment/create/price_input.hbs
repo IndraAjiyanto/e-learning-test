@@ -6,34 +6,34 @@
         <!-- Down Payment (DP) -->
         <div class='space-y-2'>
           <label
-            for='dp'
+            for='downPayment'
             class='block text-sm font-semibold text-gray-700 mb-1'
           >
             Down Payment (DP)
           </label>
           <input
             type='text'
-            id='dp'
-            x-model='dpDisplay'
+            id='downPayment'
+            x-model='downPaymentDisplay'
             @input='formatNumber($event)'
             placeholder='Enter down payment amount'
             required
-            :class="formErrors.dp ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.dp ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+            :class="formErrors.downPayment ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.downPayment ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           />
-          <input type='hidden' name='dp' x-model='dpValue' />
+          <input type='hidden' name='downPayment' x-model='downPaymentValue' />
           <!-- Error Message -->
-          <template x-if='formErrors.dp'>
+          <template x-if='formErrors.downPayment'>
             <div
               class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
             >
               <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <p class='text-xs text-red-700' x-text='formErrors.dp'></p>
+              <p class='text-xs text-red-700' x-text='formErrors.downPayment'></p>
             </div>
           </template>
 
           <!-- Success Message -->
-          <template x-if='formValid.dp && !formErrors.dp'>
+          <template x-if='formValid.downPayment && !formErrors.downPayment'>
             <div
               class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
             >
@@ -43,7 +43,7 @@
           </template>
         </div>
         <div class='space-y-2'>
-          <template x-for='(price, index) in parseInt(bulan)' :key='index'>
+          <template x-for='(price, index) in parseInt(month)' :key='index'>
             <div class='flex items-center gap-3'>
               <span
                 class='text-sm text-gray-600 w-20'
@@ -51,34 +51,34 @@
               ></span>
               <input
                 type='text'
-                x-model='hargaDisplays[index]'
+                x-model='priceDisplays[index]'
                 @input='formatNumber($event, index)'
                 placeholder='Enter amount'
                 required
-                :class="formErrors.harga[index] ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.harga[index] ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+                :class="formErrors.price[index] ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.price[index] ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
                 class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
               />
               <input
                 type='hidden'
-                name='harga[]'
-                x-model='hargaValues[index]'
+                name='price[]'
+                x-model='priceValues[index]'
               />
             </div>
             <!-- Error Message -->
-            <template x-if='formErrors.harga[index]'>
+            <template x-if='formErrors.price[index]'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg ml-20'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.harga[index]'
+                  x-text='formErrors.price[index]'
                 ></p>
               </div>
             </template>
 
             <!-- Success Message -->
-            <template x-if='formValid.harga[index] && !formErrors.harga[index]'>
+            <template x-if='formValid.price[index] && !formErrors.price[index]'>
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg ml-20'
               >

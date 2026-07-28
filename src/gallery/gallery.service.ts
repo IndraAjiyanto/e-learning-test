@@ -4,29 +4,29 @@ import { Repository } from 'typeorm';
 import { Gallery } from './../entities/gallery.entity'
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
-import { Kategori } from 'src/entities/kategori.entity';
+import { Category } from 'src/entities/category.entity';
 
 @Injectable()
 export class GalleryService {
   constructor(
     @InjectRepository(Gallery)
     private readonly galleryRepository: Repository<Gallery>,
-    @InjectRepository(Kategori)
-    private readonly kategoriRepository: Repository<Kategori>
+    @InjectRepository(Category)
+    private readonly kategoriRepository: Repository<Category>
   ) {}
 
   async create(createGalleryDto: CreateGalleryDto): Promise<Gallery> {
-     const { kategori_id, ...rest } = createGalleryDto;
+     const { category_id, ...rest } = createGalleryDto;
     const gallery = this.galleryRepository.create({
         ...rest,
-    kategori: kategori_id ? { id: kategori_id } as any : null,
+    category: category_id ? { id: category_id } as any : null,
       });
     return this.galleryRepository.save(gallery);
   }
 
   async findAll(): Promise<Gallery[]> {
     return this.galleryRepository.find({
-      relations: ['kategori'],
+      relations: ['category'],
       order: { id: 'DESC' },
     });
   }
@@ -34,7 +34,7 @@ export class GalleryService {
   async findOne(id: number): Promise<Gallery> {
     const gallery = await this.galleryRepository.findOne({
       where: { id },
-      relations: ['kategori'],
+      relations: ['category'],
     });
 
     if (!gallery) {
@@ -44,25 +44,25 @@ export class GalleryService {
     return gallery;
   }
 
-  async findByKategori(kategoriId: number): Promise<Gallery[]> {
+  async findByKategori(categoryId: number): Promise<Gallery[]> {
   return this.galleryRepository.find({
-    where: { kategori: { id: kategoriId } },
-    relations: ['kategori'],
+    where: { category: { id: categoryId } },
+    relations: ['category'],
     order: { id: 'DESC' },
   });
 }
 
  async update(
   galleryId: number,
-  updateGalleryDto: UpdateGalleryDto & { file_path?: string },
+  updateGalleryDto: UpdateGalleryDto & { filePath?: string },
 ): Promise<Gallery> {
   const gallery = await this.findOne(galleryId);
-  const { kategori_id, ...rest } = updateGalleryDto;
+  const { category_id, ...rest } = updateGalleryDto;
 
   Object.assign(gallery, rest);
 
-  if (kategori_id !== undefined) {
-    gallery.kategori = kategori_id ? ({ id: kategori_id } as any) : null;
+  if (category_id !== undefined) {
+    gallery.category = category_id ? ({ id: category_id } as any) : null;
   }
 
   return this.galleryRepository.save(gallery);

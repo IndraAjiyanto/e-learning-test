@@ -1,7 +1,7 @@
     {{#if check_user}}
         {{else}}
-          {{#if kelas.check_paid}}
-            {{#if (check daftar kelas.kuota)}}
+          {{#if course.checkPaid}}
+            {{#if (check daftar course.quota)}}
               <div
                 class='bg-gradient-to-br from-primary via-secondary to-gray-900 text-white p-6 rounded-2xl shadow-lg'
               >
@@ -48,7 +48,7 @@
                   <li>{{t "test.detailProgram.fullPayment.transferAmount"}}
                     <span
                       class='font-bold bg-blue-100 px-2 py-1 rounded'
-                    >{{formatRupiah kelas.harga}}</span></li>
+                    >{{formatRupiah course.harga}}</span></li>
                   <li>{{t "test.detailProgram.fullPayment.useYourName"}}</li>
                   <li>{{t "test.detailProgram.fullPayment.enterWhatsApp"}}</li>
                   <li>{{t "test.detailProgram.fullPayment.uploadProof"}}</li>
@@ -116,7 +116,7 @@
                     class='mt-2 bg-white rounded-lg p-3 border border-emerald-300'
                   >
                     <a
-                      href='{{kelas.form}}'
+                      href='{{course.form}}'
                       target='_blank'
                       class='text-emerald-600 hover:text-emerald-800 font-semibold break-all flex items-center gap-2'
                     >

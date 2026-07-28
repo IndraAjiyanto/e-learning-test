@@ -1,10 +1,10 @@
                                 <!-- Logbook Section -->
                                 <template
-                                  x-if="pertemuan.logbook?.[0]?.proses === 'acc'"
+                                  x-if="session.logbooks?.[0]?.process === 'acc'"
                                 >
                                   <div class='mt-3'>
                                     <a
-                                      :href='`/logbook/${pertemuan.logbook[0].id}`'
+                                      :href='`/logbooks/${session.logbooks[0].id}`'
                                       class='btn border-0 group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-sm'
                                     >
                                       <svg
@@ -27,11 +27,11 @@
                                   </div>
                                 </template>
                                 <template
-                                  x-if="pertemuan.logbook?.[0]?.proses === 'rejected'"
+                                  x-if="session.logbooks?.[0]?.process === 'rejected'"
                                 >
                                   <div class='mt-3'>
                                     <a
-                                      :href='`/logbook/formEdit/${pertemuan.logbook[0].id}`'
+                                      :href='`/logbooks/formEdit/${session.logbooks[0].id}`'
                                       class='btn border-0 group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-sm'
                                     >
                                       <svg
@@ -54,11 +54,11 @@
                                   </div>
                                 </template>
                                 <template
-                                  x-if="pertemuan.logbook?.[0]?.proses === 'proces'"
+                                  x-if="session.logbooks?.[0]?.process === 'proces'"
                                 >
                                   <div class='mt-3'>
                                     <a
-                                      :href='`/logbook/${pertemuan.logbook[0].id}`'
+                                      :href='`/logbooks/${session.logbooks[0].id}`'
                                       class='btn border-0 group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-sm'
                                     >
                                       <svg
@@ -81,11 +81,11 @@
                                   </div>
                                 </template>
                                 <template
-                                  x-if="!pertemuan.logbook?.[0] || (pertemuan.logbook?.[0]?.proses !== 'acc' && pertemuan.logbook?.[0]?.proses !== 'rejected' && pertemuan.logbook?.[0]?.proses !== 'proces')"
+                                  x-if="!session.logbooks?.[0] || (session.logbooks?.[0]?.process !== 'acc' && session.logbooks?.[0]?.process !== 'rejected' && session.logbooks?.[0]?.process !== 'proces')"
                                 >
                                   <div class='mt-3'>
                                     <a
-                                      :href='`/logbook/formCreate/${pertemuan.id}/{{kelas.id}}`'
+                                      :href='`/logbooks/formCreate/${session.id}/{{course.id}}`'
                                       class='btn border-0group flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-slate-700 to-slate-800 text-white text-center rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 hover:from-slate-600 hover:to-slate-700 transition-all duration-300 text-sm'
                                     >
                                       <svg

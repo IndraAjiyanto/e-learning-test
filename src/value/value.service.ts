@@ -4,7 +4,6 @@ import { UpdateValueDto } from './dto/update-value.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Value } from 'src/entities/value.entity';
 import { Repository } from 'typeorm';
-
 @Injectable()
 export class ValueService {
   constructor(
@@ -19,13 +18,13 @@ export class ValueService {
 
   async noValue() {
     const value_old = await this.valueRepository.find({
-      order: { value_ke: 'DESC' },
+      order: { valueOrder: 'DESC' },
       take: 1,
     });
     if (!value_old || value_old.length === 0) {
       return 0;
     }
-    const value_new = value_old[0].value_ke + 1;
+    const value_new = value_old[0].valueOrder + 1;
     return value_new;
   }
 
@@ -55,8 +54,8 @@ export class ValueService {
     await this.valueRepository.remove(value);
     const allValue = await this.valueRepository.find();
     for (const item of allValue) {
-      if (item.value_ke > value.value_ke) {
-        item.value_ke -= 1;
+      if (item.valueOrder > value.valueOrder) {
+        item.valueOrder -= 1;
         await this.valueRepository.save(item);
       }
     }

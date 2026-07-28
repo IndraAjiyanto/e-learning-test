@@ -30,7 +30,7 @@ import { CategoryPartnerService } from 'src/category_partner/category_partner.se
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
-@Controller('partnership')
+@Controller('partner')
 export class PartnerController {
   constructor(
     private readonly PartnerService: PartnerService,
@@ -50,7 +50,7 @@ export class PartnerController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'kerja_sama',
+    folder: 'partner',
   })
   async create(
     @Body() createPartnerDto: CreatePartnerDto,
@@ -58,62 +58,62 @@ export class PartnerController {
     @Req() req: Request,
   ) {
     try {
-      createPartnerDto.gambar = req.body.uploadedImageUrls?.[0];
+      createPartnerDto.image = req.body.uploadedImageUrls?.[0];
       await this.PartnerService.create(createPartnerDto);
-      req.flash('success', 'partnership successfully created');
-      res.redirect('/partnership');
+      req.flash('success', 'partner successfully created');
+      res.redirect('/partner');
     } catch (error: any) {
-      req.flash('error', error.message || 'partnership failed to create');
-      res.redirect('/partnership');
+      req.flash('error', error.message || 'partner failed to create');
+      res.redirect('/partner');
     }
   }
 
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const kerja_sama = await this.PartnerService.findAll();
-    res.render('super_admin/kerja_sama/index', { user: req.user, kerja_sama });
+    const partners = await this.PartnerService.findAll();
+    res.render('super_admin/partner/index', { user: req.user, partners });
   }
 
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
     const categories = await this.categoryPartnerService.findAll();
-    res.render('super_admin/kerja_sama/create', {
+    res.render('super_admin/partner/create', {
       user: req.user,
       categories,
     });
   }
 
   @Roles('super_admin')
-  @Get(':kerja_samaId')
+  @Get(':partnerId')
   async findOne(
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('partnerId') partnerId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kerja_sama = await this.PartnerService.findOne(kerja_samaId);
-    res.render('super_admin/kerja_sama/detail', { user: req.user, kerja_sama });
+    const partner = await this.PartnerService.findOne(partnerId);
+    res.render('super_admin/partner/detail', { user: req.user, partner });
   }
 
   @Roles('super_admin')
-  @Get('formEdit/:kerja_samaId')
+  @Get('formEdit/:partnerId')
   async formEdit(
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('partnerId') partnerId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kerja_sama = await this.PartnerService.findOne(kerja_samaId);
+    const partner = await this.PartnerService.findOne(partnerId);
     const categories = await this.categoryPartnerService.findAll();
-    res.render('super_admin/kerja_sama/edit', {
+    res.render('super_admin/partner/edit', {
       user: req.user,
-      kerja_sama,
+      partner,
       categories,
     });
   }
 
   @Roles('super_admin')
-  @Patch(':kerja_samaId')
+  @Patch(':partnerId')
   @UseInterceptors(
     FileInterceptor('gambar', multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -125,50 +125,51 @@ export class PartnerController {
     maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'kerja_sama',
+    folder: 'partner',
   })
   async update(
     @UploadedFile() gambar: Express.Multer.File,
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('partnerId') partnerId: number,
     @Body() updatePartnerDto: UpdatePartnerDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const kerja_sama = await this.PartnerService.findOne(kerja_samaId);
+      const partner = await this.PartnerService.findOne(partnerId);
       if (gambar) {
-        await this.PartnerService.deleteFile(kerja_sama.gambar);
-        updatePartnerDto.gambar = req.body.uploadedImageUrls?.[0];
+        await this.PartnerService.deleteFile(partner.image);
+        updatePartnerDto.image = req.body.uploadedImageUrls?.[0];
       }
-      await this.PartnerService.update(kerja_samaId, updatePartnerDto);
-      req.flash('success', 'partnership successfully updated');
-      res.redirect('/partnership');
+      await this.PartnerService.update(partnerId, updatePartnerDto);
+      req.flash('success', 'partner successfully updated');
+      res.redirect('/partner');
     } catch (error: any) {
-      req.flash('error', error.message || 'partnership failed to update');
-      res.redirect('/partnership');
+      req.flash('error', error.message || 'partner failed to update');
+      res.redirect('/partner');
     }
   }
 
   @Roles('super_admin')
-  @Delete(':kerja_samaId')
+  @Delete(':partnerId')
   async remove(
-    @Param('kerja_samaId') kerja_samaId: number,
+    @Param('partnerId') partnerId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const kerja_sama = await this.PartnerService.findOne(kerja_samaId);
-      if (!kerja_sama) {
-        req.flash('error', 'partnership not found');
-        res.redirect('/partnership');
+      const partner = await this.PartnerService.findOne(partnerId);
+      if (!partner) {
+        req.flash('error', 'partner not found');
+        res.redirect('/partner');
+        return;
       }
-      await this.PartnerService.deleteFile(kerja_sama.gambar);
-      await this.PartnerService.remove(kerja_samaId);
-      req.flash('success', 'partnership successfully remove');
-      res.redirect('/partnership');
+      await this.PartnerService.deleteFile(partner.image);
+      await this.PartnerService.remove(partnerId);
+      req.flash('success', 'partner successfully removed');
+      res.redirect('/partner');
     } catch (error: any) {
-      req.flash('error', error.message || 'partnership failed to remove');
-      res.redirect('/partnership');
+      req.flash('error', error.message || 'partner failed to remove');
+      res.redirect('/partner');
     }
   }
 }

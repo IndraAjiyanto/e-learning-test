@@ -5,7 +5,7 @@ export class CreateGalleryDto {
 
     @IsOptional()
     @IsString()
-    file_path?: string
+    filePath?: string
 
      @IsString()
     title:string
@@ -17,5 +17,5 @@ export class CreateGalleryDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  kategori_id?: number;
+  category_id?: number;
 }

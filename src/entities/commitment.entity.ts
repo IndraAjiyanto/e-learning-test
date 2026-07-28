@@ -13,16 +13,16 @@ export class Commitment {
   id: number;
 
   @Column('jsonb', { nullable: true })
-  judul: string[];
+  title: string[];
 
   @Column('jsonb', { nullable: true })
-  deskripsi: string[];
+  description: string[];
 
   @Column()
   icon: string;
 
-  @Column()
-  commitment_ke: number;
+  @Column({nullable:true})
+  commitmentOrder: number;
 
   @CreateDateColumn()
   createdAt: Date;

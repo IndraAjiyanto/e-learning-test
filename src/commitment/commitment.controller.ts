@@ -31,7 +31,7 @@ export class CommitmentController {
     @Res() res: Response,
   ) {
     try {
-      createCommitmentDto.commitment_ke =
+      createCommitmentDto.commitmentOrder =
         await this.commitmentService.noCommitment();
       await this.commitmentService.create(createCommitmentDto);
       req.flash('success', 'Commitment created successfully');

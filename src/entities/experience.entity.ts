@@ -16,10 +16,10 @@ export class Experience {
   content: string[];
 
   @Column('jsonb', { nullable: true })
-  isi: string[];
+  details: string[];
 
-  @Column()
-  experience_ke: number;
+  @Column({nullable:true})
+  experienceOrder: number;
 
   @CreateDateColumn()
   createdAt: Date;

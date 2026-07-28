@@ -5,13 +5,13 @@ export class CreateTeamDto {
   profile: string;
 
   @IsString()
-  nama: string;
+  name: string;
 
   @IsArray()
-  posisi: string[];
+  position: string[];
 
   @IsNumber()
-  team_ke: number;
+  teamOrder: number;
 
   @IsString()
   linkedin: string;
@@ -22,5 +22,5 @@ export class CreateTeamDto {
 
   @IsArray()
   @IsOptional()
-  deskripsi: string[];
+  description: string[];
 }

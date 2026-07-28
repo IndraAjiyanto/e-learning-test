@@ -3,25 +3,25 @@ import { QuizService } from './quiz.service';
 import { QuizController } from './quiz.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Quiz } from 'src/entities/quiz.entity';
-import { Minggu } from 'src/entities/minggu.entity';
-import { Nilai } from 'src/entities/nilai.entity';
+import { Weeks } from 'src/entities/weeks.entity';
+import { Score } from 'src/entities/score.entity';
 import { User } from 'src/entities/user.entity';
-import { Pertanyaan } from 'src/entities/pertanyaan.entity';
-import { ProgresQuiz } from 'src/entities/progres_quiz.entity';
-import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
-import { JawabanUser } from 'src/entities/jawaban_user.entity';
+import { Question } from 'src/entities/question.entity';
+import { QuizProgress } from 'src/entities/quiz_progress.entity';
+import { SessionProgress } from 'src/entities/session_progress.entity';
+import { UserAnswer } from 'src/entities/user_answer.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Quiz,
-      Minggu,
-      Nilai,
+      Weeks,
+      Score,
       User,
-      Pertanyaan,
-      ProgresQuiz,
-      ProgresPertemuan,
-      JawabanUser,
+      Question,
+      QuizProgress,
+      SessionProgress,
+      UserAnswer,
     ]),
   ],
   controllers: [QuizController],

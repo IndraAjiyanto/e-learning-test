@@ -25,34 +25,34 @@ export class BenefitCategoryController {
   ) {}
 
   @Roles('super_admin')
-  @Get('formCreate/:kategoriId')
+  @Get('formCreate/:categoryId')
   async formCreate(
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     res.render('super_admin/benefit_category/create', {
       user: req.user,
-      kategoriId,
+      categoryId,
     });
   }
 
   @Roles('super_admin')
-  @Post(':kategoriId')
+  @Post(':categoryId')
   async createFromForm(
     @Body() createBenefitCategoryDto: CreateBenefitCategoryDto,
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      createBenefitCategoryDto.kategoriId = kategoriId;
+      createBenefitCategoryDto.categoryId = categoryId;
       await this.benefitCategoryService.create(createBenefitCategoryDto);
       req.flash('success', 'benefit category successfully created');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to create benefit category');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     }
   }
 
@@ -71,10 +71,10 @@ export class BenefitCategoryController {
   }
 
   @Roles('super_admin')
-  @Patch('formEdit/:id/:kategoriId')
+  @Patch('formEdit/:id/:categoryId')
   async updateFromForm(
     @Param('id') id: number,
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Body() updateBenefitCategoryDto: UpdateBenefitCategoryDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -82,28 +82,28 @@ export class BenefitCategoryController {
     try {
       await this.benefitCategoryService.update(id, updateBenefitCategoryDto);
       req.flash('success', 'Benefit category successfully updated');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to update benefit category');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     }
   }
 
   @Roles('super_admin')
-  @Delete(':id/:kategoriId')
+  @Delete(':id/:categoryId')
   async deleteFromForm(
     @Param('id') id: number,
-    @Param('kategoriId') kategoriId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
       await this.benefitCategoryService.remove(id);
       req.flash('success', 'Benefit category successfully deleted');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     } catch (error: any) {
       req.flash('error', 'Failed to delete benefit category');
-      res.redirect('/category/' + kategoriId);
+      res.redirect('/category/' + categoryId);
     }
   }
 }

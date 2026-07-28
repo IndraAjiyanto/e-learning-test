@@ -1,36 +1,36 @@
           <!-- Nama Kategori -->
           <div class='space-y-2'>
             <label
-              for='nama_kategori'
+              for='name'
               class='block text-sm font-semibold text-gray-700 mb-1'
             >
               Category Name
             </label>
             <input
               type='text'
-              id='nama_kategori'
-              name='nama_kategori'
+              id='name'
+              name='name'
               required
-              :class="formErrors.nama_kategori ? 'border-red-500 focus:ring-red-500' : formValid.nama_kategori && formData.nama_kategori ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+              :class="formErrors.name ? 'border-red-500 focus:ring-red-500' : formValid.name && formData.name ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
-              @input='validateField("nama_kategori", $event.target.value)'
-              x-model='formData.nama_kategori'
+              @input='validateField("name", $event.target.value)'
+              x-model='formData.name'
             />
 
-            <template x-if='formErrors.nama_kategori'>
+            <template x-if='formErrors.name'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.nama_kategori'
+                  x-text='formErrors.name'
                 ></p>
               </div>
             </template>
 
             <template
-              x-if='formValid.nama_kategori && !formErrors.nama_kategori && formData.nama_kategori'
+              x-if='formValid.name && !formErrors.name && formData.name'
             >
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'

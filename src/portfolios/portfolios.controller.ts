@@ -49,15 +49,15 @@ export class PortfoliosController {
       const imageUrl = req.body.uploadedImageUrls?.[0];
       res.json({ success: 1, file: { url: imageUrl } });
     } catch (error: any) {
-      req.flash('error', error.message || 'Portfolio failed to create');
+      req.flash('error', error.message || 'Portfolios failed to create');
       res.redirect('/portfolios');
     }
   }
 
   @Roles('user')
-  @Post('create/:kelasId')
+  @Post('create/:courseId')
   @UseInterceptors(
-    FilesInterceptor('gambar', 100, multerConfigMemoryOnly),
+    FilesInterceptor('image', 100, multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -68,7 +68,7 @@ export class PortfoliosController {
     folder: 'portfolio',
   })
   async create(
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Body() createPortfolioDto: CreatePortfolioDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -85,32 +85,32 @@ export class PortfoliosController {
 
       let html = editorjsHTML.parse(JSON.parse(editorjsData));
 
-      createPortfolioDto.content_html = html;
+      createPortfolioDto.contentHtml = html;
 
-      createPortfolioDto.kelasId = kelasId;
-      createPortfolioDto.gambar = req.body.uploadedImageUrls;
+      createPortfolioDto.courseId = courseId;
+      createPortfolioDto.image = req.body.uploadedImageUrls;
       if (req.user) {
         createPortfolioDto.userId = req.user.id;
       }
       await this.portfoliosService.create(createPortfolioDto);
-      req.flash('success', 'portofolio successfully upload');
-      res.redirect(`/program/${kelasId}`);
+      req.flash('success', 'portofolios successfully upload');
+      res.redirect(`/program/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Failed to upload portofolio');
-      res.redirect(`/program/${kelasId}`);
+      req.flash('error', error.message || 'Failed to upload portofolios');
+      res.redirect(`/program/${courseId}`);
     }
   }
 
   @Get()
   async findAll(@Req() req: Request, @Res() res: Response) {
     const portfolio = await this.portfoliosService.findAll();
-    const kategori = await this.portfoliosService.findKategori();
-    const jenis_kelas = await this.portfoliosService.findJenisKelas();
+    const category = await this.portfoliosService.findKategori();
+    const courseType = await this.portfoliosService.findCourseTypes();
     res.render('portfolio', {
       user: req.user,
       portfolio,
-      kategori,
-      jenis_kelas,
+      category,
+      courseType,
     });
   }
 
@@ -121,55 +121,55 @@ export class PortfoliosController {
     @Res() res: Response,
     @Param('userId') userId: number,
   ) {
-    const kategori = await this.portfoliosService.findKategoriMyPortfolio(userId);
-    const jenis_kelas = await this.portfoliosService.findJenisKelasMyPortfolio(userId);
+    const category = await this.portfoliosService.findKategoriMyPortfolio(userId);
+    const courseType = await this.portfoliosService.findMyPortfolioCourseTypes(userId);
     // const portfolio = await this.portfoliosService.findByUser(userId);
     res.render('user/myportfolio', {
       user: req.user,
       // portfolio,
-      kategori,
-      jenis_kelas,
+      category,
+      courseType,
     });
   }
 
   @Roles('user')
-  @Get('formCreate/:kelasId')
+  @Get('formCreate/:courseId')
   async formCreate(
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    res.render('user/portofolio/create', { user: req.user, kelasId });
+    res.render('user/portofolios/create', { user: req.user, courseId });
   }
 
   @Roles('user')
-  @Get(':portofolioId/:kelasId')
+  @Get(':portofolioId/:courseId')
   async findOne(
     @Param('portofolioId') portofolioId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const portfolio = await this.portfoliosService.findOne(portofolioId);
-    res.render('user/portofolio/detail', { user: req.user, portfolio, kelasId });
+    res.render('user/portofolios/detail', { user: req.user, portfolio, courseId });
   }
 
   @Roles('user')
-  @Get('formEdit/:portfolioId/:kelasId')
+  @Get('formEdit/:portfolioId/:courseId')
   async formEdit(
     @Param('portfolioId') portfolioId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     const portfolio = await this.portfoliosService.findOne(portfolioId);
-    res.render('user/portofolio/edit', { user: req.user, portfolio, kelasId });
+    res.render('user/portofolios/edit', { user: req.user, portfolio, courseId });
   }
 
   @Roles('user')
-  @Patch(':portfolioId/:kelasId')
+  @Patch(':portfolioId/:courseId')
   @UseInterceptors(
-    FilesInterceptor('gambar', 10, multerConfigMemoryOnly),
+    FilesInterceptor('image', 10, multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -181,7 +181,7 @@ export class PortfoliosController {
   })
   async update(
     @Param('portfolioId') portfolioId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Body() updatePortfolioDto: UpdatePortfolioDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -202,61 +202,60 @@ export class PortfoliosController {
             '/asset/portfolio/isi',
             '/asset/portfolio/temp',
           );
-        updatePortfolioDto.content_html = editorjsHTML.parse(
+        updatePortfolioDto.contentHtml = editorjsHTML.parse(
           JSON.parse(updatePortfolioDto.content),
         );
       }
 
-      updatePortfolioDto.gambar = updatePortfolioDto.gambar || [];
+      updatePortfolioDto.image = updatePortfolioDto.image || [];
       const combineImage = [
-        ...(updatePortfolioDto.gambar || []),
+        ...(updatePortfolioDto.image || []),
         ...(req.body.uploadedImageUrls || []),
       ];
       const newImageUrls = await this.portfoliosService.deleteUnusedImages(
-        oldPortfolio.gambar,
+        oldPortfolio.image,
         combineImage,
       );
 
       const updateData = {
-        judul: updatePortfolioDto.judul,
-        deskripsi: updatePortfolioDto.deskripsi,
-        teknologi: updatePortfolioDto.teknologi,
-        gambar: newImageUrls,
+        title: updatePortfolioDto.title,
+        description: updatePortfolioDto.description,
+        image: newImageUrls,
         content: updatePortfolioDto.content,
-        content_html: updatePortfolioDto.content_html,
+        contentHtml: updatePortfolioDto.contentHtml,
       };
 
       await this.portfoliosService.update(portfolioId, updateData);
 
-      req.flash('success', 'Portfolio successfully updated');
-      return res.redirect(`/portfolio/${portfolioId}/${kelasId}`);
+      req.flash('success', 'Portfolios successfully updated');
+      return res.redirect(`/portfolio/${portfolioId}/${courseId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'Portfolio failed to update');
-      return res.redirect(`/portfolio/${portfolioId}/${kelasId}`);
+      req.flash('error', error.message || 'Portfolios failed to update');
+      return res.redirect(`/portfolio/${portfolioId}/${courseId}`);
     }
   }
 
   @Roles('user')
-  @Delete(':portfolioId/:kelasId')
+  @Delete(':portfolioId/:courseId')
   async remove(
     @Param('portfolioId') portfolioId: number,
-    @Param('kelasId') kelasId: number,
+    @Param('courseId') courseId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       const portfolio = await this.portfoliosService.findOne(portfolioId);
       if (portfolio) {
-        for (const imageUrl of portfolio.gambar) {
+        for (const imageUrl of portfolio.image) {
           await this.portfoliosService.deleteFile(imageUrl);
         }
         await this.portfoliosService.remove(portfolioId);
       }
-      req.flash('success', 'Portfolio successfully deleted');
-      res.redirect(`/program/${kelasId}`);
+      req.flash('success', 'Portfolios successfully deleted');
+      res.redirect(`/program/${courseId}`);
     } catch (error: any) {
       req.flash('error', error.message || 'Failed to delete portfolio');
-      res.redirect(`/program/${kelasId}`);
+      res.redirect(`/program/${courseId}`);
     }
   }
 }

@@ -5,8 +5,8 @@ export class CreateBackgroundDto {
   content: string[];
 
   @IsArray()
-  isi: string[];
+  details: string[];
 
   @IsNumber()
-  background_ke: number;
+  backgroundOrder: number;
 }

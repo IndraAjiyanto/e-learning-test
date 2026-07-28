@@ -5,13 +5,13 @@ export class CreateTeamLeadDto {
   profile: string;
 
   @IsString()
-  nama: string;
+  name: string;
 
   @IsArray()
-  posisi: string[];
+  position: string[];
 
   @IsArray()
-  deskripsi: string[];
+  description: string[];
 
   @IsString()
   instagram: string;

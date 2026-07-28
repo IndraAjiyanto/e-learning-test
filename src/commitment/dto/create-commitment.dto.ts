@@ -3,16 +3,16 @@ import { IsNotEmpty, IsString, IsNumber, IsArray } from 'class-validator';
 export class CreateCommitmentDto {
   @IsNotEmpty()
   @IsArray()
-  judul: string[];
+  title: string[];
 
   @IsNotEmpty()
   @IsArray()
-  deskripsi: string[];
+  description: string[];
 
   @IsNotEmpty()
   @IsString()
   icon: string;
 
   @IsNumber()
-  commitment_ke: number;
+  commitmentOrder: number;
 }

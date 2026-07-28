@@ -8,13 +8,13 @@ import {
 
 export class CreatePortfolioDto {
   @IsArray()
-  gambar: string[];
+  image: string[];
 
   @IsString()
-  judul: string;
+  title: string;
 
   @IsString()
-  deskripsi: string;
+  description: string;
 
   @IsString()
   link: string;
@@ -25,14 +25,15 @@ export class CreatePortfolioDto {
 
   @IsString()
   @IsOptional()
-  content_html: string;
+  contentHtml: string;
 
   @IsArray()
-  teknologi: string[];
+  @IsOptional()
+  technologies: string[];
 
   @IsNumber()
   userId: number;
 
   @IsNumber()
-  kelasId: number;
+  courseId: number;
 }

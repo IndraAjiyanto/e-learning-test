@@ -6,8 +6,8 @@
           <div class='mb-4'>
             <div class='relative rounded-lg overflow-hidden'>
               <img
-                src='{{kelas.gambar}}'
-                alt='{{kelas.nama_kelas}}'
+                src="{{course.image}}"
+                alt='{{course.name}}'
                 class='w-full h-40 object-cover hover:scale-110 transition-transform duration-500'
               />
             </div>
@@ -18,12 +18,12 @@
             <span
               class='badge bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-md border border-slate-200'
             >
-              {{kelas.kategori.nama_kategori}}
+              {{course.category.name}}
             </span>
             <span
               class='badge bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-md'
             >
-              {{kelas.jenis_kelas.nama_jenis_kelas}}
+              {{course.courseType.nameClassesType}}
             </span>
           </div>
 
@@ -32,17 +32,17 @@
             <h1
               class='text-xl font-bold text-slate-900 mb-2 leading-tight font-montserrat'
             >
-              {{kelas.nama_kelas}}
+              {{course.name}}
             </h1>
             <p class='text-sm text-justify text-slate-600 leading-relaxed'>
-              {{getByLang kelas.deskripsi lang}}
+              {{getByLang course.description lang}}
             </p>
           </div>
 
           <!-- Actions -->
           <div class='card-actions'>
             <a
-              href='{{kelas.grup}}'
+              href='{{course.grup}}'
               target='_blank'
               rel='noopener noreferrer'
               class='btn bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mb-3'
@@ -51,14 +51,14 @@
               {{t 'test.startLearning.joinGroup'}}
             </a>
             <a
-              href='/logbook/user/{{kelas.id}}'
+              href='/logbooks/user/{{course.id}}'
               class='btn bg-gradient-to-r from-green-600 to-green-800 hover:from-green-500 hover:to-green-700 text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mb-3'
             >
               <i class='fa-solid fa-book'></i>
               {{t 'test.startLearning.myLogbook'}}
             </a>
             <a
-              href='/program/program/detail/{{kelas.id}}'
+              href='/program/program/detail/{{course.id}}'
               class='btn bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white text-lg px-8 py-3 w-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1'
             >
               <i class='fa-solid fa-circle-info'></i>

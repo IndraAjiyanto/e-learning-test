@@ -29,7 +29,7 @@
               <div class='relative overflow-hidden rounded-t-xl'>
                 <div class='relative h-44 w-full'>
                   <template
-                    x-for="(image, index) in (Array.isArray(item.gambar) ? item.gambar : [item.gambar])"
+                    x-for="(image, index) in (Array.isArray(item.image) ? item.image : [item.image])"
                     :key='index'
                   >
                     <img
@@ -41,7 +41,7 @@
                 </div>
 
                 <!-- Slide Controls -->
-                <template x-if='Array.isArray(item.gambar) && item.gambar.length > 1'>
+                <template x-if='Array.isArray(item.image) && item.image.length > 1'>
                   <div>
                     <button
                       @click='prevSlide(item)'
@@ -68,9 +68,9 @@
                 </div>
 
                 <!-- Slide Indicators -->
-                <template x-if='Array.isArray(item.gambar) && item.gambar.length > 1'>
+                <template x-if='Array.isArray(item.image) && item.image.length > 1'>
                   <div class='absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2'>
-                    <template x-for='(image, index) in item.gambar' :key='index'>
+                    <template x-for='(image, index) in item.image' :key='index'>
                       <button
                         @click='currentSlide = index'
                         class='w-2 h-2 rounded-full transition-all duration-200'
@@ -93,7 +93,7 @@
                 </div>
 
                 <!-- Title -->
-                <h3 class='text-base font-semibold text-gray-900 leading-tight hover:text-gray-700 transition-colors line-clamp-2 mb-2' x-text="item.judul || 'No Title'"></h3>
+                <h3 class='text-base font-semibold text-gray-900 leading-tight hover:text-gray-700 transition-colors line-clamp-2 mb-2' x-text="item.title || 'No Title'"></h3>
                 
                 <!-- Excerpt -->
                 <p class="text-xs text-gray-600 line-clamp-2 mb-3 text-justify" x-text="item.description"></p>

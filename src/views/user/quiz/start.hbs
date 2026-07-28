@@ -36,8 +36,8 @@ document.addEventListener("change", function(e){
                     },
                     body: JSON.stringify({
                         userId: {{user.id}},
-                        pertanyaanId: questionId,
-                        jawabanId: value
+                        questionsId: questionId,
+                        answersId: value
                     })
                 });
 
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function(){
             },
             
             updateAnsweredStatus() {
-                const questionIds = [{{#each pertanyaan}}{{#unless @first}},{{/unless}}{{id}}{{/each}}];
+                const questionIds = [{{#each questions}}{{#unless @first}},{{/unless}}{{id}}{{/each}}];
                 this.answeredQuestions = questionIds.map((qId, index) => {
                     const input = this.$el.querySelector(`input[name="q-${qId}"]:checked`);
                     return input !== null;
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function(){
             },
             
             nextQuestion() {
-                if (this.currentQuestion < {{pertanyaan.length}} - 1) {
+                if (this.currentQuestion < {{questions.length}} - 1) {
                     this.currentQuestion++;
                 }
             },

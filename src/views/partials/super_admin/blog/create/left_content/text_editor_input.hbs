@@ -4,7 +4,7 @@
   id='editor-id'
   class='text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4'
 ></div>
-<input type='hidden' name='isi[id]' id='isi-id' />
+<input type='hidden' name='details[id]' id='details-id' />
 
 <!-- Editor EN -->
 <label class='mb-2 block font-medium text-gray-700'>Content EN</label>
@@ -12,7 +12,7 @@
   id='editor-en'
   class='text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4'
 ></div>
-<input type='hidden' name='isi[en]' id='isi-en' />
+<input type='hidden' name='details[en]' id='details-en' />
 
 <!-- Editor JP -->
 <label class='mb-2 block font-medium text-gray-700'>Content JP</label>
@@ -20,7 +20,7 @@
   id='editor-ja'
   class='text-left text-black max-w-none min-h-[500px] border border-gray-300 rounded-md bg-white p-4'
 ></div>
-<input type='hidden' name='isi[ja]' id='isi-ja' />
+<input type='hidden' name='details[ja]' id='details-ja' />
 
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
@@ -78,9 +78,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       editors.ja.save(),
     ]);
 
-    document.getElementById('isi-id').value = JSON.stringify(outputId);
-    document.getElementById('isi-en').value = JSON.stringify(outputEn);
-    document.getElementById('isi-ja').value = JSON.stringify(outputJa);
+    document.getElementById('details-id').value = JSON.stringify(outputId);
+    document.getElementById('details-en').value = JSON.stringify(outputEn);
+    document.getElementById('details-ja').value = JSON.stringify(outputJa);
 
     form.submit();
   });

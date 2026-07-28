@@ -18,7 +18,7 @@
       >
         <img
           id='preview-img'
-          src='{{gallery.file_path}}'
+          src='{{gallery.filePath}}'
           class='absolute inset-0 w-full h-full object-cover'
           alt='Preview'
         />
@@ -32,7 +32,7 @@
         <input
           id='gambar-input'
           type='file'
-          name='gambar'
+          name="image"
           accept='image/jpeg,image/jpg,image/png'
           class='hidden'
         />
@@ -117,7 +117,7 @@
 
     <div>
       <label
-        for='kategori_id'
+        for="categoryId"
         class='block text-sm text-gray-900 font-medium mb-2'
       >
         Category
@@ -125,11 +125,11 @@
 
       <input
         type='text'
-        value='{{kategori.nama_kategori}}'
+        value='{{category.name}}'
         class='w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-100'
         disabled
       />
-      <input type='hidden' name='kategori_id' value='{{kategori.id}}' />
+      <input type='hidden' name="categoryId" value='{{category.id}}' />
     </div>
 
     <div class='flex items-center gap-3 pt-2'>
@@ -142,7 +142,7 @@
         Save Changes
       </button>
       <a
-        href='/category/{{kategori.id}}'
+        href='/category/{{category.id}}'
         class='text-sm text-gray-500 hover:text-gray-900'
       >Cancel</a>
     </div>

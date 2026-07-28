@@ -3,10 +3,10 @@ import { BenefitCategoryService } from './benefit_category.service';
 import { BenefitCategoryController } from './benefit_category.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
-import { Kategori } from 'src/entities/kategori.entity';
+import { Category } from 'src/entities/category.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BenefitCategory, Kategori])],
+  imports: [TypeOrmModule.forFeature([BenefitCategory, Category])],
   controllers: [BenefitCategoryController],
   providers: [BenefitCategoryService],
 })

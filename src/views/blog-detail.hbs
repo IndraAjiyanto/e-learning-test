@@ -50,7 +50,7 @@
           {{/each}}
         {{else}}
           <img
-            src='{{gambar}}'
+            src="{{gambar}}"
             class='absolute inset-0 w-full h-44 object-cover'
           />
         {{/if}}
@@ -116,9 +116,9 @@
 <script>
   const shareData = (platform, blog) => {
     const url = window.location.href;
-    const title = blog.judul;
+    const title = blog.title;
     const description = blog.description || "";
-    const image = blog.gambar?.[0] || "";
+    const image = blog.image?.[0] || "";
 
     switch (platform) {
       case "facebook":

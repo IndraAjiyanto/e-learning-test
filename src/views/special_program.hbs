@@ -13,8 +13,8 @@
 
             courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
-        {{#each kategori.jenis_kelas}}
-        { value: '{{this.nama_jenis_kelas }}', icon: '{{computeIcon this.icon}}', title: '{{ this.nama_jenis_kelas }}', desc: '{{truncate (getByLang this.deskripsi ../lang) 10}}' },
+        {{#each category.courseType}}
+        { value: '{{this.nameClassesType }}', icon: '/{{computeIcon this.icon}}', title: '{{ this.nameClassesType }}', desc: '{{truncate (getByLang this.description ../lang) 10}}' },
         {{/each}}
       ],
       
@@ -44,14 +44,14 @@
       this.loading = true;
       try {
         const params = new URLSearchParams();
-        params.set('kategori', `{{kategori.nama_kategori}}`);
-        if (this.selectedType !== 'all') params.set('jenis_kelas', this.selectedType);
+        params.set('category', `{{category.name}}`);
+        if (this.selectedType !== 'all') params.set('courseType', this.selectedType);
         if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);
         if (this.searchQuery) params.set('search', this.searchQuery);
         params.set('page', this.currentPage);
         params.set('limit', this.itemsPerPage);
 
-        const res = await fetch(`/dashboard/kelas/filter?${params.toString()}`);
+        const res = await fetch(`/dashboard/course/filter?${params.toString()}`);
         const json = await res.json();
 
         this.kelasItems = json.data;
@@ -59,7 +59,7 @@
         this.totalPages = json.totalPages;
         this.currentPage = json.currentPage;
       } catch (err) {
-        console.error('Fetch kelas error:', err);
+        console.error('Fetch course error:', err);
       } finally {
         this.loading = false;
       }

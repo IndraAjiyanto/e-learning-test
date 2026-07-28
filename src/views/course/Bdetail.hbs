@@ -1,0 +1,306 @@
+<style>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 150px; /* Offset for sticky header + nav */
+  }
+  @keyframes slideFadeUp {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .anim-slide-up {
+    opacity: 0;
+    animation: slideFadeUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .delay-1 { animation-delay: 0.3s; }
+  .delay-2 { animation-delay: 0.6s; }
+</style>
+<div class='min-h-screen text-slate-900 bg-white relative overflow-hidden' 
+     x-data="{ heroHeight: 600 }" 
+     x-init="$nextTick(() => { 
+        const resizeObserver = new ResizeObserver(entries => {
+            heroHeight = $refs.heroContent.offsetHeight;
+        });
+        if ($refs.heroContent) resizeObserver.observe($refs.heroContent);
+     })">
+  
+  <!-- Full-width Parallax Gradient Background -->
+  <div class="absolute top-0 left-0 w-full z-0 transition-all duration-300 bg-[linear-gradient(180deg,#CEE5F6_0%,#CEE5F6_50%,#E2F0F9_85%,#FFFFFF_100%)]" 
+       :style="`height: ${heroHeight}px;`"></div>
+
+  <!-- HERO SECTION BLOCK -->
+  <div class='w-full mx-auto py-10 pt-28 relative z-10' style="max-width: 1728px; padding-left: 104px; padding-right: 87px;" x-ref="heroContent">
+    
+    <!-- Tombol Kembali -->
+    <button onclick="history.back()" class="flex items-center justify-center rounded-full border border-[#0B1F3B]/30 bg-white hover:bg-[#0B1F3B]/10 transition mb-8 text-[#0B1F3B]" style="width: 50px; height: 50px;">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class='grid grid-cols-1 lg:grid-cols-3 gap-10'>
+
+    <div class='lg:col-span-2 space-y-8' 
+    x-data="{
+
+    activeTab: localStorage.getItem('activeDetailTab') || 'what_you_learn',
+
+    participants: null,
+    what_you_learn: null,
+    benefits: null,
+    learning_flow: null,
+    schedule_fees: null,
+    gallery: null,
+    faq: null,
+    lang: '{{lang}}',
+
+    loading: {
+      participants: false,
+      what_you_learn: false,
+      benefits: false,
+      learning_flow: false,
+      schedule_fees: false,
+      gallery: false,
+      faq: false
+    },
+    fetched: {
+      participants: false,
+      what_you_learn: false,
+      benefits: false,
+      learning_flow: false,
+      schedule_fees: false,
+      gallery: false,
+      faq: false
+    },
+
+    init() {
+        const savedTab = localStorage.getItem('activeDetailTab');
+        console.log(savedTab)
+        if (savedTab) {
+            this.activeTab = savedTab;
+        }
+        
+        this.fetchTab(this.activeTab);
+
+        this.$watch('activeTab', value => {
+            localStorage.setItem('activeDetailTab', value);
+        });
+    },
+
+    async fetchTab(tab) {
+      if (['what_you_learn', 'participants', 'schedule_fees', 'gallery'].includes(tab)) return;
+      if (this.fetched[tab]) return;
+      this.loading[tab] = true;
+      
+      try {
+        const map = {
+          benefit: '/program/api/detail/{{course.id}}/benefit',
+          faq:     '/program/api/detail/{{course.id}}/faq',
+          flow:    '/program/api/detail/{{course.id}}/flow',
+          mentor:  '/program/api/detail/{{course.id}}/mentor'
+        };
+        if(map[tab]) {
+          const res = await fetch(map[tab]);
+          const json = await res.json();
+          this[tab] = json;
+          this.fetched[tab] = true;
+        }
+      } catch(e) {
+        console.error(e);
+      } finally {
+        this.loading[tab] = false;
+      }
+    },
+
+    getByLang(obj, lang) {
+      if (!obj || typeof obj !== 'object') return '';
+      return obj[lang] || obj.id || obj.en || '';
+    },
+
+    switchTab(tab) {
+      this.activeTab = tab;
+      localStorage.setItem('activeDetailTab', tab);
+      this.fetchTab(tab);
+    }
+  }">
+{{> program_Bdetail/left_content/program_priview}}
+
+{{> program_Bdetail/left_content/tab}}
+
+      <div>
+{{> program_Bdetail/left_content/tab_content/participants}}
+
+{{> program_Bdetail/left_content/tab_content/information}}
+
+{{> program_Bdetail/left_content/tab_content/benefit}}
+
+{{> program_Bdetail/left_content/tab_content/flow}}
+
+{{> program_Bdetail/left_content/tab_content/schedule_fees}}
+
+{{> program_Bdetail/left_content/tab_content/gallery}}
+
+{{> program_Bdetail/left_content/tab_content/faq}}
+      </div>
+    </div>
+
+    <aside
+      class='space-y-6'
+      x-data="{ 
+        previewUrl: null, 
+        copied: false, 
+        paymentType: 'full',
+        installmentMonths: 0,
+        fileError: '',
+        waError: '',
+        isValidFile: false,
+        isValidWa: false,
+        fileInputTouched: false,
+        waInputTouched: false,
+        installmentsData: [
+          {{#each installments}}
+            {
+              id: {{this.id}},
+              bulan: {{this.bulan}},
+              dp: {{this.dp}},
+              harga: {{json this.harga}}
+            }{{#unless @last}},{{/unless}}
+          {{/each}}
+        ],
+        hasCicilan: {{#if installments.length}}true{{else}}false{{/if}},
+        copyToClipboard() { 
+          navigator.clipboard.writeText('2847 9237 4298 1234'); 
+          this.copied = true; 
+          setTimeout(() => this.copied = false, 2000); 
+        },
+        setPaymentType(type) {
+          this.paymentType = type;
+          if (type === 'installment' && this.installmentMonths === 0 && this.availableMonths.length > 0) {
+            this.installmentMonths = this.availableMonths[0];
+          }
+        },
+        getCicilanByMonth(months) {
+          const installments = this.installmentsData.find(c => c.bulan === months);
+          return installments ? installments : null;
+        },
+        get installmentAmount() {
+          if (!this.installmentMonths || this.installmentMonths === 0) return 0;
+          const installments = this.getCicilanByMonth(this.installmentMonths);
+          if (installments && installments.dp) {
+            return installments.dp;
+          }
+          return Math.ceil({{course.harga}} / this.installmentMonths);
+        },
+        get totalCicilanAmount() {
+          if (!this.installmentMonths || this.installmentMonths === 0) return {{course.harga}};
+          const installments = this.getCicilanByMonth(this.installmentMonths);
+          if (installments && installments.harga && installments.harga.length > 0) {
+            return installments.harga.reduce((sum, h) => sum + h, 0);
+          }
+          return {{course.harga}};
+        },
+        get availableMonths() {
+          return this.installmentsData.map(c => c.bulan);
+        },
+        validateFile(event) {
+          const file = event.target.files[0];
+          this.fileError = '';
+          this.isValidFile = false;
+          this.previewUrl = null;
+          this.fileInputTouched = true;
+
+          if (!file) return;
+
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            this.fileError = 'File type not allowed. Please upload JPG, JPEG, or PNG only.';
+            event.target.value = '';
+            return;
+          }
+
+          const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+          if (file.size > maxSize) {
+            this.fileError = `File size exceeds 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`;
+            event.target.value = '';
+            return;
+          }
+
+          this.isValidFile = true;
+          this.previewUrl = URL.createObjectURL(file);
+        },
+        validateWa(event) {
+          const value = event.target.value;
+          this.waError = '';
+          this.isValidWa = false;
+          this.waInputTouched = true;
+
+          if (!value) return;
+
+          const cleanValue = value.replace(/[\s\-\(\)]/g, '');
+
+          if (!/^\d+$/.test(cleanValue)) {
+            this.waError = 'WhatsApp number must contain only numbers.';
+            return;
+          }
+
+          if (cleanValue.length < 10 || cleanValue.length > 13) {
+            this.waError = `WhatsApp number must be 10-13 digits. Current: ${cleanValue.length} digits.`;
+            return;
+          }
+
+          if (!cleanValue.startsWith('0') && !cleanValue.startsWith('62')) {
+            this.waError = 'WhatsApp number must start with 0 or 62 (e.g., 08123456789 or 628123456789).';
+            return;
+          }
+
+          this.isValidWa = true;
+        }
+      }"
+    >
+      <div
+        class='p-8 border border-slate-200 rounded-2xl shadow-xl bg-gradient-to-br from-white to-slate-50 space-y-6 sticky top-6'
+      >
+{{> program_Bdetail/right_content/price}}
+
+        <!-- Card No Rekening -->
+        {{#if user}}
+    {{> program_Bdetail/right_content/card_no_rekening}}
+
+          <!-- Form Upload -->
+          {{#if check_user}}
+            <a
+              href='/program/{{course.id}}'
+              class='btn text-base w-full text-center  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold '
+            >
+              <i class='fas fa-play-circle mr-2'></i>
+              {{t "test.detailProgram.continueLearning"}}
+            </a>
+          {{else}}
+            {{#if course.checkPaid}}
+              {{#if (check daftar course.quota)}}
+{{> program_Bdetail/right_content/upload_proof_of_payment/full_payment}}
+
+{{> program_Bdetail/right_content/upload_proof_of_payment/installment}}
+              {{/if}}
+            {{else}}
+              {{#if (check daftar course.quota)}}
+{{> program_Bdetail/right_content/upload_proof_of_payment/free_payment}}
+              {{/if}}
+            {{/if}}
+          {{/if}}
+
+        {{else}}
+          <a
+            href='/login'
+            class='btn text-base w-full bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center border-none'
+          >
+            <i class='fas fa-sign-in-alt mr-2'></i>
+            Registration Now
+          </a>
+        {{/if}}
+      </div>
+      </div>
+    </aside>
+    </div>
+  </div>
+
+
+{{> program_Bdetail/other_program}}
+</div>

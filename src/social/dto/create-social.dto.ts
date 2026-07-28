@@ -5,13 +5,13 @@ export class CreateSocialDto {
   linkedin: string;
 
   @IsString()
-  instragram: string;
+  instagram: string;
 
   @IsString()
-  video_youtube: string;
+  videoYoutube: string;
 
   @IsString()
-  link_form: string;
+  linkForm: string;
 
   @IsString()
   youtube: string;
@@ -20,11 +20,11 @@ export class CreateSocialDto {
   email: string;
 
   @IsString()
-  alamat: string;
+  address: string;
 
   @IsString()
-  link_alamat: string;
+  linkAddress: string;
 
   @IsString()
-  nomor: string;
+  number: string;
 }

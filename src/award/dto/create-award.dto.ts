@@ -5,8 +5,8 @@ export class CreateAwardDto {
   content: string[];
 
   @IsArray()
-  isi: string[];
+  details: string[];
 
   @IsNumber()
-  award_ke: number;
+  awardOrder: number;
 }

@@ -20,13 +20,13 @@ export class ExperienceService {
 
   async noExperience() {
     const experience_old = await this.experienceRepository.find({
-      order: { experience_ke: 'DESC' },
+      order: { experienceOrder: 'DESC' },
       take: 1,
     });
     if (!experience_old || experience_old.length === 0) {
       return 0;
     }
-    const experience_new = experience_old[0].experience_ke + 1;
+    const experience_new = experience_old[0].experienceOrder + 1;
     return experience_new;
   }
 
@@ -54,8 +54,8 @@ export class ExperienceService {
     await this.experienceRepository.remove(experience);
     const allExperience = await this.experienceRepository.find();
     for (const item of allExperience) {
-      if (item.experience_ke > experience.experience_ke) {
-        item.experience_ke -= 1;
+      if (item.experienceOrder > experience.experienceOrder) {
+        item.experienceOrder -= 1;
         await this.experienceRepository.save(item);
       }
     }

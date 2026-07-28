@@ -7,7 +7,7 @@
     <ul class="space-y-2">
       {{#each materipdf}}
       <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-        <span class="text-gray-800">{{judul}}</span>
+        <span class="text-gray-800">{{title}}</span>
         <div class="flex space-x-2">
           <a href="/learning-material/{{id}}/download" 
              class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
@@ -31,7 +31,7 @@
     <ul class="space-y-2">
       {{#each materivideo}}
       <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-        <span class="text-gray-800">{{judul}}</span>
+        <span class="text-gray-800">{{title}}</span>
         <div class="flex space-x-2">
           <a href="/learning-material/{{id}}/download" 
              class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
@@ -55,7 +55,7 @@
     <ul class="space-y-2">
       {{#each materippt}}
       <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm hover:bg-gray-100 transition">
-        <span class="text-gray-800">{{judul}}</span>
+        <span class="text-gray-800">{{title}}</span>
         <div class="flex space-x-2">
           <a href="/learning-material/{{id}}/download" 
              class="bg-gray-900 text-white px-3 py-1 rounded-lg shadow hover:bg-gray-700 transition">Download</a>
@@ -92,7 +92,7 @@
         <form action="/learning-material/pdf/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Judul Materi</label>
-            <input type="text" name="judul"  class="w-full border rounded-lg p-2" required>
+            <input type="text" name="title"  class="w-full border rounded-lg p-2" required>
           </div>
           <div>
             <label class="block text-sm font-medium mb-1">Upload File PDF</label>
@@ -106,7 +106,7 @@
         <form action="/learning-material/video/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Judul Materi</label>
-            <input type="text" name="judul"  class="w-full border rounded-lg p-2" required>
+            <input type="text" name="title"  class="w-full border rounded-lg p-2" required>
           </div>
           <div>
             <label class="block text-sm font-medium mb-1">Upload Video</label>
@@ -120,7 +120,7 @@
         <form action="/learning-material/ppt/{{id}}" method="POST" enctype="multipart/form-data" class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-1">Judul Materi</label>
-            <input type="text" name="judul"  class="w-full border rounded-lg p-2" required>
+            <input type="text" name="title"  class="w-full border rounded-lg p-2" required>
           </div>
           <div>
             <label class="block text-sm font-medium mb-1">Upload File PPT</label>

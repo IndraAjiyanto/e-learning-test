@@ -7,28 +7,28 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>ID</label>
             <input
-              x-model='formData.alumni.id'
-              @input='validateField("alumni", "id", $event.target.value)'
+              x-model='formData.program.id'
+              @input='validateField("program", "id", $event.target.value)'
               type='text'
-              name='alumni[id]'
+              name='program[id]'
               required
               maxlength='255'
-              :class="formErrors.alumni.id ? 'border-red-500 focus:ring-red-500' : (formValid.alumni.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.program.id ? 'border-red-500 focus:ring-red-500' : (formValid.program.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               placeholder='Status Alumni (ID)'
             />
-            <template x-if='formErrors.alumni.id'>
+            <template x-if='formErrors.program.id'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.alumni.id'
+                  x-text='formErrors.program.id'
                 ></p>
               </div>
             </template>
-            <template x-if='formValid.alumni.id && !formErrors.alumni.id'>
+            <template x-if='formValid.program.id && !formErrors.program.id'>
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
               >
@@ -42,28 +42,28 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>EN</label>
             <input
-              x-model='formData.alumni.en'
-              @input='validateField("alumni", "en", $event.target.value)'
+              x-model='formData.program.en'
+              @input='validateField("program", "en", $event.target.value)'
               type='text'
-              name='alumni[en]'
+              name='program[en]'
               required
               maxlength='255'
-              :class="formErrors.alumni.en ? 'border-red-500 focus:ring-red-500' : (formValid.alumni.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.program.en ? 'border-red-500 focus:ring-red-500' : (formValid.program.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               placeholder='Alumni Status (EN)'
             />
-            <template x-if='formErrors.alumni.en'>
+            <template x-if='formErrors.program.en'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.alumni.en'
+                  x-text='formErrors.program.en'
                 ></p>
               </div>
             </template>
-            <template x-if='formValid.alumni.en && !formErrors.alumni.en'>
+            <template x-if='formValid.program.en && !formErrors.program.en'>
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
               >
@@ -77,28 +77,28 @@
           <div class='space-y-2'>
             <label class='block text-xs font-medium text-gray-600'>JP</label>
             <input
-              x-model='formData.alumni.ja'
-              @input='validateField("alumni", "ja", $event.target.value)'
+              x-model='formData.program.ja'
+              @input='validateField("program", "ja", $event.target.value)'
               type='text'
-              name='alumni[ja]'
+              name='program[ja]'
               required
               maxlength='255'
-              :class="formErrors.alumni.ja ? 'border-red-500 focus:ring-red-500' : (formValid.alumni.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
+              :class="formErrors.program.ja ? 'border-red-500 focus:ring-red-500' : (formValid.program.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
               placeholder='卒業生ステータス (JA)'
             />
-            <template x-if='formErrors.alumni.ja'>
+            <template x-if='formErrors.program.ja'>
               <div
                 class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
               >
                 <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
                 <p
                   class='text-xs text-red-700'
-                  x-text='formErrors.alumni.ja'
+                  x-text='formErrors.program.ja'
                 ></p>
               </div>
             </template>
-            <template x-if='formValid.alumni.ja && !formErrors.alumni.ja'>
+            <template x-if='formValid.program.ja && !formErrors.program.ja'>
               <div
                 class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
               >

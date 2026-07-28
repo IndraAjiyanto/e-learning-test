@@ -5,8 +5,8 @@ export class CreateExperienceDto {
   content: string[];
 
   @IsArray()
-  isi: string[];
+  details: string[];
 
   @IsNumber()
-  experience_ke: number;
+  experienceOrder: number;
 }

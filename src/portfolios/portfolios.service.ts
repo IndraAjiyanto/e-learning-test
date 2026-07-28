@@ -2,12 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Portfolio } from 'src/entities/portfolio.entity';
+import { Portofolios } from 'src/entities/portofolios.entity';
 import { Repository } from 'typeorm';
-import { Kelas } from 'src/entities/kelas.entity';
+import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
-import { Kategori } from 'src/entities/kategori.entity';
-import { JenisKelas } from 'src/entities/jenis_kelas.entity';
+import { Category } from 'src/entities/category.entity';
+import { CourseType } from 'src/entities/course_type.entity';
 import * as ps from 'fs/promises';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -15,40 +15,40 @@ import * as fs from 'fs';
 @Injectable()
 export class PortfoliosService {
   constructor(
-    @InjectRepository(Portfolio)
-    private readonly portfolioRepository: Repository<Portfolio>,
+    @InjectRepository(Portofolios)
+    private readonly portfolioRepository: Repository<Portofolios>,
 
-    @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>,
+    @InjectRepository(Course)
+    private readonly kelasRepository: Repository<Course>,
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    @InjectRepository(Kategori)
-    private readonly kategoriRepository: Repository<Kategori>,
+    @InjectRepository(Category)
+    private readonly kategoriRepository: Repository<Category>,
 
-    @InjectRepository(JenisKelas)
-    private readonly jenisKelasRepository: Repository<JenisKelas>,
+    @InjectRepository(CourseType)
+    private readonly courseTypeRepository: Repository<CourseType>,
   ) {}
   async create(createPortfolioDto: CreatePortfolioDto) {
     const user = await this.userRepository.findOne({
       where: { id: createPortfolioDto.userId },
     });
-    const kelas = await this.kelasRepository.findOne({
-      where: { id: createPortfolioDto.kelasId },
+    const course = await this.kelasRepository.findOne({
+      where: { id: createPortfolioDto.courseId },
     });
     if (!user) {
       throw new NotFoundException('user not found');
     }
 
-    if (!kelas) {
-      throw new NotFoundException('kelas not found');
+    if (!course) {
+      throw new NotFoundException('course not found');
     }
 
     const portfolio = await this.portfolioRepository.create({
       ...createPortfolioDto,
       user: user,
-      kelas: kelas,
+      course: course,
     });
 
     return await this.portfolioRepository.save(portfolio);
@@ -58,10 +58,10 @@ export class PortfoliosService {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
       relations: [
-        'kelas',
-        'kelas.kategori',
-        'kelas.jenis_kelas',
-        'kelas.teknologi',
+        'course',
+        'course.category',
+        'course.courseType',
+        'course.technologies',
       ],
     });
   }
@@ -70,39 +70,39 @@ export class PortfoliosService {
     return await this.kategoriRepository.find();
   }
 
-  async findJenisKelas() {
-    return await this.jenisKelasRepository.find();
+  async findCourseTypes() {
+    return await this.courseTypeRepository.find();
   }
 
   async findKategoriMyPortfolio(userId: number) {
-    return await this.kategoriRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
+    return await this.kategoriRepository.find({where: { courses: { userCourses: { user: { id: userId } } } } });
   }
 
-  async findJenisKelasMyPortfolio(userId: number) {
-    return await this.jenisKelasRepository.find({where: { kelas: { user_kelas: { user: { id: userId } } } } });
+  async findMyPortfolioCourseTypes(userId: number) {
+    return await this.courseTypeRepository.find({where: { classes: { userCourses: { user: { id: userId } } } } });
   }
 
   async findAll(
     page: number = 1,
     limit: number = 6,
-    kategoriId?: number,
-    jenisKelasId?: number,
+    categoryId?: number,
+    courseTypeId?: number,
   ) {
     const skip = (page - 1) * limit;
 
     const queryBuilder = this.portfolioRepository
       .createQueryBuilder('portfolio')
-      .leftJoinAndSelect('portfolio.kelas', 'kelas')
+      .leftJoinAndSelect('portfolio.course', 'course')
       .leftJoinAndSelect('portfolio.user', 'user')
-      .leftJoinAndSelect('kelas.kategori', 'kategori')
-      .leftJoinAndSelect('kelas.jenis_kelas', 'jenis_kelas');
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.courseType', 'courseType');
 
-    if (kategoriId) {
-      queryBuilder.andWhere('kategori.id = :kategoriId', { kategoriId });
+    if (categoryId) {
+      queryBuilder.andWhere('category.id = :categoryId', { categoryId });
     }
 
-    if (jenisKelasId) {
-      queryBuilder.andWhere('jenis_kelas.id = :jenisKelasId', { jenisKelasId });
+    if (courseTypeId) {
+      queryBuilder.andWhere('courseType.id = :courseTypeId', { courseTypeId });
     }
 
     const total = await queryBuilder.getCount();
@@ -125,7 +125,7 @@ export class PortfoliosService {
   async findOne(portfolioId: number) {
     const portfolio = await this.portfolioRepository.findOne({
       where: { id: portfolioId },
-      relations: ['kelas', 'kelas.teknologi'],
+      relations: ['course', 'course.technologies'],
     });
     if (!portfolio) {
       throw new NotFoundException('portfolio not found');
@@ -216,7 +216,7 @@ export class PortfoliosService {
   async remove(portfolioId: number) {
     const portfolio = await this.findOne(portfolioId);
     if (!portfolio) {
-      throw new NotFoundException('Portfolio Not Found');
+      throw new NotFoundException('Portfolios Not Found');
     }
     return await this.portfolioRepository.remove(portfolio);
   }

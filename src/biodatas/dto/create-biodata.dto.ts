@@ -1,19 +1,19 @@
 import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
-import { JenisKelamin, Pendidikan } from 'src/entities/biodata.entity';
+import { Gender, Education } from 'src/entities/biodata.entity';
 
 export class CreateBiodataDto {
   @IsString()
-  nama_lengkap: string;
+  fullName: string;
 
   @IsString()
   no: string;
 
   @IsEnum(['Laki laki', 'Perempuan'])
   @IsOptional()
-  jenis_kelamin: JenisKelamin;
+  gender: Gender;
 
   @IsString()
-  kota: string;
+  city: string;
 
   @IsEnum([
     'SMP/Sederajat',
@@ -22,10 +22,10 @@ export class CreateBiodataDto {
     'Sarjana(S1)',
   ])
   @IsOptional()
-  pendidikan: Pendidikan;
+  education: Education;
 
   @IsString()
-  program_studi: string;
+  studyProgram: string;
 
   @IsInt()
   userId: number;

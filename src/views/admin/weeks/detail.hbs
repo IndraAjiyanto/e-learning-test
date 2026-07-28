@@ -1,0 +1,179 @@
+<div class='px-6 w-full mx-auto py-10'>
+  <div class=' mx-auto'>
+
+    <div class='mb-8 bg-white rounded-xl shadow-lg p-6'>
+      <div class='mb-4'>
+        <a
+          href='/program/detail/program/admin/{{weeks.course.id}}'
+          class='inline-flex items-center text-gray-700 text-base font-medium hover:underline'
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            class='h-5 w-5 mr-1'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M15 19l-7-7 7-7'
+            />
+          </svg>
+          Back
+        </a>
+      </div>
+
+      <div class='flex items-start justify-between'>
+        <div>
+          <h1 class='text-2xl font-bold mb-2 text-gray-900'>Week
+            {{weeks.week_number}}</h1>
+
+          <p class='text-gray-600 mb-1'>
+            <span class='font-semibold'>Program :</span>
+            {{weeks.course.name}}
+          </p>
+          <p class='text-gray-600 mb-1'>
+            <span class='font-semibold'>Deskription :</span>
+            {{weeks.description}}
+          </p>
+
+        </div>
+        <div class='flex items-center gap-4'>
+          <!-- Tombol Edit -->
+          <a
+            href='/week/formEdit/{{weeks.id}}'
+            class='p-3 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm'
+            title='Edit Minggu'
+          >
+            <!-- Icon Edit (Pencil) -->
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke-width='2'
+              stroke='currentColor'
+              class='w-7 h-7'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                d='M16.862 4.487l1.687-1.688a1.875 1.875 
+               0 112.652 2.652L10.582 16.07a4.5 
+               4.5 0 01-1.897 1.13l-2.685.805.805-2.685
+               a4.5 4.5 0 011.13-1.897l10.927-10.936z'
+              />
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                d='M19.5 7.125L16.875 4.5'
+              />
+            </svg>
+          </a>
+
+          <!-- Tombol Delete -->
+          <form
+            action='/week/{{weeks.id}}/{{weeks.course.id}}?_method=DELETE'
+            method='post'
+          >
+            <button
+              type='button'
+              onclick='confirmDelete(this)'
+              class='p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800 transition shadow-sm'
+              title='Delete Minggu'
+            >
+              <!-- Icon Delete (Trash) -->
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke-width='2'
+                stroke='currentColor'
+                class='w-7 h-7'
+              >
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  d='M6 18L18 6M6 6l12 12'
+                />
+              </svg>
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<div class='mx-auto' x-data="tabData()">
+
+  <div class='flex space-x-4 mb-6'>
+    <button
+      @click="toggleFetch('/week/session/{{weeks.id}}', 'session')"
+      :class="tab === 'session' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+      class='px-4 py-2 rounded-lg shadow transition'
+    >
+      Session
+    </button>
+    {{#if pertemuanAkhir}}
+      <button
+        @click="toggleFetch('/week/quiz/{{weeks.id}}', 'quiz')"
+        :class="tab === 'quiz' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
+        class='px-4 py-2 rounded-lg shadow transition'
+      >
+        Quiz
+      </button>
+    {{/if}}
+  </div>
+
+  <div x-show="tab === 'session'" x-data="sessionData()" x-init="fetchSessions()">
+    {{> weeks/session_tab}}
+  </div>
+
+  <div x-show="tab === 'quiz'" x-data="quizData()" x-init="fetchQuizzes()">
+    {{> weeks/quiz_tab}}
+  </div>
+
+</div>
+</div>
+
+<script>
+function tabData() {
+  return {
+    search: '',
+    tab: localStorage.getItem('activeTabWeek'),
+    data: localStorage.getItem('activeData')
+      ? JSON.parse(localStorage.getItem('activeData'))
+      : [],
+
+
+    async init() {
+      if(!this.tab) {
+          this.tab = 'session';
+          localStorage.setItem('activeTabWeek', 'session');
+      }
+    },
+    
+    async toggleFetch(url, tabName) {
+      this.tab = tabName;
+      localStorage.setItem('activeTabWeek', tabName);
+      
+      try {
+        if(url === '') {
+          this.data = [];
+          localStorage.removeItem('activeData');
+          return;
+        }else{
+          const response = await fetch(url);
+        if (!response.ok) throw new Error('Network error');
+        
+        this.data = await response.json();
+        localStorage.setItem('activeData', JSON.stringify(this.data));
+        }
+      } catch (error) {
+      }
+    }
+  }
+}
+</script>

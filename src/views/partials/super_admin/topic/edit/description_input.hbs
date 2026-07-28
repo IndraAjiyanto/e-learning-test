@@ -10,7 +10,7 @@
       <textarea
         x-model='formData.description.id'
         @input='validateField("description", "id", $event.target.value)'
-        name='deskripsi[id]'
+        name='description[id]'
         rows='5'
         required
         :class="formErrors.description.id ? 'border-red-500 focus:ring-red-500' : (formValid.description.id ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
@@ -44,7 +44,7 @@
       <textarea
         x-model='formData.description.en'
         @input='validateField("description", "en", $event.target.value)'
-        name='deskripsi[en]'
+        name='description[en]'
         rows='5'
         required
         :class="formErrors.description.en ? 'border-red-500 focus:ring-red-500' : (formValid.description.en ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"
@@ -78,7 +78,7 @@
       <textarea
         x-model='formData.description.ja'
         @input='validateField("description", "ja", $event.target.value)'
-        name='deskripsi[ja]'
+        name='description[ja]'
         rows='5'
         required
         :class="formErrors.description.ja ? 'border-red-500 focus:ring-red-500' : (formValid.description.ja ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-gray-900')"

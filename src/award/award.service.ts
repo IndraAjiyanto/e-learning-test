@@ -19,13 +19,13 @@ export class AwardService {
 
   async noAward() {
     const award_old = await this.awardRepository.find({
-      order: { award_ke: 'DESC' },
+      order: { awardOrder: 'DESC' },
       take: 1,
     });
     if (!award_old || award_old.length === 0) {
       return 0;
     }
-    const award_new = award_old[0].award_ke + 1;
+    const award_new = award_old[0].awardOrder + 1;
     return award_new;
   }
 
@@ -53,8 +53,8 @@ export class AwardService {
     await this.awardRepository.remove(award);
     const allAward = await this.awardRepository.find();
     for (const item of allAward) {
-      if (item.award_ke > award.award_ke) {
-        item.award_ke -= 1;
+      if (item.awardOrder > award.awardOrder) {
+        item.awardOrder -= 1;
         await this.awardRepository.save(item);
       }
     }

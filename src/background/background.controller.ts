@@ -30,7 +30,7 @@ export class BackgroundController {
     @Req() req: Request,
   ) {
     try {
-      createBackgroundDto.background_ke =
+      createBackgroundDto.backgroundOrder =
         await this.backgroundService.noBackground();
       await this.backgroundService.create(createBackgroundDto);
       req.flash('success', 'background successfully created');

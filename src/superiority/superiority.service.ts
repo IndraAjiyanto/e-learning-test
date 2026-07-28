@@ -4,27 +4,27 @@ import { Repository } from 'typeorm';
 import { Superiority } from '../entities/superiority.entity';
 import { CreateSuperiorityDto } from './dto/create-superiority.dto';
 import { UpdateSuperiorityDto } from './dto/update-superiority.dto';
-import { Kategori } from '../entities/kategori.entity';
+import { Category } from '../entities/category.entity';
 
 @Injectable()
 export class SuperiorityService {
   constructor(
     @InjectRepository(Superiority)
     private superiorityRepository: Repository<Superiority>,
-    @InjectRepository(Kategori)
-    private kategoriRepository: Repository<Kategori>,
+    @InjectRepository(Category)
+    private kategoriRepository: Repository<Category>,
   ) {}
 
   async create(createSuperiorityDto: CreateSuperiorityDto) {
-    const kategori = await this.kategoriRepository.findOne({
-      where: { id: createSuperiorityDto.kategoriId },
+    const category = await this.kategoriRepository.findOne({
+      where: { id: createSuperiorityDto.categoryId },
     });
-    if (!kategori) {
-      throw new NotFoundException('Kategori not found');
+    if (!category) {
+      throw new NotFoundException('Category not found');
     }
     const superiority = await this.superiorityRepository.create({
       ...createSuperiorityDto,
-      kategori,
+      category: category,
     });
     return await this.superiorityRepository.save(superiority);
   }
@@ -32,7 +32,7 @@ export class SuperiorityService {
   async findOne(id: number) {
     const superiority = await this.superiorityRepository.findOne({
       where: { id },
-      relations: ['kategori'],
+      relations: ['category'],
     });
     if (!superiority) {
       throw new NotFoundException('Superiority not found');
@@ -42,14 +42,14 @@ export class SuperiorityService {
 
   async update(id: number, updateSuperiorityDto: UpdateSuperiorityDto) {
     const superiority = await this.findOne(id);
-    if (updateSuperiorityDto.kategoriId) {
-      const kategori = await this.kategoriRepository.findOne({
-        where: { id: updateSuperiorityDto.kategoriId },
+    if (updateSuperiorityDto.categoryId) {
+      const category = await this.kategoriRepository.findOne({
+        where: { id: updateSuperiorityDto.categoryId },
       });
-      if (!kategori) {
-        throw new NotFoundException('Kategori not found');
+      if (!category) {
+        throw new NotFoundException('Category not found');
       }
-      superiority.kategori = kategori;
+      superiority.category = category;
     }
     Object.assign(superiority, updateSuperiorityDto);
     return await this.superiorityRepository.save(superiority);

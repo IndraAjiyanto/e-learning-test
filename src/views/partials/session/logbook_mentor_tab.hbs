@@ -1,0 +1,138 @@
+{{> sub_partials/session/logbook_mentor_tab/header}}
+
+{{> sub_partials/session/logbook_mentor_tab/table}}
+
+{{> sub_partials/session/logbook_mentor_tab/modal_information}}
+
+{{> sub_partials/session/logbook_mentor_tab/pagination}}
+
+<script>
+  function logBookMentorData() {
+    return {
+    data: JSON.parse(localStorage.getItem('activeData')) || [],
+      searchInput: "",
+      search: "",
+      pageNumber: 0,
+      size: 5,
+      amount: 0,
+
+      showModal: false,
+      selectedLogbook: null,
+
+      async fetchLogBookMentor() {
+      const res = await fetch('/session/logbooks-mentor/{{session.id}}');
+      this.data = await res.json();
+      localStorage.setItem('activeData', JSON.stringify(this.data));
+    },
+
+      get filteredData() {
+        const filtered = this.data.filter(l =>
+          (
+            `${l.activity} ${l.activityDetail} ${l.obstacle}`
+          ).toLowerCase()
+          .includes(this.search.toLowerCase())
+        );
+
+        this.amount = filtered.length;
+
+      const start = this.pageNumber * this.size;
+      return filtered.slice(start, start + this.size);
+      },
+
+      exportExcel() {
+        try {
+          const s = this.search.toLowerCase();
+
+          const filtered = this.data.filter(l =>
+            (
+              `${l.activity} ${l.activityDetail} ${l.obstacle}`
+            ).toLowerCase().includes(s)
+          );
+
+          const dataToExport = filtered.map((log, index) => ({
+            No: index + 1,
+            Activity: log.activity || "-",
+            Details: log.activityDetail || "-",
+            Obstacle: log.obstacle || "-",
+            Documentation: log.documentation || "-",
+            Program: log.session?.weeks?.course?.name || "-",
+            User: log.user?.username || "-",
+            Date: this.formatDate(log.createdAt),
+          }));
+
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+          ws["!cols"] = [
+            { wch: 5 },  // No
+            { wch: 30 }, // Activity
+            { wch: 50 }, // Details
+            { wch: 40 }, // Obstacle
+            { wch: 60 }, // Documentation
+            { wch: 25 }, // Program
+            { wch: 20 }, // User
+            { wch: 20 }  // Date
+          ];
+
+          XLSX.utils.book_append_sheet(wb, ws, "Logbook");
+          XLSX.writeFile(
+            wb,
+            `Logbook_Mentor_${new Date().toISOString().slice(0, 10)}.xlsx`
+          );
+        } catch (error) {
+          alert("Failed to export data to Excel");
+        }
+      },
+
+      formatDate(date) {
+        if (!date) return "-";
+        return new Date(date).toLocaleDateString("id-ID", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
+
+      pages() {
+        return Array.from({ length: this.pageCount() });
+      },
+
+      pageCount() {
+        return Math.ceil(this.amount / this.size);
+      },
+
+      nextPage() {
+        if (this.pageNumber < this.pageCount() - 1) {
+          this.pageNumber++;
+        }
+      },
+
+      prevPage() {
+        if (this.pageNumber > 0) {
+          this.pageNumber--;
+        }
+      },
+
+      viewPage(index) {
+        this.pageNumber = index;
+      },
+
+      openModal(id) {
+        this.selectedLogbook = this.data.find(l => l.id == id);
+        this.showModal = true;
+      },
+
+      closeModal() {
+        this.showModal = false;
+        this.selectedLogbook = null;
+      }
+    };
+  }
+</script>
+<style>
+  .modal-content::-webkit-scrollbar {
+    display: none;
+  }
+</style>

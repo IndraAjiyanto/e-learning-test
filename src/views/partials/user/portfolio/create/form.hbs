@@ -1,7 +1,7 @@
       <form
         id='portfolioForm'
         method='POST'
-        action='/portfolio/create/{{kelasId}}'
+        action='/portfolio/create/{{courseId}}'
         enctype='multipart/form-data'
         x-data='{ loading: false }'
         @submit='loading = true'
@@ -13,13 +13,13 @@
             <!-- Judul Portfolio -->
             <div>
               <label
-                for='judul'
+                for="title"
                 class='block text-lg font-semibold text-gray-700 mb-3'
               >{{t 'test.myPortfolio.createPortfolio.portfolioTittle'}}</label>
               <input
                 type='text'
-                id='judul'
-                name='judul'
+                id="title"
+                name="title"
                 required
                 placeholder='{{t
                   "test.myPortfolio.createPortfolio.placeholderTittle"
@@ -31,12 +31,12 @@
             <!-- Deskripsi -->
             <div>
               <label
-                for='deskripsi'
+                for='description'
                 class='block text-lg font-semibold text-gray-700 mb-3'
               >{{t 'test.myPortfolio.createPortfolio.description'}}</label>
               <textarea
-                name='deskripsi'
-                id='deskripsi'
+                name='description'
+                id='description'
                 required
                 placeholder='{{t
                   "test.myPortfolio.createPortfolio.placeholderDescription"
@@ -175,7 +175,7 @@
                       <div class='flex-1'>
                         <input
                           type='file'
-                          name='gambar'
+                          name="image"
                           accept='image/jpeg,image/jpg,image/png,image/gif'
                           required
                           x-ref='fileInput'
@@ -339,7 +339,7 @@
               }}</span>
           </button>
           <a
-            href='/program/{{kelasId}}'
+            href='/program/{{courseId}}'
             :disabled='loading'
             class='btn bg-white rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 text-center transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2'
           >

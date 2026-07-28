@@ -1,0 +1,1250 @@
+<div class='py-10'>
+  <div
+    class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
+    x-data='{ 
+            coverValid: true,
+            coverHasFile: false,
+            categorySelected: {{json category}},
+            formData: { description: { id: "", en: "", ja: "" },
+                        lokasi: { id: "", en: "", ja: "" } },
+            updateCoverValidation(isValid, hasFile) {
+                this.coverValid = isValid;
+                this.coverHasFile = hasFile;
+            },
+            validateField(field, lang) {
+                const value = this.formData[field][lang];
+                const fieldName = `${field}_${lang}`;
+                const errorElement = document.getElementById(`${fieldName}_error`);
+                if (errorElement) {
+                    if (!value || value.trim() === "") {
+                        errorElement.classList.remove("hidden");
+                    } else {
+                        errorElement.classList.add("hidden");
+                    }
+                }
+            }
+        }'
+  >
+    <h2 class='text-3xl font-bold mb-8 text-gray-900 text-center'>Create Program</h2>
+
+    <form
+      method='POST'
+      action='/program/{{category.id}}'
+      class='grid grid-cols-1 lg:grid-cols-2 gap-8'
+      enctype='multipart/form-data'
+      x-data='{loading:false}'
+      @submit='loading = true'
+    >
+
+      <!-- LEFT COLUMN -->
+      <div class='space-y-6'>
+        <!-- Cover -->
+        <div
+          x-data="{ 
+                        previewUrl: null,
+                        errorMessage: '',
+                        isValid: true,
+                        fileName: '',
+                        fileSize: 0,
+                        imageWidth: 0,
+                        imageHeight: 0,
+                        hasFile: false,
+                        validateImage(file) {
+                            if (!file) {
+                                this.hasFile = false;
+                                $dispatch('cover-validation', { isValid: true, hasFile: false });
+                                return;
+                            }
+                            
+                            this.hasFile = true;
+                            this.fileName = file.name;
+                            this.fileSize = file.size;
+                            this.errorMessage = '';
+                            this.isValid = true;
+
+                            // Validasi tipe file
+                            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                            if (!allowedTypes.includes(file.type)) {
+                                this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+                                this.isValid = false;
+                                this.previewUrl = null;
+                                $dispatch('cover-validation', { isValid: false, hasFile: true });
+                                return;
+                            }
+
+                            // Validasi ukuran file (10MB max berdasarkan multer config umum)
+                            const maxSize = 10 * 1024 * 1024; // 10MB
+                            if (file.size > maxSize) {
+                                this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 10MB`;
+                                this.isValid = false;
+                                this.previewUrl = null;
+                                $dispatch('cover-validation', { isValid: false, hasFile: true });
+                                return;
+                            }
+
+                            // Validasi dimensi gambar
+                            const img = new Image();
+                            const objectUrl = URL.createObjectURL(file);
+                            
+                            img.onload = () => {
+                                this.imageWidth = img.width;
+                                this.imageHeight = img.height;
+                                
+                                if (img.width < 1900 || img.width > 1920 || img.height < 1000 || img.height > 1080) {
+                                    this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 1900x1000 to 1920x1080 pixels`;
+                                    this.isValid = false;
+                                    this.previewUrl = null;
+                                    URL.revokeObjectURL(objectUrl);
+                                    $dispatch('cover-validation', { isValid: false, hasFile: true });
+                                } else {
+                                    this.previewUrl = objectUrl;
+                                    this.isValid = true;
+                                    this.errorMessage = '';
+                                    $dispatch('cover-validation', { isValid: true, hasFile: true });
+                                }
+                            };
+                            
+                            img.onerror = () => {
+                                this.errorMessage = 'Failed to load image';
+                                this.isValid = false;
+                                this.previewUrl = null;
+                                URL.revokeObjectURL(objectUrl);
+                                $dispatch('cover-validation', { isValid: false, hasFile: true });
+                            };
+                            
+                            img.src = objectUrl;
+                        },
+                        clearFile() {
+                            this.previewUrl = null;
+                            this.errorMessage = '';
+                            this.isValid = true;
+                            this.fileName = '';
+                            this.fileSize = 0;
+                            this.imageWidth = 0;
+                            this.imageHeight = 0;
+                            this.hasFile = false;
+                            $refs.fileInput.value = null;
+                            $dispatch('cover-validation', { isValid: true, hasFile: false });
+                        }
+                    }"
+          @cover-validation.window='updateCoverValidation($event.detail.isValid, $event.detail.hasFile)'
+          @category-selected.window='categorySelected = $event.detail.category'
+          class='space-y-3'
+        >
+          <label
+            for="image"
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >
+            Cover Program
+            <span class='text-xs text-gray-500 font-normal'>(1900x1000 -
+              1920x1080px, max 10MB, JPG/PNG)</span>
+          </label>
+          <input
+            type='file'
+            id="image"
+            name="image"
+            accept='image/jpeg,image/jpg,image/png'
+            x-ref='fileInput'
+            :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
+            class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
+            @change='validateImage($event.target.files[0])'
+          />
+
+          <!-- Error Message -->
+          <template x-if='!isValid && errorMessage'>
+            <div
+              class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+            >
+              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
+              <div>
+                <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+                <p class='text-xs text-red-700' x-text='errorMessage'></p>
+              </div>
+            </div>
+          </template>
+
+          <!-- Preview with validation success -->
+          <template x-if='previewUrl && isValid'>
+            <div class='space-y-2'>
+              <!-- Success Message -->
+              <div
+                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
+              >
+                <i class='fas fa-check-circle text-green-500'></i>
+                <div class='text-xs text-green-700'>
+                  <span class='font-semibold'>Valid image:</span>
+                  <span
+                    x-text='`${imageWidth}x${imageHeight}px, ${(fileSize / 1024 / 1024).toFixed(2)}MB`'
+                  ></span>
+                </div>
+              </div>
+
+              <!-- Image Preview -->
+              <div class='relative w-full max-w-md'>
+                <img
+                  :src='previewUrl'
+                  alt='Preview'
+                  class='w-full h-auto object-cover rounded-lg border-2 border-green-500 shadow-sm'
+                />
+
+                <button
+                  type='button'
+                  class='absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors'
+                  @click='clearFile()'
+                >
+                  <i class='fas fa-times'></i>
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Class Name -->
+        <div>
+          <label
+            for='name'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Program Name</label>
+          <input
+            type='text'
+            id='name'
+            name='name'
+            placeholder='Enter class name'
+            required
+            class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+        </div>
+
+        <!-- Group -->
+        <div>
+          <label
+            for='grup'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Group</label>
+          <input
+            type='text'
+            id='grup'
+            name='grup'
+            placeholder='Enter group name'
+            required
+            class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+        </div>
+
+        <!-- Description -->
+        <div class='space-y-4'>
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Description</label>
+
+          <!-- ID Description -->
+          <div>
+            <label
+              for='description_id'
+              class='block text-xs text-gray-600 mb-1'
+            >ID</label>
+            <textarea
+              id='description_id'
+              x-model='formData.description.id'
+              @blur="validateField('description', 'id')"
+              rows='3'
+              placeholder='Tulis description dalam bahasa Indonesia...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+            <div
+              id='description_id_error'
+              class='hidden text-red-500 text-xs mt-1'
+            >Deskripsi bahasa Indonesia wajib diisi</div>
+          </div>
+
+          <!-- EN Description -->
+          <div>
+            <label
+              for='description_en'
+              class='block text-xs text-gray-600 mb-1'
+            >EN</label>
+            <textarea
+              id='description_en'
+              x-model='formData.description.en'
+              @blur="validateField('description', 'en')"
+              rows='3'
+              placeholder='Write description in English...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+            <div
+              id='description_en_error'
+              class='hidden text-red-500 text-xs mt-1'
+            >English description is required</div>
+          </div>
+
+          <!-- JP Description -->
+          <div>
+            <label
+              for='description_ja'
+              class='block text-xs text-gray-600 mb-1'
+            >JP</label>
+            <textarea
+              id='description_ja'
+              x-model='formData.description.ja'
+              @blur="validateField('description', 'ja')"
+              rows='3'
+              placeholder='日本語で説明を書いてください...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            ></textarea>
+            <div
+              id='description_ja_error'
+              class='hidden text-red-500 text-xs mt-1'
+            >日本語の説明が必要です</div>
+          </div>
+
+          <!-- Hidden inputs for form submission -->
+          <input
+            type='hidden'
+            name='description[id]'
+            x-model='formData.description.id'
+          />
+          <input
+            type='hidden'
+            name='description[en]'
+            x-model='formData.description.en'
+          />
+          <input
+            type='hidden'
+            name='description[ja]'
+            x-model='formData.description.ja'
+          />
+        </div>
+
+        <!-- Method -->
+        <div>
+          <span
+            class='block text-sm font-semibold text-gray-700 mb-2'
+          >Method</span>
+          <div class='grid grid-cols-2 gap-4'>
+            <label class='cursor-pointer'>
+              <input
+                type='radio'
+                name='metode'
+                value='online'
+                class='hidden peer'
+              />
+              <div
+                class='flex items-center justify-center px-4 py-3 border rounded-lg transition peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white'
+              >
+                <span class='font-semibold'>Online</span>
+              </div>
+            </label>
+            <label class='cursor-pointer'>
+              <input
+                type='radio'
+                name='metode'
+                value='offline'
+                class='hidden peer'
+              />
+              <div
+                class='flex items-center justify-center px-4 py-3 border rounded-lg transition peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white'
+              >
+                <span class='font-semibold'>Offline</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class='space-y-4'>
+          <label class='block text-sm font-semibold text-gray-700 mb-1'>Name
+            Location</label>
+          <div>
+            <label class='block text-xs text-gray-600 my-2'>ID</label>
+            <input
+              type='text'
+              x-model='formData.location.id'
+              name='lokasi[id]'
+              placeholder='Enter location'
+              required
+              class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+          </div>
+          <div>
+            <label class='block text-xs text-gray-600 my-2'>EN</label>
+            <input
+              type='text'
+              x-model='formData.location.en'
+              name='lokasi[en]'
+              placeholder='Enter location'
+              required
+              class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+          </div>
+          <div>
+            <label class='block text-xs text-gray-600 my-2'>JP</label>
+            <input
+              type='text'
+              x-model='formData.location.ja'
+              name='lokasi[ja]'
+              placeholder='Enter location'
+              required
+              class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+          </div>
+        </div>
+
+        <div>
+          <label
+            for='link_lokasi'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Link Location</label>
+          <input
+            type='text'
+            id='link_lokasi'
+            name='link_lokasi'
+            placeholder='Enter location link'
+            required
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+        </div>
+
+        <!-- Paid Class Toggle -->
+        <div x-data='{ paidClass: false }' class='space-y-6'>
+          <div class='flex items-center gap-3'>
+            <label class='relative inline-flex items-center cursor-pointer'>
+              <input type='checkbox' x-model='paidClass' class='sr-only' />
+
+              <div
+                :class="paidClass ? 'bg-green-500' : 'bg-gray-300'"
+                class='w-11 h-6 rounded-full transition-colors'
+              ></div>
+
+              <div
+                :class="paidClass ? 'translate-x-5' : 'translate-x-0'"
+                class='absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform'
+              ></div>
+            </label>
+
+            <span class='text-sm text-gray-700 font-semibold'>Paid Program</span>
+
+            <input type='hidden' name='paid_check' :value='paidClass' />
+          </div>
+
+          {{#if (roles user.role 'super_admin')}}
+            <!-- Fields that appear when paid_check is true -->
+            <div x-show='paidClass' x-transition class='space-y-6'>
+              <!-- Price -->
+              <div
+                x-data="{
+                          display: '',
+                          value: '',
+                          formatHarga(event) {
+                              let angka = event.target.value.replace(/\D/g, ''); 
+                              this.value = angka;
+                              this.display = new Intl.NumberFormat('id-ID').format(angka);
+                          }
+                      }"
+              >
+                <label
+                  for='harga1'
+                  class='block text-sm font-semibold text-gray-700 mb-1'
+                >Price</label>
+                <input
+                  type='text'
+                  id='harga1'
+                  x-model='display'
+                  @input='formatHarga($event)'
+                  placeholder='Enter price'
+                  class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
+                />
+                <input type='hidden' name='harga' x-model='value' />
+              </div>
+
+              <!-- Promo -->
+              <div
+                x-data="{
+                          display: '',
+                          value: '',
+                          formatPromo(event) {
+                              let angka = event.target.value.replace(/\D/g, ''); 
+                              this.value = angka;
+                              this.display = new Intl.NumberFormat('id-ID').format(angka);
+                          }
+                      }"
+              >
+                <label
+                  for='promo1'
+                  class='block text-sm font-semibold text-gray-700 mb-1'
+                >Promo</label>
+                <input
+                  type='text'
+                  id='promo1'
+                  x-model='display'
+                  @input='formatPromo($event)'
+                  placeholder='Enter promo price'
+                  class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
+                />
+                <input type='hidden' name='promo' x-model='value' />
+              </div>
+            </div>
+
+            <!-- Fields that appear when paid_check is false (not active) -->
+            <div x-show='!paidClass' x-transition class='space-y-6'>
+              <!-- Form -->
+              <div>
+                <label
+                  for='form'
+                  class='block text-sm font-semibold text-gray-700 mb-1'
+                >Registration Form Link</label>
+                <input
+                  type='url'
+                  id='form'
+                  placeholder='https://forms.google.com/...'
+                  name='form'
+                  class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
+                />
+              </div>
+            </div>
+
+            <!-- Quota - Always visionsble below Paid Class Toggle -->
+            <div
+              x-data="{
+                        display: '',
+                        value: '',
+                        formatKuota(event) {
+                            let angka = event.target.value.replace(/\D/g, ''); 
+                            this.value = angka;
+                            this.display = new Intl.NumberFormat('id-ID').format(angka);
+                        }
+                    }"
+            >
+              <label
+                for='kuota1'
+                class='block text-sm font-semibold text-gray-700 mb-1'
+              >Program Quota</label>
+              <input
+                type='text'
+                id='kuota1'
+                x-model='display'
+                @input='formatKuota($event)'
+                placeholder='Enter quota'
+                class='w-full border border-gray-300 bg-blue-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700'
+              />
+              <input type='hidden' name='quota' x-model='value' />
+            </div>
+          {{/if}}
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class='space-y-6'>
+
+        <!-- Class Type -->
+        <div
+          x-data="{
+          search: '',
+          selectedJenisKelas: null,
+          showDropdown: false,
+          availableJenisKelas: {{json courseType}},
+          get filteredJenisKelas() {
+            return this.availableJenisKelas.filter(j => 
+              j.nameClassesType.toLowerCase().includes(this.search.toLowerCase())
+            );
+          },
+          selectJenisKelas(jenisKelas) {
+            this.selectedJenisKelas = jenisKelas;
+            this.search = jenisKelas.nameClassesType;
+            this.showDropdown = false;
+          },
+          clearJenisKelas() {
+            this.selectedJenisKelas = null;
+            this.search = '';
+          }
+        }"
+          @click.away='showDropdown = false'
+        >
+          <label
+            for='jenis_kelasId'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Program Type</label>
+
+          <div class='relative'>
+            <input
+              type='text'
+              x-model='search'
+              @focus='showDropdown = true'
+              @input='showDropdown = true'
+              placeholder='Search and select program type...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+            <i
+              class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+            ></i>
+
+            <!-- Dropdown -->
+            <div
+              x-show='showDropdown && filteredJenisKelas.length > 0'
+              class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+            >
+              <template
+                x-for='jenisKelas in filteredJenisKelas'
+                :key='jenisKelas.id'
+              >
+                <button
+                  type='button'
+                  @click='selectJenisKelas(jenisKelas)'
+                  class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                >
+                  <span
+                    class='text-sm font-medium text-gray-700'
+                    x-text='jenisKelas.nameClassesType'
+                  ></span>
+                </button>
+              </template>
+            </div>
+
+            <input
+              type='hidden'
+              name='jenis_kelasId'
+              x-model='selectedJenisKelas ? selectedJenisKelas.id : ""'
+            />
+          </div>
+        </div>
+
+        <!-- Month -->
+        <div
+          x-show="!categorySelected || categorySelected.name !== 'Short Class'"
+        >
+          <label
+            for='bulan'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Month</label>
+          <div
+            x-data="{
+            display: '',
+            value: '',
+            formatBulan(event) {
+              let angka = event.target.value.replace(/\D/g, '');
+              this.value = angka;
+              this.display = angka;
+            }
+          }"
+            x-init="
+            value = '';
+            display = value;
+          "
+          >
+            <input
+              type='text'
+              id='bulan'
+              x-model='display'
+              @input='formatBulan($event)'
+              placeholder='Enter month (1-12)'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+            <input type='hidden' name='bulan' x-model='value' />
+          </div>
+        </div>
+
+        <!-- Day -->
+        <div
+          x-show="categorySelected && categorySelected.name === 'Short Class'"
+        >
+          <label
+            for='hari'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Day</label>
+          <div
+            x-data="{
+            display: '',
+            value: '',
+            formatHari(event) {
+              let angka = event.target.value.replace(/\D/g, '');
+              this.value = angka;
+              this.display = angka;
+            }
+          }"
+            x-init="
+            value = '';
+            display = value;
+          "
+          >
+            <input
+              type='text'
+              id='hari'
+              x-model='display'
+              @input='formatHari($event)'
+              placeholder='Enter day (1-31)'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+            <input type='hidden' name='hari' x-model='value' />
+          </div>
+        </div>
+
+        <!-- Start Date -->
+        <div>
+          <label
+            for='tanggal_mulai'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Start Date</label>
+          <input
+            type='date'
+            id='tanggal_mulai'
+            name='tanggal_mulai'
+            required
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
+            style='color-scheme: light;'
+          />
+        </div>
+
+        <!-- End Date -->
+        <div>
+          <label
+            for='tanggal_selesai'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >End Date</label>
+          <input
+            type='date'
+            id='tanggal_selesai'
+            name='tanggal_selesai'
+            required
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
+            style='color-scheme: light;'
+          />
+        </div>
+
+        <!-- Mentoring -->
+        {{#if (roles user.role 'super_admin')}}
+          <div
+            x-data="{
+            search: '',
+            selectedMentoring: null,
+            showDropdown: false,
+            availableMentoring: {{json mentoring}},
+            get filteredMentoring() {
+              return this.availableMentoring.filter(m => 
+                m.username.toLowerCase().includes(this.search.toLowerCase())
+              );
+            },
+            selectMentoring(mentoring) {
+              this.selectedMentoring = mentoring;
+              this.search = mentoring.username;
+              this.showDropdown = false;
+            },
+            clearMentoring() {
+              this.selectedMentoring = null;
+              this.search = '';
+            }
+          }"
+            @click.away='showDropdown = false'
+          >
+            <label
+              for='mentoringId'
+              class='block text-sm font-semibold text-gray-700 mb-1'
+            >Mentoring</label>
+
+            <div class='relative'>
+              <input
+                type='text'
+                x-model='search'
+                @focus='showDropdown = true'
+                @input='showDropdown = true'
+                placeholder='Search and select mentoring...'
+                class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              />
+              <i
+                class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+              ></i>
+
+              <!-- Dropdown -->
+              <div
+                x-show='showDropdown && filteredMentoring.length > 0'
+                class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+              >
+                <template
+                  x-for='mentoring in filteredMentoring'
+                  :key='mentoring.id'
+                >
+                  <button
+                    type='button'
+                    @click='selectMentoring(mentoring)'
+                    class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                  >
+                    <span
+                      class='text-sm font-medium text-gray-700'
+                      x-text='mentoring.username'
+                    ></span>
+                  </button>
+                </template>
+              </div>
+
+              <input
+                type='hidden'
+                name='mentoringId'
+                x-model='selectedMentoring ? selectedMentoring.id : ""'
+              />
+            </div>
+          </div>
+        {{/if}}
+
+        <!-- Technologies -->
+        <div
+          x-data="{
+          search: '',
+          selectedTechs: [],
+          showDropdown: false,
+          availableTechs: {{json technologies}},
+          get filteredTechs() {
+            return this.availableTechs.filter(t => 
+              t.name.toLowerCase().includes(this.search.toLowerCase()) &&
+              !this.selectedTechs.find(s => s.id === t.id)
+            );
+          },
+          selectTech(tech) {
+            this.selectedTechs.push(tech);
+            this.search = '';
+            this.showDropdown = false;
+          },
+          removeTech(techId) {
+            this.selectedTechs = this.selectedTechs.filter(t => t.id !== techId);
+          }
+        }"
+          @click.away='showDropdown = false'
+        >
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-2'
+          >
+            Technologies
+            <span class='text-xs text-gray-500 font-normal italic ml-1'>(Optional)</span>
+          </label>
+
+          <!-- Selected Technologies -->
+          <div
+            class='flex flex-wrap gap-2 mb-3'
+            x-show='selectedTechs.length > 0'
+          >
+            <template x-for='tech in selectedTechs' :key='tech.id'>
+              <div
+                class='flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2'
+              >
+                <div class='w-6 h-6 flex items-center justify-center'>
+                  <template x-if="tech.svg">
+                    <div x-html="tech.svg" class="w-full h-full flex items-center justify-center"></div>
+                  </template>
+                  <template x-if="!tech.svg && tech.imgUrl">
+                    <img :src="tech.imgUrl" class="w-full h-full object-contain" />
+                  </template>
+                  <template x-if="!tech.svg && !tech.imgUrl">
+                    <i class="fas fa-code text-gray-400"></i>
+                  </template>
+                </div>
+                <span
+                  class='text-sm font-medium text-gray-700'
+                  x-text='tech.name'
+                ></span>
+                <button
+                  type='button'
+                  @click='removeTech(tech.id)'
+                  class='text-red-500 hover:text-red-700 ml-2'
+                >
+                  <i class='fas fa-times'></i>
+                </button>
+                <input type='hidden' name='technologiesIds[]' :value='tech.id' />
+              </div>
+            </template>
+          </div>
+
+          <!-- Search Input -->
+          <div class='relative'>
+            <input
+              type='text'
+              x-model='search'
+              @focus='showDropdown = true'
+              @input='showDropdown = true'
+              placeholder='Search and select technologies...'
+              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            />
+            <i
+              class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
+            ></i>
+
+            <!-- Dropdown -->
+            <div
+              x-show='showDropdown && filteredTechs.length > 0'
+              class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
+            >
+              <template x-for='tech in filteredTechs' :key='tech.id'>
+                <button
+                  type='button'
+                  @click='selectTech(tech)'
+                  class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
+                >
+                  <div class='w-8 h-8 flex items-center justify-center flex-shrink-0'>
+                    <template x-if="tech.svg">
+                      <div x-html="tech.svg" class="w-full h-full flex items-center justify-center"></div>
+                    </template>
+                    <template x-if="!tech.svg && tech.imgUrl">
+                      <img :src="tech.imgUrl" class="w-full h-full object-contain" />
+                    </template>
+                    <template x-if="!tech.svg && !tech.imgUrl">
+                      <i class="fas fa-code text-gray-400 text-lg"></i>
+                    </template>
+                  </div>
+                  <span
+                    class='text-sm font-medium text-gray-700'
+                    x-text='tech.name'
+                  ></span>
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <p class='text-xs text-gray-500 mt-2'>Click to select technologies
+            from the list</p>
+        </div>
+
+        <!-- Lessons -->
+        <div>
+          <label
+            class='block text-sm font-semibold text-gray-700 mb-2'
+          >Lessons</label>
+          <div x-data="{ materis_id: [''] }">
+
+            <label class='block text-xs text-gray-600 mb-1'>ID</label>
+            <template x-for='(materi_id, index) in materis_id' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='materis_id[index]'
+                  name='materi_id[]'
+                  placeholder='Enter a lesson'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <button
+                  type='button'
+                  @click='materis_id.splice(index,1)'
+                  x-show='materis_id.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                >
+                  ✕
+                </button>
+              </div>
+            </template>
+            <button
+              type='button'
+              @click="materis_id.push('')"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Lesson
+            </button>
+          </div>
+
+          <div x-data="{ materis_en: [''] }">
+            <label class='block text-xs text-gray-600 mb-1'>EN</label>
+            <template x-for='(materi_en, index) in materis_en' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='materis_en[index]'
+                  name='materi_en[]'
+                  placeholder='Enter a lesson'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <button
+                  type='button'
+                  @click='materis_en.splice(index,1)'
+                  x-show='materis_en.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                >
+                  ✕
+                </button>
+              </div>
+            </template>
+            <button
+              type='button'
+              @click="materis_en.push('')"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Lesson
+            </button>
+          </div>
+
+          <div x-data="{ materis_ja: [''] }">
+            <label class='block text-xs text-gray-600 mb-1'>JP</label>
+            <template x-for='(materi_ja, index) in materis_ja' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='materis_ja[index]'
+                  name='materi_ja[]'
+                  placeholder='Enter a lesson'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <button
+                  type='button'
+                  @click='materis_ja.splice(index,1)'
+                  x-show='materis_ja.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                >
+                  ✕
+                </button>
+              </div>
+            </template>
+            <button
+              type='button'
+              @click="materis_ja.push('')"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Lesson
+            </button>
+          </div>
+        </div>
+
+        <!-- Learning Targets -->
+        <div>
+          <label class='block text-sm font-semibold text-gray-700 mb-2'>Learning
+            Targets</label>
+          <div x-data="{ targets_id: [''] }">
+
+            <label class='block text-xs text-gray-600 mb-1'>ID</label>
+            <template x-for='(target_id, index) in targets_id' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='targets_id[index]'
+                  name='target_pembelajaran_id[]'
+                  placeholder='Enter a learning target'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <button
+                  type='button'
+                  @click='targets_id.splice(index,1)'
+                  x-show='targets_id.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                >
+                  ✕
+                </button>
+              </div>
+            </template>
+            <button
+              type='button'
+              @click="targets_id.push('')"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Target
+            </button>
+          </div>
+
+          <div x-data="{ targets_en: [''] }">
+
+            <label class='block text-xs text-gray-600 mb-1'>EN</label>
+            <template x-for='(target_en, index) in targets_en' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='targets_en[index]'
+                  name='target_pembelajaran_en[]'
+                  placeholder='Enter a learning target'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <button
+                  type='button'
+                  @click='targets_en.splice(index,1)'
+                  x-show='targets_en.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                >
+                  ✕
+                </button>
+              </div>
+            </template>
+            <button
+              type='button'
+              @click="targets_en.push('')"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Target
+            </button>
+          </div>
+
+          <div x-data="{ targets_ja: [''] }">
+
+            <label class='block text-xs text-gray-600 mb-1'>JP</label>
+            <template x-for='(target_ja, index) in targets_ja' :key='index'>
+              <div class='flex items-center gap-3 mb-3'>
+                <input
+                  type='text'
+                  x-model='targets_ja[index]'
+                  name='target_pembelajaran_ja[]'
+                  placeholder='Enter a learning target'
+                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                />
+                <button
+                  type='button'
+                  @click='targets_ja.splice(index,1)'
+                  x-show='targets_ja.length > 1'
+                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                >
+                  ✕
+                </button>
+              </div>
+            </template>
+            <button
+              type='button'
+              @click="targets_ja.push('')"
+              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+            >
+              + Add Target
+            </button>
+          </div>
+
+          <!-- Criteria -->
+          <div>
+            <label
+              class='block text-sm font-semibold text-gray-700 mb-2'
+            >Criteria</label>
+            <div x-data="{ kriterias_id: [''] }">
+
+              <label class='block text-xs text-gray-600 mb-1'>ID</label>
+              <template
+                x-for='(kriteria_id, index) in kriterias_id'
+                :key='index'
+              >
+                <div class='flex items-center gap-3 mb-3'>
+                  <input
+                    type='text'
+                    x-model='kriterias_id[index]'
+                    name='kriteria_id[]'
+                    placeholder='Enter criteria'
+                    class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                  />
+                  <button
+                    type='button'
+                    @click='kriterias_id.splice(index,1)'
+                    x-show='kriterias_id.length > 1'
+                    class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                  >
+                    ✕
+                  </button>
+                </div>
+              </template>
+              <button
+                type='button'
+                @click="kriterias_id.push('')"
+                class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+              >
+                + Add Criteria
+              </button>
+            </div>
+
+            <div x-data="{ kriterias_en: [''] }">
+
+              <label class='block text-xs text-gray-600 mb-1'>EN</label>
+              <template
+                x-for='(kriteria_en, index) in kriterias_en'
+                :key='index'
+              >
+                <div class='flex items-center gap-3 mb-3'>
+                  <input
+                    type='text'
+                    x-model='kriterias_en[index]'
+                    name='kriteria_en[]'
+                    placeholder='Enter criteria'
+                    class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                  />
+                  <button
+                    type='button'
+                    @click='kriterias_en.splice(index,1)'
+                    x-show='kriterias_en.length > 1'
+                    class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                  >
+                    ✕
+                  </button>
+                </div>
+              </template>
+              <button
+                type='button'
+                @click="kriterias_en.push('')"
+                class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+              >
+                + Add Criteria
+              </button>
+            </div>
+
+            <div x-data="{ kriterias_ja: [''] }">
+
+              <label class='block text-xs text-gray-600 mb-1'>JP</label>
+              <template
+                x-for='(kriteria_ja, index) in kriterias_ja'
+                :key='index'
+              >
+                <div class='flex items-center gap-3 mb-3'>
+                  <input
+                    type='text'
+                    x-model='kriterias_ja[index]'
+                    name='kriteria_ja[]'
+                    placeholder='Enter criteria'
+                    class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                  />
+                  <button
+                    type='button'
+                    @click='kriterias_ja.splice(index,1)'
+                    x-show='kriterias_ja.length > 1'
+                    class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
+                  >
+                    ✕
+                  </button>
+                </div>
+              </template>
+              <button
+                type='button'
+                @click="kriterias_ja.push('')"
+                class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
+              >
+                + Add Criteria
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- BUTTONS - Full Width -->
+      <div class='lg:col-span-2 space-y-4'>
+        <!-- Submit Warning -->
+        <template x-if='!coverHasFile || !coverValid'>
+          <div
+            class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-triangle text-red-500'></i>
+            <p class='text-sm text-red-800'>
+              <span class='font-semibold'>Cannot submit:</span>
+              <span
+                x-text="!coverHasFile ? 'Please upload a cover image first.' : 'Please fix the cover image validation errors above.'"
+              ></span>
+            </p>
+          </div>
+        </template>
+
+      </div>
+      <div class='flex space-x-4'>
+        <button
+          type='submit'
+          :disabled='coverHasFile && !coverValid || loading'
+          :class="coverHasFile && !coverValid || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+          class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
+        >
+          <span
+            x-show='loading'
+            class='loading loading-spinner loading-sm'
+          ></span>
+          <span x-show='!loading'>Create</span>
+        </button>
+        <a
+          href='/category/{{category.id}}'
+          :disabled='loading'
+          :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300 transition'
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+
+
+</div>

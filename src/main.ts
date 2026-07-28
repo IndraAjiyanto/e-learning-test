@@ -2,6 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import methodOverride from 'method-override';
 import session from 'express-session';
 import passport from 'passport';
@@ -40,6 +41,15 @@ async function bootstrap() {
 
   // Cookie parser
   app.use(cookieParser());
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('E-Learning API')
+    .setDescription('API documentation for the e-learning application')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api-docs', app, swaggerDocument);
 
   // Konfigurasi Handlebars dengan engine()
   app.engine(
@@ -121,7 +131,7 @@ async function bootstrap() {
 
           return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale });
         },
-        formatTime: (waktu: string) => waktu.slice(0, 5),
+        formatTime: (waktu: string) => (waktu ? waktu.slice(0, 5) : '-'),
         formatMinutes: (ms: number) => Math.floor(ms / 60000),
 
         // Helper untuk logika bisnis
@@ -140,7 +150,7 @@ async function bootstrap() {
             return false;
           }
           return absenList.some(
-            (absen) => absen.user && absen.user.id === userId,
+            (attendances) => attendances.user && attendances.user.id === userId,
           );
         },
         roles: (userRole: string, ...roles: string[]) => {
@@ -249,17 +259,17 @@ async function bootstrap() {
   app.use(methodOverride('_method'));
   app.use(
     session({
-                     store: new PgSession({
-            conObject: {
-                host: process.env.DB_HOST,
-                port: Number(process.env.DB_PORT),
-                user: process.env.DB_USERNAME,
-                password: process.env.DB_PASSWORD,
-                database: process.env.DB_NAME,
-            },
-            tableName: 'session',
-            createTableIfMissing: true,
-        }),
+      store: new PgSession({
+        conObject: {
+          host: process.env.DB_HOST,
+          port: Number(process.env.DB_PORT),
+          user: process.env.DB_USERNAME,
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_NAME,
+        },
+        tableName: 'web_sessions',
+        createTableIfMissing: true,
+      }),
       secret: 'rahasia-super',
       resave: false,
       saveUninitialized: false,
@@ -279,13 +289,12 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-app.use((req: any, res: Response, next: NextFunction) => {
+  app.use((req: any, res: Response, next: NextFunction) => {
     res.locals.isAuthenticated = req.isAuthenticated();
     next();
-});
+  });
 
   app.use((req: Request, res: Response, next: NextFunction) => {
-
     const lang = req.cookies?.lang || 'en';
     res.locals.currentLang = lang;
     res.locals.lang = lang;

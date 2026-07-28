@@ -14,7 +14,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
-import { KategorisService } from '../kategoris/kategoris.service';
+import { CategoriesService } from '../categories/categories.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -32,7 +32,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 export class GalleryController {
   constructor(
     private readonly galleryService: GalleryService,
-    private readonly kategorisService: KategorisService,
+    private readonly kategorisService: CategoriesService,
   ) {}
  
   // @Get()
@@ -52,10 +52,10 @@ export class GalleryController {
 
 
   @Roles('super_admin')
-  @Get('formCreate/:kategoriId')
-  async formCreate(@Param('kategoriId') kategoriId: string, @Res() res: Response, @Req() req: Request) {
-    const kategori = await this.kategorisService.findOne(+kategoriId);
-    res.render('super_admin/gallery/create', { user: req.user, kategori });
+  @Get('formCreate/:categoryId')
+  async formCreate(@Param('categoryId') categoryId: string, @Res() res: Response, @Req() req: Request) {
+    const category = await this.kategorisService.findOne(+categoryId);
+    res.render('super_admin/gallery/create', { user: req.user, category });
   }
 
   @Roles('super_admin')
@@ -86,7 +86,7 @@ export class GalleryController {
       throw new BadRequestException('No image uploaded');
     }
 
-    createGalleryDto.file_path =
+    createGalleryDto.filePath =
       req.body.uploadedImageUrls[0];
 
     const gallery =
@@ -94,7 +94,7 @@ export class GalleryController {
 
     req.flash('success', 'Gallery successfully created');
 
-    res.redirect(`/category/${gallery.kategori.id}`);
+    res.redirect(`/category/${gallery.category.id}`);
 
   } catch (error: any) {
 
@@ -104,18 +104,18 @@ export class GalleryController {
     );
 
     res.redirect(
-      `/category/${createGalleryDto.kategori_id}`
+      `/category/${createGalleryDto.category_id}`
     );
   }
 }
 
   @Roles('super_admin')
-@Get('kategori/:kategoriId')
+@Get('category/:categoryId')
 async findByKategori(
-  @Param('kategoriId') kategoriId: string,
+  @Param('categoryId') categoryId: string,
   @Res() res: Response,
 ) {
-  const gallery = await this.galleryService.findByKategori(+kategoriId);
+  const gallery = await this.galleryService.findByKategori(+categoryId);
   res.json(gallery);
 }
 
@@ -132,7 +132,7 @@ async formEdit(
   res.render('super_admin/gallery/edit', {
     user: req.user,
     gallery,
-    kategori: gallery.kategori
+    category: gallery.category
   });
 }
 
@@ -160,7 +160,7 @@ async formEdit(
   @Req() req: Request,
 ) {
   try {
-    const data: UpdateGalleryDto & { file_path?: string } = {
+    const data: UpdateGalleryDto & { filePath?: string } = {
       ...updateGalleryDto,
     };
 
@@ -168,14 +168,14 @@ async formEdit(
       req.body.uploadedImageUrls &&
       req.body.uploadedImageUrls.length > 0
     ) {
-      data.file_path = req.body.uploadedImageUrls[0];
+      data.filePath = req.body.uploadedImageUrls[0];
     }
 
     const gallery = await this.galleryService.update(+id, data);
 
     req.flash('success', 'Gallery successfully updated');
 
-    res.redirect(`/category/${gallery.kategori.id}`);
+    res.redirect(`/category/${gallery.category.id}`);
 
   } catch (error: any) {
 
@@ -184,7 +184,7 @@ async formEdit(
       error.message || 'Gallery failed to update'
     );
 
-    res.redirect('/kategori_id');
+    res.redirect('/categoryId');
   }
 }
 
@@ -206,7 +206,7 @@ async remove(
 
     req.flash('success', 'Gallery successfully deleted');
 
-    return res.redirect(`/category/${gallery.kategori.id}`);
+    return res.redirect(`/category/${gallery.category.id}`);
 
   } catch (error: any) {
 
@@ -240,7 +240,7 @@ async remove(
 export class PublicGalleryController {
   constructor(
     private readonly galleryService: GalleryService,
-    private readonly kategorisService: KategorisService,
+    private readonly kategorisService: CategoriesService,
   ) {}
 
   // 1. Menampilkan halaman pertama (Lengkap)

@@ -2,16 +2,16 @@ import { IsArray, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateMentorDto {
   @IsString()
-  nama: string;
+  name: string;
 
   @IsArray()
-  posisi: string[];
+  position: string[];
 
   @IsString()
   profile: string;
 
   @IsArray()
-  teknologi: string[];
+  technology: string[];
 
   @IsString()
   linkedin: string;
@@ -19,11 +19,11 @@ export class CreateMentorDto {
   @IsArray()
   @IsInt({ each: true })
   @IsOptional()
-  teknologiIds: number[];
+  technologyId: number[];
 
   @IsArray()
-  deskripsi: string[];
+  description: string[];
 
   @IsInt()
-  kelasId: number;
+  courseId: number;
 }

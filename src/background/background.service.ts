@@ -19,13 +19,13 @@ export class BackgroundService {
 
   async noBackground() {
     const background_old = await this.backgroundRepository.find({
-      order: { background_ke: 'DESC' },
+      order: { backgroundOrder: 'DESC' },
       take: 1,
     });
     if (!background_old || background_old.length === 0) {
       return 0;
     }
-    const background_new = background_old[0].background_ke + 1;
+    const background_new = background_old[0].backgroundOrder + 1;
     return background_new;
   }
 
@@ -53,8 +53,8 @@ export class BackgroundService {
     await this.backgroundRepository.remove(background);
     const allBackground = await this.backgroundRepository.find();
     for (const item of allBackground) {
-      if (item.background_ke > background.background_ke) {
-        item.background_ke -= 1;
+      if (item.backgroundOrder > background.backgroundOrder) {
+        item.backgroundOrder -= 1;
         await this.backgroundRepository.save(item);
       }
     }

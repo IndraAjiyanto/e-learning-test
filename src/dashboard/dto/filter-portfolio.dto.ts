@@ -6,13 +6,13 @@ export class FilterPortfolioDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  kategori?: number;
+  category?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  jenis_kelas?: number;
+  courseType?: number;
 
   @IsOptional()
   @Type(() => Number)

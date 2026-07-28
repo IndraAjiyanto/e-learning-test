@@ -1,7 +1,7 @@
                 <!-- Full Payment Form -->
                 <form
                   x-show="paymentType === 'full'"
-                  action='/payment/{{user.id}}/{{kelas.id}}'
+                  action='/payment/{{user.id}}/{{course.id}}'
                   enctype='multipart/form-data'
                   method='post'
                   class='space-y-4'
@@ -28,7 +28,7 @@
                         >{{t "test.detailProgram.fullPayment.amount"}}</p>
                         <p
                           class='text-sm font-bold text-slate-900'
-                        >{{formatRupiah kelas.harga}}</p>
+                        >{{formatRupiah course.harga}}</p>
                       </div>
                     </div>
                   </div>

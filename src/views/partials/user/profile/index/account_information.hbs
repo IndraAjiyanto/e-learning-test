@@ -84,7 +84,7 @@
                       }}</p>
                     <p
                       class='text-lg text-slate-800 font-semibold'
-                    >{{user.biodata.nama_lengkap}}</p>
+                    >{{user.biodata.fullName}}</p>
                   </div>
                 </div>
 
@@ -102,9 +102,9 @@
                         'test.profile.gender'
                       }}</p>
                     <p class='text-lg text-slate-800 font-semibold'>{{#if
-                        (eq user.biodata.jenis_kelamin 'Laki laki')
+                        (eq user.biodata.gender 'Laki laki')
                       }}{{t 'test.profile.male'}}{{else if
-                          (eq user.biodata.jenis_kelamin 'Perempuan')
+                          (eq user.biodata.gender 'Perempuan')
                         }}{{t 'test.profile.female'}}{{/if}}</p>
                   </div>
                 </div>
@@ -144,7 +144,7 @@
                     }}</p>
                   <p
                     class='text-base text-slate-800 font-semibold'
-                  >{{user.biodata.kota}}</p>
+                  >{{user.biodata.city}}</p>
                 </div>
 
                 <!-- Education -->
@@ -161,10 +161,10 @@
                     }}</p>
                   <p
                     class='text-base text-slate-800 font-semibold'
-                  >{{#if (eq user.biodata.pendidikan "Junior High School")}}{{t 'test.profile.juniorHighSchool'}}
-                  {{else if (eq user.biodata.pendidikan "Senior High School")}}{{t 'test.profile.seniorHighSchool'}}
-                  {{else if (eq user.biodata.pendidikan "Diploma (D3/D4)")}}{{t 'test.profile.diploma'}}
-                  {{else if (eq user.biodata.pendidikan "Bachelor Degree (S1)")}}{{t 'test.profile.bachelorDegree'}}
+                  >{{#if (eq user.biodata.education "Junior High School")}}{{t 'test.profile.juniorHighSchool'}}
+                  {{else if (eq user.biodata.education "Senior High School")}}{{t 'test.profile.seniorHighSchool'}}
+                  {{else if (eq user.biodata.education "Diploma (D3/D4)")}}{{t 'test.profile.diploma'}}
+                  {{else if (eq user.biodata.education "Bachelor Degree (S1)")}}{{t 'test.profile.bachelorDegree'}}
                   {{/if}}</p>
                 </div>
 
@@ -182,7 +182,7 @@
                     }}</p>
                   <p
                     class='text-base text-slate-800 font-semibold'
-                  >{{user.biodata.program_studi}}</p>
+                  >{{user.biodata.studyProgram}}</p>
                 </div>
               </div>
             </div>

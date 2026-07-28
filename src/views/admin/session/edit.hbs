@@ -1,0 +1,143 @@
+<div class='py-10'>
+  <div class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
+    <h2 class='text-2xl font-semibold mb-8 text-gray-900 text-center'>Edit
+      Session</h2>
+
+    <form
+      method='POST'
+      action='/session/{{session.id}}?_method=PATCH'
+      class='space-y-8'
+      x-data='{ loading: false }'
+      @submit="loading = true;"
+    >
+
+      <!-- Grid Input Dua Kolom -->
+      <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+
+        <!-- Lokasi -->
+        <div>
+          <label
+            for="location"
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Location</label>
+          <input
+            type='text'
+            id="location"
+            name="location"
+            required
+            value='{{session.location}}'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+          />
+        </div>
+
+        <!-- Date -->
+        <div>
+          <label
+            for="date"
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Date</label>
+          <input
+            type='date'
+            id="date"
+            name="date"
+            required
+            value='{{formDate session.date}}'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
+            style='color-scheme: light;'
+          />
+        </div>
+
+        <!-- Time Start -->
+        <div>
+          <label
+            for="startTime"
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Time Start</label>
+          <input
+            type='time'
+            id="startTime"
+            name="startTime"
+            required
+            value='{{formatTime session.startTime}}'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
+            style='color-scheme: light;'
+          />
+        </div>
+
+        <!-- Time End -->
+        <div>
+          <label
+            for="endTime"
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Time End</label>
+          <input
+            type='time'
+            id="endTime"
+            name="endTime"
+            required
+            value='{{formatTime session.endTime}}'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
+            style='color-scheme: light;'
+          />
+        </div>
+      </div>
+
+      <!-- Topik -->
+      <div>
+        <label
+          for="topic"
+          class='block text-sm font-semibold text-gray-700 mb-1'
+        >Topic</label>
+        <textarea
+          id="topic"
+          name="topic"
+          rows='3'
+          class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+        >{{session.topic}}</textarea>
+      </div>
+
+      <!-- Toggle Pertemuan Terakhir -->
+      <div
+        x-data='{ launch: {{session.isFinal}} }'
+        class='flex items-center gap-3'
+      >
+        <label class='relative inline-flex items-center cursor-pointer'>
+          <input type='checkbox' x-model='launch' class='sr-only' />
+          <div
+            :class="launch ? 'bg-green-500' : 'bg-gray-300'"
+            class='w-11 h-6 rounded-full transition-colors'
+          ></div>
+          <div
+            :class="launch ? 'translate-x-5' : 'translate-x-0'"
+            class='absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform'
+          ></div>
+        </label>
+        <span class='text-sm text-gray-700'>Click toggle if this is the last
+          session</span>
+        <input type='hidden' name='isFinalCheck' :value='launch' />
+      </div>
+
+      <!-- Tombol di Kiri -->
+      <div class='flex justify-start gap-3'>
+        <button
+          type='submit'
+          :disabled='loading'
+          :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-700'"
+          class='text-white px-6 py-2 rounded-lg shadow transition'
+        >
+          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+          <span x-show='!loading'>Update</span>
+        </button>
+        <a
+          href='/session/{{session.id}}'
+        :disabled='loading'
+        :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
+          class='px-6 py-2 rounded-lg border border-gray-300  transition'>
+          Cancel
+        </a>
+
+      </div>
+
+    </form>
+  </div>
+</div>

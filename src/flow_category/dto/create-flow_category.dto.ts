@@ -14,5 +14,5 @@ export class CreateFlowCategoryDto {
   description: string[];
 
   @IsNotEmpty()
-  kategoriId: number;
+  categoryId: number;
 }

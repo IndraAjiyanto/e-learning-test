@@ -1,0 +1,169 @@
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    
+    <div x-data="materiData()" x-init="init()" class="space-y-6">
+
+      <div class="flex space-x-4">
+        <button @click="toggleFetchMateri('/session/pdf/{{session.id}}', 'pdf')" 
+                :class="tabMateri === 'pdf' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                class="px-4 py-2 rounded-lg shadow transition">PDF</button>
+        <button @click="toggleFetchMateri('/session/video/{{session.id}}', 'video')" 
+                :class="tabMateri === 'video' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                class="px-4 py-2 rounded-lg shadow transition">Video</button>
+        <button @click="toggleFetchMateri('/session/ppt/{{session.id}}', 'ppt')" 
+                :class="tabMateri === 'ppt' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+                class="px-4 py-2 rounded-lg shadow transition">PPT</button>
+      </div>
+
+{{> sub_partials/session/materi_tab/pdf}}
+
+{{> sub_partials/session/materi_tab/video}}
+
+{{> sub_partials/session/materi_tab/ppt}}
+
+    </div>
+  </div>
+
+<div x-data="materiModal()" 
+     @open-materi-modal.window="openModal($event.detail)"
+     x-show="isOpen"
+     x-cloak
+     class="fixed inset-0 z-50 overflow-y-auto"
+     style="display: none;">
+  
+  <!-- Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity z-40"
+       @click="closeModal()"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative flex items-center justify-center min-h-screen p-4 z-50">
+    <div class="relative bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
+         @click.stop>
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 border-b">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900" x-text="materi.title"></h2>
+          <p class="text-sm text-gray-600 mt-1">
+            File Type: <span class="uppercase font-semibold" x-text="materi.fileType"></span>
+          </p>
+        </div>
+        <button @click="closeModal()" 
+                class="p-2 hover:bg-gray-100 rounded-lg transition">
+          <svg xmlns="http://www.w3.org/2000/svg" 
+               class="h-6 w-6 text-gray-600" 
+               fill="none" viewBox="0 0 24 24" 
+               stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Content -->
+      <div class="p-6 overflow-y-auto bg-white" style="max-height: calc(90vh - 180px);">
+        
+        <!-- PDF Viewer -->
+        <template x-if="materi.fileType === 'pdf'">
+          <div class="w-full h-[600px] bg-white">
+            <iframe :src="materi.file" 
+            type="application/pdf"
+                    class="w-full h-full border rounded-lg bg-white"
+                    frameborder="0">
+            </iframe>
+          </div>
+        </template>
+
+      </div>
+      
+      <!-- Footer -->
+      <div class="flex items-center justify-between p-6 border-t bg-gray-50">
+ 
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<script>
+function materiModal() {
+  return {
+    isOpen: false,
+    currentSlide: 0,
+    materi: {
+      id: null,
+      title: '',
+      fileType: '',
+      file: '',
+    },
+    
+    get totalSlides() {
+      return this.materi.slides ? this.materi.slides.length : 0;
+    },
+    
+    openModal(data) {
+      
+      this.materi = data;
+      
+      // Pastikan slides adalah array
+      if (data.slides && !Array.isArray(data.slides)) {
+        this.materi.slides = [];
+      }
+      
+      this.currentSlide = 0;
+      this.isOpen = true;
+      document.body.style.overflow = 'hidden';
+    
+    },
+    
+    closeModal() {
+      this.isOpen = false;
+      document.body.style.overflow = 'auto';
+    },
+    
+    nextSlide() {
+      if (this.currentSlide < this.totalSlides - 1) {
+        this.currentSlide++;
+      }
+    },
+    
+    prevSlide() {
+      if (this.currentSlide > 0) {
+        this.currentSlide--;
+      }
+    }
+  }
+}
+
+function materiData() {
+  return {
+    tabMateri: localStorage.getItem('tabMateri') || 'pdf',
+    dataMateri: localStorage.getItem('dataMateri') ? JSON.parse(localStorage.getItem('dataMateri')) : [],
+
+    async init() {
+      const urlMap = {
+        pdf: '/session/pdf/{{session.id}}',
+        video: '/session/video/{{session.id}}',
+        ppt: '/session/ppt/{{session.id}}'
+      }
+
+      await this.toggleFetchMateri(urlMap[this.tabMateri], this.tabMateri);
+    },
+
+    async toggleFetchMateri(url, jenis) {
+      this.tabMateri = jenis;
+      localStorage.setItem('tabMateri', jenis);
+      try{
+      const res = await fetch(url);
+      this.dataMateri = await res.json();
+  
+      localStorage.setItem('dataMateri', JSON.stringify(this.dataMateri));
+      } catch (error) {
+        console.error('❌ Error:', error);
+      }
+
+    }
+
+
+  }
+}
+</script>

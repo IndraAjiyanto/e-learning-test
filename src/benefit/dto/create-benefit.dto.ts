@@ -3,10 +3,10 @@ import { No } from 'src/entities/benefit.entity';
 
 export class CreateBenefitDto {
   @IsArray()
-  judul: string[];
+  title: string[];
 
   @IsArray()
-  text: string[];
+  description: string[];
 
   @IsEnum([1, 2, 3, 4, 5])
   no: No;

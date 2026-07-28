@@ -2,21 +2,27 @@
   x-data="{
     open: false,
     imageSrc: '',
-    mainTab: localStorage.getItem('activeMainTab') || 'pembayaran',
+    mainTab: (() => {
+      const hash = window.location.hash.replace('#', '');
+      if (['pembayaran', 'pendaftaran', 'installments'].includes(hash)) {
+        return hash;
+      }
+      return localStorage.getItem('activeMainTab') || 'pembayaran';
+    })(),
     statusTab: localStorage.getItem('activeStatusTab') || 'all',
 
     pembayaran: [],
-    cicilan: [],
+    installments: [],
     pendaftaran: [],
 
     loading: {
       pembayaran: false,
-      cicilan: false,
+      installments: false,
       pendaftaran: false
     },
     fetched: {
       pembayaran: false,
-      cicilan: false,
+      installments: false,
       pendaftaran: false
     },
 
@@ -27,7 +33,7 @@
         const map = {
           pembayaran: '/payment/api/payment/{{userId}}',
           pendaftaran: '/payment/api/registration/{{userId}}',
-          cicilan: '/payment/api/installment/{{userId}}'
+          installments: '/payment/api/installment/{{userId}}'
         };
         const res = await fetch(map[tab]);
         const json = await res.json();
@@ -43,6 +49,7 @@
     async switchTab(tab) {
       this.mainTab = tab;
       localStorage.setItem('activeMainTab', tab);
+      window.location.hash = tab;
       await this.fetchTab(tab);
     },
 

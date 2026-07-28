@@ -3,7 +3,7 @@
                                         <label
             class='block text-sm font-semibold text-gray-700 my-2'
           >Learning Targets</label>
-                    <div x-data="{ targets_id: {{json kelas.target_pembelajaran_id}} || [''] }">
+                    <div x-data="{ targets_id: {{json course.learningTargetsId}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >ID</label>
@@ -12,7 +12,7 @@
                           <input
                             type='text'
                             x-model='targets_id[index]'
-                            name='target_pembelajaran_id[]'
+                            name='learningTargetsId[]'
                             placeholder='Enter a learning target'
                             class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                           />
@@ -35,7 +35,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ targets_en: {{json kelas.target_pembelajaran_en}} || [''] }">
+                    <div x-data="{ targets_en: {{json course.learningTargetsEn}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >EN</label>
@@ -44,7 +44,7 @@
                           <input
                             type='text'
                             x-model='targets_en[index]'
-                            name='target_pembelajaran_en[]'
+                            name='learningTargetsEn[]'
                             placeholder='Enter a learning target'
                             class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                           />
@@ -67,7 +67,7 @@
                       </button>
                     </div>
 
-                    <div x-data="{ targets_ja: {{json kelas.target_pembelajaran_ja}} || [''] }">
+                    <div x-data="{ targets_ja: {{json course.learningTargetsJa}} || [''] }">
                             <label
               class='block text-xs text-gray-600 my-2'
             >JP</label>
@@ -76,7 +76,7 @@
                           <input
                             type='text'
                             x-model='targets_ja[index]'
-                            name='target_pembelajaran_ja[]'
+                            name='learningTargetsJa[]'
                             placeholder='Enter a learning target'
                             class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                           />

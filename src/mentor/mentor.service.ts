@@ -2,56 +2,56 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMentorDto } from './dto/create-mentor.dto';
 import { UpdateMentorDto } from './dto/update-mentor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Kelas } from 'src/entities/kelas.entity';
-import { Mentor } from 'src/entities/mentor.entity';
+import { Course } from 'src/entities/course.entity';
+import { Mentors } from 'src/entities/mentor.entity';
 import { In, Repository } from 'typeorm';
-import { Teknologi } from 'src/entities/teknologi.entity';
+import { Technology } from 'src/entities/technology.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
 @Injectable()
 export class MentorService {
   constructor(
-    @InjectRepository(Mentor)
-    private readonly mentorRepository: Repository<Mentor>,
-    @InjectRepository(Teknologi)
-    private readonly teknologiRepository: Repository<Teknologi>,
-    @InjectRepository(Kelas)
-    private readonly kelasRepository: Repository<Kelas>,
+    @InjectRepository(Mentors)
+    private readonly mentorRepository: Repository<Mentors>,
+    @InjectRepository(Technology)
+    private readonly technologiesRepository: Repository<Technology>,
+    @InjectRepository(Course)
+    private readonly kelasRepository: Repository<Course>,
   ) {}
 
   async create(createMentorDto: CreateMentorDto) {
-    const kelas = await this.kelasRepository.findOne({
-      where: { id: createMentorDto.kelasId },
+    const course = await this.kelasRepository.findOne({
+      where: { id: createMentorDto.courseId },
     });
-    if (!kelas) {
+    if (!course) {
       throw new NotFoundException('Program not found');
     }
-    let teknologi: Teknologi[] = [];
+    let technologies: Technology[] = [];
     if (
-      createMentorDto.teknologiIds &&
-      createMentorDto.teknologiIds.length > 0
+      createMentorDto.technologyId &&
+      createMentorDto.technologyId.length > 0
     ) {
-      teknologi = await this.teknologiRepository.findBy({
-        id: In(createMentorDto.teknologiIds),
+      technologies = await this.technologiesRepository.findBy({
+        id: In(createMentorDto.technologyId),
       });
     }
     const mentor = await this.mentorRepository.create({
       ...createMentorDto,
-      kelas: kelas,
-      teknologi: teknologi,
+      course: course,
+      technologies: technologies,
     });
     return await this.mentorRepository.save(mentor);
   }
 
-  async findTeknologi() {
-    return await this.teknologiRepository.find();
+  async findTechnologies() {
+    return await this.technologiesRepository.find();
   }
 
   async findOne(mentorId: number) {
     const mentor = await this.mentorRepository.findOne({
       where: { id: mentorId },
-      relations: ['kelas', 'teknologi'],
+      relations: ['course', 'technologies'],
     });
     if (!mentor) {
       throw new NotFoundException('mentor not found');
@@ -64,17 +64,17 @@ export class MentorService {
     if (!mentor) {
       throw new NotFoundException('Program not found');
     }
-    if (updateMentorDto.teknologiIds !== undefined) {
-      if (updateMentorDto.teknologiIds.length > 0) {
-        mentor.teknologi = await this.teknologiRepository.findBy({
-          id: In(updateMentorDto.teknologiIds),
+    if (updateMentorDto.technologyId !== undefined) {
+      if (updateMentorDto.technologyId.length > 0) {
+        mentor.technologies = await this.technologiesRepository.findBy({
+          id: In(updateMentorDto.technologyId),
         });
       } else {
-        mentor.teknologi = [];
+        mentor.technologies = [];
       }
     }
 
-    const { teknologiIds, ...otherProperties } = updateMentorDto;
+    const { technologyId: _technologyId, ...otherProperties } = updateMentorDto;
     Object.assign(mentor, otherProperties);
 
     return await this.mentorRepository.save(mentor);

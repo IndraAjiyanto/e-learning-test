@@ -11,5 +11,5 @@ export class CreateValueDto {
   icon: string;
 
   @IsNumber()
-  value_ke: number;
+  valueOrder: number;
 }
