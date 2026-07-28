@@ -2,7 +2,13 @@
   x-data="{
     open: false,
     imageSrc: '',
-    mainTab: localStorage.getItem('activeMainTab') || 'pembayaran',
+    mainTab: (() => {
+      const hash = window.location.hash.replace('#', '');
+      if (['pembayaran', 'pendaftaran', 'installments'].includes(hash)) {
+        return hash;
+      }
+      return localStorage.getItem('activeMainTab') || 'pembayaran';
+    })(),
     statusTab: localStorage.getItem('activeStatusTab') || 'all',
 
     pembayaran: [],
@@ -43,6 +49,7 @@
     async switchTab(tab) {
       this.mainTab = tab;
       localStorage.setItem('activeMainTab', tab);
+      window.location.hash = tab;
       await this.fetchTab(tab);
     },
 

@@ -65,8 +65,8 @@ export class AnswerTasksController {
       );
       res.render('user/assignments', {
         user: req.user,
-        assignments,
-        taskAnswers,
+        assignment: assignments,
+        jawaban_tugas: taskAnswers,
         jawabanExists,
       });
     }
@@ -84,8 +84,8 @@ export class AnswerTasksController {
       await this.answerTasksService.findAllJawabanTugas(assignmentId);
     res.render('admin/answers-assignments/index', {
       user: req.user,
-      taskAnswers,
-      assignments,
+      jawaban_tugas: taskAnswers,
+      assignment: assignments,
     });
   }
 

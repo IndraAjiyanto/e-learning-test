@@ -57,7 +57,7 @@ export class PortfoliosController {
   @Roles('user')
   @Post('create/:courseId')
   @UseInterceptors(
-    FilesInterceptor('gambar', 100, multerConfigMemoryOnly),
+    FilesInterceptor('image', 100, multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -169,7 +169,7 @@ export class PortfoliosController {
   @Roles('user')
   @Patch(':portfolioId/:courseId')
   @UseInterceptors(
-    FilesInterceptor('gambar', 10, multerConfigMemoryOnly),
+    FilesInterceptor('image', 10, multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -220,7 +220,6 @@ export class PortfoliosController {
       const updateData = {
         title: updatePortfolioDto.title,
         description: updatePortfolioDto.description,
-        technologies: updatePortfolioDto.technologies,
         image: newImageUrls,
         content: updatePortfolioDto.content,
         content_html: updatePortfolioDto.content_html,

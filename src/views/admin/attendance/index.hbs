@@ -30,13 +30,13 @@
       </thead>
       <tbody class="divide-y divide-gray-200">
         {{#each attendance}}
-        <tr class="hover:bg-gray-50 transition" x-show="'{{status}} {{user.username}} {{session.course.name}} {{session.pertemuan_ke}}'.toLowerCase().includes(search.toLowerCase())">
+        <tr class="hover:bg-gray-50 transition" x-show="'{{status}} {{user.username}} {{session.weeks.course.name}} {{session.sessionOrder}}'.toLowerCase().includes(search.toLowerCase())">
           <td class="px-6 py-4 text-sm text-gray-800">{{addOne @index}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{session.course.name}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{session.pertemuan_ke}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{session.weeks.course.name}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{session.sessionOrder}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.username}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{status}}</td>
-          <td class="px-6 py-4 text-sm text-gray-800">{{keterangan}}</td>
+          <td class="px-6 py-4 text-sm text-gray-800">{{notes}}</td>
           <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
             <a href="/attendance/{{id}}" class="inline-block text-gray-600 font-medium hover:underline">Lihat Attendance</a>
           </td>

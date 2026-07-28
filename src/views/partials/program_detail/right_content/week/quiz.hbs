@@ -23,9 +23,9 @@
 
                     <template x-for='quiz in quizData' :key='quiz.id'>
                       <div>
-                        <template x-if='quiz.progres_quiz.length > 0'>
+                        <template x-if='quiz.quizProgresses.length > 0'>
                           <div>
-                            <template x-if='quiz.question?.length > 0'>
+                            <template x-if='quiz.questions?.length > 0'>
 
                               <a
                                 :href='`/quiz/form/${quiz.id}`'
@@ -51,7 +51,7 @@
                               </a>
 
                             </template>
-                            <template x-if='!quiz.question?.length'>
+                            <template x-if='!quiz.questions?.length'>
                               <div
                                 class='flex items-center justify-center p-3 bg-gray-100 rounded-lg'
                               >
@@ -75,7 +75,7 @@
                             </template>
                           </div>
                         </template>
-                        <template x-if='quiz.progres_quiz.length === 0'>
+                        <template x-if='quiz.quizProgresses.length === 0'>
                           <div
                             class='flex items-center p-3 bg-yellow-50 border border-yellow-200 rounded-lg'
                           >

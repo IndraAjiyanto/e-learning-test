@@ -90,14 +90,14 @@
       <!-- Date -->
       <div>
         <label
-          for='waktu_absen'
+          for='attendance_time'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Attendance Date</label>
         <input
           type='date'
-          id='waktu_absen'
-          name='waktu_absen'
-          value='{{formDate attendance.waktu_absen}}'
+          id='attendance_time'
+          name='attendance_time'
+          value='{{formDate attendance.attendance_time}}'
           required
           class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
           style='color-scheme: light;'
@@ -107,16 +107,16 @@
       <!-- Note -->
       <div>
         <label
-          for="description"
+          for="notes"
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Note</label>
         <textarea
-          id="description"
-          name="description"
+          id="notes"
+          name="notes"
           rows='3'
           placeholder='Enter additional note...'
           class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-        >{{attendance.description}}</textarea>
+        >{{attendance.notes}}</textarea>
       </div>
 
       <!-- Buttons -->

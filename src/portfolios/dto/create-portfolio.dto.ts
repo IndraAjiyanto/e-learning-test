@@ -28,6 +28,7 @@ export class CreatePortfolioDto {
   content_html: string;
 
   @IsArray()
+  @IsOptional()
   technologies: string[];
 
   @IsNumber()

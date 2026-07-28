@@ -45,7 +45,7 @@
             <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook.activity"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbook.activity_details"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook.activityDetails"
             ></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook.obstacles"></td>
             <td class='px-6 py-4 text-sm text-gray-800'>
@@ -56,24 +56,24 @@
               />
             </td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbook.other_documentation"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbook.otherDocumentation"
             ></td>
             <td
               class='px-6 py-4 text-sm text-gray-800' x-text="logbook.session?.weeks?.course?.name"
             ></td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook.user.username"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook.user?.username"></td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              <template x-if="logbook.proses === 'acc'">
+              <template x-if="logbook.process === 'acc'">
                 <span
                   class='px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800'
                 >Approved</span>
                 </template>
-              <template x-if="logbook.proses === 'rejected'">
+              <template x-if="logbook.process === 'rejected'">
                 <span
                   class='px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800'
                 >Rejected</span>
                 </template>
-                <template x-if="logbook.proses === 'proces'">
+                <template x-if="logbook.process === 'proces'">
                 <span
                   class='px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800'
                 >Pending</span>
@@ -83,7 +83,7 @@
               <div class='flex items-center justify-center gap-2'>
                 <!-- ACC Button -->
                 <form
-                  :action="`/logbook/${logbook.id}/acc?_method=PATCH`"
+                  :action="`/logbooks/${logbook.id}/acc?_method=PATCH`"
                   method='post'
                   class='inline'
                 >
@@ -111,7 +111,7 @@
 
                 <!-- Reject Button -->
                 <form
-                  :action="`/logbook/${logbook.id}/rejected?_method=PATCH`"
+                  :action="`/logbooks/${logbook.id}/rejected?_method=PATCH`"
                   method='post'
                   class='inline'
                 >
@@ -171,7 +171,7 @@
 
                 <!-- Edit Button -->
                 <a
-                  :href="`/logbook/formEdit/${logbook.id}`"
+                  :href="`/logbooks/formEdit/${logbook.id}`"
                   class='p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition'
                   title='Edit'
                 >
@@ -201,7 +201,7 @@
 
                 <!-- Delete Button -->
                 <form
-                  :action="`/logbook/${logbook.session.id}/${logbook.id}?_method=DELETE`"
+                  :action="`/logbooks/${logbook.session?.id}/${logbook.id}?_method=DELETE`"
                   method='post'
                   class='inline'
                 >

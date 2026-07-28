@@ -5,7 +5,7 @@
     </div>
 
     <form
-      action='/logbook/{{pertemuanId}}'
+      action='/logbooks/{{sessionId}}'
       method='POST'
       enctype='multipart/form-data'
       class='space-y-6'
@@ -163,12 +163,12 @@
       <!-- Activity Details -->
       <div>
         <label
-          for="activity_details"
+          for="activityDetails"
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Activity Details</label>
         <textarea
-          name="activity_details"
-          id="activity_details"
+          name="activityDetails"
+          id="activityDetails"
           rows="4"
           placeholder='Enter activity details...'
           class='w-full text-gray-700 bg-white border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
@@ -259,13 +259,13 @@
 
             <div>
         <label
-          for="other_documentation"
+          for="otherDocumentation"
           class='block text-sm font-semibold text-gray-700 mb-1'
         >Link Documentation</label>
         <input
           type='text'
-          id="other_documentation"
-          name="other_documentation"
+          id="otherDocumentation"
+          name="otherDocumentation"
           required
           placeholder='Enter link documentation...'
           class='w-full border text-gray-700 bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900'
@@ -284,7 +284,7 @@
           <span x-show="!loading">Add Log Book</span>
         </button>
         <a
-          href='/session/{{pertemuanId}}'
+          href='/session/{{sessionId}}'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>
           Cancel

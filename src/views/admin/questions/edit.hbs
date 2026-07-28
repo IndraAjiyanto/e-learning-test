@@ -2,12 +2,12 @@
   <div class="max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-6 text-gray-900">Edit Question</h2>
 
-    <form action="/question/{{pertanyaan.id}}/{{pertanyaan.quiz.id}}?_method=PATCH" method="POST" class="space-y-6" enctype="multipart/form-data" x-data="{loading:false}" @submit="loading = true;">
+    <form action="/question/{{questions.id}}/{{questions.quiz.id}}?_method=PATCH" method="POST" class="space-y-6" enctype="multipart/form-data" x-data="{loading:false}" @submit="loading = true;">
       
       <div 
   x-data="{ 
     previewUrl: null, 
-    oldPhoto: '{{#if pertanyaan.image}}{{pertanyaan.image}}{{else}}/images/default-avatar.png{{/if}}' 
+    oldPhoto: '{{#if questions.image}}{{questions.image}}{{else}}/images/default-avatar.png{{/if}}' 
   }" 
   class="space-y-3"
 >
@@ -48,24 +48,24 @@
 
       <!-- Pertanyaan -->
       <div>
-        <label for="pertanyaan_soal" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="questionText" class="block text-sm font-medium text-gray-700 mb-1">
           Pertanyaan
         </label>
-        <textarea id="pertanyaan_soal" name="pertanyaan_soal" rows="4"
+        <textarea id="questionText" name="questionText" rows="4"
           class="w-full border bg-white rounded-lg p-3 focus:ring-2 focus:ring-gray-900 text-gray-700"
-          placeholder="Tulis pertanyaan di sini..." required>{{pertanyaan.pertanyaan_soal}}</textarea>
+          placeholder="Tulis pertanyaan di sini..." required>{{questions.questionText}}</textarea>
       </div>
 
       <!-- Pilihan Jawaban -->
       <div class="space-y-4">
-        {{#each pertanyaan.answer}}
+        {{#each questions.answers}}
         <div class="flex items-center gap-3">
-          <input type="radio" name="answer" value="{{@index}}" required
+          <input type="radio" name="answers" value="{{@index}}" required
             class="h-5 w-5 border-gray-400 text-gray-900 focus:ring-gray-900"
-            {{#if this.is_correct}}checked{{/if}} />
+            {{#if this.isCorrect}}checked{{/if}} />
           <div class="flex-1">
             <label class="block text-sm font-medium text-gray-700 mb-1">Pilihan {{lookup "ABCD" @index}}</label>
-            <input type="text" name="pilihan[]" value="{{this.answer}}"
+            <input type="text" name="answer" value="{{this.answer}}"
               class="w-full border bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-900 text-gray-700"
               placeholder="Tulis pilihan {{lookup "ABCD" @index}}" required />
           </div>
@@ -82,7 +82,7 @@
           <span x-show='loading' class="loading loading-spinner loading-sm"></span>
           <span x-show='!loading'>Update Question</span>
         </button>
-        <a href="/quiz/{{pertanyaan.quiz.id}}"
+          <a href="/quiz/{{questions.quiz.id}}"
         :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>

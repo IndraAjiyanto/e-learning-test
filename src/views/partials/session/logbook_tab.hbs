@@ -21,7 +21,7 @@
       selectedLogbook: null,
 
             async fetchLogBook() {
-      const res = await fetch('/session/logbook/{{session.id}}');
+      const res = await fetch('/session/logbooks/{{session.id}}');
       this.data = await res.json();
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },
@@ -30,7 +30,7 @@
       get filteredData() {
         let filtered = this.data.filter(l =>
           (
-            `${l.activity} ${l.activity_details} ${l.obstacles} ${l.other_documentation} ${l.user?.username}`
+            `${l.activity} ${l.activityDetails} ${l.obstacles} ${l.otherDocumentation} ${l.user?.username}`
           ).toLowerCase()
           .includes(this.search.toLowerCase())
         );
@@ -48,7 +48,7 @@
         try {
           const filtered = this.data.filter(l =>
             (
-              `${l.activity} ${l.activity_details} ${l.obstacles}`
+              `${l.activity} ${l.activityDetails} ${l.obstacles}`
             )
               .toLowerCase()
               .includes(this.search.toLowerCase())
@@ -57,16 +57,16 @@
           const dataToExport = filtered.map((log, index) => ({
             No: index + 1,
             Activity: log.activity || "-",
-            Details: log.activity_details || "-",
+            Details: log.activityDetails || "-",
             Obstacle: log.obstacles || "-",
             Documentation: log.dokumentasi || "-",
-            AdditionalDocumentation: log.other_documentation || "-",
+            AdditionalDocumentation: log.otherDocumentation || "-",
             Program: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",
             Status:
-              log.proses === "acc"
+              log.process === "acc"
                 ? "Approved"
-                : log.proses === "proces"
+                : log.process === "proces"
                 ? "Process"
                 : "Rejected",
             Date: this.formatDate(log.createdAt)

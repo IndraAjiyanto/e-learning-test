@@ -13,7 +13,7 @@
                         :
                         {{this.description}}
                       </h2>
-                      {{#if progres_minggu.[0].quiz}}
+                      {{#if weekProgresses.[0].quiz}}
                         <span
                           class='bg-gradient-to-r from-green-100 to-green-200 text-green-800 shadow-sm text-xs px-2 py-0.5 rounded-full font-semibold'
                         >
@@ -22,7 +22,7 @@
                       {{/if}}
                     </div>
                     <p class='text-xs text-gray-500 mt-0.5'>
-                      {{#if progres_minggu.[0].quiz}}
+                      {{#if weekProgresses.[0].quiz}}
                         {{t 'test.startLearning.clickToReview'}}
                       {{else}}
                         {{t 'test.startLearning.clickToExpandWeek'}}

@@ -42,7 +42,7 @@
 
           filtered = filtered.filter((log) =>
             (log.activity || "").toLowerCase().includes(s) ||
-            (log.activity_details || "").toLowerCase().includes(s) ||
+            (log.activityDetails || "").toLowerCase().includes(s) ||
             (log.obstacles || "").toLowerCase().includes(s) ||
             (log.session?.weeks?.course?.name || "")
               .toLowerCase()
@@ -93,13 +93,13 @@
           const dataToExport = this.filteredLogbooks.map((log, index) => ({
             No: index + 1,
             Activity: log.activity || "-",
-            "Activity Details": log.activity_details || "-",
+            "Activity Details": log.activityDetails || "-",
             Issues: log.obstacles || "-",
             Class: log.session?.weeks?.course?.name || "-",
             Status:
-              log.proses === "acc"
+              log.process === "acc"
                 ? "Approved"
-                : log.proses === "proces"
+                : log.process === "proces"
                 ? "Process"
                 : "Rejected",
             Date: this.formatDate(log.createdAt),

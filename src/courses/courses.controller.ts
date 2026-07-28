@@ -171,7 +171,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Post('addStudent/:courseId')
   async addUserToCourse(
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
     @Req() req: Request,
     @Body('userId') userId: number,
@@ -269,7 +269,7 @@ export class CoursesController {
   async formAddUser(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
   ) {
     const users = await this.kelassService.findUser();
     const murid = await this.kelassService.findMurid(courseId);
@@ -286,7 +286,7 @@ export class CoursesController {
   @Get('/edit/:courseId')
   async formEdit(
     @Res() res: Response,
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Req() req: Request,
   ) {
     const course = await this.kelassService.findOne(courseId);
@@ -308,7 +308,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/logbookMentor/:courseId')
   async getMentorLogbook(
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
     const logbookMentor = await this.kelassService.findMentorLogbook(courseId);
@@ -318,7 +318,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/logbookUser/:courseId')
   async getLogbookUser(
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
     const logbookUser = await this.kelassService.findLogBookUser(courseId);
@@ -328,7 +328,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/mentorProgram/:courseId')
   async getMentorKelas(
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
     const mentor = await this.kelassService.findCourseMentors(courseId);
@@ -337,21 +337,21 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/week/:courseId')
-  async getMinggu(@Param('courseId') courseId: number, @Res() res: Response) {
+  async getMinggu(@Param('courseId', ParseIntPipe) courseId: number, @Res() res: Response) {
     const weeks = await this.kelassService.findCourseWeeks(courseId);
     res.json(weeks);
   }
 
   @Roles('super_admin', 'admin')
   @Get('/userProgram/:courseId')
-  async getUserKelas(@Param('courseId') courseId: number, @Res() res: Response) {
+  async getUserKelas(@Param('courseId', ParseIntPipe) courseId: number, @Res() res: Response) {
     const userCourses = await this.kelassService.findCourseUsers(courseId);
     res.json(userCourses);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/installment/:courseId')
-  async getCicilan(@Param('courseId') courseId: number, @Res() res: Response) {
+  async getCicilan(@Param('courseId', ParseIntPipe) courseId: number, @Res() res: Response) {
     const availableMonths = await this.kelassService.findNo(courseId);
     const installments = await this.kelassService.findCourseInstallments(courseId);
     res.json({ availableMonths, installments });
@@ -360,7 +360,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/register/:courseId')
   async getPendaftaran(
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
     const pendaftaran = await this.kelassService.findCourseRegistrations(courseId);
@@ -370,7 +370,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/paymentInstallment/:courseId')
   async getPaymentInstallment(
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
     const paymentInstallment =
@@ -381,7 +381,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/benefit/:courseId')
   async getProgramBenefit(
-    @Param('courseId') courseId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
     const course_benefits = await this.kelassService.findProgramBenefit(courseId);
@@ -449,7 +449,7 @@ export class CoursesController {
   @Roles('user')
   @Get('myProgram/:id')
   async myCourse(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -483,6 +483,7 @@ export class CoursesController {
     // const course_benefits = await this.kelassService.findProgramBenefit(courseId);
     const technologies = await this.kelassService.findCourseTechnologies(courseId);
     const installments = await this.kelassService.findCourseInstallments(courseId);
+    const daftar = await this.kelassService.sumStudent(course.id);
 
     if (course.check_paid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
@@ -491,6 +492,7 @@ export class CoursesController {
         user: req.user,
         kelass,
         check_user,
+        daftar,
         // courseQuestions,
         // course_flows,
         // mentor,
@@ -516,7 +518,7 @@ export class CoursesController {
 
   @Get(':id')
   async detail(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {

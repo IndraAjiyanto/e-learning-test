@@ -14,33 +14,33 @@
         <template x-for="item in pendaftaran" :key="item.id">
           <div
             x-show="statusTab === 'all'
-              || (statusTab === 'acc' && item.proses === 'acc')
-              || (statusTab === 'proces' && item.proses === 'proces')
-              || (statusTab === 'rejected' && item.proses === 'rejected')"
+              || (statusTab === 'acc' && item.process === 'acc')
+              || (statusTab === 'proces' && item.process === 'proces')
+              || (statusTab === 'rejected' && item.process === 'rejected')"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 transform scale-95"
             x-transition:enter-end="opacity-100 transform scale-100"
             :class="{
-              'bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-200': item.proses === 'acc',
-              'bg-gradient-to-br from-amber-50 to-orange-100 border-amber-200 hover:from-amber-100 hover:to-orange-200': item.proses === 'proces',
-              'bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:from-red-100 hover:to-red-200': item.proses !== 'acc' && item.proses !== 'proces'
+              'bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:from-emerald-100 hover:to-emerald-200': item.process === 'acc',
+              'bg-gradient-to-br from-amber-50 to-orange-100 border-amber-200 hover:from-amber-100 hover:to-orange-200': item.process === 'proces',
+              'bg-gradient-to-br from-red-50 to-red-100 border-red-200 hover:from-red-100 hover:to-red-200': item.process !== 'acc' && item.process !== 'proces'
             }"
             class="group relative rounded-2xl shadow-lg overflow-hidden border transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
 
             <div class="absolute top-4 right-4 z-10">
-              <div x-show="item.proses === 'acc'"
+              <div x-show="item.process === 'acc'"
                 class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                 <i class="fas fa-check"></i>
                 <span class="hidden sm:inline">{{t "test.historyPayment.free.accepted"}}</span>
                 <span class="sm:hidden">{{t "test.historyPayment.free.acc"}}</span>
               </div>
-              <div x-show="item.proses === 'proces'"
+              <div x-show="item.process === 'proces'"
                 class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                 <i class="fas fa-clock"></i>
                 <span class="hidden sm:inline">{{t "test.historyPayment.free.processing"}}</span>
                 <span class="sm:hidden">{{t "test.historyPayment.free.proc"}}</span>
               </div>
-              <div x-show="item.proses !== 'acc' && item.proses !== 'proces'"
+              <div x-show="item.process !== 'acc' && item.process !== 'proces'"
                 class="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 md:px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                 <i class="fas fa-times"></i>
                 <span class="hidden sm:inline">{{t "test.historyPayment.free.rejected"}}</span>
@@ -69,13 +69,13 @@
                 <div class="flex items-center text-xs md:text-sm">
                   <i class="fas fa-info-circle mr-2 text-slate-500"></i>
                   <span class="font-medium text-slate-700">{{t "test.historyPayment.free.status"}}</span>
-                  <span x-show="item.proses === 'acc'" class="ml-2 text-emerald-700 font-bold">{{t "test.historyPayment.free.accepted"}}</span>
-                  <span x-show="item.proses === 'proces'" class="ml-2 text-amber-700 font-bold">{{t "test.historyPayment.free.processing"}}</span>
-                  <span x-show="item.proses !== 'acc' && item.proses !== 'proces'" class="ml-2 text-red-700 font-bold">{{t "test.historyPayment.free.rejected"}}</span>
+                  <span x-show="item.process === 'acc'" class="ml-2 text-emerald-700 font-bold">{{t "test.historyPayment.free.accepted"}}</span>
+                  <span x-show="item.process === 'proces'" class="ml-2 text-amber-700 font-bold">{{t "test.historyPayment.free.processing"}}</span>
+                  <span x-show="item.process !== 'acc' && item.process !== 'proces'" class="ml-2 text-red-700 font-bold">{{t "test.historyPayment.free.rejected"}}</span>
                 </div>
               </div>
 
-              <div x-show="item.proses === 'proces'" class="bg-amber-100 border border-amber-300 rounded-xl p-3 md:p-4 space-y-2">
+              <div x-show="item.process === 'proces'" class="bg-amber-100 border border-amber-300 rounded-xl p-3 md:p-4 space-y-2">
                 <div class="flex items-center gap-2 text-amber-800 font-semibold text-xs md:text-sm">
                   <i class="fas fa-info-circle"></i>
                   <span>{{t "test.historyPayment.free.registrationUnderReview"}}</span>
@@ -89,7 +89,7 @@
                 </a>
               </div>
 
-              <div x-show="item.proses !== 'acc' && item.proses !== 'proces'" class="bg-red-100 border border-red-300 rounded-xl p-3 md:p-4 space-y-2">
+              <div x-show="item.process !== 'acc' && item.process !== 'proces'" class="bg-red-100 border border-red-300 rounded-xl p-3 md:p-4 space-y-2">
                 <div class="flex items-center gap-2 text-red-800 font-semibold text-xs md:text-sm">
                   <i class="fas fa-exclamation-triangle"></i>
                   <span>{{t "test.historyPayment.free.registrationRejected"}}</span>
