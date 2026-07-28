@@ -17,7 +17,7 @@ export class CourseType {
   id: number;
 
   @Column({ nullable: true })
-  name_clasess_type: string;
+  nameClassesType: string;
 
   @Column()
   icon: string;

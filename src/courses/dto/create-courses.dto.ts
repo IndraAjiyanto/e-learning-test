@@ -67,7 +67,7 @@ export class CreateCoursesDto {
 
   @IsBoolean()
   @IsOptional()
-  check_paid: boolean;
+  checkPaid: boolean;
 
   @IsString()
   paid_check: string;

@@ -222,7 +222,7 @@ export class CoursesService {
       throw new BadRequestException('User already joined the program');
     }
 
-    if (course.check_paid === true) {
+    if (course.checkPaid === true) {
       const daftar = await this.pembayaranRepository.find({
         where: { course: { id: courseId }, process: 'proces' },
       });
@@ -424,7 +424,7 @@ export class CoursesService {
 
   async sumStudent(courseId: number) {
     const course = await this.findOne(courseId);
-    if (course.check_paid === true) {
+    if (course.checkPaid === true) {
       const daftar = await this.pembayaranRepository.find({
         where: { course: { id: courseId }, process: 'proces' },
       });
@@ -581,7 +581,7 @@ export class CoursesService {
       select: {
         id: true,
         activity: true,
-        activity_detail: true,
+        activityDetail: true,
         documentation: true,
         obstacle: true,
         createdAt: true,
@@ -598,7 +598,7 @@ export class CoursesService {
                 name: true,
               },
               courseType: {
-                name_clasess_type: true,
+                nameClassesType: true,
               },
             },
           },
@@ -623,7 +623,7 @@ export class CoursesService {
         id: true,
         activity: true,
         activityDetails: true,
-        dokumentasi: true,
+        documentation: true,
         process: true,
         obstacles: true,
         otherDocumentation: true,
@@ -645,7 +645,7 @@ export class CoursesService {
                 name: true,
               },
               courseType: {
-                name_clasess_type: true,
+                nameClassesType: true,
               },
             },
           },

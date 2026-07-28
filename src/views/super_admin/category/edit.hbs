@@ -36,9 +36,9 @@
         ja: `{{category.for.ja}}`
       },
       courseTypes: [],
-      info_id: {{#if category.info_id}}{{{json category.info_id}}}{{else}}['']{{/if}},
-      info_en: {{#if category.info_en}}{{{json category.info_en}}}{{else}}['']{{/if}},
-      info_ja: {{#if category.info_ja}}{{{json category.info_ja}}}{{else}}['']{{/if}},
+      infoId: {{#if category.infoId}}{{{json category.infoId}}}{{else}}['']{{/if}},
+      infoEn: {{#if category.infoEn}}{{{json category.infoEn}}}{{else}}['']{{/if}},
+      infoJa: {{#if category.infoJa}}{{{json category.infoJa}}}{{else}}['']{{/if}},
       type: `{{category.type}}`,
     },
 
@@ -64,9 +64,9 @@
       contact: '',
       for:        { id: '', en: '', ja: '' },
       courseTypes: '',
-      info_id: '',
-      info_en: '',
-      info_ja: '',
+      infoId: '',
+      infoEn: '',
+      infoJa: '',
       type: '',
     },
 
@@ -81,9 +81,9 @@
       contact: false,
       for:       { id: false, en: false, ja: false },
       courseTypes: ({{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}}).length > 0,
-      info_id: ({{#if category.info_id}}{{{json category.info_id}}}{{else}}[]{{/if}}).some(info => info.trim()),
-      info_en: ({{#if category.info_en}}{{{json category.info_en}}}{{else}}[]{{/if}}).some(info => info.trim()),
-      info_ja: ({{#if category.info_ja}}{{{json category.info_ja}}}{{else}}[]{{/if}}).some(info => info.trim()),
+      infoId: ({{#if category.infoId}}{{{json category.infoId}}}{{else}}[]{{/if}}).some(info => info.trim()),
+      infoEn: ({{#if category.infoEn}}{{{json category.infoEn}}}{{else}}[]{{/if}}).some(info => info.trim()),
+      infoJa: ({{#if category.infoJa}}{{{json category.infoJa}}}{{else}}[]{{/if}}).some(info => info.trim()),
       type: true,
     },
 
@@ -98,9 +98,9 @@
       contact: false,
       for:       { id: false, en: false, ja: false },
       courseTypes: ({{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}}).length > 0,
-      info_id: true,
-      info_en: true,
-      info_ja: true,
+      infoId: true,
+      infoEn: true,
+      infoJa: true,
       type: true,
     },
 
@@ -275,7 +275,7 @@ case 'contact':
 
     get filteredJenisKelas() {
       return this.availableJenisKelas.filter(jk =>
-        jk.name_clasess_type.toLowerCase().includes(this.searchJenisKelas.toLowerCase()) &&
+        jk.nameClassesType.toLowerCase().includes(this.searchJenisKelas.toLowerCase()) &&
         !this.selectedJenisKelas.some(s => s.id === jk.id)
       );
     },
@@ -308,7 +308,7 @@ case 'contact':
       const namaKategoriValid = this.formValid.name;
       const deskripsiValid   = Object.values(this.formValid.description).every(v => v);
       const typeValid        = this.formValid.type;
-      const infoValid        = this.formValid.info_id || this.formValid.info_en || this.formValid.info_ja;
+      const infoValid        = this.formValid.infoId || this.formValid.infoEn || this.formValid.infoJa;
 
       return imageValid && namaKategoriValid && deskripsiValid && typeValid && infoValid;
     },

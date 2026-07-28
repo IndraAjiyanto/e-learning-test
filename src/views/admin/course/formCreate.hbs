@@ -544,12 +544,12 @@
           availableJenisKelas: {{json courseType}},
           get filteredJenisKelas() {
             return this.availableJenisKelas.filter(j => 
-              j.name_clasess_type.toLowerCase().includes(this.search.toLowerCase())
+              j.nameClassesType.toLowerCase().includes(this.search.toLowerCase())
             );
           },
           selectJenisKelas(jenisKelas) {
             this.selectedJenisKelas = jenisKelas;
-            this.search = jenisKelas.name_clasess_type;
+            this.search = jenisKelas.nameClassesType;
             this.showDropdown = false;
           },
           clearJenisKelas() {
@@ -593,7 +593,7 @@
                 >
                   <span
                     class='text-sm font-medium text-gray-700'
-                    x-text='jenisKelas.name_clasess_type'
+                    x-text='jenisKelas.nameClassesType'
                   ></span>
                 </button>
               </template>
@@ -827,10 +827,10 @@
                   <template x-if="tech.svg">
                     <div x-html="tech.svg" class="w-full h-full flex items-center justify-center"></div>
                   </template>
-                  <template x-if="!tech.svg && tech.img_url">
-                    <img :src="tech.img_url" class="w-full h-full object-contain" />
+                  <template x-if="!tech.svg && tech.imgUrl">
+                    <img :src="tech.imgUrl" class="w-full h-full object-contain" />
                   </template>
-                  <template x-if="!tech.svg && !tech.img_url">
+                  <template x-if="!tech.svg && !tech.imgUrl">
                     <i class="fas fa-code text-gray-400"></i>
                   </template>
                 </div>
@@ -879,10 +879,10 @@
                     <template x-if="tech.svg">
                       <div x-html="tech.svg" class="w-full h-full flex items-center justify-center"></div>
                     </template>
-                    <template x-if="!tech.svg && tech.img_url">
-                      <img :src="tech.img_url" class="w-full h-full object-contain" />
+                    <template x-if="!tech.svg && tech.imgUrl">
+                      <img :src="tech.imgUrl" class="w-full h-full object-contain" />
                     </template>
-                    <template x-if="!tech.svg && !tech.img_url">
+                    <template x-if="!tech.svg && !tech.imgUrl">
                       <i class="fas fa-code text-gray-400 text-lg"></i>
                     </template>
                   </div>

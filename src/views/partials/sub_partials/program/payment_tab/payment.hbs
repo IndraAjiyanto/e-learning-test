@@ -1,6 +1,6 @@
   <!-- Main Tabs: Pembayaran & Pendaftaran -->
   <div class="flex flex-wrap justify-center md:justify-start gap-3 mb-6">
-    {{#if course.check_paid}}
+    {{#if course.checkPaid}}
     <button @click="toggleFetchMateri('/program/payment/{{course.id}}', 'payment');"
       :class="tab === 'payment' ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg scale-105' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'"
       class="px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">

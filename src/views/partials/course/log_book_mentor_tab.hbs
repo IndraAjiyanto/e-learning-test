@@ -125,14 +125,14 @@
               class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.name"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.courseType?.name_clasess_type"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.courseType?.nameClassesType"
             ></td>
             <td
               class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.category?.name"
             ></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.activity"></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.activity_detail"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.activityDetail"
             ></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.documentation"></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.obstacle"></td>
@@ -201,10 +201,10 @@ function logBookMentorData() {
              ${l.session?.sessionOrder || ""}
              ${l.session?.weeks?.weekNumber || ""}
              ${l.session?.weeks?.course?.name || ""}
-             ${l.session?.weeks?.course?.courseType?.name_clasess_type || ""}
+             ${l.session?.weeks?.course?.courseType?.nameClassesType || ""}
              ${l.session?.weeks?.course?.category?.name || ""}
              ${l.activity || ""}
-             ${l.activity_detail || ""}
+             ${l.activityDetail || ""}
              ${l.documentation || ""}
              ${l.obstacle || ""}`
           ).toLowerCase().
@@ -251,11 +251,11 @@ function logBookMentorData() {
             "Meeting No": l.session.sessionOrder,
             "Week No": l.session?.weeks?.weekNumber,
             "Program Name": l.session?.weeks?.course?.name,
-            "Program Type": l.session?.weeks?.course?.courseType?.name_clasess_type,
+            "Program Type": l.session?.weeks?.course?.courseType?.nameClassesType,
             Category: l.session?.weeks?.course?.category?.name,
             Activity: l.activity,
-            "Activity Details": l.activity_detail,
-            Documentation: l.dokumentasi,
+            "Activity Details": l.activityDetail,
+            Documentation: l.documentation,
             Issues: l.obstacle,
           }));
 

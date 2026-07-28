@@ -101,13 +101,13 @@ export class Course {
   materialsJa: string[];
 
   @Column('jsonb', { nullable: true })
-  learningTargets_id: string[];
+  learningTargetsId: string[];
 
   @Column('jsonb', { nullable: true })
-  learningTargets_en: string[];
+  learningTargetsEn: string[];
 
   @Column('jsonb', { nullable: true })
-  learningTargets_ja: string[];
+  learningTargetsJa: string[];
 
   @Column({ nullable: true })
   quota: number;
@@ -116,7 +116,7 @@ export class Course {
   form: string;
 
   @Column({ default: false })
-  check_paid: boolean;
+  checkPaid: boolean;
 
   @Column({ nullable: true })
   month: number;

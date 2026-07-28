@@ -22,7 +22,7 @@ export class Technology {
   svg: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  img_url: string | null;
+  imgUrl: string | null;
   @ManyToMany(() => Course, (course) => course.technologies)
   @Exclude()
   course: Course[];

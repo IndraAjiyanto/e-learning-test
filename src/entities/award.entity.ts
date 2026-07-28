@@ -17,8 +17,8 @@ export class Award {
   @Column('jsonb', { nullable: true })
   details: string[];
 
-  @Column()
-  award_order: number;
+  @Column({nullable:true})
+  awardOrder: number;
 
   @CreateDateColumn()
   createdAt: Date;

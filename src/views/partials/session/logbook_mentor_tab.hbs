@@ -28,7 +28,7 @@
       get filteredData() {
         const filtered = this.data.filter(l =>
           (
-            `${l.activity} ${l.activity_detail} ${l.obstacle}`
+            `${l.activity} ${l.activityDetail} ${l.obstacle}`
           ).toLowerCase()
           .includes(this.search.toLowerCase())
         );
@@ -45,16 +45,16 @@
 
           const filtered = this.data.filter(l =>
             (
-              `${l.activity} ${l.activity_detail} ${l.obstacle}`
+              `${l.activity} ${l.activityDetail} ${l.obstacle}`
             ).toLowerCase().includes(s)
           );
 
           const dataToExport = filtered.map((log, index) => ({
             No: index + 1,
             Activity: log.activity || "-",
-            Details: log.activity_detail || "-",
+            Details: log.activityDetail || "-",
             Obstacle: log.obstacle || "-",
-            Documentation: log.dokumentasi || "-",
+            Documentation: log.documentation || "-",
             Program: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",
             Date: this.formatDate(log.createdAt),

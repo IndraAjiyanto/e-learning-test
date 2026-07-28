@@ -8,5 +8,5 @@ export class CreateBackgroundDto {
   details: string[];
 
   @IsNumber()
-  background_order: number;
+  backgroundOrder: number;
 }

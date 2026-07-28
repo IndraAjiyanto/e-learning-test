@@ -43,9 +43,9 @@
                   <template x-if="tech.svg && tech.svg !== 'null' && tech.svg.trim() !== ''">
                     <div class='w-6 h-6 flex items-center justify-center' x-html='tech.svg'></div>
                   </template>
-                  <template x-if="tech.img_url && tech.img_url !== 'null' && tech.img_url.trim() !== ''">
+                  <template x-if="tech.imgUrl && tech.imgUrl !== 'null' && tech.imgUrl.trim() !== ''">
                     <div class='w-6 h-6 flex items-center justify-center'>
-                      <img :src="tech.img_url" :alt="tech.name" class="w-full h-full object-contain">
+                      <img :src="tech.imgUrl" :alt="tech.name" class="w-full h-full object-contain">
                     </div>
                   </template>
                 </div>
@@ -94,9 +94,9 @@
                     <template x-if="tech.svg && tech.svg !== 'null' && tech.svg.trim() !== ''">
                       <div class='w-8 h-8 flex items-center justify-center' x-html='tech.svg'></div>
                     </template>
-                    <template x-if="tech.img_url && tech.img_url !== 'null' && tech.img_url.trim() !== ''">
+                    <template x-if="tech.imgUrl && tech.imgUrl !== 'null' && tech.imgUrl.trim() !== ''">
                       <div class='w-8 h-8 flex items-center justify-center'>
-                        <img :src="tech.img_url" :alt="tech.name" class="w-full h-full object-contain">
+                        <img :src="tech.imgUrl" :alt="tech.name" class="w-full h-full object-contain">
                       </div>
                     </template>
                   </div>

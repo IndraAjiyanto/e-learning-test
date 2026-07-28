@@ -65,14 +65,14 @@ export class CoursesController {
 
       if (createKelassDto.paid_check === 'true') {
         createKelassDto.form = '';
-        createKelassDto.check_paid = true;
+        createKelassDto.checkPaid = true;
         if (req.user!.role === 'super_admin') {
           createKelassDto.process = 'acc';
         } else if (req.user!.role === 'admin') {
           createKelassDto.process = 'proces';
         }
       } else if (createKelassDto.paid_check === 'false') {
-        createKelassDto.check_paid = false;
+        createKelassDto.checkPaid = false;
         createKelassDto.price = 0;
         createKelassDto.promo = 0;
         if (req.user!.role === 'super_admin') {
@@ -133,14 +133,14 @@ export class CoursesController {
 
       if (createKelassDto.paid_check === 'true') {
         createKelassDto.form = '';
-        createKelassDto.check_paid = true;
+        createKelassDto.checkPaid = true;
         if (req.user!.role === 'super_admin') {
           createKelassDto.process = 'acc';
         } else if (req.user!.role === 'admin') {
           createKelassDto.process = 'proces';
         }
       } else if (createKelassDto.paid_check === 'false') {
-        createKelassDto.check_paid = false;
+        createKelassDto.checkPaid = false;
         createKelassDto.price = 0;
         createKelassDto.promo = 0;
         if (req.user!.role === 'super_admin') {
@@ -485,7 +485,7 @@ export class CoursesController {
     const installments = await this.kelassService.findCourseInstallments(courseId);
     const daftar = await this.kelassService.sumStudent(course.id);
 
-    if (course.check_paid === false) {
+    if (course.checkPaid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
       res.render('detail_program/free_program/index', {
         course,
@@ -534,7 +534,7 @@ export class CoursesController {
       const userCourses = await this.kelassService.findCourseUsers(id);
       const kelass = await this.kelassService.allClassExcept(course.id);
       const daftar = await this.kelassService.sumStudent(course.id);
-      if (course.check_paid === false) {
+      if (course.checkPaid === false) {
         res.render('detail_program/free_program/index', {
           course,
           kelass,
@@ -596,7 +596,7 @@ export class CoursesController {
         const userCourses = await this.kelassService.findCourseUsers(id);
         const kelass = await this.kelassService.allClassExcept(course.id);
         const daftar = await this.kelassService.sumStudent(course.id);
-        if (course.check_paid === false) {
+        if (course.checkPaid === false) {
           res.render('detail_program/free_program/index', {
             user: req.user,
             course,
@@ -691,9 +691,9 @@ export class CoursesController {
       }
 
       if (updateKelassDto.paid_check === 'true') {
-        updateKelassDto.check_paid = true;
+        updateKelassDto.checkPaid = true;
       } else if (updateKelassDto.paid_check === 'false') {
-        updateKelassDto.check_paid = false;
+        updateKelassDto.checkPaid = false;
       }
 
       if (req.user?.role === 'super_admin') {

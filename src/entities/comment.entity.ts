@@ -16,7 +16,7 @@ export class Comment {
   id: number;
 
   @Column()
-  komentar: string;
+  comment: string;
 
   @ManyToOne(() => AnswerTask, (answerTask) => answerTask.comment, {
     onDelete: 'CASCADE',

@@ -4,22 +4,22 @@
     x-data="{
     // Form validation states
     formData: {
-      name_clasess_type: `{{courseType.name_clasess_type}}`,
+      nameClassesType: `{{courseType.nameClassesType}}`,
       description: { id: `{{courseType.description.id}}`, en: `{{courseType.description.en}}`, ja: `{{courseType.description.ja}}` },
       icon: `{{courseType.icon}}`
     },
     formErrors: {
-      name_clasess_type: '',
+      nameClassesType: '',
       description: { id: '', en: '', ja: '' },
       icon: ''
     },
     formValid: {
-      name_clasess_type: true,
+      nameClassesType: true,
       description: { id: true, en: true, ja: true },
       icon: true
     },
     formTouched: {
-      name_clasess_type: false,
+      nameClassesType: false,
       description: { id: false, en: false, ja: false },
       icon: false
     },
@@ -47,16 +47,16 @@
       }
       
       switch(field) {
-        case 'name_clasess_type':
+        case 'nameClassesType':
           if (!value.trim()) {
-            this.formErrors.name_clasess_type = 'Class type name is required';
-            this.formValid.name_clasess_type = false;
+            this.formErrors.nameClassesType = 'Class type name is required';
+            this.formValid.nameClassesType = false;
           } else if (value.trim().length < 2) {
-            this.formErrors.name_clasess_type = 'Class type name must be at least 2 characters';
-            this.formValid.name_clasess_type = false;
+            this.formErrors.nameClassesType = 'Class type name must be at least 2 characters';
+            this.formValid.nameClassesType = false;
           } else {
-            this.formErrors.name_clasess_type = '';
-            this.formValid.name_clasess_type = true;
+            this.formErrors.nameClassesType = '';
+            this.formValid.nameClassesType = true;
           }
           break;
           
@@ -83,11 +83,11 @@
 
     canSubmit() {
       const deskripsiValid = Object.values(this.formValid.description).every(v => v);
-      return this.formValid.name_clasess_type && deskripsiValid && this.formValid.icon;
+      return this.formValid.nameClassesType && deskripsiValid && this.formValid.icon;
     },
 
     hasFormErrors() {
-      return this.formErrors.name_clasess_type !== '' ||
+      return this.formErrors.nameClassesType !== '' ||
              Object.values(this.formErrors.description).some(e => e !== '') ||
              this.formErrors.icon !== '';
     }

@@ -108,7 +108,7 @@ export class AnswerTasksController {
         updateJawabanTugassDto,
       );
       if (updateJawabanTugassDto.comment) {
-        await this.answerTasksService.createKomentar(
+        await this.answerTasksService.createComment(
           updateJawabanTugassDto.comment,
           assignment_answerId,
         );

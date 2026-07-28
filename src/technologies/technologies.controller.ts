@@ -47,14 +47,14 @@ export class TechnologiesController {
     @Req() req: Request,
   ) {
     try {
-      createTechnologiesDto.img_url = req.body.uploadedImageUrls?.[0] || null;
+      createTechnologiesDto.imgUrl = req.body.uploadedImageUrls?.[0] || null;
 
       const isSvgEmpty = createTechnologiesDto.svg === '';
       if (isSvgEmpty) {
         createTechnologiesDto.svg = null;
       }
 
-      if (!createTechnologiesDto.svg && !createTechnologiesDto.img_url) {
+      if (!createTechnologiesDto.svg && !createTechnologiesDto.imgUrl) {
         throw new BadRequestException('SVG atau Gambar (Image) wajib diisi salah satunya!');
       }
 
@@ -110,9 +110,9 @@ export class TechnologiesController {
   ) {
     try {
       if (req.body.uploadedImageUrls?.[0]) {
-        updateTechnologiesDto.img_url = req.body.uploadedImageUrls[0];
+        updateTechnologiesDto.imgUrl = req.body.uploadedImageUrls[0];
       } else if (req.body.remove_image === 'true') {
-        updateTechnologiesDto.img_url = null;
+        updateTechnologiesDto.imgUrl = null;
       }
       
       const existingTech = await this.technologiesService.findOne(id);
@@ -122,7 +122,7 @@ export class TechnologiesController {
 
       const isSvgEmpty = updateTechnologiesDto.svg === '';
       const finalSvg = updateTechnologiesDto.svg !== undefined ? updateTechnologiesDto.svg : existingTech.svg;
-      const finalImgUrl = updateTechnologiesDto.img_url !== undefined ? updateTechnologiesDto.img_url : existingTech.img_url;
+      const finalImgUrl = updateTechnologiesDto.imgUrl !== undefined ? updateTechnologiesDto.imgUrl : existingTech.imgUrl;
 
       if ((isSvgEmpty || !finalSvg) && !finalImgUrl) {
          throw new BadRequestException('SVG atau Gambar (Image) wajib diisi salah satunya!');

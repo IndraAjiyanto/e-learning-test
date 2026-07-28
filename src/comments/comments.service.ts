@@ -8,7 +8,7 @@ import { AnswerTask, ProcessType } from 'src/entities/answer_task.entity';
 @Injectable()
 export class CommentsService {
   @InjectRepository(Comment)
-  private readonly komentarRepository: Repository<Comment>;
+  private readonly commentRepository: Repository<Comment>;
   @InjectRepository(AnswerTask)
   private readonly jawabanTugasRepository: Repository<AnswerTask>;
 
@@ -19,11 +19,11 @@ export class CommentsService {
     if (!taskAnswers) {
       throw new NotFoundException('User tidak ada');
     }
-    const komentar = await this.komentarRepository.create({
+    const comment = await this.commentRepository.create({
       ...createKomentarDto,
       answer_task: taskAnswers,
     });
-    return await this.komentarRepository.save(komentar);
+    return await this.commentRepository.save(comment);
   }
 
   async updateJawabanTugas(assignment_answerId: number, proses: ProcessType) {

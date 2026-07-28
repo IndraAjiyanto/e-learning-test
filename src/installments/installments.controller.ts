@@ -58,8 +58,8 @@ export class InstallmentsController {
         createCicilanDto.price = createCicilanDto.price.map((h) => Number(h));
       }
 
-      if (createCicilanDto.down_payment !== undefined) {
-        createCicilanDto.down_payment = Number(createCicilanDto.down_payment);
+      if (createCicilanDto.downPayment !== undefined) {
+        createCicilanDto.downPayment = Number(createCicilanDto.downPayment);
       }
 
       createCicilanDto.courseId = Number(courseId);
@@ -87,8 +87,8 @@ export class InstallmentsController {
         updateCicilanDto.price = updateCicilanDto.price.map((h) => Number(h));
       }
 
-      if (updateCicilanDto.down_payment !== undefined) {
-        updateCicilanDto.down_payment = Number(updateCicilanDto.down_payment);
+      if (updateCicilanDto.downPayment !== undefined) {
+        updateCicilanDto.downPayment = Number(updateCicilanDto.downPayment);
       }
 
       if (updateCicilanDto.month) {

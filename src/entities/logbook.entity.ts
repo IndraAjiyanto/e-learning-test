@@ -17,14 +17,14 @@ export class Logbook {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'activity' })
+  @Column({ name: 'activity', nullable:true })
   activity: string;
 
-  @Column({ name: 'activity_details' })
+  @Column({ name: 'activity_details', nullable:true })
   activityDetails: string;
 
   @Column({ type:'varchar', nullable: true })
-  dokumentasi?: string| null;
+  documentation?: string| null;
 
   @Column({
     type: 'enum',
@@ -33,10 +33,10 @@ export class Logbook {
   })
   process: Proses;
 
-  @Column({ name: 'obstacles' })
+  @Column({ name: 'obstacles', nullable:true })
   obstacles: string;
 
-  @Column({ name: 'other_documentation' })
+  @Column({ name: 'other_documentation', nullable:true })
   otherDocumentation: string;
 
   @CreateDateColumn()

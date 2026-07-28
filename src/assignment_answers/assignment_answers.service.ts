@@ -17,7 +17,7 @@ export class AnswerTasksService {
   @InjectRepository(Assignment)
   private readonly tugasRepository: Repository<Assignment>;
   @InjectRepository(Comment)
-  private readonly komentarRepository: Repository<Comment>;
+  private readonly commentRepository: Repository<Comment>;
 
   async create(createJawabanTugassDto: CreateAssignmentAnswersDto) {
     const user = await this.userRepository.findOne({
@@ -41,18 +41,18 @@ export class AnswerTasksService {
     return await this.jawabanTugasRepository.save(taskAnswers);
   }
 
-  async createKomentar(komentarText: string, assignment_answerId: number) {
+  async createComment(commentText: string, assignment_answerId: number) {
     const answersTask = await this.jawabanTugasRepository.findOne({
       where: { id: assignment_answerId },
     });
     if (!answersTask) {
       throw new NotFoundException('answer not found');
     }
-    const komentar = await this.komentarRepository.create({
-      komentar: komentarText,
+    const comment = await this.commentRepository.create({
+      comment: commentText,
       answer_task: answersTask,
     });
-    return await this.komentarRepository.save(komentar);
+    return await this.commentRepository.save(comment);
   }
 
   async findTugas(assignmentId: number) {

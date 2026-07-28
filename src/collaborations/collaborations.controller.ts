@@ -65,7 +65,7 @@ export class PartnerController {
     try {
       createKerjaSamaDto.image = req.body.uploadedImageUrls?.[0];
       await this.CollaborationsService.create(createKerjaSamaDto);
-      createPartnerDto.gambar = req.body.uploadedImageUrls?.[0];
+      createPartnerDto.image = req.body.uploadedImageUrls?.[0];
       await this.PartnerService.create(createPartnerDto);
       req.flash('success', 'partnership successfully created');
       res.redirect('/partnership');
@@ -170,8 +170,8 @@ export class PartnerController {
 
       const kerja_sama = await this.PartnerService.findOne(collaborationsId);
       if (gambar) {
-        await this.PartnerService.deleteFile(kerja_sama.gambar);
-        updatePartnerDto.gambar = req.body.uploadedImageUrls?.[0];
+        await this.PartnerService.deleteFile(kerja_sama.image);
+        updatePartnerDto.image = req.body.uploadedImageUrls?.[0];
       }
       await this.PartnerService.update(collaborationsId, updatePartnerDto);
 
@@ -207,7 +207,7 @@ export class PartnerController {
         res.redirect('/partnership');
         return;
       }
-      await this.PartnerService.deleteFile(kerja_sama.gambar);
+      await this.PartnerService.deleteFile(kerja_sama.image);
       await this.PartnerService.remove(collaborationsId);
 
       req.flash('success', 'partnership successfully removed');

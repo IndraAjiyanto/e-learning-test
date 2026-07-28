@@ -37,7 +37,7 @@
           a.name.localeCompare(b.name)
         );
         this.allJenisKelas = this.allJenisKelas.sort((a, b) =>
-          a.name_clasess_type.localeCompare(b.name_clasess_type)
+          a.nameClassesType.localeCompare(b.nameClassesType)
         );
         this.filteredKategoriList = [...this.allKategori];
         this.filteredJenisKelasList = [...this.allJenisKelas];
@@ -60,7 +60,7 @@
         const query = this.searchJenisKelasQuery.toLowerCase().trim();
         this.filteredJenisKelasList = query
           ? this.allJenisKelas.filter(j =>
-              this.getByLang(j.name_clasess_type, this.lang).toLowerCase().includes(query)
+              this.getByLang(j.nameClassesType, this.lang).toLowerCase().includes(query)
             )
           : [...this.allJenisKelas];
       },
@@ -106,7 +106,7 @@
         this.currentPage = 1;
         if (jenisKelasId) {
           const jenis = this.allJenisKelas.find(j => j.id == jenisKelasId);
-          this.selectedJenisKelas = jenis ? jenis.name_clasess_type : '';
+          this.selectedJenisKelas = jenis ? jenis.nameClassesType : '';
         } else {
           this.selectedJenisKelas = '';
         }
@@ -139,8 +139,8 @@
       },
 
       getJenisKelasName(item) {
-        return item.course?.courseType?.name_clasess_type
-          || item.courseType?.name_clasess_type
+        return item.course?.courseType?.nameClassesType
+          || item.courseType?.nameClassesType
           || null;
       }
     };

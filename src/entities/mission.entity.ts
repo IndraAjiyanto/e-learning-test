@@ -12,7 +12,7 @@ export class Mission {
   id: number;
 
   @Column()
-  mission_order: number;
+  missionOrder: number;
 
   @Column('jsonb', { nullable: true })
   content: string[];

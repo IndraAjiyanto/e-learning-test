@@ -18,8 +18,8 @@ export class Experience {
   @Column('jsonb', { nullable: true })
   details: string[];
 
-  @Column()
-  experience_order: number;
+  @Column({nullable:true})
+  experienceOrder: number;
 
   @CreateDateColumn()
   createdAt: Date;

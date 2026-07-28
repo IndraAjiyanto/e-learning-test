@@ -54,7 +54,7 @@ export class GalleryService {
 
  async update(
   galleryId: number,
-  updateGalleryDto: UpdateGalleryDto & { file_path?: string },
+  updateGalleryDto: UpdateGalleryDto & { filePath?: string },
 ): Promise<Gallery> {
   const gallery = await this.findOne(galleryId);
   const { category_id, ...rest } = updateGalleryDto;

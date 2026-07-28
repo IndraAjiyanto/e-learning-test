@@ -13,7 +13,7 @@ export class CreateAttendanceDto {
   status?: Status;
 
   @IsDateString()
-  attendance_time: Date;
+  attendanceTime: Date;
 
   @IsString()
   notes: string;

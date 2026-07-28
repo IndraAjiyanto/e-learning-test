@@ -4,23 +4,23 @@
     month: `{{installments.month}}`, 
     priceValues: {{json installments.price}}, 
     priceDisplays: [], 
-    downPaymentValue: `{{installments.down_payment}}`, 
+    downPaymentValue: `{{installments.downPayment}}`, 
     downPaymentDisplay: "",
 
     // Form validation states
     formData: {
       month: `{{installments.month}}`,
-      down_payment: `{{installments.down_payment}}`,
+      downPayment: `{{installments.downPayment}}`,
       price: {{json installments.price}}
     },
     formErrors: {
       month: "",
-      down_payment: "",
+      downPayment: "",
       price: []
     },
     formValid: {
       month: false,
-      down_payment: false,
+      downPayment: false,
       price: []
     },
 
@@ -49,14 +49,14 @@
             }
             break;
             
-          case "down_payment":
+          case "downPayment":
             const dpNumValue = parseInt(value);
             if (!value || isNaN(dpNumValue) || dpNumValue <= 0) {
-              this.formErrors.down_payment = "Valid down payment amount required";
-              this.formValid.down_payment = false;
+              this.formErrors.downPayment = "Valid down payment amount required";
+              this.formValid.downPayment = false;
             } else {
-              this.formErrors.down_payment = "";
-              this.formValid.down_payment = true;
+              this.formErrors.downPayment = "";
+              this.formValid.downPayment = true;
             }
             break;
         }
@@ -66,7 +66,7 @@
     get canSubmit() {
       const monthCount = parseInt(this.month);
       const allPriceValid = Array.from({length: monthCount}, (_, i) => this.formValid.price[i] || false).every(valid => valid);
-      return this.formValid.month && this.formValid.down_payment && allPriceValid;
+      return this.formValid.month && this.formValid.downPayment && allPriceValid;
     },
 
     hasFormErrors() {
@@ -89,7 +89,7 @@
       } else { 
         this.downPaymentValue = angka; 
         this.downPaymentDisplay = new Intl.NumberFormat("id-ID").format(angka);
-        this.validateField("down_payment", angka);
+        this.validateField("downPayment", angka);
       } 
     }
   }'

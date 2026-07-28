@@ -33,7 +33,7 @@ export class LogbookController {
   @Roles('user', 'admin')
   @Post(':sessionId')
   @UseInterceptors(
-    FileInterceptor('dokumentasi', multerConfigMemoryOnly),
+    FileInterceptor('documentation', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -151,7 +151,7 @@ export class LogbookController {
   @Roles('admin', 'user')
   @Patch(':logbookId')
   @UseInterceptors(
-    FileInterceptor('dokumentasi', multerConfigMemoryOnly),
+    FileInterceptor('documentation', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -160,7 +160,7 @@ export class LogbookController {
     folder: 'logbook_user',
   })
   async update(
-    @UploadedFile() dokumentasi: Express.Multer.File,
+    @UploadedFile() documentation: Express.Multer.File,
     @Param('logbookId') logbookId: number,
     @Body() updateLogbookDto: UpdateLogbookDto,
     @Req() req: Request,
@@ -168,12 +168,12 @@ export class LogbookController {
   ) {
     try {
       const logbooks = await this.logbookService.findOne(logbookId);
-      if (dokumentasi && dokumentasi.size > 0) {
-        if (logbooks.dokumentasi) {
-        await this.logbookService.deleteFile(logbooks.dokumentasi);
+      if (documentation && documentation.size > 0) {
+        if (logbooks.documentation) {
+        await this.logbookService.deleteFile(logbooks.documentation);
       }
         updateLogbookDto.documentation =
-          req.body.uploadedImageUrls?.[0] || dokumentasi.path;
+          req.body.uploadedImageUrls?.[0] || documentation.path;
       }
       updateLogbookDto.process = 'proces';
       await this.logbookService.update(logbookId, updateLogbookDto);
@@ -231,8 +231,8 @@ export class LogbookController {
   ) {
     try {
       const logbooks = await this.logbookService.findOne(logbookId);
-      if (logbooks && logbooks.dokumentasi) {
-        await this.logbookService.deleteFile(logbooks.dokumentasi);
+      if (logbooks && logbooks.documentation) {
+        await this.logbookService.deleteFile(logbooks.documentation);
       }
       await this.logbookService.remove(logbookId);
       req.flash('success', 'logbooks successfully deleted');

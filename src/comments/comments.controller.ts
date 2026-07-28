@@ -16,7 +16,7 @@ import { Request, Response } from 'express';
 @UseGuards(AuthenticatedGuard)
 @Controller('comments')
 export class CommentsController {
-  constructor(private readonly komentarService: CommentsService) {}
+  constructor(private readonly commentService: CommentsService) {}
 
   @Roles('admin')
   @Post(':assignmentId/:assignment_answerId')
@@ -29,8 +29,8 @@ export class CommentsController {
   ) {
     try {
       createKomentarDto.answerTaskId = assignment_answerId;
-      await this.komentarService.create(createKomentarDto);
-      await this.komentarService.updateJawabanTugas(
+      await this.commentService.create(createKomentarDto);
+      await this.commentService.updateJawabanTugas(
         assignment_answerId,
         createKomentarDto.process,
       );

@@ -86,7 +86,7 @@ export class GalleryController {
       throw new BadRequestException('No image uploaded');
     }
 
-    createGalleryDto.file_path =
+    createGalleryDto.filePath =
       req.body.uploadedImageUrls[0];
 
     const gallery =
@@ -160,7 +160,7 @@ async formEdit(
   @Req() req: Request,
 ) {
   try {
-    const data: UpdateGalleryDto & { file_path?: string } = {
+    const data: UpdateGalleryDto & { filePath?: string } = {
       ...updateGalleryDto,
     };
 
@@ -168,7 +168,7 @@ async formEdit(
       req.body.uploadedImageUrls &&
       req.body.uploadedImageUrls.length > 0
     ) {
-      data.file_path = req.body.uploadedImageUrls[0];
+      data.filePath = req.body.uploadedImageUrls[0];
     }
 
     const gallery = await this.galleryService.update(+id, data);

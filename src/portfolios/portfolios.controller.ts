@@ -85,7 +85,7 @@ export class PortfoliosController {
 
       let html = editorjsHTML.parse(JSON.parse(editorjsData));
 
-      createPortfolioDto.content_html = html;
+      createPortfolioDto.contentHtml = html;
 
       createPortfolioDto.courseId = courseId;
       createPortfolioDto.image = req.body.uploadedImageUrls;
@@ -202,7 +202,7 @@ export class PortfoliosController {
             '/asset/portfolio/isi',
             '/asset/portfolio/temp',
           );
-        updatePortfolioDto.content_html = editorjsHTML.parse(
+        updatePortfolioDto.contentHtml = editorjsHTML.parse(
           JSON.parse(updatePortfolioDto.content),
         );
       }
@@ -222,7 +222,7 @@ export class PortfoliosController {
         description: updatePortfolioDto.description,
         image: newImageUrls,
         content: updatePortfolioDto.content,
-        content_html: updatePortfolioDto.content_html,
+        contentHtml: updatePortfolioDto.contentHtml,
       };
 
       await this.portfoliosService.update(portfolioId, updateData);

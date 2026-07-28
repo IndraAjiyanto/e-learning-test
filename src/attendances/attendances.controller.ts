@@ -35,7 +35,7 @@ export class AttendanceController {
     try {
       createAttendanceDto.sessionId = sessionId;
       createAttendanceDto.userId = userId;
-      createAttendanceDto.attendance_time = new Date();
+      createAttendanceDto.attendanceTime = new Date();
       await this.attendanceService.create(createAttendanceDto);
       req.flash('success', 'Successfully submitted attendance');
       res.redirect(`/program/${courseId}`);

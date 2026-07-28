@@ -13,7 +13,7 @@
             courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
         {{#each category.courseType}}
-        { value: '{{this.name_clasess_type }}', icon: '/{{computeIcon this.icon}}', title: '{{ this.name_clasess_type }}', desc: '{{truncate (getByLang this.description ../lang) 10}}' },
+        { value: '{{this.nameClassesType }}', icon: '/{{computeIcon this.icon}}', title: '{{ this.nameClassesType }}', desc: '{{truncate (getByLang this.description ../lang) 10}}' },
         {{/each}}
       ],
       

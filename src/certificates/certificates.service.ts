@@ -69,12 +69,12 @@ export class CertificatesService {
       // Hitung lebar text untuk center alignment
       const nameSize = 43.8;
       const nameWidth = openSauceBold.widthOfTextAtSize(
-        user.biodata.full_name,
+        user.biodata.fullName,
         nameSize,
       );
       const nameCenterX = (width - nameWidth) / 2;
 
-      page.drawText(user.biodata.full_name, {
+      page.drawText(user.biodata.fullName, {
         x: nameCenterX,
         y: 349,
         size: nameSize,

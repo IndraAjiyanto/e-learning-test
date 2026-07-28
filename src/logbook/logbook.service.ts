@@ -162,8 +162,8 @@ export class LogbookService {
   async findCapstoneProjects(kategoriId?: number) {
     const query = this.logBookRepository
       .createQueryBuilder('logbook')
-      .where('logbook.dokumentasi IS NOT NULL')
-      .andWhere('logbook.dokumentasi != :empty', { empty: '' })
+      .where('logbook.documentation IS NOT NULL')
+      .andWhere('logbook.documentation != :empty', { empty: '' })
       .orderBy('logbook.createdAt', 'DESC');
 
     // Join necessary relations to filter by kategoriId

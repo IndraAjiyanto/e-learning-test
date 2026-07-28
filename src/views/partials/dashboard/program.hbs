@@ -22,7 +22,7 @@
       courseCategoriesData: [
         { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allTypes"}}', desc: '{{t "test.home.programSection.deskripsiAllTypes"}}' },
         {{#each courseType}}
-        { value: `{{this.name_clasess_type }}`, icon: '/{{computeIcon this.icon}}', title: `{{this.name_clasess_type}}`, desc: `{{truncate (getByLang this.description ../lang) 10}}` },
+        { value: `{{this.nameClassesType }}`, icon: '/{{computeIcon this.icon}}', title: `{{this.nameClassesType}}`, desc: `{{truncate (getByLang this.description ../lang) 10}}` },
         {{/each}}
       ],
       
@@ -454,7 +454,7 @@
             x-text="course.category?.name">
           </span>
           <span class="badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-full"
-            x-text="course.courseType?.name_clasess_type">
+            x-text="course.courseType?.nameClassesType">
           </span>
         </div> --}}
 

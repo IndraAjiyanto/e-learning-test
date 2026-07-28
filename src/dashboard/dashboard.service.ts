@@ -121,7 +121,7 @@ async findAllCategories() {
     query.andWhere('category.name = :category', { category: params.category });
   }
   if (params.jenisKelas) {
-    query.andWhere('courseType.name_clasess_type = :jenisKelas', { jenisKelas: params.jenisKelas });
+    query.andWhere('courseType.nameClassesType = :jenisKelas', { jenisKelas: params.jenisKelas });
   }
   if (params.metode) {
     query.andWhere('course.method = :metode', { metode: params.metode });
@@ -144,7 +144,7 @@ async findAllCategories() {
 
   async findCommitment() {
     return await this.commitmentRepository.find({
-      order: { commitment_order: 'ASC' },
+      order: { commitmentOrder: 'ASC' },
     });
   }
 
@@ -170,17 +170,17 @@ async findAllCategories() {
   }
 
   async findMission() {
-    return await this.missionRepository.find({ order: { mission_order: 'ASC' } });
+    return await this.missionRepository.find({ order: { missionOrder: 'ASC' } });
   }
 
   async findExperience() {
     return await this.experienceRepository.find({
-      order: { experience_order: 'ASC' },
+      order: { experienceOrder: 'ASC' },
     });
   }
 
   async findAward() {
-    return await this.awardRepository.find({ order: { award_order: 'ASC' } });
+    return await this.awardRepository.find({ order: { awardOrder: 'ASC' } });
   }
 
   async findAbout() {
@@ -193,7 +193,7 @@ async findAllCategories() {
 
   async findBackground() {
     return await this.backgroundRepository.find({
-      order: { background_order: 'ASC' },
+      order: { backgroundOrder: 'ASC' },
     });
   }
 

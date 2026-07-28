@@ -93,8 +93,8 @@ export class InstallmentsService {
       installments.month = updateCicilanDto.month;
     }
 
-    if (updateCicilanDto.down_payment) {
-      installments.down_payment = updateCicilanDto.down_payment;
+    if (updateCicilanDto.downPayment) {
+      installments.downPayment = updateCicilanDto.downPayment;
     }
 
     return await this.installmentsRepository.save(installments);
