@@ -101,8 +101,8 @@ async findAllCategories() {
   async findCoursesPaginated(params: {
     userId?: number;
   category?: string;
-  jenisKelas?: string;
-  metode?: string;
+  courseType?: string;
+  method?: string;
   search?: string;
   page: number;
   limit: number;
@@ -120,11 +120,11 @@ async findAllCategories() {
   if (params.category) {
     query.andWhere('category.name = :category', { category: params.category });
   }
-  if (params.jenisKelas) {
-    query.andWhere('courseType.nameClassesType = :jenisKelas', { jenisKelas: params.jenisKelas });
+  if (params.courseType) {
+    query.andWhere('courseType.nameClassesType = :courseType', { courseType: params.courseType });
   }
-  if (params.metode) {
-    query.andWhere('course.method = :metode', { metode: params.metode });
+  if (params.method) {
+    query.andWhere('course.method = :method', { method: params.method });
   }
   if (params.search) {
     query.andWhere('course.name ILIKE :search', { search: `%${params.search}%` });

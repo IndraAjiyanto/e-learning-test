@@ -59,7 +59,7 @@ export class QuizController {
     @Req() req: Request,
   ) {
     const quiz = await this.quizService.findOne(quizId);
-    const scores = await this.quizService.findNilai(quizId);
+    const scores = await this.quizService.findScore(quizId);
     const questions = await this.quizService.findQuestions(quizId);
     res.render('admin/quiz/detail', {
       user: req.user,
@@ -88,7 +88,7 @@ export class QuizController {
     @Req() req: Request,
   ) {
     const quiz = await this.quizService.findOne(quizId);
-    const scores = await this.quizService.findNilaiUser(req.user!.id, quizId);
+    const scores = await this.quizService.findUserScore(req.user!.id, quizId);
     const questions = await this.quizService.findQuestions(quizId);
     res.render('user/quiz/quiz', { user: req.user, quiz, scores, questions });
   }

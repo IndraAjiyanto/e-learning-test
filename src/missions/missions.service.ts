@@ -21,7 +21,7 @@ export class MissionService {
     return await this.missionRepository.find();
   }
 
-  async noPertemuan() {
+  async getNextOrder() {
     const mission_old = await this.missionRepository.find({
       order: { missionOrder: 'DESC' },
       take: 1,

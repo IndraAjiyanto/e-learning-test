@@ -12,11 +12,11 @@ export class FlowCategoryService {
     @InjectRepository(FlowCategory)
     private flowCategoryRepository: Repository<FlowCategory>,
     @InjectRepository(Category)
-    private kategoriRepository: Repository<Category>,
+    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(createFlowCategoryDto: CreateFlowCategoryDto) {
-    const category = await this.kategoriRepository.findOne({
+    const category = await this.categoryRepository.findOne({
       where: { id: createFlowCategoryDto.categoryId },
     });
     if (!category) {
@@ -49,7 +49,7 @@ export class FlowCategoryService {
   async update(id: number, updateFlowCategoryDto: UpdateFlowCategoryDto) {
     const flowCategory = await this.findOne(id);
     if (updateFlowCategoryDto.categoryId) {
-      const category = await this.kategoriRepository.findOne({
+      const category = await this.categoryRepository.findOne({
         where: { id: updateFlowCategoryDto.categoryId },
       });
       if (!category) {

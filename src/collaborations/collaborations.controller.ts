@@ -44,7 +44,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -136,7 +136,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Patch(':collaborationsId')
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({

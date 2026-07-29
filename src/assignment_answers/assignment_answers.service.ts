@@ -11,20 +11,20 @@ import { Comment } from 'src/entities/comment.entity';
 @Injectable()
 export class AnswerTasksService {
   @InjectRepository(AnswerTask)
-  private readonly jawabanTugasRepository: Repository<AnswerTask>;
+  private readonly assignmentAnswerRepository: Repository<AnswerTask>;
   @InjectRepository(User)
   private readonly userRepository: Repository<User>;
   @InjectRepository(Assignment)
-  private readonly tugasRepository: Repository<Assignment>;
+  private readonly assignmentRepository: Repository<Assignment>;
   @InjectRepository(Comment)
   private readonly commentRepository: Repository<Comment>;
 
-  async create(createJawabanTugassDto: CreateAssignmentAnswersDto) {
+  async create(createAssignmentAnswerDto: CreateAssignmentAnswersDto) {
     const user = await this.userRepository.findOne({
-      where: { id: createJawabanTugassDto.userId },
+      where: { id: createAssignmentAnswerDto.userId },
     });
-    const assignments = await this.tugasRepository.findOne({
-      where: { id: createJawabanTugassDto.taskId },
+    const assignments = await this.assignmentRepository.findOne({
+      where: { id: createAssignmentAnswerDto.taskId },
     });
     if (!user) {
       throw new NotFoundException('user Not found');
@@ -32,17 +32,17 @@ export class AnswerTasksService {
     if (!assignments) {
       throw new NotFoundException('assignments Not found');
     }
-    const taskAnswers = await this.jawabanTugasRepository.create({
-      file: createJawabanTugassDto.file,
-      process: createJawabanTugassDto.process,
+    const taskAnswers = await this.assignmentAnswerRepository.create({
+      file: createAssignmentAnswerDto.file,
+      process: createAssignmentAnswerDto.process,
       user: user,
       task: assignments,
     });
-    return await this.jawabanTugasRepository.save(taskAnswers);
+    return await this.assignmentAnswerRepository.save(taskAnswers);
   }
 
   async createComment(commentText: string, assignment_answerId: number) {
-    const answersTask = await this.jawabanTugasRepository.findOne({
+    const answersTask = await this.assignmentAnswerRepository.findOne({
       where: { id: assignment_answerId },
     });
     if (!answersTask) {
@@ -55,26 +55,26 @@ export class AnswerTasksService {
     return await this.commentRepository.save(comment);
   }
 
-  async findTugas(assignmentId: number) {
-    const assignments = await this.tugasRepository.findOne({
+  async findAssignment(assignmentId: number) {
+    const assignments = await this.assignmentRepository.findOne({
       where: { id: assignmentId },
       relations: ['session', 'session.weeks', 'session.weeks.course'],
     });
     if (!assignments) {
-      throw new NotFoundException('Tugas Not Found');
+      throw new NotFoundException('Assignment not found');
     }
     return assignments;
   }
 
-  async findJawabanTugas(userId: number, assignmentId: number) {
-    return await this.jawabanTugasRepository.find({
+  async findAssignmentAnswer(userId: number, assignmentId: number) {
+    return await this.assignmentAnswerRepository.find({
       where: { user: { id: userId }, task: { id: assignmentId } },
       relations: ['comment'],
     });
   }
 
-  async findJawabanExists(userId: number, assignmentId: number) {
-    return await this.jawabanTugasRepository.find({
+  async findExistingAnswer(userId: number, assignmentId: number) {
+    return await this.assignmentAnswerRepository.find({
       where: {
         user: { id: userId },
         task: { id: assignmentId },
@@ -83,34 +83,34 @@ export class AnswerTasksService {
     });
   }
 
-  async findAllJawabanTugas(assignmentId: number) {
-    return await this.jawabanTugasRepository.find({
+  async findAllAssignmentAnswers(assignmentId: number) {
+    return await this.assignmentAnswerRepository.find({
       where: { task: { id: assignmentId } },
       relations: ['user', 'comment', 'task'],
     });
   }
 
   async findOne(id: number) {
-    const taskAnswers = await this.jawabanTugasRepository.findOne({
+    const taskAnswers = await this.assignmentAnswerRepository.findOne({
       where: { id: id },
     });
     if (!taskAnswers) {
-      throw new NotFoundException('Jawaban Tugas Not Found');
+      throw new NotFoundException('Assignment answer not found');
     }
     return taskAnswers;
   }
 
-  async update(id: number, updateJawabanTugassDto: UpdateAssignmentAnswersDto) {
+  async update(id: number, updateAssignmentAnswerDto: UpdateAssignmentAnswersDto) {
     const taskAnswers = await this.findOne(id);
     if (!taskAnswers) {
       throw new NotFoundException('answer not found');
     }
-    if (updateJawabanTugassDto.process) {
-      taskAnswers.process = updateJawabanTugassDto.process;
+    if (updateAssignmentAnswerDto.process) {
+      taskAnswers.process = updateAssignmentAnswerDto.process;
     }
-    if (updateJawabanTugassDto.file) {
-      taskAnswers.file = updateJawabanTugassDto.file;
+    if (updateAssignmentAnswerDto.file) {
+      taskAnswers.file = updateAssignmentAnswerDto.file;
     }
-    return await this.jawabanTugasRepository.save(taskAnswers);
+    return await this.assignmentAnswerRepository.save(taskAnswers);
   }
 }

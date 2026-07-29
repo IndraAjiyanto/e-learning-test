@@ -20,44 +20,44 @@ import { Request, Response } from 'express';
 @UseGuards(AuthenticatedGuard)
 @Controller('flow-program')
 export class CourseFlowsController {
-  constructor(private readonly alurKelasService: CourseFlowsService) {}
+  constructor(private readonly courseFlowsService: CourseFlowsService) {}
 
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const course_flows = await this.alurKelasService.findAll();
+    const course_flows = await this.courseFlowsService.findAll();
     res.render('super_admin/course_flows/index', { user: req.user, course_flows });
   }
 
   @Roles('super_admin')
-  @Get('detail/:alurKelasId')
+  @Get('detail/:courseFlowId')
   async findOneDetail(
-    @Param('alurKelasId') alurKelasId: number,
+    @Param('courseFlowId') courseFlowId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const course_flows = await this.alurKelasService.findOne(alurKelasId);
+    const course_flows = await this.courseFlowsService.findOne(courseFlowId);
     res.render('super_admin/course_flows/detail', { user: req.user, course_flows });
   }
 
   @Roles('super_admin')
   @Get('formCreate')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    const course = await this.alurKelasService.findAllCourses();
+    const course = await this.courseFlowsService.findAllCourses();
     res.render('super_admin/course_flows/create', { user: req.user, course });
   }
 
   @Roles('super_admin')
   @Post()
   async createFromIndex(
-    @Body() createAlurKelaDto: CreateCourseFlowDto,
+    @Body() createCourseFlowDto: CreateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       const courseId = Number(req.body.kelas_id);
-      createAlurKelaDto.courseId = courseId;
-      await this.alurKelasService.create(createAlurKelaDto);
+      createCourseFlowDto.courseId = courseId;
+      await this.courseFlowsService.create(createCourseFlowDto);
       req.flash('success', 'Flow Program successfully created');
       res.redirect(`/flow-program`);
     } catch (error: any) {
@@ -70,13 +70,13 @@ export class CourseFlowsController {
   @Post(':courseId')
   async create(
     @Param('courseId') courseId: number,
-    @Body() createAlurKelaDto: CreateCourseFlowDto,
+    @Body() createCourseFlowDto: CreateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createAlurKelaDto.courseId = courseId;
-      await this.alurKelasService.create(createAlurKelaDto);
+      createCourseFlowDto.courseId = courseId;
+      await this.courseFlowsService.create(createCourseFlowDto);
       req.flash('success', 'alur course successfully created');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -96,27 +96,27 @@ export class CourseFlowsController {
   }
 
   @Roles('super_admin')
-  @Get('formEdit/:alurKelasId')
+  @Get('formEdit/:courseFlowId')
   async formEdit(
-    @Param('alurKelasId') alurKelasId: number,
+    @Param('courseFlowId') courseFlowId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const course_flows = await this.alurKelasService.findOne(alurKelasId);
+    const course_flows = await this.courseFlowsService.findOne(courseFlowId);
     res.render('super_admin/course_flows/edit', { user: req.user, course_flows });
   }
 
   @Roles('super_admin')
-  @Patch(':alurKelasId/:courseId')
+  @Patch(':courseFlowId/:courseId')
   async update(
-    @Param('alurKelasId') alurKelasId: number,
+    @Param('courseFlowId') courseFlowId: number,
     @Param('courseId') courseId: number,
-    @Body() updateAlurKelaDto: UpdateCourseFlowDto,
+    @Body() updateCourseFlowDto: UpdateCourseFlowDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.alurKelasService.update(alurKelasId, updateAlurKelaDto);
+      await this.courseFlowsService.update(courseFlowId, updateCourseFlowDto);
       req.flash('success', 'Flow Program successfully updated');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -126,15 +126,15 @@ export class CourseFlowsController {
   }
 
   @Roles('super_admin')
-  @Delete(':alurKelasId/:courseId')
+  @Delete(':courseFlowId/:courseId')
   async remove(
-    @Param('alurKelasId') alurKelasId: number,
+    @Param('courseFlowId') courseFlowId: number,
     @Param('courseId') courseId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.alurKelasService.remove(alurKelasId, courseId);
+      await this.courseFlowsService.remove(courseFlowId, courseId);
       req.flash('success', 'Flow Program successfully deleted');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {

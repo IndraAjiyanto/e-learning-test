@@ -26,10 +26,11 @@ import { CourseFlow } from './course_flow.entity';
 import { ProgramBenefits } from './course_benefit.entity';
 import { Mentorings } from './mentoring.entity';
 import { Registration } from './registration.entity';
+import { Voucher } from './voucher.entity';
 import { Exclude } from 'class-transformer';
+import { ProcessStatus } from './types/process-status';
 
 export type Method = 'online' | 'offline';
-export type ProcessState = 'acc' | 'proces' | 'rejected';
 
 @Entity()
 export class Course {
@@ -86,10 +87,10 @@ export class Course {
 
   @Column({
     type: 'enum',
-    enum: ['acc', 'proces', 'rejected'],
+    enum: ['approved', 'process', 'rejected'],
     default: 'rejected',
   })
-  process: ProcessState;
+  process: ProcessStatus;
 
   @Column('jsonb', { nullable: true })
   materialsId: string[];
@@ -230,4 +231,9 @@ export class Course {
   })
   @Exclude()
   registrations: Registration[];
+
+  @ManyToOne(() => Voucher, (voucher) => voucher.courses)
+  @JoinColumn({ name: 'voucherId' })
+  @Exclude()
+  voucher: Voucher;
 }

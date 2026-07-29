@@ -1,14 +1,14 @@
 import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
-import { Proses } from 'src/entities/payment.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreatePaymentDto {
   @IsString()
   @IsOptional()
   file: string;
 
-  @IsEnum(['acc', 'proces', 'rejected'])
+  @IsEnum(['approved', 'process', 'rejected'])
   @IsOptional()
-  process: Proses;
+  process: ProcessStatus;
 
   @IsInt()
   userId: number;
@@ -23,4 +23,8 @@ export class CreatePaymentDto {
   @IsString()
   @IsOptional()
   no: string;
+
+  @IsEnum(['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'])
+  @IsOptional()
+  referalSource: string;
 }

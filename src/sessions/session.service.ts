@@ -21,10 +21,10 @@ export class SessionService {
     private readonly sessionRepository: Repository<Session>,
 
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
 
     @InjectRepository(Weeks)
-    private readonly mingguRepository: Repository<Weeks>,
+    private readonly weeksRepository: Repository<Weeks>,
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -33,19 +33,19 @@ export class SessionService {
     private readonly logBookRepository: Repository<Logbook>,
 
     @InjectRepository(Question)
-    private readonly pertanyaanRepository: Repository<Question>,
+    private readonly questionRepository: Repository<Question>,
 
     @InjectRepository(MentorLogbook)
-    private readonly logbookMentorRepository: Repository<MentorLogbook>,
+    private readonly mentorLogbookRepository: Repository<MentorLogbook>,
 
     @InjectRepository(SessionProgress)
-    private readonly progresPertemuanRepository: Repository<SessionProgress>,
+    private readonly sessionProgressRepository: Repository<SessionProgress>,
 
     @InjectRepository(WeekProgress)
     private readonly weekProgressRepository: Repository<WeekProgress>,
 
     @InjectRepository(Assignment)
-    private readonly tugasRepository: Repository<Assignment>,
+    private readonly assignmentRepository: Repository<Assignment>,
   ) {}
 
   async create(createSessionDto: CreateSessionDto) {
@@ -54,7 +54,7 @@ export class SessionService {
     } else {
       createSessionDto.isFinal = false;
     }
-    const weeks = await this.mingguRepository.findOne({
+    const weeks = await this.weeksRepository.findOne({
       where: { id: createSessionDto.weeksId },
       relations: ['course'],
     });
@@ -66,34 +66,34 @@ export class SessionService {
         ...createSessionDto,
         weeks: weeks,
       });
-      const new_pertemuan = await this.sessionRepository.save(data);
+      const newSession = await this.sessionRepository.save(data);
       const weekProgress = await this.weekProgressRepository.find({
         where: { week: { id: weeks.id }, process: true },
         relations: ['user'],
       });
       if (weekProgress.length > 0) {
-        for (const progres of weekProgress) {
-          const existingProgresPertemuan =
-            await this.progresPertemuanRepository.findOne({
+        for (const progress of weekProgress) {
+          const existingSessionProgress =
+            await this.sessionProgressRepository.findOne({
               where: {
-                session: { id: new_pertemuan.id },
-                user: { id: progres.user.id },
+                session: { id: newSession.id },
+                user: { id: progress.user.id },
               },
             });
-          if (existingProgresPertemuan) {
-            await this.progresPertemuanRepository.save({
-              id: existingProgresPertemuan.id,
+          if (existingSessionProgress) {
+            await this.sessionProgressRepository.save({
+              id: existingSessionProgress.id,
               logbook: false,
               isAttended: true,
-              session: new_pertemuan,
-              user: progres.user,
+              session: newSession,
+              user: progress.user,
             });
           } else {
-            await this.progresPertemuanRepository.save({
+            await this.sessionProgressRepository.save({
               logbook: false,
               isAttended: true,
-              session: new_pertemuan,
-              user: progres.user,
+              session: newSession,
+              user: progress.user,
             });
           }
         }
@@ -118,8 +118,8 @@ export class SessionService {
           ...createSessionDto,
           weeks: weeks,
         });
-        const new_pertemuan = await this.sessionRepository.save(user);
-        const progresPertemuan = await this.progresPertemuanRepository.find({
+        const newSession = await this.sessionRepository.save(user);
+        const sessionProgressList = await this.sessionProgressRepository.find({
           where: {
             session: { id: session.id },
             isAttended: true,
@@ -127,13 +127,13 @@ export class SessionService {
           },
           relations: ['user'],
         });
-        if (progresPertemuan.length > 0) {
-          for (const progres of progresPertemuan) {
-            await this.progresPertemuanRepository.save({
+        if (sessionProgressList.length > 0) {
+          for (const progress of sessionProgressList) {
+            await this.sessionProgressRepository.save({
               isAttended: true,
               logbook: false,
-              session: new_pertemuan,
-              user: progres.user,
+              session: newSession,
+              user: progress.user,
             });
           }
         }
@@ -142,7 +142,7 @@ export class SessionService {
   }
 
   async findAllCourses() {
-    return await this.kelasRepository.find();
+    return await this.courseRepository.find();
   }
 
   async findWeekSessions(weeksId: number) {
@@ -156,10 +156,10 @@ export class SessionService {
     return session.sessionOrder;
   }
 
-  async noPertemuan(weeksId: number) {
-    const pertemuanTerakhir = await this.findWeekSessions(weeksId);
-    const pertemuanBaru = pertemuanTerakhir + 1;
-    return pertemuanBaru;
+  async getNextOrder(weeksId: number) {
+    const lastSession = await this.findWeekSessions(weeksId);
+    const newSession = lastSession + 1;
+    return newSession;
   }
 
   async findStudentsInCourse(courseId: number, sessionId: number) {
@@ -173,7 +173,7 @@ export class SessionService {
   }
 
   async findQuestions(sessionId: number) {
-    return await this.pertanyaanRepository.find({
+    return await this.questionRepository.find({
       where: { quiz: { id: sessionId } },
       relations: ['answers'],
     });
@@ -192,7 +192,7 @@ export class SessionService {
   }
 
   async findLogBookMentor(sessionId: number) {
-    return await this.logbookMentorRepository.find({
+    return await this.mentorLogbookRepository.find({
       where: { session: { id: sessionId } },
       relations: [
         'user',
@@ -204,7 +204,7 @@ export class SessionService {
   }
 
   async findTugas(sessionId: number) {
-    return await this.tugasRepository.find({
+    return await this.assignmentRepository.find({
       where: { session: { id: sessionId } },
     });
   }

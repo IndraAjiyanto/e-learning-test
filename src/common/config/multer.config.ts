@@ -30,18 +30,18 @@ const FILE_TYPES: Record<string, FileTypeConfig> = {
     mimeTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     extensions: ['.jpg', '.jpeg', '.png'],
     errorMessage:
-      'Format file tidak valid. Hanya file gambar (JPG, JPEG, PNG) yang diperbolehkan',
+      'Invalid file format. Only image files (JPG, JPEG, PNG) are allowed',
   },
   pdf: {
     mimeTypes: ['application/pdf'],
     extensions: ['.pdf'],
-    errorMessage: 'Format file tidak valid. Hanya file PDF yang diperbolehkan',
+    errorMessage: 'Invalid file format. Only PDF files are allowed',
   },
   video: {
     mimeTypes: ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime'],
     extensions: ['.mp4', '.avi', '.mov'],
     errorMessage:
-      'Format file tidak valid. Hanya file video (MP4, AVI, MOV) yang diperbolehkan',
+      'Invalid file format. Only video files (MP4, AVI, MOV) are allowed',
   },
   ppt: {
     mimeTypes: [
@@ -50,7 +50,7 @@ const FILE_TYPES: Record<string, FileTypeConfig> = {
     ],
     extensions: ['.ppt', '.pptx'],
     errorMessage:
-      'Format file tidak valid. Hanya file PowerPoint (PPT, PPTX) yang diperbolehkan',
+      'Invalid file format. Only PowerPoint files (PPT, PPTX) are allowed',
   },
   document: {
     mimeTypes: [
@@ -62,12 +62,12 @@ const FILE_TYPES: Record<string, FileTypeConfig> = {
     ],
     extensions: ['.pdf', '.doc', '.docx', '.xls', '.xlsx'],
     errorMessage:
-      'Format file tidak valid. Hanya file dokumen (PDF, DOC, DOCX, XLS, XLSX) yang diperbolehkan',
+      'Invalid file format. Only document files (PDF, DOC, DOCX, XLS, XLSX) are allowed',
   },
   any: {
     mimeTypes: [],
     extensions: [],
-    errorMessage: 'Format file tidak valid',
+    errorMessage: 'Invalid file format',
   },
 };
 
@@ -117,7 +117,7 @@ export const createMemoryConfig = (
         callback(null, true);
       } else {
         callback(
-          new Error(errorMessage || 'Format file tidak valid') as any,
+          new Error(errorMessage || 'Invalid file format') as any,
           false,
         );
       }
@@ -209,7 +209,7 @@ export const createLocalConfig = (
         callback(null, true);
       } else {
         callback(
-          new Error(errorMessage || 'Format file tidak valid') as any,
+          new Error(errorMessage || 'Invalid file format') as any,
           false,
         );
       }

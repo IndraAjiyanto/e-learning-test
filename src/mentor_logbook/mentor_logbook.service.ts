@@ -13,13 +13,13 @@ import * as path from 'path';
 @Injectable()
 export class MentorLogbookService {
   @InjectRepository(MentorLogbook)
-  private readonly logBookMentorRepository: Repository<MentorLogbook>;
+  private readonly mentorLogbookRepository: Repository<MentorLogbook>;
   @InjectRepository(Session)
   private readonly sessionRepository: Repository<Session>;
   @InjectRepository(User)
   private readonly userRepository: Repository<User>;
   @InjectRepository(Course)
-  private readonly kelasRepository: Repository<Course>;
+  private readonly courseRepository: Repository<Course>;
 
   async create(createMentorLogbookDto: CreateMentorLogbookDto) {
     const user = await this.userRepository.findOne({
@@ -29,27 +29,27 @@ export class MentorLogbookService {
       where: { id: createMentorLogbookDto.sessionId },
     });
     if (!user) {
-      throw new Error('User tidak ada');
+      throw new Error('User not found');
     }
     if (!session) {
-      throw new Error('session tidak ada');
+      throw new Error('Session not found');
     }
-    const logbooks = await this.logBookMentorRepository.create({
+    const logbooks = await this.mentorLogbookRepository.create({
       ...createMentorLogbookDto,
       user: user,
       session: session,
     });
-    return await this.logBookMentorRepository.save(logbooks);
+    return await this.mentorLogbookRepository.save(logbooks);
   }
 
   async getCourseList(userId: number) {
-    return await this.kelasRepository.find({
+    return await this.courseRepository.find({
       where: { mentorings: { user: { id: userId } } },
     });
   }
 
   async findOne(mentor_logbookId: number) {
-    const mentor_logbook = await this.logBookMentorRepository.findOne({
+    const mentor_logbook = await this.mentorLogbookRepository.findOne({
       where: { id: mentor_logbookId },
       relations: ['session', 'user'],
     });
@@ -78,7 +78,7 @@ export class MentorLogbookService {
       throw new NotFoundException('logbooks not found');
     }
     Object.assign(logbooks, updateMentorLogbookDto);
-    return await this.logBookMentorRepository.save(logbooks);
+    return await this.mentorLogbookRepository.save(logbooks);
   }
 
   async remove(id: number) {
@@ -86,6 +86,6 @@ export class MentorLogbookService {
     if (!logbooks) {
       throw new NotFoundException('logbooks not found');
     }
-    await this.logBookMentorRepository.remove(logbooks);
+    await this.mentorLogbookRepository.remove(logbooks);
   }
 }

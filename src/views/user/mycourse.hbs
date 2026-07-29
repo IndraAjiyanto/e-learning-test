@@ -52,7 +52,7 @@
         params.set('userId', `{{user.id}}`)
         if (this.tab !== 'all') params.set('category', this.tab);
         if (this.selectedCategory !== 'all') params.set('courseType', this.selectedCategory);
-        if (this.selectedMethod !== 'all') params.set('metode', this.selectedMethod);
+        if (this.selectedMethod !== 'all') params.set('method', this.selectedMethod);
         if (this.searchQuery) params.set('search', this.searchQuery);
         params.set('page', this.currentPage);
         params.set('limit', this.itemsPerPage);

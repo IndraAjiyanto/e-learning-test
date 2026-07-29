@@ -26,7 +26,7 @@ import { Request, Response } from 'express';
 @UseGuards(AuthenticatedGuard)
 @Controller('logbooks-mentor')
 export class MentorLogbookController {
-  constructor(private readonly logbookMentorService: MentorLogbookService) {}
+  constructor(private readonly mentorLogbookService: MentorLogbookService) {}
 
   @Roles('admin')
   @Post(':sessionId')
@@ -49,7 +49,7 @@ export class MentorLogbookController {
       createMentorLogbookDto.documentation = req.body.uploadedImageUrls?.[0];
       createMentorLogbookDto.userId = req.user!.id;
       createMentorLogbookDto.sessionId = sessionId;
-      await this.logbookMentorService.create(createMentorLogbookDto);
+      await this.mentorLogbookService.create(createMentorLogbookDto);
       req.flash('success', 'Log book added successfully');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
@@ -76,7 +76,7 @@ export class MentorLogbookController {
     @Req() req: Request,
   ) {
     const mentor_logbook =
-      await this.logbookMentorService.findOne(mentor_logbookId);
+      await this.mentorLogbookService.findOne(mentor_logbookId);
     res.render('admin/mentor_logbook/edit', { user: req.user, mentor_logbook });
   }
 
@@ -88,7 +88,7 @@ export class MentorLogbookController {
     @Req() req: Request,
   ) {
     const mentor_logbook =
-      await this.logbookMentorService.findOne(mentor_logbookId);
+      await this.mentorLogbookService.findOne(mentor_logbookId);
     res.render('admin/mentor_logbook/detail', {
       user: req.user,
       mentor_logbook,
@@ -114,19 +114,19 @@ export class MentorLogbookController {
     @Req() req: Request,
   ) {
     try {
-      const logbooks = await this.logbookMentorService.findOne(mentor_logbookId);
+      const logbooks = await this.mentorLogbookService.findOne(mentor_logbookId);
       if (documentation) {
-        await this.logbookMentorService.deleteFile(logbooks.documentation);
+        await this.mentorLogbookService.deleteFile(logbooks.documentation);
         updateMentorLogbookDto.documentation = req.body.uploadedImageUrls?.[0];
       }
-      await this.logbookMentorService.update(
+      await this.mentorLogbookService.update(
         mentor_logbookId,
         updateMentorLogbookDto,
       );
       req.flash('success', 'logbooks successfully updated');
       res.redirect(`/session/${logbooks.session.id}`);
     } catch (error: any) {
-      const logbooks = await this.logbookMentorService.findOne(mentor_logbookId);
+      const logbooks = await this.mentorLogbookService.findOne(mentor_logbookId);
       req.flash('error', error.message || 'logbooks failed to updated');
       res.redirect(`/session/${logbooks.session.id}`);
     }
@@ -141,9 +141,9 @@ export class MentorLogbookController {
     @Req() req: Request,
   ) {
     try {
-      const logbooks = await this.logbookMentorService.findOne(mentor_logbookId);
-      await this.logbookMentorService.deleteFile(logbooks.documentation);
-      await this.logbookMentorService.remove(mentor_logbookId);
+      const logbooks = await this.mentorLogbookService.findOne(mentor_logbookId);
+      await this.mentorLogbookService.deleteFile(logbooks.documentation);
+      await this.mentorLogbookService.remove(mentor_logbookId);
       req.flash('success', 'logbooks successfully deleted');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {

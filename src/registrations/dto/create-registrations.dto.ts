@@ -1,14 +1,14 @@
 import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
-import { Proses } from 'src/entities/registration.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreateRegistrationsDto {
   @IsString()
   @IsOptional()
   file: string;
 
-  @IsEnum(['acc', 'proces', 'rejected'])
+  @IsEnum(['approved', 'process', 'rejected'])
   @IsOptional()
-  process: Proses;
+  process: ProcessStatus;
 
   @IsInt()
   userId: number;

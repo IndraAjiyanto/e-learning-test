@@ -67,7 +67,7 @@ export class ValidateImageInterceptor implements NestInterceptor {
         // ========================================
         if (options.maxSize && file.size > options.maxSize) {
           throw new Error(
-            `Ukuran file terlalu besar. Maksimal ${(options.maxSize / 1024 / 1024).toFixed(2)}MB`,
+            `File size too large. Maximum ${(options.maxSize / 1024 / 1024).toFixed(2)}MB`,
           );
         }
 
@@ -79,7 +79,7 @@ export class ValidateImageInterceptor implements NestInterceptor {
           !options.allowedTypes.includes(file.mimetype)
         ) {
           throw new Error(
-            `Tipe file tidak diizinkan. Hanya: ${options.allowedTypes.join(', ')}`,
+            `File type not allowed. Only: ${options.allowedTypes.join(', ')}`,
           );
         }
 
@@ -132,7 +132,7 @@ export class ValidateImageInterceptor implements NestInterceptor {
           const fileUrl = `/asset/${options.folder || 'images'}/${filename}`;
           uploadResults.push(fileUrl);
         } else {
-          throw new Error('File tidak valid: tidak ada buffer atau path');
+          throw new Error('Invalid file: no buffer or path');
         }
       }
 

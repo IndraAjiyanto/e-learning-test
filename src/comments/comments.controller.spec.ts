@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommentsController } from './comments.controller';
 import { CommentsService } from './comments.service';
 
-describe('KomentarController', () => {
+describe('CommentsController', () => {
   let controller: CommentsController;
 
   beforeEach(async () => {

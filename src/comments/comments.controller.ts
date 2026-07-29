@@ -23,16 +23,16 @@ export class CommentsController {
   async create(
     @Param('assignmentId') assignmentId: number,
     @Param('assignment_answerId') assignment_answerId: number,
-    @Body() createKomentarDto: CreateCommentsDto,
+    @Body() createCommentDto: CreateCommentsDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      createKomentarDto.answerTaskId = assignment_answerId;
-      await this.commentService.create(createKomentarDto);
-      await this.commentService.updateJawabanTugas(
+      createCommentDto.answerTaskId = assignment_answerId;
+      await this.commentService.create(createCommentDto);
+      await this.commentService.updateAssignmentAnswer(
         assignment_answerId,
-        createKomentarDto.process,
+        createCommentDto.process,
       );
       req.flash('success', 'comment successfuly send');
       res.redirect(`/answer-assigment/${assignmentId}`);

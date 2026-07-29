@@ -11,8 +11,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { AttendanceService } from './attendances.service';
-import { CreateAttendanceDto } from './dto/create-absen.dto';
-import { UpdateAttendanceDto } from './dto/update-absen.dto';
+import { CreateAttendanceDto } from './dto/create-attendance.dto';
+import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';

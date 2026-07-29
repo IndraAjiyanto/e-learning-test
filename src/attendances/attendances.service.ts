@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateAttendanceDto } from './dto/create-absen.dto';
-import { UpdateAttendanceDto } from './dto/update-absen.dto';
+import { CreateAttendanceDto } from './dto/create-attendance.dto';
+import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Attendance } from 'src/entities/attendance.entity';
 import { Repository } from 'typeorm';
@@ -22,10 +22,10 @@ export class AttendanceService {
     private readonly userRepository: Repository<User>,
 
     @InjectRepository(SessionProgress)
-    private readonly progresPertemuanRepository: Repository<SessionProgress>,
+    private readonly sessionProgressRepository: Repository<SessionProgress>,
 
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
   ) {}
 
   async create(CreateAttendanceDto: CreateAttendanceDto) {
@@ -37,10 +37,10 @@ export class AttendanceService {
       where: { id: CreateAttendanceDto.userId },
     });
     if (!session) {
-      throw new NotFoundException('session ini tidak ada');
+      throw new NotFoundException('Session not found');
     }
     if (!user) {
-      throw new NotFoundException('user ini tidak ada');
+      throw new NotFoundException('User not found');
     }
     const attendance = await this.attendanceRepository.create({
       ...CreateAttendanceDto,
@@ -65,7 +65,7 @@ export class AttendanceService {
   }
 
   async findUsers(sessionId: number) {
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { weeks: { session: { id: sessionId } } },
     });
     if (!course) {
@@ -77,7 +77,7 @@ export class AttendanceService {
   }
 
   async findCourse() {
-    return await this.kelasRepository.find({ relations: ['session'] });
+    return await this.courseRepository.find({ relations: ['session'] });
   }
 
   async findOne(id: number) {
@@ -86,15 +86,15 @@ export class AttendanceService {
       relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
     });
     if (!attendance) {
-      throw new NotFoundException(`attendance tidak ditemukan`);
+      throw new NotFoundException(`Attendance not found`);
     }
 
     if (!attendance.session) {
-      throw new NotFoundException('session tidak ditemukan');
+      throw new NotFoundException('Session not found');
     }
 
     if (!attendance.user) {
-      throw new NotFoundException('user tidak ditemukan');
+      throw new NotFoundException('User not found');
     }
     return attendance;
   }
@@ -102,7 +102,7 @@ export class AttendanceService {
   async update(id: number, updateAttendanceDto: UpdateAttendanceDto) {
     const attendance = await this.findOne(id);
     if (!attendance) {
-      throw new NotFoundException('attendance tidak ditemukan');
+      throw new NotFoundException('Attendance not found');
     }
     Object.assign(attendance, updateAttendanceDto);
     return await this.attendanceRepository.save(attendance);
@@ -111,14 +111,14 @@ export class AttendanceService {
   async remove(id: number, sessionId: number) {
     const attendance = await this.findOne(id);
     if (!attendance) {
-      throw new NotFoundException('attendance tidak ditemukan');
+      throw new NotFoundException('Attendance not found');
     }
-    const sessionProgress = await this.progresPertemuanRepository.findOne({
+    const sessionProgress = await this.sessionProgressRepository.findOne({
       where: { user: { id: attendance.user.id }, session: { id: sessionId } },
     });
 
     if (sessionProgress) {
-      await this.progresPertemuanRepository.remove(sessionProgress);
+      await this.sessionProgressRepository.remove(sessionProgress);
     }
     return await this.attendanceRepository.remove(attendance);
   }

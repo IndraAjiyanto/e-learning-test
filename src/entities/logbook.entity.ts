@@ -9,8 +9,7 @@ import {
 import { User } from './user.entity';
 import { Session } from './session.entity';
 import { Exclude } from 'class-transformer';
-
-export type Proses = 'acc' | 'proces' | 'rejected';
+import { ProcessStatus } from './types/process-status';
 
 @Entity()
 export class Logbook {
@@ -28,10 +27,10 @@ export class Logbook {
 
   @Column({
     type: 'enum',
-    enum: ['acc', 'proces', 'rejected'],
+    enum: ['approved', 'process', 'rejected'],
     default: 'rejected',
   })
-  process: Proses;
+  process: ProcessStatus;
 
   @Column({ name: 'obstacles', nullable:true })
   obstacles: string;

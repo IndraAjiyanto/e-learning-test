@@ -12,11 +12,11 @@ export class BenefitCategoryService {
     @InjectRepository(BenefitCategory)
     private benefitCategoryRepository: Repository<BenefitCategory>,
     @InjectRepository(Category)
-    private kategoriRepository: Repository<Category>,
+    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(createBenefitCategoryDto: CreateBenefitCategoryDto) {
-    const category = await this.kategoriRepository.findOne({
+    const category = await this.categoryRepository.findOne({
       where: { id: createBenefitCategoryDto.categoryId },
     });
     if (!category) {
@@ -43,7 +43,7 @@ export class BenefitCategoryService {
   async update(id: number, updateBenefitCategoryDto: UpdateBenefitCategoryDto) {
     const benefitCategory = await this.findOne(id);
     if (updateBenefitCategoryDto.categoryId) {
-      const category = await this.kategoriRepository.findOne({
+      const category = await this.categoryRepository.findOne({
         where: { id: updateBenefitCategoryDto.categoryId },
       });
       if (!category) {

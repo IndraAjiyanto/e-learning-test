@@ -22,7 +22,7 @@
             <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
 
               <!-- Learning Method Card -->
-              {{#if (eq course.metode 'online')}}
+              {{#if (eq course.method 'online')}}
                 <div
                   class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 hover:shadow-xl transition-all duration-300 group'
                 >
@@ -74,7 +74,7 @@
                   <div
                     class='w-12 h-12 rounded-xl bg-gradient-to-br from-primary via-secondary to-gray-900 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg'
                   >
-                    {{#if (eq course.metode 'online')}}
+                    {{#if (eq course.method 'online')}}
                       <i class='fas fa-globe text-white text-xl'></i>
                     {{else}}
                       <i class='fas fa-map-marker-alt text-white text-xl'></i>
@@ -84,7 +84,7 @@
                     <p
                       class=' text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1'
                     >{{t "test.detailProgram.infoProgram.location"}}</p>
-                    {{#if (eq course.metode 'online')}}
+                    {{#if (eq course.method 'online')}}
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
                       ><a href="{{course.link_lokasi}}" target="_blank" rel="noopener noreferrer" class="underline">{{getByLang course.location lang}}</a></h4>
@@ -218,7 +218,7 @@
                     >{{t "test.detailProgram.infoProgram.startDate"}}</p>
                     <h4
                       class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                    >{{#if course.tanggal_mulai}}{{formatTanggal course.tanggal_mulai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
+                    >{{#if course.tanggal_mulai}}{{formatDate course.tanggal_mulai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
                   </div>
                 </div>
               </div>
@@ -239,7 +239,7 @@
                     >{{t "test.detailProgram.infoProgram.endDate"}}</p>
                     <h4
                       class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                    >{{#if course.tanggal_selesai}}{{formatTanggal course.tanggal_selesai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
+                    >{{#if course.tanggal_selesai}}{{formatDate course.tanggal_selesai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
                   </div>
                 </div>
               </div>

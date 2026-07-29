@@ -29,17 +29,17 @@ import { UserAnswersService } from 'src/user_answers/user_answers.service';
 @Controller('question')
 export class QuestionsController {
   constructor(
-    private readonly pertanyaansService: QuestionsService,
+    private readonly questionsService: QuestionsService,
     private readonly sessionService: SessionService,
     private readonly quizService: QuizService,
-    private readonly jawabansService: AnswersService,
-    private readonly jawabanUsersService: UserAnswersService,
+    private readonly answersService: AnswersService,
+    private readonly userAnswersService: UserAnswersService,
   ) {}
 
   @Roles('admin')
   @Post(':quizId')
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -50,20 +50,20 @@ export class QuestionsController {
   async create(
     @Res() res: Response,
     @Req() req: Request,
-    @Body() createPertanyaanDto: CreateQuestionDto,
+    @Body() createQuestionDto: CreateQuestionDto,
     @Param('quizId') quizId: number,
   ) {
     try {
-      createPertanyaanDto.quizId = quizId;
-      createPertanyaanDto.image = req.body.uploadedImageUrls?.[0];
+      createQuestionDto.quizId = quizId;
+      createQuestionDto.image = req.body.uploadedImageUrls?.[0];
 
       const questions =
-        await this.pertanyaansService.create(createPertanyaanDto);
-      for (let i = 0; i < createPertanyaanDto.options.length; i++) {
-        await this.jawabansService.create({
+        await this.questionsService.create(createQuestionDto);
+      for (let i = 0; i < createQuestionDto.options.length; i++) {
+        await this.answersService.create({
           questionsId: questions['id'],
-          answer: createPertanyaanDto.options[i],
-          is_correct: i === Number(createPertanyaanDto.answers),
+          answer: createQuestionDto.options[i],
+          is_correct: i === Number(createQuestionDto.answers),
         });
       }
 
@@ -93,7 +93,7 @@ export class QuestionsController {
     @Res() res: Response,
     @Param('questionId') questionId: number,
   ) {
-    const question = await this.pertanyaansService.findOne(questionId);
+    const question = await this.questionsService.findOne(questionId);
     res.render('admin/questions/edit', { user: req.user, question });
   }
 
@@ -107,7 +107,7 @@ export class QuestionsController {
   ) {
     const session = await this.sessionService.findOne(sessionId);
     const questions =
-      await this.pertanyaansService.findQuestions(sessionId);
+      await this.questionsService.findQuestions(sessionId);
     res.render('user/quiz/quiz', {
       user: req.user,
       questions,
@@ -126,10 +126,10 @@ export class QuestionsController {
   ) {
     const session = await this.sessionService.findOne(sessionId);
     const questions =
-      await this.pertanyaansService.findQuestions(sessionId);
+      await this.questionsService.findQuestions(sessionId);
     const userAnswers =
-      await this.jawabanUsersService.findAnswersByUser(userId);
-    const scores = await this.jawabanUsersService.AmountNilai(
+      await this.userAnswersService.findAnswersByUser(userId);
+    const scores = await this.userAnswersService.calculateScore(
       sessionId,
       userId,
     );
@@ -156,19 +156,19 @@ export class QuestionsController {
   async update(
     @Param('questionId') questionId: number,
     @Param('quizId') quizId: number,
-    @Body() updatePertanyaanDto: UpdateQuestionDto,
+    @Body() updateQuestionDto: UpdateQuestionDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      const questions = await this.pertanyaansService.findOne(questionId);
+      const questions = await this.questionsService.findOne(questionId);
       if (req.body.uploadedImageUrls?.length) {
-        updatePertanyaanDto.image = req.body.uploadedImageUrls[0];
+        updateQuestionDto.image = req.body.uploadedImageUrls[0];
         if (questions.image) {
-          await this.pertanyaansService.deleteFile(questions.image);
+          await this.questionsService.deleteFile(questions.image);
         }
       }
-      await this.pertanyaansService.update(questionId, updatePertanyaanDto);
+      await this.questionsService.update(questionId, updateQuestionDto);
       req.flash('success', 'successfuly update question');
       res.redirect(`/quiz/${quizId}`);
     } catch (error: any) {
@@ -186,11 +186,11 @@ export class QuestionsController {
     @Res() res: Response,
   ) {
     try {
-      const questions = await this.pertanyaansService.findOne(questionId);
+      const questions = await this.questionsService.findOne(questionId);
       if (questions.image) {
-        await this.pertanyaansService.deleteFile(questions.image);
+        await this.questionsService.deleteFile(questions.image);
       }
-      await this.pertanyaansService.remove(questionId);
+      await this.questionsService.remove(questionId);
       req.flash('success', 'successfuly delete question');
       res.redirect(`/quiz/${quizId}`);
     } catch (error: any) {

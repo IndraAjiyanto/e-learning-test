@@ -19,13 +19,13 @@ export class PortfoliosService {
     private readonly portfolioRepository: Repository<Portofolios>,
 
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
     @InjectRepository(Category)
-    private readonly kategoriRepository: Repository<Category>,
+    private readonly categoryRepository: Repository<Category>,
 
     @InjectRepository(CourseType)
     private readonly courseTypeRepository: Repository<CourseType>,
@@ -34,7 +34,7 @@ export class PortfoliosService {
     const user = await this.userRepository.findOne({
       where: { id: createPortfolioDto.userId },
     });
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: createPortfolioDto.courseId },
     });
     if (!user) {
@@ -66,16 +66,16 @@ export class PortfoliosService {
     });
   }
 
-  async findKategori() {
-    return await this.kategoriRepository.find();
+  async findCategory() {
+    return await this.categoryRepository.find();
   }
 
   async findCourseTypes() {
     return await this.courseTypeRepository.find();
   }
 
-  async findKategoriMyPortfolio(userId: number) {
-    return await this.kategoriRepository.find({where: { courses: { userCourses: { user: { id: userId } } } } });
+  async findCategoryMyPortfolio(userId: number) {
+    return await this.categoryRepository.find({where: { courses: { userCourses: { user: { id: userId } } } } });
   }
 
   async findMyPortfolioCourseTypes(userId: number) {

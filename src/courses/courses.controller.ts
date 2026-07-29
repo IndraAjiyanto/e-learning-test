@@ -30,12 +30,12 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('program')
 export class CoursesController {
-  constructor(private readonly kelassService: CoursesService) { }
+  constructor(private readonly coursesService: CoursesService) { }
 
   @Roles('admin', 'super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -48,48 +48,48 @@ export class CoursesController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
-    @Body() createKelassDto: CreateCoursesDto,
+    @Body() createCourseDto: CreateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createKelassDto.image = req.body.uploadedImageUrls?.[0];
+      createCourseDto.image = req.body.uploadedImageUrls?.[0];
 
-      if (createKelassDto.month) {
-        createKelassDto.day = 0;
+      if (createCourseDto.month) {
+        createCourseDto.day = 0;
       }
 
-      if (createKelassDto.day) {
-        createKelassDto.month = 0;
+      if (createCourseDto.day) {
+        createCourseDto.month = 0;
       }
 
-      if (createKelassDto.paid_check === 'true') {
-        createKelassDto.form = '';
-        createKelassDto.checkPaid = true;
+      if (createCourseDto.paid_check === 'true') {
+        createCourseDto.form = '';
+        createCourseDto.checkPaid = true;
         if (req.user!.role === 'super_admin') {
-          createKelassDto.process = 'acc';
+          createCourseDto.process = 'approved';
         } else if (req.user!.role === 'admin') {
-          createKelassDto.process = 'proces';
+          createCourseDto.process = 'process';
         }
-      } else if (createKelassDto.paid_check === 'false') {
-        createKelassDto.checkPaid = false;
-        createKelassDto.price = 0;
-        createKelassDto.promo = 0;
+      } else if (createCourseDto.paid_check === 'false') {
+        createCourseDto.checkPaid = false;
+        createCourseDto.price = 0;
+        createCourseDto.promo = 0;
         if (req.user!.role === 'super_admin') {
-          createKelassDto.process = 'acc';
+          createCourseDto.process = 'approved';
         } else if (req.user!.role === 'admin') {
-          createKelassDto.process = 'proces';
+          createCourseDto.process = 'process';
         }
       }
-      const course = await this.kelassService.create(createKelassDto);
+      const course = await this.coursesService.create(createCourseDto);
       if (req.user!.role === 'super_admin') {
-        await this.kelassService.createMentoring(
-          createKelassDto.mentoringsId,
+        await this.coursesService.createMentoring(
+          createCourseDto.mentoringsId,
           course.id,
         );
       }
       if (req.user!.role === 'admin') {
-        await this.kelassService.createMentoring(req.user!.id, course.id);
+        await this.coursesService.createMentoring(req.user!.id, course.id);
       }
       req.flash('success', 'program successfully created');
       res.redirect('/program');
@@ -102,7 +102,7 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Post(':categoryId')
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -115,50 +115,50 @@ export class CoursesController {
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async createKelas(
-    @Body() createKelassDto: CreateCoursesDto,
+    @Body() createCourseDto: CreateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
     @Param('categoryId') categoryId: number,
   ) {
     try {
-      createKelassDto.image = req.body.uploadedImageUrls?.[0];
+      createCourseDto.image = req.body.uploadedImageUrls?.[0];
 
-      if (createKelassDto.month) {
-        createKelassDto.day = 0;
+      if (createCourseDto.month) {
+        createCourseDto.day = 0;
       }
 
-      if (createKelassDto.day) {
-        createKelassDto.month = 0;
+      if (createCourseDto.day) {
+        createCourseDto.month = 0;
       }
 
-      if (createKelassDto.paid_check === 'true') {
-        createKelassDto.form = '';
-        createKelassDto.checkPaid = true;
+      if (createCourseDto.paid_check === 'true') {
+        createCourseDto.form = '';
+        createCourseDto.checkPaid = true;
         if (req.user!.role === 'super_admin') {
-          createKelassDto.process = 'acc';
+          createCourseDto.process = 'approved';
         } else if (req.user!.role === 'admin') {
-          createKelassDto.process = 'proces';
+          createCourseDto.process = 'process';
         }
-      } else if (createKelassDto.paid_check === 'false') {
-        createKelassDto.checkPaid = false;
-        createKelassDto.price = 0;
-        createKelassDto.promo = 0;
+      } else if (createCourseDto.paid_check === 'false') {
+        createCourseDto.checkPaid = false;
+        createCourseDto.price = 0;
+        createCourseDto.promo = 0;
         if (req.user!.role === 'super_admin') {
-          createKelassDto.process = 'acc';
+          createCourseDto.process = 'approved';
         } else if (req.user!.role === 'admin') {
-          createKelassDto.process = 'proces';
+          createCourseDto.process = 'process';
         }
       }
-      createKelassDto.categoryId = categoryId;
-      const course = await this.kelassService.create(createKelassDto);
+      createCourseDto.categoryId = categoryId;
+      const course = await this.coursesService.create(createCourseDto);
       if (req.user!.role === 'super_admin') {
-        await this.kelassService.createMentoring(
-          createKelassDto.mentoringsId,
+        await this.coursesService.createMentoring(
+          createCourseDto.mentoringsId,
           course.id,
         );
       }
       if (req.user!.role === 'admin') {
-        await this.kelassService.createMentoring(req.user!.id, course.id);
+        await this.coursesService.createMentoring(req.user!.id, course.id);
       }
       req.flash('success', 'program successfully created');
       res.redirect(`/category/${categoryId}`);
@@ -177,7 +177,7 @@ export class CoursesController {
     @Body('userId') userId: number,
   ) {
     try {
-      await this.kelassService.addUserToCourse(userId, courseId);
+      await this.coursesService.addUserToCourse(userId, courseId);
       req.flash('success', 'user successfuly add to program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
@@ -190,10 +190,10 @@ export class CoursesController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     if (req.user!.role === 'super_admin') {
-      // const course = await this.kelassService.findAllCourses();
+      // const course = await this.coursesService.findAllCourses();
       res.render('admin/course/index', { user: req.user });
     } else if (req.user!.role === 'admin') {
-      // const course = await this.kelassService.findCourseByMentoring(req.user!.id);
+      // const course = await this.coursesService.findCourseByMentoring(req.user!.id);
       res.render('admin/course/index', { user: req.user });
     }
   }
@@ -211,7 +211,7 @@ export class CoursesController {
     const currentPage = parseInt(page || '1', 10);
     const itemsPerPage = parseInt(limit || '5', 10);
 
-    const result = await this.kelassService.findPaginatedCourses({
+    const result = await this.coursesService.findPaginatedCourses({
       search: search || undefined,
       alphabet: alphabet || undefined,
       page: currentPage,
@@ -230,10 +230,10 @@ export class CoursesController {
   @Roles('admin', 'super_admin')
   @Get('/create')
   async formCreate(@Res() res: Response, @Req() req: Request) {
-    const category = await this.kelassService.findKategori();
-    const courseType = await this.kelassService.findCourseTypes();
-    const technologies = await this.kelassService.findTechnologies();
-    const mentorings = await this.kelassService.findMentoring();
+    const category = await this.coursesService.findCategory();
+    const courseType = await this.coursesService.findCourseTypes();
+    const technologies = await this.coursesService.findTechnologies();
+    const mentorings = await this.coursesService.findMentoring();
     return res.render('admin/course/create', {
       user: req.user,
       category,
@@ -250,10 +250,10 @@ export class CoursesController {
     @Req() req: Request,
     @Param('categoryId') categoryId: number,
   ) {
-    const category = await this.kelassService.findOneKategori(categoryId);
-    const courseType = await this.kelassService.findCourseTypes();
-    const technologies = await this.kelassService.findTechnologies();
-    const mentorings = await this.kelassService.findMentoring();
+    const category = await this.coursesService.findOneCategory(categoryId);
+    const courseType = await this.coursesService.findCourseTypes();
+    const technologies = await this.coursesService.findTechnologies();
+    const mentorings = await this.coursesService.findMentoring();
     return res.render('admin/course/formCreate', {
       user: req.user,
       courseType,
@@ -271,14 +271,14 @@ export class CoursesController {
     @Req() req: Request,
     @Param('courseId', ParseIntPipe) courseId: number,
   ) {
-    const users = await this.kelassService.findUser();
-    const murid = await this.kelassService.findMurid(courseId);
-    const course = await this.kelassService.findOne(courseId);
+    const users = await this.coursesService.findUser();
+    const student = await this.coursesService.findStudent(courseId);
+    const course = await this.coursesService.findOne(courseId);
     return res.render('admin/course/addUser', {
       user: req.user,
       course,
       users,
-      murid,
+      student,
     });
   }
 
@@ -289,11 +289,11 @@ export class CoursesController {
     @Param('courseId', ParseIntPipe) courseId: number,
     @Req() req: Request,
   ) {
-    const course = await this.kelassService.findOne(courseId);
-    const category = await this.kelassService.findKategori();
-    const courseType = await this.kelassService.findCourseTypes();
-    const technologies = await this.kelassService.findTechnologies();
-    const mentorings = await this.kelassService.findMentoring();
+    const course = await this.coursesService.findOne(courseId);
+    const category = await this.coursesService.findCategory();
+    const courseType = await this.coursesService.findCourseTypes();
+    const technologies = await this.coursesService.findTechnologies();
+    const mentorings = await this.coursesService.findMentoring();
 
     return res.render('admin/course/edit', {
       user: req.user,
@@ -311,7 +311,7 @@ export class CoursesController {
     @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
-    const logbookMentor = await this.kelassService.findMentorLogbook(courseId);
+    const logbookMentor = await this.coursesService.findMentorLogbook(courseId);
     res.json(logbookMentor);
   }
 
@@ -321,7 +321,7 @@ export class CoursesController {
     @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
-    const logbookUser = await this.kelassService.findLogBookUser(courseId);
+    const logbookUser = await this.coursesService.findLogBookUser(courseId);
     res.json(logbookUser);
   }
 
@@ -331,40 +331,40 @@ export class CoursesController {
     @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
-    const mentor = await this.kelassService.findCourseMentors(courseId);
+    const mentor = await this.coursesService.findCourseMentors(courseId);
     res.json(mentor);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/week/:courseId')
   async getMinggu(@Param('courseId', ParseIntPipe) courseId: number, @Res() res: Response) {
-    const weeks = await this.kelassService.findCourseWeeks(courseId);
+    const weeks = await this.coursesService.findCourseWeeks(courseId);
     res.json(weeks);
   }
 
   @Roles('super_admin', 'admin')
   @Get('/userProgram/:courseId')
   async getUserKelas(@Param('courseId', ParseIntPipe) courseId: number, @Res() res: Response) {
-    const userCourses = await this.kelassService.findCourseUsers(courseId);
+    const userCourses = await this.coursesService.findCourseUsers(courseId);
     res.json(userCourses);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/installment/:courseId')
   async getCicilan(@Param('courseId', ParseIntPipe) courseId: number, @Res() res: Response) {
-    const availableMonths = await this.kelassService.findNo(courseId);
-    const installments = await this.kelassService.findCourseInstallments(courseId);
+    const availableMonths = await this.coursesService.findNo(courseId);
+    const installments = await this.coursesService.findCourseInstallments(courseId);
     res.json({ availableMonths, installments });
   }
 
   @Roles('admin', 'super_admin')
   @Get('/register/:courseId')
-  async getPendaftaran(
+  async getRegistration(
     @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
-    const pendaftaran = await this.kelassService.findCourseRegistrations(courseId);
-    res.json(pendaftaran);
+    const registration = await this.coursesService.findCourseRegistrations(courseId);
+    res.json(registration);
   }
 
   @Roles('admin', 'super_admin')
@@ -374,7 +374,7 @@ export class CoursesController {
     @Res() res: Response,
   ) {
     const paymentInstallment =
-      await this.kelassService.findCoursePaymentInstallments(courseId);
+      await this.coursesService.findCoursePaymentInstallments(courseId);
     res.json(paymentInstallment);
   }
 
@@ -384,39 +384,39 @@ export class CoursesController {
     @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
-    const course_benefits = await this.kelassService.findProgramBenefit(courseId);
+    const course_benefits = await this.coursesService.findProgramBenefit(courseId);
     res.json(course_benefits);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/faq/:courseId')
-  async getPertanyaanKelas(
+  async getCourseQuestions(
     @Param('courseId') courseId: number,
     @Res() res: Response,
   ) {
     const courseQuestions =
-      await this.kelassService.findCourseQuestions(courseId);
+      await this.coursesService.findCourseQuestions(courseId);
     res.json(courseQuestions);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/flow/:courseId')
-  async getAlurKelas(@Param('courseId') courseId: number, @Res() res: Response) {
-    const course_flows = await this.kelassService.findCourseFlows(courseId);
+  async getCourseFlow(@Param('courseId') courseId: number, @Res() res: Response) {
+    const course_flows = await this.coursesService.findCourseFlows(courseId);
     res.json(course_flows);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/payment/:courseId')
   async getPembayaran(@Param('courseId') courseId: number, @Res() res: Response) {
-    const pembayaran = await this.kelassService.findCoursePayments(courseId);
-    res.json(pembayaran);
+    const payment = await this.coursesService.findCoursePayments(courseId);
+    res.json(payment);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/alumni/:courseId')
   async getAlumni(@Param('courseId') courseId: number, @Res() res: Response) {
-    const alumni = await this.kelassService.findCourseAlumni(courseId);
+    const alumni = await this.coursesService.findCourseAlumni(courseId);
     res.json(alumni);
   }
 
@@ -429,16 +429,16 @@ export class CoursesController {
     @Req() req: Request,
   ) {
     if (req.user!.role === 'admin') {
-      const course = await this.kelassService.findOneAdminCourse(courseId);
-      const mingguTerakhir =
-        await this.kelassService.findLastWeek(courseId);
+      const course = await this.coursesService.findOneAdminCourse(courseId);
+      const lastWeek =
+        await this.coursesService.findLastWeek(courseId);
       res.render('admin/course/detail', {
         user: req.user,
         course,
-        mingguTerakhir,
+        lastWeek,
       });
     } else if (req.user!.role === 'super_admin') {
-      const course = await this.kelassService.findOne(courseId);
+      const course = await this.coursesService.findOne(courseId);
       res.render('admin/course/detail', {
         user: req.user,
         course,
@@ -453,9 +453,9 @@ export class CoursesController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    // const course = await this.kelassService.findMyCourse(id);
-    const category = await this.kelassService.findKategoriMyProgram(id);
-    const courseType = await this.kelassService.findMyProgramCourseTypes(id);
+    // const course = await this.coursesService.findMyCourse(id);
+    const category = await this.coursesService.findCategoryMyProgram(id);
+    const courseType = await this.coursesService.findMyProgramCourseTypes(id);
     res.render('user/mycourse', {
       // course,
       user: req.user,
@@ -471,19 +471,19 @@ export class CoursesController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const course = await this.kelassService.findOneCourse(courseId);
-    const check_user = await this.kelassService.checkUserInCourse(
+    const course = await this.coursesService.findOneCourse(courseId);
+    const check_user = await this.coursesService.checkUserInCourse(
       course.id,
       req.user!.id,
     );
-    const kelass = await this.kelassService.allClassExcept(course.id);
-    // const courseQuestions = await this.kelassService.findCourseQuestions(courseId);
-    // const course_flows = await this.kelassService.findCourseFlows(courseId);
-    // const mentor = await this.kelassService.findCourseMentors(courseId);
-    // const course_benefits = await this.kelassService.findProgramBenefit(courseId);
-    const technologies = await this.kelassService.findCourseTechnologies(courseId);
-    const installments = await this.kelassService.findCourseInstallments(courseId);
-    const daftar = await this.kelassService.sumStudent(course.id);
+    const kelass = await this.coursesService.allClassExcept(course.id);
+    // const courseQuestions = await this.coursesService.findCourseQuestions(courseId);
+    // const course_flows = await this.coursesService.findCourseFlows(courseId);
+    // const mentor = await this.coursesService.findCourseMentors(courseId);
+    // const course_benefits = await this.coursesService.findProgramBenefit(courseId);
+    const technologies = await this.coursesService.findCourseTechnologies(courseId);
+    const installments = await this.coursesService.findCourseInstallments(courseId);
+    const studentList = await this.coursesService.sumStudent(course.id);
 
     if (course.checkPaid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
@@ -492,7 +492,7 @@ export class CoursesController {
         user: req.user,
         kelass,
         check_user,
-        daftar,
+        studentList,
         // courseQuestions,
         // course_flows,
         // mentor,
@@ -524,21 +524,21 @@ export class CoursesController {
   ) {
     let isUserInKelas = false;
     if (!req.user) {
-      const course = await this.kelassService.findOneUserCourse(id);
-      // const courseQuestions = await this.kelassService.findCourseQuestions(id);
-      // const course_flows = await this.kelassService.findCourseFlows(id);
-      // const mentor = await this.kelassService.findCourseMentors(id);
-      // const course_benefits = await this.kelassService.findProgramBenefit(id);
-      const technologies = await this.kelassService.findCourseTechnologies(id);
-      const installments = await this.kelassService.findCourseInstallments(id);
-      const userCourses = await this.kelassService.findCourseUsers(id);
-      const kelass = await this.kelassService.allClassExcept(course.id);
-      const daftar = await this.kelassService.sumStudent(course.id);
+      const course = await this.coursesService.findOneUserCourse(id);
+      // const courseQuestions = await this.coursesService.findCourseQuestions(id);
+      // const course_flows = await this.coursesService.findCourseFlows(id);
+      // const mentor = await this.coursesService.findCourseMentors(id);
+      // const course_benefits = await this.coursesService.findProgramBenefit(id);
+      const technologies = await this.coursesService.findCourseTechnologies(id);
+      const installments = await this.coursesService.findCourseInstallments(id);
+      const userCourses = await this.coursesService.findCourseUsers(id);
+      const kelass = await this.coursesService.allClassExcept(course.id);
+      const studentList = await this.coursesService.sumStudent(course.id);
       if (course.checkPaid === false) {
         res.render('detail_program/free_program/index', {
           course,
           kelass,
-          daftar,
+          studentList,
           technologies,
           installments,
           userCourses,
@@ -547,7 +547,7 @@ export class CoursesController {
         res.render('course/Bdetail', {
           course,
           kelass,
-          daftar,
+          studentList,
           // courseQuestions,
           // course_flows,
           // mentor,
@@ -558,7 +558,7 @@ export class CoursesController {
         });
       }
     } else {
-      const course = await this.kelassService.findOneUserLaunchCourse(id);
+      const course = await this.coursesService.findOneUserLaunchCourse(id);
       for (const u of course.userCourses) {
         if (u.user.id === req.user.id) {
           isUserInKelas = true;
@@ -566,15 +566,15 @@ export class CoursesController {
         }
       }
       if (isUserInKelas) {
-        const mingguUpdated = await this.kelassService.findWeeks(
+        const updatedWeek = await this.coursesService.findWeeks(
           id,
           req.user.id,
         );
-        const userCourses = await this.kelassService.getUserCourseRelation(
+        const userCourses = await this.coursesService.getUserCourseRelation(
           req.user.id,
           course.id,
         );
-        const portfolio = await this.kelassService.findOnePortfolio(
+        const portfolio = await this.coursesService.findOnePortfolio(
           req.user.id,
           course.id,
         );
@@ -583,25 +583,25 @@ export class CoursesController {
           portfolio,
           user: req.user,
           course,
-          weeks: mingguUpdated,
+          weeks: updatedWeek,
         });
       } else {
-        const course = await this.kelassService.findOneUserCourse(id);
-        // const courseQuestions = await this.kelassService.findCourseQuestions(id);
-        // const course_flows = await this.kelassService.findCourseFlows(id);
-        // const mentor = await this.kelassService.findCourseMentors(id);
-        // const course_benefits = await this.kelassService.findProgramBenefit(id);
-        const technologies = await this.kelassService.findCourseTechnologies(id);
-        const installments = await this.kelassService.findCourseInstallments(id);
-        const userCourses = await this.kelassService.findCourseUsers(id);
-        const kelass = await this.kelassService.allClassExcept(course.id);
-        const daftar = await this.kelassService.sumStudent(course.id);
+        const course = await this.coursesService.findOneUserCourse(id);
+        // const courseQuestions = await this.coursesService.findCourseQuestions(id);
+        // const course_flows = await this.coursesService.findCourseFlows(id);
+        // const mentor = await this.coursesService.findCourseMentors(id);
+        // const course_benefits = await this.coursesService.findProgramBenefit(id);
+        const technologies = await this.coursesService.findCourseTechnologies(id);
+        const installments = await this.coursesService.findCourseInstallments(id);
+        const userCourses = await this.coursesService.findCourseUsers(id);
+        const kelass = await this.coursesService.allClassExcept(course.id);
+        const studentList = await this.coursesService.sumStudent(course.id);
         if (course.checkPaid === false) {
           res.render('detail_program/free_program/index', {
             user: req.user,
             course,
             kelass,
-            daftar,
+            studentList,
             technologies,
             userCourses,
             installments,
@@ -611,7 +611,7 @@ export class CoursesController {
             user: req.user,
             course,
             kelass,
-            daftar,
+            studentList,
             // courseQuestions,
             // course_flows,
             // mentor,
@@ -627,32 +627,32 @@ export class CoursesController {
 
   @Get('api/detail/:id/benefit')
   async getBenefit(@Param('id') id: number, @Res() res: Response) {
-    const course_benefits = await this.kelassService.findProgramBenefit(id);
+    const course_benefits = await this.coursesService.findProgramBenefit(id);
     return res.json({ course_benefits });
   }
 
   @Get('api/detail/:id/faq')
   async getFaq(@Param('id') id: number, @Res() res: Response) {
-    const courseQuestions = await this.kelassService.findCourseQuestions(id);
+    const courseQuestions = await this.coursesService.findCourseQuestions(id);
     return res.json({ courseQuestions });
   }
 
   @Get('api/detail/:id/flow')
   async getFlow(@Param('id') id: number, @Res() res: Response) {
-    const course_flows = await this.kelassService.findCourseFlows(id);
+    const course_flows = await this.coursesService.findCourseFlows(id);
     return res.json({ course_flows });
   }
 
   @Get('api/detail/:id/mentor')
   async getMentor(@Param('id') id: number, @Res() res: Response) {
-    const mentor = await this.kelassService.findCourseMentors(id);
+    const mentor = await this.coursesService.findCourseMentors(id);
     return res.json({ mentor });
   }
 
   @Roles('admin', 'super_admin')
   @Patch(':courseId')
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -667,44 +667,44 @@ export class CoursesController {
   async update(
     @UploadedFile() gambar: Express.Multer.File,
     @Param('courseId') courseId: number,
-    @Body() updateKelassDto: UpdateCoursesDto,
+    @Body() updateCourseDto: UpdateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const course = await this.kelassService.findOne(courseId);
+      const course = await this.coursesService.findOne(courseId);
       if (gambar) {
-        await this.kelassService.deleteFile(course.image);
-        updateKelassDto.image = req.body.uploadedImageUrls?.[0];
+        await this.coursesService.deleteFile(course.image);
+        updateCourseDto.image = req.body.uploadedImageUrls?.[0];
       }
 
-      if (updateKelassDto.mentoringsId) {
+      if (updateCourseDto.mentoringsId) {
         const currentMentoringUserId = course.mentorings?.[0]?.user?.id;
-        const newMentoringUserId = Number(updateKelassDto.mentoringsId);
+        const newMentoringUserId = Number(updateCourseDto.mentoringsId);
 
         if (currentMentoringUserId !== newMentoringUserId) {
-          await this.kelassService.updateMentoring(
+          await this.coursesService.updateMentoring(
             newMentoringUserId,
             course.id,
           );
         }
       }
 
-      if (updateKelassDto.paid_check === 'true') {
-        updateKelassDto.checkPaid = true;
-      } else if (updateKelassDto.paid_check === 'false') {
-        updateKelassDto.checkPaid = false;
+      if (updateCourseDto.paid_check === 'true') {
+        updateCourseDto.checkPaid = true;
+      } else if (updateCourseDto.paid_check === 'false') {
+        updateCourseDto.checkPaid = false;
       }
 
       if (req.user?.role === 'super_admin') {
-        updateKelassDto.process = 'acc';
+        updateCourseDto.process = 'approved';
       }
 
-      if (req.body.technologiesIds_sent !== undefined && updateKelassDto.technologiesIds === undefined) {
-        updateKelassDto.technologiesIds = [];
+      if (req.body.technologiesIds_sent !== undefined && updateCourseDto.technologiesIds === undefined) {
+        updateCourseDto.technologiesIds = [];
       }
 
-      await this.kelassService.update(courseId, updateKelassDto);
+      await this.coursesService.update(courseId, updateCourseDto);
       req.flash('success', 'Successfully update program');
 
       res.redirect(`/program/detail/program/admin/${courseId}`);
@@ -718,12 +718,12 @@ export class CoursesController {
   @Patch(':courseId/toggle-launch')
   async updateLaunch(
     @Param('courseId') courseId: number,
-    @Body() updateKelassDto: UpdateCoursesDto,
+    @Body() updateCourseDto: UpdateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.kelassService.updateLaunch(courseId, updateKelassDto);
+      await this.coursesService.updateLaunch(courseId, updateCourseDto);
       req.flash('success', 'program successfuly switch launch');
       res.redirect('/program');
     } catch (error: any) {
@@ -736,12 +736,12 @@ export class CoursesController {
   @Patch(':courseId/toggle-status')
   async updateStatus(
     @Param('courseId') courseId: number,
-    @Body() updateKelassDto: UpdateCoursesDto,
+    @Body() updateCourseDto: UpdateCoursesDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.kelassService.updateLaunch(courseId, updateKelassDto);
+      await this.coursesService.updateLaunch(courseId, updateCourseDto);
       req.flash('success', 'program successfuly switch status');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -759,13 +759,13 @@ export class CoursesController {
     @Req() req: Request,
   ) {
     try {
-      const course = await this.kelassService.findOne(courseId);
+      const course = await this.coursesService.findOne(courseId);
       if (!course) {
         req.flash('error', 'Program not found');
         return res.redirect(previous || '/program');
       }
-      await this.kelassService.deleteFile(course.image);
-      await this.kelassService.remove(courseId);
+      await this.coursesService.deleteFile(course.image);
+      await this.coursesService.remove(courseId);
       req.flash('success', 'Program successfully removed');
       return res.redirect(previous || '/program');
     } catch (error: any) {
@@ -783,7 +783,7 @@ export class CoursesController {
     @Req() req: Request,
   ) {
     try {
-      await this.kelassService.removeCourseUser(userId, courseId);
+      await this.coursesService.removeCourseUser(userId, courseId);
       req.flash('success', 'User successfully removed from program');
       res.redirect(`/program/addUser/${courseId}`);
     } catch (error: any) {
@@ -803,7 +803,7 @@ export class CoursesController {
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
-    const session = await this.kelassService.findPertemuan(weeksId, user.id);
+    const session = await this.coursesService.findSession(weeksId, user.id);
     res.json(session);
   }
 
@@ -818,7 +818,7 @@ export class CoursesController {
     if (!user) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
-    const quiz = await this.kelassService.findQuiz(weeksId, user.id);
+    const quiz = await this.coursesService.findQuiz(weeksId, user.id);
     res.json(quiz);
   }
 }

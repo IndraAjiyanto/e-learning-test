@@ -13,38 +13,38 @@ import * as path from 'path';
 @Injectable()
 export class QuestionsService {
   @InjectRepository(Question)
-  private readonly pertanyaanRepository: Repository<Question>;
+  private readonly questionRepository: Repository<Question>;
   @InjectRepository(Session)
   private readonly sessionRepository: Repository<Session>;
   @InjectRepository(Answer)
-  private readonly jawabanRepository: Repository<Answer>;
+  private readonly answerRepository: Repository<Answer>;
   @InjectRepository(Quiz)
   private readonly quizRepository: Repository<Quiz>;
 
-  async create(createPertanyaanDto: CreateQuestionDto) {
+  async create(createQuestionDto: CreateQuestionDto) {
     const quiz = await this.quizRepository.findOne({
-      where: { id: createPertanyaanDto.quizId },
+      where: { id: createQuestionDto.quizId },
     });
     if (!quiz) {
       throw new NotFoundException('Quiz not found');
     }
-    const questions = await this.pertanyaanRepository.create({
-      questionText: createPertanyaanDto.questionText,
-      image: createPertanyaanDto.image,
+    const questions = await this.questionRepository.create({
+      questionText: createQuestionDto.questionText,
+      image: createQuestionDto.image,
       quiz: quiz,
     });
-    return await this.pertanyaanRepository.save(questions);
+    return await this.questionRepository.save(questions);
   }
 
   async findQuestions(quizId: number) {
-    return await this.pertanyaanRepository.find({
+    return await this.questionRepository.find({
       where: { quiz: { id: quizId } },
       relations: ['answers.userAnswers'],
     });
   }
 
   async findOne(questionId: number) {
-    const questions = await this.pertanyaanRepository.findOne({
+    const questions = await this.questionRepository.findOne({
       where: { id: questionId },
       relations: ['answers', 'quiz'],
     });
@@ -54,40 +54,40 @@ export class QuestionsService {
     return questions;
   }
 
-  async update(questionId: number, updatePertanyaanDto: UpdateQuestionDto) {
+  async update(questionId: number, updateQuestionDto: UpdateQuestionDto) {
     const questions = await this.findOne(questionId);
     if (!questions) {
       throw new NotFoundException('Question not found');
     }
 
-    questions.questionText = updatePertanyaanDto.questionText;
-    questions.image = updatePertanyaanDto.image;
-    await this.pertanyaanRepository.save(questions);
+    questions.questionText = updateQuestionDto.questionText;
+    questions.image = updateQuestionDto.image;
+    await this.questionRepository.save(questions);
 
-    const jawabanLama = await this.jawabanRepository.find({
+    const oldAnswers = await this.answerRepository.find({
       where: { question: { id: questionId } },
     });
 
-    if (!jawabanLama || jawabanLama.length === 0) {
+    if (!oldAnswers || oldAnswers.length === 0) {
       throw new NotFoundException('Answer not found');
     }
 
-    await this.jawabanRepository.remove(jawabanLama);
+    await this.answerRepository.remove(oldAnswers);
 
-    const jawabanBaru = updatePertanyaanDto.answer.map((answers, index) => {
-      return this.jawabanRepository.create({
+    const newAnswers = updateQuestionDto.answer.map((answers, index) => {
+      return this.answerRepository.create({
         answer: answers,
-        isCorrect: Number(updatePertanyaanDto.answers) === index,
+        isCorrect: Number(updateQuestionDto.answers) === index,
         question: questions,
       });
     });
 
-    return await this.jawabanRepository.save(jawabanBaru);
+    return await this.answerRepository.save(newAnswers);
   }
 
   async remove(questionId: number) {
     const questions = await this.findOne(questionId);
-    const answers = await this.jawabanRepository.find({
+    const answers = await this.answerRepository.find({
       where: { question: { id: questionId } },
     });
     if (!answers) {
@@ -96,8 +96,8 @@ export class QuestionsService {
     if (!questions) {
       throw new NotFoundException('Question not found');
     }
-    await this.jawabanRepository.remove(answers);
-    await this.pertanyaanRepository.remove(questions);
+    await this.answerRepository.remove(answers);
+    await this.questionRepository.remove(questions);
   }
 
   async deleteFile(url: string) {

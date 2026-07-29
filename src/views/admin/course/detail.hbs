@@ -139,8 +139,8 @@
             {{else}}
             <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{course.month}} month</span></p>
             {{/if}}
-            <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if course.startDate}}{{formatTanggal course.startDate}}{{else}}Not set{{/if}}</span></p>
-            <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if course.startEnd}}{{formatTanggal course.startEnd}}{{else}}Not set{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if course.startDate}}{{formatDate course.startDate}}{{else}}Not set{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if course.startEnd}}{{formatDate course.startEnd}}{{else}}Not set{{/if}}</span></p>
           </div>
         </div>
 

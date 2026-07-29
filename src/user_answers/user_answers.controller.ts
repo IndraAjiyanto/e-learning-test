@@ -16,13 +16,13 @@ import { CreateUserAnswerDto, UserAnswerDto } from './dto/create-user_answer.dto
 @UseGuards(AuthenticatedGuard)
 @Controller('answer-users')
 export class UserAnswersController {
-  constructor(private readonly jawabanUsersService: UserAnswersService) {}
+  constructor(private readonly userAnswersService: UserAnswersService) {}
 
     @Roles('user')
   @Post('chose-answer')
-  async choseAnswer(@Body() jawabanUserDto: UserAnswerDto) {
+  async choseAnswer(@Body() userAnswerDto: UserAnswerDto) {
     try {
-    await this.jawabanUsersService.createAnswer(jawabanUserDto);
+    await this.userAnswersService.createAnswer(userAnswerDto);
       
     } catch (error: any) {
     }
@@ -37,9 +37,9 @@ export class UserAnswersController {
     @Body() createUserAnswerDto: CreateUserAnswerDto,
   ) {
     try {
-      const jawabanUser = await this.jawabanUsersService.searchAnswerUser(quizId, req.user!.id);
-      await this.jawabanUsersService.nilaiCreate(jawabanUser, quizId, req.user!.id);
-      await this.jawabanUsersService.deleteAnswerUser(req.user!.id, quizId);
+      const userAnswer = await this.userAnswersService.searchAnswerUser(quizId, req.user!.id);
+      await this.userAnswersService.createScore(userAnswer, quizId, req.user!.id);
+      await this.userAnswersService.deleteAnswerUser(req.user!.id, quizId);
 
       req.flash('success', 'Success complete quiz');
       res.redirect(`/quiz/form/${quizId}`);

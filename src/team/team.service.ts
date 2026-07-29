@@ -19,7 +19,7 @@ export class TeamService {
     return await this.teamRepository.save(team);
   }
 
-  async noPertemuan() {
+  async getNextOrder() {
     const team_old = await this.teamRepository.find({
       order: { teamOrder: 'DESC' },
       take: 1,

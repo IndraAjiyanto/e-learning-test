@@ -12,7 +12,7 @@ export class GalleryService {
     @InjectRepository(Gallery)
     private readonly galleryRepository: Repository<Gallery>,
     @InjectRepository(Category)
-    private readonly kategoriRepository: Repository<Category>
+    private readonly categoryRepository: Repository<Category>
   ) {}
 
   async create(createGalleryDto: CreateGalleryDto): Promise<Gallery> {

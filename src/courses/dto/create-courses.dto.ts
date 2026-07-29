@@ -7,7 +7,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Method, ProcessState } from 'src/entities/course.entity';
+import { Method } from 'src/entities/course.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreateCoursesDto {
   @IsString()
@@ -87,9 +88,9 @@ export class CreateCoursesDto {
   @IsOptional()
   image: string;
 
-  @IsEnum(['acc', 'proces', 'rejected'])
+  @IsEnum(['approved', 'process', 'rejected'])
   @IsOptional()
-  process: ProcessState;
+  process: ProcessStatus;
 
   @IsArray()
   description: string[];

@@ -22,7 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
 import { Request, Response } from 'express';
-import { Proses } from 'src/entities/logbook.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 
 @UseGuards(AuthenticatedGuard)
@@ -57,9 +57,9 @@ export class LogbookController {
       createLogbookDto.documentation = req.body.uploadedImageUrls?.[0] ?? null;
       if (req.user?.role === 'user') {
         createLogbookDto.userId = req.user!.id;
-        createLogbookDto.process = 'proces';
+        createLogbookDto.process = 'process';
       } else if (req.user?.role === 'admin') {
-        createLogbookDto.process = 'acc';
+        createLogbookDto.process = 'approved';
       }
       createLogbookDto.sessionId = sessionId;
       await this.logbookService.create(createLogbookDto);
@@ -175,7 +175,7 @@ export class LogbookController {
         updateLogbookDto.documentation =
           req.body.uploadedImageUrls?.[0] || documentation.path;
       }
-      updateLogbookDto.process = 'proces';
+      updateLogbookDto.process = 'process';
       await this.logbookService.update(logbookId, updateLogbookDto);
       req.flash('success', 'logbooks successfully updated');
       if (req.user?.role === 'admin') {
@@ -204,7 +204,7 @@ export class LogbookController {
   async updateProses(
     @Body() updateLogbookDto: UpdateLogbookDto,
     @Param('logbookId') logbookId: number,
-    @Param('proses') proses: Proses,
+    @Param('proses') proses: ProcessStatus,
     @Req() req: Request,
     @Res() res: Response,
   ) {

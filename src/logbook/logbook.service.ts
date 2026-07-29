@@ -23,11 +23,11 @@ export class LogbookService {
   @InjectRepository(Session)
   private readonly sessionRepository: Repository<Session>;
   @InjectRepository(Course)
-  private readonly kelasRepository: Repository<Course>;
+  private readonly courseRepository: Repository<Course>;
   @InjectRepository(MentorLogbook)
-  private readonly logBookMentorRepository: Repository<MentorLogbook>;
+  private readonly mentorLogbookRepository: Repository<MentorLogbook>;
   @InjectRepository(SessionProgress)
-  private readonly progresPertemuanRepository: Repository<SessionProgress>;
+  private readonly sessionProgressRepository: Repository<SessionProgress>;
   @InjectRepository(Quiz)
   private readonly quizRepository: Repository<Quiz>;
   @InjectRepository(QuizProgress)
@@ -77,14 +77,14 @@ export class LogbookService {
   }
 
   async findCourseByUser(userId: number) {
-    return await this.kelasRepository.find({
+    return await this.courseRepository.find({
       where: { userCourses: { user: { id: userId } } },
       relations: ['userCourses', 'userCourses.user', 'weeks'],
     });
   }
 
   async findAllCourses() {
-    return await this.kelasRepository.find({
+    return await this.courseRepository.find({
       order: { id: 'DESC' },
     });
   }
@@ -100,8 +100,8 @@ export class LogbookService {
     });
   }
 
-  async findLogBookMentor() {
-    return await this.logBookMentorRepository.find({
+  async findMentorLogbook() {
+    return await this.mentorLogbookRepository.find({
       relations: [
         'user',
         'session',
@@ -187,8 +187,8 @@ export class LogbookService {
     }
     Object.assign(logbooks, updateLogbookDto);
 
-    if (updateLogbookDto.process === 'acc') {
-      const existingProgres = await this.progresPertemuanRepository.findOne({
+    if (updateLogbookDto.process === 'approved') {
+      const existingProgress = await this.sessionProgressRepository.findOne({
         where: {
           user: { id: logbooks.user.id },
           session: { id: logbooks.session.id },
@@ -196,12 +196,12 @@ export class LogbookService {
         relations: ['session', 'session.weeks'],
       });
 
-      if (existingProgres) {
-        await this.progresPertemuanRepository.update(existingProgres.id, {
+      if (existingProgress) {
+        await this.sessionProgressRepository.update(existingProgress.id, {
           logbook: true,
         });
       } else {
-        await this.progresPertemuanRepository.save({
+        await this.sessionProgressRepository.save({
           user: { id: logbooks.user.id },
           session: { id: logbooks.session.id },
           logbook: true,
@@ -221,13 +221,13 @@ export class LogbookService {
             },
           });
           if (quiz) {
-            const existingProgresQuiz =
+            const existingQuizProgress =
               await this.progresQuizRepository.findOne({
                 where: { quiz: { id: quiz.id }, user: { id: logbooks.user.id } },
               });
-            if (existingProgresQuiz) {
+            if (existingQuizProgress) {
               await this.progresQuizRepository.save({
-                id: existingProgresQuiz.id,
+                id: existingQuizProgress.id,
                 quiz: { id: quiz.id },
                 user: { id: logbooks.user.id },
                 proses: true,
@@ -241,32 +241,32 @@ export class LogbookService {
             }
           }
         } else {
-          const pertemuan_selanjutnya = await this.sessionRepository.findOne({
+          const nextSession = await this.sessionRepository.findOne({
             where: {
               sessionOrder: session.sessionOrder + 1,
               weeks: { id: session.weeks.id },
             },
           });
 
-          if (pertemuan_selanjutnya) {
-            const existingProgresPertemuan =
-              await this.progresPertemuanRepository.findOne({
+          if (nextSession) {
+            const existingSessionProgress =
+              await this.sessionProgressRepository.findOne({
                 where: {
                   user: { id: logbooks.user.id },
-                  session: { id: pertemuan_selanjutnya.id },
+                  session: { id: nextSession.id },
                 },
               });
-            if (existingProgresPertemuan) {
-              await this.progresPertemuanRepository.save({
-                id: existingProgresPertemuan.id,
-                session: { id: pertemuan_selanjutnya.id },
+            if (existingSessionProgress) {
+              await this.sessionProgressRepository.save({
+                id: existingSessionProgress.id,
+                session: { id: nextSession.id },
                 user: { id: logbooks.user.id },
                 isAttended: true,
                 logbook: false,
               });
             } else {
-              await this.progresPertemuanRepository.save({
-                session: { id: pertemuan_selanjutnya.id },
+              await this.sessionProgressRepository.save({
+                session: { id: nextSession.id },
                 user: { id: logbooks.user.id },
                 isAttended: true,
                 logbook: false,
@@ -276,19 +276,19 @@ export class LogbookService {
         }
       }
     } else if (updateLogbookDto.process === 'rejected') {
-      const existingProgres = await this.progresPertemuanRepository.findOne({
+      const existingProgress = await this.sessionProgressRepository.findOne({
         where: {
           user: { id: logbooks.user.id },
           session: { id: logbooks.session.id },
         },
       });
 
-      if (existingProgres) {
-        await this.progresPertemuanRepository.update(existingProgres.id, {
+      if (existingProgress) {
+        await this.sessionProgressRepository.update(existingProgress.id, {
           logbook: false,
         });
       } else {
-        await this.progresPertemuanRepository.save({
+        await this.sessionProgressRepository.save({
           user: { id: logbooks.user.id },
           session: { id: logbooks.session.id },
           logbook: false,

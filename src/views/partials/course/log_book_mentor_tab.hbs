@@ -114,7 +114,7 @@
             <td
               class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.weeks?.course?.mentor?.[0]?.name"
             ></td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text="formatTanggal(logbookMentors.createdAt)"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="formatDate(logbookMentors.createdAt)"></td>
             <td
               class='px-6 py-4 text-sm text-gray-800' x-text="logbookMentors.session?.sessionOrder"
             ></td>
@@ -237,7 +237,7 @@ function logBookMentorData() {
       this.pageNumber = i;
     },
 
-    formatTanggal(value) {
+    formatDate(value) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(value).toLocaleDateString('id-ID', options);
     },

@@ -17,11 +17,11 @@ export class MentorService {
     @InjectRepository(Technology)
     private readonly technologiesRepository: Repository<Technology>,
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
   ) {}
 
   async create(createMentorDto: CreateMentorDto) {
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: createMentorDto.courseId },
     });
     if (!course) {

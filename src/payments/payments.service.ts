@@ -24,79 +24,79 @@ import * as path from 'path';
 export class PaymentsService {
   constructor(
     @InjectRepository(Payment)
-    private readonly pembayaranRepository: Repository<Payment>,
+    private readonly paymentRepository: Repository<Payment>,
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Registration)
-    private readonly pendaftaranRepository: Repository<Registration>,
+    private readonly registrationRepository: Repository<Registration>,
     @InjectRepository(Installment)
     private readonly installmentsRepository: Repository<Installment>,
     @InjectRepository(UserCourse)
-    private readonly userKelasRepository: Repository<UserCourse>,
+    private readonly userCourseRepository: Repository<UserCourse>,
     @InjectRepository(WeekProgress)
     private readonly weekProgressRepository: Repository<WeekProgress>,
     @InjectRepository(SessionProgress)
-    private readonly progresPertemuanRepository: Repository<SessionProgress>,
+    private readonly sessionProgressRepository: Repository<SessionProgress>,
     @InjectRepository(Weeks)
-    private readonly mingguRepository: Repository<Weeks>,
+    private readonly weeksRepository: Repository<Weeks>,
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
   ) {}
 
-  async create(createPembayaranDto: CreatePaymentDto) {
+  async create(createPaymentDto: CreatePaymentDto) {
     const user = await this.userRepository.findOne({
-      where: { id: createPembayaranDto.userId },
+      where: { id: createPaymentDto.userId },
     });
     if (!user) {
       return;
     }
 
-    const course = await this.kelasRepository.findOne({
-      where: { id: createPembayaranDto.courseId },
+    const course = await this.courseRepository.findOne({
+      where: { id: createPaymentDto.courseId },
     });
     if (!course) {
       return;
     }
 
-    if (createPembayaranDto.installmentId) {
+    if (createPaymentDto.installmentId) {
       const installments = await this.installmentsRepository.findOne({
-        where: { id: createPembayaranDto.installmentId },
+        where: { id: createPaymentDto.installmentId },
       });
       if (!installments) {
         return;
       }
       const check = await this.checkPayment(
-        createPembayaranDto.userId,
-        createPembayaranDto.courseId,
+        createPaymentDto.userId,
+        createPaymentDto.courseId,
       );
       if (check == false) {
         return false;
       } else {
-        const pembayaran = await this.pembayaranRepository.create({
-          ...createPembayaranDto,
+        const payment = await this.paymentRepository.create({
+          ...createPaymentDto,
           user: user,
           course: course,
           installment: installments,
         });
-        return await this.pembayaranRepository.save(pembayaran);
+        return await this.paymentRepository.save(payment);
       }
     }
 
     const check = await this.checkPayment(
-      createPembayaranDto.userId,
-      createPembayaranDto.courseId,
+      createPaymentDto.userId,
+      createPaymentDto.courseId,
     );
     if (check == false) {
       return false;
     } else {
-      const pembayaran = await this.pembayaranRepository.create({
-        ...createPembayaranDto,
+      const payment = await this.paymentRepository.create({
+        ...createPaymentDto,
         user: user,
         course: course,
       });
-      return await this.pembayaranRepository.save(pembayaran);
+      return await this.paymentRepository.save(payment);
     }
   }
 
@@ -110,7 +110,7 @@ export class PaymentsService {
       throw new NotFoundException('User not found');
     }
 
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['weeks', 'weeks.session'],
     });
@@ -118,40 +118,40 @@ export class PaymentsService {
       throw new NotFoundException('Program not found');
     }
 
-    const sudahGabung = await this.userKelasRepository.findOne({
+    const alreadyJoined = await this.userCourseRepository.findOne({
       where: { user: { id: userId }, course: { id: courseId } },
     });
-    if (sudahGabung) {
+    if (alreadyJoined) {
       throw new BadRequestException('User already joined the program');
     }
 
-    const userCourses = await this.userKelasRepository.create({
+    const userCourses = await this.userCourseRepository.create({
       progress: false,
       user: user,
       course: course,
     });
 
-    await this.userKelasRepository.save(userCourses);
+    await this.userCourseRepository.save(userCourses);
 
     if (course.weeks.length > 0) {
-      const weeks = await this.mingguRepository.findOne({
+      const weeks = await this.weeksRepository.findOne({
         where: { course: { id: courseId }, weekNumber: 1 },
         relations: ['session'],
       });
-      const minggu_akhir = await this.mingguRepository.findOne({
+      const lastWeek = await this.weeksRepository.findOne({
         where: { course: { id: courseId }, isFinal: true },
       });
       if (weeks) {
-        const existingProgresMinggu =
+        const existingWeekProgress =
           await this.weekProgressRepository.findOne({
             where: {
               week: { id: weeks.id },
               user: { id: userId },
             },
           });
-        if (existingProgresMinggu) {
+        if (existingWeekProgress) {
           await this.weekProgressRepository.save({
-            id: existingProgresMinggu.id,
+            id: existingWeekProgress.id,
             weeks: weeks,
             user: user,
             proses: true,
@@ -171,20 +171,20 @@ export class PaymentsService {
           relations: [],
         });
         if (session) {
-          const existingProgresPertemuan =
-            await this.progresPertemuanRepository.findOne({
+          const existingSessionProgress =
+            await this.sessionProgressRepository.findOne({
               where: { session: { id: session.id }, user: { id: userId } },
             });
-          if (existingProgresPertemuan) {
-            await this.progresPertemuanRepository.save({
-              id: existingProgresPertemuan.id,
+          if (existingSessionProgress) {
+            await this.sessionProgressRepository.save({
+              id: existingSessionProgress.id,
               session: session,
               user: user,
                 isAttended: true,
               logbook: false,
             });
           } else {
-            await this.progresPertemuanRepository.save({
+            await this.sessionProgressRepository.save({
               session: session,
               user: user,
                 isAttended: true,
@@ -192,17 +192,17 @@ export class PaymentsService {
             });
           }
         }
-      } else if (minggu_akhir) {
-        const weekProgressAkhir = await this.weekProgressRepository.findOne({
+      } else if (lastWeek) {
+        const lastWeekProgress = await this.weekProgressRepository.findOne({
           where: {
-            week: { id: minggu_akhir.id },
+            week: { id: lastWeek.id },
             user: { id: userId },
             process: true,
             quiz: true,
           },
         });
-        if (weekProgressAkhir) {
-          await this.userKelasRepository.update(userCourses.id, {
+        if (lastWeekProgress) {
+          await this.userCourseRepository.update(userCourses.id, {
             progress: true,
           });
         }
@@ -219,32 +219,32 @@ export class PaymentsService {
       throw new NotFoundException('User not found');
     }
 
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: courseId },
     });
     if (!course) {
       throw new NotFoundException('Program not found');
     }
 
-    const userKelas = await this.userKelasRepository.findOne({
+    const userCourse = await this.userCourseRepository.findOne({
       where: { user: { id: userId }, course: { id: courseId } },
     });
-    if (!userKelas) {
+    if (!userCourse) {
       throw new BadRequestException('User is not enrolled in this program');
     }
 
-    return await this.userKelasRepository.remove(userKelas);
+    return await this.userCourseRepository.remove(userCourse);
   }
 
   async checkPayment(userId: number, courseId: number) {
-    const pembayaran = await this.pembayaranRepository.find({
+    const payment = await this.paymentRepository.find({
       where: {
         user: { id: userId },
         course: { id: courseId },
         process: Not('rejected'),
       },
     });
-    if (pembayaran.length) {
+    if (payment.length) {
       return false;
     } else {
       return true;
@@ -252,7 +252,7 @@ export class PaymentsService {
   }
 
   async findCourse(courseId: number) {
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['weeks', 'category'],
     });
@@ -263,8 +263,8 @@ export class PaymentsService {
     }
   }
 
-  async findPembayaran(userId: number) {
-    const pembayaran = await this.pembayaranRepository.find({
+  async findPayment(userId: number) {
+    const payment = await this.paymentRepository.find({
       where: {
         user: { id: userId },
         installment: IsNull(),
@@ -272,15 +272,15 @@ export class PaymentsService {
       relations: ['course', 'course.category', 'installment'],
     });
 
-    if (!pembayaran) {
+    if (!payment) {
       return;
     } else {
-      return pembayaran;
+      return payment;
     }
   }
 
   async findInstallments(userId: number) {
-    return await this.pembayaranRepository.find({
+    return await this.paymentRepository.find({
       where: {
         user: { id: userId },
         installment: Not(IsNull()),
@@ -289,55 +289,55 @@ export class PaymentsService {
     });
   }
 
-  async findPendaftaran(userId: number) {
-    console.log('🔵 [PaymentsService] findPendaftaran for userId:', userId);
-    const result = await this.pendaftaranRepository.find({
+  async findRegistration(userId: number) {
+    console.log('🔵 [PaymentsService] findRegistration for userId:', userId);
+    const result = await this.registrationRepository.find({
       where: { user: { id: userId } },
       relations: ['course', 'course.category'],
     });
-    console.log('🔵 [PaymentsService] findPendaftaran result:', result);
+    console.log('🔵 [PaymentsService] findRegistration result:', result);
     return result;
   }
 
   async findAll() {
-    return await this.pembayaranRepository.find({
+    return await this.paymentRepository.find({
       where: { installment: IsNull() },
       relations: ['user', 'course', 'course.category'],
     });
   }
 
   async findAllInstallments() {
-    return await this.pembayaranRepository.find({
+    return await this.paymentRepository.find({
       where: { installment: Not(IsNull()) },
       relations: ['user', 'course', 'course.category', 'installment'],
     });
   }
 
-  async findAllPendaftaran() {
-    return await this.pendaftaranRepository.find({
+  async findAllRegistrations() {
+    return await this.registrationRepository.find({
       relations: ['user', 'course', 'course.category'],
     });
   }
 
-  async findOne(pembayaranId: number) {
-    const pembayaran = await this.pembayaranRepository.findOne({
-      where: { id: pembayaranId },
+  async findOne(paymentId: number) {
+    const payment = await this.paymentRepository.findOne({
+      where: { id: paymentId },
       relations: ['user', 'course'],
     });
-    if (!pembayaran) {
+    if (!payment) {
       throw new NotFoundException('Payment not found');
     } else {
-      return pembayaran;
+      return payment;
     }
   }
 
-  async update(pembayaranId: number, updatePembayaranDto: UpdatePaymentDto) {
-    const pembayaran = await this.findOne(pembayaranId);
-    if (!pembayaran) {
+  async update(paymentId: number, updatePaymentDto: UpdatePaymentDto) {
+    const payment = await this.findOne(paymentId);
+    if (!payment) {
       return;
     }
-    Object.assign(pembayaran, updatePembayaranDto);
-    return await this.pembayaranRepository.save(pembayaran);
+    Object.assign(payment, updatePaymentDto);
+    return await this.paymentRepository.save(payment);
   }
 
   async deleteFile(url: string) {

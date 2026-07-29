@@ -12,11 +12,11 @@ export class InstallmentsService {
     @InjectRepository(Installment)
     private installmentsRepository: Repository<Installment>,
     @InjectRepository(Course)
-    private kelasRepository: Repository<Course>,
+    private courseRepository: Repository<Course>,
   ) {}
 
   async create(createCicilanDto: CreateInstallmentsDto) {
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: createCicilanDto.courseId },
     });
 
@@ -74,7 +74,7 @@ export class InstallmentsService {
     const installments = await this.findOne(id);
 
     if (updateCicilanDto.courseId) {
-      const course = await this.kelasRepository.findOne({
+      const course = await this.courseRepository.findOne({
         where: { id: updateCicilanDto.courseId },
       });
 

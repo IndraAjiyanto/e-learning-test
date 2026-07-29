@@ -10,76 +10,76 @@ import { Course } from 'src/entities/course.entity';
 export class CourseQuestionsService {
   constructor(
     @InjectRepository(CourseQuestions)
-    private pertanyaanKelasRepository: Repository<CourseQuestions>,
+    private courseQuestionRepository: Repository<CourseQuestions>,
     @InjectRepository(Course)
-    private kelasRepository: Repository<Course>,
+    private courseRepository: Repository<Course>,
   ) {}
 
-  async create(createPertanyaanKelaDto: CreateCourseQuestionDto) {
-    const course = await this.kelasRepository.findOne({
-      where: { id: createPertanyaanKelaDto.courseId },
+  async create(createCourseQuestionDto: CreateCourseQuestionDto) {
+    const course = await this.courseRepository.findOne({
+      where: { id: createCourseQuestionDto.courseId },
     });
 
     if (!course) {
       throw new NotFoundException('Program not found');
     }
 
-    const pertanyaanKelas = this.pertanyaanKelasRepository.create({
-      questions: createPertanyaanKelaDto.questions,
-      answers: createPertanyaanKelaDto.answer,
+    const courseQuestion = this.courseQuestionRepository.create({
+      questions: createCourseQuestionDto.questions,
+      answers: createCourseQuestionDto.answer,
       course: course,
     });
 
-    return await this.pertanyaanKelasRepository.save(pertanyaanKelas);
+    return await this.courseQuestionRepository.save(courseQuestion);
   }
 
   async findAll() {
-    return await this.pertanyaanKelasRepository.find({
+    return await this.courseQuestionRepository.find({
       relations: ['course'],
       order: { id: 'DESC' },
     });
   }
 
   async findAllCourses() {
-    return await this.kelasRepository.find({
+    return await this.courseRepository.find({
       order: { id: 'DESC' },
     });
   }
 
   async findOne(id: number) {
-    const pertanyaanKelas = await this.pertanyaanKelasRepository.findOne({
+    const courseQuestion = await this.courseQuestionRepository.findOne({
       where: { id },
       relations: ['course'],
     });
 
-    if (!pertanyaanKelas) {
+    if (!courseQuestion) {
       throw new NotFoundException('FAQ program not found');
     }
 
-    return pertanyaanKelas;
+    return courseQuestion;
   }
 
-  async update(id: number, updatePertanyaanKelaDto: UpdateCourseQuestionDto) {
-    const pertanyaanKelas = await this.findOne(id);
+  async update(id: number, updateCourseQuestionDto: UpdateCourseQuestionDto) {
+    const courseQuestion = await this.findOne(id);
 
-    if (updatePertanyaanKelaDto.courseId) {
-      const course = await this.kelasRepository.findOne({
-        where: { id: updatePertanyaanKelaDto.courseId },
+    if (updateCourseQuestionDto.courseId) {
+      const course = await this.courseRepository.findOne({
+        where: { id: updateCourseQuestionDto.courseId },
       });
 
       if (!course) {
         throw new NotFoundException('Program not found');
       }
 
-      pertanyaanKelas.course = course;
+      courseQuestion.course = course;
     }
 
-    Object.assign(pertanyaanKelas, updatePertanyaanKelaDto);
-    return await this.pertanyaanKelasRepository.save(pertanyaanKelas);
+    Object.assign(courseQuestion, updateCourseQuestionDto);
+    return await this.courseQuestionRepository.save(courseQuestion);
   }
 
   async remove(id: number) {
-    const pertanyaanKelas = await this.findOne(id);
-    return await this.pertanyaanKelasRepository.remove(pertanyaanKelas);
+    const courseQuestion = await this.findOne(id);
+    return await this.courseQuestionRepository.remove(courseQuestion);
   }
 }
