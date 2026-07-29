@@ -17,6 +17,7 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { MaterisService } from 'src/materis/materis.service';
+import { LogbookExportService } from 'src/logbook/logbook-export.service';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('session')
@@ -24,6 +25,7 @@ export class PertemuansController {
   constructor(
     private readonly pertemuansService: PertemuansService,
     private readonly materisService: MaterisService,
+    private readonly logbookExportService: LogbookExportService,
   ) {}
 
   @Roles('admin')
@@ -117,6 +119,49 @@ export class PertemuansController {
     const logbook_mentor =
       await this.pertemuansService.findLogBookMentor(pertemuanId);
     res.json(logbook_mentor);
+  }
+
+  @Roles('admin')
+  @Get('logbook/:pertemuanId/export')
+  async exportLogBook(
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response,
+  ) {
+    const logbooks = await this.pertemuansService.findLogBook(pertemuanId);
+    const buffer =
+      await this.logbookExportService.exportLogbookToExcel(logbooks);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=Logbook_User_${new Date().toISOString().slice(0, 10)}.xlsx`,
+    );
+    res.send(buffer);
+  }
+
+  @Roles('admin')
+  @Get('logbook-mentor/:pertemuanId/export')
+  async exportLogBookMentor(
+    @Param('pertemuanId') pertemuanId: number,
+    @Res() res: Response,
+  ) {
+    const logbooks =
+      await this.pertemuansService.findLogBookMentor(pertemuanId);
+    const buffer =
+      await this.logbookExportService.exportLogbookMentorToExcel(logbooks);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=Logbook_Mentor_${new Date().toISOString().slice(0, 10)}.xlsx`,
+    );
+    res.send(buffer);
   }
 
   @Roles('admin')
