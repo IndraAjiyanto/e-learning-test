@@ -218,7 +218,7 @@
                     >{{t "test.detailProgram.infoProgram.startDate"}}</p>
                     <h4
                       class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                    >{{#if course.tanggal_mulai}}{{formatDate course.tanggal_mulai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
+                    >{{#if course.startDate}}{{formatDate course.startDate lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
                   </div>
                 </div>
               </div>
@@ -239,7 +239,7 @@
                     >{{t "test.detailProgram.infoProgram.endDate"}}</p>
                     <h4
                       class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                    >{{#if course.tanggal_selesai}}{{formatDate course.tanggal_selesai lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
+                    >{{#if course.startEnd}}{{formatDate course.startEnd lang}}{{else}}{{t "test.detailProgram.infoProgram.noSet"}}{{/if}}</h4>
                   </div>
                 </div>
               </div>

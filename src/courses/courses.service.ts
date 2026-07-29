@@ -133,8 +133,10 @@ export class CoursesService {
       });
     }
 
+    const { endDate, ...restDto } = createCourseDto;
     const course = await this.courseRepository.create({
-      ...createCourseDto,
+      ...restDto,
+      startEnd: endDate,
       category: category,
       courseType: courseType,
       technologies: technologies,
@@ -1045,9 +1047,9 @@ async allClassExcept(courseId: number) {
       }
     }
 
-    const { courseTypeId, categoryId, technologiesIds, ...otherProperties } =
+    const { courseTypeId, categoryId, technologiesIds, endDate, ...otherProperties } =
       updateCourseDto;
-    Object.assign(course, otherProperties);
+    Object.assign(course, otherProperties, { startEnd: endDate });
 
     return await this.courseRepository.save(course);
   }

@@ -110,38 +110,38 @@ async function bootstrap() {
 
   await coursesRepository.save([
     {
-      nama_kelas: 'Full Stack Developer',
-      deskripsi: ['belajar menjadi full stack developer'],
-      gambar: 'logo.png',
-      kuota: 10,
-      harga: 1000000,
+      name: 'Full Stack Developer',
+      description: ['belajar menjadi full stack developer'],
+      image: 'logo.png',
+      quota: 10,
+      price: 1000000,
       promo: 5000000,
-      grup: 'grup whatsapp',
-      lokasi: ['kantor wiratek'],
-      link_lokasi: 'disini',
+      group: 'grup whatsapp',
+      locations: ['kantor wiratek'],
+      locationLink: 'disini',
       method: 'offline' as Method,
-      proses: 'approved' as ProcessStatus,
-      kriteria_id: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
+      process: 'approved' as ProcessStatus,
+      criteriaId: ['paham javascript', 'paham konsep dasar dasar pemrograman'],
       launch: false,
-      check_paid: true,
+      checkPaid: true,
       technologies: [nestJs, reactJs],
-      materi_id: ['javascript', 'css'],
-      target_pembelajaran_id: [
+      materialsId: ['javascript', 'css'],
+      learningTargetsId: [
         'paham alur nest js',
         'mahir di bidang full stack developer',
       ],
-      jenis_kelas: { id: 1 },
-      kategori: { id: 1 },
-      hari: 1,
-      tanggal_mulai: new Date('2025-12-01'),
-      tanggal_selesai: new Date('2025-12-31'),
+      courseType: { id: 1 },
+      category: { id: 1 },
+      day: 1,
+      startDate: new Date('2025-12-01'),
+      startEnd: new Date('2025-12-31'),
     },
   ]);
 
   await mentoringRepository.save([
     {
       user: { id: 2 },
-      kelas: { id: 1 },
+      course: { id: 1 },
     },
   ]);
 
