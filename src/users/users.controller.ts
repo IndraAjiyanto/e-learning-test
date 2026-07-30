@@ -256,7 +256,7 @@ async filterUsers(
   @Query('limit') limit?: string,
 ) {
   const currentPage = parseInt(page || '1', 10);
-  const itemsPerPage = parseInt(limit || '5', 10);
+  const itemsPerPage = parseInt(limit || '10', 10);
 
   const result = await this.usersService.findAllPaginated({
     search: search || undefined,
