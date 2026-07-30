@@ -24,8 +24,8 @@ export class AuthController {
     res.render('login');
   }
 
-  @Get('daftar/:id')
-  async daftarKelas(
+  @Get('register/:id')
+  async registerCourse(
     @Param('id') id: number,
     @Res() res: Response,
     @Req() req: any,
@@ -87,7 +87,7 @@ export class AuthController {
   logout(@Req() req: any, @Res() res: Response) {
     req.logout((err) => {
       if (err) {
-        return res.status(500).send({ message: 'Logout gagal', error: err });
+        return res.status(500).send({ message: 'Logout failed', error: err });
       }
 
       req.session.destroy(() => {

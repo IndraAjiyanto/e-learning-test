@@ -25,7 +25,7 @@ export class CreatePortfolioDto {
 
   @IsString()
   @IsOptional()
-  content_html: string;
+  contentHtml: string;
 
   @IsArray()
   @IsOptional()

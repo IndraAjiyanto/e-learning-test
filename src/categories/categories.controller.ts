@@ -80,23 +80,23 @@ export class CategoriesController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const category = await this.categoriesService.findOneKategori(categoryName);
-    const benefit_category = await this.categoriesService.findBenefitByKategori(
+    const category = await this.categoriesService.findOneCategory(categoryName);
+    const benefit_category = await this.categoriesService.findBenefitByCategory(
       category.id,
     );
-    const flow_category = await this.categoriesService.findFlowByKategori(
+    const flow_category = await this.categoriesService.findFlowByCategory(
       category.id,
     );
-    const superiority = await this.categoriesService.findSuperiorityByKategori(
+    const superiority = await this.categoriesService.findSuperiorityByCategory(
       category.id,
     );
-    const faqs = await this.categoriesService.findFaqByKategori(
+    const faqs = await this.categoriesService.findFaqByCategory(
       category.id,
     );
-    const alumni = await this.categoriesService.findAlumniByKategori(
+    const alumni = await this.categoriesService.findAlumniByCategory(
       category.id,
     );
-    // const courses = await this.categoriesService.findCourseByKategori(category.id);
+    // const courses = await this.categoriesService.findCourseByCategory(category.id);
     if (category?.type === 'Special Program') {
       res.render('special_program', {
         category,
@@ -119,66 +119,66 @@ export class CategoriesController {
 
   @Roles('super_admin')
   @Get('benefit/:categoryId')
-  async findBenefitByKategori(
+  async findBenefitByCategory(
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
     const benefit_category =
-      await this.categoriesService.findBenefitByKategori(categoryId);
+      await this.categoriesService.findBenefitByCategory(categoryId);
     res.json(benefit_category);
   }
 
   @Roles('super_admin')
   @Get('flow/:categoryId')
-  async findFlowByKategori(
+  async findFlowByCategory(
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
     const flow_category =
-      await this.categoriesService.findFlowByKategori(categoryId);
+      await this.categoriesService.findFlowByCategory(categoryId);
     res.json(flow_category);
   }
 
   @Roles('super_admin')
   @Get('superiority/:categoryId')
-  async findSuperiorityByKategori(
+  async findSuperiorityByCategory(
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
     const superiority =
-      await this.categoriesService.findSuperiorityByKategori(categoryId);
+      await this.categoriesService.findSuperiorityByCategory(categoryId);
     res.json(superiority);
   }
 
   @Roles('super_admin')
   @Get('faq/:categoryId')
-  async findFaqByKategori(
+  async findFaqByCategory(
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
     const faqs =
-      await this.categoriesService.findFaqByKategori(categoryId);
+      await this.categoriesService.findFaqByCategory(categoryId);
     res.json(faqs);
   }
 
   @Roles('super_admin')
   @Get('admin/program/:categoryId')
-  async findCourseByKategori(
+  async findCourseByCategory(
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
     const courses =
-      await this.categoriesService.findCourseByKategoriAll(categoryId);
+      await this.categoriesService.findCourseByCategoryAll(categoryId);
     res.json(courses);
   }
 
   @Roles('super_admin')
   @Get('alumni/:categoryId')
-  async findAlumniByKategori(
+  async findAlumniByCategory(
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
-    const alumni = await this.categoriesService.findAlumniByKategori(categoryId);
+    const alumni = await this.categoriesService.findAlumniByCategory(categoryId);
     res.json(alumni);
   }
 

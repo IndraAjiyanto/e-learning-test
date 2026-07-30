@@ -17,7 +17,7 @@ export class ParagraphsService {
     return await this.paragraphsRepository.save(paragraphs);
   }
 
-  async noPertemuan() {
+  async getNextOrder() {
     const paragraphsList = await this.paragraphsRepository.find({
       order: { paragraphOrder: 'DESC' },
       take: 1,

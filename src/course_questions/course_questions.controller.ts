@@ -18,16 +18,16 @@ import { Request, Response } from 'express';
 @Controller('question-program')
 export class CourseQuestionsController {
   constructor(
-    private readonly pertanyaanKelasService: CourseQuestionsService,
+    private readonly courseQuestionsService: CourseQuestionsService,
   ) {}
 
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const pertanyaanKelas = await this.pertanyaanKelasService.findAll();
+    const courseQuestion = await this.courseQuestionsService.findAll();
     res.render('super_admin/course_questions/index', {
       user: req.user,
-      pertanyaanKelas,
+      courseQuestion,
     });
   }
 
@@ -38,10 +38,10 @@ export class CourseQuestionsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const kelass = await this.pertanyaanKelasService.findAllCourses();
+    const course = await this.courseQuestionsService.findAllCourses();
     res.render('super_admin/course_questions/create', {
       user: req.user,
-      kelass,
+      course,
       courseId,
     });
   }
@@ -50,13 +50,13 @@ export class CourseQuestionsController {
   @Post(':courseId')
   async create(
     @Param('courseId') courseId: number,
-    @Body() createPertanyaanKelaDto: CreateCourseQuestionDto,
+    @Body() createCourseQuestionDto: CreateCourseQuestionDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createPertanyaanKelaDto.courseId = courseId;
-      await this.pertanyaanKelasService.create(createPertanyaanKelaDto);
+      createCourseQuestionDto.courseId = courseId;
+      await this.courseQuestionsService.create(createCourseQuestionDto);
       req.flash('success', 'FAQ program created successfully');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -72,12 +72,12 @@ export class CourseQuestionsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const pertanyaanKelas = await this.pertanyaanKelasService.findOne(id);
-    const kelass = await this.pertanyaanKelasService.findAllCourses();
+    const courseQuestion = await this.courseQuestionsService.findOne(id);
+    const course = await this.courseQuestionsService.findAllCourses();
     res.render('super_admin/course_questions/edit', {
       user: req.user,
-      pertanyaanKelas,
-      kelass,
+      courseQuestion,
+      course,
     });
   }
 
@@ -86,12 +86,12 @@ export class CourseQuestionsController {
   async update(
     @Param('id') id: number,
     @Param('courseId') courseId: number,
-    @Body() updatePertanyaanKelaDto: UpdateCourseQuestionDto,
+    @Body() updateCourseQuestionDto: UpdateCourseQuestionDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      await this.pertanyaanKelasService.update(+id, updatePertanyaanKelaDto);
+      await this.courseQuestionsService.update(+id, updateCourseQuestionDto);
       req.flash('success', 'FAQ program updated successfully');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -109,7 +109,7 @@ export class CourseQuestionsController {
     @Req() req: Request,
   ) {
     try {
-      await this.pertanyaanKelasService.remove(+id);
+      await this.courseQuestionsService.remove(+id);
       req.flash('success', 'FAQ program deleted successfully');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {

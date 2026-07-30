@@ -18,55 +18,55 @@ import * as path from 'path';
 export class RegistrationsService {
   constructor(
     @InjectRepository(Registration)
-    private readonly pendaftaranRepository: Repository<Registration>,
+    private readonly registrationRepository: Repository<Registration>,
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserCourse)
-    private readonly userKelasRepository: Repository<UserCourse>,
+    private readonly userCourseRepository: Repository<UserCourse>,
   ) {}
 
-  async create(createPendaftaranDto: CreateRegistrationsDto) {
+  async create(createRegistrationDto: CreateRegistrationsDto) {
     const user = await this.userRepository.findOne({
-      where: { id: createPendaftaranDto.userId },
+      where: { id: createRegistrationDto.userId },
     });
     if (!user) {
       return;
     }
 
-    const course = await this.kelasRepository.findOne({
-      where: { id: createPendaftaranDto.courseId },
+    const course = await this.courseRepository.findOne({
+      where: { id: createRegistrationDto.courseId },
     });
     if (!course) {
       return;
     }
 
-    const check = await this.checkPendaftaran(
-      createPendaftaranDto.userId,
-      createPendaftaranDto.courseId,
+    const check = await this.checkRegistration(
+      createRegistrationDto.userId,
+      createRegistrationDto.courseId,
     );
     if (check == false) {
       return false;
     } else {
-      const pendaftaran = await this.pendaftaranRepository.create({
-        ...createPendaftaranDto,
+      const registration = await this.registrationRepository.create({
+        ...createRegistrationDto,
         user: user,
         course: course,
       });
-      return await this.pendaftaranRepository.save(pendaftaran);
+      return await this.registrationRepository.save(registration);
     }
   }
 
-  async checkPendaftaran(userId: number, courseId: number) {
-    const pendaftaran = await this.pendaftaranRepository.find({
+  async checkRegistration(userId: number, courseId: number) {
+    const registration = await this.registrationRepository.find({
       where: {
         user: { id: userId },
         course: { id: courseId },
         process: Not('rejected'),
       },
     });
-    if (pendaftaran.length) {
+    if (registration.length) {
       return false;
     } else {
       return true;
@@ -84,24 +84,24 @@ export class RegistrationsService {
   }
 
   async findAll() {
-    return await this.pendaftaranRepository.find();
+    return await this.registrationRepository.find();
   }
 
-  async findPendaftaran(userId: number) {
-    return await this.pendaftaranRepository.find({
+  async findRegistration(userId: number) {
+    return await this.registrationRepository.find({
       where: { user: { id: userId } },
     });
   }
 
   async findOne(id: number) {
-    const pendaftaran = await this.pendaftaranRepository.findOne({
+    const registration = await this.registrationRepository.findOne({
       where: { id },
       relations: ['user', 'course'],
     });
-    if (!pendaftaran) {
+    if (!registration) {
       throw new NotFoundException('registration not found');
     }
-    return pendaftaran;
+    return registration;
   }
 
   async addUserToCourse(userId: number, courseId: number) {
@@ -114,7 +114,7 @@ export class RegistrationsService {
       throw new NotFoundException('User not found');
     }
 
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['userCourses', 'userCourses.user'],
     });
@@ -122,20 +122,20 @@ export class RegistrationsService {
       throw new NotFoundException('Program not found');
     }
 
-    const sudahGabung = await this.userKelasRepository.findOne({
+    const alreadyJoined = await this.userCourseRepository.findOne({
       where: { user: { id: userId }, course: { id: courseId } },
     });
-    if (sudahGabung) {
+    if (alreadyJoined) {
       throw new BadRequestException('User already joined the program');
     }
 
-    const userCourses = await this.userKelasRepository.create({
+    const userCourses = await this.userCourseRepository.create({
       progress: false,
       user: user,
       course: course,
     });
 
-    return await this.userKelasRepository.save(userCourses);
+    return await this.userCourseRepository.save(userCourses);
   }
 
   async removeCourseUser(userId: number, courseId: number): Promise<UserCourse> {
@@ -147,32 +147,32 @@ export class RegistrationsService {
       throw new NotFoundException('User not found');
     }
 
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: courseId },
     });
     if (!course) {
       throw new NotFoundException('Program not found');
     }
 
-    const userKelas = await this.userKelasRepository.findOne({
+    const userCourse = await this.userCourseRepository.findOne({
       where: { user: { id: userId }, course: { id: courseId } },
     });
-    if (!userKelas) {
+    if (!userCourse) {
       throw new BadRequestException('User is not enrolled in this program');
     }
 
-    return await this.userKelasRepository.remove(userKelas);
+    return await this.userCourseRepository.remove(userCourse);
   }
 
   async update(
-    pendaftaranId: number,
-    updatePendaftaranDto: UpdateRegistrationsDto,
+    registrationId: number,
+    updateRegistrationDto: UpdateRegistrationsDto,
   ) {
-    const pendaftaran = await this.findOne(pendaftaranId);
-    if (!pendaftaran) {
+    const registration = await this.findOne(registrationId);
+    if (!registration) {
       return;
     }
-    Object.assign(pendaftaran, updatePendaftaranDto);
-    return await this.pendaftaranRepository.save(pendaftaran);
+    Object.assign(registration, updateRegistrationDto);
+    return await this.registrationRepository.save(registration);
   }
 }

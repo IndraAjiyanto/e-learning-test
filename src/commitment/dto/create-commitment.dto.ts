@@ -14,5 +14,5 @@ export class CreateCommitmentDto {
   icon: string;
 
   @IsNumber()
-  commitment_order: number;
+  commitmentOrder: number;
 }

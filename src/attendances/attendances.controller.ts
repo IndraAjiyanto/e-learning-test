@@ -11,8 +11,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { AttendanceService } from './attendances.service';
-import { CreateAttendanceDto } from './dto/create-absen.dto';
-import { UpdateAttendanceDto } from './dto/update-absen.dto';
+import { CreateAttendanceDto } from './dto/create-attendance.dto';
+import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
@@ -35,7 +35,7 @@ export class AttendanceController {
     try {
       createAttendanceDto.sessionId = sessionId;
       createAttendanceDto.userId = userId;
-      createAttendanceDto.attendance_time = new Date();
+      createAttendanceDto.attendanceTime = new Date();
       await this.attendanceService.create(createAttendanceDto);
       req.flash('success', 'Successfully submitted attendance');
       res.redirect(`/program/${courseId}`);

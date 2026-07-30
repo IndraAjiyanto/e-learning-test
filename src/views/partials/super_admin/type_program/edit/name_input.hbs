@@ -1,40 +1,40 @@
       <!-- Class Type Name -->
       <div class='space-y-2'>
         <label
-          for='name_clasess_type'
+          for='nameClassesType'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >
           Class Type Name
         </label>
         <input
-          x-model='formData.name_clasess_type'
-          @input='validateField("name_clasess_type", $event.target.value)'
+          x-model='formData.nameClassesType'
+          @input='validateField("nameClassesType", $event.target.value)'
           type='text'
-          id='name_clasess_type'
-          name='name_clasess_type'
+          id='nameClassesType'
+          name='nameClassesType'
           required
           maxlength='255'
-          :class="formErrors.name_clasess_type ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.name_clasess_type ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
+          :class="formErrors.nameClassesType ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : formValid.nameClassesType ? 'border-green-500 focus:ring-green-500 focus:border-green-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 transition-colors'
           placeholder='Enter class type name'
         />
 
         <!-- Error Message -->
-        <template x-if='formErrors.name_clasess_type'>
+        <template x-if='formErrors.nameClassesType'>
           <div
             class='flex items-start gap-2 p-2 bg-red-50 border border-red-300 rounded-lg'
           >
             <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
             <p
               class='text-xs text-red-700'
-              x-text='formErrors.name_clasess_type'
+              x-text='formErrors.nameClassesType'
             ></p>
           </div>
         </template>
 
         <!-- Success Message -->
         <template
-          x-if='formTouched.name_clasess_type && formValid.name_clasess_type && !formErrors.name_clasess_type'
+          x-if='formTouched.nameClassesType && formValid.nameClassesType && !formErrors.nameClassesType'
         >
           <div
             class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'

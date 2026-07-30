@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AttendanceController } from './attendances.controller';
 import { AttendanceService } from './attendances.service';
 
-describe('AbsensController', () => {
+describe('AttendancesController', () => {
   let controller: AttendanceController;
 
   beforeEach(async () => {

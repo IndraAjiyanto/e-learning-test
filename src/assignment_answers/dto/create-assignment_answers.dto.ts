@@ -1,5 +1,5 @@
 import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
-import { ProcessType } from 'src/entities/answer_task.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreateAssignmentAnswersDto {
   @IsString()
@@ -15,6 +15,6 @@ export class CreateAssignmentAnswersDto {
   @IsInt()
   taskId: number;
 
-  @IsEnum(['acc', 'proces', 'rejected'])
-  process: ProcessType;
+  @IsEnum(['approved', 'process', 'rejected'])
+  process: ProcessStatus;
 }

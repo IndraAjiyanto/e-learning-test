@@ -50,7 +50,7 @@ export class TeamController {
   ) {
     try {
       createTeamDto.profile = req.body.uploadedImageUrls?.[0];
-      createTeamDto.teamOrder = await this.teamService.noPertemuan();
+      createTeamDto.teamOrder = await this.teamService.getNextOrder();
 
       await this.teamService.create(createTeamDto);
       req.flash('success', 'team successfully created');

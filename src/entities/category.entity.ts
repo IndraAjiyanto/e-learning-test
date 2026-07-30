@@ -24,7 +24,7 @@ export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({nullable:true})
   name: string;
 
   @Column('jsonb', { nullable: true })
@@ -43,13 +43,13 @@ export class Category {
   for: string[];
 
   @Column({ nullable: true, type: 'jsonb' })
-  info_id: string[];
+  infoId: string[];
 
   @Column({ nullable: true, type: 'jsonb' })
-  info_en: string[];
+  infoEn: string[];
 
   @Column({ nullable: true, type: 'jsonb' })
-  info_ja: string[];
+  infoJa: string[];
 
   @Column({
     type: 'enum',

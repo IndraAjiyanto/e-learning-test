@@ -36,7 +36,7 @@ export class AboutController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -102,7 +102,7 @@ export class AboutController {
   @Roles('super_admin')
   @Patch(':id')
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({

@@ -16,5 +16,5 @@ export class CreateInstallmentsDto {
 
   @IsNumber()
   @IsNotEmpty()
-  down_payment: number;
+  downPayment: number;
 }

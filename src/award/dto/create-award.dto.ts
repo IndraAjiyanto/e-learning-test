@@ -8,5 +8,5 @@ export class CreateAwardDto {
   details: string[];
 
   @IsNumber()
-  award_order: number;
+  awardOrder: number;
 }

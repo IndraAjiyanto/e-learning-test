@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { WeeksController } from './weeks.controller';
 import { WeeksService } from './weeks.service';
 
-describe('MingguController', () => {
+describe('WeeksController', () => {
   let controller: WeeksController;
 
   beforeEach(async () => {

@@ -45,7 +45,7 @@
       <!-- Features List - Fixed height with scroll if needed -->
       <ul class='space-y-3 mb-8 min-h-[12rem] max-h-[12rem] overflow-y-auto'>
         {{#if (eq ../lang 'id')}}
-          {{#each info_id}}
+          {{#each infoId}}
           <li class='flex items-center gap-3 text-gray-700'>
             <div class='w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0'>
               <i class='fas fa-check text-white text-xs'></i>
@@ -54,7 +54,7 @@
           </li>
           {{/each}}
         {{else if (eq ../lang 'en')}}
-          {{#each info_en}}
+          {{#each infoEn}}
           <li class='flex items-center gap-3 text-gray-700'>
             <div class='w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0'>
               <i class='fas fa-check text-white text-xs'></i>
@@ -63,7 +63,7 @@
           </li>
           {{/each}}
         {{else if (eq ../lang 'ja')}}
-          {{#each info_ja}}
+          {{#each infoJa}}
           <li class='flex items-center gap-3 text-gray-700'>
             <div class='w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0'>
               <i class='fas fa-check text-white text-xs'></i>

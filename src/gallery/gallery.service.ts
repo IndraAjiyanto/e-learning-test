@@ -12,7 +12,7 @@ export class GalleryService {
     @InjectRepository(Gallery)
     private readonly galleryRepository: Repository<Gallery>,
     @InjectRepository(Category)
-    private readonly kategoriRepository: Repository<Category>
+    private readonly categoryRepository: Repository<Category>
   ) {}
 
   async create(createGalleryDto: CreateGalleryDto): Promise<Gallery> {
@@ -54,7 +54,7 @@ export class GalleryService {
 
  async update(
   galleryId: number,
-  updateGalleryDto: UpdateGalleryDto & { file_path?: string },
+  updateGalleryDto: UpdateGalleryDto & { filePath?: string },
 ): Promise<Gallery> {
   const gallery = await this.findOne(galleryId);
   const { category_id, ...rest } = updateGalleryDto;

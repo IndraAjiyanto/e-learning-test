@@ -101,8 +101,8 @@ async findAllCategories() {
   async findCoursesPaginated(params: {
     userId?: number;
   category?: string;
-  jenisKelas?: string;
-  metode?: string;
+  courseType?: string;
+  method?: string;
   search?: string;
   page: number;
   limit: number;
@@ -120,11 +120,11 @@ async findAllCategories() {
   if (params.category) {
     query.andWhere('category.name = :category', { category: params.category });
   }
-  if (params.jenisKelas) {
-    query.andWhere('courseType.name_clasess_type = :jenisKelas', { jenisKelas: params.jenisKelas });
+  if (params.courseType) {
+    query.andWhere('courseType.nameClassesType = :courseType', { courseType: params.courseType });
   }
-  if (params.metode) {
-    query.andWhere('course.method = :metode', { metode: params.metode });
+  if (params.method) {
+    query.andWhere('course.method = :method', { method: params.method });
   }
   if (params.search) {
     query.andWhere('course.name ILIKE :search', { search: `%${params.search}%` });
@@ -144,7 +144,7 @@ async findAllCategories() {
 
   async findCommitment() {
     return await this.commitmentRepository.find({
-      order: { commitment_order: 'ASC' },
+      order: { commitmentOrder: 'ASC' },
     });
   }
 
@@ -170,17 +170,17 @@ async findAllCategories() {
   }
 
   async findMission() {
-    return await this.missionRepository.find({ order: { mission_order: 'ASC' } });
+    return await this.missionRepository.find({ order: { missionOrder: 'ASC' } });
   }
 
   async findExperience() {
     return await this.experienceRepository.find({
-      order: { experience_order: 'ASC' },
+      order: { experienceOrder: 'ASC' },
     });
   }
 
   async findAward() {
-    return await this.awardRepository.find({ order: { award_order: 'ASC' } });
+    return await this.awardRepository.find({ order: { awardOrder: 'ASC' } });
   }
 
   async findAbout() {
@@ -193,7 +193,7 @@ async findAllCategories() {
 
   async findBackground() {
     return await this.backgroundRepository.find({
-      order: { background_order: 'ASC' },
+      order: { backgroundOrder: 'ASC' },
     });
   }
 

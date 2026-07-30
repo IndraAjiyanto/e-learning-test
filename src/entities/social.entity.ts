@@ -15,28 +15,28 @@ export class Social {
   linkedin: string;
 
   @Column()
-  instragram: string;
+  instagram: string;
 
   @Column()
   youtube: string;
 
   @Column({ nullable: true })
-  video_youtube: string;
+  videoYoutube: string;
 
   @Column({ nullable: true })
-  link_form: string;
+  linkForm: string;
 
   @Column()
   email: string;
 
   @Column()
-  alamat: string;
+  address: string;
 
   @Column()
-  nomor: string;
+  number: string;
 
   @Column('text')
-  link_alamat: string;
+  linkAddress: string;
 
   @CreateDateColumn()
   createdAt: Date;

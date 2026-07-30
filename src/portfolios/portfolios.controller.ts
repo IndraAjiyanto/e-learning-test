@@ -85,7 +85,7 @@ export class PortfoliosController {
 
       let html = editorjsHTML.parse(JSON.parse(editorjsData));
 
-      createPortfolioDto.content_html = html;
+      createPortfolioDto.contentHtml = html;
 
       createPortfolioDto.courseId = courseId;
       createPortfolioDto.image = req.body.uploadedImageUrls;
@@ -104,7 +104,7 @@ export class PortfoliosController {
   @Get()
   async findAll(@Req() req: Request, @Res() res: Response) {
     const portfolio = await this.portfoliosService.findAll();
-    const category = await this.portfoliosService.findKategori();
+    const category = await this.portfoliosService.findCategory();
     const courseType = await this.portfoliosService.findCourseTypes();
     res.render('portfolio', {
       user: req.user,
@@ -121,7 +121,7 @@ export class PortfoliosController {
     @Res() res: Response,
     @Param('userId') userId: number,
   ) {
-    const category = await this.portfoliosService.findKategoriMyPortfolio(userId);
+    const category = await this.portfoliosService.findCategoryMyPortfolio(userId);
     const courseType = await this.portfoliosService.findMyPortfolioCourseTypes(userId);
     // const portfolio = await this.portfoliosService.findByUser(userId);
     res.render('user/myportfolio', {
@@ -202,7 +202,7 @@ export class PortfoliosController {
             '/asset/portfolio/isi',
             '/asset/portfolio/temp',
           );
-        updatePortfolioDto.content_html = editorjsHTML.parse(
+        updatePortfolioDto.contentHtml = editorjsHTML.parse(
           JSON.parse(updatePortfolioDto.content),
         );
       }
@@ -222,7 +222,7 @@ export class PortfoliosController {
         description: updatePortfolioDto.description,
         image: newImageUrls,
         content: updatePortfolioDto.content,
-        content_html: updatePortfolioDto.content_html,
+        contentHtml: updatePortfolioDto.contentHtml,
       };
 
       await this.portfoliosService.update(portfolioId, updateData);

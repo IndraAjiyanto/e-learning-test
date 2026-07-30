@@ -26,17 +26,17 @@ export class AnswerTasksController {
   async create(
     @Param('assignmentId') assignmentId: number,
     @Param('sessionId') sessionId: number,
-    @Body() createJawabanTugassDto: CreateAssignmentAnswersDto,
+    @Body() createAssignmentAnswerDto: CreateAssignmentAnswersDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      createJawabanTugassDto.process = 'proces';
+      createAssignmentAnswerDto.process = 'process';
       if (req.user) {
-        createJawabanTugassDto.userId = req.user.id;
+        createAssignmentAnswerDto.userId = req.user.id;
       }
-      createJawabanTugassDto.taskId = assignmentId;
-      await this.answerTasksService.create(createJawabanTugassDto);
+      createAssignmentAnswerDto.taskId = assignmentId;
+      await this.answerTasksService.create(createAssignmentAnswerDto);
       req.flash('success', 'submission successfuly send');
       res.redirect(`/answer-assigment/${sessionId}/${assignmentId}`);
     } catch (error: any) {
@@ -47,27 +47,27 @@ export class AnswerTasksController {
 
   @Roles('user')
   @Get(':sessionId/:assignmentId')
-  async findJawaban(
+  async findAnswer(
     @Param('assignmentId') assignmentId: number,
     @Param('sessionId') sessionId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     if (req.user) {
-      const assignments = await this.answerTasksService.findTugas(assignmentId);
-      const taskAnswers = await this.answerTasksService.findJawabanTugas(
+      const assignments = await this.answerTasksService.findAssignment(assignmentId);
+      const taskAnswers = await this.answerTasksService.findAssignmentAnswer(
         req.user.id,
         assignmentId,
       );
-      const jawabanExists = await this.answerTasksService.findJawabanExists(
+      const answerExists = await this.answerTasksService.findExistingAnswer(
         req.user.id,
         assignmentId,
       );
       res.render('user/assignments', {
         user: req.user,
         assignment: assignments,
-        jawaban_tugas: taskAnswers,
-        jawabanExists,
+        assignment_answer: taskAnswers,
+        answerExists,
       });
     }
   }
@@ -79,12 +79,12 @@ export class AnswerTasksController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const assignments = await this.answerTasksService.findTugas(assignmentId);
+    const assignments = await this.answerTasksService.findAssignment(assignmentId);
     const taskAnswers =
-      await this.answerTasksService.findAllJawabanTugas(assignmentId);
+      await this.answerTasksService.findAllAssignmentAnswers(assignmentId);
     res.render('admin/answers-assignments/index', {
       user: req.user,
-      jawaban_tugas: taskAnswers,
+      assignment_answer: taskAnswers,
       assignment: assignments,
     });
   }
@@ -94,22 +94,22 @@ export class AnswerTasksController {
   async update(
     @Param('assignment_answerId') assignment_answerId: number,
     @Param('assignmentId') assignmentId: number,
-    @Body() updateJawabanTugassDto: UpdateAssignmentAnswersDto,
+    @Body() updateAssignmentAnswerDto: UpdateAssignmentAnswersDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const assignments = await this.answerTasksService.findTugas(assignmentId);
-      if (!updateJawabanTugassDto.process) {
-        updateJawabanTugassDto.process = 'proces';
+      const assignments = await this.answerTasksService.findAssignment(assignmentId);
+      if (!updateAssignmentAnswerDto.process) {
+        updateAssignmentAnswerDto.process = 'process';
       }
       await this.answerTasksService.update(
         assignment_answerId,
-        updateJawabanTugassDto,
+        updateAssignmentAnswerDto,
       );
-      if (updateJawabanTugassDto.comment) {
-        await this.answerTasksService.createKomentar(
-          updateJawabanTugassDto.comment,
+      if (updateAssignmentAnswerDto.comment) {
+        await this.answerTasksService.createComment(
+          updateAssignmentAnswerDto.comment,
           assignment_answerId,
         );
       }
@@ -121,7 +121,7 @@ export class AnswerTasksController {
         res.redirect(`/answer-assigment/${assignments.session.id}/${assignments.id}`);
       }
     } catch (error: any) {
-      const assignments = await this.answerTasksService.findTugas(assignmentId);
+      const assignments = await this.answerTasksService.findAssignment(assignmentId);
       if (req.user?.role.includes('admin')) {
         req.flash('error', error.message || 'Update answer unsuccessfully');
         res.redirect(`/answer-assigment/${assignmentId}`);

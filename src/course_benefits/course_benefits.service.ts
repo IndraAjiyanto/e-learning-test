@@ -12,11 +12,11 @@ export class ProgramBenefitService {
     @InjectRepository(ProgramBenefits)
     private readonly programBenefitRepository: Repository<ProgramBenefits>,
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
   ) {}
 
   async create(createProgramBenefitDto: CreateCourseBenefitDto) {
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: createProgramBenefitDto.courseId },
     });
     if (!course) {
@@ -38,14 +38,14 @@ export class ProgramBenefitService {
   }
 
   async findAllCourses() {
-    const course = await this.kelasRepository.find({
+    const course = await this.courseRepository.find({
       order: { id: 'ASC' },
     });
     return course;
   }
 
   async findCourse(courseId: number) {
-    return await this.kelasRepository.findOne({ where: { id: courseId } });
+    return await this.courseRepository.findOne({ where: { id: courseId } });
   }
 
   async findOne(programBenefitId: number) {

@@ -17,9 +17,9 @@ function categoryCreateData() {
           contact: '',
           for: { id: '', en: '', ja: '' },
           courseType: [],
-          info_id: [''],
-          info_en: [''],
-          info_ja: [''],
+          infoId: [''],
+          infoEn: [''],
+          infoJa: [''],
           type: ''
         },
         formErrors: {
@@ -29,9 +29,9 @@ function categoryCreateData() {
           contact: '',
           for: { id: '', en: '', ja: '' },
           courseType: '',
-          info_id: '',
-          info_en: '',
-          info_ja: '',
+          infoId: '',
+          infoEn: '',
+          infoJa: '',
           type: ''
         },
         formValid: {
@@ -41,9 +41,9 @@ function categoryCreateData() {
           contact: false,
           for: { id: false, en: false, ja: false },
           courseType: false,
-          info_id: false,
-          info_en: false,
-          info_ja: false,
+          infoId: false,
+          infoEn: false,
+          infoJa: false,
           type: false
         },
         
@@ -65,7 +65,7 @@ function categoryCreateData() {
         availableJenisKelas: {{{json courseTypes}}},
         get filteredJenisKelas() {
           return this.availableJenisKelas.filter(jk =>
-            jk.name_clasess_type.toLowerCase().includes(this.searchJenisKelas.toLowerCase()) &&
+            jk.nameClassesType.toLowerCase().includes(this.searchJenisKelas.toLowerCase()) &&
             !this.selectedJenisKelas.some(selected => selected.id === jk.id)
           );
         },
@@ -220,13 +220,13 @@ function categoryCreateData() {
               this.formErrors.courseType = '';
               this.formValid.courseType = Array.isArray(value) && value.length > 0;
               break;
-            case 'info_id':
+            case 'infoId':
               // Handled by validateInfo
               break;
-            case 'info_en':
+            case 'infoEn':
               // Handled by validateInfo
               break;
-            case 'info_ja':
+            case 'infoJa':
               // Handled by validateInfo
               break;
           }
@@ -251,7 +251,7 @@ function categoryCreateData() {
           const namaKategoriValid = this.formValid.name;
           const deskripsiValid = Object.values(this.formValid.description).every(v => v);
           const typeValid = this.formValid.type;
-          const infoValid = this.formValid.info_id || this.formValid.info_en || this.formValid.info_ja;
+          const infoValid = this.formValid.infoId || this.formValid.infoEn || this.formValid.infoJa;
           
           return imageValid && namaKategoriValid && deskripsiValid && typeValid && infoValid;
         },

@@ -5,7 +5,7 @@ export class CreateMissionDto {
   content: string[];
 
   @IsNumber()
-  mission_order: number;
+  missionOrder: number;
 
   @IsArray()
   items: string[];

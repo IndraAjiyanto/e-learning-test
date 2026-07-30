@@ -1,18 +1,18 @@
                     <!-- Class Type -->
                     <div
                       x-data="{
-                        search: '{{course.courseType.name_clasess_type}}',
+                        search: '{{course.courseType.nameClassesType}}',
                         selectedJenisKelas: {{json course.courseType}},
                         showDropdown: false,
                         availableJenisKelas: {{json courseType}},
                         get filteredJenisKelas() {
                           return this.availableJenisKelas.filter(j => 
-                            j.name_clasess_type.toLowerCase().includes(this.search.toLowerCase())
+                            j.nameClassesType.toLowerCase().includes(this.search.toLowerCase())
                           );
                         },
                         selectJenisKelas(jenisKelas) {
                           this.selectedJenisKelas = jenisKelas;
-                          this.search = jenisKelas.name_clasess_type;
+                          this.search = jenisKelas.nameClassesType;
                           this.showDropdown = false;
                         }
                       }"
@@ -41,7 +41,7 @@
                               @click='selectJenisKelas(jenisKelas)'
                               class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
                             >
-                              <span class='text-sm font-medium text-gray-700' x-text='jenisKelas.name_clasess_type'></span>
+                              <span class='text-sm font-medium text-gray-700' x-text='jenisKelas.nameClassesType'></span>
                             </button>
                           </template>
                         </div>

@@ -199,7 +199,7 @@ export class AppModule implements OnApplicationBootstrap {
             'program/*path',
             'category/*path',
             'blog/*path',
-            '/daftar/:id',
+            '/register/:id',
             '/session-expired',
             '/users/send-verify-email',
             '/users/verify-email',

@@ -5,5 +5,5 @@ import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 @UseGuards(AuthenticatedGuard)
 @Controller('answers')
 export class AnswersController {
-  constructor(private readonly jawabansService: AnswersService) {}
+  constructor(private readonly answersService: AnswersService) {}
 }

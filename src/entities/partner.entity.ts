@@ -15,7 +15,7 @@ export class Partner {
   id: number;
 
   @Column()
-  gambar: string;
+  image: string;
 
   @CreateDateColumn()
   createdAt: Date;

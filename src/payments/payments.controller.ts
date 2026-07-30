@@ -24,7 +24,7 @@ import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 @UseGuards(AuthenticatedGuard)
 @Controller('payment')
 export class PaymentsController {
-  constructor(private readonly pembayaransService: PaymentsService) {}
+  constructor(private readonly paymentsService: PaymentsService) {}
 
   @Roles('user')
   @Post(':userId/:courseId')
@@ -40,19 +40,19 @@ export class PaymentsController {
   async create(
     @Param('userId') userId: number,
     @Param('courseId') courseId: number,
-    @Body() createPembayaranDto: CreatePaymentDto,
+    @Body() createPaymentDto: CreatePaymentDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createPembayaranDto.file = req.body.uploadedImageUrls?.[0];
-      createPembayaranDto.courseId = courseId;
-      createPembayaranDto.userId = userId;
-      createPembayaranDto.process = 'proces';
-      const pembayaran =
-        await this.pembayaransService.create(createPembayaranDto);
-      if (pembayaran == false) {
-        await this.pembayaransService.deleteFile(createPembayaranDto.file);
+      createPaymentDto.file = req.body.uploadedImageUrls?.[0];
+      createPaymentDto.courseId = courseId;
+      createPaymentDto.userId = userId;
+      createPaymentDto.process = 'process';
+      const payment =
+        await this.paymentsService.create(createPaymentDto);
+      if (payment == false) {
+        await this.paymentsService.deleteFile(createPaymentDto.file);
         req.flash(
           'info',
           'You have already submitted the payment proof, please wait for further information from the admin.',
@@ -86,20 +86,20 @@ export class PaymentsController {
     @Param('installmentsId') installmentsId: number,
     @Param('userId') userId: number,
     @Param('courseId') courseId: number,
-    @Body() createPembayaranDto: CreatePaymentDto,
+    @Body() createPaymentDto: CreatePaymentDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createPembayaranDto.installmentId = installmentsId;
-      createPembayaranDto.file = req.body.uploadedImageUrls?.[0];
-      createPembayaranDto.courseId = courseId;
-      createPembayaranDto.userId = userId;
-      createPembayaranDto.process = 'proces';
-      const pembayaran =
-        await this.pembayaransService.create(createPembayaranDto);
-      if (pembayaran == false) {
-        await this.pembayaransService.deleteFile(createPembayaranDto.file);
+      createPaymentDto.installmentId = installmentsId;
+      createPaymentDto.file = req.body.uploadedImageUrls?.[0];
+      createPaymentDto.courseId = courseId;
+      createPaymentDto.userId = userId;
+      createPaymentDto.process = 'process';
+      const payment =
+        await this.paymentsService.create(createPaymentDto);
+      if (payment == false) {
+        await this.paymentsService.deleteFile(createPaymentDto.file);
         req.flash(
           'info',
           'You have already submitted the payment proof, please wait for further information from the admin.',
@@ -122,21 +122,21 @@ export class PaymentsController {
  @Roles('user')
 @Get('api/payment/:userId')
 async getPayment(@Param('userId') userId: number, @Res() res: Response) {
-  const pembayaran = await this.pembayaransService.findPembayaran(userId);
-  return res.json({ data: pembayaran });
+  const payment = await this.paymentsService.findPayment(userId);
+  return res.json({ data: payment });
 }
 
 @Roles('user')
 @Get('api/registration/:userId')
 async getRegistration(@Param('userId') userId: number, @Res() res: Response) {
-  const pendaftaran = await this.pembayaransService.findPendaftaran(userId);
-  return res.json({ data: pendaftaran });
+  const registration = await this.paymentsService.findRegistration(userId);
+  return res.json({ data: registration });
 }
 
 @Roles('user')
 @Get('api/installment/:userId')
 async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
-  const installments = await this.pembayaransService.findInstallments(userId);
+  const installments = await this.paymentsService.findInstallments(userId);
   return res.json({ data: installments });
 }
 
@@ -160,83 +160,83 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const course = await this.pembayaransService.findCourse(courseId);
+    const course = await this.paymentsService.findCourse(courseId);
     res.render('user/payment', { user: req.user, course });
   }
 
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const pembayaran = await this.pembayaransService.findAll();
-    const pendaftaran = await this.pembayaransService.findAllPendaftaran();
-    const installments = await this.pembayaransService.findAllInstallments();
+    const payment = await this.paymentsService.findAll();
+    const registration = await this.paymentsService.findAllRegistrations();
+    const installments = await this.paymentsService.findAllInstallments();
     res.render('super_admin/payments/index', {
       user: req.user,
-      pembayaran,
-      pendaftaran,
+      payment,
+      registration,
       installments,
     });
   }
 
   @Roles('super_admin')
-  @Get(':pembayaranId')
+  @Get(':paymentId')
   async findPaymentDetails(
-    @Param('pembayaranId') pembayaranId: number,
+    @Param('paymentId') paymentId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const pembayaran = await this.pembayaransService.findOne(pembayaranId);
-    res.render('super_admin/payments/detail', { user: req.user, pembayaran });
+    const payment = await this.paymentsService.findOne(paymentId);
+    res.render('super_admin/payments/detail', { user: req.user, payment });
   }
 
   @Roles('super_admin')
-  @Patch(':proses/:pembayaranId')
+  @Patch(':proses/:paymentId')
   async update(
-    @Param('pembayaranId') pembayaranId: number,
+    @Param('paymentId') paymentId: number,
     @Param('proses') proses: string,
-    @Body() updatePembayaranDto: UpdatePaymentDto,
+    @Body() updatePaymentDto: UpdatePaymentDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const pembayaran = await this.pembayaransService.findOne(pembayaranId);
-      if (!pembayaran) {
+      const payment = await this.paymentsService.findOne(paymentId);
+      if (!payment) {
         return null;
       }
-      if (proses === 'acc') {
-        updatePembayaranDto.file = pembayaran['file'];
-        updatePembayaranDto.userId = pembayaran['user']['id'];
-        updatePembayaranDto.courseId = pembayaran['course']['id'];
-        updatePembayaranDto.process = 'acc';
-        await this.pembayaransService.update(pembayaranId, updatePembayaranDto);
+      if (proses === 'approved') {
+        updatePaymentDto.file = payment['file'];
+        updatePaymentDto.userId = payment['user']['id'];
+        updatePaymentDto.courseId = payment['course']['id'];
+        updatePaymentDto.process = 'approved';
+        await this.paymentsService.update(paymentId, updatePaymentDto);
         try {
-          await this.pembayaransService.addUserToCourse(
-            pembayaran['user']['id'],
-            pembayaran['course']['id'],
+          await this.paymentsService.addUserToCourse(
+            payment['user']['id'],
+            payment['course']['id'],
           );
         } catch (error: any) {}
 
         req.flash('success', 'proces successfully change acc');
-        res.redirect(`/program/detail/program/admin/${pembayaran['course']['id']}`);
+        res.redirect(`/program/detail/program/admin/${payment['course']['id']}`);
       } else if (proses === 'rejected') {
-        updatePembayaranDto.file = pembayaran['file'];
-        updatePembayaranDto.userId = pembayaran['user']['id'];
-        updatePembayaranDto.courseId = pembayaran['course']['id'];
-        updatePembayaranDto.process = 'rejected';
-        await this.pembayaransService.update(pembayaranId, updatePembayaranDto);
+        updatePaymentDto.file = payment['file'];
+        updatePaymentDto.userId = payment['user']['id'];
+        updatePaymentDto.courseId = payment['course']['id'];
+        updatePaymentDto.process = 'rejected';
+        await this.paymentsService.update(paymentId, updatePaymentDto);
         try {
-          await this.pembayaransService.removeCourseUser(
-            pembayaran['user']['id'],
-            pembayaran['course']['id'],
+          await this.paymentsService.removeCourseUser(
+            payment['user']['id'],
+            payment['course']['id'],
           );
         } catch (error: any) {}
         req.flash('success', 'proces successfully change rejected');
-        res.redirect(`/program/detail/program/admin/${pembayaran['course']['id']}`);
+        res.redirect(`/program/detail/program/admin/${payment['course']['id']}`);
       }
     } catch (error: any) {
-      const pembayaran = await this.pembayaransService.findOne(pembayaranId);
+      const payment = await this.paymentsService.findOne(paymentId);
       req.flash('error', error.message || 'Payment proof submission failed');
-      res.redirect(`/program/detail/program/admin/${pembayaran['course']['id']}`);
+      res.redirect(`/program/detail/program/admin/${payment['course']['id']}`);
     }
   }
 }

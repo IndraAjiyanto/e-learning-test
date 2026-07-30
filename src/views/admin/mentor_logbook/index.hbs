@@ -126,7 +126,7 @@
             <td class='px-6 py-4 text-sm text-gray-800'>{{activity}}</td>
             <td
               class='px-6 py-4 text-sm text-gray-800'
-            >{{activity_detail}}</td>
+            >{{activityDetail}}</td>
             <td class='px-6 py-4 text-sm text-gray-800'>{{obstacle}}</td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               <img
@@ -224,7 +224,7 @@
           const dataToExport = filtered.map((log, index) => ({
             No: index + 1,
             Kegiatan: log.activity || "-",
-            Rincian: log.activity_detail || "-",
+            Rincian: log.activityDetail || "-",
             Kendala: log.obstacle || "-",
             Dokumentasi: log.documentation || "-",
             Kelas: log.session?.weeks?.course?.name || "-",

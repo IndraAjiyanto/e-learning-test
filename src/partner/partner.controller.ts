@@ -40,7 +40,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -58,7 +58,7 @@ export class PartnerController {
     @Req() req: Request,
   ) {
     try {
-      createPartnerDto.gambar = req.body.uploadedImageUrls?.[0];
+      createPartnerDto.image = req.body.uploadedImageUrls?.[0];
       await this.PartnerService.create(createPartnerDto);
       req.flash('success', 'partner successfully created');
       res.redirect('/partner');
@@ -115,7 +115,7 @@ export class PartnerController {
   @Roles('super_admin')
   @Patch(':partnerId')
   @UseInterceptors(
-    FileInterceptor('gambar', multerConfigMemoryOnly),
+    FileInterceptor('image', multerConfigMemoryOnly),
     ValidateImageInterceptor,
   )
   @ValidateImage({
@@ -137,8 +137,8 @@ export class PartnerController {
     try {
       const partner = await this.PartnerService.findOne(partnerId);
       if (gambar) {
-        await this.PartnerService.deleteFile(partner.gambar);
-        updatePartnerDto.gambar = req.body.uploadedImageUrls?.[0];
+        await this.PartnerService.deleteFile(partner.image);
+        updatePartnerDto.image = req.body.uploadedImageUrls?.[0];
       }
       await this.PartnerService.update(partnerId, updatePartnerDto);
       req.flash('success', 'partner successfully updated');
@@ -163,7 +163,7 @@ export class PartnerController {
         res.redirect('/partner');
         return;
       }
-      await this.PartnerService.deleteFile(partner.gambar);
+      await this.PartnerService.deleteFile(partner.image);
       await this.PartnerService.remove(partnerId);
       req.flash('success', 'partner successfully removed');
       res.redirect('/partner');

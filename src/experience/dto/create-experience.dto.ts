@@ -8,5 +8,5 @@ export class CreateExperienceDto {
   details: string[];
 
   @IsNumber()
-  experience_order: number;
+  experienceOrder: number;
 }

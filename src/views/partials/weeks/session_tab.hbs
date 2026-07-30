@@ -18,7 +18,7 @@
                   -
                   <span x-text="formatTime(session.endTime)"></span></p>
                 <p><span class='font-medium'>Date:</span>
-                  <span x-text="formatTanggal(session.date)"></span></p>
+                  <span x-text="formatDate(session.date)"></span></p>
               </div>
             </div>
             <a
@@ -115,7 +115,7 @@ function sessionData() {
       localStorage.setItem('activeData', JSON.stringify(this.data));
     },
 
-        formatTanggal(value) {
+        formatDate(value) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(value).toLocaleDateString('id-ID', options);
     },

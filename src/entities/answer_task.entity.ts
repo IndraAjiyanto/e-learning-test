@@ -11,8 +11,7 @@ import { Assignment } from './assignment.entity';
 import { Comment } from './comment.entity';
 import { User } from './user.entity';
 import { Exclude } from 'class-transformer';
-
-export type ProcessType = 'acc' | 'proces' | 'rejected';
+import { ProcessStatus } from './types/process-status';
 
 @Entity()
 export class AnswerTask {
@@ -24,10 +23,10 @@ export class AnswerTask {
 
   @Column({
     type: 'enum',
-    enum: ['acc', 'proces', 'rejected'],
+    enum: ['approved', 'process', 'rejected'],
     default: 'rejected',
   })
-  process: ProcessType;
+  process: ProcessStatus;
 
   @CreateDateColumn()
   createdAt: Date;

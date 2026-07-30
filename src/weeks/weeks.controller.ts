@@ -17,19 +17,19 @@ import { Request, Response } from 'express';
 
 @Controller('week')
 export class WeeksController {
-  constructor(private readonly mingguService: WeeksService) {}
+  constructor(private readonly weeksService: WeeksService) {}
 
   @Roles('admin')
   @Post(':courseId')
   async create(
     @Param('courseId') courseId: number,
-    @Body() createMingguDto: CreateWeeksDto,
+    @Body() createWeekDto: CreateWeeksDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createMingguDto.weekNumber = await this.mingguService.noPertemuan(courseId);
-      await this.mingguService.create(createMingguDto, courseId);
+      createWeekDto.weekNumber = await this.weeksService.getSessionNumber(courseId);
+      await this.weeksService.create(createWeekDto, courseId);
       req.flash('success', 'session succesfuly create');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {
@@ -55,27 +55,27 @@ export class WeeksController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const weeks = await this.mingguService.findOne(weeksId);
-    const pertemuanAkhir =
-      await this.mingguService.findPertemuanAkhir(weeksId);
+    const weeks = await this.weeksService.findOne(weeksId);
+    const lastSession =
+      await this.weeksService.findLastSession(weeksId);
     res.render('admin/weeks/detail', {
       user: req.user,
       weeks,
-      pertemuanAkhir,
+      lastSession,
     });
   }
 
   @Roles('admin')
   @Get('/session/:weeksId')
   async getSession(@Param('weeksId') weeksId: number, @Res() res: Response) {
-    const session = await this.mingguService.findPertemuan(weeksId);
+    const session = await this.weeksService.findSession(weeksId);
     res.json(session);
   }
 
   @Roles('admin')
   @Get('/quiz/:weeksId')
   async getQuiz(@Param('weeksId') weeksId: number, @Res() res: Response) {
-    const quiz = await this.mingguService.findQuiz(weeksId);
+    const quiz = await this.weeksService.findQuiz(weeksId);
     res.json(quiz);
   }
 
@@ -86,7 +86,7 @@ export class WeeksController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const weeks = await this.mingguService.findOne(weeksId);
+    const weeks = await this.weeksService.findOne(weeksId);
     res.render('admin/weeks/edit', { user: req.user, weeks });
   }
 
@@ -94,12 +94,12 @@ export class WeeksController {
   @Patch('update/:weeksId')
   async update(
     @Param('weeksId') weeksId: number,
-    @Body() updateMingguDto: UpdateWeeksDto,
+    @Body() updateWeekDto: UpdateWeeksDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      await this.mingguService.update(weeksId, updateMingguDto);
+      await this.weeksService.update(weeksId, updateWeekDto);
       req.flash('success', 'week successfully updated');
       res.redirect(`/week/${weeksId}`);
     } catch (error: any) {
@@ -117,7 +117,7 @@ export class WeeksController {
     @Req() req: Request,
   ) {
     try {
-      await this.mingguService.remove(id, courseId);
+      await this.weeksService.remove(id, courseId);
       req.flash('success', 'week successfully deleted');
       res.redirect(`/program/detail/program/admin/${courseId}`);
     } catch (error: any) {

@@ -2,7 +2,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreatePartnerDto {
   @IsString()
-  gambar: string;
+  image: string;
 
   @IsNotEmpty()
   categoryPartnerId: number;

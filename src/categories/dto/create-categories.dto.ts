@@ -36,17 +36,17 @@ export class CreateCategoriesDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  info_id?: string[];
+  infoId?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  info_en?: string[];
+  infoEn?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  info_ja?: string[];
+  infoJa?: string[];
 
   @IsEnum(['Special Program', 'Paid Program', 'Free Program'])
   type: 'Special Program' | 'Paid Program' | 'Free Program';

@@ -3,7 +3,7 @@ import { Gender, Education } from 'src/entities/biodata.entity';
 
 export class CreateBiodataDto {
   @IsString()
-  full_name: string;
+  fullName: string;
 
   @IsString()
   no: string;
@@ -25,7 +25,7 @@ export class CreateBiodataDto {
   education: Education;
 
   @IsString()
-  study_program: string;
+  studyProgram: string;
 
   @IsInt()
   userId: number;
