@@ -22,6 +22,9 @@ export class Voucher {
   @Column({ type: 'enum', enum: ['free', 'discount'] })
   type: VoucherType;
 
+  @Column({ type: 'float', nullable: true })
+  percent?: number;
+
   @Column({ type: 'boolean', default: true })
   active: boolean;
 

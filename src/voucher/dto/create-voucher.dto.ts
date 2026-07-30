@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Max, max, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { VoucherType } from 'src/entities/voucher.entity';
 
@@ -15,4 +15,10 @@ export class CreateVoucherDto {
   @IsBoolean()
   @IsOptional()
   active?: boolean;
+
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  @IsOptional()
+  percent?: number;
 }
