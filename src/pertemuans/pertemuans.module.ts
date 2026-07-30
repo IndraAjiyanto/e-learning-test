@@ -13,6 +13,7 @@ import { LogbookMentor } from 'src/entities/logbook_mentor.entity';
 import { ProgresPertemuan } from 'src/entities/progres_pertemuan.entity';
 import { ProgresMinggu } from 'src/entities/progres_minggu.entity';
 import { Tugas } from 'src/entities/tugas.entity';
+import { LogbookExportService } from 'src/logbook/logbook-export.service';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { Tugas } from 'src/entities/tugas.entity';
     MaterisModule,
   ],
   controllers: [PertemuansController],
-  providers: [PertemuansService],
+  providers: [PertemuansService, LogbookExportService],
   exports: [PertemuansService],
 })
 export class PertemuansModule {}
