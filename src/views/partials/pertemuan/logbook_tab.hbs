@@ -45,57 +45,7 @@
       // EXPORT EXCEL
       // ============================
       exportExcel() {
-        try {
-          const filtered = this.data.filter(l =>
-            (
-              `${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`
-            )
-              .toLowerCase()
-              .includes(this.search.toLowerCase())
-          );
-
-          const dataToExport = filtered.map((log, index) => ({
-            No: index + 1,
-            Activity: log.kegiatan || "-",
-            Details: log.rincian_kegiatan || "-",
-            Obstacle: log.kendala || "-",
-            Documentation: log.dokumentasi || "-",
-            AdditionalDocumentation: log.dokumentasi_lain || "-",
-            Program: log.pertemuan?.minggu?.kelas?.nama_kelas || "-",
-            User: log.user?.username || "-",
-            Status:
-              log.proses === "acc"
-                ? "Approved"
-                : log.proses === "proces"
-                ? "Process"
-                : "Rejected",
-            Date: this.formatDate(log.createdAt)
-          }));
-
-          const wb = XLSX.utils.book_new();
-          const ws = XLSX.utils.json_to_sheet(dataToExport);
-
-          ws["!cols"] = [
-            { wch: 5 },
-            { wch: 30 },
-            { wch: 50 },
-            { wch: 40 },
-            { wch: 60 },
-            { wch: 25 },
-            { wch: 20 },
-            { wch: 12 },
-            { wch: 20 }
-          ];
-
-          XLSX.utils.book_append_sheet(wb, ws, "Logbook");
-
-          XLSX.writeFile(
-            wb,
-            `Logbook_User_${new Date().toISOString().slice(0, 10)}.xlsx`
-          );
-        } catch (error) {
-          alert("Failed to export data to Excel");
-        }
+        window.location.href = '/session/logbook/{{pertemuan.id}}/export';
       },
 
       // ============================
