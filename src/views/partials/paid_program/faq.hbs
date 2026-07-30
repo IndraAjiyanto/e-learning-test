@@ -1,0 +1,91 @@
+<!-- FAQ SECTION -->
+<section id="faq" class="bg-[#FAFAFA] py-20 font-montserrat">
+  <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
+    
+    <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
+      Frequently Asked Questions
+    </div>
+    
+    <!-- Alpine.js & FAQ List -->
+    <div class="w-full max-w-[900px]"
+      x-data="{
+        activeIndex: null,
+        faqs: [
+          {{#if faqs.length}}
+            {{#each faqs}}
+              { question: `{{getByLang pertanyaan ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
+            {{/each}}
+          {{else}}
+            // DUMMY DATA UNTUK PAID PROGRAM
+            { question: 'What is the main focus of the &quot;Flow Sense: UI/UX Design with Figma&quot; training?', answer: 'The main focus is to equip participants with the fundamental skills and advanced techniques needed to create intuitive and engaging user interfaces using Figma.' },
+            { question: 'Who is the target group most relevant to this program? Software tools (software) what main things will be studied?', answer: 'This program is perfect for beginners, junior designers, and product managers. We will deeply focus on Figma as the primary software tool.' },
+            { question: 'What are the standard laptop specifications required for the program to run smoothly?', answer: 'Any laptop capable of running a modern web browser can run Figma smoothly. We recommend at least 4GB of RAM and a stable internet connection.' },
+            { question: 'Why is the training outcome (Capstone Project) so emphasized?', answer: 'The Capstone Project acts as your professional portfolio piece, showcasing your practical skills to potential employers and proving you can handle end-to-end design processes.' },
+            { question: 'How is the communication procedure between the designer and the coder/developer?', answer: 'We teach handoff techniques using Figma\'s Inspect mode, proper documentation, and collaborative workflows that bridge the gap between design and development.' },
+            { question: 'Should interface designs be tested in real time?', answer: 'Yes, usability testing is crucial to validate design decisions. We cover practical testing methods to gather real user feedback.' },
+            { question: 'What is the essence of iteration in the user experience design stage?', answer: 'Iteration allows designers to continuously refine and improve their solutions based on feedback, leading to a much stronger final product.' },
+            { question: 'Are there any large-scale design structure construction methods taught?', answer: 'Yes, we delve into atomic design principles and building robust design systems that scale effortlessly.' },
+            { question: 'How much discount value is saved by paying cash (Paid in Advance)?', answer: 'By paying in advance, you can save up to 15% off the total tuition compared to the installment plan.' }
+          {{/if}}
+        ],
+        toggle(index) {
+          this.activeIndex = this.activeIndex === index ? null : index;
+        }
+      }"
+    >
+      
+      <!-- Wrapper Daftar FAQ -->
+      <div class="border-t border-[#E0E0E0]">
+        <template x-for="(faq, index) in faqs" :key="index">
+          <div class="border-b border-[#E0E0E0]">
+            
+            <!-- Tombol Pertanyaan -->
+            <button
+              @click="toggle(index)"
+              class="w-full text-left py-5 px-4 focus:outline-none flex items-center justify-between group transition-colors duration-300 hover:bg-[#003060]"
+              :class="activeIndex === index ? 'bg-[#003060]' : 'bg-transparent'"
+            >
+              <div class="flex items-center gap-4">
+                <!-- Bullet -->
+                <div class="w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors duration-300 group-hover:bg-white"
+                     :class="activeIndex === index ? 'bg-white' : 'bg-[#0B1F3B]'"></div>
+                <!-- Vertical Line -->
+                <div class="w-[1px] h-5 flex-shrink-0 transition-colors duration-300 group-hover:bg-white/40"
+                     :class="activeIndex === index ? 'bg-white/40' : 'bg-gray-300'"></div>
+                
+                <h3 class="font-[600] text-[15px] transition-colors duration-300 group-hover:text-white" 
+                    :class="activeIndex === index ? 'text-white' : 'text-[#0F0F0F]'" 
+                    x-text="faq.question"></h3>
+              </div>
+              
+              <!-- Icon Chevron -->
+              <div class="flex-shrink-0 ml-4">
+                <i class="fas fa-chevron-down transition-transform duration-300 group-hover:text-white"
+                   :class="activeIndex === index ? 'text-white rotate-180' : 'text-[#8F8F8F]'">
+                </i>
+              </div>
+            </button>
+            
+            <!-- Jawaban -->
+            <div
+              x-show="activeIndex === index"
+              x-transition:enter="transition ease-out duration-300"
+              x-transition:enter-start="opacity-0 max-h-0"
+              x-transition:enter-end="opacity-100 max-h-[500px]"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100 max-h-[500px]"
+              x-transition:leave-end="opacity-0 max-h-0"
+              class="overflow-hidden bg-[#FAFAFA]"
+            >
+              <div class="pl-12 pr-4 py-6 text-[#545454] text-[14px] leading-[1.6]">
+                <p x-html="faq.answer"></p>
+              </div>
+            </div>
+            
+          </div>
+        </template>
+      </div>
+      
+    </div>
+  </div>
+</section>
