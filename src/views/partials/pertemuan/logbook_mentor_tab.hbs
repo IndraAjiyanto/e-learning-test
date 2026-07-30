@@ -40,48 +40,7 @@
       },
 
       exportExcel() {
-        try {
-          const s = this.search.toLowerCase();
-
-          const filtered = this.data.filter(l =>
-            (
-              `${l.kegiatan} ${l.rincian_kegiatan} ${l.kendala}`
-            ).toLowerCase().includes(s)
-          );
-
-          const dataToExport = filtered.map((log, index) => ({
-            No: index + 1,
-            Activity: log.kegiatan || "-",
-            Details: log.rincian_kegiatan || "-",
-            Obstacle: log.kendala || "-",
-            Documentation: log.dokumentasi || "-",
-            Program: log.pertemuan?.minggu?.kelas?.nama_kelas || "-",
-            User: log.user?.username || "-",
-            Date: this.formatDate(log.createdAt),
-          }));
-
-          const wb = XLSX.utils.book_new();
-          const ws = XLSX.utils.json_to_sheet(dataToExport);
-
-          ws["!cols"] = [
-            { wch: 5 },  // No
-            { wch: 30 }, // Activity
-            { wch: 50 }, // Details
-            { wch: 40 }, // Obstacle
-            { wch: 60 }, // Documentation
-            { wch: 25 }, // Program
-            { wch: 20 }, // User
-            { wch: 20 }  // Date
-          ];
-
-          XLSX.utils.book_append_sheet(wb, ws, "Logbook");
-          XLSX.writeFile(
-            wb,
-            `Logbook_Mentor_${new Date().toISOString().slice(0, 10)}.xlsx`
-          );
-        } catch (error) {
-          alert("Failed to export data to Excel");
-        }
+        window.location.href = '/session/logbook-mentor/{{pertemuan.id}}/export';
       },
 
       formatDate(date) {
