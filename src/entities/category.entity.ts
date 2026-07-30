@@ -91,7 +91,7 @@ export class Category {
   superiority: Superiority[];
 
   @ManyToMany(() => CourseType, (courseType) => courseType.categories)
-  @JoinTable()
+  @JoinTable({name:'category_course_types'})
   @Exclude()
   courseTypes: CourseType[];
 
