@@ -3,39 +3,40 @@ import { CreateCommentsDto } from './dto/create-comments.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Comment } from 'src/entities/comment.entity';
 import { Repository } from 'typeorm';
-import { AnswerTask, ProcessType } from 'src/entities/answer_task.entity';
+import { AnswerTask } from 'src/entities/answer_task.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
 
 @Injectable()
 export class CommentsService {
   @InjectRepository(Comment)
-  private readonly komentarRepository: Repository<Comment>;
+  private readonly commentRepository: Repository<Comment>;
   @InjectRepository(AnswerTask)
-  private readonly jawabanTugasRepository: Repository<AnswerTask>;
+  private readonly assignmentAnswerRepository: Repository<AnswerTask>;
 
-  async create(createKomentarDto: CreateCommentsDto) {
-    const taskAnswers = await this.jawabanTugasRepository.findOne({
-      where: { id: createKomentarDto.answerTaskId },
+  async create(createCommentDto: CreateCommentsDto) {
+    const taskAnswers = await this.assignmentAnswerRepository.findOne({
+      where: { id: createCommentDto.answerTaskId },
     });
     if (!taskAnswers) {
-      throw new NotFoundException('User tidak ada');
+      throw new NotFoundException('User not found');
     }
-    const komentar = await this.komentarRepository.create({
-      ...createKomentarDto,
+    const comment = await this.commentRepository.create({
+      ...createCommentDto,
       answer_task: taskAnswers,
     });
-    return await this.komentarRepository.save(komentar);
+    return await this.commentRepository.save(comment);
   }
 
-  async updateJawabanTugas(assignment_answerId: number, proses: ProcessType) {
-    const taskAnswers = await this.jawabanTugasRepository.findOne({
+  async updateAssignmentAnswer(assignment_answerId: number, process: ProcessStatus) {
+    const taskAnswers = await this.assignmentAnswerRepository.findOne({
       where: { id: assignment_answerId },
     });
 
     if (!taskAnswers) {
-      throw new NotFoundException('Jawaban Tugas tidak ada');
+      throw new NotFoundException('Assignment answer not found');
     }
 
-    taskAnswers.process = proses;
-    return await this.jawabanTugasRepository.save(taskAnswers);
+    taskAnswers.process = process;
+    return await this.assignmentAnswerRepository.save(taskAnswers);
   }
 }

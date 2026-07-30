@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AssignmentsController } from './assignments.controller';
 import { AssignmentsService } from './assignments.service';
 
-describe('TugassController', () => {
+describe('AssignmentsController', () => {
   let controller: AssignmentsController;
 
   beforeEach(async () => {

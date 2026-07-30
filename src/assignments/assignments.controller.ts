@@ -24,7 +24,7 @@ import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 @UseGuards(AuthenticatedGuard)
 @Controller('task')
 export class AssignmentsController {
-  constructor(private readonly tugassService: AssignmentsService) {}
+  constructor(private readonly assignmentsService: AssignmentsService) {}
 
   @Roles('admin')
   @Post(':sessionId')
@@ -40,7 +40,7 @@ export class AssignmentsController {
     resourceType: 'raw',
   })
   async create(
-    @Body() createTugassDto: CreateAssignmentsDto,
+    @Body() createAssignmentDto: CreateAssignmentsDto,
     @UploadedFile() file: Express.Multer.File,
     @Param('sessionId') sessionId: number,
     @Res() res: Response,
@@ -51,9 +51,9 @@ export class AssignmentsController {
         throw new Error('File upload failed. Please try again.');
       }
 
-      createTugassDto.sessionId = sessionId;
-      createTugassDto.file = req.body.uploadedFileUrls[0];
-      await this.tugassService.create(createTugassDto);
+      createAssignmentDto.sessionId = sessionId;
+      createAssignmentDto.file = req.body.uploadedFileUrls[0];
+      await this.assignmentsService.create(createAssignmentDto);
       req.flash('success', 'Assignment successfully created');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {
@@ -74,17 +74,17 @@ export class AssignmentsController {
   }
 
   @Roles('admin')
-  @Delete(':tugasId/:sessionId')
+  @Delete(':assignmentId/:sessionId')
   async remove(
     @Param('sessionId') sessionId: number,
-    @Param('tugasId') tugasId: number,
+    @Param('assignmentId') assignmentId: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      const assignments = await this.tugassService.findOne(tugasId);
-      await this.tugassService.deleteFile(assignments.file);
-      await this.tugassService.remove(tugasId);
+      const assignments = await this.assignmentsService.findOne(assignmentId);
+      await this.assignmentsService.deleteFile(assignments.file);
+      await this.assignmentsService.remove(assignmentId);
       req.flash('success', 'successfuly delete assignment');
       res.redirect(`/session/${sessionId}`);
     } catch (error: any) {

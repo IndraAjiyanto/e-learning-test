@@ -24,7 +24,7 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 @UseGuards(AuthenticatedGuard)
 @Controller('registration')
 export class RegistrationsController {
-  constructor(private readonly pendaftaranService: RegistrationsService) {}
+  constructor(private readonly registrationsService: RegistrationsService) {}
 
   @Roles('user')
   @Post(':userId/:courseId')
@@ -40,22 +40,22 @@ export class RegistrationsController {
   async create(
     @Param('userId') userId: number,
     @Param('courseId') courseId: number,
-    @Body() createPendaftaranDto: CreateRegistrationsDto,
+    @Body() createRegistrationDto: CreateRegistrationsDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
       console.log('🔵 [Registration] Attempt:', { userId, courseId, file: req.file, body: req.body, uploadedImageUrls: req.body.uploadedImageUrls });
-      createPendaftaranDto.file = req.body.uploadedImageUrls?.[0];
-      console.log('🔵 [Registration] File URL:', createPendaftaranDto.file);
-      createPendaftaranDto.courseId = courseId;
-      createPendaftaranDto.userId = userId;
-      createPendaftaranDto.process = 'proces';
-      const pendaftaran =
-        await this.pendaftaranService.create(createPendaftaranDto);
-      console.log('🔵 [Registration] Result:', pendaftaran);
-      if (pendaftaran == false) {
-        await this.pendaftaranService.deleteFile(createPendaftaranDto.file);
+      createRegistrationDto.file = req.body.uploadedImageUrls?.[0];
+      console.log('🔵 [Registration] File URL:', createRegistrationDto.file);
+      createRegistrationDto.courseId = courseId;
+      createRegistrationDto.userId = userId;
+      createRegistrationDto.process = 'process';
+      const registration =
+        await this.registrationsService.create(createRegistrationDto);
+      console.log('🔵 [Registration] Result:', registration);
+      if (registration == false) {
+        await this.registrationsService.deleteFile(createRegistrationDto.file);
         req.flash(
           'info',
           'you have already submitted the registration proof, please wait for further information from the admin',
@@ -78,67 +78,67 @@ export class RegistrationsController {
   @Roles('super_admin')
   @Get()
   async findAll() {
-    return await this.pendaftaranService.findAll();
+    return await this.registrationsService.findAll();
   }
 
   @Roles('super_admin')
   @Patch(':proses/:pendaftaranId')
   async update(
-    @Param('pendaftaranId') pendaftaranId: number,
-    @Param('proses') proses: string,
-    @Body() updatePendaftaranDto: UpdateRegistrationsDto,
+    @Param('pendaftaranId') registrationId: number,
+    @Param('proses') processStatus: string,
+    @Body() updateRegistrationDto: UpdateRegistrationsDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      const pendaftaran = await this.pendaftaranService.findOne(pendaftaranId);
-      if (!pendaftaran) {
+      const registration = await this.registrationsService.findOne(registrationId);
+      if (!registration) {
         return null;
       }
-      if (proses === 'acc') {
-        updatePendaftaranDto.file = pendaftaran['file'];
-        updatePendaftaranDto.userId = pendaftaran['user']['id'];
-        updatePendaftaranDto.courseId = pendaftaran['course']['id'];
-        updatePendaftaranDto.process = 'acc';
-        await this.pendaftaranService.update(
-          pendaftaranId,
-          updatePendaftaranDto,
+      if (processStatus === 'approved') {
+        updateRegistrationDto.file = registration['file'];
+        updateRegistrationDto.userId = registration['user']['id'];
+        updateRegistrationDto.courseId = registration['course']['id'];
+        updateRegistrationDto.process = 'approved';
+        await this.registrationsService.update(
+          registrationId,
+          updateRegistrationDto,
         );
         try {
-          await this.pendaftaranService.addUserToCourse(
-            pendaftaran['user']['id'],
-            pendaftaran['course']['id'],
+          await this.registrationsService.addUserToCourse(
+            registration['user']['id'],
+            registration['course']['id'],
           );
         } catch (error: any) {}
 
-        req.flash('success', 'proces successfully change acc');
+        req.flash('success', 'Process successfully changed to approved');
         res.redirect(
-          `/program/detail/program/admin/${pendaftaran['course']['id']}`,
+          `/program/detail/program/admin/${registration['course']['id']}`,
         );
-      } else if (proses === 'rejected') {
-        updatePendaftaranDto.file = pendaftaran['file'];
-        updatePendaftaranDto.userId = pendaftaran['user']['id'];
-        updatePendaftaranDto.courseId = pendaftaran['course']['id'];
-        updatePendaftaranDto.process = 'rejected';
-        await this.pendaftaranService.update(
-          pendaftaranId,
-          updatePendaftaranDto,
+      } else if (processStatus === 'rejected') {
+        updateRegistrationDto.file = registration['file'];
+        updateRegistrationDto.userId = registration['user']['id'];
+        updateRegistrationDto.courseId = registration['course']['id'];
+        updateRegistrationDto.process = 'rejected';
+        await this.registrationsService.update(
+          registrationId,
+          updateRegistrationDto,
         );
         try {
-          await this.pendaftaranService.removeCourseUser(
-            pendaftaran['user']['id'],
-            pendaftaran['course']['id'],
+          await this.registrationsService.removeCourseUser(
+            registration['user']['id'],
+            registration['course']['id'],
           );
         } catch (error: any) {}
-        req.flash('success', 'proces successfully change rejected');
+        req.flash('success', 'Process successfully changed to rejected');
         res.redirect(
-          `/program/detail/program/admin/${[pendaftaran]['course']['id']}`,
+          `/program/detail/program/admin/${[registration]['course']['id']}`,
         );
       }
     } catch (error: any) {
-      const pendaftaran = await this.pendaftaranService.findOne(pendaftaranId);
-      req.flash('error', error.message || 'proses pembayaran gagal diubah');
-      res.redirect(`/program/detail/program/admin/${pendaftaran['course']['id']}`);
+      const registration = await this.registrationsService.findOne(registrationId);
+      req.flash('error', error.message || 'Failed to update process');
+      res.redirect(`/program/detail/program/admin/${registration['course']['id']}`);
     }
   }
 }

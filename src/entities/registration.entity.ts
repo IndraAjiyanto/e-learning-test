@@ -10,8 +10,7 @@ import {
 import { User } from './user.entity';
 import { Course } from './course.entity';
 import { Exclude } from 'class-transformer';
-
-export type Proses = 'acc' | 'proces' | 'rejected';
+import { ProcessStatus } from './types/process-status';
 
 @Entity('registrations')
 export class Registration {
@@ -23,10 +22,10 @@ export class Registration {
 
   @Column({
     type: 'enum',
-    enum: ['acc', 'proces', 'rejected'],
+    enum: ['approved', 'process', 'rejected'],
     default: 'rejected',
   })
-  process: Proses;
+  process: ProcessStatus;
 
   @CreateDateColumn()
   createdAt: Date;

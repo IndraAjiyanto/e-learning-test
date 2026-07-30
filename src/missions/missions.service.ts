@@ -21,15 +21,15 @@ export class MissionService {
     return await this.missionRepository.find();
   }
 
-  async noPertemuan() {
+  async getNextOrder() {
     const mission_old = await this.missionRepository.find({
-      order: { mission_order: 'DESC' },
+      order: { missionOrder: 'DESC' },
       take: 1,
     });
     if (!mission_old || mission_old.length === 0) {
       return 0;
     }
-    const mission_new = mission_old[0].mission_order + 1;
+    const mission_new = mission_old[0].missionOrder + 1;
     return mission_new;
   }
 
@@ -50,8 +50,8 @@ export class MissionService {
     await this.missionRepository.remove(mission);
     const allMission = await this.missionRepository.find();
     for (const item of allMission) {
-      if (item.mission_order > mission.mission_order) {
-        item.mission_order -= 1;
+      if (item.missionOrder > mission.missionOrder) {
+        item.missionOrder -= 1;
         await this.missionRepository.save(item);
       }
     }

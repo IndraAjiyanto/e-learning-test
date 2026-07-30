@@ -21,7 +21,7 @@ export class MaterialService {
       where: { id: createMaterialDto.sessionId },
     });
     if (!session) {
-      throw new NotFoundException('session ini tidak ada');
+      throw new NotFoundException('Session not found');
     }
     const material = await this.materialRepository.create({
       ...createMaterialDto,
@@ -101,11 +101,11 @@ export class MaterialService {
       relations: ['session'],
     });
     if (!material) {
-      throw new NotFoundException(`materi tidak ditemukan`);
+      throw new NotFoundException(`Material not found`);
     }
 
     if (!material.session) {
-      throw new NotFoundException('session tidak ditemukan');
+      throw new NotFoundException('Session not found');
     }
 
     return material;
@@ -125,7 +125,7 @@ export class MaterialService {
   async update(id: number, updateMaterialDto: UpdateMaterialDto) {
     const material = await this.findOne(id);
     if (!material) {
-      throw new NotFoundException('materi tidak ditemukan');
+      throw new NotFoundException('Material not found');
     }
     Object.assign(material, updateMaterialDto);
     return await this.materialRepository.save(material);
@@ -134,7 +134,7 @@ export class MaterialService {
   async remove(materialId: number) {
     const material = await this.findOne(materialId);
     if (!material) {
-      throw new NotFoundException('materi tidak ditemukan');
+      throw new NotFoundException('Material not found');
     }
 
     if (material.fileType == 'pdf') {

@@ -9,34 +9,33 @@ import {
 import { User } from './user.entity';
 import { Session } from './session.entity';
 import { Exclude } from 'class-transformer';
-
-export type Proses = 'acc' | 'proces' | 'rejected';
+import { ProcessStatus } from './types/process-status';
 
 @Entity()
 export class Logbook {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'activity' })
+  @Column({ name: 'activity', nullable:true })
   activity: string;
 
-  @Column({ name: 'activity_details' })
+  @Column({ name: 'activity_details', nullable:true })
   activityDetails: string;
 
   @Column({ type:'varchar', nullable: true })
-  dokumentasi?: string| null;
+  documentation?: string| null;
 
   @Column({
     type: 'enum',
-    enum: ['acc', 'proces', 'rejected'],
+    enum: ['approved', 'process', 'rejected'],
     default: 'rejected',
   })
-  process: Proses;
+  process: ProcessStatus;
 
-  @Column({ name: 'obstacles' })
+  @Column({ name: 'obstacles', nullable:true })
   obstacles: string;
 
-  @Column({ name: 'other_documentation' })
+  @Column({ name: 'other_documentation', nullable:true })
   otherDocumentation: string;
 
   @CreateDateColumn()

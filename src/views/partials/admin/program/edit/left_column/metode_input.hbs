@@ -3,14 +3,14 @@
                         <span class="block text-sm font-semibold text-gray-700 mb-2">Method</span>
                         <div class="grid grid-cols-2 gap-4">
                             <label class="cursor-pointer">
-                                <input type="radio" name="metode" value="online" class="hidden peer" {{#if (roles course.metode "online")}}checked{{/if}}>
+                                <input type="radio" name="method" value="online" class="hidden peer" {{#if (roles course.method "online")}}checked{{/if}}>
                                 <div class="flex items-center justify-center px-4 py-3 border rounded-lg transition
                                             peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white">
                                     <span class="font-semibold">Online</span>
                                 </div>
                             </label>
                             <label class="cursor-pointer">
-                                <input type="radio" name="metode" value="offline" class="hidden peer" {{#if (roles course.metode "offline")}}checked{{/if}}>
+                                <input type="radio" name="method" value="offline" class="hidden peer" {{#if (roles course.method "offline")}}checked{{/if}}>
                                 <div class="flex items-center justify-center px-4 py-3 border rounded-lg transition
                                             peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white">
                                     <span class="font-semibold">Offline</span>

@@ -65,7 +65,7 @@
       }
 
       if (!this.tab || !urlMap[this.tab]) {
-        {{#if course.check_paid}}
+        {{#if course.checkPaid}}
         this.tab = 'payment';
         {{else}}
         this.tab = 'register';
@@ -96,7 +96,7 @@
       this.tabStatus = status;
       localStorage.setItem('statusPayment', status);
     },
-        formatTanggal(value) {
+        formatDate(value) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(value).toLocaleDateString('id-ID', options);
     },

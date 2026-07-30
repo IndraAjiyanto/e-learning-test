@@ -14,16 +14,16 @@ import { Quiz } from 'src/entities/quiz.entity';
 export class WeeksService {
   constructor(
     @InjectRepository(Weeks)
-    private readonly mingguRepository: Repository<Weeks>,
+    private readonly weeksRepository: Repository<Weeks>,
 
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
 
     @InjectRepository(WeekProgress)
     private readonly weekProgressRepository: Repository<WeekProgress>,
 
     @InjectRepository(UserCourse)
-    private readonly userKelasRepository: Repository<UserCourse>,
+    private readonly userCourseRepository: Repository<UserCourse>,
 
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
@@ -32,45 +32,45 @@ export class WeeksService {
     private readonly quizRepository: Repository<Quiz>,
   ) {}
 
-  async create(createMingguDto: CreateWeeksDto, courseId: number) {
-    const course = await this.kelasRepository.findOne({
+  async create(createWeekDto: CreateWeeksDto, courseId: number) {
+    const course = await this.courseRepository.findOne({
       where: { id: courseId },
     });
     if (!course) {
       throw new NotFoundException('course Not Found');
     }
-    if (createMingguDto.weekNumber === 1) {
-      const data = await this.mingguRepository.create({
-        ...createMingguDto,
+    if (createWeekDto.weekNumber === 1) {
+      const data = await this.weeksRepository.create({
+        ...createWeekDto,
         course: course,
       });
-      const weeks = await this.mingguRepository.save(data);
+      const weeks = await this.weeksRepository.save(data);
 
-      const userKelass = await this.userKelasRepository.find({
+      const userCourses = await this.userCourseRepository.find({
         where: { course: { id: course.id }, progress: false },
         relations: ['user'],
       });
-      if (userKelass.length > 0) {
-        for (const userKelas of userKelass) {
-          const existingProgresMinggu =
+      if (userCourses.length > 0) {
+        for (const userCourse of userCourses) {
+          const existingWeekProgress =
             await this.weekProgressRepository.findOne({
               where: {
                 week: { id: weeks.id },
-                user: { id: userKelas.user.id },
+                user: { id: userCourse.user.id },
               },
             });
-          if (existingProgresMinggu) {
+          if (existingWeekProgress) {
             await this.weekProgressRepository.save({
-              id: existingProgresMinggu.id,
+              id: existingWeekProgress.id,
               week: weeks,
-              user: userKelas.user,
+              user: userCourse.user,
               quiz: false,
               process: true,
             });
           } else {
             await this.weekProgressRepository.save({
               week: weeks,
-              user: userKelas.user,
+              user: userCourse.user,
               quiz: false,
               process: true,
             });
@@ -79,9 +79,9 @@ export class WeeksService {
         return weeks;
       }
     } else {
-      const weeks = await this.mingguRepository.findOne({
+      const weeks = await this.weeksRepository.findOne({
         where: {
-          weekNumber: createMingguDto.weekNumber - 1,
+          weekNumber: createWeekDto.weekNumber - 1,
           course: { id: course.id },
         },
         relations: ['weekProgresses'],
@@ -89,17 +89,17 @@ export class WeeksService {
 
       if (!weeks) {
         throw new NotFoundException(
-          'weeks sebelumnya harus dibuat terlebih dahulu',
+          'Previous week must be created first',
         );
       } else if (!weeks.isFinal) {
-        if (createMingguDto.isFinalCheck === 'true') {
-          createMingguDto.isFinal = true;
+        if (createWeekDto.isFinalCheck === 'true') {
+          createWeekDto.isFinal = true;
         }
-        const data = await this.mingguRepository.create({
-          ...createMingguDto,
+        const data = await this.weeksRepository.create({
+          ...createWeekDto,
           course: course,
         });
-        const newMinggu = await this.mingguRepository.save(data);
+        const newWeek = await this.weeksRepository.save(data);
 
         if (weeks.weekProgresses.length > 0) {
           const weekProgress = await this.weekProgressRepository.find({
@@ -108,33 +108,33 @@ export class WeeksService {
           });
 
           if (weekProgress.length > 0) {
-            for (const progres of weekProgress) {
+            for (const progress of weekProgress) {
               await this.weekProgressRepository.save({
-                week: newMinggu,
-                user: progres.user,
+                week: newWeek,
+                user: progress.user,
                 quiz: false,
                 process: true,
               });
             }
           }
         }
-        return newMinggu;
+        return newWeek;
       } else {
         throw new BadRequestException(
-          'Minggu sebelumnya sudah final, tidak bisa menambahkan week baru',
+          'Previous week is already finalized, cannot add a new week',
         );
       }
     }
   }
 
-  async noPertemuan(courseId: number) {
-    const mingguTerakhir = await this.findCourseWeeks(courseId);
-    const mingguBaru = mingguTerakhir + 1;
-    return mingguBaru;
+  async getSessionNumber(courseId: number) {
+    const lastWeek = await this.findCourseWeeks(courseId);
+    const newWeek = lastWeek + 1;
+    return newWeek;
   }
 
   async findCourseWeeks(courseId: number) {
-    const weeks = await this.mingguRepository.findOne({
+    const weeks = await this.weeksRepository.findOne({
       where: { course: { id: courseId } },
       order: { weekNumber: 'DESC' },
     });
@@ -145,13 +145,13 @@ export class WeeksService {
   }
 
   async findOne(weeksId: number) {
-    return await this.mingguRepository.findOne({
+    return await this.weeksRepository.findOne({
       where: { id: weeksId },
       relations: ['course'],
     });
   }
 
-  async findPertemuan(weeksId: number) {
+  async findSession(weeksId: number) {
     return await this.sessionRepository.find({
       where: { weeks: { id: weeksId } },
       order: { sessionOrder: 'ASC' },
@@ -164,29 +164,29 @@ export class WeeksService {
     });
   }
 
-  async findPertemuanAkhir(weeksId: number) {
+  async findLastSession(weeksId: number) {
     return await this.sessionRepository.findOne({
       where: { weeks: { id: weeksId }, isFinal: true },
     });
   }
 
-  async update(id: number, updateMingguDto: UpdateWeeksDto) {
+  async update(id: number, updateWeekDto: UpdateWeeksDto) {
     const weeks = await this.findOne(id);
     if (!weeks) {
       throw new NotFoundException('week not found');
     }
 
     if (weeks.isFinal) {
-      throw new BadRequestException('Week final tidak bisa diupdate');
+      throw new BadRequestException('Finalized week cannot be updated');
     }
 
-    if (updateMingguDto.isFinalCheck === 'true') {
-      updateMingguDto.isFinal = true;
+    if (updateWeekDto.isFinalCheck === 'true') {
+      updateWeekDto.isFinal = true;
     } else {
-      updateMingguDto.isFinal = false;
+      updateWeekDto.isFinal = false;
     }
-    Object.assign(weeks, updateMingguDto);
-    return await this.mingguRepository.save(weeks);
+    Object.assign(weeks, updateWeekDto);
+    return await this.weeksRepository.save(weeks);
   }
 
   async remove(id: number, courseId: number) {
@@ -194,15 +194,15 @@ export class WeeksService {
     if (!weeks) {
       throw new NotFoundException('week not found');
     }
-    await this.mingguRepository.remove(weeks);
-    const semuaMinggu = await this.mingguRepository.find({
+    await this.weeksRepository.remove(weeks);
+    const allWeeks = await this.weeksRepository.find({
       where: { course: { id: courseId } },
       order: { createdAt: 'ASC' },
     });
 
-    for (let i = 0; i < semuaMinggu.length; i++) {
-      semuaMinggu[i].weekNumber = i + 1;
-      await this.mingguRepository.save(semuaMinggu[i]);
+    for (let i = 0; i < allWeeks.length; i++) {
+      allWeeks[i].weekNumber = i + 1;
+      await this.weeksRepository.save(allWeeks[i]);
     }
   }
 }

@@ -11,34 +11,34 @@ import * as path from 'path';
 @Injectable()
 export class AssignmentsService {
   @InjectRepository(Assignment)
-  private readonly tugasRepository: Repository<Assignment>;
+  private readonly assignmentRepository: Repository<Assignment>;
   @InjectRepository(Session)
   private readonly sessionRepository: Repository<Session>;
 
-  async create(createTugassDto: CreateAssignmentsDto) {
+  async create(createAssignmentDto: CreateAssignmentsDto) {
     const session = await this.sessionRepository.findOne({
-      where: { id: createTugassDto.sessionId },
+      where: { id: createAssignmentDto.sessionId },
     });
     if (!session) {
-      throw new NotFoundException('session ini tidak ada');
+      throw new NotFoundException('Session not found');
     }
-    const task = await this.tugasRepository.create({
-      ...createTugassDto,
+    const task = await this.assignmentRepository.create({
+      ...createAssignmentDto,
       session: session,
     });
-    return await this.tugasRepository.save(task);
+    return await this.assignmentRepository.save(task);
   }
 
   async findOne(id: number) {
-    const task = await this.tugasRepository.findOne({ where: { id: id } });
+    const task = await this.assignmentRepository.findOne({ where: { id: id } });
     if (!task) {
       throw new NotFoundException('assignments not found');
     }
     return task;
   }
 
-  update(id: number, updateTugassDto: UpdateAssignmentsDto) {
-    return `This action updates a #${id} tugass`;
+  update(id: number, updateAssignmentDto: UpdateAssignmentsDto) {
+    return `This action updates a #${id} assignments`;
   }
   async deleteFile(url: string) {
     if (!url) return;
@@ -50,13 +50,13 @@ export class AssignmentsService {
     } catch (error) {}
   }
 
-  async remove(tugasId: number) {
-    const task = await this.tugasRepository.findOne({
-      where: { id: tugasId },
+  async remove(assignmentId: number) {
+    const task = await this.assignmentRepository.findOne({
+      where: { id: assignmentId },
     });
     if (!task) {
-      throw new NotFoundException('assignments tidak ditemukan');
+      throw new NotFoundException('Assignment not found');
     }
-    await this.tugasRepository.remove(task);
+    await this.assignmentRepository.remove(task);
   }
 }

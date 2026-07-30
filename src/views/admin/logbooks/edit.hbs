@@ -13,18 +13,18 @@
       loading: false,
         errorMessage: '',
         isValid: true,
-        fileName: '{{#if logbook.dokumentasi}}Existing Image{{/if}}',
+        fileName: '{{#if logbook.documentation}}Existing Image{{/if}}',
         fileSize: 0,
-        hasFile: {{#if logbook.dokumentasi}}true{{else}}false{{/if}},
-        previewUrl: '{{logbook.dokumentasi}}',
+        hasFile: {{#if logbook.documentation}}true{{else}}false{{/if}},
+        previewUrl: '{{logbook.documentation}}',
         maxSize: 5 * 1024 * 1024,
         allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
         allowedExtensions: ['.jpg', '.jpeg', '.png'],
         validateFile(file) {
           if (!file) {
-            this.hasFile = {{#if logbook.dokumentasi}}true{{else}}false{{/if}};
-            this.previewUrl = '{{logbook.dokumentasi}}';
-            this.fileName = '{{#if logbook.dokumentasi}}Existing Image{{/if}}';
+            this.hasFile = {{#if logbook.documentation}}true{{else}}false{{/if}};
+            this.previewUrl = '{{logbook.documentation}}';
+            this.fileName = '{{#if logbook.documentation}}Existing Image{{/if}}';
             return;
           }
           
@@ -38,7 +38,7 @@
           if (file.size > this.maxSize) {
             this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum ${(this.maxSize / 1024 / 1024).toFixed(0)}MB`;
             this.isValid = false;
-            this.previewUrl = '{{logbook.dokumentasi}}';
+            this.previewUrl = '{{logbook.documentation}}';
             return;
           }
           
@@ -46,7 +46,7 @@
           if (!this.allowedTypes.includes(file.type)) {
             this.errorMessage = `File type not allowed. Allowed: JPG, JPEG, PNG`;
             this.isValid = false;
-            this.previewUrl = '{{logbook.dokumentasi}}';
+            this.previewUrl = '{{logbook.documentation}}';
             return;
           }
           
@@ -57,7 +57,7 @@
           if (!hasValidExtension) {
             this.errorMessage = `File extension not allowed. Allowed: ${this.allowedExtensions.join(', ')}`;
             this.isValid = false;
-            this.previewUrl = '{{logbook.dokumentasi}}';
+            this.previewUrl = '{{logbook.documentation}}';
             return;
           }
           
@@ -67,10 +67,10 @@
         clearFile() {
           this.errorMessage = '';
           this.isValid = true;
-          this.fileName = '{{#if logbook.dokumentasi}}Existing Image{{/if}}';
+          this.fileName = '{{#if logbook.documentation}}Existing Image{{/if}}';
           this.fileSize = 0;
-          this.hasFile = {{#if logbook.dokumentasi}}true{{else}}false{{/if}};
-          this.previewUrl = '{{logbook.dokumentasi}}';
+          this.hasFile = {{#if logbook.documentation}}true{{else}}false{{/if}};
+          this.previewUrl = '{{logbook.documentation}}';
           $refs.fileInput.value = null;
         },
         canSubmit() {
@@ -146,7 +146,7 @@
       <!-- Photo Documentation -->
       <div class='space-y-3'>
         <label
-          for='dokumentasi'
+          for='documentation'
           class='block text-sm font-semibold text-gray-700 mb-1'
         >
           Photo Documentation
@@ -156,8 +156,8 @@
 
         <input
           type='file'
-          id='dokumentasi'
-          name='dokumentasi'
+          id='documentation'
+          name='documentation'
           accept='.jpg,.jpeg,.png'
           x-ref='fileInput'
           :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"

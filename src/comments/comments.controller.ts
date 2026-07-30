@@ -16,23 +16,23 @@ import { Request, Response } from 'express';
 @UseGuards(AuthenticatedGuard)
 @Controller('comments')
 export class CommentsController {
-  constructor(private readonly komentarService: CommentsService) {}
+  constructor(private readonly commentService: CommentsService) {}
 
   @Roles('admin')
   @Post(':assignmentId/:assignment_answerId')
   async create(
     @Param('assignmentId') assignmentId: number,
     @Param('assignment_answerId') assignment_answerId: number,
-    @Body() createKomentarDto: CreateCommentsDto,
+    @Body() createCommentDto: CreateCommentsDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      createKomentarDto.answerTaskId = assignment_answerId;
-      await this.komentarService.create(createKomentarDto);
-      await this.komentarService.updateJawabanTugas(
+      createCommentDto.answerTaskId = assignment_answerId;
+      await this.commentService.create(createCommentDto);
+      await this.commentService.updateAssignmentAnswer(
         assignment_answerId,
-        createKomentarDto.process,
+        createCommentDto.process,
       );
       req.flash('success', 'comment successfuly send');
       res.redirect(`/answer-assigment/${assignmentId}`);

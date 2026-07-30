@@ -5,7 +5,7 @@ export class CreateMentorLogbookDto {
   activity: string;
 
   @IsString()
-  activity_detail: string;
+  activityDetail: string;
 
   @IsString()
   documentation: string;

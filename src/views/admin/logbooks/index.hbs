@@ -71,7 +71,7 @@
           <td class="px-6 py-4 text-sm text-gray-800">{{activityDetails}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{obstacles}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">
-            <img src="{{dokumentasi}}" alt="Dokumentasi" class="w-16 h-16 object-cover rounded border" />
+            <img src="{{documentation}}" alt="Dokumentasi" class="w-16 h-16 object-cover rounded border" />
           </td>
           <td class="px-6 py-4 text-sm text-gray-800">{{session.weeks.course.name}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.username}}</td>
@@ -167,7 +167,7 @@ function logbookTable({ logbooks }) {
       const currentPageData = filtered.slice(start, end);
 
       const rows = [
-        ["No", "Kegiatan", "Rincian", "Kendala", "dokumentasi", "User", "Kelas", "Created At"]
+        ["No", "Kegiatan", "Rincian", "Kendala", "documentation", "User", "Kelas", "Created At"]
       ];
 
       currentPageData.forEach((l, index) => {
@@ -176,7 +176,7 @@ function logbookTable({ logbooks }) {
           l.activity,
           l.activityDetails,
           l.obstacles,
-          l.dokumentasi,
+          l.documentation,
           l.user?.username ?? "-",
           l.session?.weeks?.course?.name ?? "-",
           l.createdAt

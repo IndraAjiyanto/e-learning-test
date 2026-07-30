@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateJawabanDto } from './dto/create-jawaban.dto';
+import { CreateAnswerDto } from './dto/create-answer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from 'src/entities/answer.entity';
 import { Repository } from 'typeorm';
@@ -9,28 +9,28 @@ import { Question } from 'src/entities/question.entity';
 export class AnswersService {
   constructor(
     @InjectRepository(Answer)
-    private readonly jawabanRepository: Repository<Answer>,
+    private readonly answerRepository: Repository<Answer>,
     @InjectRepository(Question)
-    private readonly pertanyaanRepository: Repository<Question>,
+    private readonly questionRepository: Repository<Question>,
   ) {}
-  async create(createJawabanDto: CreateJawabanDto) {
-    const questions = await this.pertanyaanRepository.findOne({
-      where: { id: createJawabanDto.questionsId },
+  async create(createAnswerDto: CreateAnswerDto) {
+    const questions = await this.questionRepository.findOne({
+      where: { id: createAnswerDto.questionsId },
     });
     if (!questions) {
-      throw new NotFoundException('session ini tidak ada');
+      throw new NotFoundException('Session not found');
     }
 
-    const answers = this.jawabanRepository.create({
-      answer: createJawabanDto.answer,
-      isCorrect: createJawabanDto.is_correct,
+    const answers = this.answerRepository.create({
+      answer: createAnswerDto.answer,
+      isCorrect: createAnswerDto.is_correct,
       question: questions,
     });
-    return await this.jawabanRepository.save(answers);
+    return await this.answerRepository.save(answers);
   }
 
-  async findJawabanBenar(questionId: number) {
-    return await this.jawabanRepository.find({
+  async findCorrectAnswer(questionId: number) {
+    return await this.answerRepository.find({
       where: { question: { id: questionId } },
     });
   }

@@ -21,22 +21,22 @@ export class Session {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'topic' })
+  @Column({ name: 'topic', nullable:true })
   topic: string;
 
-  @Column()
+  @Column({nullable:true})
   sessionOrder: number;
 
-  @Column({ name: 'date' })
+  @Column({ name: 'date', nullable:true })
   date: Date;
 
-  @Column({ name: 'location' })
+  @Column({ name: 'location', nullable:true })
   location: string;
 
-  @Column({ name: 'start_time', type: 'time' })
+  @Column({ name: 'start_time', type: 'time', nullable:true })
   startTime: string;
 
-  @Column({ name: 'end_time', type: 'time' })
+  @Column({ name: 'end_time', type: 'time', nullable:true })
   endTime: string;
 
   @Column({ name: 'is_final', default: false })

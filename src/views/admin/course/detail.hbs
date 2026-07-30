@@ -130,7 +130,7 @@
           <div class="space-y-1 text-xs">
             <p><span class="font-medium text-gray-600">Program Name:</span> <span class="text-gray-800">{{course.name}}</span></p>
             <p><span class="font-medium text-gray-600">Category:</span> <span class="text-gray-800">{{course.category.name}}</span></p>
-            <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{ course.courseType.name_clasess_type}}</span></p>
+            <p><span class="font-medium text-gray-600">Type:</span> <span class="text-gray-800">{{ course.courseType.nameClassesType}}</span></p>
             <p><span class="font-medium text-gray-600">Method:</span> <span class="text-gray-800">{{#if (eq course.method 'online')}}Online{{else}}Offline{{/if}}</span></p>
             <p><span class="font-medium text-gray-600">Location:</span> <span class="text-gray-800">{{#each course.locations}}{{this}}{{/each}}</span></p>
             <p><span class="font-medium text-gray-600">Location:</span> <a href="{{course.locationLink}}" target="_blank" class="text-blue-500 underline truncate block">{{course.locationLink}}</a></p>
@@ -139,8 +139,8 @@
             {{else}}
             <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{course.month}} month</span></p>
             {{/if}}
-            <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if course.startDate}}{{formatTanggal course.startDate}}{{else}}Not set{{/if}}</span></p>
-            <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if course.startEnd}}{{formatTanggal course.startEnd}}{{else}}Not set{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if course.startDate}}{{formatDate course.startDate}}{{else}}Not set{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if course.startEnd}}{{formatDate course.startEnd}}{{else}}Not set{{/if}}</span></p>
           </div>
         </div>
 
@@ -174,10 +174,10 @@
             <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
             </svg>
-            {{#if course.check_paid}}Pricing Information{{else}}Form Information{{/if}}
+            {{#if course.checkPaid}}Pricing Information{{else}}Form Information{{/if}}
           </h3>
           <div class="space-y-1 text-xs">
-            {{#if course.check_paid}}
+            {{#if course.checkPaid}}
             <p><span class="font-medium text-gray-600">Price:</span> <span class="text-gray-800 font-semibold">Rp {{formatRupiah course.price}}</span></p>
             <p><span class="font-medium text-gray-600">Promo:</span> <span class="text-green-600 font-semibold">Rp {{formatRupiah course.promo}}</span></p>
             <p><span class="font-medium text-gray-600">Type:</span> <span class="text-green-600">Paid</span></p>
@@ -198,9 +198,9 @@
           </h3>
           <div class="space-y-1 text-xs">
             <p><span class="font-medium text-gray-600">Account Mentor:</span> <span class="text-gray-800">{{#each course.mentorings}}{{this.user.username}}{{/each}}</span></p>
-            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate course.learningTargets_id 40}}</span></p>
-            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate course.learningTargets_en 40}}</span></p>
-            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate course.learningTargets_ja 40}}</span></p>
+            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate course.learningTargetsId 40}}</span></p>
+            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate course.learningTargetsEn 40}}</span></p>
+            <p><span class="font-medium text-gray-600">Target:</span> <span class="text-gray-800">{{truncate course.learningTargetsJa 40}}</span></p>
             <div class="mt-2">
               <p class="font-medium text-gray-600 mb-1">Technologies:</p>
               <div class="flex flex-wrap gap-1">
@@ -211,9 +211,9 @@
                     {{{ this.svg }}}
                   </div>
                   {{/if}}
-                  {{#if this.img_url}}
+                  {{#if this.imgUrl}}
                   <div class='w-6 h-6 flex items-center justify-center'>
-                    <img src="{{this.img_url}}" alt="{{this.name}}" class="w-full h-full object-contain">
+                    <img src="{{this.imgUrl}}" alt="{{this.name}}" class="w-full h-full object-contain">
                   </div>
                   {{/if}}
                 </div>
@@ -264,7 +264,7 @@
       FAQ
     </button>
 
-    {{#if course.check_paid}}
+    {{#if course.checkPaid}}
     <button @click="toggleFetch('/program/installment/{{course.id}}', 'installment')" 
             :class="tab === 'installment' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">

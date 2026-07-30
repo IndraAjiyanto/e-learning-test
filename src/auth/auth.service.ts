@@ -13,7 +13,7 @@ import { CoursesService } from 'src/courses/courses.service';
 export class AuthService {
   constructor(
     private userService: UsersService,
-    private kelasService: CoursesService,
+    private coursesService: CoursesService,
     private emailService: EmailService,
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
@@ -68,10 +68,10 @@ export class AuthService {
   }
 
   async findAllCourses() {
-    return await this.kelasService.findAllLaunch();
+    return await this.coursesService.findAllLaunch();
   }
 
   async findCourse(id: number) {
-    return await this.kelasService.findOne(id);
+    return await this.coursesService.findOne(id);
   }
 }

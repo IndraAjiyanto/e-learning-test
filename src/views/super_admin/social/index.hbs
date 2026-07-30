@@ -79,12 +79,12 @@
             </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               <a
-                href='{{instragram}}'
+                href='{{instagram}}'
                 target='_blank'
                 class='text-pink-600 hover:underline flex items-center gap-2'
               >
                 <i class='fab fa-instagram'></i>
-                <span class='truncate max-w-[150px]'>{{instragram}}</span>
+                <span class='truncate max-w-[150px]'>{{instagram}}</span>
               </a>
             </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
@@ -98,14 +98,14 @@
               </a>
             </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#if video_youtube}}
+              {{#if videoYoutube}}
                 <a
-                  href='{{video_youtube}}'
+                  href='{{videoYoutube}}'
                   target='_blank'
                   class='text-red-600 hover:underline flex items-center gap-2'
                 >
                   <i class='fab fa-youtube'></i>
-                  <span class='truncate max-w-[150px]'>{{video_youtube}}</span>
+                  <span class='truncate max-w-[150px]'>{{videoYoutube}}</span>
                 </a>
               {{else}}
                 <span class='text-gray-400 italic'>No video</span>
@@ -123,16 +123,16 @@
             <td class='px-6 py-4 text-sm text-gray-800'>
               <div class='flex items-center gap-2'>
                 <i class='fas fa-phone text-gray-600'></i>
-                <span>{{nomor}}</span>
+                <span>{{number}}</span>
               </div>
             </td>
             <!-- Google Maps Embed -->
             <td class='px-6 py-4 text-sm text-gray-800'>
-              {{#if link_alamat}}
+              {{#if linkAddress}}
                 <div
                   class='w-full max-w-xs md:max-w-sm lg:max-w-md mx-auto rounded overflow-hidden border border-gray-200'
                 >
-                  {{{link_alamat}}}
+                  {{{linkAddress}}}
                 </div>
               {{else}}
                 <span class='text-gray-400 italic'>No map</span>
@@ -140,12 +140,12 @@
             </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               <a
-                href='{{link_form}}'
+                href='{{linkForm}}'
                 target='_blank'
                 class='text-green-600 hover:underline flex items-center gap-2'
               >
                 <i class='fas fa-link'></i>
-                <span class='truncate max-w-[150px]'>{{link_form}}</span>
+                <span class='truncate max-w-[150px]'>{{linkForm}}</span>
               </a>
             </td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
@@ -256,7 +256,7 @@
       get filteredSocials() {
         let filtered = this.socials.filter((s) =>
           (
-            `${s.linkedin} ${s.instragram} ${s.youtube} ${s.video_youtube} ${s.email} ${s.nomor} ${s.alamat}`
+            `${s.linkedin} ${s.instagram} ${s.youtube} ${s.videoYoutube} ${s.email} ${s.number} ${s.address}`
           )
             .toLowerCase()
             .includes(this.search.toLowerCase())

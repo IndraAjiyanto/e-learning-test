@@ -98,8 +98,27 @@ async function bootstrap() {
 
         // Helper untuk tanggal dan waktu
         formDate: (date: Date) => new Date(date).toISOString().split('T')[0],
-        formatDate: (date: Date) => {
-          if (!date) return '';
+        formatDate: (date: string | Date, lang?: string) => {
+          if (!date) return lang ? 'Not set' : '';
+
+          if (lang) {
+            let locale;
+            switch (lang) {
+              case 'id':
+                locale = id;
+                break;
+              case 'en':
+                locale = enUS;
+                break;
+              case 'ja':
+                locale = ja;
+                break;
+              default:
+                locale = id;
+            }
+            return format(new Date(date), 'EEEE, d MMMM yyyy', { locale });
+          }
+
           const d = new Date(date);
           const options: Intl.DateTimeFormatOptions = {
             year: 'numeric',
@@ -107,29 +126,6 @@ async function bootstrap() {
             day: 'numeric',
           };
           return d.toLocaleDateString('en-US', options);
-        },
-        formatTanggal: (tanggal: string, lang: string) => {
-          if (!tanggal) {
-            return 'Not set';
-          }
-
-          let locale;
-
-          switch (lang) {
-            case 'id':
-              locale = id;
-              break;
-            case 'en':
-              locale = enUS;
-              break;
-            case 'ja':
-              locale = ja;
-              break;
-            default:
-              locale = id;
-          }
-
-          return format(new Date(tanggal), 'EEEE, d MMMM yyyy', { locale });
         },
         formatTime: (waktu: string) => (waktu ? waktu.slice(0, 5) : '-'),
         formatMinutes: (ms: number) => Math.floor(ms / 60000),

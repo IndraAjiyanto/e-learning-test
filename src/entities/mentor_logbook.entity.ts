@@ -19,7 +19,7 @@ export class MentorLogbook {
   activity: string;
 
   @Column()
-  activity_detail: string;
+  activityDetail: string;
 
   @Column()
   documentation: string;

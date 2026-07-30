@@ -29,8 +29,8 @@ export class Attendance {
   })
   status: Status;
 
-  @Column()
-  attendance_time: Date;
+  @Column({ name: 'attendanceTime' })
+  attendanceTime: Date;
 
   @Column()
   notes: string;

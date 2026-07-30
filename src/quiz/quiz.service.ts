@@ -18,23 +18,23 @@ export class QuizService {
     @InjectRepository(Quiz)
     private readonly quizRepository: Repository<Quiz>,
     @InjectRepository(Weeks)
-    private readonly mingguRepository: Repository<Weeks>,
+    private readonly weeksRepository: Repository<Weeks>,
     @InjectRepository(Score)
-    private readonly nilaiRepository: Repository<Score>,
+    private readonly scoreRepository: Repository<Score>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Question)
-    private readonly pertanyaanRepository: Repository<Question>,
+    private readonly questionRepository: Repository<Question>,
     @InjectRepository(QuizProgress)
     private readonly progresQuizRepository: Repository<QuizProgress>,
     @InjectRepository(SessionProgress)
-    private readonly progresPertemuanRepository: Repository<SessionProgress>,
+    private readonly sessionProgressRepository: Repository<SessionProgress>,
     @InjectRepository(UserAnswer)
-    private readonly jawabanUserRepository: Repository<UserAnswer>,
+    private readonly userAnswerRepository: Repository<UserAnswer>,
   ) {}
 
   async create(createQuizDto: CreateQuizDto) {
-    const weeks = await this.mingguRepository.findOne({
+    const weeks = await this.weeksRepository.findOne({
       where: { id: createQuizDto.weeksId },
       relations: ['session'],
     });
@@ -46,7 +46,7 @@ export class QuizService {
       weeks: weeks,
     });
     const newQuiz = await this.quizRepository.save(quiz);
-    const progres_pertemuan_akhir = await this.progresPertemuanRepository.find({
+    const lastSessionProgress = await this.sessionProgressRepository.find({
       where: {
         session: { isFinal: true, weeks: { id: weeks.id } },
         isAttended: true,
@@ -55,8 +55,8 @@ export class QuizService {
       relations: ['user'],
     });
 
-    if (progres_pertemuan_akhir.length > 0) {
-      for (const progres of progres_pertemuan_akhir) {
+    if (lastSessionProgress.length > 0) {
+      for (const progres of lastSessionProgress) {
         const existingProgresQuiz = await this.progresQuizRepository.findOne({
           where: {
             quiz: { id: newQuiz.id },
@@ -81,12 +81,12 @@ export class QuizService {
     }
   }
 
-  async findNilai(quizId: number) {
+  async findScore(quizId: number) {
     const quiz = await this.findOne(quizId);
     if (!quiz) {
       throw new NotFoundException('quiz not found');
     }
-    return await this.nilaiRepository.find({
+    return await this.scoreRepository.find({
       where: { quiz: { id: quizId } },
       relations: ['user'],
     });
@@ -112,9 +112,9 @@ export class QuizService {
     if(user.countdownQuiz !== null) {
 
     const startTime = user.countdownQuiz.getTime();
-    const durasi = quiz.duration * 60000;
+    const duration = quiz.duration * 60000;
 
-    if(startTime + durasi <= Date.now() && user.quizStart === true) {
+    if(startTime + duration <= Date.now() && user.quizStart === true) {
       return true;
     }else{
       return false;
@@ -123,12 +123,12 @@ export class QuizService {
 
   }
 
-  async findNilaiUser(userId: number, quziId: number) {
+  async findUserScore(userId: number, quziId: number) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
     }
-    return await this.nilaiRepository.find({
+    return await this.scoreRepository.find({
       where: { user: { id: userId }, quiz: { id: quziId } },
     });
   }
@@ -173,7 +173,7 @@ const remainingSecond = Math.ceil(remainingMs / 1000);
   }
 
   async findQuestions(quizId: number) {
-    return await this.pertanyaanRepository.find({
+    return await this.questionRepository.find({
       where: {
         quiz: { id: quizId },
       },

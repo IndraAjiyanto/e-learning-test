@@ -8,7 +8,7 @@ export class Gallery {
     id: number 
 
     @Column()
-    file_path:string
+    filePath:string
 
     @Column()
     title:string

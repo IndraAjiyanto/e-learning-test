@@ -5,7 +5,7 @@ export class CreateGalleryDto {
 
     @IsOptional()
     @IsString()
-    file_path?: string
+    filePath?: string
 
      @IsString()
     title:string

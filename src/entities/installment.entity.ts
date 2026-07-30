@@ -20,7 +20,7 @@ export class Installment {
   id: number;
 
   @Column()
-  down_payment: number;
+  downPayment: number;
 
   @Column('jsonb')
   price: number[];

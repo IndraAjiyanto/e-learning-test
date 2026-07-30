@@ -26,7 +26,7 @@ export class Portofolios {
   content: string;
 
   @Column({ type: 'text' })
-  content_html: string;
+  contentHtml: string;
 
   @Column({ name: 'description' })
   description: string;

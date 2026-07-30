@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CategoriesService } from './categories.service';
 
-describe('KategorisService', () => {
+describe('CategoriesService', () => {
   let service: CategoriesService;
 
   beforeEach(async () => {

@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsString, IsUrl } from 'class-validator';
-import { Proses } from 'src/entities/logbook.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreateLogbookDto {
   @IsString()
@@ -25,8 +25,8 @@ export class CreateLogbookDto {
   userId: number;
 
   @IsOptional() // Tambahkan opsional untuk update
-  @IsEnum(['acc', 'proces', 'rejected'])
-  process: Proses;
+  @IsEnum(['approved', 'process', 'rejected'])
+  process: ProcessStatus;
 
  @IsOptional() // Tambahkan opsional untuk update
   @Type(() => Number) // <--- 3. Tambahkan ini juga

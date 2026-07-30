@@ -21,8 +21,8 @@ export class Commitment {
   @Column()
   icon: string;
 
-  @Column()
-  commitment_order: number;
+  @Column({nullable:true})
+  commitmentOrder: number;
 
   @CreateDateColumn()
   createdAt: Date;

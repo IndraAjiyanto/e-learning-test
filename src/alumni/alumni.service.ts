@@ -14,10 +14,10 @@ export class AlumniService {
     @InjectRepository(Alumni)
     private readonly alumniRepository: Repository<Alumni>,
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
   ) {}
   async create(createAlumnusDto: CreateAlumnusDto) {
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: createAlumnusDto.courseId },
     });
     if (!course) {
@@ -35,11 +35,11 @@ export class AlumniService {
   }
 
   async findAllCourses() {
-    return await this.kelasRepository.find();
+    return await this.courseRepository.find();
   }
 
   async findCourseByKategori(categoryId: number) {
-    return await this.kelasRepository.find({
+    return await this.courseRepository.find({
       where: { category: { id: categoryId } },
     });
   }
@@ -86,7 +86,7 @@ export class AlumniService {
 
   async filterAlumni(
     kategoriId?: number,
-    kelasId?: number,
+    courseId?: number,
     search?: string,
     page: number = 1,
     limit: number = 6,
@@ -97,8 +97,8 @@ export class AlumniService {
       .leftJoinAndSelect('kelas.kategori', 'kategori');
 
     // Filter by kelas first (most specific)
-    if (kelasId) {
-      query = query.where('alumni.kelas_id = :kelasId', { kelasId });
+    if (courseId) {
+      query = query.where('alumni.kelas_id = :courseId', { courseId });
     }
     // Then by kategori (if no kelas specified)
     else if (kategoriId) {

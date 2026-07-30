@@ -36,8 +36,8 @@ export class CategoriesService {
   ) {}
 
   async create(createCategoriesDto: CreateCategoriesDto) {
-    const { courseType: courseTypeIds, ...kategoriData } = createCategoriesDto;
-    const category = await this.categoryRepository.create(kategoriData);
+    const { courseType: courseTypeIds, ...categoryData } = createCategoriesDto;
+    const category = await this.categoryRepository.create(categoryData);
 
     if (courseTypeIds && courseTypeIds.length > 0) {
       const courseTypes =
@@ -48,7 +48,7 @@ export class CategoriesService {
     return await this.categoryRepository.save(category);
   }
 
-  async findOneKategori(categoryName: string) {
+  async findOneCategory(categoryName: string) {
     const category = await this.categoryRepository.findOne({
       where: { name: categoryName },
       relations: ['courseTypes'],
@@ -78,14 +78,14 @@ export class CategoriesService {
     return category;
   }
 
-  async findCourseByKategori(categoryId: number) {
+  async findCourseByCategory(categoryId: number) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId }, launch: true },
       relations: ['courseType', 'category', 'userCourses'],
     });
   }
 
-  async findCourseByKategoriAll(categoryId: number) {
+  async findCourseByCategoryAll(categoryId: number) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId } },
       relations: ['courseType', 'category', 'userCourses'],
@@ -93,7 +93,7 @@ export class CategoriesService {
     });
   }
 
-  async findAlumniByKategori(categoryId: number) {
+  async findAlumniByCategory(categoryId: number) {
     return await this.alumniRepository.find({
       where: { course: { category: { id: categoryId } } },
       relations: ['course'],
@@ -102,25 +102,25 @@ export class CategoriesService {
     });
   }
 
-  async findFaqByKategori(categoryId: number) {
+  async findFaqByCategory(categoryId: number) {
     return await this.faqRepository.find({
       where: { category: { id: categoryId } },
     });
   }
 
-  async findSuperiorityByKategori(categoryId: number) {
+  async findSuperiorityByCategory(categoryId: number) {
     return await this.superiorityRepository.find({
       where: { category: { id: categoryId } },
     });
   }
 
-  async findBenefitByKategori(categoryId: number) {
+  async findBenefitByCategory(categoryId: number) {
     return await this.benefitCategoryRepository.find({
       where: { category: { id: categoryId } },
     });
   }
 
-  async findFlowByKategori(categoryId: number) {
+  async findFlowByCategory(categoryId: number) {
     return await this.flowCategoryRepository.find({
       where: { category: { id: categoryId } },
     });

@@ -17,19 +17,19 @@ import { Request, Response } from 'express';
 
 @Controller('question-general')
 export class FaqsController {
-  constructor(private readonly pertanyaanUmumService: FaqsService) {}
+  constructor(private readonly faqsService: FaqsService) {}
 
   @Roles('super_admin')
   @Post(':categoryId')
   async create(
     @Param('categoryId') categoryId: number,
-    @Body() createPertanyaanUmumDto: CreateFaqsDto,
+    @Body() createFaqDto: CreateFaqsDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createPertanyaanUmumDto.categoryId = categoryId;
-      await this.pertanyaanUmumService.create(createPertanyaanUmumDto);
+      createFaqDto.categoryId = categoryId;
+      await this.faqsService.create(createFaqDto);
       req.flash('success', 'FAQ successfully created');
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
@@ -59,7 +59,7 @@ export class FaqsController {
     @Res() res: Response,
   ) {
     const faqs =
-      await this.pertanyaanUmumService.findOne(faqsId);
+      await this.faqsService.findOne(faqsId);
     res.render('super_admin/faqs/edit', {
       user: req.user,
       faqs,
@@ -71,14 +71,14 @@ export class FaqsController {
   async update(
     @Param('faqsId') faqsId: number,
     @Param('categoryId') categoryId: number,
-    @Body() updatePertanyaanUmumDto: UpdateFaqsDto,
+    @Body() updateFaqDto: UpdateFaqsDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
-      await this.pertanyaanUmumService.update(
+      await this.faqsService.update(
         faqsId,
-        updatePertanyaanUmumDto,
+        updateFaqDto,
       );
       req.flash('success', 'FAQ successfully updated');
       res.redirect('/category/' + categoryId);
@@ -97,7 +97,7 @@ export class FaqsController {
     @Res() res: Response,
   ) {
     try {
-      await this.pertanyaanUmumService.remove(faqsId);
+      await this.faqsService.remove(faqsId);
       req.flash('success', 'FAQ successfully deleted');
       res.redirect('/category/' + categoryId);
     } catch (error: any) {

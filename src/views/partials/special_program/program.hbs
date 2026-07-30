@@ -174,18 +174,18 @@
               <div class="card-body p-6">
                 <div class="flex gap-2 mb-3">
                   <span class="badge flex justify-center h-fit items-center bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold rounded-full" x-text="course.category?.name"></span>
-                  <span class="badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-full" x-text="course.courseType?.name_clasess_type"></span>
+                  <span class="badge flex justify-center h-fit items-center bg-gradient-to-br from-primary via-secondary to-gray-900 text-white px-3 py-1 text-xs font-semibold rounded-full" x-text="course.courseType?.nameClassesType"></span>
                 </div>
 
                 <div class="flex flex-wrap gap-2 mb-4 text-sm text-gray-700">
                   <div class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
-                    <template x-if="course.metode === 'online'">
+                    <template x-if="course.method === 'online'">
                       <span class="flex items-center gap-2">
                         <i class="fas fa-laptop text-slate-500"></i>
                         <span>{{t "test.home.programSection.online"}}</span>
                       </span>
                     </template>
-                    <template x-if="course.metode === 'offline'">
+                    <template x-if="course.method === 'offline'">
                       <span class="flex items-center gap-2">
                         <i class="fas fa-map-marker-alt text-slate-500"></i>
                         <span>{{t "test.home.programSection.offline"}}</span>

@@ -10,33 +10,33 @@ import { Repository } from 'typeorm';
 export class FaqsService {
   constructor(
     @InjectRepository(CategoryFaq)
-    private readonly pertanyaanUmumRepository: Repository<CategoryFaq>,
+    private readonly faqRepository: Repository<CategoryFaq>,
   ) {}
 
-  async create(createPertanyaanUmumDto: CreateFaqsDto) {
-    const { categoryId, ...data } = createPertanyaanUmumDto;
-    const category = await this.pertanyaanUmumRepository.manager.findOne(
+  async create(createFaqDto: CreateFaqsDto) {
+    const { categoryId, ...data } = createFaqDto;
+    const category = await this.faqRepository.manager.findOne(
       Category,
       { where: { id: categoryId } },
     );
     if (!category) {
       throw new NotFoundException('Category not found');
     }
-    const pertanyaanUmum = this.pertanyaanUmumRepository.create({
+    const faq = this.faqRepository.create({
       ...data,
       category: category,
     });
-    return await this.pertanyaanUmumRepository.save(pertanyaanUmum);
+    return await this.faqRepository.save(faq);
   }
 
   async findAll() {
-    return await this.pertanyaanUmumRepository.find({
+    return await this.faqRepository.find({
       relations: ['category'],
     });
   }
 
   async findOne(faqsId: number) {
-    return await this.pertanyaanUmumRepository.findOne({
+    return await this.faqRepository.findOne({
       where: { id: faqsId },
       relations: ['category'],
     });
@@ -44,15 +44,15 @@ export class FaqsService {
 
   async update(
     faqsId: number,
-    updatePertanyaanUmumDto: UpdateFaqsDto,
+    updateFaqDto: UpdateFaqsDto,
   ) {
     const faqs = await this.findOne(faqsId);
     if (!faqs) {
       throw new NotFoundException('FAQ Not Found');
     }
-    const { categoryId, ...data } = updatePertanyaanUmumDto;
+    const { categoryId, ...data } = updateFaqDto;
     if (categoryId) {
-      const category = await this.pertanyaanUmumRepository.manager.findOne(
+      const category = await this.faqRepository.manager.findOne(
         Category,
         { where: { id: categoryId } },
       );
@@ -62,7 +62,7 @@ export class FaqsService {
       faqs.category = category;
     }
     Object.assign(faqs, data);
-    return await this.pertanyaanUmumRepository.save(faqs);
+    return await this.faqRepository.save(faqs);
   }
 
   async remove(faqsId: number) {
@@ -70,10 +70,10 @@ export class FaqsService {
     if (!faqs) {
       throw new NotFoundException('FAQ Not Found');
     }
-    return await this.pertanyaanUmumRepository.remove(faqs);
+    return await this.faqRepository.remove(faqs);
   }
 
-  async getKategori() {
-    return await this.pertanyaanUmumRepository.manager.find(Category);
+  async getCategory() {
+    return await this.faqRepository.manager.find(Category);
   }
 }

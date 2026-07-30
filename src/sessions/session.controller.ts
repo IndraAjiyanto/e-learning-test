@@ -35,7 +35,7 @@ export class SessionController {
   ) {
     try {
       CreateSessionDto.sessionOrder =
-        await this.sessionService.noPertemuan(CreateSessionDto.weeksId);
+        await this.sessionService.getNextOrder(CreateSessionDto.weeksId);
       await this.sessionService.create(CreateSessionDto);
       req.flash('success', 'session succesfuly create');
       res.redirect(`/week/${CreateSessionDto.weeksId}`);
@@ -56,7 +56,7 @@ export class SessionController {
     try {
       createPertemuanDto.weeksId = weeksId;
       createPertemuanDto.sessionOrder =
-        await this.sessionService.noPertemuan(weeksId);
+        await this.sessionService.getNextOrder(weeksId);
       await this.sessionService.create(createPertemuanDto);
       req.flash('success', 'session succesfuly create');
       res.redirect(`/week/${weeksId}`);

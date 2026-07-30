@@ -15,7 +15,7 @@ import { Biodata } from 'src/entities/biodata.entity';
 export class CertificatesService {
   constructor(
     @InjectRepository(Course)
-    private readonly kelasRepository: Repository<Course>,
+    private readonly courseRepository: Repository<Course>,
     @InjectRepository(Certificates)
     private readonly certificatesRepository: Repository<Certificates>,
     @InjectRepository(User)
@@ -32,7 +32,7 @@ export class CertificatesService {
     if (!user) {
       throw new NotFoundException('user not found');
     }
-    const course = await this.kelasRepository.findOne({
+    const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['weeks', 'weeks.quiz', 'courseType', 'category', 'mentorings'],
     });
@@ -69,12 +69,12 @@ export class CertificatesService {
       // Hitung lebar text untuk center alignment
       const nameSize = 43.8;
       const nameWidth = openSauceBold.widthOfTextAtSize(
-        user.biodata.full_name,
+        user.biodata.fullName,
         nameSize,
       );
       const nameCenterX = (width - nameWidth) / 2;
 
-      page.drawText(user.biodata.full_name, {
+      page.drawText(user.biodata.fullName, {
         x: nameCenterX,
         y: 349,
         size: nameSize,

@@ -227,15 +227,15 @@ export class AlumniController {
     @Res() res: Response,
   ) {
     try {
-      const kategoriId = req.query.kategori_id ? Number(req.query.kategori_id) : undefined;
-      const kelasId = req.query.kelas_id ? Number(req.query.kelas_id) : undefined;
+      const kategoriId = req.query.category_id ? Number(req.query.category_id) : undefined;
+      const courseId = req.query.course_id ? Number(req.query.course_id) : undefined;
       const search = req.query.search ? String(req.query.search) : undefined;
       const page = req.query.page ? Number(req.query.page) : 1;
       const limit = req.query.limit ? Number(req.query.limit) : 6;
 
       const result = await this.alumniService.filterAlumni(
         kategoriId,
-        kelasId,
+        courseId,
         search,
         page,
         limit,

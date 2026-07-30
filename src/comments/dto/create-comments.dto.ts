@@ -1,5 +1,5 @@
 import { IsInt, IsString } from 'class-validator';
-import { ProcessType } from 'src/entities/answer_task.entity';
+import { ProcessStatus } from 'src/entities/types/process-status';
 
 export class CreateCommentsDto {
   @IsString()
@@ -9,5 +9,5 @@ export class CreateCommentsDto {
   answerTaskId: number;
 
   @IsString()
-  process: ProcessType;
+  process: ProcessStatus;
 }

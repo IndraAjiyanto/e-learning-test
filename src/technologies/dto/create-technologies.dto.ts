@@ -11,5 +11,5 @@ export class CreateTechnologiesDto {
 
   @IsString()
   @IsOptional()
-  img_url?: string | null;
+  imgUrl?: string | null;
 }

@@ -15,7 +15,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
 
     response.status(404).render('404', {
       url: request.originalUrl,
-      title: 'Halaman Tidak Ditemukan - 404',
+      title: 'Page Not Found - 404',
     });
   }
 }

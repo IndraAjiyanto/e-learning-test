@@ -17,8 +17,8 @@ export class Background {
   @Column('jsonb', { nullable: true })
   details: string[];
 
-  @Column()
-  background_order: number;
+  @Column({nullable:true})
+  backgroundOrder: number;
 
   @CreateDateColumn()
   createdAt: Date;

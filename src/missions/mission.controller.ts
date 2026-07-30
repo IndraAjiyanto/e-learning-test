@@ -30,7 +30,7 @@ export class MissionController {
     @Req() req: Request,
   ) {
     try {
-      createMissionDto.mission_order = await this.missionService.noPertemuan();
+      createMissionDto.missionOrder = await this.missionService.getNextOrder();
       await this.missionService.create(createMissionDto);
       req.flash('success', 'missions successfully created');
       res.redirect('/mission');

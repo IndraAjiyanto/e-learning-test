@@ -57,7 +57,7 @@
               ></h4>
               <p
                 class='text-xs text-gray-500'
-                x-text="kelasItem.courseType.name_clasess_type"></p>
+                x-text="kelasItem.courseType.nameClassesType"></p>
             </div>
           </div>
           
@@ -170,7 +170,7 @@
         } else {
           this.filteredData = this.data.filter(item => 
             item.name.toLowerCase().includes(query) ||
-            item.courseType.name_clasess_type.toLowerCase().includes(query) ||
+            item.courseType.nameClassesType.toLowerCase().includes(query) ||
             item.method.toLowerCase().includes(query)
           );
         }

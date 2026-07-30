@@ -5,36 +5,36 @@
       // Form validation states
       formData: {
         linkedin: `{{social.linkedin}}`,
-        instragram: `{{social.instragram}}`,
+        instagram: `{{social.instagram}}`,
         youtube: `{{social.youtube}}`,
-        video_youtube: `{{social.video_youtube}}`,
+        videoYoutube: `{{social.videoYoutube}}`,
         email: `{{social.email}}`,
-        nomor: `{{social.nomor}}`,
-        alamat: `{{social.alamat}}`,
-        link_alamat: `{{social.link_alamat}}`,
-        link_form: `{{social.link_form}}`
+        number: `{{social.number}}`,
+        address: `{{social.address}}`,
+        linkAddress: `{{social.linkAddress}}`,
+        linkForm: `{{social.linkForm}}`
       },
       formErrors: {
         linkedin: '',
-        instragram: '',
+        instagram: '',
         youtube: '',
-        video_youtube: '',
+        videoYoutube: '',
         email: '',
-        nomor: '',
-        alamat: '',
-        link_alamat: '',
-        link_form: ''
+        number: '',
+        address: '',
+        linkAddress: '',
+        linkForm: ''
       },
       formValid: {
         linkedin: true,
-        instragram: true,
+        instagram: true,
         youtube: true,
-        video_youtube: true,
+        videoYoutube: true,
         email: true,
-        nomor: true,
-        alamat: true,
-        link_alamat: true,
-        link_form: true
+        number: true,
+        address: true,
+        linkAddress: true,
+        linkForm: true
       },
 
       validateField(field, value) {
@@ -62,23 +62,23 @@
             }
             break;
             
-          case 'instragram':
+          case 'instagram':
             if (!value.trim()) {
-              this.formErrors.instragram = 'Instagram URL is required';
-              this.formValid.instragram = false;
+              this.formErrors.instagram = 'Instagram URL is required';
+              this.formValid.instagram = false;
             } else {
               try {
                 new URL(value);
                 if (!value.includes('instagram.com')) {
-                  this.formErrors.instragram = 'Please enter a valid Instagram URL';
-                  this.formValid.instragram = false;
+                  this.formErrors.instagram = 'Please enter a valid Instagram URL';
+                  this.formValid.instagram = false;
                 } else {
-                  this.formErrors.instragram = '';
-                  this.formValid.instragram = true;
+                  this.formErrors.instagram = '';
+                  this.formValid.instagram = true;
                 }
               } catch {
-                this.formErrors.instragram = 'Please enter a valid URL';
-                this.formValid.instragram = false;
+                this.formErrors.instagram = 'Please enter a valid URL';
+                this.formValid.instagram = false;
               }
             }
             break;
@@ -104,23 +104,23 @@
             }
             break;
             
-          case 'video_youtube':
+          case 'videoYoutube':
             if (!value.trim()) {
-              this.formErrors.video_youtube = 'YouTube Video URL is required';
-              this.formValid.video_youtube = false;
+              this.formErrors.videoYoutube = 'YouTube Video URL is required';
+              this.formValid.videoYoutube = false;
             } else {
               try {
                 new URL(value);
                 if (!value.includes('youtube.com') && !value.includes('youtu.be')) {
-                  this.formErrors.video_youtube = 'Please enter a valid YouTube video URL';
-                  this.formValid.video_youtube = false;
+                  this.formErrors.videoYoutube = 'Please enter a valid YouTube video URL';
+                  this.formValid.videoYoutube = false;
                 } else {
-                  this.formErrors.video_youtube = '';
-                  this.formValid.video_youtube = true;
+                  this.formErrors.videoYoutube = '';
+                  this.formValid.videoYoutube = true;
                 }
               } catch {
-                this.formErrors.video_youtube = 'Please enter a valid URL';
-                this.formValid.video_youtube = false;
+                this.formErrors.videoYoutube = 'Please enter a valid URL';
+                this.formValid.videoYoutube = false;
               }
             }
             break;
@@ -141,54 +141,54 @@
             }
             break;
             
-          case 'nomor':
+          case 'number':
             if (!value.trim()) {
-              this.formErrors.nomor = 'Phone number is required';
-              this.formValid.nomor = false;
+              this.formErrors.number = 'Phone number is required';
+              this.formValid.number = false;
             } else if (value.trim().length < 10) {
-              this.formErrors.nomor = 'Phone number must be at least 10 characters';
-              this.formValid.nomor = false;
+              this.formErrors.number = 'Phone number must be at least 10 characters';
+              this.formValid.number = false;
             } else {
-              this.formErrors.nomor = '';
-              this.formValid.nomor = true;
+              this.formErrors.number = '';
+              this.formValid.number = true;
             }
             break;
             
-          case 'alamat':
+          case 'address':
             if (!value.trim()) {
-              this.formErrors.alamat = 'Address is required';
-              this.formValid.alamat = false;
+              this.formErrors.address = 'Address is required';
+              this.formValid.address = false;
             } else if (value.trim().length < 10) {
-              this.formErrors.alamat = 'Address must be at least 10 characters';
-              this.formValid.alamat = false;
+              this.formErrors.address = 'Address must be at least 10 characters';
+              this.formValid.address = false;
             } else {
-              this.formErrors.alamat = '';
-              this.formValid.alamat = true;
+              this.formErrors.address = '';
+              this.formValid.address = true;
             }
             break;
 
-case 'link_alamat':
+case 'linkAddress':
   if (!value.trim()) {
-    this.formErrors.link_alamat = 'Link alamat is required';
-    this.formValid.link_alamat = false;
+    this.formErrors.linkAddress = 'Link address is required';
+    this.formValid.linkAddress = false;
   } else {
-    this.formErrors.link_alamat = '';
-    this.formValid.link_alamat = true;
+    this.formErrors.linkAddress = '';
+    this.formValid.linkAddress = true;
   }
   break;
 
-  case 'link_form':
+  case 'linkForm':
   if (!value.trim()) {
-    this.formErrors.link_form = 'Link form is required';
-    this.formValid.link_form = false;
+    this.formErrors.linkForm = 'Link form is required';
+    this.formValid.linkForm = false;
   } else {
     try {
       new URL(value); // Cek apakah valid URL
-      this.formErrors.link_form = '';
-      this.formValid.link_form = true;
+      this.formErrors.linkForm = '';
+      this.formValid.linkForm = true;
     } catch {
-      this.formErrors.link_form = 'Please enter a valid URL';
-      this.formValid.link_form = false;
+      this.formErrors.linkForm = 'Please enter a valid URL';
+      this.formValid.linkForm = false;
     }
   }
   break;
@@ -199,7 +199,7 @@ case 'link_alamat':
       },
 
       canSubmit() {
-        return this.formValid.linkedin && this.formValid.instragram && this.formValid.youtube && this.formValid.video_youtube && this.formValid.email && this.formValid.nomor && this.formValid.alamat && this.formValid.link_alamat && this.formValid.link_form;
+        return this.formValid.linkedin && this.formValid.instagram && this.formValid.youtube && this.formValid.videoYoutube && this.formValid.email && this.formValid.number && this.formValid.address && this.formValid.linkAddress && this.formValid.linkForm;
       },
 
       hasFormErrors() {
@@ -223,7 +223,7 @@ case 'link_alamat':
         {{> super_admin/social/edit/linkedin_input }}
         {{> super_admin/social/edit/instagram_input }}
         {{> super_admin/social/edit/youtube_input }}
-        {{> super_admin/social/edit/video_youtube_input }}
+        {{> super_admin/social/edit/videoYoutube_input }}
         {{> super_admin/social/edit/email_input }}
         {{> super_admin/social/edit/phone_input }}
 

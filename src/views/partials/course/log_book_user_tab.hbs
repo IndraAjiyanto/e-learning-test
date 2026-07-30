@@ -130,7 +130,7 @@
             <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.user.username"></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.user.email"></td>
-            <td class='px-6 py-4 text-sm text-gray-800' x-text="formatTanggal(logbookUser.createdAt)"></td>
+            <td class='px-6 py-4 text-sm text-gray-800' x-text="formatDate(logbookUser.createdAt)"></td>
             <td
               class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session?.sessionOrder"
             ></td>
@@ -141,7 +141,7 @@
               class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session?.weeks?.course?.name"
             ></td>
             <td
-              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session?.weeks?.course?.courseType?.name_clasess_type"
+              class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session?.weeks?.course?.courseType?.nameClassesType"
             ></td>
             <td
               class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.session?.weeks?.course?.category?.name"
@@ -154,8 +154,8 @@
               class='px-6 py-4 text-sm text-gray-800' x-text="logbookUser.activityDetails"
             ></td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              <template x-if="logbookUser.dokumentasi">
-                <img :src="logbookUser.dokumentasi" 
+              <template x-if="logbookUser.documentation">
+                <img :src="logbookUser.documentation" 
                      class="w-12 h-12 object-cover rounded-lg shadow-sm hover:scale-110 transition cursor-pointer" 
                      @click="viewDetail(logbookUser)" alt="Doc">
               </template>
@@ -277,13 +277,13 @@
                 <div>
                   <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Program Details</label>
                   <p class="text-sm text-gray-900"><span class="font-medium">Name:</span> <span x-text="selectedLogbook?.session?.weeks.course.name"></span></p>
-                  <p class="text-sm text-gray-900"><span class="font-medium">Type:</span> <span x-text="selectedLogbook?.session?.weeks.course.courseType.name_clasess_type"></span></p>
+                  <p class="text-sm text-gray-900"><span class="font-medium">Type:</span> <span x-text="selectedLogbook?.session?.weeks.course.courseType.nameClassesType"></span></p>
                   <p class="text-sm text-gray-900"><span class="font-medium">Mentor:</span> <span x-text="selectedLogbook?.session?.weeks.course.mentor[0]?.name || '-'"></span></p>
                 </div>
                 <div>
                   <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Timeline</label>
                   <p class="text-sm text-gray-900">Week <span x-text="selectedLogbook?.session?.weeks.weekNumber"></span>, Meeting <span x-text="selectedLogbook.session.sessionOrder"></span></p>
-                  <p class="text-sm text-gray-600" x-text="formatTanggal(selectedLogbook.createdAt)"></p>
+                  <p class="text-sm text-gray-600" x-text="formatDate(selectedLogbook.createdAt)"></p>
                 </div>
               </div>
 
@@ -310,8 +310,8 @@
                 <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div class="space-y-2">
                     <p class="text-sm font-medium text-gray-700">Main Documentation:</p>
-                    <template x-if="selectedLogbook.dokumentasi">
-                      <img :src="selectedLogbook.dokumentasi" class="w-full h-auto max-h-80 object-contain rounded-xl border bg-gray-50 shadow-sm cursor-zoom-in" @click="window.open(selectedLogbook.dokumentasi, '_blank')" alt="Main Doc">
+                    <template x-if="selectedLogbook.documentation">
+                      <img :src="selectedLogbook.documentation" class="w-full h-auto max-h-80 object-contain rounded-xl border bg-gray-50 shadow-sm cursor-zoom-in" @click="window.open(selectedLogbook.documentation, '_blank')" alt="Main Doc">
                     </template>
                   </div>
                   <div class="space-y-2">
@@ -361,12 +361,12 @@ function logBookUserData() {
              ${l.session?.sessionOrder || ""}
              ${l.session?.weeks?.weekNumber || ""}
              ${l.session?.weeks?.course?.name || ""}
-             ${l.session?.weeks?.course?.courseType?.name_clasess_type || ""}
+             ${l.session?.weeks?.course?.courseType?.nameClassesType || ""}
              ${l.session?.weeks?.course?.category?.name || ""}
              ${l.session?.weeks?.course?.mentor?.[0]?.name || ""}
              ${l.activity || ""}
              ${l.activityDetails || ""}
-             ${l.dokumentasi || ""}
+             ${l.documentation || ""}
              ${l.process || ""}
              ${l.obstacles || ""}
              ${l.otherDocumentation || ""}`
@@ -410,7 +410,7 @@ function logBookUserData() {
       this.selectedLogbook = null;
     },
 
-    formatTanggal(value) {
+    formatDate(value) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(value).toLocaleDateString('id-ID', options);
     },
@@ -425,12 +425,12 @@ function logBookUserData() {
             "Meeting No": l.session.sessionOrder,
             "Week No": l.session?.weeks?.weekNumber,
             "Program Name": l.session?.weeks?.course?.name,
-            "Program Type": l.session?.weeks?.course?.courseType?.name_clasess_type,
+            "Program Type": l.session?.weeks?.course?.courseType?.nameClassesType,
             Category: l.session?.weeks?.course?.category?.name,
             Mentor: l.session.weeks.course.mentor[0]?.name || "",
             Activity: l.activity,
             "Activity Details": l.activityDetails,
-            Documentation: l.dokumentasi,
+            Documentation: l.documentation,
             Status: l.process,
             Issues: l.obstacles,
             "Additional Documentation": l.otherDocumentation

@@ -3,7 +3,7 @@
             coverValid: true,
             coverHasFile: false,
             categorySelected: {{json course.category}} || null,
-            paidClass: {{#if course.check_paid}}true{{else}}false{{/if}},
+            paidClass: {{#if course.checkPaid}}true{{else}}false{{/if}},
             formData: { description: { id: "", en: "", ja: "" }, lokasi: { id: "", en: "", ja: "" }, link_lokasi: "" },
             formErrors: { link_lokasi: "" },
             formValid: { link_lokasi: true },

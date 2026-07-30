@@ -20,33 +20,33 @@ import { Session } from 'src/entities/session.entity';
 @Injectable()
 export class UserAnswersService {
   @InjectRepository(UserAnswer)
-  private readonly jawabanUserRepository: Repository<UserAnswer>;
+  private readonly userAnswerRepository: Repository<UserAnswer>;
   @InjectRepository(Question)
-  private readonly pertanyaanRepository: Repository<Question>;
+  private readonly questionRepository: Repository<Question>;
   @InjectRepository(Answer)
-  private readonly jawabanRepository: Repository<Answer>;
+  private readonly answerRepository: Repository<Answer>;
   @InjectRepository(User)
   private readonly userRepository: Repository<User>;
   @InjectRepository(Score)
-  private readonly nilaiRepository: Repository<Score>;
+  private readonly scoreRepository: Repository<Score>;
   @InjectRepository(Quiz)
   private readonly quizRepository: Repository<Quiz>;
   @InjectRepository(WeekProgress)
   private readonly weekProgressRepository: Repository<WeekProgress>;
   @InjectRepository(Weeks)
-  private readonly mingguRepository: Repository<Weeks>;
+  private readonly weeksRepository: Repository<Weeks>;
   @InjectRepository(UserCourse)
-  private readonly userKelasRepository: Repository<UserCourse>;
+  private readonly userCourseRepository: Repository<UserCourse>;
   @InjectRepository(SessionProgress)
-  private readonly progresPertemuanRepository: Repository<SessionProgress>;
+  private readonly sessionProgressRepository: Repository<SessionProgress>;
   @InjectRepository(Session)
   private readonly sessionRepository: Repository<Session>;
 
   async create(createUserAnswerDto: CreateUserAnswerDto) {
-    const jawabanToInsert: UserAnswer[] = [];
+    const answersToInsert: UserAnswer[] = [];
 
     for (const j of createUserAnswerDto.answerUser) {
-      const questions = await this.pertanyaanRepository.findOne({
+      const questions = await this.questionRepository.findOne({
         where: { id: j.questionsId },
       });
 
@@ -56,54 +56,54 @@ export class UserAnswersService {
 
       if (!questions)
         throw new NotFoundException(
-          `Pertanyaan id ${j.questionsId} tidak ditemukan`,
+          `Question id ${j.questionsId} not found`,
         );
 
       if (!user)
-        throw new NotFoundException(`User id ${j.userId} tidak ditemukan`);
+        throw new NotFoundException(`User id ${j.userId} not found`);
 
       const answers = j.answersId
-        ? await this.jawabanRepository.findOne({ where: { id: j.answersId } })
+        ? await this.answerRepository.findOne({ where: { id: j.answersId } })
         : null;
 
-      const jawabanUser = this.jawabanUserRepository.create({
+      const userAnswer = this.userAnswerRepository.create({
         question: questions,
         answer: answers,
         user,
       });
 
-      jawabanToInsert.push(jawabanUser);
+      answersToInsert.push(userAnswer);
     }
 
-    return await this.jawabanUserRepository.save(jawabanToInsert);
+    return await this.userAnswerRepository.save(answersToInsert);
   }
 
   async searchAnswerUser(quizId: number, userId: number) {
-    return await this.jawabanUserRepository.find({
+    return await this.userAnswerRepository.find({
       where: { question: { quiz: { id: quizId } }, user: { id: userId } },
       relations: ['answer', 'user'],
     });
   }
 
-  async createAnswer(jawabanUserDto: UserAnswerDto) {
-    const userIsAnswered = await this.jawabanUserRepository.findOne({
+  async createAnswer(userAnswerDto: UserAnswerDto) {
+    const userIsAnswered = await this.userAnswerRepository.findOne({
       where: {
-        user: { id: jawabanUserDto.userId },
-        question: { id: jawabanUserDto.questionsId },
+        user: { id: userAnswerDto.userId },
+        question: { id: userAnswerDto.questionsId },
       },
     });
 
     if (userIsAnswered) {
-      if (jawabanUserDto.answersId !== null) {
-        const answers = await this.jawabanRepository.findOne({
-          where: { id: jawabanUserDto.answersId },
+      if (userAnswerDto.answersId !== null) {
+        const answers = await this.answerRepository.findOne({
+          where: { id: userAnswerDto.answersId },
         });
         userIsAnswered.answer = answers;
-        await this.jawabanUserRepository.save(userIsAnswered);
+        await this.userAnswerRepository.save(userIsAnswered);
       }
     } else {
-      const questions = await this.pertanyaanRepository.findOne({
-        where: { id: jawabanUserDto.questionsId },
+      const questions = await this.questionRepository.findOne({
+        where: { id: userAnswerDto.questionsId },
       });
 
       if (!questions) {
@@ -111,30 +111,30 @@ export class UserAnswersService {
       }
 
       const user = await this.userRepository.findOne({
-        where: { id: jawabanUserDto.userId },
+        where: { id: userAnswerDto.userId },
       });
 
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      const answers = jawabanUserDto.answersId
-        ? await this.jawabanRepository.findOne({
-            where: { id: jawabanUserDto.answersId },
+      const answers = userAnswerDto.answersId
+        ? await this.answerRepository.findOne({
+            where: { id: userAnswerDto.answersId },
           })
         : null;
 
-      const jawabanUser = this.jawabanUserRepository.create({
+      const userAnswerEntry = this.userAnswerRepository.create({
         question: questions,
         answer: answers,
         user,
       });
 
-      await this.jawabanUserRepository.save(jawabanUser);
+      await this.userAnswerRepository.save(userAnswerEntry);
     }
   }
 
-  async nilaiCreate(JawabanUser: UserAnswer[], quizId: number, userId: number) {
-    if (JawabanUser.length === 0) {
+  async createScore(UserAnswer: UserAnswer[], quizId: number, userId: number) {
+    if (UserAnswer.length === 0) {
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
         throw new NotFoundException('User not found');
@@ -142,31 +142,31 @@ export class UserAnswersService {
       user.quizStart = false;
       await this.userRepository.save(user);
 
-      await this.nilaiRepository.save({
+      await this.scoreRepository.save({
         user: { id: userId },
         quiz: { id: quizId },
         score: 0,
       });
     } else {
-      const jawabanIds = JawabanUser.map((j) => j.answer?.id).filter(
+      const answerIds = UserAnswer.map((j) => j.answer?.id).filter(
         (id): id is number => id !== undefined && id !== null,
       );
-      const jawabanBenar = await this.jawabanRepository.findBy({
-        id: In(jawabanIds),
+      const correctAnswers = await this.answerRepository.findBy({
+        id: In(answerIds),
       });
 
-      let benar = 0;
-      jawabanBenar.forEach((j) => {
+      let correctCount = 0;
+      correctAnswers.forEach((j) => {
         if (j.isCorrect) {
-          benar++;
+          correctCount++;
         }
       });
 
-      const questions = await this.pertanyaanRepository.find({
+      const questions = await this.questionRepository.find({
         where: { quiz: { id: quizId } },
       });
-      const totalSoal = questions.length;
-      const scores = Math.round((benar / totalSoal) * 100);
+      const totalQuestions = questions.length;
+      const scores = Math.round((correctCount / totalQuestions) * 100);
 
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
@@ -190,7 +190,7 @@ export class UserAnswersService {
       user.quizStart = false;
       await this.userRepository.save(user);
 
-      await this.nilaiRepository.save({
+      await this.scoreRepository.save({
         user: user,
         quiz: quiz,
         score: scores,
@@ -213,79 +213,79 @@ export class UserAnswersService {
   }
 
   async weekProgress(weeksId: number, userId: number) {
-    const minggu_sebelum = await this.mingguRepository.findOne({
+    const currentWeek = await this.weeksRepository.findOne({
       where: { id: weeksId },
       relations: ['course'],
     });
-    if (!minggu_sebelum) {
-      throw new NotFoundException('minggu_sebelum not found');
-    } else if (minggu_sebelum.isFinal === true) {
-      const existingUserKelas = await this.userKelasRepository.findOne({
+    if (!currentWeek) {
+      throw new NotFoundException('Week not found');
+    } else if (currentWeek.isFinal === true) {
+      const existingUserCourse = await this.userCourseRepository.findOne({
         where: {
-          course: { id: minggu_sebelum.course.id },
+          course: { id: currentWeek.course.id },
           user: { id: userId },
         },
       });
-      if (existingUserKelas) {
-        await this.userKelasRepository.save({
-          id: existingUserKelas.id,
-          course: { id: minggu_sebelum.course.id },
+      if (existingUserCourse) {
+        await this.userCourseRepository.save({
+          id: existingUserCourse.id,
+          course: { id: currentWeek.course.id },
           user: { id: userId },
           progress: true,
           quiz: true,
         });
       } else {
-        await this.userKelasRepository.save({
-          course: { id: minggu_sebelum.course.id },
+        await this.userCourseRepository.save({
+          course: { id: currentWeek.course.id },
           user: { id: userId },
           progress: true,
           quiz: true,
         });
       }
     } else {
-      const weeks = await this.mingguRepository.findOne({
+      const weeks = await this.weeksRepository.findOne({
         where: {
-          weekNumber: minggu_sebelum.weekNumber + 1,
-          course: { id: minggu_sebelum.course.id },
+          weekNumber: currentWeek.weekNumber + 1,
+          course: { id: currentWeek.course.id },
         },
         relations: ['session'],
       });
       if (weeks) {
         if (weeks.session.length > 0) {
-          const session_satu = await this.sessionRepository.findOne({
+          const firstSession = await this.sessionRepository.findOne({
             where: { weeks: { id: weeks.id }, sessionOrder: 1 },
           });
-          if (session_satu) {
-            const existingProgresPertemuan =
-              await this.progresPertemuanRepository.findOne({
+          if (firstSession) {
+            const existingSessionProgress =
+              await this.sessionProgressRepository.findOne({
                 where: {
-                  session: { id: session_satu.id },
+                  session: { id: firstSession.id },
                   user: { id: userId },
                 },
               });
-            if (existingProgresPertemuan) {
-              await this.progresPertemuanRepository.save({
-                id: existingProgresPertemuan.id,
+            if (existingSessionProgress) {
+              await this.sessionProgressRepository.save({
+                id: existingSessionProgress.id,
                 user: { id: userId },
-                session: session_satu,
+                session: firstSession,
                 logbook: false,
                 isAttended: true,
               });
             } else {
-              await this.progresPertemuanRepository.save({
+              await this.sessionProgressRepository.save({
                 user: { id: userId },
-                session: session_satu,
+                session: firstSession,
                 logbook: false,
                 isAttended: true,
               });
             }
           }
         }
-        const existingProgres = await this.weekProgressRepository.findOne({
+        const existingProgress = await this.weekProgressRepository.findOne({
           where: { week: { id: weeks.id }, user: { id: userId } },
         });
-        if (existingProgres) {
-          await this.weekProgressRepository.update(existingProgres.id, {
+        if (existingProgress) {
+          await this.weekProgressRepository.update(existingProgress.id, {
             process: true,
           });
         } else {
@@ -301,47 +301,47 @@ export class UserAnswersService {
   }
 
   async findByUserAndQuestion(userId: number, questionId: number) {
-    return await this.jawabanUserRepository.find({
+    return await this.userAnswerRepository.find({
       where: { user: { id: userId }, question: { id: questionId } },
       relations: ['answer'],
     });
   }
 
   async findAnswersByUser(userId: number) {
-    return await this.jawabanUserRepository.find({
+    return await this.userAnswerRepository.find({
       where: { user: { id: userId } },
       relations: ['answer'],
     });
   }
 
-  async AmountNilai(weeksId: number, userId: number) {
-    const answers = await this.jawabanUserRepository.find({
+  async calculateScore(weeksId: number, userId: number) {
+    const answers = await this.userAnswerRepository.find({
       where: { question: { quiz: { id: weeksId } }, user: { id: userId } },
       relations: ['answer'],
     });
 
-    const jumlahSoal = answers.length;
-    const nilaiPerSoal = 100 / jumlahSoal;
+    const totalQuestions = answers.length;
+    const scorePerQuestion = 100 / totalQuestions;
 
-    const totalNilai = answers.reduce((sum, j) => {
+    const totalScore = answers.reduce((sum, j) => {
       if (j.answer !== null && j.answer.isCorrect) {
-        return sum + nilaiPerSoal;
+        return sum + scorePerQuestion;
       }
       return sum;
     }, 0);
 
-    return totalNilai;
+    return totalScore;
   }
 
   async deleteAnswerUser(userId: number, quizId: number) {
-    const questions = await this.pertanyaanRepository.find({
+    const questions = await this.questionRepository.find({
       where: { quiz: { id: quizId } },
       select: ['id'],
     });
 
     const ids = questions.map((p) => p.id);
 
-    await this.jawabanUserRepository.delete({
+    await this.userAnswerRepository.delete({
       user: { id: userId },
       question: { id: In(ids) },
     });

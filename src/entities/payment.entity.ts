@@ -12,8 +12,7 @@ import { User } from './user.entity';
 import { Course } from './course.entity';
 import { Installment } from './installment.entity';
 import { Exclude } from 'class-transformer';
-
-export type Proses = 'acc' | 'proces' | 'rejected';
+import { ProcessStatus } from './types/process-status';
 
 @Entity('payments')
 export class Payment {
@@ -28,10 +27,17 @@ export class Payment {
 
   @Column({
     type: 'enum',
-    enum: ['acc', 'proces', 'rejected'],
+    enum: ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'],
+    nullable: true,
+  })
+  referalSource: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['approved', 'process', 'rejected'],
     default: 'rejected',
   })
-  process: Proses;
+  process: ProcessStatus;
 
   @CreateDateColumn()
   createdAt: Date;

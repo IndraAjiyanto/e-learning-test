@@ -16,8 +16,8 @@ export class DashboardController {
     @Res() res: Response,
     @Query('userId') userId?: number,
     @Query('category') category?: string,
-    @Query('courseType') jenisKelas?: string,
-    @Query('metode') metode?: string,
+    @Query('courseType') courseType?: string,
+    @Query('method') method?: string,
     @Query('search') search?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -28,8 +28,8 @@ export class DashboardController {
     const result = await this.dashboardService.findCoursesPaginated({
       userId: userId || undefined,
       category: category || undefined,
-      jenisKelas: jenisKelas || undefined,
-      metode: metode || undefined,
+      courseType: courseType || undefined,
+      method: method || undefined,
       search: search || undefined,
       page: currentPage,
       limit: itemsPerPage,
@@ -137,7 +137,7 @@ export class DashboardController {
     @Res() res: Response,
     @Query('userId') userId?: number,
     @Query('categoryId') categoryId?: string,
-    @Query('jenis_kelas_id') courseTypeId?: string,
+    @Query('course_type_id') courseTypeId?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -165,13 +165,13 @@ export class DashboardController {
   async portfolio(@Req() req: Request, @Res() res: Response) {
     // const portfolioList = await this.dashboardService.findPortfolio();
     const kategoriList = await this.dashboardService.findCategories();
-    const jenisKelasList = await this.dashboardService.findCourseTypes();
+    const courseTypeList = await this.dashboardService.findCourseTypes();
 
     res.render('portofolios', {
       user: req.user,
       // portfolio: portfolioList,
       category: kategoriList,
-      courseType: jenisKelasList,
+      courseType: courseTypeList,
     });
   }
 
@@ -190,7 +190,7 @@ export class DashboardController {
     @Req() req: Request,
     @Res() res: Response,
     @Query('search') search?: string,         
-    @Query('kelas_id') courseId?: string,
+    @Query('course_id') courseId?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -253,7 +253,7 @@ export class DashboardController {
   }
 
   @Get('api/category')
-  async getKategori(@Res() res: Response) {
+  async getCategory(@Res() res: Response) {
     const category = await this.dashboardService.findCategories();
     res.json(category);
   }

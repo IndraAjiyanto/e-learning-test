@@ -12,11 +12,11 @@ export class SuperiorityService {
     @InjectRepository(Superiority)
     private superiorityRepository: Repository<Superiority>,
     @InjectRepository(Category)
-    private kategoriRepository: Repository<Category>,
+    private categoryRepository: Repository<Category>,
   ) {}
 
   async create(createSuperiorityDto: CreateSuperiorityDto) {
-    const category = await this.kategoriRepository.findOne({
+    const category = await this.categoryRepository.findOne({
       where: { id: createSuperiorityDto.categoryId },
     });
     if (!category) {
@@ -43,7 +43,7 @@ export class SuperiorityService {
   async update(id: number, updateSuperiorityDto: UpdateSuperiorityDto) {
     const superiority = await this.findOne(id);
     if (updateSuperiorityDto.categoryId) {
-      const category = await this.kategoriRepository.findOne({
+      const category = await this.categoryRepository.findOne({
         where: { id: updateSuperiorityDto.categoryId },
       });
       if (!category) {
