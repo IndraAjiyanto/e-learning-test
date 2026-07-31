@@ -1,0 +1,107 @@
+<form id="step-1-form" class="space-y-6">
+  
+  <!-- Your Program -->
+  <div>
+    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
+      Your Program<span class="text-red-500">*</span>
+    </label>
+    <div class="relative w-full max-w-[760px] mb-4">
+      <input type="text" id="program-input" required class="absolute bottom-0 left-1/2 w-[1px] h-[1px] -z-10 opacity-0 pointer-events-none">
+      <div class="dropdown w-full">
+        <div tabindex="0" role="button" class="w-full h-[60px] rounded-[6px] p-[10px] px-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer">
+          <span id="program-text" class="text-slate-400">Select Your Program</span>
+          <i class="fa-solid fa-chevron-down w-5 h-5 flex items-center justify-center text-slate-500"></i>
+        </div>
+        <ul tabindex="0" class="dropdown-content menu bg-white rounded-box z-[1] w-full p-2 mt-1 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
+          <li><a onclick="selectDropdown('program', 'Batch 6.2: Flow Sense: UI/UX Design With Figma')">Batch 6.2: Flow Sense: UI/UX Design With Figma</a></li>
+          <li><a onclick="selectDropdown('program', 'Batch 6.1: Web Development Mastery')">Batch 6.1: Web Development Mastery</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full Name -->
+  <div>
+    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
+      Full Name<span class="text-red-500">*</span>
+    </label>
+    <input type="text" required placeholder="Input Your Full Name" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400">
+  </div>
+
+  <!-- Email -->
+  <div>
+    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
+      Email<span class="text-red-500">*</span>
+    </label>
+    <input type="email" required placeholder="Input Your Email" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400">
+  </div>
+
+  <!-- WhatsApp Number -->
+  <div>
+    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
+      WhatsApp Number<span class="text-red-500">*</span>
+    </label>
+    <input type="tel" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400">
+  </div>
+
+  <!-- How did you know -->
+  <div>
+    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
+      How did you know About the Kesatria Academy Program?<span class="text-red-500">*</span>
+    </label>
+    <div class="relative w-full max-w-[760px] mb-4">
+      <input type="text" id="source-input" required class="absolute bottom-0 left-1/2 w-[1px] h-[1px] -z-10 opacity-0 pointer-events-none">
+      <div class="dropdown w-full">
+        <div tabindex="0" role="button" class="w-full h-[60px] rounded-[6px] p-[10px] px-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer">
+          <span id="source-text" class="text-slate-400">Select How Did You Know</span>
+          <i class="fa-solid fa-chevron-down w-5 h-5 flex items-center justify-center text-slate-500"></i>
+        </div>
+        <ul tabindex="0" class="dropdown-content menu bg-white rounded-box z-[1] w-full p-2 mt-1 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
+          <li><a onclick="selectDropdown('source', 'Friends')">Friends</a></li>
+          <li><a onclick="selectDropdown('source', 'Social Media')">Social Media</a></li>
+          <li><a onclick="selectDropdown('source', 'Website')">Website</a></li>
+          <li><a onclick="selectDropdown('source', 'Other')">Other</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agreement -->
+  <div class="pt-4 pb-2">
+    <label class="block text-2xl md:text-3xl text-[#003060] font-semibold mb-4">
+      I agree to participate in the program until its completion
+    </label>
+    <label class="flex items-center gap-3 cursor-pointer group w-fit">
+      <div class="relative flex items-center justify-center">
+        <input type="checkbox" required class="peer appearance-none w-5 h-5 border border-slate-300 rounded-sm bg-white checked:bg-[#0B3A68] checked:border-[#0B3A68] transition-all cursor-pointer">
+        <i class="fa-solid fa-check w-3.5 h-3.5 flex items-center justify-center text-white absolute opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></i>
+      </div>
+      <span class="text-slate-700 group-hover:text-[#0B3A68] transition-colors">Yes, I agree</span>
+    </label>
+  </div>
+
+  <!-- Next Button -->
+  <div class="pt-4 max-w-[760px]">
+    <button type="button" onclick="goToStep(2)" class="w-full h-[56px] bg-[#003060] hover:bg-[#082a4d] text-white text-lg rounded-[12px] border border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.5)] flex items-center justify-center gap-[20px] font-semibold transition-colors">
+      <span>Next</span>
+      <i class="fa-solid fa-arrow-right text-xl pt-0.5"></i>
+    </button>
+  </div>
+</form>
+
+<script>
+  function selectDropdown(id, value) {
+    // Set the hidden input value for required validation
+    const input = document.getElementById(`${id}-input`);
+    input.value = value;
+    
+    // Update the dropdown label text
+    const textEl = document.getElementById(`${id}-text`);
+    textEl.textContent = value;
+    textEl.classList.remove('text-slate-400');
+    textEl.classList.add('text-[#0B3A68]', 'font-medium');
+    
+    // Close the DaisyUI dropdown by removing focus from the active element
+    document.activeElement.blur();
+  }
+</script>
