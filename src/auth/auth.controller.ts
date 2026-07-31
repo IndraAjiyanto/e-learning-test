@@ -50,38 +50,41 @@ export class AuthController {
     @Res() res: Response,
   ) {
     try {
-      await this.authService.createAcount(createUserDto);
+      const user = await this.authService.createAcount(createUserDto);
       req.flash('success', 'Registration successful! Please login');
-      res.redirect('/login');
+      res.redirect('/users/send-verify-email?token=' + user.verificationToken);
+      
     } catch (error: any) {
       req.flash('error', error.message || 'Registration failed');
+      // res.redirect('/login');
       res.redirect('/register');
     }
   }
 
   @Post('login')
-  async login(@Body() body: any, @Request() req: any, @Res() res: Response) {
-    try {
-      const user = await this.authService.validateUser(
-        body.email,
-        body.password,
-      );
+async login(@Body() body: any, @Request() req: any, @Res() res: Response) {
+try {
+const user = await this.authService.validateUser(
+body.email,
+body.password,
+);
 
-      req.login(user, (err) => {
-        if (err) {
-          req.flash('error', 'Login failed');
-          return res.redirect('/login');
-        }
-        if (user!.isVerified === false) {
-          req.flash('info', 'Please verify your email for full access');
-        }
-        res.redirect('/dashboard');
-      });
-    } catch (error: any) {
-      req.flash('error', error.message || 'Email or password is incorrect');
-      return res.redirect('/login');
-    }
-  }
+if (user!.isVerified === false) {
+res.redirect('/users/send-verify-email?token=' + user!.verificationToken);
+} else {
+req.login(user, (err) => {
+if (err) {
+req.flash('error', 'Email not verified');
+return res.redirect('/login');
+}
+res.redirect('/dashboard');
+});
+}
+} catch (error: any) {
+req.flash('error', error.message || 'Email or password is incorrect');
+return res.redirect('/login');
+}
+}
 
   @Get('logout')
   logout(@Req() req: any, @Res() res: Response) {
