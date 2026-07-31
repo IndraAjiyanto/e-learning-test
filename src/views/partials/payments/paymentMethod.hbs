@@ -1,0 +1,159 @@
+<form id="step-2-form" class="w-full pb-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[250px]">
+    
+    <!-- Left Column (Inputs) -->
+    <div class="space-y-8">
+      
+      <!-- Choose Payment Methods -->
+      <div>
+        <label class="block text-2xl md:text-[30px] font-semibold text-[#003060] mb-4">
+          Choose Payment Methods<span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <select id="payment-method-select" onchange="togglePaymentMethod()" required class="w-full h-[50px] rounded-[6px] border border-slate-300 px-[16px] appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-[#003060] text-slate-700">
+            <option value="Full Payment">Full Payment</option>
+            <option value="Installment">Installment Payment</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+            <i class="fa-solid fa-chevron-down w-4 h-4 flex items-center justify-center"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Installment UI (Hidden by default) -->
+      <div id="installment-ui" class="hidden space-y-8">
+        <!-- Choose Installment Periode -->
+        <div>
+          <label class="block text-2xl md:text-[30px] font-semibold text-[#003060] mb-4">
+            Choose Installment Periode<span class="text-red-500">*</span>
+          </label>
+          <div class="border border-slate-300 rounded-[10px] p-[6px] w-[300px] bg-white flex">
+            <button type="button" class="w-[130px] h-[48px] bg-[#003060] text-white font-medium rounded-[6px] shadow-sm">
+              3 Months
+            </button>
+          </div>
+        </div>
+
+        <!-- Payment Schedule -->
+        <div class="border-[2px] border-white/10 rounded-xl p-6 shadow-[0_0_4px_rgba(0,0,0,0.25)] bg-[#FAFAFA]">
+          <h4 class="font-bold text-[#003060] mb-4 text-lg">Payment Schedule</h4>
+          
+          <!-- DP Box -->
+          <div class="bg-[#FFFBCB]/60 rounded-[12px] shadow-[0_0_6px_rgba(0,0,0,0.5)] p-4 flex justify-between items-center mb-6">
+            <div>
+              <div class="font-bold text-black text-[15px]">Down Payment (DP)</div>
+              <div class="text-[13px] text-slate-600 pt-0.5">Pay now to enroll</div>
+            </div>
+            <div class="font-bold text-black text-lg">Rp 550.000</div>
+          </div>
+
+          <div class="text-black font-medium mb-3 text-[15px]">Monthly Installment (After DP)</div>
+          <div class="space-y-3 text-sm text-black">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Month 1</span>
+              <span class="font-bold">Rp 2.000.000</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Month 2</span>
+              <span class="font-bold">Rp 2.000.000</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Month 3</span>
+              <span class="font-bold">Rp 2.000.000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voucher Discount -->
+      <div>
+        <label class="block text-2xl md:text-[30px] font-semibold text-[#003060] mb-4">
+          Voucher Discount
+        </label>
+        <input type="text" placeholder="Input Voucher Code" class="w-full h-[50px] rounded-[6px] border border-slate-300 px-[16px] bg-white focus:outline-none focus:ring-1 focus:ring-[#003060] text-slate-700">
+      </div>
+      
+    </div>
+
+    <!-- Right Column (Payment Details) -->
+    <div class="bg-transparent">
+      <h2 class="text-2xl md:text-[30px] font-semibold text-[#003060] mb-6">
+        Complete your payment<span class="text-red-500">*</span>
+      </h2>
+      <h3 class="text-[#003060] font-medium text-lg md:text-xl mb-6">Payment Details:</h3>
+      
+      <div class="space-y-6">
+        <!-- Item 1 -->
+        <div class="flex justify-between items-start gap-4">
+          <div class="text-black font-normal text-[15px] md:text-base leading-relaxed flex-1">
+            Batch 6.2: Flow Sense: UI/UX Design With Figma<br>
+            <span id="detail-payment-type">(Full Payment)</span>
+          </div>
+          <div id="detail-price" class="text-[#003060] text-[15px] md:text-base font-medium whitespace-nowrap pt-0.5">Rp8.550.000</div>
+        </div>
+        
+        <div class="h-[0.5px] w-full bg-[#D9D9D9]"></div>
+        
+        <!-- Item 2 -->
+        <div class="flex justify-between items-center gap-4">
+          <div class="text-black text-[15px] md:text-base">Discount Voucher</div>
+          <div id="detail-voucher" class="text-[#003060] text-[15px] md:text-base font-medium">Rp2.655.000</div>
+        </div>
+        
+        <div class="h-[0.5px] w-full bg-[#D9D9D9]"></div>
+        
+        <!-- Item 3 -->
+        <div class="flex justify-between items-center gap-4">
+          <div class="text-black text-[15px] md:text-base">SubTotal</div>
+          <div id="detail-subtotal" class="text-[#003060] text-[15px] md:text-base font-medium">Rp5.895.000</div>
+        </div>
+        
+        <div class="h-[0.5px] w-full bg-[#D9D9D9]"></div>
+        
+        <!-- Total -->
+        <div class="flex justify-between items-center pt-2">
+          <div class="text-black font-bold text-lg md:text-xl">Total</div>
+          <div id="detail-total" class="text-[#003060] font-bold text-lg md:text-xl">Rp5.895.000</div>
+        </div>
+        
+        <!-- Pay Now Button -->
+        <div class="pt-6">
+          <button type="button" onclick="goToStep(3)" class="w-full h-[56px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-[12px] font-semibold text-lg transition-colors shadow-sm">
+            Pay Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>
+
+<script>
+  function togglePaymentMethod() {
+    const method = document.getElementById('payment-method-select').value;
+    const installmentUi = document.getElementById('installment-ui');
+    
+    // Right column elements
+    const detailType = document.getElementById('detail-payment-type');
+    const detailPrice = document.getElementById('detail-price');
+    const detailVoucher = document.getElementById('detail-voucher');
+    const detailSubtotal = document.getElementById('detail-subtotal');
+    const detailTotal = document.getElementById('detail-total');
+
+    if (method === 'Installment') {
+      installmentUi.classList.remove('hidden');
+      detailType.innerText = '(Installment Payment - 3 month)';
+      detailPrice.innerText = 'Rp550.000';
+      detailVoucher.innerText = 'Rp0';
+      detailSubtotal.innerText = 'Rp550.000';
+      detailTotal.innerText = 'Rp550.000';
+    } else {
+      installmentUi.classList.add('hidden');
+      detailType.innerText = '(Full Payment)';
+      detailPrice.innerText = 'Rp8.550.000';
+      detailVoucher.innerText = 'Rp2.655.000';
+      detailSubtotal.innerText = 'Rp5.895.000';
+      detailTotal.innerText = 'Rp5.895.000';
+    }
+  }
+</script>
