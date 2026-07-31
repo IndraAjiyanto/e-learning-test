@@ -31,7 +31,6 @@ export class RenameTableAndColumn1785382749167 implements MigrationInterface {
 
     await queryRunner.query(`ALTER TABLE "category_course_types_course_type" RENAME TO "category_course_types"`);
 
-    
     await queryRunner.query(`DROP TABLE IF EXISTS "absen" CASCADE;`);
     await queryRunner.query(`DROP TABLE IF EXISTS "alur_kelas" CASCADE;`);
     await queryRunner.query(`DROP TABLE IF EXISTS "benefit_kelas" CASCADE;`);
@@ -85,6 +84,8 @@ export class RenameTableAndColumn1785382749167 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS "user_kelas" CASCADE;`);
     await queryRunner.query(`DROP TABLE IF EXISTS "visi" CASCADE;`);
     await queryRunner.query(`DROP TABLE IF EXISTS "staging_proses" CASCADE;`);
+
+    await queryRunner.query(`TRUNCATE TABLE migrations RESTART IDENTITY CASCADE;`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

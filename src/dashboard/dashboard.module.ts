@@ -8,7 +8,7 @@ import { Portofolios } from 'src/entities/portofolios.entity';
 import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
-import { Collaboration } from 'src/entities/collaboration.entity';
+import { Partner } from 'src/entities/partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -45,7 +45,7 @@ import { GalleryModule } from 'src/gallery/gallery.module';
       ImageBenefit,
       Category,
       CourseType,
-      Collaboration,
+      Partner,
       Mission,
       Experience,
       Award,

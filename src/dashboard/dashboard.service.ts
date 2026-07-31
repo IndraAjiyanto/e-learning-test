@@ -7,7 +7,7 @@ import { Portofolios } from 'src/entities/portofolios.entity';
 import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
-import { Collaboration } from 'src/entities/collaboration.entity';
+import { Partner } from 'src/entities/partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -39,8 +39,8 @@ export class DashboardService {
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(CourseType)
     private readonly courseTypeRepository: Repository<CourseType>,
-    @InjectRepository(Collaboration)
-    private readonly collaborationRepository: Repository<Collaboration>,
+    @InjectRepository(Partner)
+    private readonly partnerRepository: Repository<Partner>,
     @InjectRepository(Benefit)
     private readonly benefitRepository: Repository<Benefit>,
     @InjectRepository(Team)
@@ -323,7 +323,7 @@ async findAlumni(options?: {
   // }
 
   async findCollaborations() {
-    return await this.collaborationRepository.find({
+    return await this.partnerRepository.find({
       order: { createdAt: 'ASC' },
     });
   }
