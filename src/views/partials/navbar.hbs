@@ -219,7 +219,7 @@ isProgramActive() {
 
         <!-- Mobile Menu Content -->
         <div class='flex-1 py-4'>
-          {{#if (roles user.role 'user')}}
+          {{#if isAuthenticated}}
             <a
               href='/dashboard'
               @click="setActive('/dashboard')"
@@ -630,7 +630,7 @@ isProgramActive() {
       class='hidden md:flex flex-1 items-center justify-center space-x-8 h-full'
       x-show='isDesktop'
     >
-      {{#if (roles user.role 'user')}}
+      {{#if isAuthenticated}}
         <a
           href='/dashboard'
           @click="setActive('/dashboard')"
