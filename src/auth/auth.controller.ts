@@ -61,6 +61,13 @@ export class AuthController {
     }
   }
 
+  @Get('test')
+  async test(@Res() res:Response){
+    const course = await this.authService.findCourse(1);
+    res.render('detail_program/paid_program/index', { course });
+  }
+
+
   @Post('login')
 async login(@Body() body: any, @Request() req: any, @Res() res: Response) {
 try {
