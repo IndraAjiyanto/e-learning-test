@@ -1,82 +1,115 @@
-<section class='bg-transparant py-20 px-6 lg:px-20'>
-  <div class='flex flex-col items-center text-center justify-center mb-12'>
-    <h1 class='text-l border bg-[#6EB6E533] border-gray-400 w-36 rounded-full -mb-12 text-gray-900 font-montserrat'>{{{t
-        'test.home.partnerSection.ourPartners'
-      }}}</h1>
-  </div>
-  <div class='text-center mb-16'>
-    <h2 class="text-4xl md:text-5xl font-bold leading-tight font-montserrat text-gray-900">{{{t "test.home.partnerSection.tittle"}}}</h2>
-    <div
-        class='border border-b-2 border-slate-900 w-24 mx-auto mt-8 my-2 rounded'
-      ></div>
-    <p class='text-lg text-gray-600 py-6 max-w-2xl mx-auto'>
+<section class='py-20 px-6 lg:px-20 relative overflow-hidden'>
+  <!-- Header Section -->
+  <div class='text-center mb-12 relative z-10'>
+    <!-- Pill badge -->
+    <div class="border border-[#003060] text-[#003060] w-[305px] h-[49px] flex items-center justify-center rounded-[50px] text-[20px] font-medium font-montserrat transition-all mx-auto bg-[#6EB6E5]/20">
+      {{{t 'test.home.partnerSection.ourPartners'}}}
+    </div>
+    
+    <!-- Title with Background (Efek Stabilo Highlight Animation) -->
+    <div 
+      class="relative w-fit h-[48px] sm:h-[52px] mx-auto rounded-[6px] my-6 flex items-center justify-center overflow-hidden"
+      x-data="{
+        isHighlighted: false,
+        init() {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                this.isHighlighted = true;
+              }
+            });
+          }, { threshold: 0.4, rootMargin: '0px 0px -50px 0px' });
+          observer.observe(this.$el);
+        }
+      }"
+    >
+      <!-- Base Black Text (Initial State before Stabilo) -->
+      <h2 class="font-montserrat font-semibold text-[#000000] text-xl sm:text-4xl leading-none tracking-normal text-center whitespace-nowrap px-1">
+        {{{t "test.home.partnerSection.tittle"}}}
+      </h2>
+
+      <!-- Blue Stabilo Highlight Layer (Sweeps from Left 0% to 100% Width) -->
+      <div 
+        class="absolute inset-y-0 left-0 bg-[#003060] rounded-[6px] transition-all duration-[800ms] ease-out overflow-hidden flex items-center justify-center whitespace-nowrap shadow-md pointer-events-none"
+        :class="isHighlighted ? 'w-full' : 'w-0'"
+      >
+        <!-- White Text Revealed as Blue Stabilo Sweeps Over -->
+        <h2 class="font-montserrat font-semibold text-white text-xl sm:text-4xl leading-none tracking-normal text-center whitespace-nowrap px-1 min-w-max">
+          {{{t "test.home.partnerSection.tittle"}}}
+        </h2>
+      </div>
+    </div>
+    
+    <!-- Divider -->
+    <div class="w-[68px] h-[4px] bg-[#0B1F3B] mx-auto mb-8 rounded-full"></div>
+    
+    <!-- Subtitle -->
+    <p class='font-sans font-normal text-base sm:text-xl text-[#000000]/80 leading-[32px] sm:leading-[45px] tracking-normal max-w-[1052px] mx-auto'>
       {{t "test.home.partnerSection.description"}}
     </p>
   </div>
 
-  <div class='overflow-hidden whitespace-nowrap bg-white rounded-2xl shadow-lg py-8 relative'>
-    {{#if collaborations}}
-    <div class=' inline-flex animate-scroll-seamless'>
-      {{#each collaborations}}
-      <img
-        src="{{gambar}}"
-        alt='Partner Logo'
-        class='h-24 w-auto inline-block mx-8 grayscale hover:grayscale-0 transition-all duration-300 flex-shrink-0'
-      />
-      {{/each}}
+  <div class="max-w-[1440px] mx-auto" x-data="{ activeTab: 'Institutions' }">
+    <!-- Category Tabs -->
+    <div class="flex justify-center flex-wrap gap-4 mb-14">
+      <!-- Government Institutions Button -->
+      <button 
+        @click="activeTab = 'Government Institutions'"
+        :class="activeTab === 'Government Institutions' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
+        class="w-full sm:w-[428px] h-[62px] rounded-[24px] text-white font-montserrat text-[17px] font-medium transition-all duration-300 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] backdrop-blur-[6.6px] flex items-center justify-center opacity-100"
+      >
+        Government Institutions
+      </button>
+
+      <!-- Company Button -->
+      <button 
+        @click="activeTab = 'Company'"
+        :class="activeTab === 'Company' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
+        class="w-full sm:w-[326px] h-[62px] rounded-[24px] text-white font-montserrat text-[17px] font-medium transition-all duration-300 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] backdrop-blur-[6.6px] flex items-center justify-center opacity-100"
+      >
+        Company
+      </button>
+
+      <!-- Institutions Button -->
+      <button 
+        @click="activeTab = 'Institutions'"
+        :class="activeTab === 'Institutions' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
+        class="w-full sm:w-[327px] h-[62px] rounded-[24px] text-white font-montserrat text-[17px] font-medium transition-all duration-300 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] backdrop-blur-[6.6px] flex items-center justify-center opacity-100"
+      >
+        Institutions
+      </button>
+
+      <!-- BUMN Button -->
+      <button 
+        @click="activeTab = 'BUMN'"
+        :class="activeTab === 'BUMN' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
+        class="w-full sm:w-[221px] h-[62px] rounded-[24px] text-white font-montserrat text-[17px] font-medium transition-all duration-300 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] backdrop-blur-[6.6px] flex items-center justify-center opacity-100"
+      >
+        BUMN
+      </button>
     </div>
-    {{else}}
-    <div class='flex items-center justify-center gap-8 px-8'>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-building text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 1</p>
-      </div>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-industry text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 2</p>
-      </div>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-store text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 3</p>
-      </div>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-landmark text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 4</p>
-      </div>
-      <div class='text-center text-slate-400 py-4'>
-        <i class='fas fa-university text-4xl mb-2'></i>
-        <p class='text-sm'>Partner Logo 5</p>
-      </div>
+
+    <!-- Logos Grid -->
+    <div class="flex flex-wrap justify-center gap-6" x-data="{ 
+      logos: [
+        'Frame 1618876256.svg',
+        'Frame 1618876244.svg', 
+        'Frame 1618876264.svg',
+        'Frame 1618876254.svg',
+        'Frame 1618876245.svg', 
+        'Frame 1618876255.svg', 
+        'Frame 1618876260.svg', 
+        'Frame 1618876249.svg',
+        'Frame 1618876259.svg',
+        'Frame 1618876248.svg',
+        'Frame 1618876253.svg' 
+      ]
+    }">
+      <template x-for="logo in logos" :key="logo">
+        <div class="w-[200px] h-[120px] bg-white border border-gray-200 rounded-[12px] flex items-center justify-center p-6 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow">
+          <img :src="'/public/image/dashboard/' + logo" alt="Partner Logo" class="max-h-full max-w-full object-contain" />
+        </div>
+      </template>
     </div>
-    {{/if}}
   </div>
 </section>
-
-<script>
-  function partnerFilter({ partners }) {
-    return {
-      partners,
-      // 'all' by default → semua logo tampil saat halaman dibuka / di-refresh
-      selected: 'all',
-
-      get categories() {
-        const seen = {};
-        this.partners.forEach((p) => {
-          if (p.categoryPartner) {
-            seen[p.categoryPartner.id] = p.categoryPartner.category;
-          }
-        });
-        return Object.keys(seen).map((id) => ({ id, category: seen[id] }));
-      },
-
-      get filtered() {
-        if (this.selected === 'all') return this.partners;
-        return this.partners.filter(
-          (p) =>
-            p.categoryPartner &&
-            String(p.categoryPartner.id) === String(this.selected),
-        );
-      },
-    };
-  }
-</script>
