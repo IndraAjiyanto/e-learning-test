@@ -565,6 +565,7 @@ export class CoursesController {
           technologies,
           installments,
           userCourses,
+          faqs
         });
       } else {
         res.render('detail_program/paid_program/index', {

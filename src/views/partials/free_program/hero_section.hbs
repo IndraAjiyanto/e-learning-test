@@ -26,8 +26,8 @@
         
         <!-- Deskripsi: mt-7 untuk jarak yang pas dari judul, leading-[1.8] agar baris lega -->
         <p class="text-gray-700 text-[18px] leading-[1.8] mt-7 pr-8 font-normal font-montserrat">
-          {{#if course.description.[0]}}
-            {{course.description.[0]}}
+          {{#if course.description}}
+            {{getByLang course.description lang}}
           {{else}}
             Learn the fundamentals of Python for data analysis from scratch to better understand data insights in a simpler and more structured way.
           {{/if}}
@@ -64,7 +64,7 @@
               </div>
               <p class="text-gray-800 text-[15px] mt-1.5 ml-[35px] leading-relaxed pr-4">
                 {{#if (eq course.method 'offline')}}
-                  {{course.location.[0]}}
+                  {{getByLang course.locations lang}}
                 {{else}}
                   Zoom / Google Meet (Link will be provided)
                 {{/if}}
