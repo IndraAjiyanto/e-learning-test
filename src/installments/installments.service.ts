@@ -64,7 +64,7 @@ export class InstallmentsService {
         const installment = await this.findByKelas(courseId);
       const usedNumbers = installment.map((i) => Number(i.month));
       
-      const availableNumbers = [3, 6, 12].filter(
+      const availableNumbers = [3].filter(
         (n) => !usedNumbers.includes(n)
       );
       return availableNumbers;
