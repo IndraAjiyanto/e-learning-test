@@ -30,7 +30,9 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('program')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) { }
+  constructor(
+    private readonly coursesService: CoursesService,
+  ) {}
 
   @Roles('admin', 'super_admin')
   @Post()
@@ -337,23 +339,33 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/week/:courseId')
-  async getMinggu(@Param('courseId', ParseIntPipe) courseId: number, @Res() res: Response) {
+  async getMinggu(
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Res() res: Response,
+  ) {
     const weeks = await this.coursesService.findCourseWeeks(courseId);
     res.json(weeks);
   }
 
   @Roles('super_admin', 'admin')
   @Get('/userProgram/:courseId')
-  async getUserKelas(@Param('courseId', ParseIntPipe) courseId: number, @Res() res: Response) {
+  async getUserKelas(
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Res() res: Response,
+  ) {
     const userCourses = await this.coursesService.findCourseUsers(courseId);
     res.json(userCourses);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/installment/:courseId')
-  async getCicilan(@Param('courseId', ParseIntPipe) courseId: number, @Res() res: Response) {
+  async getCicilan(
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Res() res: Response,
+  ) {
     const availableMonths = await this.coursesService.findNo(courseId);
-    const installments = await this.coursesService.findCourseInstallments(courseId);
+    const installments =
+      await this.coursesService.findCourseInstallments(courseId);
     res.json({ availableMonths, installments });
   }
 
@@ -363,7 +375,8 @@ export class CoursesController {
     @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
-    const registration = await this.coursesService.findCourseRegistrations(courseId);
+    const registration =
+      await this.coursesService.findCourseRegistrations(courseId);
     res.json(registration);
   }
 
@@ -384,7 +397,8 @@ export class CoursesController {
     @Param('courseId', ParseIntPipe) courseId: number,
     @Res() res: Response,
   ) {
-    const course_benefits = await this.coursesService.findProgramBenefit(courseId);
+    const course_benefits =
+      await this.coursesService.findProgramBenefit(courseId);
     res.json(course_benefits);
   }
 
@@ -401,14 +415,20 @@ export class CoursesController {
 
   @Roles('admin', 'super_admin')
   @Get('/flow/:courseId')
-  async getCourseFlow(@Param('courseId') courseId: number, @Res() res: Response) {
+  async getCourseFlow(
+    @Param('courseId') courseId: number,
+    @Res() res: Response,
+  ) {
     const course_flows = await this.coursesService.findCourseFlows(courseId);
     res.json(course_flows);
   }
 
   @Roles('admin', 'super_admin')
   @Get('/payment/:courseId')
-  async getPembayaran(@Param('courseId') courseId: number, @Res() res: Response) {
+  async getPembayaran(
+    @Param('courseId') courseId: number,
+    @Res() res: Response,
+  ) {
     const payment = await this.coursesService.findCoursePayments(courseId);
     res.json(payment);
   }
@@ -430,8 +450,7 @@ export class CoursesController {
   ) {
     if (req.user!.role === 'admin') {
       const course = await this.coursesService.findOneAdminCourse(courseId);
-      const lastWeek =
-        await this.coursesService.findLastWeek(courseId);
+      const lastWeek = await this.coursesService.findLastWeek(courseId);
       res.render('admin/course/detail', {
         user: req.user,
         course,
@@ -481,8 +500,10 @@ export class CoursesController {
     // const course_flows = await this.coursesService.findCourseFlows(courseId);
     // const mentor = await this.coursesService.findCourseMentors(courseId);
     // const course_benefits = await this.coursesService.findProgramBenefit(courseId);
-    const technologies = await this.coursesService.findCourseTechnologies(courseId);
-    const installments = await this.coursesService.findCourseInstallments(courseId);
+    const technologies =
+      await this.coursesService.findCourseTechnologies(courseId);
+    const installments =
+      await this.coursesService.findCourseInstallments(courseId);
     const studentList = await this.coursesService.sumStudent(course.id);
 
     if (course.checkPaid === false) {
@@ -525,10 +546,12 @@ export class CoursesController {
     let isUserInKelas = false;
     if (!req.user) {
       const course = await this.coursesService.findOneUserCourse(id);
-      // const courseQuestions = await this.coursesService.findCourseQuestions(id);
-      // const course_flows = await this.coursesService.findCourseFlows(id);
-      // const mentor = await this.coursesService.findCourseMentors(id);
-      // const course_benefits = await this.coursesService.findProgramBenefit(id);
+      const courseQuestions = await this.coursesService.findCourseQuestions(id);
+      const faqs = courseQuestions.map((cq) => ({
+        question: cq.questions,
+        answer: cq.answers,
+      }));
+      const course_benefits = await this.coursesService.findProgramBenefit(id);
       const technologies = await this.coursesService.findCourseTechnologies(id);
       const installments = await this.coursesService.findCourseInstallments(id);
       const userCourses = await this.coursesService.findCourseUsers(id);
@@ -542,19 +565,21 @@ export class CoursesController {
           technologies,
           installments,
           userCourses,
+          faqs
         });
       } else {
-        res.render('course/Bdetail', {
+        res.render('detail_program/paid_program/index', {
           course,
           kelass,
           studentList,
           // courseQuestions,
           // course_flows,
           // mentor,
-          // course_benefits,
+          course_benefits,
           technologies,
           installments,
           userCourses,
+          faqs,
         });
       }
     } else {
@@ -591,8 +616,10 @@ export class CoursesController {
         // const course_flows = await this.coursesService.findCourseFlows(id);
         // const mentor = await this.coursesService.findCourseMentors(id);
         // const course_benefits = await this.coursesService.findProgramBenefit(id);
-        const technologies = await this.coursesService.findCourseTechnologies(id);
-        const installments = await this.coursesService.findCourseInstallments(id);
+        const technologies =
+          await this.coursesService.findCourseTechnologies(id);
+        const installments =
+          await this.coursesService.findCourseInstallments(id);
         const userCourses = await this.coursesService.findCourseUsers(id);
         const kelass = await this.coursesService.allClassExcept(course.id);
         const studentList = await this.coursesService.sumStudent(course.id);
@@ -700,7 +727,10 @@ export class CoursesController {
         updateCourseDto.process = 'approved';
       }
 
-      if (req.body.technologiesIds_sent !== undefined && updateCourseDto.technologiesIds === undefined) {
+      if (
+        req.body.technologiesIds_sent !== undefined &&
+        updateCourseDto.technologiesIds === undefined
+      ) {
         updateCourseDto.technologiesIds = [];
       }
 

@@ -22,7 +22,7 @@
         faqs: [
           {{#if faqs.length}}
             {{#each faqs}}
-              { question: `{{getByLang pertanyaan ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
+              { question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
             {{/each}}
           {{else}}
             // DUMMY DATA: Tampil otomatis jika database/tabel faqs kosong

@@ -6,7 +6,7 @@ export class CreateInstallmentsDto {
   @IsNotEmpty()
   price: number[];
 
-  @IsEnum([3, 6, 12])
+  @IsEnum([3])
   @IsNotEmpty()
   month: Month;
 
