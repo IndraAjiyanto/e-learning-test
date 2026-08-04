@@ -60,38 +60,33 @@ export class AuthController {
       res.redirect('/register');
     }
   }
-
-  @Get('test')
-  async test(@Res() res:Response){
-    const course = await this.authService.findCourse(1);
-    res.render('detail_program/paid_program/index', { course });
-  }
-
-
+ 
   @Post('login')
-async login(@Body() body: any, @Request() req: any, @Res() res: Response) {
-try {
-const user = await this.authService.validateUser(
-body.email,
-body.password,
-);
+  async login(@Body() body: any, @Request() req: any, @Res() res: Response) {
+    try {
+      const user = await this.authService.validateUser(
+        body.email,
+        body.password,
+      );
 
-if (user!.isVerified === false) {
-res.redirect('/users/send-verify-email?token=' + user!.verificationToken);
-} else {
-req.login(user, (err) => {
-if (err) {
-req.flash('error', 'Email not verified');
-return res.redirect('/login');
-}
-res.redirect('/dashboard');
-});
-}
-} catch (error: any) {
-req.flash('error', error.message || 'Email or password is incorrect');
-return res.redirect('/login');
-}
-}
+      if (user!.isVerified === false) {
+        res.redirect(
+          '/users/send-verify-email?token=' + user!.verificationToken,
+        );
+      } else {
+        req.login(user, (err) => {
+          if (err) {
+            req.flash('error', 'Email not verified');
+            return res.redirect('/login');
+          }
+          res.redirect('/dashboard');
+        });
+      }
+    } catch (error: any) {
+      req.flash('error', error.message || 'Email or password is incorrect');
+      return res.redirect('/login');
+    }
+  }
 
   @Get('logout')
   logout(@Req() req: any, @Res() res: Response) {
@@ -108,7 +103,7 @@ return res.redirect('/login');
   }
 
   @Get('session-expired')
-sessionExpired(@Res() res: Response) {
+  sessionExpired(@Res() res: Response) {
     res.redirect('/login');
-}
+  }
 }

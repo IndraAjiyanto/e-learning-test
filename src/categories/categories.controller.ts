@@ -90,9 +90,7 @@ export class CategoriesController {
     const superiority = await this.categoriesService.findSuperiorityByCategory(
       category.id,
     );
-    const faqs = await this.categoriesService.findFaqByCategory(
-      category.id,
-    );
+    const faqs = await this.categoriesService.findFaqByCategory(category.id);
     const alumni = await this.categoriesService.findAlumniByCategory(
       category.id,
     );
@@ -112,7 +110,7 @@ export class CategoriesController {
       if (category.name === 'Short Class') {
         res.render('short_class', { category, user: req.user, alumni });
       } else {
-        res.render('program', { category, user: req.user, alumni });
+        res.render('free_program', { category, user: req.user, alumni });
       }
     }
   }
@@ -156,8 +154,7 @@ export class CategoriesController {
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
-    const faqs =
-      await this.categoriesService.findFaqByCategory(categoryId);
+    const faqs = await this.categoriesService.findFaqByCategory(categoryId);
     res.json(faqs);
   }
 
@@ -178,7 +175,8 @@ export class CategoriesController {
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
-    const alumni = await this.categoriesService.findAlumniByCategory(categoryId);
+    const alumni =
+      await this.categoriesService.findAlumniByCategory(categoryId);
     res.json(alumni);
   }
 
