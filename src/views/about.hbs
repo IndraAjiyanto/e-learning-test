@@ -40,7 +40,7 @@
         <nav class='flex space-x-3 min-w-max sm:min-w-0 pb-4'>
           <button
             @click="toggleActiveSection('story');"
-            :class="activeSection === 'story' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+            :class="activeSection === 'story' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
             class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
           >
             <i class='fas fa-book-open text-base'></i>
@@ -48,7 +48,7 @@
           </button>
           <button
             @click="toggleActiveSection('mission');"
-            :class="activeSection === 'mission' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+            :class="activeSection === 'mission' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
             class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
           >
             <i class='fas fa-bullseye text-base'></i>
@@ -56,7 +56,7 @@
           </button>
           <button
             @click="toggleActiveSection('values');"
-            :class="activeSection === 'values' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+            :class="activeSection === 'values' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
             class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
           >
             <i class='fas fa-heart text-base'></i>
@@ -64,7 +64,7 @@
           </button>
           <button
             @click="toggleActiveSection('team');"
-            :class="activeSection === 'team' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+            :class="activeSection === 'team' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
             class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
           >
             <i class='fas fa-users text-base'></i>
@@ -81,7 +81,7 @@
           <nav class='space-y-4'>
             <button
               @click="toggleActiveSection('story');"
-              :class="activeSection === 'story' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+              :class="activeSection === 'story' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
               class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
             >
               <i class='fas fa-book-open text-xl w-7 text-center'></i>
@@ -89,7 +89,7 @@
             </button>
             <button
               @click="toggleActiveSection('mission');"
-              :class="activeSection === 'mission' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+              :class="activeSection === 'mission' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
               class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
             >
               <i class='fas fa-bullseye text-xl w-7 text-center'></i>
@@ -97,7 +97,7 @@
             </button>
             <button
               @click="toggleActiveSection('values');"
-              :class="activeSection === 'values' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+              :class="activeSection === 'values' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
               class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
             >
               <i class='fas fa-heart text-xl w-7 text-center'></i>
@@ -105,7 +105,7 @@
             </button>
             <button
               @click="toggleActiveSection('team');"
-              :class="activeSection === 'team' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+              :class="activeSection === 'team' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'text-[#000000] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'"
               class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
             >
               <i class='fas fa-users text-xl w-7 text-center'></i>
