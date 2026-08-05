@@ -29,6 +29,9 @@ module.exports = {
         slideSlow: 'slide 40s linear infinite',
       },
       fontFamily: {
+        sans: ['"Open Sans"', 'sans-serif'],
+        'open-sans': ['"Open Sans"', 'sans-serif'],
+        opensans: ['"Open Sans"', 'sans-serif'],
         montserrat: ['Montserrat', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
       },
