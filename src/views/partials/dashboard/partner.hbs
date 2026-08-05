@@ -49,67 +49,28 @@
     </p>
   </div>
 
-  <div class="max-w-[1440px] mx-auto" x-data="{ activeTab: 'Institutions' }">
+  <div class="max-w-[1440px] mx-auto" x-data="{ activeTab: '{{categoryPartner.[0].category}}' }">
     <!-- Category Tabs -->
     <div class="flex justify-center flex-wrap gap-4 mb-14">
-      <!-- Government Institutions Button -->
-      <button 
-        @click="activeTab = 'Government Institutions'"
-        :class="activeTab === 'Government Institutions' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
+      {{#each categoryPartner}}
+      <!-- Category Button -->
+      <button
+        @click="activeTab = '{{this.category}}'"
+        :class="activeTab === '{{this.category}}' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
         class="w-full sm:w-[428px] h-[62px] rounded-[24px] text-white font-montserrat text-[17px] font-medium transition-all duration-300 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] backdrop-blur-[6.6px] flex items-center justify-center opacity-100"
       >
-        Government Institutions
+        {{this.category}}
       </button>
-
-      <!-- Company Button -->
-      <button 
-        @click="activeTab = 'Company'"
-        :class="activeTab === 'Company' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
-        class="w-full sm:w-[326px] h-[62px] rounded-[24px] text-white font-montserrat text-[17px] font-medium transition-all duration-300 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] backdrop-blur-[6.6px] flex items-center justify-center opacity-100"
-      >
-        Company
-      </button>
-
-      <!-- Institutions Button -->
-      <button 
-        @click="activeTab = 'Institutions'"
-        :class="activeTab === 'Institutions' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
-        class="w-full sm:w-[327px] h-[62px] rounded-[24px] text-white font-montserrat text-[17px] font-medium transition-all duration-300 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] backdrop-blur-[6.6px] flex items-center justify-center opacity-100"
-      >
-        Institutions
-      </button>
-
-      <!-- BUMN Button -->
-      <button 
-        @click="activeTab = 'BUMN'"
-        :class="activeTab === 'BUMN' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
-        class="w-full sm:w-[221px] h-[62px] rounded-[24px] text-white font-montserrat text-[17px] font-medium transition-all duration-300 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] backdrop-blur-[6.6px] flex items-center justify-center opacity-100"
-      >
-        BUMN
-      </button>
+      {{/each}}
     </div>
 
     <!-- Logos Grid -->
-    <div class="flex flex-wrap justify-center gap-6" x-data="{ 
-      logos: [
-        'Frame 1618876256.svg',
-        'Frame 1618876244.svg', 
-        'Frame 1618876264.svg',
-        'Frame 1618876254.svg',
-        'Frame 1618876245.svg', 
-        'Frame 1618876255.svg', 
-        'Frame 1618876260.svg', 
-        'Frame 1618876249.svg',
-        'Frame 1618876259.svg',
-        'Frame 1618876248.svg',
-        'Frame 1618876253.svg' 
-      ]
-    }">
-      <template x-for="logo in logos" :key="logo">
-        <div class="w-[200px] h-[120px] bg-white border border-gray-200 rounded-[12px] flex items-center justify-center p-6 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow">
-          <img :src="'/public/image/dashboard/' + logo" alt="Partner Logo" class="max-h-full max-w-full object-contain" />
+    <div class="flex flex-wrap justify-center gap-6">
+      {{#each partners}}
+        <div x-show="activeTab === '{{this.categoryPartner.category}}'" class="w-[200px] h-[120px] bg-white border border-gray-200 rounded-[12px] flex items-center justify-center p-6 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow">
+          <img src="{{this.image}}" alt="Partner Logo" class="max-h-full max-w-full object-contain" />
         </div>
-      </template>
+      {{/each}}
     </div>
   </div>
 </section>

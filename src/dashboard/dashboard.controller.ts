@@ -65,13 +65,17 @@ export class DashboardController {
         const category = await this.dashboardService.findCategories();
         const alumni = await this.dashboardService.findAllAlumni();
         const collaborations = await this.dashboardService.findCollaborations();
+        const categoryPartner =
+          await this.dashboardService.findCategoryPartners();
         const benefits = await this.dashboardService.findAllBenefits();
         const about = await this.dashboardService.findAbout();
         const social = await this.dashboardService.findSocial();
         const gallery = await this.galleryService.findAll();
         const programs = await this.dashboardService.findAllCategories();
+        const partners = await this.dashboardService.findAllPartners();
         res.render('dashboard', {
           special_program,
+          partners,
           user: req.user,
           gallery,
           programs,
@@ -85,6 +89,7 @@ export class DashboardController {
           category,
           alumni,
           collaborations,
+          categoryPartner,
           benefits,
           about,
           social,
@@ -102,14 +107,18 @@ export class DashboardController {
       const courseType = await this.dashboardService.findCourseTypes();
       const category = await this.dashboardService.findCategories();
       const alumni = await this.dashboardService.findAllAlumni();
-      const collaborations = await this.dashboardService.findCollaborations();
+      // const collaborations = await this.dashboardService.findCollaborations();
+      const categoryPartner =
+        await this.dashboardService.findCategoryPartners();
       const benefits = await this.dashboardService.findAllBenefits();
       const about = await this.dashboardService.findAbout();
       const social = await this.dashboardService.findSocial();
       const gallery = await this.galleryService.findAll();
       const programs = await this.dashboardService.findAllCategories();
+      const partners = await this.dashboardService.findAllPartners();
       res.render('dashboard', {
         special_program,
+        partners,
         user: req.user,
         gallery,
         programs,
@@ -122,7 +131,8 @@ export class DashboardController {
         courseType,
         category,
         alumni,
-        collaborations,
+        // collaborations,
+        categoryPartner,
         benefits,
         about,
         social,
@@ -143,7 +153,7 @@ export class DashboardController {
   ) {
     const currentPage = parseInt(page || '1', 10);
     const itemsPerPage = parseInt(limit || '6', 10);
-  
+
     const portfolioList = await this.dashboardService.findPortfolio({
       userId: userId || null,
       categoryId: categoryId || null,
@@ -152,7 +162,6 @@ export class DashboardController {
       limit: itemsPerPage,
     });
 
-  
     return res.json({
       data: portfolioList.data,
       totalItems: portfolioList.total,
@@ -189,7 +198,7 @@ export class DashboardController {
   async alumniFilter(
     @Req() req: Request,
     @Res() res: Response,
-    @Query('search') search?: string,         
+    @Query('search') search?: string,
     @Query('course_id') courseId?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -199,7 +208,7 @@ export class DashboardController {
 
     const result = await this.dashboardService.findAlumni({
       courseId: courseId || null,
-      search: search || null, 
+      search: search || null,
       page: currentPage,
       limit: itemsPerPage,
     });
@@ -219,7 +228,7 @@ export class DashboardController {
     res.render('alumni', {
       user: req.user,
       course: kelasList,
-      // kategoriList: kategoriList 
+      // kategoriList: kategoriList
     });
   }
 

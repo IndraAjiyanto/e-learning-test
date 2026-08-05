@@ -1,7 +1,7 @@
 <section
   class="py-20 relative overflow-hidden bg-cover bg-center"
   style="background-image: url('/public/image/dashboard/bgAlumni.png'); background-size: cover; background-position: center;"
-  x-data="testimonialCarousel()"
+  x-data="testimonialCarousel(window.__alumniCarousel)"
 >
   <!-- Background Blur Effects -->
   <div class="absolute top-0 right-0 opacity-10 pointer-events-none">
@@ -62,9 +62,9 @@
                 <div>
                   <p class="font-montserrat font-[600] text-[#000000] text-[18px] md:text-[22.07px] leading-[100%] mb-1" x-text="item.name"></p>
                   <p class="font-sans font-[400] text-[#000000]/80 text-[14px] md:text-[18px] leading-snug">
-                    <span x-text="item.position"></span>
+                    <span x-text="item.company"></span>
                     <template x-if="item.company">
-                      <span> at <span x-text="item.company"></span></span>
+                      <span> at <span x-text="item.position"></span></span>
                     </template>
                   </p>
                 </div>
@@ -149,3 +149,19 @@
     </div>
   </div>
 </section>
+<script>
+  // Data alumni dari database untuk carousel testimonial
+  // getByLang mengambil teks sesuai bahasa aktif (id/en/ja)
+  window.__alumniCarousel = [
+    {{#each alumni}}
+    {
+      id: {{this.id}},
+      name: {{{json (getByLang this.name ../lang)}}},
+      position: {{{json (getByLang this.currentPosition ../lang)}}},
+      company: {{{json (default this.course.name '')}}},
+      photo: {{{json (default this.profile '')}}},
+      testimonial: {{{json (getByLang this.message ../lang)}}}
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  ];
+</script>

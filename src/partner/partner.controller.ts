@@ -30,7 +30,7 @@ import { CategoryPartnerService } from 'src/category_partner/category_partner.se
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
-@Controller('partner')
+@Controller('partnership')
 export class PartnerController {
   constructor(
     private readonly PartnerService: PartnerService,

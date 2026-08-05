@@ -1200,6 +1200,15 @@ input:-webkit-autofill,
   color: var(--fallback-nc,oklch(var(--nc)/var(--tw-text-opacity)));
 }
 
+.carousel {
+  display: inline-flex;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .checkbox {
   flex-shrink: 0;
   --chkbg: var(--fallback-bc,oklch(var(--bc)/1));
@@ -2544,6 +2553,10 @@ input.tab:checked + .tab-content,
 .card.image-full :where(figure) {
   overflow: hidden;
   border-radius: inherit;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
 }
 
 .checkbox:focus {
@@ -5249,10 +5262,6 @@ details.collapse summary::-webkit-details-marker {
 
 .min-h-\[500px\] {
   min-height: 500px;
-}
-
-.min-h-\[50px\] {
-  min-height: 50px;
 }
 
 .min-h-\[52px\] {
@@ -10716,18 +10725,6 @@ details.collapse summary::-webkit-details-marker {
 
   .sm\:w-28 {
     width: 7rem;
-  }
-
-  .sm\:w-\[221px\] {
-    width: 221px;
-  }
-
-  .sm\:w-\[326px\] {
-    width: 326px;
-  }
-
-  .sm\:w-\[327px\] {
-    width: 327px;
   }
 
   .sm\:w-\[360px\] {
