@@ -8,6 +8,7 @@ import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Partner } from 'src/entities/partner.entity';
+import { CategoryPartner } from 'src/entities/category_partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -41,6 +42,8 @@ export class DashboardService {
     private readonly courseTypeRepository: Repository<CourseType>,
     @InjectRepository(Partner)
     private readonly partnerRepository: Repository<Partner>,
+    @InjectRepository(CategoryPartner)
+    private readonly categoryPartnerRepository: Repository<CategoryPartner>,
     @InjectRepository(Benefit)
     private readonly benefitRepository: Repository<Benefit>,
     @InjectRepository(Team)
@@ -73,10 +76,16 @@ export class DashboardService {
     private readonly ourExperienceRepository: Repository<OurExperience>,
   ) {}
 
+  async findAllCategories() {
+    return await this.categoryRepository.find({ order: { id: 'ASC' } });
+  }
 
-async findAllCategories() {
-  return await this.categoryRepository.find({ order: { id: 'ASC' } });
-}
+  async findAllPartners() {
+    return await this.partnerRepository.find({
+      relations: ['categoryPartner'],
+      order: { createdAt: 'ASC' },
+    });
+  }
 
   async findOurExperience() {
     return await this.ourExperienceRepository.find({
@@ -100,43 +109,53 @@ async findAllCategories() {
 
   async findCoursesPaginated(params: {
     userId?: number;
-  category?: string;
-  courseType?: string;
-  method?: string;
-  search?: string;
-  page: number;
-  limit: number;
-}) {
-  const query = this.courseRepository.createQueryBuilder('course')
-    .leftJoinAndSelect('course.category', 'category')
-    .leftJoinAndSelect('course.courseType', 'courseType')
-    .leftJoinAndSelect('course.userCourses', 'userCourses')
-    .where('course.launch = :launch', { launch: true });
+    category?: string;
+    courseType?: string;
+    method?: string;
+    search?: string;
+    page: number;
+    limit: number;
+  }) {
+    const query = this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('course.userCourses', 'userCourses')
+      .where('course.launch = :launch', { launch: true });
 
-    if(params.userId){
-      query.andWhere('userCourses.user.id = :userId', { userId: params.userId });
+    if (params.userId) {
+      query.andWhere('userCourses.user.id = :userId', {
+        userId: params.userId,
+      });
     }
 
-  if (params.category) {
-    query.andWhere('category.name = :category', { category: params.category });
-  }
-  if (params.courseType) {
-    query.andWhere('courseType.nameClassesType = :courseType', { courseType: params.courseType });
-  }
-  if (params.method) {
-    query.andWhere('course.method = :method', { method: params.method });
-  }
-  if (params.search) {
-    query.andWhere('course.name ILIKE :search', { search: `%${params.search}%` });
-  }
+    if (params.category) {
+      query.andWhere('category.name = :category', {
+        category: params.category,
+      });
+    }
+    if (params.courseType) {
+      query.andWhere('courseType.nameClassesType = :courseType', {
+        courseType: params.courseType,
+      });
+    }
+    if (params.method) {
+      query.andWhere('course.method = :method', { method: params.method });
+    }
+    if (params.search) {
+      query.andWhere('course.name ILIKE :search', {
+        search: `%${params.search}%`,
+      });
+    }
 
-  query.orderBy('course.id', 'DESC')
-    .skip((params.page - 1) * params.limit)
-    .take(params.limit);
+    query
+      .orderBy('course.id', 'DESC')
+      .skip((params.page - 1) * params.limit)
+      .take(params.limit);
 
-  const [data, total] = await query.getManyAndCount();
-  return { data, total };
-}
+    const [data, total] = await query.getManyAndCount();
+    return { data, total };
+  }
 
   async findVisionsMissions() {
     return await this.visionRepository.find();
@@ -170,7 +189,9 @@ async findAllCategories() {
   }
 
   async findMission() {
-    return await this.missionRepository.find({ order: { missionOrder: 'ASC' } });
+    return await this.missionRepository.find({
+      order: { missionOrder: 'ASC' },
+    });
   }
 
   async findExperience() {
@@ -188,7 +209,9 @@ async findAllCategories() {
   }
 
   async findAboutParagraphs() {
-    return await this.paragraphRepository.find({ order: { paragraphOrder: 'ASC' } });
+    return await this.paragraphRepository.find({
+      order: { paragraphOrder: 'ASC' },
+    });
   }
 
   async findBackground() {
@@ -204,90 +227,89 @@ async findAllCategories() {
     });
   }
 
-async findPortfolio(options?: {
-  userId?: number | null;
-  categoryId?: string | null;
-  courseTypeId?: string | null;
-  page?: number;
-  limit?: number;
-}) {
-  const page = options?.page || 1;
-  const limit = options?.limit || 6;
-  const skip = (page - 1) * limit;
-
-  const where: any = {};
-
-  if (options?.userId) {
-    where.user = { id: options.userId };
-  }
-
-  if (options?.categoryId) {
-    where.course = {
-      ...where.course,
-      category: { id: options.categoryId }
-    };
-  }
-
-  if (options?.courseTypeId) {
-    where.course = {
-      ...where.course,
-      courseType: { id: options.courseTypeId }
-    };
-  }
-
-  const [data, total] = await this.portfolioRepository.findAndCount({
-    where,
-    relations: ['course', 'course.category', 'course.courseType', 'user'],
-    skip,
-    take: limit,
-  });
-
-  return { data, total };
-}
-
-
-async findAlumni(options?: {
-  courseId?: string | null;
-  search?: string | null;
-  categoryId?: string | null; 
-  page?: number;
-  limit?: number;
-}) {
-  const page = options?.page || 1;
-  const limit = options?.limit || 6;
-  const skip = (page - 1) * limit;
-
-  const qb = this.alumniRepository
-    .createQueryBuilder('alumni')
-    .leftJoinAndSelect('alumni.kelas', 'kelas')
-    .leftJoinAndSelect('kelas.kategori', 'kategori')
-    .orderBy('alumni.createdAt', 'DESC')
-    .skip(skip)
-    .take(limit);
+  async findPortfolio(options?: {
+    userId?: number | null;
+    categoryId?: string | null;
+    courseTypeId?: string | null;
+    page?: number;
+    limit?: number;
+  }) {
+    const page = options?.page || 1;
+    const limit = options?.limit || 6;
+    const skip = (page - 1) * limit;
 
     const where: any = {};
 
-  // Logika filter course atau category global
-  if (options?.courseId) {
-    where.course = { id: options.courseId };
-  } else if (options?.categoryId) {
-    where.course = { category: { id: options.categoryId } };
-  }
- if (options?.search && options.search.trim() !== '') {
-    const keyword = `%${options.search.trim()}%`;
-    where.nama = ILike(keyword);
+    if (options?.userId) {
+      where.user = { id: options.userId };
+    }
+
+    if (options?.categoryId) {
+      where.course = {
+        ...where.course,
+        category: { id: options.categoryId },
+      };
+    }
+
+    if (options?.courseTypeId) {
+      where.course = {
+        ...where.course,
+        courseType: { id: options.courseTypeId },
+      };
+    }
+
+    const [data, total] = await this.portfolioRepository.findAndCount({
+      where,
+      relations: ['course', 'course.category', 'course.courseType', 'user'],
+      skip,
+      take: limit,
+    });
+
+    return { data, total };
   }
 
-  const [data, total] = await this.alumniRepository.findAndCount({
-    where,
-    relations: ['course', 'course.category'],
-    order: { createdAt: 'DESC' },
-    skip,
-    take: limit,
-  });
+  async findAlumni(options?: {
+    courseId?: string | null;
+    search?: string | null;
+    categoryId?: string | null;
+    page?: number;
+    limit?: number;
+  }) {
+    const page = options?.page || 1;
+    const limit = options?.limit || 6;
+    const skip = (page - 1) * limit;
 
-  return { data, total };
-}
+    const qb = this.alumniRepository
+      .createQueryBuilder('alumni')
+      .leftJoinAndSelect('alumni.kelas', 'kelas')
+      .leftJoinAndSelect('kelas.kategori', 'kategori')
+      .orderBy('alumni.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+
+    const where: any = {};
+
+    // Logika filter course atau category global
+    if (options?.courseId) {
+      where.course = { id: options.courseId };
+    } else if (options?.categoryId) {
+      where.course = { category: { id: options.categoryId } };
+    }
+    if (options?.search && options.search.trim() !== '') {
+      const keyword = `%${options.search.trim()}%`;
+      where.nama = ILike(keyword);
+    }
+
+    const [data, total] = await this.alumniRepository.findAndCount({
+      where,
+      relations: ['course', 'course.category'],
+      order: { createdAt: 'DESC' },
+      skip,
+      take: limit,
+    });
+
+    return { data, total };
+  }
 
   async findAllAlumni() {
     return await this.alumniRepository.find({
@@ -324,6 +346,13 @@ async findAlumni(options?: {
 
   async findCollaborations() {
     return await this.partnerRepository.find({
+      relations: ['categoryPartner'],
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  async findCategoryPartners() {
+    return await this.categoryPartnerRepository.find({
       order: { createdAt: 'ASC' },
     });
   }

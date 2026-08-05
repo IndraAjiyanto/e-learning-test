@@ -9,6 +9,7 @@ import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Partner } from 'src/entities/partner.entity';
+import { CategoryPartner } from 'src/entities/category_partner.entity';
 import { Benefit } from 'src/entities/benefit.entity';
 import { Team } from 'src/entities/team.entity';
 import { Social } from 'src/entities/social.entity';
@@ -53,6 +54,7 @@ import { GalleryModule } from 'src/gallery/gallery.module';
       Paragraph,
       Faq,
       OurExperience,
+      CategoryPartner,
     ]),
     TranslationModule, // Import TranslationModule
     GalleryModule,
@@ -61,4 +63,4 @@ import { GalleryModule } from 'src/gallery/gallery.module';
   providers: [DashboardService],
   exports: [DashboardService],
 })
-export class DashboardModule { }
+export class DashboardModule {}
