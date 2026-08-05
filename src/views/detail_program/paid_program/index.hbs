@@ -14,7 +14,7 @@
       <div class="flex-1 lg:max-w-2xl pt-2">
         <!-- Batch Pill -->
         <div class="inline-flex items-center justify-center px-5 lg:px-6 py-2 lg:py-2.5 mb-6 lg:mb-8 rounded-full border-2 border-white bg-white/80 backdrop-blur-[6.6px] shadow-[0_0_4px_rgba(0,0,0,0.1)] w-fit max-w-full">
-          <span class="text-[#0B1F3B] font-[600] text-[30px] leading-none text-center">{{course.group}} - Start Learning {{formatDate course.startDate lang}}</span>
+          <span class="text-[#0B1F3B] font-[600] text-[30px] leading-none text-center">{{course.group}} - {{t 'test.paidProgram.header.startLearning'}} {{formatDate course.startDate lang}}</span>
         </div>
 
         <!-- Title -->
@@ -39,7 +39,7 @@
                 <img src="/public/image/icons/paid_program/calendar.svg" alt="Calendar Icon" class="w-[30px] h-[30px]" />
               </div>
               <div>
-                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">Learning Date</h3>
+                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{t 'test.paidProgram.header.learningDate'}}</h3>
                 <p class="text-[#545454] font-[400] text-[20px]">{{formatDate course.startDate lang}} - {{formatDate course.startEnd lang}} - {{course.method}}</p>
               </div>
             </div>
@@ -50,7 +50,7 @@
                 <img src="/public/image/icons/paid_program/location.svg" alt="Location Icon" class="w-[23px] h-[32px]" />
               </div>
               <div>
-                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">Location</h3>
+                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{t 'test.paidProgram.header.location'}}</h3>
                 <p class="text-[#545454] font-[400] text-[20px]">{{getByLang course.locations lang}}</p>
               </div>
             </div>
@@ -61,21 +61,21 @@
                 <img src="/public/image/icons/paid_program/capacity.svg" alt="Capacity Icon" class="w-[30px] h-[21px]" />
               </div>
               <div>
-                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">Capacity</h3>
-                <p class="text-[#545454] font-[400] text-[20px]">{{course.quota}} Students</p>
+                <h3 class="font-[600] text-[#0F0F0F] text-[25px] leading-none mb-1.5">{{t 'test.paidProgram.header.capacity'}}</h3>
+                <p class="text-[#545454] font-[400] text-[20px]">{{course.quota}} {{t 'test.paidProgram.header.students'}}</p>
               </div>
             </div>
           </div>
 
           <!-- Registration Status -->
           <div class="text-center mb-6">
-            <p class="text-[#D32F2F] font-bold text-[17px]">Registration is Open Until {{formatDate course.startEnd lang}}</p>
+            <p class="text-[#D32F2F] font-bold text-[17px]">{{t 'test.paidProgram.header.registrationTime'}} {{formatDate course.startEnd lang}}</p>
           </div>
 
           <!-- Button -->
           {{!-- BUTTON BELUM DIUBAH --}}
           <button class="btn bg-[#003060] hover:bg-[#002244] w-full text-white text-lg h-14 rounded-lg shadow-md border-none">
-            Registration Now
+            {{t 'test.paidProgram.header.registrationNow'}}
           </button>
         </div>
       </div>
@@ -92,7 +92,7 @@
     
     <!-- Title Pill -->
     <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
-      Participants
+      {{t 'test.paidProgram.title.participants'}}
     </div>
 
     <!-- Cards Grid (2x2) -->
@@ -119,7 +119,7 @@
   <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
     
     <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
-      What You'll Learn
+      {{t 'test.paidProgram.navbarMenu.whatYouLearn'}}
     </div>
 
     <div class="flex flex-col lg:flex-row items-center gap-4 w-full max-w-[1200px]">
@@ -161,7 +161,7 @@
 <section id="benefits" class="bg-[#FAFAFA] py-20 font-montserrat overflow-x-hidden">
   <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
     <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
-      Benefits
+      {{t 'test.paidProgram.navbarMenu.benefits'}}
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-[1000px]">
       {{#each course.programBenefits}}
@@ -185,7 +185,7 @@
   <div class="container mx-auto px-4 lg:px-8 max-w-[1200px] flex flex-col items-center">
     
     <div class="inline-flex items-center justify-center border border-[#003060] bg-[#6EB6E5]/[20%] text-[#003060] px-14 py-2.5 rounded-[100px] font-[600] text-[16px] mb-14">
-      Learning Flow
+      {{t 'test.paidProgram.navbarMenu.learningFlow'}}
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-x-3 gap-y-16 w-full">
