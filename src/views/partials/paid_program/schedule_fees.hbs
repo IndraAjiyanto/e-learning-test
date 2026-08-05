@@ -54,22 +54,25 @@
             <div class="flex items-center gap-2">
               <i class="far fa-info-circle"></i> {{t 'test.paidProgram.schedule&Fees.installmentInfo'}}
             </div>
-            <i class="fas fa-chevron-down text-[#0F0F0F] text-[18px] md:text-[35px] transition-transform duration-300" :class="openInfo ? 'rotate-180' : ''"></i>
+            <i class="fas fa-chevron-down text-[#0F0F0F] text-[18px] md:text-[32px] transition-transform duration-300" :class="openInfo ? 'rotate-180' : ''"></i>
           </button>
           
           <div x-show="openInfo"
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 max-h-0"
-               x-transition:enter-end="opacity-100 max-h-[200px]"
+               x-transition:enter-end="opacity-100 max-h-[500px]"
                x-transition:leave="transition ease-in duration-200"
-               x-transition:leave-start="opacity-100 max-h-[200px]"
+               x-transition:leave-start="opacity-100 max-h-[500px]"
                x-transition:leave-end="opacity-0 max-h-0"
                class="overflow-hidden" style="display: none;">
-               {{#each installments}}
-             <div class="pt-4 pb-2 text-[16px] md:text-[25px] text-[#545454] leading-relaxed">
-               By selecting installment, you will pay a down payment of Rp {{../course.price}} upfront. The remaining balance can be paid flexibly up to {{this.month}} months. Terms and conditions apply.
+             <div class="pt-4 pb-2 font-['Open_Sans'] font-normal text-xl leading-[50px] tracking-normal text-[#0F0F0F]">
+               <ol class="list-decimal pl-6">
+                 <li>Down Payment (DP) is required as the first payment for enrollment</li>
+                 <li>No additional fees or interest</li>
+                 <li>Pay monthly as per schedule below</li>
+                 <li>Full access after DP payment</li>
+               </ol>
              </div>
-             {{/each}}
           </div>
         </div>
 
