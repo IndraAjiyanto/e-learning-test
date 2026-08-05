@@ -44,7 +44,8 @@
         <div class="flex flex-col md:flex-row items-center text-[#0F0F0F] text-[18px] md:text-[35px] font-[500] mb-6">
           <i class="far fa-clock mr-2"></i> 
           <span>Offer Ends In </span>
-          <span class="text-[#D32F2F] font-[500] ml-2 tracking-wide">##15 Days &nbsp; 11 : 50 : 05##</span>
+          {{!-- BELUM DIEDIT WAKTU NYA   --}}
+          <span class="text-[#D32F2F] font-[500] ml-2 tracking-wide">15 Days &nbsp; 11 : 50 : 05</span>
         </div>
 
         <!-- Installment Information Accordion (Only for Cicilan) -->
@@ -76,18 +77,19 @@
         <div class="w-full bg-[#EAEAEA] rounded-[8px] p-4 md:p-5 mb-8">
           <div class="flex justify-between items-center mb-3">
             <span class="font-[600] text-[#0F0F0F] text-[18px] md:text-[35px]">Registration</span>
-            <span class="text-[#0F0F0F] font-[400] text-[18px] md:text-[35px]">{{formatDate course.startDate}}</span>
+            <span class="text-[#0F0F0F] font-[400] text-[18px] md:text-[35px]">{{formatDate course.startDate lang}}</span>
           </div>
           <div class="flex justify-between items-center">
             <span class="font-[600] text-[#0F0F0F] text-[18px] md:text-[35px]">Start Learning</span>
-            <span class="text-[#0F0F0F] font-[400] text-[18px] md:text-[35px]">{{formatDate course.startDate }} - {{formatDate course.startEnd}}</span>
+            <span class="text-[#0F0F0F] font-[400] text-[18px] md:text-[35px]">{{formatDate course.startDate lang }} - {{formatDate course.startEnd lang}}</span>
           </div>
         </div>
 
         <!-- Buttons (Shared) -->
         <div class="flex flex-col gap-4 w-full">
-          <button class="w-full bg-[#003060] text-white font-[600] text-[18px] md:text-[35px] py-4 md:py-6 rounded-[8px] hover:bg-[#002244] transition-colors">##Registration Now</button>
-          <button class="w-full bg-[#F5F5F5] border border-[#E0E0E0] text-[#003060] font-[600] text-[18px] md:text-[35px] py-4 md:py-6 rounded-[8px] hover:bg-[#EAEAEA] transition-colors">##Free Consultation</button>
+          {{!-- BUTTON BELUM DIUBAH --}}
+          <button class="w-full bg-[#003060] text-white font-[600] text-[18px] md:text-[35px] py-4 md:py-6 rounded-[8px] hover:bg-[#002244] transition-colors">Registration Now</button>
+          <button class="w-full bg-[#F5F5F5] border border-[#E0E0E0] text-[#003060] font-[600] text-[18px] md:text-[35px] py-4 md:py-6 rounded-[8px] hover:bg-[#EAEAEA] transition-colors">Free Consultation</button>
         </div>
 
       </div>
