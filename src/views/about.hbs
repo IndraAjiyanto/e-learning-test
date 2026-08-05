@@ -8,117 +8,114 @@
   }
 </style>
 
-<div class='pt-20 min-h-screen bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)]' x-data="
-          {
-            activeSection: localStorage.getItem('activeSection') || 'story',
+<div 
+  class='relative min-h-screen bg-slate-50' 
+  x-data="{
+    activeSection: localStorage.getItem('activeSection') || 'story',
+    get bgImage() {
+      switch(this.activeSection) {
+        case 'story': return '/public/image/about/bgStory.png';
+        case 'mission': return '/public/image/about/bgVisionMission.png';
+        case 'values': return '/public/image/about/bgValues.png';
+        case 'team': return '/public/image/about/bgTeam.png';
+        default: return '/public/image/about/bgStory.png';
+      }
+    },
+    async toggleActiveSection(sectionName) {
+      this.activeSection = sectionName;
+      localStorage.setItem('activeSection', sectionName);
+    }
+  }"
+>
+  <!-- Fixed Dynamic Background Image per Tab (Contained to About Section) -->
+  <div 
+    class="absolute inset-0 w-full h-full pointer-events-none z-0 bg-fixed bg-cover bg-top bg-no-repeat transition-all duration-500 opacity-90"
+    :style="`background-image: url('${bgImage}');`"
+  ></div>
 
-            async toggleActiveSection(sectionName) {
-this.activeSection = sectionName;
-localStorage.setItem('activeSection', sectionName);
-}
-          }
-        ">
-  <div class='max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12'>
+  <div class='relative z-10 max-w-full mx-8 mt-4 p-4 sm:p-8 py-8 md:py-20 lg:py-24'>
 
     <div class='lg:hidden mb-6 -mx-4 sm:mx-0'>
       <div class='overflow-x-auto scrollbar-hide px-4 sm:px-0'>
-        <nav class='flex space-x-2 min-w-max sm:min-w-0 pb-4' >
+        <nav class='flex space-x-3 min-w-max sm:min-w-0 pb-4'>
           <button
             @click="toggleActiveSection('story');"
-            :class="activeSection === 'story' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300 '
+            :class="activeSection === 'story' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+            class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
           >
-            <i class='fas fa-book-open text-xs'></i>
+            <i class='fas fa-book-open text-base'></i>
             <span>{{t "test.about.tabAbout.story"}}</span>
           </button>
           <button
             @click="toggleActiveSection('mission');"
-            :class="activeSection === 'mission' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300'
+            :class="activeSection === 'mission' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+            class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
           >
-            <i class='fas fa-bullseye text-xs'></i>
+            <i class='fas fa-bullseye text-base'></i>
             <span>{{t "test.about.tabAbout.visionsMisi"}}</span>
           </button>
           <button
             @click="toggleActiveSection('values');"
-            :class="activeSection === 'values' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300'
+            :class="activeSection === 'values' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+            class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
           >
-            <i class='fas fa-heart text-xs'></i>
+            <i class='fas fa-heart text-base'></i>
             <span>{{t "test.about.tabAbout.value"}}</span>
           </button>
           <button
             @click="toggleActiveSection('team');"
-            :class="activeSection === 'team' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300'
+            :class="activeSection === 'team' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+            class='h-[64px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg md:text-[25px] font-medium font-inter leading-none tracking-normal'
           >
-            <i class='fas fa-users text-xs'></i>
+            <i class='fas fa-users text-base'></i>
             <span>{{t "test.about.tabAbout.team"}}</span>
           </button>
-          
-          {{!-- <button
-            @click="toggleActiveSection('contact');"
-            :class="activeSection === 'contact' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-            class='px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center space-x-2 whitespace-nowrap text-sm font-medium border border-gray-300'
-          >
-            <i class='fas fa-envelope text-xs'></i>
-            <span>{{t "test.about.tabAbout.contact"}}</span>
-          </button> --}}
         </nav>
       </div>
     </div>
 
-    <div class='grid grid-cols-1 lg:grid-cols-4 gap-8'>
+    <div class='grid grid-cols-1 lg:grid-cols-12 gap-8'>
       <!-- Desktop Sidebar Navigation -->
-      <div class='hidden lg:block lg:col-span-1'>
-        <div class='sticky top-32 space-y-2'>
-          <nav class='space-y-1'>
+      <div class='hidden lg:block lg:col-span-4 w-full max-w-[488px] sticky top-24 self-start'>
+        <div class='space-y-4'>
+          <nav class='space-y-4'>
             <button
               @click="toggleActiveSection('story');"
-              :class="activeSection === 'story' ? 'bg-secondary text-white shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
+              :class="activeSection === 'story' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+              class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
             >
-              <i class='fas fa-book-open text-sm'></i>
+              <i class='fas fa-book-open text-xl w-7 text-center'></i>
               <span>{{t "test.about.tabAbout.story"}}</span>
             </button>
             <button
               @click="toggleActiveSection('mission');"
-              :class="activeSection === 'mission' ? 'bg-secondary text-white shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
+              :class="activeSection === 'mission' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+              class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
             >
-              <i class='fas fa-bullseye text-sm'></i>
+              <i class='fas fa-bullseye text-xl w-7 text-center'></i>
               <span>{{t "test.about.tabAbout.visionsMisi"}}</span>
             </button>
-                 <button
+            <button
               @click="toggleActiveSection('values');"
-              :class="activeSection === 'values' ? 'bg-secondary text-white shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
+              :class="activeSection === 'values' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+              class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
             >
-              <i class='fas fa-heart text-sm'></i>
+              <i class='fas fa-heart text-xl w-7 text-center'></i>
               <span>{{t "test.about.tabAbout.value"}}</span>
             </button>
             <button
               @click="toggleActiveSection('team');"
-              :class="activeSection === 'team' ? 'bg-secondary text-white shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
+              :class="activeSection === 'team' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]' : 'bg-white text-[#000000] border border-[#D9D9D9] hover:bg-gray-50'"
+              class='w-full max-w-[488px] h-[84px] text-left px-[30px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[25px] leading-none tracking-normal'
             >
-              <i class='fas fa-users text-sm'></i>
+              <i class='fas fa-users text-xl w-7 text-center'></i>
               <span>{{t "test.about.tabAbout.team"}}</span>
             </button>
-       
-            {{!-- <button
-              @click="toggleActiveSection('contact');"
-              :class="activeSection === 'contact' ? 'bg-slate-100 text-slate-700 shadow-lg' : 'text-slate-600 hover:text-slate-700 hover:shadow-xl hover:bg-slate-50'"
-              class='w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 border border-gray-300'
-            >
-              <i class='fas fa-envelope text-sm'></i>
-              <span>{{t "test.about.tabAbout.contact"}}</span>
-            </button> --}}
           </nav>
         </div>
       </div>
 
-      <div class='lg:col-span-3'>
+      <div class='lg:col-span-8'>
         <div x-show="activeSection === 'story'">
         {{> about/story_tab}}
         </div>
@@ -133,9 +130,6 @@ localStorage.setItem('activeSection', sectionName);
 <div x-show="activeSection === 'values'">
         {{> about/values_tab}}
         </div>
-{{!-- <div x-show="activeSection === 'contact'">
-        {{> about/contact_tab}}
-        </div> --}}
       </div>
     </div>
   </div>
