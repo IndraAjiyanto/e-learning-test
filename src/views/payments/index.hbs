@@ -1,0 +1,114 @@
+<div class="min-h-screen bg-[#FAFAFA] font-montserrat pt-24 pb-12">
+  <div class="ml-0 md:ml-12 mr-0 md:mr-12 px-6">
+    <!-- Back Button -->
+    {{> backButton }}
+
+    <!-- Header Section -->
+    <h1 class="text-2xl md:text-4xl lg:text-[36px] leading-tight font-semibold text-[#003060] mb-3">Kesatria Academy Program Registration Form</h1>
+    <p class="text-base md:text-2xl lg:text-[28px] leading-snug font-normal text-[#003060] mb-12">Please complete your payment to verify your registration and activate your participation.</p>
+
+    <!-- Progress Bar -->
+    {{> payments/progresBar }}
+
+    <!-- Form Container -->
+    <div class="bg-[#FAFAFA] rounded-xl pt-4 md:pt-8 max-w-[1300px] w-full">
+      <!-- Step 1: Registration Form -->
+      <div id="step-1-content" class="step-content">
+        {{> payments/registration}}
+      </div>
+
+      <!-- Step 2: Payment Method (Will be added later) -->
+      <div id="step-2-content" class="step-content hidden">
+        {{> payments/paymentMethod}}
+      </div>
+
+      <!-- Step 3: Checkout (Will be added later) -->
+      <div id="step-3-content" class="step-content hidden">
+        {{> payments/successfull}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function goToStep(step, skipValidation = false) {
+    // Validate step 1 if trying to go to step 2
+    if (step === 2 && !skipValidation) {
+      const form = document.getElementById('step-1-form');
+      if (form && !form.checkValidity()) {
+        form.reportValidity(); // This shows browser's required messages
+        return; // Stop execution, don't change step
+      }
+    }
+
+    // Hide all contents
+    document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+    
+    // Show target content
+    const targetContent = document.getElementById(`step-${step}-content`);
+    if(targetContent) {
+      targetContent.classList.remove('hidden');
+      // Adding a subtle fade-in animation
+      targetContent.classList.add('animate-fade-in');
+    }
+
+    // Update Progress Bar
+    const progressLine = document.getElementById('progress-line');
+    if (step === 1) progressLine.style.width = '0%';
+    if (step === 2) progressLine.style.width = '50%';
+    if (step === 3) progressLine.style.width = '100%';
+
+    // Update Step Indicators
+    document.querySelectorAll('.step-indicator').forEach(indicator => {
+      const indicatorStep = parseInt(indicator.dataset.step);
+      const circle = indicator.querySelector('div');
+      
+      if (indicatorStep < step) {
+        // Completed step
+        circle.className = 'w-[50px] h-[50px] rounded-full flex items-center justify-center font-semibold transition-colors duration-300 bg-[#6EB6E5] text-black';
+      } else if (indicatorStep === step) {
+        // Current step
+        circle.className = 'w-[50px] h-[50px] rounded-full flex items-center justify-center font-semibold transition-colors duration-300 bg-[#6EB6E5] text-black';
+      } else {
+        // Future step
+        circle.className = 'w-[50px] h-[50px] rounded-full flex items-center justify-center font-semibold transition-colors duration-300 bg-white text-black shadow-[0_0_4px_rgba(0,0,0,0.25)]';
+      }
+    });
+
+    // Scroll back to top of form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Save step to sessionStorage
+    sessionStorage.setItem('currentPaymentStep', step);
+  }
+
+  // Restore step on page reload and handle Back Button
+  document.addEventListener('DOMContentLoaded', () => {
+    // Handle back button specifically for checkout steps
+    const backBtn = document.querySelector('a[href="javascript:history.back()"]');
+    if (backBtn) {
+      backBtn.addEventListener('click', (e) => {
+        const currentStep = parseInt(sessionStorage.getItem('currentPaymentStep') || '1');
+        if (currentStep > 1) {
+          e.preventDefault(); // Prevent actually going back in browser history
+          goToStep(currentStep - 1, true); // Go back one step
+        }
+      });
+    }
+
+    const savedStep = sessionStorage.getItem('currentPaymentStep');
+    if (savedStep) {
+      goToStep(parseInt(savedStep), true); // Skip validation when restoring from reload
+    }
+  });
+</script>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+</style>

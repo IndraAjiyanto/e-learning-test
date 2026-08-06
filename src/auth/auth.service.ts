@@ -15,8 +15,8 @@ export class AuthService {
     private userService: UsersService,
     private coursesService: CoursesService,
     private emailService: EmailService,
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -50,7 +50,10 @@ export class AuthService {
     createUserDto.verificationTokenExpires = new Date(Date.now() + 60000);
 
     try {
-      const user_data = await this.userRepository.create({ ...createUserDto, isVerified: false });
+      const user_data = await this.userRepository.create({
+        ...createUserDto,
+        isVerified: false,
+      });
       const user = await this.userRepository.save(user_data);
       try {
         await this.emailService.sendVerificationEmail(
@@ -60,6 +63,9 @@ export class AuthService {
         );
       } catch (emailError) {
         console.error('Failed to send verification email:', emailError.message);
+        throw new BadRequestException(
+          'Verification email could not be sent. Please try again later.',
+        );
       }
       return user;
     } catch (error) {

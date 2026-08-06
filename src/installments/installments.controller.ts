@@ -63,7 +63,7 @@ export class InstallmentsController {
       }
 
       createCicilanDto.courseId = Number(courseId);
-      createCicilanDto.month = Number(createCicilanDto.month) as 3 | 6 | 12;
+      createCicilanDto.month = Number(createCicilanDto.month) as 3 ;
 
       await this.installmentsService.create(createCicilanDto);
       req.flash('success', 'Installment created successfully');
@@ -92,7 +92,7 @@ export class InstallmentsController {
       }
 
       if (updateCicilanDto.month) {
-        updateCicilanDto.month = Number(updateCicilanDto.month) as 3 | 6 | 12;
+        updateCicilanDto.month = Number(updateCicilanDto.month) as 3;
       }
 
       const installments = await this.installmentsService.update(id, updateCicilanDto);

@@ -12,7 +12,7 @@ import { Course } from './course.entity';
 import { Payment } from './payment.entity';
 import { Exclude } from 'class-transformer';
 
-export type Month = 3 | 6 | 12;
+export type Month = 3;
 
 @Entity()
 export class Installment {
@@ -25,7 +25,7 @@ export class Installment {
   @Column('jsonb')
   price: number[];
 
-  @Column({ type: 'enum', enum: [3, 6, 12] })
+  @Column({ type: 'enum', enum: [3] })
   month: Month;
 
   @CreateDateColumn()

@@ -62,6 +62,7 @@ async function bootstrap() {
       helpers: {
         // Helper untuk perhitungan
         addOne: (index: number) => index + 1,
+        mod: (a: number, b: number) => a % b,
         check: (a: number, b: number) => a < b,
         eq: (a: any, b: any) => a == b,
         gte: (a: number, b: number) => a >= b,
