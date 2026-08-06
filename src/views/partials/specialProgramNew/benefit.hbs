@@ -1,0 +1,125 @@
+<section 
+  class="w-full relative pt-16 pb-24 z-0 overflow-hidden bg-[#FAFAFA]"
+  x-data="{ sectionShown: false }"
+  x-init="
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        sectionShown = true;
+        observer.disconnect();
+      }
+    }, { threshold: 0.25, rootMargin: '0px 0px -50px 0px' });
+    observer.observe($el);
+  "
+>
+  
+  <!-- Background Image without gradient overlay -->
+  <div class="absolute inset-0 -z-10">
+    <img src="/public/image/specialProgram/bgBenefit.png" alt="Benefit Background" class="w-full h-full object-cover">
+  </div>
+
+  <div class="container mx-auto px-4 lg:px-8 max-w-[1324px] relative z-10 text-center">
+    
+    <!-- Header Section (Silky Smooth Fade & Float Up) -->
+    <div 
+      :class="sectionShown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+      class="transition-all duration-700 ease-out text-center mb-16 space-y-4 transform"
+    >
+      <!-- Title: Montserrat 600, 36px (text-4xl), leading-none, text-center -->
+      <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl leading-none tracking-normal text-center text-[#000000] mb-4">
+        Why Choose Our <span class="text-[#003060]">In House Training</span>?
+      </h2>
+      
+      <!-- Subtitle: Open Sans 400, 20px (text-xl), leading-none, text-center, #000000CC -->
+      <p class="font-sans font-normal text-base sm:text-lg lg:text-xl leading-none tracking-normal text-center text-[#000000]/80 max-w-3xl mx-auto">
+        Designed to equip students with industry-relevant skills through practical, hands-on learning led by experienced professionals.
+      </p>
+    </div>
+
+    <!-- Cards Grid Container (Smooth Fade & Float Up with 150ms delay) -->
+    <div 
+      :class="sectionShown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center transition-all duration-700 ease-out delay-150 transform"
+    >
+
+      <!-- Card 1 -->
+      <div class="w-full sm:w-[360px] h-[360px] bg-[linear-gradient(180deg,rgba(240,240,240,0.8)_33.18%,rgba(224,241,249,0.8)_94.72%)] backdrop-blur-[6.6px] rounded-[12px] px-6 py-8 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center">
+        <div class="w-16 h-16 rounded-full bg-[#003060] flex items-center justify-center mb-6 shadow-md shrink-0">
+          <img src="/public/image/specialProgram/aligned.png" alt="Aligned with Industry Needs" class="w-8 h-8 object-contain" />
+        </div>
+        <h3 class="font-montserrat font-semibold text-[20px] leading-snug text-[#003060] mb-4">
+          Aligned with Industry Needs
+        </h3>
+        <p class="font-sans font-normal text-[15px] leading-relaxed text-[#4B5563]">
+          Training content is designed to match current industry trends and employer expectations.
+        </p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="w-full sm:w-[360px] h-[360px] bg-[linear-gradient(180deg,rgba(240,240,240,0.8)_33.18%,rgba(224,241,249,0.8)_94.72%)] backdrop-blur-[6.6px] rounded-[12px] px-6 py-8 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center">
+        <div class="w-16 h-16 rounded-full bg-[#003060] flex items-center justify-center mb-6 shadow-md shrink-0">
+          <img src="/public/image/specialProgram/delivered.png" alt="Delivered by Industry Experts" class="w-8 h-8 object-contain" />
+        </div>
+        <h3 class="font-montserrat font-semibold text-[20px] leading-snug text-[#003060] mb-4">
+          Delivered by Industry Experts
+        </h3>
+        <p class="font-sans font-normal text-[15px] leading-relaxed text-[#4B5563]">
+          Learn directly from experienced professionals with practical, real-world expertise.
+        </p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="w-full sm:w-[360px] h-[360px] bg-[linear-gradient(180deg,rgba(240,240,240,0.8)_33.18%,rgba(224,241,249,0.8)_94.72%)] backdrop-blur-[6.6px] rounded-[12px] px-6 py-8 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center">
+        <div class="w-16 h-16 rounded-full bg-[#003060] flex items-center justify-center mb-6 shadow-md shrink-0">
+          <img src="/public/image/specialProgram/handson.png" alt="Hands-On Project Experience" class="w-8 h-8 object-contain" />
+        </div>
+        <h3 class="font-montserrat font-semibold text-[20px] leading-snug text-[#003060] mb-4">
+          Hands-On Project Experience
+        </h3>
+        <p class="font-sans font-normal text-[15px] leading-relaxed text-[#4B5563]">
+          Build practical skills through interactive projects, case studies, and real-world challenges.
+        </p>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="w-full sm:w-[360px] h-[360px] bg-[linear-gradient(180deg,rgba(240,240,240,0.8)_33.18%,rgba(224,241,249,0.8)_94.72%)] backdrop-blur-[6.6px] rounded-[12px] px-6 py-8 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center">
+        <div class="w-16 h-16 rounded-full bg-[#003060] flex items-center justify-center mb-6 shadow-md shrink-0">
+          <img src="/public/image/specialProgram/conducted.png" alt="Conducted Directly on Campus" class="w-8 h-8 object-contain" />
+        </div>
+        <h3 class="font-montserrat font-semibold text-[20px] leading-snug text-[#003060] mb-4">
+          Conducted Directly on Campus
+        </h3>
+        <p class="font-sans font-normal text-[15px] leading-relaxed text-[#4B5563]">
+          Enjoy a convenient learning experience delivered at your university or institution.
+        </p>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="w-full sm:w-[360px] h-[360px] bg-[linear-gradient(180deg,rgba(240,240,240,0.8)_33.18%,rgba(224,241,249,0.8)_94.72%)] backdrop-blur-[6.6px] rounded-[12px] px-6 py-8 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center">
+        <div class="w-16 h-16 rounded-full bg-[#003060] flex items-center justify-center mb-6 shadow-md shrink-0">
+          <img src="/public/image/specialProgram/collaborative.png" alt="Collaborative & Interactive Learning" class="w-8 h-8 object-contain" />
+        </div>
+        <h3 class="font-montserrat font-semibold text-[20px] leading-snug text-[#003060] mb-4">
+          Collaborative & Interactive Learning
+        </h3>
+        <p class="font-sans font-normal text-[15px] leading-relaxed text-[#4B5563]">
+          Engage in discussions, teamwork, and problem-solving activities that enhance learning outcomes.
+        </p>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="w-full sm:w-[360px] h-[360px] bg-[linear-gradient(180deg,rgba(240,240,240,0.8)_33.18%,rgba(224,241,249,0.8)_94.72%)] backdrop-blur-[6.6px] rounded-[12px] px-6 py-8 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center">
+        <div class="w-16 h-16 rounded-full bg-[#003060] flex items-center justify-center mb-6 shadow-md shrink-0">
+          <img src="/public/image/specialProgram/enhacing.png" alt="Enhancing Students' Career Readiness" class="w-8 h-8 object-contain" />
+        </div>
+        <h3 class="font-montserrat font-semibold text-[20px] leading-snug text-[#003060] mb-4">
+          Enhancing Students' Career Readiness
+        </h3>
+        <p class="font-sans font-normal text-[15px] leading-relaxed text-[#4B5563]">
+          Equip students with the skills, confidence, and experience needed to succeed in their future careers.
+        </p>
+      </div>
+
+    </div>
+    
+  </div>
+</section>
