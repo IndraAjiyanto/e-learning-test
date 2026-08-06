@@ -279,13 +279,13 @@ export class DashboardService {
     const limit = options?.limit || 6;
     const skip = (page - 1) * limit;
 
-    const qb = this.alumniRepository
-      .createQueryBuilder('alumni')
-      .leftJoinAndSelect('alumni.kelas', 'kelas')
-      .leftJoinAndSelect('kelas.kategori', 'kategori')
-      .orderBy('alumni.createdAt', 'DESC')
-      .skip(skip)
-      .take(limit);
+    // const qb = this.alumniRepository
+    //   .createQueryBuilder('alumni')
+    //   .leftJoinAndSelect('alumni.kelas', 'kelas')
+    //   .leftJoinAndSelect('kelas.kategori', 'kategori')
+    //   .orderBy('alumni.createdAt', 'DESC')
+    //   .skip(skip)
+    //   .take(limit);
 
     const where: any = {};
 
