@@ -3,7 +3,7 @@
     class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
     x-data="{ 
     previewUrl: null,
-    oldImage: `{{collaborations.image}}`,
+    oldImage: `{{partner.image}}`,
     errorMessage: '',
     isValid: true,
     fileName: '',
@@ -12,7 +12,7 @@
     imageHeight: 0,
     hasFile: false,
     hasNewImage: false,
-    categoryPartnerId: '{{kerja_sama.categoryPartner.id}}',
+    categoryPartnerId: '{{partner.categoryPartner.id}}',
     validateImage(file) {
       if (!file) {
         this.hasFile = false;
@@ -103,7 +103,7 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Cooperation</h2>
 
     <form
-      action='/partnership/{{collaborations.id}}?_method=PATCH'
+      action='/partnership/{{partner.id}}?_method=PATCH'
       method='post'
       enctype='multipart/form-data'
       class='space-y-6'
