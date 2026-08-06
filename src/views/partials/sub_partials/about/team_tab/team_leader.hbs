@@ -89,7 +89,7 @@
           {{#if background.length}}
             {{#each background}}
               <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
-                <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang isi ../lang}}
+                <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
               </li>
             {{/each}}
           {{else}}
@@ -130,10 +130,10 @@
         class='px-6 py-5 border-t border-[#000000]/15 bg-[#E0F1F9]/50 shadow-[inset_0_4px_6px_-2px_rgba(0,0,0,0.1)]'
       >
         <ul class='list-disc pl-6 space-y-3 font-sans text-xl leading-[35px] text-justify text-black'>
-          {{#if portfolio.length}}
-            {{#each portfolio}}
+          {{#if experience.length}}
+            {{#each experience}}
               <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
-                <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang isi ../lang}}
+                <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
               </li>
             {{/each}}
           {{else}}

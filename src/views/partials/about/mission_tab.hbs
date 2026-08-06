@@ -45,15 +45,15 @@
         <div class='w-11 h-1 bg-[#003060] rounded-full mb-4'></div>
         
         <ul class='space-y-4 sm:space-y-5'>
-          {{#if missions.length}}
-            {{#each missions}}
+          {{#if mission.length}}
+            {{#each mission}}
               <li class='flex items-start space-x-3.5'>
                 <div class='w-6 h-6 rounded-full bg-[#003060] text-white flex items-center justify-center flex-shrink-0 text-xs mt-1'>
                   <i class='fas fa-check'></i>
                 </div>
                 <p class='text-[#000000CC] text-lg sm:text-xl leading-[35px] tracking-normal font-sans font-normal'>
                   <strong class='font-semibold text-[#000000CC]'>{{getByLang content ../lang}}:</strong>
-                  {{getByLang isi ../lang}}
+                  {{getByLang items ../lang}}
                 </p>
               </li>
             {{/each}}
