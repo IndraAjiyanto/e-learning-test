@@ -2,7 +2,6 @@ import { Module, forwardRef } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
 import {
   GalleryController,
-  PublicGalleryController,
 } from './gallery.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Gallery } from '../entities/gallery.entity';
@@ -16,7 +15,7 @@ import { CategoriesModule } from 'src/categories/categories.module';
     TypeOrmModule.forFeature([Gallery, Category]),
     CategoriesModule,
   ],
-  controllers: [GalleryController, PublicGalleryController],
+  controllers: [GalleryController],
   providers: [GalleryService],
   exports: [GalleryService],
 })

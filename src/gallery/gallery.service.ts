@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Gallery } from './../entities/gallery.entity'
+import { Gallery } from './../entities/gallery.entity';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
 import { Category } from 'src/entities/category.entity';
@@ -12,15 +12,15 @@ export class GalleryService {
     @InjectRepository(Gallery)
     private readonly galleryRepository: Repository<Gallery>,
     @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
   async create(createGalleryDto: CreateGalleryDto): Promise<Gallery> {
-     const { category_id, ...rest } = createGalleryDto;
+    const { categoryId, ...rest } = createGalleryDto;
     const gallery = this.galleryRepository.create({
-        ...rest,
-    category: category_id ? { id: category_id } as any : null,
-      });
+      ...rest,
+      category: categoryId ? ({ id: categoryId } as any) : null,
+    });
     return this.galleryRepository.save(gallery);
   }
 
@@ -45,28 +45,28 @@ export class GalleryService {
   }
 
   async findByKategori(categoryId: number): Promise<Gallery[]> {
-  return this.galleryRepository.find({
-    where: { category: { id: categoryId } },
-    relations: ['category'],
-    order: { id: 'DESC' },
-  });
-}
-
- async update(
-  galleryId: number,
-  updateGalleryDto: UpdateGalleryDto & { filePath?: string },
-): Promise<Gallery> {
-  const gallery = await this.findOne(galleryId);
-  const { category_id, ...rest } = updateGalleryDto;
-
-  Object.assign(gallery, rest);
-
-  if (category_id !== undefined) {
-    gallery.category = category_id ? ({ id: category_id } as any) : null;
+    return this.galleryRepository.find({
+      where: { category: { id: categoryId } },
+      relations: ['category'],
+      order: { id: 'DESC' },
+    });
   }
 
-  return this.galleryRepository.save(gallery);
-}
+  async update(
+    galleryId: number,
+    updateGalleryDto: UpdateGalleryDto & { filePath?: string },
+  ): Promise<Gallery> {
+    const gallery = await this.findOne(galleryId);
+    const { categoryId, ...rest } = updateGalleryDto;
+
+    Object.assign(gallery, rest);
+
+    if (categoryId !== undefined) {
+      gallery.category = categoryId ? ({ id: categoryId } as any) : null;
+    }
+
+    return this.galleryRepository.save(gallery);
+  }
 
   async remove(id: number): Promise<void> {
     const gallery = await this.findOne(id);

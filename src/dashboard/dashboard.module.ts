@@ -27,6 +27,8 @@ import { TranslationModule } from 'src/translation/translation.module';
 import { OurExperience } from 'src/entities/our_experience.entity';
 import { Paragraph } from 'src/entities/paragraph.entity';
 import { GalleryModule } from 'src/gallery/gallery.module';
+import { Gallery } from 'src/entities/gallery.entity';
+import { CategoriesModule } from 'src/categories/categories.module';
 
 @Module({
   imports: [
@@ -55,9 +57,11 @@ import { GalleryModule } from 'src/gallery/gallery.module';
       Faq,
       OurExperience,
       CategoryPartner,
+      Gallery,
     ]),
     TranslationModule, // Import TranslationModule
     GalleryModule,
+    CategoriesModule,
   ],
   controllers: [DashboardController],
   providers: [DashboardService],
