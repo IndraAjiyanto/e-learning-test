@@ -34,7 +34,7 @@
                                 }
                             }"
                             x-init="
-                                value = '{{course.harga}}'; 
+                                value = '{{course.price}}';
                                 display = new Intl.NumberFormat('id-ID').format(value);
                             ">
                                 <label for="harga1" class="block text-sm font-semibold text-gray-700 mb-1">Price</label>
@@ -44,7 +44,7 @@
                                        @input="formatHarga($event)" 
                                        placeholder="Enter price"
                                        class="w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700">
-                                <input type="hidden" name="harga" x-model="value">
+                                <input type="hidden" name="price" x-model="value">
                             </div>
 
                             <!-- Promo -->

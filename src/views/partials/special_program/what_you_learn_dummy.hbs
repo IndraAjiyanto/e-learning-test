@@ -10,21 +10,21 @@
       <div class="lg:w-1/2 space-y-4">
         <ul class="space-y-6">
           {{#if (eq lang 'id')}}
-            {{#each kelas.materi_id}}
+            {{#each kelas.materialsId}}
             <li class="flex items-start">
               <span class="w-1.5 h-1.5 rounded-full bg-gray-800 mt-2 mr-3 flex-shrink-0"></span>
               <p class="text-gray-700 font-medium">{{this}}</p>
             </li>
             {{/each}}
           {{else if (eq lang 'en')}}
-            {{#each kelas.materi_en}}
+            {{#each kelas.materialsEn}}
             <li class="flex items-start">
               <span class="w-1.5 h-1.5 rounded-full bg-gray-800 mt-2 mr-3 flex-shrink-0"></span>
               <p class="text-gray-700 font-medium">{{this}}</p>
             </li>
             {{/each}}
           {{else if (eq lang 'ja')}}
-            {{#each kelas.materi_ja}}
+            {{#each kelas.materialsJa}}
             <li class="flex items-start">
               <span class="w-1.5 h-1.5 rounded-full bg-gray-800 mt-2 mr-3 flex-shrink-0"></span>
               <p class="text-gray-700 font-medium">{{this}}</p>

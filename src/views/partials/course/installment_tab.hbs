@@ -203,7 +203,7 @@ async fetchInstallment() {
 },
     get filteredData() {
       let filtered = this.data.filter(i =>
-                 (`${i.bulan}`).toLowerCase()
+                 (`${i.month}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
 
