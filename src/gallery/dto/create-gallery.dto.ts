@@ -1,21 +1,20 @@
-import { Type } from "class-transformer";
-import { IsInt, IsNumber, IsOptional, IsString } from "class-validator"
+import { Type } from 'class-transformer';
+import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateGalleryDto {
+  @IsOptional()
+  @IsString()
+  filePath?: string;
 
-    @IsOptional()
-    @IsString()
-    filePath?: string
+  @IsString()
+  title: string;
 
-     @IsString()
-    title:string
-
-    @IsOptional()
-     @IsString()
-    description: string
+  @IsOptional()
+  @IsString()
+  description: string;
 
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  category_id?: number;
+  categoryId?: number;
 }

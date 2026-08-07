@@ -6,12 +6,12 @@
           <div x-data="{ materis_id: [''] }">
 
             <label class='block text-xs text-gray-600 mb-1'>ID</label>
-            <template x-for='(materi_id, index) in materis_id' :key='index'>
+            <template x-for='(materialsId, index) in materis_id' :key='index'>
               <div class='flex items-center gap-3 mb-3'>
                 <input
                   type='text'
                   x-model='materis_id[index]'
-                  name='materi_id[]'
+                  name='materialsId[]'
                   placeholder='Enter a lesson'
                   class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                 />
@@ -36,12 +36,12 @@
 
           <div x-data="{ materis_en: [''] }">
             <label class='block text-xs text-gray-600 mb-1'>EN</label>
-            <template x-for='(materi_en, index) in materis_en' :key='index'>
+            <template x-for='(materialsEn, index) in materis_en' :key='index'>
               <div class='flex items-center gap-3 mb-3'>
                 <input
                   type='text'
                   x-model='materis_en[index]'
-                  name='materi_en[]'
+                  name='materialsEn[]'
                   placeholder='Enter a lesson'
                   class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                 />
@@ -66,12 +66,12 @@
 
           <div x-data="{ materis_ja: [''] }">
             <label class='block text-xs text-gray-600 mb-1'>JP</label>
-            <template x-for='(materi_ja, index) in materis_ja' :key='index'>
+            <template x-for='(materialsJa, index) in materis_ja' :key='index'>
               <div class='flex items-center gap-3 mb-3'>
                 <input
                   type='text'
                   x-model='materis_ja[index]'
-                  name='materi_ja[]'
+                  name='materialsJa[]'
                   placeholder='Enter a lesson'
                   class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                 />

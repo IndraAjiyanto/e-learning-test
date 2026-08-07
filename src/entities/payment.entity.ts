@@ -14,6 +14,8 @@ import { Installment } from './installment.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 
+export type currentStatus = 'University Student'| 'Fresh Graduate'| 'Job Seeker'| 'Employee'| 'Freelancer'| 'Entrepreneur'| 'Other';
+
 @Entity('payments')
 export class Payment {
   @PrimaryGeneratedColumn()
@@ -38,6 +40,16 @@ export class Payment {
     default: 'rejected',
   })
   process: ProcessStatus;
+
+  @Column({
+    type:'enum',
+    enum:['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'],
+    nullable:true,
+  })
+  current_status: currentStatus;
+
+  @Column({nullable:true,})
+  attend_program: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
