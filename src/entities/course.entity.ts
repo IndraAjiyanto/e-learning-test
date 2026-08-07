@@ -76,6 +76,9 @@ export class Course {
   @Column({ default: false })
   launch: boolean;
 
+  @Column({nullable:true})
+  date_registration: Date
+
   @ManyToMany(() => Technology, (technologies) => technologies.course)
   @JoinTable({
     name: 'course_technologies',

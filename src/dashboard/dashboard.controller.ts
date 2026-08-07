@@ -2,12 +2,14 @@ import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { GalleryService } from '../gallery/gallery.service';
 import { Request, Response } from 'express';
+import { CategoriesService } from 'src/categories/categories.service';
 
 @Controller('dashboard')
 export class DashboardController {
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly galleryService: GalleryService,
+    private readonly kategorisService: CategoriesService,
   ) {}
 
   @Get('course/filter')
@@ -265,5 +267,23 @@ export class DashboardController {
   async getCategory(@Res() res: Response) {
     const category = await this.dashboardService.findCategories();
     res.json(category);
+  }
+
+  // 1. Menampilkan halaman pertama (Lengkap)
+  @Get('gallery') 
+  async index(@Res() res: Response) {
+    const gallery = await this.dashboardService.findAllGallery();
+    const programs = await this.dashboardService.findCategories();
+
+    return res.render('public/gallery/index', { gallery, programs });
+  }
+
+  // 2. Menampilkan halaman kedua (Fitur yang dikurangi)
+  @Get('galeri') 
+  async dashboard(@Res() res: Response) {
+    const gallery = await this.dashboardService.findAllGallery();
+    const programs = await this.dashboardService.findCategories();
+
+    return res.render('partials/dashboard/gallery', { gallery, programs });
   }
 }
