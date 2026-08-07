@@ -22,12 +22,12 @@
     >
       <!-- Pill badge -->
       <div class="border border-[#003060] text-[#003060] w-[305px] h-[49px] mb-8 flex items-center justify-center rounded-[50px] text-[20px] font-[500] font-montserrat transition-all mx-auto bg-[#6EB6E5]/20">
-        Why Choose Us
+        {{t 'test.home.imagine.whyChooseUs'}}
       </div>
       
       <!-- Title -->
       <h2 class="text-3xl md:text-4xl lg:text-[42px] mb-4 font-[600] text-black font-montserrat tracking-tight">
-        Why Choose <span class="font-[700] text-[#003060]">Kesatria</span> Academy?
+        {{{t 'test.home.imagine.title'}}}
       </h2>
       
       <!-- Short horizontal line -->
@@ -35,7 +35,7 @@
       
       <!-- Subtitle -->
       <p class="text-base md:text-xl text-[#000000]/80 leading-[45px] max-w-auto mx-auto font-sans font-[400]">
-        We are committed to helping you gain in-demand IT skills, build real-world experience, and achieve your dream career.
+        {{t 'test.home.imagine.description'}}
       </p>
     </div>
 
@@ -56,7 +56,7 @@
        {{#each benefits}}
       <div class="w-full sm:w-[360px] h-[360px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] px-4 py-6 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center border border-white/60">
         <div class="w-20 h-20 rounded-full bg-[#6EB6E5] flex items-center justify-center mb-6 shadow-sm shrink-0">
-          <i class="{{computeIcon icon}} w-10 h-10" aria-hidden="true"></i>
+          <i class="{{computeIcon icon}} text-4xl text-[#003060]"  aria-hidden="true"></i>
         </div>
         <h3 class="font-montserrat font-[600] text-[18px] leading-tight text-[#0B1F3B] mb-4 min-h-[44px] flex items-center justify-center text-center">
           {{getByLang this.title ../lang}}

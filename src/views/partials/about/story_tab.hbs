@@ -6,10 +6,10 @@
   <!-- Header Title & Subtitle -->
   <div class='mb-6 sm:mb-8'>
     <h1 class='text-xl sm:text-2xl md:text-4xl font-semibold text-[#003060] mb-2 font-montserrat'>
-      {{t "test.about.ourStory.tittle"}}
+      {{t "test.about.ourStory.title"}}
     </h1>
     <h2 class='text-lg sm:text-xl md:text-2xl font-normal text-[#003060] mb-6 font-montserrat'>
-      {{t "test.about.ourStory.subTittle"}}
+      {{t "test.about.ourStory.description"}}
     </h2>
   </div>
 
@@ -64,10 +64,10 @@
       {{#each commitment}}
         <div class='w-full max-w-[349px] min-h-[362px] lg:h-[362px] flex flex-col items-center justify-center text-center p-6 bg-[#E0F1F9]/65 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
           <div class='w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-[#EFF4FE] flex items-center justify-center mb-4 lg:mb-5 shadow-sm flex-shrink-0'>
-            <img src="/public/image/about/story/{{this.icon}}" alt="{{getByLang judul ../lang}}" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" onerror="this.onerror=null; this.src='/public/image/about/story/inclusive.svg';" />
+            <img src="/public/image/about/story/{{this.icon}}" alt="{{getByLang title ../lang}}" class="w-6 h-6 lg:w-7 lg:h-7 object-contain" onerror="this.onerror=null; this.src='/public/image/about/story/inclusive.svg';" />
           </div>
           <h4 class='font-semibold text-base lg:text-xl text-[#003060] mb-2 lg:mb-3 font-montserrat leading-snug'>
-            {{getByLang judul ../lang}}
+            {{getByLang title ../lang}}
           </h4>
           <div class='w-12 h-0.5 bg-[#003060] rounded-full mb-3 lg:mb-4'></div>
           <p class='text-[#000000CC] text-xs lg:text-[15px] leading-relaxed lg:leading-[30px] tracking-normal font-sans font-normal text-center'>
