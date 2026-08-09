@@ -158,7 +158,7 @@
           {{#each installments}}
             {
               id: {{this.id}},
-              bulan: {{this.bulan}},
+              month: {{this.month}},
               dp: {{this.dp}},
               harga: {{json this.harga}}
             }{{#unless @last}},{{/unless}}
@@ -177,7 +177,7 @@
           }
         },
         getCicilanByMonth(months) {
-          const installments = this.installmentsData.find(c => c.bulan === months);
+          const installments = this.installmentsData.find(c => c.month === months);
           return installments ? installments : null;
         },
         get installmentAmount() {
@@ -197,7 +197,7 @@
           return {{course.harga}};
         },
         get availableMonths() {
-          return this.installmentsData.map(c => c.bulan);
+          return this.installmentsData.map(c => c.month);
         },
         validateFile(event) {
           const file = event.target.files[0];

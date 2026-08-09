@@ -139,10 +139,10 @@
                     <h4
                       class='font-montserrat text-sm font-bold text-gray-900 mb-1'
                     >
-                      {{#if kelas.bulan}}
-                        {{kelas.bulan}} {{t "test.detailProgram.infoProgram.months"}}
-                      {{else if kelas.hari}}
-                        {{kelas.hari}} {{t "test.detailProgram.infoProgram.days"}}
+                      {{#if kelas.month}}
+                        {{kelas.month}} {{t "test.detailProgram.infoProgram.months"}}
+                      {{else if kelas.day}}
+                        {{kelas.day}} {{t "test.detailProgram.infoProgram.days"}}
                       {{else}}
                         {{t "test.detailProgram.infoProgram.noSet"}}
                       {{/if}}
@@ -173,7 +173,7 @@
                       >{{t "test.detailProgram.infoProgram.month"}}</p>
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{course.bulan}} {{t "test.detailProgram.infoProgram.months"}}</h4>
+                      >{{course.month}} {{t "test.detailProgram.infoProgram.months"}}</h4>
                     </div>
                   </div>
                 </div>
@@ -196,7 +196,7 @@
                       >{{t "test.detailProgram.infoProgram.day"}}</p>
                       <h4
                         class='font-montserrat text-sm font-bold text-gray-900 mb-1'
-                      >{{course.hari}} {{t "test.detailProgram.infoProgram.days"}}</h4>
+                      >{{course.day}} {{t "test.detailProgram.infoProgram.days"}}</h4>
                     </div>
                   </div>
                 </div>
@@ -256,7 +256,7 @@
               </h4>
               <ul class='ml-8 space-y-3'>
                 {{#if (eq lang 'id')}}
-                {{#each course.materi_id}}
+                {{#each course.materialsId}}
                   <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs  text-gray-500 flex-shrink-0'
@@ -265,7 +265,7 @@
                   </li>
                   {{/each}}
                 {{else if (eq lang 'en')}}
-                {{#each course.materi_en}}
+                {{#each course.materialsEn}}
                   <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
@@ -274,7 +274,7 @@
                   </li>
                 {{/each}}
                 {{else if (eq lang 'ja')}}
-                {{#each course.materi_ja}}
+                {{#each course.materialsJa}}
                   <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
@@ -297,21 +297,21 @@
               </h4>
               <ul class='ml-8 space-y-3'>
                 {{#if (eq lang 'id')}}
-                {{#each course.target_pembelajaran_id}}
+                {{#each course.learningTargetsId}}
                   <li class='flex items-center gap-3  text-gray-700'>
                     <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
                     <span>{{this}}</span>
                   </li>
                   {{/each}}
                 {{else if (eq lang 'en')}}
-                {{#each course.target_pembelajaran_en}}
+                {{#each course.learningTargetsEn}}
                   <li class='flex items-center gap-3  text-gray-700'>
                     <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
                     <span>{{this}}</span>
                   </li>
                 {{/each}}
                 {{else if (eq lang 'ja')}}
-                {{#each course.target_pembelajaran_ja}}
+                {{#each course.learningTargetsJa}}
                   <li class='flex items-center gap-3  text-gray-700'>
                     <i class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'></i>
                     <span>{{this}}</span>
@@ -325,21 +325,21 @@
                 <div class="flex items-center max-w-3xl">
                   <ul class='ml-8 space-y-6'>
                     {{#if (eq lang 'id')}}
-                    {{#each kelas.target_pembelajaran_id}}
+                    {{#each kelas.learningTargetsId}}
                       <li class='flex items-center gap-3  text-gray-900'>
                         <i class='fa-solid fa-circle fa-2xs text-gray-900 flex-shrink-0'></i>
                         <span>{{this}}</span>
                       </li>
                       {{/each}}
                     {{else if (eq lang 'en')}}
-                    {{#each kelas.target_pembelajaran_en}}
+                    {{#each kelas.learningTargetsEn}}
                       <li class='flex items-center gap-3  text-gray-900'>
                         <i class='fa-solid fa-circle fa-2xs text-gray-900 flex-shrink-0'></i>
                         <span>{{this}}</span>
                       </li>
                     {{/each}}
                     {{else if (eq lang 'ja')}}
-                    {{#each kelas.target_pembelajaran_ja}}
+                    {{#each kelas.learningTargetsJa}}
                       <li class='flex items-center gap-3  text-gray-900'>
                         <i class='fa-solid fa-circle fa-2xs text-gray-900 flex-shrink-0'></i>
                         <span>{{this}}</span>
@@ -370,7 +370,7 @@
               </h4>
               <ul class='ml-8 space-y-3'>
                 {{#if (eq lang 'id')}}
-                {{#each course.kriteria_id}}
+                {{#each course.criteriaId}}
                   <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
@@ -379,7 +379,7 @@
                   </li>
                 {{/each}}
                 {{else if (eq lang 'en')}}
-                {{#each course.kriteria_en}}
+                {{#each course.criteriaEn}}
                   <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
@@ -388,7 +388,7 @@
                   </li>
                 {{/each}}
                 {{else if (eq lang 'ja')}}
-                {{#each course.kriteria_ja}}
+                {{#each course.criteriaJa}}
                   <li class='flex items-center gap-3  text-gray-700'>
                     <i
                       class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'

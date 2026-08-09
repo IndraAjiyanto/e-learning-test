@@ -24,6 +24,7 @@ import { Background } from 'src/entities/background.entity';
 import { Paragraph } from 'src/entities/paragraph.entity';
 import { Faq } from 'src/entities/faq.entity';
 import { OurExperience } from 'src/entities/our_experience.entity';
+import { Gallery } from 'src/entities/gallery.entity';
 
 @Injectable()
 export class DashboardService {
@@ -74,6 +75,8 @@ export class DashboardService {
     private readonly faqRepository: Repository<Faq>,
     @InjectRepository(OurExperience)
     private readonly ourExperienceRepository: Repository<OurExperience>,
+    @InjectRepository(Gallery)
+    private readonly galleryRepository: Repository<Gallery>,
   ) {}
 
   async findAllCategories() {
@@ -419,4 +422,11 @@ export class DashboardService {
   async findImage4() {
     return await this.imageBenefitRepository.findOne({ where: { no: 4 } });
   }
+
+  async findAllGallery(): Promise<Gallery[]> {
+      return this.galleryRepository.find({
+        relations: ['category'],
+        order: { id: 'DESC' },
+      });
+    }
 }
