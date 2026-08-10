@@ -171,7 +171,6 @@ export class UsersController {
   ) {
     try {
       await this.usersService.verifyEmail(token);
-      console.log('teeeeee');
       req.flash('success', 'Email verified successfully! You can now login.');
       res.redirect('/users/verify-email-success');
     } catch (error: any) {
