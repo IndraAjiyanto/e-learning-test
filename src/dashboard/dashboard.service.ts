@@ -1,4 +1,4 @@
-import { Repository, ILike } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
@@ -282,38 +282,29 @@ export class DashboardService {
     const limit = options?.limit || 6;
     const skip = (page - 1) * limit;
 
-    // const qb = this.alumniRepository
-    //   .createQueryBuilder('alumni')
-    //   .leftJoinAndSelect('alumni.kelas', 'kelas')
-    //   .leftJoinAndSelect('kelas.kategori', 'kategori')
-    //   .orderBy('alumni.createdAt', 'DESC')
-    //   .skip(skip)
-    //   .take(limit);
+    const qb = this.alumniRepository
+      .createQueryBuilder('alumni')
+      .leftJoinAndSelect('alumni.course', 'course')
+      .leftJoinAndSelect('course.category', 'category')
+      .orderBy('alumni.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
 
-    const where: any = {};
-
-    // Logika filter course atau category global
     if (options?.courseId) {
-      where.course = { id: options.courseId };
+      qb.andWhere('course.id = :courseId', { courseId: options.courseId });
     } else if (options?.categoryId) {
-      where.course = { category: { id: options.categoryId } };
+      qb.andWhere('category.id = :categoryId', { categoryId: options.categoryId });
     }
-    
-    // Perbaikan nama kolom pencarian (sebelumnya 'nama' padahal di entity 'name')
+
+    // Pencarian nama & posisi saat ini (kolom jsonb -> cast ke text agar ILIKE valid)
     if (options?.search && options.search.trim() !== '') {
       const keyword = `%${options.search.trim()}%`;
-      // Jika kolom name adalah jsonb, pencarian langsung dengan ILike mungkin gagal di DB tertentu,
-      // tetapi setidaknya kita gunakan nama properti yang benar.
-      where.name = ILike(keyword);
+      qb.andWhere('(alumni.name::text ILIKE :keyword OR alumni."currentPosition"::text ILIKE :keyword)', {
+        keyword,
+      });
     }
 
-    const [data, total] = await this.alumniRepository.findAndCount({
-      where,
-      relations: ['course', 'course.category'],
-      order: { createdAt: 'DESC' },
-      skip,
-      take: limit,
-    });
+    const [data, total] = await qb.getManyAndCount();
 
     return { data, total };
   }
