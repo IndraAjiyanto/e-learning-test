@@ -1,183 +1,158 @@
 <div
-  class='pt-24 min-h-screen bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)]'
+  class='pt-24 min-h-screen bg-cover bg-top bg-no-repeat bg-fixed'
+  style="background-image: url('/public/image/dashboard/bake1.png');"
   x-data='galleryTable({ gallery: {{{json gallery}}}, programs: {{{json programs}}} })'
 >
-  <div class='container mx-auto px-4 pb-8 max-w-5xl'>
-    <div class='flex flex-col items-center text-center mb-8'>
-      <span class='inline-block text-sm border bg-[#6EB6E533] border-gray-300 px-5 py-1 rounded-full text-gray-900 font-montserrat mb-5'>{{{t
-          'test.gallery.gallery'
-        }}}</span>
-    </div>
-    <div class='text-center mb-10'>
-      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
-          'test.gallery.title'
-        }}}</h1>
-      <div
-        class='border border-b-2 border-slate-900 w-10 mx-auto my-2 rounded'
-      ></div>
-      <p class='text-gray-600 max-w-2xl mx-auto text-lg'>{{t
-          'test.gallery.description'
-        }}</p>
+  <div class='container mx-auto px-4 pb-16 max-w-[1440px]'>
+    
+    <!-- Header -->
+    <div class='flex flex-col items-center mb-[50px]'>
+      <!-- Badge -->
+      <div class='flex justify-center items-center rounded-full mb-[30px]' style="width: 250px; height: 35px; background: rgba(110, 182, 229, 0.2); border: 1px solid #003060;">
+        <span class='font-montserrat font-medium' style="font-size: 20px; color: #003060;">{{t 'test.gallery.gallery'}}</span>
+      </div>
+
+      <!-- Title & Subtitle -->
+      <div class='flex flex-col items-center w-full' style="gap: 10px;">
+        <h1 class='font-montserrat font-semibold text-center text-black m-0' style="font-size: 45px; line-height: 55px;">{{{t 'test.gallery.title'}}}</h1>
+        <div class="rounded-[6px]" style="width: 70px; height: 5px; background: #0B1F3B;"></div>
+        <p class='text-center m-0' style="max-width: 1034px; font-family: 'Open Sans'; font-weight: 400; font-size: 25px; line-height: 45px; color: rgba(0, 0, 0, 0.8);">
+          {{t 'test.gallery.description'}}
+        </p>
+      </div>
     </div>
 
-    <!-- Header & Search -->
-    <div
-      class=' flex w-full justify-end md:items-center gap-4'
-      x-data='{ open: false }'
-    >
-      <!-- Trigger -->
-      <div class='relative inline-block text-left'>
+    <!-- Filters (Dropdown & Search) -->
+    <div class='flex flex-row flex-wrap justify-end items-center w-full mb-[50px]' style="gap: 30px;">
+      <!-- Dropdown Program -->
+      <div class='relative flex-shrink-0' x-data='{ open: false }' @click.outside='open = false' style="width: 423px;">
         <button
           @click='open = !open'
           type='button'
-          class='inline-flex items-center justify-between w-56 rounded-xl border border-gray-300 bg-[#E0F1F9] px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none'
-          aria-haspopup='true'
-          :aria-expanded='open'
+          class='w-full px-[20px] bg-[#E0F1F9] text-black font-montserrat font-medium rounded-[12px] flex items-center justify-between transition-all duration-200 focus:outline-none'
+          style="height: 60px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); font-size: 25px; line-height: 30px;"
         >
-          <span
-            x-text="selectedProgramName || '{{t "test.gallery.program"}}'"
-          ></span>
-          <svg
-            class='w-5 h-5 ml-2'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M19.5 8.25l-7.5 7.5-7.5-7.5'
-            />
-          </svg>
+          <span class='truncate text-left flex-1' x-text="selectedProgramName || '{{t 'test.gallery.allPrograms'}}'"></span>
+          <i class='fas fa-chevron-down text-[#003060] transition-transform duration-200' :class="open ? 'transform rotate-180' : ''" style="font-size: 28px;"></i>
         </button>
 
-        <!-- Dropdown -->
+        <!-- Dropdown Options -->
         <div
           x-show='open'
-          @click.outside='open = false'
-          x-transition
-          class='absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-lg border border-gray-200 z-50'
+          x-transition.opacity.duration.200ms
+          class='absolute right-0 mt-2 w-full max-h-60 overflow-y-auto bg-white border border-gray-200 rounded-[12px] shadow-lg z-50 p-2 space-y-1 focus:outline-none'
+          style='display: none;'
         >
-          <div class='py-1'>
-            <button
-              type='button'
-              @click='selectProgram(null); open = false'
-              class='block w-full text-left px-4 py-2 text-sm hover:bg-gray-100'
-              :class="{ 'font-semibold bg-gray-50': selectedProgram === null }"
-            >
-              {{t 'test.gallery.allPrograms'}}
-            </button>
+          <button
+            @click='selectProgram(null); open = false'
+            :class="!selectedProgram ? 'bg-[#0B1F3B] text-white' : 'text-gray-700 hover:bg-gray-50'"
+            class='w-full px-4 py-3 rounded-lg font-montserrat font-medium transition-colors flex items-center justify-between'
+            style="font-size: 20px;"
+          >
+            <span>{{t 'test.gallery.allPrograms'}}</span>
+            <i x-show='!selectedProgram' class='fas fa-check'></i>
+          </button>
 
-            {{#each programs}}
-              <button
-                type='button'
-                @click="selectProgram('{{this.id}}', '{{this.nama_kategori}}'); open = false"
-                class='block w-full text-left px-4 py-2 text-sm hover:bg-gray-100'
-                :class="{ 'font-semibold bg-gray-50': selectedProgram === '{{this.id}}' }"
-              >
-                {{this.nama_kategori}}
-              </button>
-            {{/each}}
-          </div>
+          {{#each programs}}
+            <button
+              @click="selectProgram('{{this.id}}', '{{this.name}}'); open = false"
+              :class="selectedProgram == '{{this.id}}' ? 'bg-[#0B1F3B] text-white' : 'text-gray-700 hover:bg-gray-50'"
+              class='w-full px-4 py-3 rounded-lg font-montserrat font-medium transition-colors flex items-center justify-between'
+              style="font-size: 20px;"
+            >
+              <span>{{this.name}}</span>
+              <i x-show="selectedProgram == '{{this.id}}'" class='fas fa-check'></i>
+            </button>
+          {{/each}}
         </div>
       </div>
 
-      <div class='flex items-center gap-3'>
-        <div class='relative w-full md:w-64'>
-          <input
-            type='text'
-            placeholder='Search gallery...'
-            x-model='searchInput'
-            @input='search = searchInput; pageNumber = 0'
-            class='border border-gray-300 bg-[#E0F1F9] text-gray-900 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 w-full'
-          />
-          <button
-            @click='search = searchInput; pageNumber = 0'
-            class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900'
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              class='h-5 w-5'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z'
-              />
-            </svg>
-          </button>
-        </div>
+      <!-- Search Box -->
+      <div class='relative flex-shrink-0' style="width: 423px;">
+        <input
+          type='text'
+          placeholder='Search Galery'
+          x-model='searchInput'
+          @input.debounce.500ms='search = searchInput; pageNumber = 0'
+          class='w-full text-black pl-[50px] pr-[20px] bg-[#E0F1F9] rounded-[12px] font-montserrat font-medium placeholder-[#676767] focus:outline-none transition-all duration-200'
+          style="height: 60px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); font-size: 25px; line-height: 30px;"
+        />
+        <i class='fas fa-search absolute left-[18px] top-1/2 transform -translate-y-1/2 text-black' style="font-size: 24px;"></i>
       </div>
     </div>
-  </div>
 
-  <div class='mb-10'></div>
-
-  <!-- Grid Cards -->
-  <div class='container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl'>
-    {{#each gallery}}
-      <div
-        class='bg-white shadow-lg rounded-xl overflow-hidden group'
-        x-show="filteredGallery.includes('{{id}}')"
-      >
-        <div class='aspect-[4/3] bg-gray-100 overflow-hidden'>
-          <img
-            src='{{filePath}}'
-            alt='{{title}}'
-            class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
-          />
+    <!-- Grid Cards -->
+    <div class='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3' style="gap: 30px;">
+      {{#each gallery}}
+        <div
+          class='flex flex-col relative transition-all duration-300 hover:-translate-y-2'
+          style="width: 100%; min-height: 484px; background: rgba(245, 245, 245, 0.5); border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25); backdrop-filter: blur(3.3px); border-radius: 12px; overflow: hidden;"
+          x-show="filteredGallery.includes('{{id}}')"
+        >
+          <!-- Image -->
+          <div style="width: 100%; height: 394px; background: #FAFAFA;">
+            <img
+              src='{{filePath}}'
+              alt='{{title}}'
+              class='w-full h-full object-cover transition-transform duration-300 hover:scale-105'
+            />
+          </div>
+          <!-- Title -->
+          <div class='flex flex-col items-center justify-center flex-1' style="padding: 15px;">
+            <h3 class='text-center w-full truncate m-0' style="font-family: 'Montserrat'; font-weight: 500; font-size: 25px; line-height: 30px; color: #0B1F3B;">
+              {{title}}
+            </h3>
+          </div>
         </div>
-        <div class='p-4'>
-          <h3 class='font-semibold text-gray-900'>{{title}}</h3>
-        </div>
-      </div>
-    {{/each}}
-  </div>
+      {{/each}}
+    </div>
 
-  <!-- Empty state -->
-  <div
-    class='container mx-auto px-4 max-w-5xl text-center py-16'
-    x-show='amount === 0'
-  >
-    <p class='text-gray-500 text-lg'>No gallery found.</p>
-  </div>
-
-  <!-- Pagination -->
-  <div
-    class='mx-auto py-10 flex justify-center gap-2 items-center'
-    x-show='pageCount() > 1'
-  >
-    <button
-      @click='prevPage'
-      :disabled='pageNumber==0'
-      class='w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition'
-      :class="{ 'opacity-40 cursor-not-allowed': pageNumber==0 }"
+    <!-- Empty state -->
+    <div
+      class='w-full text-center py-16'
+      x-show='amount === 0'
     >
-      <i class='fas fa-chevron-left text-sm'></i>
-    </button>
+      <p class='text-gray-500 text-lg'>No gallery found.</p>
+    </div>
 
-    <template x-for='(page,index) in pages()' :key='index'>
+    <!-- Pagination -->
+    <div
+      class='flex flex-row justify-center items-center mt-12'
+      style="gap: 49px;"
+      x-show='pageCount() > 1'
+    >
+      <!-- Prev Button -->
       <button
-        @click='viewPage(index)'
-        class='w-9 h-9 flex items-center justify-center rounded-full border transition'
-        :class="index===pageNumber ? 'bg-gray-900 text-white border-gray-900 font-bold' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-        x-text='index+1'
-      ></button>
-    </template>
+        @click='prevPage'
+        :disabled='pageNumber==0'
+        class='flex items-center justify-center rounded-full bg-white transition disabled:opacity-40 disabled:cursor-not-allowed'
+        style="width: 50px; height: 50px; box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);"
+      >
+        <i class='fas fa-chevron-left text-[#0B1F3B]' style="font-size: 20px;"></i>
+      </button>
 
-    <button
-      @click='nextPage'
-      :disabled='pageNumber >= pageCount()-1'
-      class='w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition'
-      :class="{ 'opacity-40 cursor-not-allowed': pageNumber >= pageCount()-1 }"
-    >
-      <i class='fas fa-chevron-right text-sm'></i>
-    </button>
+      <!-- Numbers -->
+      <div class='flex flex-row items-center justify-center' style="gap: 15px;">
+        <template x-for='(page,index) in pages()' :key='index'>
+          <button
+            @click='viewPage(index)'
+            class='flex items-center justify-center rounded-full transition'
+            :style="index === pageNumber ? 'width: 43px; height: 43px; background: #0B1F3B; color: #FFFFFF; font-family: Inter; font-weight: 500; font-size: 25px; line-height: 30px;' : 'width: 43px; height: 43px; background: #D9D9D9; color: #FFFFFF; font-family: Inter; font-weight: 500; font-size: 25px; line-height: 30px;'"
+            x-text='index+1'
+          ></button>
+        </template>
+      </div>
+
+      <!-- Next Button -->
+      <button
+        @click='nextPage'
+        :disabled='pageNumber >= pageCount()-1'
+        class='flex items-center justify-center rounded-full bg-white transition disabled:opacity-40 disabled:cursor-not-allowed'
+        style="width: 50px; height: 50px; box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);"
+      >
+        <i class='fas fa-chevron-right text-[#0B1F3B]' style="font-size: 20px;"></i>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -197,13 +172,13 @@ function galleryTable({ gallery, programs }) {
 
     get filteredGalleryFull() {
       return this.gallery.filter((item) => {
-        const matchSearch = item.title
+        const matchSearch = (item.title || "")
           .toLowerCase()
           .includes(this.search.toLowerCase());
 
         const matchProgram =
           this.selectedProgram === null ||
-          String(item.kategori?.id) === String(this.selectedProgram);
+          String(item.category?.id) === String(this.selectedProgram);
 
         return matchSearch && matchProgram;
       });

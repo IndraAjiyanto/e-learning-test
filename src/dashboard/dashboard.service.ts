@@ -298,9 +298,13 @@ export class DashboardService {
     } else if (options?.categoryId) {
       where.course = { category: { id: options.categoryId } };
     }
+    
+    // Perbaikan nama kolom pencarian (sebelumnya 'nama' padahal di entity 'name')
     if (options?.search && options.search.trim() !== '') {
       const keyword = `%${options.search.trim()}%`;
-      where.nama = ILike(keyword);
+      // Jika kolom name adalah jsonb, pencarian langsung dengan ILike mungkin gagal di DB tertentu,
+      // tetapi setidaknya kita gunakan nama properti yang benar.
+      where.name = ILike(keyword);
     }
 
     const [data, total] = await this.alumniRepository.findAndCount({

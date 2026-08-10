@@ -235,8 +235,8 @@ export class Course {
   @Exclude()
   registrations: Registration[];
 
-  @ManyToOne(() => Voucher, (voucher) => voucher.courses)
-  @JoinColumn({ name: 'voucherId' })
+  // Sisi inverse dari ManyToMany — @JoinTable ada di voucher.entity.ts
+  @ManyToMany(() => Voucher, (voucher) => voucher.courses)
   @Exclude()
-  voucher: Voucher;
+  vouchers: Voucher[];
 }
