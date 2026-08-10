@@ -172,13 +172,21 @@ export class UsersController {
     try {
       await this.usersService.verifyEmail(token);
       req.flash('success', 'Email verified successfully! You can now login.');
-      res.redirect('/login');
+      res.redirect('/users/verify-email-success');
     } catch (error: any) {
       const user = await this.usersService.findUserByEmail(email);
       req.flash('error', error.message || 'Email verification failed');
       res.redirect('/users/send-verify-email?token=' + user.verificationToken);
     }
   }
+
+  @Get('verify-email-success')
+  async verifyEmailSuccess(
+    @Res() res: Response
+  ){
+    res.render('verify-email-success')
+  }
+
 
   // ============================================
   // PROTECTED ROUTES - Require Authentication

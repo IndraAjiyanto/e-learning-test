@@ -22,7 +22,7 @@ export class EmailService {
     verificationToken: string,
     username: string,
   ) {
-    const verificationUrl = `${process.env.APP_URL || 'http://localhost:3000'}/users/verify-email?token=${verificationToken}&email=${to}`;
+    const verificationUrl = `${process.env.APP_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}&email=${to}`;
     const mailOptions = {
       from: `"${process.env.MAIL_FROM_NAME || 'Kesatria Academy'}" <${process.env.MAIL_FROM || process.env.MAIL_USER}>`,
       to,
