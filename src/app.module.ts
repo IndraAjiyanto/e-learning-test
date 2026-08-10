@@ -236,6 +236,7 @@ export class AppModule implements OnApplicationBootstrap {
         '/register/:id',
         '/session-expired',
         '/users/send-verify-email',
+        '/users/verify-email-success',
         '/users/verify-email',
         '/users/reset-password',
         '/users/forgot-password',
