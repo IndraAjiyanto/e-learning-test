@@ -1,133 +1,132 @@
 <!-- Sidebar Filters -->
 <div class='w-full mx-auto'>
-  <div class='bg-transparent flex flex-col gap-6'>
+  <div class='bg-transparent flex flex-col gap-[30px]'>
 
-    <!-- Filter by Program Type -->
-    <div class='w-full'>
-      <h3 class='text-base font-semibold text-gray-900 mb-3 font-montserrat'>
-        {{t 'test.alumni.programTittle'}}
-      </h3>
+    <!-- Filter by Program Type Title -->
+    <h3 class='text-[#0B1F3B] font-montserrat font-semibold m-0' style="font-size: 25px; line-height: 30px;">
+      {{t 'test.alumni.programTittle'}}
+    </h3>
 
-      <div class='flex flex-row flex-wrap items-center gap-2'>
+    <!-- Container for Rows -->
+    <div class='flex flex-col gap-[30px]'>
+      
+      <!-- Row 1: Categories (Gap 16px) -->
+      <div class='flex flex-row flex-wrap items-center gap-[16px]'>
         <!-- All Programs -->
         <button
-                @click='selectKategori(null), selectKelas(null)'
-                :class="!selectedKategoriId ? 'bg-secondary hover:from-primary hover:to-secondary text-white' : 'bg-[#E0F1F9] text-gray-700 hover:bg-gray-50'"
-                class='w-auto px-4 py-2.5 rounded-lg font-medium transition-all duration-200 flex-shrink-0 border border-slate-300 shadow-sm'
-              ><i class='fas fa-rocket mr-1 text-xl'></i>
-                <span class='text-sm whitespace-nowrap'>{{t 'test.alumni.allProgram'}}</span>
-              </button>
-              <template  x-for="kat in kategoriList" :key="kat.id">
-                <button
-                
-                  @click='selectKategori(kat.id), selectKelas(null)'
-                  :class="selectedKategoriId == kat.id ? 'bg-secondary hover:from-primary hover:to-secondary text-white' : 'bg-[#E0F1F9] text-gray-700 hover:bg-gray-50'"
-                  class='w-auto px-4 py-2.5 rounded-lg font-medium transition-all duration-200 flex-shrink-0 border border-slate-300 shadow-sm'
-                  
-                ><i class='fas fa-rocket mr-1 text-xl'></i>
-                <span 
-          class="text-sm text-left whitespace-nowrap" 
-          x-text="getByLang(kat.name, lang) || kat.name || kat.name || 'Kategori ' + kat.id"
-        ></span>
-                  {{!-- <span
-                    class='text-sm text-left'
-                    x-text='course.name'
-                  ></span> --}}
-                </button>
-              </template>
-      </div>
-    </div>
-
-    <!-- Bootcamp Program + Search + Clear -->
-    <div class='w-full flex flex-col md:flex-row md:items-center gap-4'>
-
-      <h3 class='text-base font-semibold text-gray-900 font-montserrat whitespace-nowrap'>
-        {{t 'test.alumni.bootcampProgram'}}
-      </h3>
-
-      <!-- Dropdown Kelas (Dynamic - shows programs from selected kategori) -->
-      <div
-        class='relative flex-1 min-w-[200px] max-w-xs'
-        x-data='{ open: false }'
-        @click.outside='open = false'
-      >
-        <button
-          @click='open = !open'
-          type='button'
-          class='w-full px-4 py-3 bg-[#E0F1F9] text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-all duration-200 flex items-center justify-between shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400'
+          @click='selectKategori(null)'
+          :class="!selectedKategoriId ? 'bg-[#0B1F3B] text-white' : 'bg-[#E0F1F9] text-black hover:bg-[#d0e8f5]'"
+          class='px-[20px] rounded-[12px] font-montserrat font-medium transition-all duration-200 flex items-center justify-center gap-[10px] flex-shrink-0'
+          style="height: 60px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); font-size: 25px; line-height: 30px; min-width: 270px;"
         >
-          <span class='text-sm truncate'>
-            <template x-if='!selectedKelasId'>
-              <span>{{t 'test.alumni.allProgram'}}</span>
-            </template>
-            <template x-if='selectedKelasId'>
-            <span x-text="kelasList.find(k => k.id == selectedKelasId)?.name || ''"></span>
-            </template>
-          </span>
-          <i
-            class='fas fa-chevron-down text-gray-400 transition-transform duration-200 ml-2'
-            :class="open ? 'transform rotate-180' : ''"
-          ></i>
+          <i class='fas fa-th-large' style="font-size: 28px;"></i>
+          <span class='whitespace-nowrap'>{{t 'test.alumni.allProgram'}}</span>
         </button>
 
-        <div
-          x-show='open'
-          x-transition:enter='transition ease-out duration-100'
-          x-transition:enter-start='transform opacity-0 scale-95'
-          x-transition:enter-end='transform opacity-100 scale-100'
-          x-transition:leave='transition ease-in duration-75'
-          x-transition:leave-start='transform opacity-100 scale-100'
-          x-transition:leave-end='transform opacity-0 scale-95'
-          class='absolute left-0 mt-2 w-full max-h-60 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-1 space-y-1 focus:outline-none'
-          style='display: none;'
-        >
-          <!-- All Program -->
+        <!-- Kategori Looping -->
+        <template x-for="kat in kategoriList" :key="kat.id">
           <button
-            @click='selectKelas(null); open = false'
-            :class="!selectedKelasId ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 text-white' : 'text-gray-700 hover:bg-gray-50'"
-            class='w-full px-4 py-2.5 rounded-md text-sm font-medium text-left transition-colors flex items-center justify-between'
+            @click='selectKategori(kat.id)'
+            :class="selectedKategoriId == kat.id ? 'bg-[#0B1F3B] text-white' : 'bg-[#E0F1F9] text-black hover:bg-[#d0e8f5]'"
+            class='px-[20px] rounded-[12px] font-montserrat font-medium transition-all duration-200 flex items-center justify-center gap-[10px] flex-shrink-0'
+            style="height: 60px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); font-size: 25px; line-height: 30px; min-width: 243px;"
           >
-            <span>{{t 'test.alumni.allProgram'}}</span>
-            <i x-show='!selectedKelasId' class='fas fa-check text-xs'></i>
+            <i class='fas fa-graduation-cap' style="font-size: 28px;"></i>
+            <span class="text-left whitespace-nowrap" x-text="getByLang(kat.name, lang) || kat.name || 'Kategori ' + kat.id"></span>
           </button>
+        </template>
+      </div>
 
-          <!-- Looping List Kelas -->
-          <template x-for='course in filteredKelasList' :key='course.id'>
+      <!-- Row 2: Sub Filters -->
+      <div class='flex flex-row flex-wrap items-center gap-[30px]'>
+        
+        <!-- Group 1: Title & Dropdown -->
+        <div class="flex flex-row items-center gap-[16px]">
+          <!-- Bootcamp Program Title -->
+          <h3 class='text-[#0B1F3B] font-montserrat font-semibold text-center m-0' style="font-size: 25px; line-height: 30px; min-width: 271px;">
+            {{t 'test.alumni.bootcampProgram'}}
+          </h3>
+
+          <!-- Dropdown Kelas -->
+          <div class='relative flex-shrink-0' x-data='{ open: false }' @click.outside='open = false' style="width: 423px;">
             <button
-              @click='selectKategori(course.categoryId);selectKelas(course.id); open = false'
-              :class="selectedKelasId == course.id ? 'bg-gradient-to-br from-primary via-secondary to-gray-900 text-white' : 'text-gray-700 hover:bg-gray-50'"
-              class='w-full px-4 py-2.5 rounded-md text-sm font-medium text-left transition-colors flex items-center justify-between'
+              @click='open = !open'
+              type='button'
+              class='w-full px-[20px] bg-[#E0F1F9] text-black font-montserrat font-medium rounded-[12px] flex items-center justify-between transition-all duration-200 focus:outline-none'
+              style="height: 60px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); font-size: 25px; line-height: 30px;"
             >
-              <span x-text='course.name'></span>
-              <i
-                x-show='selectedKelasId == course.id'
-                class='fas fa-check text-xs'
-              ></i>
+              <span class='truncate text-left flex-1'>
+                <template x-if='!selectedKelasId'>
+                  <span>{{t 'test.alumni.allProgram'}}</span>
+                </template>
+                <template x-if='selectedKelasId'>
+                  <span x-text="kelasList.find(k => k.id == selectedKelasId)?.name || ''"></span>
+                </template>
+              </span>
+              <i class='fas fa-chevron-down text-[#003060] transition-transform duration-200' :class="open ? 'transform rotate-180' : ''" style="font-size: 28px;"></i>
             </button>
-          </template>
+
+            <!-- Dropdown Options -->
+            <div
+              x-show='open'
+              x-transition.opacity.duration.200ms
+              class='absolute left-0 mt-2 w-full max-h-60 overflow-y-auto bg-white border border-gray-200 rounded-[12px] shadow-lg z-50 p-2 space-y-1 focus:outline-none'
+              style='display: none;'
+            >
+              <!-- All Program Option -->
+              <button
+                @click='selectKelas(null); open = false'
+                :class="!selectedKelasId ? 'bg-[#0B1F3B] text-white' : 'text-gray-700 hover:bg-gray-50'"
+                class='w-full px-4 py-3 rounded-lg font-montserrat font-medium transition-colors flex items-center justify-between'
+                style="font-size: 20px;"
+              >
+                <span>{{t 'test.alumni.allProgram'}}</span>
+                <i x-show='!selectedKelasId' class='fas fa-check'></i>
+              </button>
+
+              <!-- Looping List Kelas Option -->
+              <template x-for='course in filteredKelasList' :key='course.id'>
+                <button
+                  @click='selectKelas(course.id); open = false'
+                  :class="selectedKelasId == course.id ? 'bg-[#0B1F3B] text-white' : 'text-gray-700 hover:bg-gray-50'"
+                  class='w-full px-4 py-3 rounded-lg font-montserrat font-medium transition-colors flex items-center justify-between'
+                  style="font-size: 20px;"
+                >
+                  <span x-text='course.name'></span>
+                  <i x-show='selectedKelasId == course.id' class='fas fa-check'></i>
+                </button>
+              </template>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Search Alumni -->
-      <div class='relative flex-1 min-w-[200px] max-w-sm'>
-        <input
-          type='text'
-          x-model='searchQuery'
-          @input.debounce.500ms='currentPage = 1; fetchAlumni()'
-          placeholder='{{t "test.alumni.searchAlumniPlaceholder"}}'
-          class='w-full text-gray-600 px-4 py-3 pl-10 bg-white rounded-lg border border-gray-300 focus:border-gray-700 focus:ring-2 focus:ring-gray-700 transition-all duration-200'
-        />
-        <i class='fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
-      </div>
+        <!-- Group 2: Search & Clear -->
+        <div class="flex flex-row items-center gap-[16px]">
+          <!-- Search Alumni -->
+          <div class='relative flex-shrink-0' style="width: 423px;">
+            <input
+              type='text'
+              x-model='searchQuery'
+              @input.debounce.500ms='currentPage = 1; fetchAlumni()'
+              placeholder='{{t "test.alumni.searchAlumniPlaceholder"}}'
+              class='w-full text-black pl-[50px] pr-[20px] bg-[#E0F1F9] rounded-[12px] font-montserrat font-medium placeholder-[#676767] focus:outline-none transition-all duration-200'
+              style="height: 60px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); font-size: 25px; line-height: 30px;"
+            />
+            <i class='fas fa-search absolute left-[18px] top-1/2 transform -translate-y-1/2 text-black' style="font-size: 24px;"></i>
+          </div>
 
-      <!-- Clear -->
-      <button
-        @click='resetFilters()'
-        class='text-sm text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-1 whitespace-nowrap font-medium'
-      >
-        <i class='fas fa-xmark'></i>
-        {{t 'test.alumni.resetFilters'}}
-      </button>
+          <!-- Clear Filter -->
+          <button
+            @click='resetFilters()'
+            class='flex items-center justify-center gap-[15px] whitespace-nowrap font-montserrat font-medium text-[#676767] hover:text-[#0B1F3B] transition-colors flex-shrink-0'
+            style="width: 228px; height: 35px; font-size: 25px; line-height: 30px;"
+          >
+            <i class='fas fa-trash' style="font-size: 28px;"></i>
+            {{t 'test.alumni.resetFilters'}}
+          </button>
+        </div>
+
+      </div>
     </div>
 
   </div>

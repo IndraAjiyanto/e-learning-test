@@ -2,87 +2,53 @@
 <div class='w-full mt-8'>
   <!-- Alumni Cards -->
   <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-    <template x-for='alumni in alumniItems' :key='alumni.id'>
-      <div
-        class='flex flex-col bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300'
+       <template x-for='alumni in alumniItems' :key='alumni.id'>
+      
+      <!-- Desain Card (Glassmorphism & Layout presisi dari Figma) -->
+      <div 
+        class='flex flex-col relative transition-all duration-300 hover:-translate-y-2' 
+        style="width: 100%; min-height: 506px; background: rgba(224, 241, 249, 0.5); box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5); backdrop-filter: blur(3.3px); border-radius: 12px; padding: 29px 26px;"
       >
-        <!-- Profile Header -->
-        <div
-          class='bg-[#E0F1F980] p-4'
-        >
-          <!-- Profile Image -->
-          <div class='flex items-center gap-3'>
-            <div class='relative flex-shrink-0'>
-              <img
-                :src="alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + alumni.name"
-                :alt='alumni.name'
-                class='w-12 h-12 rounded-full border-4 border-white shadow-md object-cover'
-              />
+        <!-- Kontainer Utama (Profil & Kutipan) -> Gap 30px -->
+        <div class='flex flex-col w-full' style="gap: 30px;">
+          
+          <!-- Wrapper Profil (Gambar + Teks) -> Gap 26px (Row layout) -->
+          <div class='flex flex-row items-center w-full' style="gap: 26px;">
+            <!-- Foto Profil (100x100) -->
+            <img
+              :src="alumni.profile || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + alumni.name"
+              :alt='alumni.name'
+              class='rounded-full object-cover flex-shrink-0'
+              style="width: 100px; height: 100px;"
+            />
+            
+            <!-- Nama & Posisi (Kolom) -> Gap 6px -->
+            <div class='flex flex-col items-start overflow-hidden w-full' style="gap: 6px;">
+              <h3 class='truncate w-full m-0 p-0' style="font-family: 'Open Sans'; font-weight: 600; font-size: 20px; line-height: 27px; color: #000000;" x-text='getByLang(alumni.name, lang)'></h3>
+              <p class='w-full line-clamp-2 m-0 p-0' style="font-family: 'Open Sans'; font-weight: 400; font-size: 20px; line-height: 27px; color: #000000;" x-text='getByLang(alumni.currentPosition, lang)'></p>
             </div>
-            <div class='flex-1 min-w-0'>
-              <h3
-                class='font-bold text-gray-900 text-lg truncate'
-                x-text='getByLang(alumni.name, lang)'
-              ></h3>
-               <p
-                  class='text-gray-900 text-sm'
-                  x-text='getByLang(alumni.currentPosition, lang)'
-                ></p>
-             
+          </div>
+
+          <!-- Wrapper Kutipan (Icon + Teks) -> Gap 13px -->
+          <div class='flex flex-col items-start w-full' style="gap: 13px;">
+            <!-- Icon Kutipan (50x50, Warna #0B1F3B) -->
+            <div class='flex justify-center items-center flex-shrink-0 text-[#0B1F3B]' style="width: 50px; height: 50px;">
+              <i class='fas fa-quote-left' style="font-size: 40px;"></i>
             </div>
+            <!-- Teks Kutipan -->
+            <p class='line-clamp-5 m-0 p-0 w-full' style="font-family: 'Open Sans'; font-weight: 400; font-size: 20px; line-height: 30px; color: #000000;" x-text='getByLang(alumni.message, lang)'></p>
           </div>
         </div>
 
-        <!-- Card Content -->
-        <div class='p-4 flex-1 flex flex-col justify-between'>
-          <!-- Current Position -->
-          {{!-- <div class='bg-gray-50 rounded-lg p-4 border border-gray-200'>
-            <div class='flex items-start gap-3'>
-              <div
-                class='w-10 h-10 bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-lg flex items-center justify-center flex-shrink-0'
-              >
-                <i class='fas fa-briefcase text-white text-sm'></i>
-              </div>
-              <div class='flex-1 min-w-0'>
-                <p
-                  class='text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1'
-                >
-                  {{t 'test.alumni.program'}}
-                </p>
-               
-                <p
-                  class='text-xs text-gray-500 mt-1'
-                  x-text="getByLang(alumni.program, lang) || 'Unknown'"
-                ></p>
-              </div>
-            </div>
-          </div> --}}
-
-          <!-- Testimonial -->
-          <div class='flex flex-col items-start gap-2.5'>
-            <div
-              class='w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5'
-            >
-              {{!-- <div
-                class='w-8 h-8 bg-gradient-to-br from-primary via-secondary to-gray-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1'
-              > --}}
-                <i class='fas fa-quote-left text-white text-xs'></i>
-              </div>
-              <div class='flex-1 min-w-0'>
-                <p
-                  class='text-sm text-gray-700 leading-relaxed'
-                  x-text='getByLang(alumni.message, lang)'
-                ></p>
-              </div>
-            </div>
+        <!-- Wrapper Badge Program (Bawah) -> Margin atas otomatis agar selalu di bagian paling bawah -->
+        <div class='flex flex-row justify-center items-center w-full mt-auto'>
+          <!-- Badge Background -> Height 26px, bg #F1EDFD -->
+          <div class='flex flex-row justify-center items-center' style="gap: 10px; background: #F1EDFD; border-radius: 6px; height: 26px; padding: 0 15px;">
+            <span class='truncate max-w-full m-0 p-0' style="font-family: 'Open Sans'; font-weight: 400; font-size: 15px; line-height: 20px; color: #4F2CD7;" x-text="(alumni.kelas?.kategori?.nama_kategori ? alumni.kelas.kategori.nama_kategori + ': ' : '') + getKelasName(alumni)"></span>
           </div>
-
-        <!-- Kelas label -->
-        <p
-          class='text-sm font-medium text-teal-600 truncate'
-          x-text="(alumni.kelas?.kategori?.nama_kategori ? alumni.kelas.kategori.nama_kategori + ': ' : '') + getKelasName(alumni)"
-        ></p>
+        </div>
       </div>
+
     </template>
   </div>
 

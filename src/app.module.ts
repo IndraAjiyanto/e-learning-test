@@ -71,6 +71,7 @@ import { OurExperienceModule } from './our_experience/our_experience.module';
 import { GalleryModule } from './gallery/gallery.module';
 import { CategoryPartnerModule } from './category_partner/category_partner.module';
 import { PartnerModule } from './partner/partner.module';
+import { VoucherModule } from './voucher/voucher.module';
 import path from 'path';
 import { DataSource } from 'typeorm';
 
@@ -189,6 +190,7 @@ const TABLES_WITH_SEQUENCE = [
     GalleryModule,
     CategoryPartnerModule,
     PartnerModule,
+    VoucherModule,
   ],
   controllers: [AppController],
   providers: [AppService],

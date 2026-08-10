@@ -1,0 +1,90 @@
+<!-- FAQ SECTION -->
+<section id="faq" class="bg-[#FAFAFA] pb-20  font-montserrat">
+  <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col items-center">
+    
+    <div class="w-full max-w-4xl text-center mb-8 sm:mb-10">
+      <h2 class="font-montserrat font-semibold text-3xl sm:text-4xl lg:text-4xl text-center mb-3">
+        <span class="text-black">Frequently Asked</span> <span class="text-[#6EB6E5]">Questions</span>
+      </h2>
+      <p class="font-sans font-normal text-sm sm:text-base lg:text-xl text-[#000000] mb-7 text-center">
+        Everything you need to know about our program
+      </p>
+    </div>
+    
+    <!-- Alpine.js & FAQ List -->
+    <div class="w-full max-w-[900px]"
+      x-data="{
+        activeIndex: null,
+        faqs: [
+          {{#if faqs.length}}
+            {{#each faqs}}
+              { question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
+            {{/each}}
+          {{else}}
+            // DUMMY DATA FOR IN HOUSE TRAINING
+            { question: 'How long in house training program?', answer: 'The in-house training program duration is customized based on your company\'s needs, typically ranging from a few days to several weeks.' },
+            { question: 'Do I need prior programming experience?', answer: 'No prior programming experience is required for foundational modules. We offer courses tailored for beginners up to advanced levels.' },
+            { question: 'What is the payment method?', answer: 'We accept bank transfers, corporate invoicing, credit cards, and flexible payment schedule options.' }
+          {{/if}}
+        ],
+        toggle(index) {
+          this.activeIndex = this.activeIndex === index ? null : index;
+        }
+      }"
+    >
+      
+      <!-- Wrapper Daftar FAQ -->
+      <div class="border-t border-[#E0E0E0]">
+        <template x-for="(faq, index) in faqs" :key="index">
+          <div class="border-b border-[#E0E0E0]">
+            
+            <!-- Tombol Pertanyaan -->
+            <button
+              @click="toggle(index)"
+              class="w-full text-left py-5 px-4 focus:outline-none flex items-center justify-between group transition-colors duration-300 hover:bg-[#003060]"
+              :class="activeIndex === index ? 'bg-[#003060]' : 'bg-transparent'"
+            >
+              <div class="flex items-center gap-4">
+                <!-- Bullet -->
+                <div class="w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors duration-300 group-hover:bg-white"
+                     :class="activeIndex === index ? 'bg-white' : 'bg-[#0B1F3B]'"></div>
+                <!-- Vertical Line -->
+                <div class="w-[1px] h-5 flex-shrink-0 transition-colors duration-300 group-hover:bg-white/40"
+                     :class="activeIndex === index ? 'bg-white/40' : 'bg-gray-300'"></div>
+                
+                <h3 class="font-[600] text-[15px] transition-colors duration-300 group-hover:text-white" 
+                    :class="activeIndex === index ? 'text-white' : 'text-[#0F0F0F]'" 
+                    x-text="faq.question"></h3>
+              </div>
+              
+              <!-- Icon Chevron -->
+              <div class="flex-shrink-0 ml-4">
+                <i class="fas fa-chevron-down transition-transform duration-300 group-hover:text-white"
+                   :class="activeIndex === index ? 'text-white rotate-180' : 'text-[#8F8F8F]'">
+                </i>
+              </div>
+            </button>
+            
+            <!-- Jawaban -->
+            <div
+              x-show="activeIndex === index"
+              x-transition:enter="transition ease-out duration-300"
+              x-transition:enter-start="opacity-0 max-h-0"
+              x-transition:enter-end="opacity-100 max-h-[500px]"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100 max-h-[500px]"
+              x-transition:leave-end="opacity-0 max-h-0"
+              class="overflow-hidden bg-[#FAFAFA]"
+            >
+              <div class="pl-12 pr-4 py-6 text-[#545454] text-[14px] leading-[1.6]">
+                <p x-html="faq.answer"></p>
+              </div>
+            </div>
+            
+          </div>
+        </template>
+      </div>
+      
+    </div>
+  </div>
+</section>
