@@ -74,14 +74,15 @@ export class UsersController {
       );
       res.redirect('/users/forgot-password?token=' + token);
     } catch (error: any) {
-      const user = await this.usersService.findUserByEmail(
-        forgotPasswordDto.email,
-      );
-      req.flash(
-        'error',
-        error.message || 'Failed to process password reset request',
-      );
-      res.redirect('/users/forgot-password?token=' + user.resetPasswordToken);
+      if (error.message === 'If this email exists, a reset link has been sent.') {
+        req.flash('error', 'If this email exists, a reset link has been sent.');
+      } else {
+        req.flash(
+          'error',
+          error.message || 'Failed to process password reset request',
+        );
+      }
+      res.redirect('/users/forgot-password');
     }
   }
 
