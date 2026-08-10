@@ -1,122 +1,108 @@
-<div
-  class='min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-secondary to-gray-800 px-4 pt-28 py-20'>
-  <div class='w-full max-w-4xl flex items-center justify-center'>
-    <div class='w-full max-w-lg mx-auto bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl p-8'>
+<div class='min-h-screen flex items-center justify-center bg-[linear-gradient(180deg,#FAFAFA_-33%,#CEE5F6_33%,#FAFAFA_93.51%)] px-4 py-12'>
+  <div class='bg-white border border-gray-100 shadow-2xl rounded-xl p-8 flex flex-col items-center w-full max-w-xl gap-5'>
 
-      <!-- Logo -->
-      <div class='flex items-center justify-center mb-6'>
-        <i class='fa-solid fa-envelope text-5xl' style='color: #ffffff;'></i>
-      </div>
-
-      <!-- Title -->
-      <div class='text-center mb-6'>
-        <h1 class='text-2xl whitespace-nowrap font-bold text-white mt-2 font-montserrat'>{{t 'test.verify.verifyEmail'}}
-        </h1>
-        <p class='text-gray-400 text-sm mt-2'>
-          {{t 'test.verify.description'}}
-        </p>
-      </div>
-
-      <!-- Success Alert -->
-      {{#if success}}
-      <div role='alert' class='mb-6 p-4 rounded-xl bg-green-900/30 border border-green-500/40 backdrop-blur-sm'>
-        <div class='flex items-start gap-3'>
-          <div class='flex-shrink-0 mt-0.5'>
-            <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5 text-green-400' fill='none' viewBox='0 0 24 24'
-              stroke='currentColor' stroke-width='2'>
-              <path stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
-            </svg>
-          </div>
-          <div class='flex-1'>
-            <p class='text-sm font-medium text-green-200'>{{success}}</p>
-          </div>
-          <button type='button' onclick="this.parentElement.parentElement.style.display='none'"
-            class='flex-shrink-0 text-green-400 hover:text-green-300 transition-colors'>
-            <svg class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
-              <path stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' />
-            </svg>
-          </button>
-        </div>
-      </div>
-      {{/if}}
-
-      <!-- Error Alert -->
-      {{#if error}}
-      <div role='alert' class='mb-6 p-4 rounded-xl bg-red-900/30 border border-red-500/40 backdrop-blur-sm'>
-        <div class='flex items-start gap-3'>
-          <div class='flex-shrink-0 mt-0.5'>
-            <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5 text-red-400' fill='none' viewBox='0 0 24 24'
-              stroke='currentColor' stroke-width='2'>
-              <path stroke-linecap='round' stroke-linejoin='round'
-                d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-            </svg>
-          </div>
-          <div class='flex-1'>
-            <p class='text-sm font-medium text-red-200'>{{error}}</p>
-          </div>
-          <button type='button' onclick="this.parentElement.parentElement.style.display='none'"
-            class='flex-shrink-0 text-red-400 hover:text-red-300 transition-colors'>
-            <svg class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
-              <path stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' />
-            </svg>
-          </button>
-        </div>
-      </div>
-      {{/if}}
-
-      {{#if remainingMs}}
-      <div class='my-countdown simply-countdown'></div>
-
-      <script>
-        const remainingMs = {{ remainingMs }};
-        const target = new Date(Date.now() + remainingMs);
-
-        simplyCountdown('.my-countdown', {
-          year: target.getFullYear(),
-          month: target.getMonth() + 1,
-          day: target.getDate(),
-          hours: target.getHours(),
-          minutes: target.getMinutes(),
-          seconds: target.getSeconds(),
-
-          words: {
-            days: {
-              root: `{{t 'test.verify.day'}}`,
-              lambda: (root, n) => root
-            },
-            hours: {
-              root: `{{t 'test.verify.hour'}}`,
-              lambda: (root, n) => root
-            },
-            minutes: {
-              root: `{{t 'test.verify.minute'}}`,
-              lambda: (root, n) => root
-            },
-            seconds: {
-              root: `{{t 'test.verify.second'}}`,
-              lambda: (root, n) => root
-            }
-          },
-
-          onEnd: () => location.reload()
-        });
-      </script>
-
-      {{else}}
-
-      <!-- Forgot Password Form -->
-      <form action='/users/send-verify-email?token={{user.verificationToken}}' method='post' class='space-y-6'
-        x-data='{ loading: false }' @submit='loading = true'>
-
-        <!-- Submit Button -->
-        <button type='submit' :disabled='loading'
-          class='btn border-0 text-base w-full py-3 rounded-lg bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl'>
-          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
-          <span x-show='!loading'>{{t 'test.verify.sendButton'}}</span>
-        </button>
-      </form>
-      {{/if}}
-
+    <!-- Logo -->
+    <div class='flex justify-center w-full -mt-32'>
+      <img src='/public/image/logo_baru.png' class='max-h-96 w-auto object-contain' alt='Logo'>
     </div>
+
+    <!-- Email Icon -->
+    <div class='flex items-center justify-center -mt-40'>
+      <svg xmlns='http://www.w3.org/2000/svg' width='120' height='72' viewBox='0 0 40 40' preserveAspectRatio='none'>
+        <path
+          d='M12 11.5H28C29.66 11.5 31 12.84 31 14.5V32C31 33.66 29.66 35 28 35H12C10.34 35 9 33.66 9 32V14.5C9 12.84 10.34 11.5 12 11.5Z'
+          fill='none' stroke='#000000' stroke-width='2' />
+        <path d='M11 15L20 22L29 15' fill='none' stroke='#000000' stroke-width='2' stroke-linecap='round'
+          stroke-linejoin='round' />
+      </svg>
+    </div>
+
+    <!-- Title -->
+    <div class='text-center'>
+      <h1 class='text-[36px] font-semibold text-gray-900 font-montserrat'>{{t 'test.verify.verifyEmail'}}</h1>
+      {{#if remainingMs}}
+      <p class='text-gray-900 text-[20px] text-base mt-2'>{{t 'test.verify.description2'}}</p>
+      {{else}}
+      <p class='text-gray-900 text-[20px] text-base mt-2'>{{t 'test.verify.description'}}</p>
+      {{/if}}
+    </div>
+
+    <!-- Alerts -->
+    {{#if success}}
+    <div role='alert' class='w-full p-4 rounded-lg bg-green-50 border border-green-200'>
+      <div class='flex items-start gap-3'>
+        <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5 text-green-500 flex-shrink-0 mt-0.5' fill='none' viewBox='0 0 24 24'
+          stroke='currentColor' stroke-width='2'>
+          <path stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
+        </svg>
+        <p class='text-sm font-medium text-green-800 flex-1'>{{success}}</p>
+        <button type='button' onclick="this.closest('[role=alert]').remove()"
+          class='flex-shrink-0 text-green-400 hover:text-green-600 transition-colors'>
+          <svg class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
+            <path stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' />
+          </svg>
+        </button>
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if error}}
+    <div role='alert' class='w-full p-4 rounded-lg bg-red-50 border border-red-200'>
+      <div class='flex items-start gap-3'>
+        <svg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5 text-red-500 flex-shrink-0 mt-0.5' fill='none' viewBox='0 0 24 24'
+          stroke='currentColor' stroke-width='2'>
+          <path stroke-linecap='round' stroke-linejoin='round'
+            d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+        </svg>
+        <p class='text-sm font-medium text-red-800 flex-1'>{{error}}</p>
+        <button type='button' onclick="this.closest('[role=alert]').remove()"
+          class='flex-shrink-0 text-red-400 hover:text-red-600 transition-colors'>
+          <svg class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
+            <path stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' />
+          </svg>
+        </button>
+      </div>
+    </div>
+    {{/if}}
+
+    <!-- Countdown or Form -->
+    {{#if remainingMs}}
+    <div class='w-full flex flex-col items-center gap-3'>
+      <div class='my-countdown simply-countdown'></div>
+    </div>
+
+    <script>
+      const remainingMs = {{ remainingMs }};
+      const target = new Date(Date.now() + remainingMs);
+      simplyCountdown('.my-countdown', {
+        year: target.getFullYear(),
+        month: target.getMonth() + 1,
+        day: target.getDate(),
+        hours: target.getHours(),
+        minutes: target.getMinutes(),
+        seconds: target.getSeconds(),
+        words: {
+          days: { root: `{{t 'test.verify.day'}}`, lambda: (root, n) => root },
+          hours: { root: `{{t 'test.verify.hour'}}`, lambda: (root, n) => root },
+          minutes: { root: `{{t 'test.verify.minute'}}`, lambda: (root, n) => root },
+          seconds: { root: `{{t 'test.verify.second'}}`, lambda: (root, n) => root }
+        },
+        onEnd: () => location.reload()
+      });
+    </script>
+
+    {{else}}
+
+    <!-- Verify Email Form -->
+    <form action='/users/send-verify-email?token={{user.verificationToken}}' method='post' class='w-full'
+      x-data='{ loading: false }' @submit='loading = true'>
+      <button type='submit' :disabled='loading'
+        class='btn border-0 text-base w-full h-[45px] rounded-lg bg-[#003060] text-white font-semibold transition-all duration-300 hover:-translate-y-0.5 shadow-lg hover:shadow-xl'>
+        <span x-show='loading' class='loading loading-spinner loading-sm'></span>
+        <span x-show='!loading' class='text-[18px]'>{{t 'test.verify.sendButton'}}</span>
+      </button>
+    </form>
+    {{/if}}
+
   </div>
 </div>
