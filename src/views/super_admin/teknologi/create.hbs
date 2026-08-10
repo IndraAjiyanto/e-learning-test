@@ -1,6 +1,6 @@
 <div class='py-10'>
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create Technology</h2>
+    <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Create Tools</h2>
 
     <form
   action='/technology'
@@ -67,10 +67,10 @@
 
     validateNama() {
       if (!this.nama.trim()) {
-        this.errors.nama = 'Technology name is required';
+        this.errors.nama = 'Tools name is required';
         this.success.nama = false;
       } else if (this.nama.trim().length < 2) {
-        this.errors.nama = 'Technology name must be at least 2 characters';
+        this.errors.nama = 'Toolss name must be at least 2 characters';
         this.success.nama = false;
       } else {
         this.errors.nama = null;
@@ -108,7 +108,7 @@
 
 <!-- SVG or Image Selection -->
 <div class='bg-gray-50 p-6 rounded-xl border border-gray-200'>
-  <h3 class='text-lg font-semibold text-gray-800 mb-4'>Technology Icon</h3>
+  <h3 class='text-lg font-semibold text-gray-800 mb-4'>Tools Icon</h3>
   <p class='text-sm text-gray-500 mb-6'>Wajib mengisi salah satu (SVG Code atau Upload Gambar)</p>
 
   <div class='space-y-6'>
