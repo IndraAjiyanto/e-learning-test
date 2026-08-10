@@ -40,7 +40,7 @@
                 }
             }
         }'
-        x-init="formData.description = { id: '{{course.description.id}}', en: '{{course.description.en}}', ja: '{{course.description.ja}}' }, formData.location = { id: '{{course.locations.[0]}}', en: '{{course.locations.[1]}}', ja: '{{course.locations.[2]}}' }, formData.locationLink = '{{course.locationLink}}'">
+        x-init="formData.description = { id: '{{course.description.id}}', en: '{{course.description.en}}', ja: '{{course.description.ja}}' }, formData.location = { id: '{{course.locations.[id]}}', en: '{{course.locations.[en]}}', ja: '{{course.locations.[ja]}}' }, formData.locationLink = '{{course.locationLink}}'">
             <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Edit Program</h2>
 
             <form method="POST" action="/program/{{course.id}}?_method=PATCH" class="grid grid-cols-1 lg:grid-cols-2 gap-8" enctype="multipart/form-data" x-data="{loading:false}" @submit="loading = true">
