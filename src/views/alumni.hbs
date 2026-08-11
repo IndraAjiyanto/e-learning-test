@@ -30,7 +30,7 @@
           </div>
           <div class='flex flex-col'>
             <span class='font-bold text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 25px; line-height: 34px;">1000+</span>
-            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">Alumni</span>
+            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">{{t 'test.alumni.statAlumni'}}</span>
           </div>
         </div>
 
@@ -41,7 +41,7 @@
           </div>
           <div class='flex flex-col'>
             <span class='font-bold text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 25px; line-height: 34px;">95%</span>
-            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">Career Growth</span>
+            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">{{t 'test.alumni.statCareerGrowth'}}</span>
           </div>
         </div>
 
@@ -52,7 +52,7 @@
           </div>
           <div class='flex flex-col'>
             <span class='font-bold text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 25px; line-height: 34px;">200+</span>
-            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">Hiring Partners</span>
+            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">{{t 'test.alumni.statHiringPartners'}}</span>
           </div>
         </div>
 
@@ -86,6 +86,7 @@ function alumniApp() {
     loading: false,
     alumniItems: [],
     lang: '{{lang}}' || 'id',
+    unknown: "{{t 'test.alumni.unknown'}}",
 
     async init() {
       this.kelasList = this.kelasList.sort((a, b) =>
@@ -198,7 +199,8 @@ function alumniApp() {
     },
 
     getKelasName(alumni) {
-      return alumni.course?.name || 'Unknown';
+      const name = alumni.course?.name;
+      return name ? (typeof name === 'object' ? this.getByLang(name, this.lang) : name) : this.unknown;
     }
   };
 }
