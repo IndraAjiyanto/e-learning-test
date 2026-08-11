@@ -202,6 +202,7 @@ export class DashboardController {
     @Res() res: Response,
     @Query('search') search?: string,
     @Query('course_id') courseId?: string,
+    @Query('category_id') categoryId?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -210,6 +211,7 @@ export class DashboardController {
 
     const result = await this.dashboardService.findAlumni({
       courseId: courseId || null,
+      categoryId: categoryId || null,
       search: search || null,
       page: currentPage,
       limit: itemsPerPage,

@@ -1,89 +1,13 @@
-<div
-  x-data="{
-    selectedType: 'all',
-    selectedMethod: 'all',
-    searchQuery: '',
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    itemsPerPage: 6,
-    loading: false,
-    kelasItems: [],
+{{> paidProgramNew/hero_section}}
 
-            courseCategoriesData: [
-        { value: 'all', icon: 'fa-layer-group', title: '{{t "test.home.programSection.allCategory"}}', desc: '{{t "test.home.programSection.deskripsiAllCategory"}}' },
-        {{#each category.courseType}}
-        { value: '{{this.nameClassesType }}', icon: '/{{computeIcon this.icon}}', title: '{{ this.nameClassesType }}', desc: '{{truncate (getByLang this.description ../lang) 10}}' },
-        {{/each}}
-      ],
-      
-      methodOptions: [
-        { value: 'all', icon: 'fa-th', title: '{{t "test.home.programSection.allMethod"}}', desc: '{{t "test.home.programSection.deskripsiAllMethod"}}' },
-        { value: 'online', icon: 'fa-laptop', title: '{{t "test.home.programSection.online"}}', desc: '{{t "test.home.programSection.deskripsiOnline"}}' },
-        { value: 'offline', icon: 'fa-map-marker-alt', title: '{{t "test.home.programSection.offline"}}', desc: '{{t "test.home.programSection.deskripsiOffline"}}' }
-      ],
+{{> paidProgramNew/program}}
 
-    categoryDropdownOpen: false,
-    typeDropdownOpen: false,
-    methodDropdownOpen: false,
+{{> paidProgramNew/advantage}}
 
-    async init() {
-      // Hapus $watch lama, ganti dengan watch yang trigger fetch
-      this.$watch('selectedType', () => { this.currentPage = 1; this.fetchKelas(); });
-      this.$watch('selectedMethod', () => { this.currentPage = 1; this.fetchKelas(); });
-      this.$watch('searchQuery', () => { this.currentPage = 1; this.fetchKelas(); });
-      await this.fetchKelas();
-    },
+{{> paidProgramNew/flow}}
 
-    async fetchKelas() {
-      this.loading = true;
-      try {
-        const params = new URLSearchParams();
-        params.set('category', `{{category.name}}`);
-        if (this.selectedType !== 'all') params.set('courseType', this.selectedType);
-        if (this.selectedMethod !== 'all') params.set('method', this.selectedMethod);
-        if (this.searchQuery) params.set('search', this.searchQuery);
-        params.set('page', this.currentPage);
-        params.set('limit', this.itemsPerPage);
+{{> paidProgramNew/alumni}}
 
-        const res = await fetch(`/dashboard/course/filter?${params.toString()}`);
-        const json = await res.json();
+{{> paidProgramNew/gallery}}
 
-        this.kelasItems = json.data;
-        this.totalItems = json.totalItems;
-        this.totalPages = json.totalPages;
-        this.currentPage = json.currentPage;
-      } catch (err) {
-        console.error('Fetch course error:', err);
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async changePage(page) {
-      this.currentPage = page;
-      await this.fetchKelas();
-    },
-
-    async resetFilters() {
-      this.selectedType = 'all';
-      this.selectedMethod = 'all';
-      this.searchQuery = '';
-      // currentPage akan di-reset oleh $watch tab
-    },
-
-    // Computed tetap bisa pakai ini
-    get selectedTypeItem() {
-      return this.courseCategoriesData.find(c => c.value === this.selectedType) || this.courseCategoriesData[0];
-    },
-    get selectedMethodItem() {
-      return this.methodOptions.find(m => m.value === this.selectedMethod) || this.methodOptions[0];
-    },
-  }"
->
-
-{{> program/header}}
-
-{{> program/program}}
-
-</div>
+{{> paidProgramNew/cta}}
