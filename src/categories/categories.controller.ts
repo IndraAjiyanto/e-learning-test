@@ -90,21 +90,27 @@ export class CategoriesController {
     const superiority = await this.categoriesService.findSuperiorityByCategory(
       category.id,
     );
+    const gallery = await this.categoriesService.findGalleryByCategory(
+      category.id,
+    );
     const faqs = await this.categoriesService.findFaqByCategory(category.id);
     const alumni = await this.categoriesService.findAlumniByCategory(
       category.id,
     );
-    // const courses = await this.categoriesService.findCourseByCategory(category.id);
+    const courses = await this.categoriesService.findCourseByCategory(
+      category.id,
+    );
     if (category?.type === 'Special Program') {
       res.render('special_program', {
         category,
         user: req.user,
-        // courses,
+        courses,
         alumni,
         benefit_category,
         flow_category,
         superiority,
         faqs,
+        gallery,
       });
     } else if (category?.type === 'Paid Program') {
       res.render('paid_program', {
