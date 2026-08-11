@@ -102,4 +102,10 @@ export class CreateCoursesDto {
 
   @IsOptional()
   date_registration: Date;
+
+  @IsString()
+  time_start: string;
+
+  @IsString()
+  time_end: string;
 }

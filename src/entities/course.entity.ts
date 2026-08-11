@@ -239,4 +239,10 @@ export class Course {
   @ManyToMany(() => Voucher, (voucher) => voucher.courses)
   @Exclude()
   vouchers: Voucher[];
+
+  @Column({name: 'time_start', nullable:true , type:'time'})
+  time_start: string
+
+  @Column({name: 'time_end', nullable:true , type:'time'})
+  time_end: string
 }
