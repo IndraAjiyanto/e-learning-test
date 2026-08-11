@@ -1,4 +1,5 @@
 <!-- Time End -->
+{{#if this.time_end}}
         <div x-show='!paidClass'>
           <label
             for="time_end"
@@ -8,8 +9,9 @@
             type='time'
             id="time_end"
             name="time_end"
-            required
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
             style='color-scheme: light;'
           />
         </div>
+
+        {{/if}}
