@@ -106,6 +106,16 @@ export class CategoriesController {
         superiority,
         faqs,
       });
+    } else if (category?.type === 'Paid Program') {
+      res.render('paid_program', {
+        category,
+        user: req.user,
+        alumni,
+        benefit_category,
+        flow_category,
+        superiority,
+        faqs,
+      });
     } else if (category?.type === 'Free Program') {
       if (category.name === 'Short Class') {
         res.render('short_class', { category, user: req.user, alumni });
