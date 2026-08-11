@@ -11,6 +11,7 @@ import { CategoryFaq } from 'src/entities/faqs.entity';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { FlowCategory } from 'src/entities/flow_category.entity';
 import { Superiority } from 'src/entities/superiority.entity';
+import { Gallery } from 'src/entities/gallery.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -33,6 +34,8 @@ export class CategoriesService {
     private readonly flowCategoryRepository: Repository<FlowCategory>,
     @InjectRepository(Superiority)
     private readonly superiorityRepository: Repository<Superiority>,
+    @InjectRepository(Gallery)
+    private readonly galleryRepository: Repository<Gallery>,
   ) {}
 
   async create(createCategoriesDto: CreateCategoriesDto) {
@@ -123,6 +126,14 @@ export class CategoriesService {
   async findFlowByCategory(categoryId: number) {
     return await this.flowCategoryRepository.find({
       where: { category: { id: categoryId } },
+    });
+  }
+
+  async findGalleryByCategory(categoryId: number) {
+    return await this.galleryRepository.find({
+      where: { category: { id: categoryId } },
+      order: { id: 'DESC' },
+      take: 6,
     });
   }
 

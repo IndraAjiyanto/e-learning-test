@@ -3,6 +3,7 @@ import { CategoriesService } from './categories.service';
 import { CategoriesController } from './categories.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from 'src/entities/category.entity';
+import { Gallery } from 'src/entities/gallery.entity';
 import { CommonModule } from 'src/common/common.module';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { Course } from 'src/entities/course.entity';
@@ -25,6 +26,7 @@ import { CourseFlow } from 'src/entities/course_flow.entity';
       Alumni,
       CategoryFaq,
       FlowCategory,
+      Gallery,
     ]),
     CommonModule,
   ],

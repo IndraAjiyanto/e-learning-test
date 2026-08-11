@@ -11,11 +11,68 @@
       </p>
     </div>
 
+    {{#if courses}}
+    <!-- Program Cards -->
+    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+      {{#each courses}}
+        <div class="w-full bg-white border border-gray-200/80 rounded-[24px] px-6 py-9 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col group hover:shadow-md transition-all duration-300">
+          <div class="flex-grow">
+            <div class="flex flex-wrap items-center gap-[10px]">
+                {{#if this.group}}
+                <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[20px] leading-none text-center px-[10px] py-[10px] mb-2 rounded-[6px]">
+                  <i class="fa-solid fa-location-dot text-[12px] text-[#003060]"></i> {{this.group}}
+                </span>
+                {{/if}}
+              </div>
+            <div class="w-full max-w-[414px] h-[262px] rounded-[12px] overflow-hidden bg-gray-100 mb-6">
+              {{#if this.image}}
+              <img src="{{this.image}}" alt="{{this.name}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              {{/if}}
+            </div>
+            <div class="px-1">
+              <h3 class="font-montserrat font-semibold text-2xl sm:text-[35px] leading-none text-[#003060] mb-5 text-left">
+                {{this.name}}
+              </h3>
+              <p class="font-sans font-normal text-base sm:text-xl leading-relaxed sm:leading-[20px] text-black mb-5 text-left">
+                {{#if this.description}}{{getByLang this.description ../lang}}{{else}}Create innovative solutions for real-world challenges.{{/if}}
+              </p>
+            </div>
+          </div>
+
+          <!-- Pills anchor to bottom -->
+          <div class="flex flex-wrap items-center gap-[10px] mb-5 px-1">
+            {{#if this.method}}
+            <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
+              <i class="fa-solid fa-location-dot text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.method}}
+            </span>
+            {{/if}}
+            {{#if this.month}}
+            <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
+              <i class="fa-solid fa-calendar-check text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.month}}
+            </span>
+            {{/if}}
+            {{#if this.quota}}
+            <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
+              <i class="fa-solid fa-users text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.quota}}
+            </span>
+            {{/if}}
+          </div>
+
+          <div class="w-full pt-1">
+            <a href="/program/{{this.id}}" class="w-full h-[59px] flex items-center justify-center gap-2.5 bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base rounded-[12px] shadow-sm hover:shadow-md transition-all duration-300">
+              <span>{{t 'test.startLearning.detailProgram'}}</span>
+              <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+    {{else}}
     <!-- Program Coming Soon Card -->
     <div class="w-full max-w-[706px] bg-white border border-gray-200/80 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col items-center text-center px-6 sm:px-10 py-14 sm:py-16 lg:py-20">
-      
+
       <!-- Icon Circle -->
-      <div class="w-14 h-14 sm:w-16 sm:h-16 bg-[#003060] rounded-full flex items-center justify-center text-white mb-6 shadow-md shrink-0">
+      <div class="w-14 h-14 sm:w-16 sm:h-16 bg-[#003060] rounded-full flex items-center justify-center text-white mb-6 shadow-md shrink-0" aria-hidden="true">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 sm:w-8 sm:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -33,6 +90,7 @@
       </div>
 
     </div>
+    {{/if}}
 
   </div>
 </section>

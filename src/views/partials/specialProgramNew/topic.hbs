@@ -33,44 +33,19 @@
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-items-center w-full max-w-[1200px] transition-all duration-700 ease-out delay-150 transform"
     >
       
-      <!-- Card 1: Code Class -->
+      {{#each category.courseTypes}}
       <div class="w-full sm:w-[357px] h-auto lg:h-[278px] bg-[linear-gradient(245.8deg,rgba(240,240,240,0.5)_41.11%,rgba(224,241,249,0.5)_100.24%)] backdrop-blur-[6.6px] rounded-xl border border-white/60 p-6 sm:p-7 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-start text-left">
         <div class="w-12 h-12 rounded-full bg-[#003060] flex items-center justify-center text-white mb-5 shadow-sm shrink-0">
-          <i class="fas fa-code text-xl text-white"></i>
+          <i class="{{computeIcon icon}} text-xl text-white"></i>
         </div>
         <h3 class="font-montserrat font-semibold text-xl leading-none tracking-normal text-[#0B1F3B] mb-3">
-          Code Class
+          {{this.nameClassesType}}
         </h3>
         <p class="font-sans font-normal text-[15px] leading-[35px] tracking-normal text-gray-600">
-          Learn programming, AI, and data technology through practical projects designed to prepare you for real industry challenges.
+          {{getByLang this.description ../lang}}
         </p>
       </div>
-
-      <!-- Card 2: Business Class -->
-      <div class="w-full sm:w-[357px] h-auto lg:h-[278px] bg-[linear-gradient(245.8deg,rgba(240,240,240,0.5)_41.11%,rgba(224,241,249,0.5)_100.24%)] backdrop-blur-[6.6px] rounded-xl border border-white/60 p-6 sm:p-7 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-start text-left">
-        <div class="w-12 h-12 rounded-full bg-[#003060] flex items-center justify-center text-white mb-5 shadow-sm shrink-0">
-          <i class="fas fa-briefcase text-xl text-white"></i>
-        </div>
-        <h3 class="font-montserrat font-semibold text-xl leading-none tracking-normal text-[#0B1F3B] mb-3">
-          Business Class
-        </h3>
-        <p class="font-sans font-normal text-[15px] leading-[35px] tracking-normal text-gray-600">
-          Learn business management from conventional foundations to modern digital strategies to support effective business growth.
-        </p>
-      </div>
-
-      <!-- Card 3: Design Class -->
-      <div class="w-full sm:w-[357px] h-auto lg:h-[278px] bg-[linear-gradient(245.8deg,rgba(240,240,240,0.5)_41.11%,rgba(224,241,249,0.5)_100.24%)] backdrop-blur-[6.6px] rounded-xl border border-white/60 p-6 sm:p-7 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-start text-left">
-        <div class="w-12 h-12 rounded-full bg-[#003060] flex items-center justify-center text-white mb-5 shadow-md shrink-0">
-          <i class="fas fa-pen-nib text-xl text-white"></i>
-        </div>
-        <h3 class="font-montserrat font-semibold text-xl leading-none tracking-normal text-[#0B1F3B] mb-3">
-          Design Class
-        </h3>
-        <p class="font-sans font-normal text-[15px] leading-[35px] tracking-normal text-gray-600">
-          Learn creative skills in visual design, UI/UX, and video editing to build professional digital experiences and strong creative portfolio.
-        </p>
-      </div>
+      {{/each}}
 
     </div>
 
