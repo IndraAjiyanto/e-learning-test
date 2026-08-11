@@ -18,6 +18,7 @@ import { I18nContext } from 'nestjs-i18n';
 import { engine } from 'express-handlebars';
 import Handlebars from 'handlebars';
 import connectPgSimple from 'connect-pg-simple';
+import { FooterService } from './footer/footer.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -288,6 +289,24 @@ async function bootstrap() {
 
   app.use((req: any, res: Response, next: NextFunction) => {
     res.locals.isAuthenticated = req.isAuthenticated();
+    next();
+  });
+
+  const footerService = app.get(FooterService);
+  app.use(async (req: any, res: Response, next: NextFunction) => {
+    try {
+      const role = req.user?.role;
+      if (role !== 'admin' && role !== 'super_admin') {
+        const [footerData, footerCategories] = await Promise.all([
+          footerService.getFooterData(),
+          footerService.getCategories(),
+        ]);
+        res.locals.footerData = footerData;
+        res.locals.footerCategories = footerCategories;
+      }
+    } catch (error) {
+      console.error('Footer middleware error:', error);
+    }
     next();
   });
 

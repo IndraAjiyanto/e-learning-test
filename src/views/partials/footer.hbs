@@ -69,9 +69,7 @@
                 <path d='M15 22v-3a2 2 0 014 0v3' />
               </svg>
 
-              <p>Jl. S. Parman No.62, RT.002/RW.RT 002, Karangbawang, Purwokerto
-                Kulon, Kec. Purwokerto Sel., Kabupaten Banyumas, Jawa Tengah
-                53141</p>
+              <p>Jl. S. Parman No.62, Karangbawang, Purwokerto Kulon, Kec. Purwokerto Sel., Kabupaten Banyumas, Jawa Tengah 53141</p>
             </li>
             <li class='flex items-center gap-3'>
               <svg
@@ -109,7 +107,7 @@
                 ></path>
               </svg>
 
-              <p>+62 896 4683 4607</p>
+              <p>+62 895 6184 52602</p>
             </li>
           </ul>
         </div>
@@ -122,23 +120,23 @@
           </h3>
           <ul class='space-y-3 text-gray-300'>
             <li><a
-                href='#'
+                href='/dashboard'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.home'}}</a></li>
             <li><a
-                href='#'
+                href='/dashboard/about'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.aboutUs'}}</a></li>
             <li><a
-                href='#'
+                href='/dashboard/#courses-section'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.program'}}</a></li>
             <li><a
-                href='#'
+                href='/dashboard/alumni'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.alumni'}}</a></li>
             <li><a
-                href='#'
+                href='/dashboard/gallery'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.gallery'}}</a></li>
           </ul>
@@ -150,23 +148,12 @@
             Our Program
           </h3>
           <ul class='space-y-3 text-gray-300'>
+            {{#each footerCategories}}
             <li><a
-                href='#'
+                href='/category/program/{{this.name}}'
                 class='flex items-center gap-2 hover:text-white transition-colors'
-              >Bootcamp</a></li>
-            <li><a
-                href='#'
-                class='flex items-center gap-2 hover:text-white transition-colors'
-              > Short Class</a></li>
-            <li><a
-                href='#'
-                class='flex items-center gap-2 hover:text-white transition-colors'
-              > In House Training</a>
-            </li>
-            <li><a
-                href='#'
-                class='flex items-center gap-2 hover:text-white transition-colors'
-              > Wiratek Internship Program</a></li>
+              >{{this.name}}</a></li>
+            {{/each}}
           </ul>
         </div>
       </div>
@@ -194,7 +181,7 @@
 
           {{! LOGO LINKEDIN }}
           <a
-            href='https://www.linkedin.com/company/wiratek-solusi-asia/'
+            href='{{footerData.linkedin}}'
             class='rounded hover:opacity-80 transition'
           ><svg
               class='w-5 h-5'
@@ -254,7 +241,7 @@
 
           {{! LOGO INSTAGRAM }}
           <a
-            href='https://www.instagram.com/kesatria.academy/'
+            href='{{footerData.instagram}}'
             class='rounded hover:opacity-80 transition'
           >
             <svg
@@ -297,7 +284,7 @@
 
           {{! LOGO YOUTUBE }}
           <a
-            href='https://www.youtube.com/@KesatriaAcademy'
+            href='{{footerData.youtube}}'
             class='rounded hover:opacity-80 transition'
           ><svg
               class='w-5 h-5'

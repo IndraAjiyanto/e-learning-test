@@ -1,6 +1,6 @@
-<div class="bg-slate-50 min-h-screen py-12 sm:py-20 px-4 sm:px-6 lg:px-8 font-montserrat flex justify-center">
-  <!-- Container 1098px wide x min 1443px high -->
-  <div class="w-full max-w-[1098px] min-h-[1443px] p-6 sm:p-12 lg:p-14 flex flex-col justify-between">
+<div class="w-full font-montserrat flex justify-center">
+  <!-- Container 1098px wide -->
+  <div class="w-full max-w-[1098px] p-4 sm:p-8 lg:p-10 flex flex-col justify-between">
     
     <!-- Form Header -->
     <div class="mb-10">
@@ -21,58 +21,10 @@
           <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Your Program<span class="text-red-500">*</span>
           </label>
-          
-          <!-- Custom Modern Dropdown Component -->
-          <div class="relative w-full max-w-[900px] custom-dropdown" id="dropdown-program">
-            <input type="hidden" id="program-input" name="program" required value="SEMINAR - PYTHON FOR DATA ANALYST - from zero to insight">
-            
-            <!-- Trigger Button -->
-            <button 
-              type="button" 
-              class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200"
-              aria-expanded="false"
-              aria-haspopup="listbox"
-            >
-              <span class="dropdown-label font-montserrat font-medium text-xl text-black truncate pr-4">
-                SEMINAR - PYTHON FOR DATA ANALYST - from zero to insight
-              </span>
-              <div class="size-[35px] flex items-center justify-center flex-shrink-0">
-                <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
-              </div>
-            </button>
 
-            <!-- Options Menu -->
-            <ul 
-              class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out origin-top font-montserrat max-h-60 overflow-y-auto"
-              role="listbox"
-            >
-              <li 
-                role="option" 
-                aria-selected="true" 
-                data-value="SEMINAR - PYTHON FOR DATA ANALYST - from zero to insight" 
-                class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-[#003060] bg-[#003060]/10 font-semibold flex items-center justify-between"
-              >
-                <span>SEMINAR - PYTHON FOR DATA ANALYST - from zero to insight</span>
-                <i class="fa-solid fa-check text-sm text-[#003060]"></i>
-              </li>
-              <li 
-                role="option" 
-                aria-selected="false" 
-                data-value="Batch 6.2: Flow Sense: UI/UX Design With Figma" 
-                class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
-              >
-                <span>Batch 6.2: Flow Sense: UI/UX Design With Figma</span>
-              </li>
-              <li 
-                role="option" 
-                aria-selected="false" 
-                data-value="Batch 6.1: Web Development Mastery" 
-                class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
-              >
-                <span>Batch 6.1: Web Development Mastery</span>
-              </li>
-            </ul>
-          </div>
+          <span class="font-montserrat font-medium text-base sm:text-xl text-black">
+            SEMINAR - PYTHON FOR DATA ANALYST - from zero to insight
+          </span>
         </div>
 
         <!-- Full Name -->
@@ -226,18 +178,94 @@
         <button type="submit" class="h-[56px] px-10 bg-[#003060] hover:bg-[#082a4d] text-white text-lg rounded-[12px] border border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.5)] flex items-center justify-center font-semibold transition-colors min-w-[180px]">
           Register Now
         </button>
-        <a href="javascript:history.back()" class="h-[56px] px-10 bg-white hover:bg-slate-50 text-[#003060] text-lg rounded-[12px] border border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.5)] flex items-center justify-center font-semibold transition-colors min-w-[140px]">
+        <button type="button" @click="closeRegistrationModal ? closeRegistrationModal() : history.back()" class="h-[56px] px-10 bg-white hover:bg-slate-50 text-[#003060] text-lg rounded-[12px] border border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.5)] flex items-center justify-center font-semibold transition-colors min-w-[140px]">
           Cancel
-        </a>
+        </button>
       </div>
 
     </form>
   </div>
 </div>
 
-<!-- Custom Dropdown Modern JavaScript Component -->
+<!-- Registration Success Popup Modal -->
+<div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs invisible opacity-0 transition-all duration-300 ease-out" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <!-- Modal Card -->
+  <div id="modal-card" class="bg-white rounded-[24px] shadow-2xl p-8 sm:p-12 w-full max-w-[540px] transform scale-90 transition-all duration-300 ease-out flex flex-col items-center text-center space-y-4 relative">
+    
+    <!-- Close Button -->
+    <button id="close-modal-btn" type="button" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 rounded-full focus:outline-none transition-colors" aria-label="Close modal">
+      <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
+
+    <!-- Payment Success Icon Asset -->
+    <div class="mb-2">
+      <img src="/public/image/paymentSucces.svg" alt="Payment Success" class="w-24 h-24 sm:w-28 sm:h-28 object-contain mx-auto" />
+    </div>
+
+    <!-- Success Title -->
+    <h2 id="modal-title" class="text-2xl sm:text-[25px] font-montserrat font-medium text-[#003060]">
+      Success!
+    </h2>
+
+    <!-- Success Message -->
+    <p class="text-[#003060] font-montserrat font-normal text-base sm:text-xl leading-[30px] max-w-[440px] px-2">
+      Thank you for registering for our program. Stay tuned for updates and don't forget to join on the scheduled date.
+    </p>
+
+  </div>
+</div>
+
+<!-- Custom Dropdown Modern JavaScript Component & Form Submit Modal Handler -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    // --- Modal Registration Success Handler ---
+    const form = document.getElementById('short-class-form');
+    const modal = document.getElementById('success-modal');
+    const modalCard = document.getElementById('modal-card');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+
+    function openModal() {
+      modal.classList.remove('invisible', 'opacity-0');
+      modal.classList.add('visible', 'opacity-100');
+      modalCard.classList.remove('scale-90');
+      modalCard.classList.add('scale-100');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.add('invisible', 'opacity-0');
+      modal.classList.remove('visible', 'opacity-100');
+      modalCard.classList.add('scale-90');
+      modalCard.classList.remove('scale-100');
+      document.body.style.overflow = '';
+    }
+
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        openModal();
+      });
+    }
+
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', closeModal);
+    }
+
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !modal.classList.contains('invisible')) {
+          closeModal();
+        }
+      });
+    }
+
+    // --- Dropdown Handler ---
     const dropdownContainers = document.querySelectorAll('.custom-dropdown');
 
     dropdownContainers.forEach(container => {
