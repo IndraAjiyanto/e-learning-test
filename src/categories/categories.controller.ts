@@ -123,12 +123,13 @@ export class CategoriesController {
         flow_category,
         superiority,
         faqs,
+        gallery,
       });
     } else if (category?.type === 'Free Program') {
       if (category.name === 'Short Class') {
-        res.render('short_class', { category, user: req.user, courses, alumni });
+        res.render('short_class', { category, user: req.user, courses, alumni, gallery });
       } else {
-        res.render('free_program', { category, user: req.user, courses, alumni });
+        res.render('free_program', { category, user: req.user, courses, alumni, gallery });
       }
     }
   }
