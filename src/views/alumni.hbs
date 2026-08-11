@@ -139,22 +139,19 @@ function alumniApp() {
       this.loading = true;
       try {
         const params = new URLSearchParams();
-         if (this.searchQuery && this.searchQuery.trim() !== '') {
-      params.set('search', this.searchQuery.trim());
-    }
         if (this.searchQuery && this.searchQuery.trim() !== '') {
-      params.set('search', this.searchQuery.trim());
-    }
-    
-    // 2. Parameter Kelas ID (Ditulis terpisah, tanpa ELSE IF)
-    if (this.selectedKelasId) {
-      params.set('course_id', this.selectedKelasId);
-    }
-    
-    // 3. Parameter Kategori ID (Selalu dikirim agar backend tahu category aktif saat ini)
-    if (this.selectedKategoriId) {
-      params.set('kategori_id', this.selectedKategoriId);
-    }
+          params.set('search', this.searchQuery.trim());
+        }
+
+        // 2. Parameter Kelas ID
+        if (this.selectedKelasId) {
+          params.set('course_id', this.selectedKelasId);
+        }
+
+        // 3. Parameter Kategori ID
+        if (this.selectedKategoriId) {
+          params.set('category_id', this.selectedKategoriId);
+        }
         params.set('page', this.currentPage);
         params.set('limit', 6);
 
