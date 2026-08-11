@@ -90,6 +90,9 @@ export class CategoriesController {
     const superiority = await this.categoriesService.findSuperiorityByCategory(
       category.id,
     );
+    const gallery = await this.categoriesService.findGalleryByCategory(
+      category.id,
+    );
     const faqs = await this.categoriesService.findFaqByCategory(category.id);
     const alumni = await this.categoriesService.findAlumniByCategory(
       category.id,
@@ -105,6 +108,7 @@ export class CategoriesController {
         flow_category,
         superiority,
         faqs,
+        gallery,
       });
     } else if (category?.type === 'Paid Program') {
       const portfolio =

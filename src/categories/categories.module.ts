@@ -3,6 +3,7 @@ import { CategoriesService } from './categories.service';
 import { CategoriesController } from './categories.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from 'src/entities/category.entity';
+import { Gallery } from 'src/entities/gallery.entity';
 import { CommonModule } from 'src/common/common.module';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { Course } from 'src/entities/course.entity';
@@ -12,7 +13,6 @@ import { CategoryFaq } from 'src/entities/faqs.entity';
 import { FlowCategory } from 'src/entities/flow_category.entity';
 import { Superiority } from 'src/entities/superiority.entity';
 import { CourseFlow } from 'src/entities/course_flow.entity';
-import { Portofolios } from 'src/entities/portofolios.entity';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { Portofolios } from 'src/entities/portofolios.entity';
       Alumni,
       CategoryFaq,
       FlowCategory,
-      Portofolios,
+      Gallery,
     ]),
     CommonModule,
   ],

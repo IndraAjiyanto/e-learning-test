@@ -1,0 +1,381 @@
+<!-- PROFILE CONTENT PARTIAL -->
+<div class="space-y-24 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10">
+  
+  <!-- Welcome & Account Information Section -->
+  <div>
+    <!-- Header Block (h1 to p spacing: 15px, header to avatar spacing: 64px) -->
+    <div class="mb-12">
+      <h1 class="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]">
+        Welcome, {{#if user.username}}{{user.username}}{{else}}Trisna{{/if}}
+      </h1>
+      <p class="font-montserrat font-normal text-[20px] text-[#003060] leading-none">
+        Below is your profile information.
+      </p>
+    </div>
+
+    <!-- Avatar Section (avatar to form spacing: 55px) -->
+    <div class="relative w-[100px] h-[100px] mb-12">
+      <div class="w-[100px] h-[100px] rounded-[50px] bg-[#003060] text-white p-[10px] gap-[5px] flex items-center justify-center shadow-md overflow-hidden">
+        {{#if user.profile}}
+          <img src="{{user.profile}}" alt="Profile" class="w-full h-full object-cover rounded-full">
+        {{else}}
+          <span class="font-montserrat font-medium text-[20px] leading-none">TR</span>
+        {{/if}}
+      </div>
+      <button 
+        type="button" 
+        class="absolute bottom-0 -right-5 w-[35px] h-[35px] flex items-center justify-center transition-opacity hover:opacity-80 cursor-pointer"
+        aria-label="Edit Profile Picture"
+      >
+        <img src="/public/image/user_profile/edit.svg" alt="Edit" class="w-[35px] h-[35px] object-contain">
+      </button>
+    </div>
+
+    <!-- Account Inputs Form (input spacing: 30px, label to input spacing: 25px) -->
+    <form class="space-y-[30px] max-w-[1146px]">
+      <!-- Username -->
+      <div>
+        <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+          Username
+        </label>
+        <input 
+          type="text" 
+          value="{{#if user.username}}{{user.username}}{{else}}Trisna{{/if}}" 
+          placeholder="Input Your Username" 
+          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
+        >
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+          Email
+        </label>
+        <input 
+          type="email" 
+          value="{{#if user.email}}{{user.email}}{{else}}trisna123@gmail.com{{/if}}" 
+          placeholder="Input Your Email" 
+          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
+        >
+      </div>
+
+      <!-- Save Changes Button -->
+      <div>
+        <button 
+          type="button" 
+          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] bg-[#D9D9D9] hover:bg-[#003060] opacity-90 hover:opacity-100 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-base text-white transition-all duration-200 cursor-pointer"
+        >
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Your Biodata Section (Section 1 to Section 2 spacing: 96px / space-y-24) -->
+  <div>
+    <!-- Header Block (h2 to p spacing: 15px, header to form spacing: 64px) -->
+    <div class="mb-12">
+      <h2 class="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]">
+        Your Biodata
+      </h2>
+      <p class="font-montserrat font-normal text-[20px] text-[#003060] leading-none">
+        Below is your profile information.
+      </p>
+    </div>
+
+    <!-- Biodata Form (input spacing: 30px, label to input spacing: 25px, Education-to-Studi Program gap-x: 117px) -->
+    <form class="space-y-[30px] max-w-[1146px]">
+      <!-- Full Name -->
+      <div>
+        <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+          Full Name<span class="text-red-500">*</span>
+        </label>
+        <input 
+          type="text" 
+          required 
+          placeholder="Input Your Full Name" 
+          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
+        >
+      </div>
+
+      <!-- Address -->
+      <div>
+        <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+          Address
+        </label>
+        <input 
+          type="text" 
+          placeholder="Input Your City" 
+          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
+        >
+      </div>
+
+      <!-- Grid 2 Columns (Education to Studi Program gap-x: 117px, gap-y: 30px) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[117px] gap-y-[30px] max-w-[1146px]">
+        
+        <!-- Education Dropdown -->
+        <div>
+          <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+            Education
+          </label>
+          <div class="relative w-full custom-dropdown" id="dropdown-education">
+            <input type="hidden" id="education-input" name="education" value="">
+            
+            <button 
+              type="button" 
+              class="dropdown-trigger w-full h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer transition-all duration-200"
+              aria-expanded="false"
+              aria-haspopup="listbox"
+            >
+              <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">
+                Select Your Education Level
+              </span>
+              <div class="size-[24px] flex items-center justify-center flex-shrink-0">
+                <i class="dropdown-chevron text-sm text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
+              </div>
+            </button>
+
+            <ul 
+              class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out origin-top font-montserrat max-h-60 overflow-y-auto"
+              role="listbox"
+            >
+              <li role="option" aria-selected="false" data-value="High School / SMA" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
+                <span>High School / SMA</span>
+              </li>
+              <li role="option" aria-selected="false" data-value="Bachelor / S1" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
+                <span>Bachelor / S1</span>
+              </li>
+              <li role="option" aria-selected="false" data-value="Master / S2" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
+                <span>Master / S2</span>
+              </li>
+              <li role="option" aria-selected="false" data-value="Other" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
+                <span>Other</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Studi Program -->
+        <div>
+          <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+            Studi Program
+          </label>
+          <input 
+            type="text" 
+            placeholder="Input Your Studi Program" 
+            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
+          >
+        </div>
+
+        <!-- Gender Dropdown -->
+        <div>
+          <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+            Gender
+          </label>
+          <div class="relative w-full custom-dropdown" id="dropdown-gender">
+            <input type="hidden" id="gender-input" name="gender" value="">
+            
+            <button 
+              type="button" 
+              class="dropdown-trigger w-full h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer transition-all duration-200"
+              aria-expanded="false"
+              aria-haspopup="listbox"
+            >
+              <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">
+                Select Your Gender
+              </span>
+              <div class="size-[24px] flex items-center justify-center flex-shrink-0">
+                <i class="dropdown-chevron text-sm text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
+              </div>
+            </button>
+
+            <ul 
+              class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out origin-top font-montserrat max-h-60 overflow-y-auto"
+              role="listbox"
+            >
+              <li role="option" aria-selected="false" data-value="Male" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
+                <span>Male</span>
+              </li>
+              <li role="option" aria-selected="false" data-value="Female" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
+                <span>Female</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- WhatsApp Number -->
+        <div>
+          <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
+            WhatsApp Number
+          </label>
+          <input 
+            type="tel" 
+            placeholder="Input Your WhatsApp Number" 
+            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
+          >
+        </div>
+      </div>
+
+      <!-- Save Changes Button -->
+      <div class="pt-2">
+        <button 
+          type="button" 
+          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] bg-[#D9D9D9] hover:bg-[#003060] opacity-90 hover:opacity-100 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-base text-white transition-all duration-200 cursor-pointer"
+        >
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<!-- Custom Dropdown JavaScript Component -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdownContainers = document.querySelectorAll('.custom-dropdown');
+
+    dropdownContainers.forEach(container => {
+      const trigger = container.querySelector('.dropdown-trigger');
+      const menu = container.querySelector('.dropdown-menu');
+      const chevron = container.querySelector('.dropdown-chevron');
+      const label = container.querySelector('.dropdown-label');
+      const hiddenInput = container.querySelector('input[type="hidden"]');
+      const options = container.querySelectorAll('.dropdown-option');
+
+      let isOpen = false;
+      let highlightedIndex = -1;
+
+      function toggleDropdown(forceState) {
+        isOpen = forceState !== undefined ? forceState : !isOpen;
+
+        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+        if (isOpen) {
+          dropdownContainers.forEach(otherContainer => {
+            if (otherContainer !== container) {
+              const otherTrigger = otherContainer.querySelector('.dropdown-trigger');
+              const otherMenu = otherContainer.querySelector('.dropdown-menu');
+              const otherChevron = otherContainer.querySelector('.dropdown-chevron');
+              if (otherMenu && !otherMenu.classList.contains('invisible')) {
+                otherMenu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
+                otherMenu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
+                if (otherChevron) otherChevron.classList.remove('rotate-180');
+                if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+              }
+            }
+          });
+
+          menu.classList.remove('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
+          menu.classList.add('visible', 'opacity-100', 'translate-y-0', 'scale-100');
+          if (chevron) chevron.classList.add('rotate-180');
+
+          highlightedIndex = Array.from(options).findIndex(opt => opt.getAttribute('aria-selected') === 'true');
+          if (highlightedIndex >= 0) {
+            updateFocusedOption(highlightedIndex);
+          }
+        } else {
+          menu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
+          menu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
+          if (chevron) chevron.classList.remove('rotate-180');
+          highlightedIndex = -1;
+        }
+      }
+
+      function updateFocusedOption(index) {
+        options.forEach((opt, idx) => {
+          if (idx === index) {
+            opt.classList.add('ring-2', 'ring-[#003060]');
+            opt.scrollIntoView({ block: 'nearest' });
+          } else {
+            opt.classList.remove('ring-2', 'ring-[#003060]');
+          }
+        });
+      }
+
+      function selectOption(option) {
+        const selectedValue = option.getAttribute('data-value');
+        
+        if (hiddenInput) {
+          hiddenInput.value = selectedValue;
+        }
+
+        if (label) {
+          label.textContent = selectedValue;
+          label.classList.remove('text-[#676767]');
+          label.classList.add('text-black');
+        }
+
+        options.forEach(opt => {
+          const isSelected = opt === option;
+          opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+
+          const checkIcon = opt.querySelector('.fa-check');
+          if (isSelected) {
+            opt.className = 'dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-[#003060] bg-[#003060]/10 font-semibold flex items-center justify-between';
+            if (!checkIcon) {
+              opt.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-check text-sm text-[#003060]"></i>');
+            }
+          } else {
+            opt.className = 'dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between';
+            if (checkIcon) {
+              checkIcon.remove();
+            }
+          }
+        });
+
+        toggleDropdown(false);
+        trigger.focus();
+      }
+
+      trigger.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleDropdown();
+      });
+
+      options.forEach(option => {
+        option.addEventListener('click', function (e) {
+          e.stopPropagation();
+          selectOption(option);
+        });
+      });
+
+      trigger.addEventListener('keydown', function (e) {
+        if (['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Escape'].includes(e.key)) {
+          e.preventDefault();
+        }
+
+        if (e.key === 'Enter' || e.key === ' ') {
+          if (!isOpen) {
+            toggleDropdown(true);
+          } else if (highlightedIndex >= 0 && options[highlightedIndex]) {
+            selectOption(options[highlightedIndex]);
+          }
+        } else if (e.key === 'Escape') {
+          toggleDropdown(false);
+        } else if (e.key === 'ArrowDown') {
+          if (!isOpen) {
+            toggleDropdown(true);
+          } else {
+            highlightedIndex = (highlightedIndex + 1) % options.length;
+            updateFocusedOption(highlightedIndex);
+          }
+        } else if (e.key === 'ArrowUp') {
+          if (!isOpen) {
+            toggleDropdown(true);
+          } else {
+            highlightedIndex = (highlightedIndex - 1 + options.length) % options.length;
+            updateFocusedOption(highlightedIndex);
+          }
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!container.contains(e.target) && isOpen) {
+          toggleDropdown(false);
+        }
+      });
+    });
+  });
+</script>
