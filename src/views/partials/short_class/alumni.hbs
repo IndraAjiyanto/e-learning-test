@@ -28,7 +28,7 @@
               <div>
                 <div style="color: #0B1F3B; font-size: 50px; line-height: 0.8; font-family: serif; margin-bottom: 16px;">❝</div>
                 <p class='text-[14px] md:text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 1.8;">
-                  {{getByLang pesan ../lang}}
+                  {{getByLang message ../lang}}
                 </p>
               </div>
 
@@ -41,8 +41,8 @@
                       {{getByLang name ../lang}}
                     </h4>
                     <p class="text-[12px] md:text-[13px] mt-1" style="color: #4B5563; font-family: 'Open Sans', sans-serif;">
-                      {{getByLang posisi_sekarang ../lang}} <br/>
-                      <span class="opacity-75">{{getByLang course.name ../lang}}</span>
+                      {{getByLang currentPosition ../lang}} <br/>
+                      <span class="opacity-75">{{course.name}}</span>
                     </p>
                   </div>
                 </div>
@@ -50,106 +50,7 @@
             </div>
             {{/each}}
           {{else}}
-           
-             <div class='snap-center flex-shrink-0 flex flex-col justify-between text-left px-8 py-8 transition-transform duration-300 hover:-translate-y-1' 
-                  style='width: 360px; height: 420px; border-radius: 12px; background: linear-gradient(180deg, #FFFFFF 0%, #E3F2F9 100%); border: 1px solid #E5E7EB; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>
-               <div>
-                 <div style="color: #0B1F3B; font-size: 50px; line-height: 0.8; font-family: serif; margin-bottom: 16px;">❝</div>
-                 <p class='text-[14px] md:text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 1.8;">
-                   This bootcamp gave me more than just knowledge; I built a strong professional network. Collaborating with fellow participants on projects simulated the real-world dynamics of teamwork in the industry.
-                 </p>
-               </div>
-               <div>
-                 <hr class="w-full border-gray-200 mb-5 mt-4" />
-                 <div class="flex items-center gap-4 h-[72px]">
-                   <img src="https://ui-avatars.com/api/?name=John+Calvin&background=0B1F3B&color=fff" class="w-14 h-14 rounded-full object-cover shadow-sm" />
-                   <div>
-                     <h4 class="font-bold text-[15px] md:text-[16px] font-montserrat" style="color: #0B1F3B;">John Calvin Sukarman</h4>
-                     <p class="text-[12px] md:text-[13px] mt-1" style="color: #4B5563; font-family: 'Open Sans', sans-serif;">Backend Developer <br/>at PT. Wiratek Solusi Asia</p>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             <!-- Dummy 2 -->
-             <div class='snap-center flex-shrink-0 flex flex-col justify-between text-left px-8 py-8 transition-transform duration-300 hover:-translate-y-1' 
-                  style='width: 360px; height: 420px; border-radius: 12px; background: linear-gradient(180deg, #FFFFFF 0%, #E3F2F9 100%); border: 1px solid #E5E7EB; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>
-               <div>
-                 <div style="color: #0B1F3B; font-size: 50px; line-height: 0.8; font-family: serif; margin-bottom: 16px;">❝</div>
-                 <p class='text-[14px] md:text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 1.8;">
-                   Continue to foster a culture of mentorship that is humble yet critical. Mentors who can position themselves as learning partners are this bootcamp's greatest asset.
-                 </p>
-               </div>
-               <div>
-                 <hr class="w-full border-gray-200 mb-5 mt-4" />
-                 <div class="flex items-center gap-4 h-[72px]">
-                   <img src="https://ui-avatars.com/api/?name=Aqmal+Mistahul&background=0B1F3B&color=fff" class="w-14 h-14 rounded-full object-cover shadow-sm" />
-                   <div>
-                     <h4 class="font-bold text-[15px] md:text-[16px] font-montserrat" style="color: #0B1F3B;">Aqmal Mistahul Husna</h4>
-                     <p class="text-[12px] md:text-[13px] mt-1" style="color: #4B5563; font-family: 'Open Sans', sans-serif;">Quality Assurance (QA)</p>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             <!-- Dummy 3 -->
-             <div class='snap-center flex-shrink-0 flex flex-col justify-between text-left px-8 py-8 transition-transform duration-300 hover:-translate-y-1' 
-                  style='width: 360px; height: 420px; border-radius: 12px; background: linear-gradient(180deg, #FFFFFF 0%, #E3F2F9 100%); border: 1px solid #E5E7EB; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>
-               <div>
-                 <div style="color: #0B1F3B; font-size: 50px; line-height: 0.8; font-family: serif; margin-bottom: 16px;">❝</div>
-                 <p class='text-[14px] md:text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 1.8;">
-                   This bootcamp completely changed the way I understand JavaScript and React. The curriculum is well-structured, covering everything from the basics to advanced topics. What I liked most was the final project.
-                 </p>
-               </div>
-               <div>
-                 <hr class="w-full border-gray-200 mb-5 mt-4" />
-                 <div class="flex items-center gap-4 h-[72px]">
-                   <img src="https://ui-avatars.com/api/?name=Saeful+Haq&background=0B1F3B&color=fff" class="w-14 h-14 rounded-full object-cover shadow-sm" />
-                   <div>
-                     <h4 class="font-bold text-[15px] md:text-[16px] font-montserrat" style="color: #0B1F3B;">Saeful Haq Faruqi</h4>
-                     <p class="text-[12px] md:text-[13px] mt-1" style="color: #4B5563; font-family: 'Open Sans', sans-serif;">Frontend Developer <br/>at PT. Bank SMBC (BTPN)</p>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             <!-- Dummy 4 -->
-             <div class='snap-center flex-shrink-0 flex flex-col justify-between text-left px-8 py-8 transition-transform duration-300 hover:-translate-y-1' 
-                  style='width: 360px; height: 420px; border-radius: 12px; background: linear-gradient(180deg, #FFFFFF 0%, #E3F2F9 100%); border: 1px solid #E5E7EB; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>
-               <div>
-                 <div style="color: #0B1F3B; font-size: 50px; line-height: 0.8; font-family: serif; margin-bottom: 16px;">❝</div>
-                 <p class='text-[14px] md:text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 1.8;">
-                   The curriculum is very updated with current tech stacks. It really helped me transition smoothly from an academic environment into a fast-paced tech company.
-                 </p>
-               </div>
-               <div>
-                 <hr class="w-full border-gray-200 mb-5 mt-4" />
-                 <div class="flex items-center gap-4 h-[72px]">
-                   <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=0B1F3B&color=fff" class="w-14 h-14 rounded-full object-cover shadow-sm" />
-                   <div>
-                     <h4 class="font-bold text-[15px] md:text-[16px] font-montserrat" style="color: #0B1F3B;">Jane Doe</h4>
-                     <p class="text-[12px] md:text-[13px] mt-1" style="color: #4B5563; font-family: 'Open Sans', sans-serif;">Fullstack Developer <br/>at Tech Startup</p>
-                   </div>
-                 </div>
-               </div>
-             </div>
-             <!-- Dummy 5 -->
-             <div class='snap-center flex-shrink-0 flex flex-col justify-between text-left px-8 py-8 transition-transform duration-300 hover:-translate-y-1' 
-                  style='width: 360px; height: 420px; border-radius: 12px; background: linear-gradient(180deg, #FFFFFF 0%, #E3F2F9 100%); border: 1px solid #E5E7EB; box-shadow: 0px 4px 15px rgba(0,0,0,0.05);'>
-               <div>
-                 <div style="color: #0B1F3B; font-size: 50px; line-height: 0.8; font-family: serif; margin-bottom: 16px;">❝</div>
-                 <p class='text-[14px] md:text-[15px]' style="color: #4B5563; font-family: 'Open Sans', sans-serif; line-height: 1.8;">
-                   I gained not only coding skills but also the confidence to tackle large-scale projects. The mentors guided me step-by-step through every challenge.
-                 </p>
-               </div>
-               <div>
-                 <hr class="w-full border-gray-200 mb-5 mt-4" />
-                 <div class="flex items-center gap-4 h-[72px]">
-                   <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=0B1F3B&color=fff" class="w-14 h-14 rounded-full object-cover shadow-sm" />
-                   <div>
-                     <h4 class="font-bold text-[15px] md:text-[16px] font-montserrat" style="color: #0B1F3B;">Budi Santoso</h4>
-                     <p class="text-[12px] md:text-[13px] mt-1" style="color: #4B5563; font-family: 'Open Sans', sans-serif;">Software Engineer <br/>at Tokopedia</p>
-                   </div>
-                 </div>
-               </div>
-             </div>
+            <p class='w-full text-center py-10 text-gray-500' style="font-family: 'Open Sans', sans-serif;">Belum ada testimoni alumni.</p>
           {{/if}}
         </div>
 
