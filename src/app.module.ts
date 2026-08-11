@@ -72,6 +72,8 @@ import { GalleryModule } from './gallery/gallery.module';
 import { CategoryPartnerModule } from './category_partner/category_partner.module';
 import { PartnerModule } from './partner/partner.module';
 import { VoucherModule } from './voucher/voucher.module';
+import { FooterModule } from './footer/footer.module';
+import { FooterMiddleware } from './footer/footer.middleware';
 import path from 'path';
 import { DataSource } from 'typeorm';
 
@@ -191,6 +193,7 @@ const TABLES_WITH_SEQUENCE = [
     CategoryPartnerModule,
     PartnerModule,
     VoucherModule,
+    FooterModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -250,5 +253,7 @@ export class AppModule implements OnApplicationBootstrap {
         '/dashboard/*path',
       )
       .forRoutes('*');
+
+    consumer.apply(FooterMiddleware).forRoutes('*');
   }
 }

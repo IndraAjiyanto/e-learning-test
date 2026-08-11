@@ -145,14 +145,16 @@ function categoryCreateData() {
         },
 
         validateInfo(lang, infos) {
-          this.formTouched['info_' + lang] = true;
+          const keyMap = { id: 'infoId', en: 'infoEn', ja: 'infoJa' };
+          const key = keyMap[lang];
+          this.formTouched[key] = true;
           const hasValidInfo = infos && infos.some(info => info.trim());
           if (!hasValidInfo) {
-            this.formErrors['info_' + lang] = 'At least one info item is required for ' + lang.toUpperCase();
-            this.formValid['info_' + lang] = false;
+            this.formErrors[key] = 'At least one info item is required for ' + lang.toUpperCase();
+            this.formValid[key] = false;
           } else {
-            this.formErrors['info_' + lang] = '';
-            this.formValid['info_' + lang] = true;
+            this.formErrors[key] = '';
+            this.formValid[key] = true;
           }
         },
 
