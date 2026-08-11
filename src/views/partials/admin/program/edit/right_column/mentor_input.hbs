@@ -2,9 +2,9 @@
                     <!-- Mentoring -->
                     <div
                       x-data="{
-                        search: '{{#if course.mentoring.[0].user}}{{course.mentoring.[0].user.username}}{{/if}}',
-                        selectedMentoring: {{#if course.mentoring.[0].user}}{{json course.mentoring.[0].user}}{{else}}null{{/if}},
-                        selectedMentoringId: '{{#if course.mentoring.[0].user}}{{course.mentoring.[0].user.id}}{{/if}}',
+                        search: '{{#if course.mentorings.[0].user}}{{course.mentorings.[0].user.username}}{{/if}}',
+                        selectedMentoring: {{#if course.mentorings.[0].user}}{{json course.mentorings.[0].user}}{{else}}null{{/if}},
+                        selectedMentoringId: '{{#if course.mentorings.[0].user}}{{course.mentorings.[0].user.id}}{{/if}}',
                         showDropdown: false,
                         availableMentoring: {{json mentorings}},
                         get filteredMentoring() {
