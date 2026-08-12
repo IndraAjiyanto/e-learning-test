@@ -1,4 +1,3 @@
-{{#if time_end}}
 <div x-show='!paidClass'>
           <label
             for="time_end"
@@ -9,9 +8,9 @@
             id="time_end"
             name="time_end"
             required
+            :disabled='paidClass'
             value='{{formatTime course.time_end}}'
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
             style='color-scheme: light;'
           />
         </div>
-{{/if}}
