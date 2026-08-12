@@ -1,6 +1,6 @@
 {{!-- USER PROFILE INDEX VIEW --}}
 <div 
-  class="relative min-h-screen bg-[#FAFAFA] font-montserrat py-8 px-4 sm:px-6 lg:px-12 overflow-hidden"
+  class="relative min-h-screen bg-[#FAFAFA] font-montserrat overflow-hidden"
   x-data="{
     activeSection: 'profile',
     openMyLearning: true,
@@ -24,7 +24,7 @@
             :class="activeSection === 'profile' ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
             class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
           >
-            <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'profile' ? 'brightness-0 invert' : ''">
+            <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'profile' ? 'brightness-0 invert' : 'brightness-0'">
             <span>Profile</span>
           </button>
 
@@ -34,7 +34,7 @@
             :class="activeSection === 'learning' ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
             class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
           >
-            <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'learning' ? 'brightness-0 invert' : ''">
+            <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'learning' ? 'brightness-0 invert' : 'brightness-0'">
             <span>My Learning</span>
           </button>
 
@@ -44,7 +44,7 @@
             :class="activeSection === 'portfolio' ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
             class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
           >
-            <img src="/public/image/user_profile/myPortofolio.svg" alt="My Portfolio" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'portfolio' ? 'brightness-0 invert' : ''">
+            <img src="/public/image/user_profile/myPortofolio.svg" alt="My Portfolio" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'portfolio' ? 'brightness-0 invert' : 'brightness-0'">
             <span>My Portfolio</span>
           </button>
 
@@ -54,7 +54,7 @@
             :class="activeSection === 'history-payment' ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
             class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
           >
-            <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'history-payment' ? 'brightness-0 invert' : ''">
+            <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'history-payment' ? 'brightness-0 invert' : 'brightness-0'">
             <span>History Payment</span>
           </button>
 
@@ -78,7 +78,7 @@
             class="w-full max-w-[324px] h-[60px] text-left px-[30px] py-[10px] gap-[18px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[20px] leading-none cursor-pointer group"
           >
             <div class="w-7 flex justify-center items-center">
-              <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'profile' ? 'brightness-0 invert' : ''">
+              <img src="/public/image/user_profile/profile.svg" alt="Profile" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'profile' ? 'brightness-0 invert' : 'brightness-0'">
             </div>
             <span>Profile</span>
           </button>
@@ -87,14 +87,14 @@
           <div class="space-y-[20px]">
             <button
               @click="openMyLearning = !openMyLearning; toggleActiveSection('learning');"
-              :class="activeSection === 'learning' || openMyLearning 
-                ? 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' 
-                : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
+              :class="activeSection === 'learning' 
+                ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' 
+                : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] hover:border-[#003060]'"
               class="w-full max-w-[324px] h-[60px] text-left px-[30px] py-[10px] gap-[18px] rounded-[6px] transition-all duration-200 flex items-center justify-between font-inter font-medium text-[20px] leading-none cursor-pointer"
             >
               <div class="flex items-center gap-[18px]">
                 <div class="w-7 flex justify-center items-center">
-                  <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-6 h-6 object-contain">
+                  <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'learning' ? 'brightness-0 invert' : 'brightness-0'">
                 </div>
                 <span>My Learning</span>
               </div>
@@ -112,7 +112,7 @@
                 >
                   <div class="flex items-center gap-[12px]">
                     <div class="w-6 flex justify-center items-center">
-                      <img src="/public/image/user_profile/uiUxDesigner.svg" alt="UI/UX Designer" class="w-5 h-5 object-contain">
+                      <img src="/public/image/user_profile/uiUxDesigner.svg" alt="UI/UX Designer" class="w-5 h-5 object-contain transition-all brightness-0">
                     </div>
                     <span>UI/UX Designer</span>
                   </div>
@@ -128,7 +128,7 @@
                     class="w-full max-w-[280px] h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                   >
                     <div class="w-5 flex justify-center items-center">
-                      <img src="/public/image/user_profile/presentation.svg" alt="Presentation" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'presentation' ? 'brightness-0 invert' : ''">
+                      <img src="/public/image/user_profile/presentation.svg" alt="Presentation" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'presentation' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
                     <span>Presentation</span>
                   </button>
@@ -139,7 +139,7 @@
                     class="w-full max-w-[280px] h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                   >
                     <div class="w-5 flex justify-center items-center">
-                      <img src="/public/image/user_profile/myLogbook.svg" alt="My Logbook" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'logbook' ? 'brightness-0 invert' : ''">
+                      <img src="/public/image/user_profile/myLogbook.svg" alt="My Logbook" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'logbook' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
                     <span>My Logbook</span>
                   </button>
@@ -150,7 +150,7 @@
                     class="w-full max-w-[280px] h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                   >
                     <div class="w-5 flex justify-center items-center">
-                      <img src="/public/image/user_profile/assignment.svg" alt="Assignment" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'assignment' ? 'brightness-0 invert' : ''">
+                      <img src="/public/image/user_profile/assignment.svg" alt="Assignment" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'assignment' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
                     <span>Assignment</span>
                   </button>
@@ -161,7 +161,7 @@
                     class="w-full max-w-[280px] h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                   >
                     <div class="w-5 flex justify-center items-center">
-                      <img src="/public/image/user_profile/quiz.svg" alt="Quiz" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'quiz' ? 'brightness-0 invert' : ''">
+                      <img src="/public/image/user_profile/quiz.svg" alt="Quiz" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'quiz' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
                     <span>Quiz</span>
                   </button>
@@ -172,7 +172,7 @@
                     class="w-full max-w-[280px] h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                   >
                     <div class="w-5 flex justify-center items-center">
-                      <img src="/public/image/user_profile/sertificate.svg" alt="Certificate" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'certificate' ? 'brightness-0 invert' : ''">
+                      <img src="/public/image/user_profile/sertificate.svg" alt="Certificate" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'certificate' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
                     <span>Certificate</span>
                   </button>
@@ -183,7 +183,7 @@
                     class="w-full max-w-[280px] h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                   >
                     <div class="w-5 flex justify-center items-center">
-                      <img src="/public/image/user_profile/joinGroupClass.svg" alt="Join Group Class" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'group-class' ? 'brightness-0 invert' : ''">
+                      <img src="/public/image/user_profile/joinGroupClass.svg" alt="Join Group Class" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'group-class' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
                     <span>Join Group Class</span>
                   </button>
@@ -199,7 +199,7 @@
                 >
                   <div class="flex items-center gap-[12px]">
                     <div class="w-6 flex justify-center items-center">
-                      <img src="/public/image/user_profile/robloxDeveloper.svg" alt="Roblox Developer" class="w-5 h-5 object-contain">
+                      <img src="/public/image/user_profile/robloxDeveloper.svg" alt="Roblox Developer" class="w-5 h-5 object-contain transition-all brightness-0">
                     </div>
                     <span>Roblox Developer</span>
                   </div>
@@ -219,7 +219,7 @@
             class="w-full max-w-[324px] h-[60px] text-left px-[30px] py-[10px] gap-[18px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[20px] leading-none cursor-pointer"
           >
             <div class="w-7 flex justify-center items-center">
-              <img src="/public/image/user_profile/myPortofolio.svg" alt="My Portfolio" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'portfolio' ? 'brightness-0 invert' : ''">
+              <img src="/public/image/user_profile/myPortofolio.svg" alt="My Portfolio" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'portfolio' ? 'brightness-0 invert' : 'brightness-0'">
             </div>
             <span>My Portfolio</span>
           </button>
@@ -233,7 +233,7 @@
             class="w-full max-w-[324px] h-[60px] text-left px-[30px] py-[10px] gap-[18px] rounded-[6px] transition-all duration-200 flex items-center font-inter font-medium text-[20px] leading-none cursor-pointer"
           >
             <div class="w-7 flex justify-center items-center">
-              <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'history-payment' ? 'brightness-0 invert' : ''">
+              <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-6 h-6 object-contain transition-all" :class="activeSection === 'history-payment' ? 'brightness-0 invert' : 'brightness-0'">
             </div>
             <span>History Payment</span>
           </button>
@@ -249,8 +249,13 @@
           {{> user/sidebar_user_profile/profile/index }}
         </div>
 
+        <!-- My Learning Tab Content -->
+        <div x-show="activeSection === 'learning'">
+          {{> user/sidebar_user_profile/my_learning/index }}
+        </div>
+
         <!-- Other Tabs Placeholder Content -->
-        <div x-show="activeSection !== 'profile'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
+        <div x-show="activeSection !== 'profile' && activeSection !== 'learning'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
           <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
             <i class="fas fa-folder-open text-2xl"></i>
           </div>
