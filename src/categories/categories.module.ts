@@ -13,6 +13,7 @@ import { CategoryFaq } from 'src/entities/faqs.entity';
 import { FlowCategory } from 'src/entities/flow_category.entity';
 import { Superiority } from 'src/entities/superiority.entity';
 import { CourseFlow } from 'src/entities/course_flow.entity';
+import { Portofolios } from 'src/entities/portofolios.entity';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CourseFlow } from 'src/entities/course_flow.entity';
       CategoryFaq,
       FlowCategory,
       Gallery,
+      Portofolios,
     ]),
     CommonModule,
   ],

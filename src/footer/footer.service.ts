@@ -41,4 +41,8 @@ export class FooterService {
     await this.cacheManager.set(cacheKey, data, 60 * 1000);
     return data;
   }
+
+  async invalidateFooterCache() {
+    await this.cacheManager.del('footer_data');
+  }
 }

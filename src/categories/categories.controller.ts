@@ -97,9 +97,7 @@ export class CategoriesController {
     const alumni = await this.categoriesService.findAlumniByCategory(
       category.id,
     );
-    const courses = await this.categoriesService.findCourseByCategory(
-      category.id,
-    );
+    const courses = await this.categoriesService.findCourseByCategory(category.id);
     if (category?.type === 'Special Program') {
       res.render('special_program', {
         category,
@@ -113,20 +111,25 @@ export class CategoriesController {
         gallery,
       });
     } else if (category?.type === 'Paid Program') {
+      const portfolio =
+        await this.categoriesService.findPortfolioByCategory(category.id);
       res.render('paid_program', {
         category,
         user: req.user,
+        courses,
         alumni,
+        portfolio,
         benefit_category,
         flow_category,
         superiority,
         faqs,
+        gallery,
       });
     } else if (category?.type === 'Free Program') {
       if (category.name === 'Short Class') {
-        res.render('short_class', { category, user: req.user, alumni });
+        res.render('short_class', { category, user: req.user, courses, alumni, gallery });
       } else {
-        res.render('free_program', { category, user: req.user, alumni });
+        res.render('free_program', { category, user: req.user, courses, alumni, gallery });
       }
     }
   }

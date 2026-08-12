@@ -45,14 +45,14 @@
         </div>
 
         <!-- Huge Main Title -->
-        <h1 class="font-montserrat font-semibold text-[32px] sm:text-[40px] lg:text-[50px] leading-snug lg:leading-[70px] tracking-normal text-white">
-          BOOTCAMP BATCH 6.2<br />
+        <h1 class="font-montserrat font-semibold text-[32px] sm:text-[40px] lg:text-[50px] leading-snug lg:leading-[70px] tracking-normal text-white uppercase">
+          {{category.name}}<br />
           <span class="text-[#003060]">NOW OPEN!</span>
         </h1>
 
         <!-- Subtitle -->
         <p class="font-sans font-normal text-base sm:text-lg lg:text-xl leading-relaxed lg:leading-[30px] tracking-normal text-white/90 mb-7 max-w-xl">
-          Join our next cohort and accelerate your career with industry-led learning and real projects.
+          {{getByLang category.description lang}}
         </p>
 
         <!-- Buttons Row -->
