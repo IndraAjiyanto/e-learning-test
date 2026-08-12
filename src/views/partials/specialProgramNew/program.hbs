@@ -13,9 +13,9 @@
 
     {{#if courses}}
     <!-- Program Cards -->
-    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+    <div class="w-full grid xl:grid-cols-3 gap-2">
       {{#each courses}}
-        <div class="w-full bg-white border border-gray-200/80 rounded-[24px] px-6 py-9 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col group hover:shadow-md transition-all duration-300">
+        <div class="w-full bg-white border border-gray-200/80 rounded-[24px] px-3 py-3 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col group hover:shadow-md transition-all duration-300">
           <div class="flex-grow">
             <div class="w-full max-w-[414px] h-[262px] rounded-[12px] overflow-hidden bg-gray-100 mb-6">
               {{#if this.image}}
@@ -33,7 +33,7 @@
           </div>
 
           <!-- Pills anchor to bottom -->
-          <div class="flex flex-wrap items-center gap-[10px] mb-5 px-1">
+          <div class="flex flex-wrap items-center gap-2 mb-5 ">
             {{#if this.method}}
             <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
               <i class="fa-solid fa-location-dot text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.method}}
@@ -41,12 +41,12 @@
             {{/if}}
             {{#if this.month}}
             <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
-              <i class="fa-solid fa-calendar-check text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.month}}
+              <i class="fa-solid fa-clock text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.month}} <p>Months</p>
             </span>
             {{/if}}
             {{#if this.quota}}
             <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
-              <i class="fa-solid fa-users text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.quota}}
+              <i class="fa-solid fa-couch text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.quota}}<p>Students</p>
             </span>
             {{/if}}
           </div>
