@@ -6,7 +6,7 @@
     <!-- Header Block (h1 to p spacing: 15px, header to avatar spacing: 64px) -->
     <div class="mb-12">
       <h1 class="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]">
-        Welcome, {{#if user.username}}{{user.username}}{{else}}Trisna{{/if}}
+        Welcome,{{user.username}}
       </h1>
       <p class="font-montserrat font-normal text-[20px] text-[#003060] leading-none">
         Below is your profile information.
@@ -19,7 +19,7 @@
         {{#if user.profile}}
           <img src="{{user.profile}}" alt="Profile" class="w-full h-full object-cover rounded-full">
         {{else}}
-          <span class="font-montserrat font-medium text-[20px] leading-none">TR</span>
+          <span class="font-montserrat font-medium text-white text-[20px] leading-none">{{substring user.username 0 2}}</span>
         {{/if}}
       </div>
       <button 
@@ -40,7 +40,7 @@
         </label>
         <input 
           type="text" 
-          value="{{#if user.username}}{{user.username}}{{else}}Trisna{{/if}}" 
+          value="{{user.username}}" 
           placeholder="Input Your Username" 
           class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
         >
@@ -53,7 +53,7 @@
         </label>
         <input 
           type="email" 
-          value="{{#if user.email}}{{user.email}}{{else}}trisna123@gmail.com{{/if}}" 
+          value="{{user.email}}" 
           placeholder="Input Your Email" 
           class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
         >
@@ -93,6 +93,7 @@
         <input 
           type="text" 
           required 
+          value="{{user.biodata.fullName}}"
           placeholder="Input Your Full Name" 
           class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
         >
@@ -105,6 +106,7 @@
         </label>
         <input 
           type="text" 
+          value="{{user.biodata.city}}"
           placeholder="Input Your City" 
           class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
         >
@@ -119,16 +121,16 @@
             Education
           </label>
           <div class="relative w-full custom-dropdown" id="dropdown-education">
-            <input type="hidden" id="education-input" name="education" value="">
-            
-            <button 
-              type="button" 
+            <input type="hidden" id="education-input" name="education" value="{{user.biodata.education}}">
+
+            <button
+              type="button"
               class="dropdown-trigger w-full h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer transition-all duration-200"
               aria-expanded="false"
               aria-haspopup="listbox"
             >
-              <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">
-                Select Your Education Level
+              <span class="dropdown-label font-montserrat font-medium text-xl {{#if user.biodata.education}}text-black{{else}}text-[#676767]{{/if}} truncate pr-4">
+                {{#if user.biodata.education}}{{user.biodata.education}}{{else}}Select Your Education Level{{/if}}
               </span>
               <div class="size-[24px] flex items-center justify-center flex-shrink-0">
                 <i class="dropdown-chevron text-sm text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
@@ -162,6 +164,7 @@
           </label>
           <input 
             type="text" 
+            value="{{user.biodata.studyProgram}}"
             placeholder="Input Your Studi Program" 
             class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
           >
@@ -173,16 +176,16 @@
             Gender
           </label>
           <div class="relative w-full custom-dropdown" id="dropdown-gender">
-            <input type="hidden" id="gender-input" name="gender" value="">
-            
-            <button 
-              type="button" 
+            <input type="hidden" id="gender-input" name="gender" value="{{user.biodata.gender}}">
+
+            <button
+              type="button"
               class="dropdown-trigger w-full h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer transition-all duration-200"
               aria-expanded="false"
               aria-haspopup="listbox"
             >
-              <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">
-                Select Your Gender
+              <span class="dropdown-label font-montserrat font-medium text-xl {{#if user.biodata.gender}}text-black{{else}}text-[#676767]{{/if}} truncate pr-4">
+                {{#if user.biodata.gender}}{{user.biodata.gender}}{{else}}Select Your Gender{{/if}}
               </span>
               <div class="size-[24px] flex items-center justify-center flex-shrink-0">
                 <i class="dropdown-chevron text-sm text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
@@ -210,6 +213,7 @@
           </label>
           <input 
             type="tel" 
+            value="{{user.biodata.no}}"
             placeholder="Input Your WhatsApp Number" 
             class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-slate-700 placeholder:text-slate-400 transition-colors"
           >
@@ -376,6 +380,18 @@
           toggleDropdown(false);
         }
       });
+
+      // Reflect pre-saved value on load (from server-rendered hidden input)
+      const savedValue = hiddenInput ? hiddenInput.value : '';
+      if (savedValue) {
+        const match = Array.from(options).find(o => o.getAttribute('data-value') === savedValue);
+        if (match) {
+          label.textContent = savedValue;
+          label.classList.remove('text-[#676767]');
+          label.classList.add('text-black');
+          match.setAttribute('aria-selected', 'true');
+        }
+      }
     });
   });
 </script>
