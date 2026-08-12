@@ -1,12 +1,11 @@
 <section 
-  class="relative z-10 w-full font-montserrat min-h-[850px] lg:min-h-[920px] pt-14 sm:pt-16 pb-[480px] sm:pb-[540px] lg:pb-[600px] bg-[#FAFAFA] overflow-hidden"
+  class="relative z-10 w-full font-montserrat min-h-[calc(100vh-80px)] flex flex-col justify-end bg-[#FAFAFA] overflow-hidden pt-12 lg:pt-16 pb-0"
   x-data="{
     currentIndex: 0,
     intervalId: null,
     images: [
-      '/public/image/freeProgram/bg2.png',
       '/public/image/freeProgram/bg1.png',
-      '/public/image/freeProgram/bg4.png',
+      '/public/image/freeProgram/bg2.png',
       '/public/image/freeProgram/bg3.png'
     ],
     init() {
@@ -24,59 +23,61 @@
       // Continuous loop: hold briefly (2.5s) + 0.5s smooth crossfade transition
       this.intervalId = setInterval(() => {
         this.currentIndex = (this.currentIndex + 1) % this.images.length;
-      }, 3000);
+      }, 1500);
     }
   }"
 >
   <!-- Animated Background Stack Layers (bg2 -> bg1 -> bg4 -> bg3) -->
   <div class="absolute inset-0 z-0 w-full h-full pointer-events-none select-none overflow-hidden">
     <img 
-      src="/public/image/freeProgram/bg2.png" 
+      src="/public/image/freeProgram/bg1.png" 
       alt="" 
       class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
       :class="currentIndex === 0 ? 'opacity-100' : 'opacity-0'"
     />
     <img 
-      src="/public/image/freeProgram/bg1.png" 
+      src="/public/image/freeProgram/bg2.png" 
       alt="" 
       class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
       :class="currentIndex === 1 ? 'opacity-100' : 'opacity-0'"
     />
     <img 
-      src="/public/image/freeProgram/bg4.png" 
+      src="/public/image/freeProgram/bg3.png" 
       alt="" 
       class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
       :class="currentIndex === 2 ? 'opacity-100' : 'opacity-0'"
     />
-    <img 
-      src="/public/image/freeProgram/bg3.png" 
-      alt="" 
-      class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
-      :class="currentIndex === 3 ? 'opacity-100' : 'opacity-0'"
-    />
+
   </div>
 
-  <!-- Content Container (Static, Sharp & Above Background) -->
-  <div class="relative z-10 container mx-auto my-20 px-6 max-w-[1320px] text-center flex flex-col items-center">
+  <!-- Content Container (Left Aligned Wide Text + Flush-to-Bottom Right Image) -->
+  <div class="relative z-10 container mx-auto mt-32 px-6 sm:px-10 lg:px-12 max-w-[1440px] xl:max-w-[1536px] w-full flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between gap-6 lg:gap-8 pt-8">
     
-    <!-- Title -->
-    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl text-[#000000] leading-none tracking-normal text-center mb-4">
-      Free Short Classes to Boost Your Career
-    </h1>
+    <!-- Left Column: Title & Button (Vertically centered) -->
+    <div class="flex-1 max-w-[960px] flex flex-col items-start text-left mb-10 lg:mb-64 self-center lg:self-center">
+      <!-- Title -->
+      <h1 class="font-montserrat font-semibold text-3xl sm:text-5xl lg:text-[70px] text-[#000000] leading-tight lg:leading-[85px] tracking-normal text-left mb-8">
+        Free Short Classes to <br class="hidden sm:inline"> Boost Your Career <br class="hidden sm:inline"> With Kesatria Academy
+      </h1>
 
-    <!-- Subtitle -->
-    <p class="font-sans font-normal text-base sm:text-lg lg:text-xl leading-relaxed lg:leading-[45px] tracking-normal text-center text-[#000000] max-w-3xl mx-auto mb-8">
-      Learn practical skills from industry experts through our free short class.
-    </p>
+      <!-- View Program Button -->
+      <button
+        onclick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
+        class="inline-flex items-center justify-center gap-[10px] bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-8 w-full sm:w-[281px] h-[54px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer"
+      >
+        <span class="font-montserrat font-medium text-lg sm:text-[25px] leading-none tracking-normal text-center">View Program</span>
+        <i class="fa-solid fa-arrow-down text-base sm:text-lg"></i>
+      </button>
+    </div>
 
-    <!-- View Program Button -->
-    <button
-      onclick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
-      class="inline-flex items-center justify-center gap-[10px] bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-[10px] w-full sm:w-[281px] h-[54px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer"
-    >
-      <span class="font-montserrat font-medium text-lg sm:text-[25px] leading-none tracking-normal text-center">View Program</span>
-      <i class="fa-solid fa-arrow-down text-base sm:text-lg"></i>
-    </button>
+    <!-- Right Column: Kylian Mbappé Render Image (Mepet Kebawah / Flush to Bottom) -->
+    <div class="w-full lg:w-auto flex justify-center lg:justify-end flex-shrink-0 self-end">
+      <img 
+        src="/public/image/freeProgram/mbambabawatempe.png" 
+        alt="Kylian Mbappé" 
+        class="max-h-[420px] sm:max-h-[520px] lg:max-h-[620px] xl:max-h-[660px] w-auto object-contain object-bottom drop-shadow-2xl transition-transform duration-300 hover:scale-102"
+      >
+    </div>
 
   </div>
 </section>
