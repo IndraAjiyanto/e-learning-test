@@ -14,8 +14,8 @@
     <!-- Course Cards Grid -->
     <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-start">
       
-      {{#if freeCourses.length}}
-        {{#each freeCourses}}
+      {{#if courses.length}}
+        {{#each courses}}
         <div class="w-full max-w-[549px] bg-white border border-slate-200/80 rounded-[20px] shadow-[0px_2px_10px_rgba(0,0,0,0.06)] p-6 sm:p-7 flex flex-col justify-between group">
           
           <div>
@@ -43,10 +43,10 @@
                   <i class="fa-regular fa-clock text-xs text-[#003060]"></i> {{#if this.day}}{{this.day}} Day{{else}}1 Day{{/if}}
                 </span>
                 <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-location-dot text-xs text-[#003060]"></i> Offline
+                  <i class="fa-solid fa-location-dot text-xs text-[#003060]"></i> {{this.method}}
                 </span>
                 <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> 100 Students
+                  <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> {{this.quota}} Students
                 </span>
               </div>
             </div>
@@ -55,7 +55,7 @@
           <!-- Card Action Button -->
           <div class="w-full pt-2">
             <a 
-              href="/program/{{this.slug}}" 
+              href="/program/{{this.id}}" 
               class="w-full h-[64px] sm:h-[72px] flex items-center justify-center gap-3 bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-2.5 shadow-md hover:shadow-lg transition-all duration-300"
             >
               <span class="font-montserrat font-medium text-lg sm:text-[22px] leading-none tracking-normal text-center">Detail Program</span>
