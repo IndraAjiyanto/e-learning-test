@@ -18,7 +18,7 @@
         <div class="w-full max-w-[465px] min-h-[686px] bg-white border border-gray-200/80 rounded-[24px] px-6 py-9 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] flex flex-col gap-[25px] group hover:shadow-md transition-all duration-300">
           <div>
             <div class="w-[125px] h-[47px] p-[10px] gap-[10px] rounded-[6px] bg-[#0B1F3B1A] text-[#003060] font-montserrat font-semibold text-sm flex items-center justify-center mb-4 uppercase">
-              {{../category.name}}
+              BATCH 6.2
             </div>
             <div class="w-full max-w-[414px] h-[262px] rounded-[12px] overflow-hidden bg-gray-100 mb-6">
               <img 
@@ -39,10 +39,11 @@
                   <i class="fa-solid fa-location-dot text-[12px] text-[#003060]"></i> {{#if (eq this.method 'online')}}Online{{else}}Offline{{/if}}
                 </span>
                 <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
-                  <i class="fa-solid fa-graduation-cap text-[12px] text-[#003060]"></i> {{#if this.month}}{{this.month}} Bulan{{else}}—{{/if}}
+                  <i class="fa-solid fa-graduation-cap text-[12px] text-[#003060]"></i> {{#if this.month}}{{this.month}} Bulan{{else}}—{{/if}}<p>Months</p>
                 </span>
                 <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
-                  <i class="fa-solid fa-user text-[12px] text-[#003060]"></i> {{#if this.quota}}{{this.quota}}{{else}}—{{/if}}
+                  <i class="fa-solid fa-couch text-[12px] text-[#003060]"></i> {{#if this.quota}}{{this.quota}}{{else}}—{{/if}}
+                  <p>Students</p>
                 </span>
               </div>
             </div>
