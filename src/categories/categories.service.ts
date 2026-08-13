@@ -133,11 +133,16 @@ export class CategoriesService {
   }
 
   async findGalleryByCategory(categoryId: number) {
-    return await this.galleryRepository.find({
+    const gallery = await this.galleryRepository.find({
       where: { category: { id: categoryId } },
-      order: { id: 'DESC' },
+      order: { no: 'ASC' },
       take: 6,
     });
+
+    return gallery.reduce((items, item) => {
+      items[Number(item.no) - 1] = item;
+      return items;
+    }, Array(6).fill(null));
   }
 
   async findPortfolioByCategory(categoryId: number) {

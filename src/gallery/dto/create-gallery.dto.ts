@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { noGallery } from 'src/entities/types/no-gallery';
 
 export class CreateGalleryDto {
   @IsOptional()
@@ -17,4 +18,7 @@ export class CreateGalleryDto {
   @Type(() => Number)
   @IsInt()
   categoryId?: number;
+
+  @IsEnum([ '1', '2', '3', '4', '5', '6' ])
+  no:noGallery
 }
