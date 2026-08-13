@@ -126,7 +126,7 @@ export class CategoriesController {
         gallery,
       });
     } else if (category?.type === 'Free Program') {
-        res.render('free_program', { category, user: req.user, courses, alumni, gallery });
+        res.render('free_program', { category, user: req.user, courses, benefit_category,alumni, gallery });
       
     }
   }

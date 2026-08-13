@@ -94,7 +94,7 @@
     <h1 class='text-2xl font-bold text-gray-800 mb-6'>Create Benefit Category</h1>
 
     <form
-      action='/benefit_category/{{kategoriId}}'
+      action='/benefit_category/{{categoryId}}'
       method='post'
       class='space-y-6'
       x-data="{ loading: false }"
@@ -115,7 +115,7 @@
           <span x-show="!loading">Create</span>
         </button>
         <a
-          href='/category/{{kategoriId}}'
+          href='/category/{{categoryId}}'
           :disabled='loading'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100'"
           class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white transition'>
