@@ -88,6 +88,27 @@
 
     <div>
       <label
+        for='no'
+        class='block text-sm text-gray-900 font-medium mb-2'
+      >No</label>
+      <select
+        id='no'
+        name='no'
+        required
+        class='w-full border border-gray-300 text-gray-900 bg-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900'
+      >
+        <option value='' disabled>Select No</option>
+        <option value='1' {{#if (eq gallery.no '1')}}selected{{/if}}>1</option>
+        <option value='2' {{#if (eq gallery.no '2')}}selected{{/if}}>2</option>
+        <option value='3' {{#if (eq gallery.no '3')}}selected{{/if}}>3</option>
+        <option value='4' {{#if (eq gallery.no '4')}}selected{{/if}}>4</option>
+        <option value='5' {{#if (eq gallery.no '5')}}selected{{/if}}>5</option>
+        <option value='6' {{#if (eq gallery.no '6')}}selected{{/if}}>6</option>
+      </select>
+    </div>
+
+    <div>
+      <label
         for='title'
         class='block text-sm text-gray-900 font-medium mb-2'
       >Title</label>
