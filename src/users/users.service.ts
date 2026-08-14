@@ -174,7 +174,7 @@ async findAllPaginated(params: {
   // ============================================
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const { email } = forgotPasswordDto;
+    const email = forgotPasswordDto.email.trim();
 
     const user = await this.userRepository.findOne({ where: { email } });
 
