@@ -77,7 +77,7 @@ async function bootstrap() {
         array: function (...args: any[]) {
           return args.slice(0, -1);
         },
-        lookup: (str: any[], index: number) => str[index],
+        lookup: (str: any[], index: number) => (str ? str[index] : ''),
 
         // Helper untuk string
         substring: (str: string, start: number, end: number) => {
