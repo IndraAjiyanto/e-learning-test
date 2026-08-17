@@ -4,10 +4,10 @@
     <!-- Section Heading & Subtitle -->
     <div class="w-full max-w-4xl text-center mb-12 sm:mb-16">
       <h2 class="font-montserrat font-bold text-2xl sm:text-3xl lg:text-[40px] text-[#003060] leading-tight mb-4">
-        <span class="text-[#6EB6E5]">Choose</span> Your Program In House Training
+        {{{t 'test.special_program.program.title'}}} In House Training
       </h2>
       <p class="font-['Open_Sans'] font-normal text-sm sm:text-base lg:text-[18px] text-gray-600 leading-relaxed">
-        Select the program that aligns with your goals and passion.
+        {{t 'test.special_program.program.description'}}
       </p>
     </div>
 
@@ -41,12 +41,12 @@
             {{/if}}
             {{#if this.month}}
             <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
-              <i class="fa-solid fa-clock text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.month}} <p>Months</p>
+              <i class="fa-solid fa-clock text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.month}} <p>{{t 'test.special_program.program.month'}}</p>
             </span>
             {{/if}}
             {{#if this.quota}}
             <span class="inline-flex items-center gap-[5px] h-[35px] bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center px-[10px] py-[10px] rounded-[6px]">
-              <i class="fa-solid fa-couch text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.quota}}<p>Students</p>
+              <i class="fa-solid fa-couch text-[12px] text-[#003060]" aria-hidden="true"></i> {{this.quota}}<p>{{t 'test.special_program.program.student'}}</p>
             </span>
             {{/if}}
           </div>
