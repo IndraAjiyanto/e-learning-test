@@ -33,7 +33,7 @@
       >
         <!-- Base Transparent Placeholder to Reserve Space -->
         <span class="opacity-0 font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap px-3 sm:px-4 py-1 sm:py-1.5">
-          {{t 'test.special_program.alumni.title2'}} House Training
+          {{t 'test.special_program.alumni.title2'}} {{category.name}}
         </span>
 
         <!-- Blue Stabilo Highlight Layer (Sweeps from Left 0% to 100% Width) -->
@@ -42,7 +42,7 @@
           :class="isHighlighted ? 'w-full' : 'w-0'"
         >
           <span class="font-montserrat font-semibold text-white text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap min-w-max px-3 sm:px-4 py-1 sm:py-1.5">
-            {{t 'test.special_program.alumni.title2'}} House Training
+            {{t 'test.special_program.alumni.title2'}} {{category.name}}
           </span>
         </span>
       </span>
