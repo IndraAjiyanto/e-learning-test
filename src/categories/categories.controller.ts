@@ -81,6 +81,7 @@ export class CategoriesController {
     @Res() res: Response,
   ) {
     const category = await this.categoriesService.findOneCategory(categoryName);
+    category.contact = category.contact?.replace(/^0/, '62')
     const benefit_category = await this.categoriesService.findBenefitByCategory(
       category.id,
     );
