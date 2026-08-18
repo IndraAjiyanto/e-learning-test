@@ -5,22 +5,44 @@
   style="background: linear-gradient(180deg, #FAFAFA 0%, #CEE5F6 50%, #FAFAFA 95%);"
   x-data="{
     isVisible: false,
+    words: ['NOW OPEN!'],
+    wordIndex: 0,
+    charIndex: 0,
+    currentText: '',
+    speed: 300,
     init() {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             this.isVisible = true;
+            if (this.charIndex === 0 && !this.currentText) {
+              this.type();
+            }
           }
         });
       }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
       observer.observe(this.$el);
+    },
+    type() {
+      const target = this.words[this.wordIndex];
+      if (this.charIndex < target.length) {
+        this.charIndex = Math.min(this.charIndex + 2, target.length);
+        this.currentText = target.substring(0, this.charIndex);
+        setTimeout(() => this.type(), this.speed);
+      } else {
+        setTimeout(() => {
+          this.currentText = '';
+          this.charIndex = 0;
+          setTimeout(() => this.type(), 500);
+        }, 3000);
+      }
     }
   }"
 >
   <div class="container mx-auto mt-10 px-4 sm:px-6 lg:px-8 max-w-[1541px]">
     
     <!-- Main Blue Banner Card -->
-    <div class="relative w-full bg-[#6EB6E5] rounded-[28px] sm:rounded-[36px] p-8 sm:p-12 lg:p-16 overflow-hidden min-h-[620px] lg:h-[744px] flex items-start justify-between shadow-sm">
+    <div class="relative w-full bg-[#6EB6E5] rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 lg:p-12 xl:p-16 overflow-hidden min-h-[580px] lg:min-h-[640px] xl:h-[744px] flex items-start justify-between shadow-sm">
       
       <!-- Tech Particles & Person Background Layer (Fade-In & Slide Up from Bottom to Top) -->
       <div 
@@ -35,92 +57,61 @@
         />
       </div>
 
-      <!-- Content Column (Left Side) -->
-      <div class="relative z-10 w-full lg:w-3/5 max-w-3xl text-left">
+      <!-- Content Column (Left Side) - Staggered Fade-in & Slide-up Animation -->
+      <div 
+        class="relative z-10 w-full lg:w-2/3 xl:w-3/5 max-w-3xl text-left transition-all duration-1000 ease-out delay-200"
+        :class="isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+      >
         
         <!-- Badge -->
-        <div class="w-[328px] h-[47px] rounded-[50px] p-[10px] gap-[10px] bg-[#0B1F3B1A] flex items-center justify-center mb-7 shadow-xs text-white font-montserrat font-semibold text-sm sm:text-base">
-          <i class="fas fa-graduation-cap text-base"></i>
+        <div class="w-[280px] sm:w-[328px] h-[40px] sm:h-[47px] rounded-[50px] p-[10px] gap-[10px] bg-[#0B1F3B1A] flex items-center justify-center mb-4 lg:mb-6 xl:mb-8 shadow-xs text-[#003060] font-montserrat font-semibold text-xs sm:text-base md:text-xl">
+          <i class="fas fa-graduation-cap text-[#003060] text-sm sm:text-base md:text-xl"></i>
           <span>ENROLLMENT OPEN</span>
         </div>
 
         <!-- Huge Main Title -->
-        <h1 class="font-montserrat font-semibold text-[32px] sm:text-[40px] lg:text-[50px] leading-snug lg:leading-[70px] tracking-normal text-white uppercase">
-          {{category.name}}<br />
-          <span class="text-[#003060]">NOW OPEN!</span>
+        <h1 class="font-montserrat font-semibold text-[28px] sm:text-[36px] lg:text-[42px] xl:text-[50px] leading-tight lg:leading-[54px] xl:leading-[70px] tracking-normal uppercase mb-4 lg:mb-6 xl:mb-8">
+          <span class="text-white block">BOOTCAMP BATCH 6.2</span>
+          <span class="text-[#003060] block min-h-[1.2em]">
+            <span x-text="currentText">NOW OPEN!</span><span class="text-white font-light">|</span>
+          </span>
         </h1>
 
         <!-- Subtitle -->
-        <p class="font-sans font-normal text-base sm:text-lg lg:text-xl leading-relaxed lg:leading-[30px] tracking-normal text-white/90 mb-7 max-w-xl">
-          {{getByLang category.description lang}}
+        <p class="font-sans font-normal text-base sm:text-lg lg:text-xl xl:text-[30px] leading-relaxed xl:leading-[35px] tracking-normal text-white mb-6 lg:mb-8 xl:mb-12 max-w-xl xl:max-w-2xl">
+          {{#if category.description}}
+            {{getByLang category.description lang}}
+          {{else}}
+            Join our next cohort and accelerate your<br />
+            career with industry-led learning and real<br />
+            projects.
+          {{/if}}
         </p>
 
-        <!-- Buttons Row -->
-        <div class="flex flex-wrap items-center gap-4 mb-14">
+        <!-- Buttons Row (Slide Up Animation matching Background Layer) -->
+        <div 
+          class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-6 xl:mb-14 max-w-full transition-all duration-[1900ms] ease-out"
+          :class="isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[100%]'"
+        >
           <button
             onclick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth' }) : window.scrollTo({ top: 700, behavior: 'smooth' })"
-            class="w-full sm:w-[370px] h-[85px] p-[10px] gap-[10px] rounded-[12px] bg-[#003060] text-white font-montserrat font-medium text-lg sm:text-[25px] leading-none tracking-normal inline-flex items-center justify-center transition-all duration-300 shadow-md cursor-pointer"
+            class="w-full sm:flex-1 sm:max-w-[370px] h-[52px] sm:h-[65px] xl:h-[85px] p-[10px] gap-[10px] rounded-[12px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-base sm:text-lg lg:text-xl xl:text-[25px] leading-none tracking-normal inline-flex items-center justify-center transition-all duration-300 shadow-md cursor-pointer hover:scale-[1.02] active:scale-95 whitespace-nowrap"
           >
             <span>Explore Learning Path</span>
-            <i class="fas fa-arrow-down text-lg sm:text-xl"></i>
+            <i class="fas fa-arrow-down text-base sm:text-lg xl:text-xl"></i>
           </button>
 
           <a
             href="https://wa.me/"
             target="_blank"
-            class="w-full sm:w-[370px] h-[85px] p-[10px] gap-[10px] rounded-[12px] border border-white bg-transparent text-white font-montserrat font-medium text-lg sm:text-[25px] leading-none tracking-normal inline-flex items-center justify-center shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300"
+            class="w-full sm:flex-1 sm:max-w-[370px] h-[52px] sm:h-[65px] xl:h-[85px] p-[10px] gap-[10px] rounded-[12px] border border-white bg-transparent text-white font-montserrat font-medium text-base sm:text-lg lg:text-xl xl:text-[25px] leading-none tracking-normal inline-flex items-center justify-center shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 hover:bg-white/10 hover:scale-[1.02] active:scale-95 whitespace-nowrap"
           >
-            <i class="fas fa-headset text-lg sm:text-2xl"></i>
+            <i class="fas fa-headset text-base sm:text-xl xl:text-2xl"></i>
             <span>Consultation</span>
           </a>
         </div>
 
-        <!-- 4 Info Features Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-          
-          <!-- Item 1 -->
-          <div class="flex items-center gap-2.5">
-            <div class="w-12 h-12 rounded-full bg-[#FFFFFF1A] backdrop-blur-md flex items-center justify-center shrink-0">
-              <img src="/public/image/paidProgram/registration.svg" alt="Registration" class="w-6 h-6 object-contain" />
-            </div>
-            <div>
-              <h4 class="font-sans font-semibold text-white text-lg sm:text-[25px] leading-none tracking-normal mb-2">Registration</h4>
-              <p class="font-sans font-normal text-sm sm:text-lg text-white/80 leading-none tracking-normal">05 Maret - 21 April 2026</p>
-            </div>
-          </div>
-
-          <!-- Item 2 -->
-          <div class="flex items-center gap-2.5">
-            <div class="w-12 h-12 rounded-full bg-[#FFFFFF1A] backdrop-blur-md flex items-center justify-center shrink-0">
-              <img src="/public/image/paidProgram/startlearning.svg" alt="Start Learning" class="w-6 h-6 object-contain" />
-            </div>
-            <div>
-              <h4 class="font-sans font-semibold text-white text-lg sm:text-[25px] leading-none tracking-normal mb-2">Start Learning</h4>
-              <p class="font-sans font-normal text-sm sm:text-lg text-white/80 leading-none tracking-normal">21 April - 21 Juli 2026</p>
-            </div>
-          </div>
-
-          <!-- Item 3 -->
-          <div class="flex items-center gap-2.5">
-            <div class="w-12 h-12 rounded-full bg-[#FFFFFF1A] backdrop-blur-md flex items-center justify-center shrink-0">
-              <img src="/public/image/paidProgram/limited.svg" alt="Limited Seats" class="w-6 h-6 object-contain" />
-            </div>
-            <div>
-              <h4 class="font-sans font-semibold text-white text-lg sm:text-[25px] leading-none tracking-normal mb-2">Limited Seats</h4>
-              <p class="font-sans font-normal text-sm sm:text-lg text-white/80 leading-none tracking-normal">Don't miss out!</p>
-            </div>
-          </div>
-
-          <!-- Item 4 -->
-          <div class="flex items-center gap-2.5">
-            <div class="w-12 h-12 rounded-full bg-[#FFFFFF1A] backdrop-blur-md flex items-center justify-center shrink-0">
-              <img src="/public/image/paidProgram/trnscript.svg" alt="Transcript Distribution" class="w-6 h-6 object-contain" />
-            </div>
-            <div>
-              <h4 class="font-sans font-semibold text-white text-lg sm:text-[25px] leading-none tracking-normal mb-2">Transcript Distribution</h4>
-              <p class="font-sans font-normal text-sm sm:text-lg text-white/80 leading-none tracking-normal">05 Maret - 21 April 2026</p>
-            </div>
-          </div>
+      
 
         </div>
 
