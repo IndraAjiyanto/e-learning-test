@@ -27,8 +27,21 @@ export class VoucherController {
 
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const vouchers = await this.voucherService.findAll();
-    // Key 'success' dan 'error' harus sesuai dengan yang dicek di sweetalert.hbs partial
+    const vouchersRaw = await this.voucherService.findAll();
+    const allUsers = await this.voucherService.findAllUsers();
+    
+    const vouchers = vouchersRaw.map(v => {
+      let targetLabel = 'Public (All Users)';
+      if (v.allowed_user_ids && v.allowed_user_ids.length > 0) {
+        const allowedNames = v.allowed_user_ids.map(id => {
+          const u = allUsers.find(user => user.id === id);
+          return u ? u.username : `ID:${id}`;
+        });
+        targetLabel = allowedNames.join(', ');
+      }
+      return { ...v, target_users_label: targetLabel };
+    });
+
     res.render('super_admin/voucher/index', {
       user: req.user,
       vouchers,
@@ -43,9 +56,11 @@ export class VoucherController {
   async formCreate(@Res() res: Response, @Req() req: Request) {
     // Kirim semua program ke view untuk ditampilkan di search-select Alpine.js
     const courses = await this.voucherService.findAllCourses();
+    const users = await this.voucherService.findAllUsers();
     res.render('super_admin/voucher/create', {
       user: req.user,
       courses,
+      users,
       error: req.flash('error')[0],
     });
   }
@@ -81,10 +96,12 @@ export class VoucherController {
       // voucher.courses sudah di-load untuk pre-fill search-select
       const voucher = await this.voucherService.findOne(id);
       const courses = await this.voucherService.findAllCourses();
+      const users = await this.voucherService.findAllUsers();
       res.render('super_admin/voucher/edit', {
         user: req.user,
         voucher,
         courses,
+        users,
         error: req.flash('error')[0],
       });
     } catch (error: any) {

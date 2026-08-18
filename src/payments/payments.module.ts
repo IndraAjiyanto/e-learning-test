@@ -13,6 +13,9 @@ import { WeekProgress } from 'src/entities/week_progress.entity';
 import { SessionProgress} from 'src/entities/session_progress.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { Session } from 'src/entities/session.entity';
+import { VoucherModule } from 'src/voucher/voucher.module';
+import { ApiPaymentController } from './api-payment.controller';
+import { ApiWebhookController } from './api-webhook.controller';
 
 @Module({
   imports: [
@@ -29,8 +32,9 @@ import { Session } from 'src/entities/session.entity';
       Session,
     ]),
     CommonModule,
+    VoucherModule,
   ],
-  controllers: [PaymentsController],
+  controllers: [PaymentsController, ApiPaymentController, ApiWebhookController],
   providers: [PaymentsService],
   exports: [PaymentsService],
 })

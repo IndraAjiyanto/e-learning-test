@@ -624,7 +624,7 @@ export class CoursesController {
         const kelass = await this.coursesService.allClassExcept(course.id);
         const studentList = await this.coursesService.sumStudent(course.id);
         if (course.checkPaid === false) {
-          res.render('detail_program/free_program/index', {
+          res.render('detail_program/paid_program/index', {
             user: req.user,
             course,
             kelass,
@@ -634,7 +634,7 @@ export class CoursesController {
             installments,
           });
         } else {
-          res.render('course/Bdetail', {
+          res.render('detail_program/paid_program/index', {
             user: req.user,
             course,
             kelass,

@@ -5,6 +5,8 @@ import {
   Body,
   Patch,
   Param,
+  ParseIntPipe,
+  NotFoundException,
   UseGuards,
   UseInterceptors,
   Res,
@@ -26,48 +28,105 @@ import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
+  // ======================== XENDIT REDIRECT PAGES ========================
+
+  @Roles('user')
+  @Get('success/:orderId')
+  async paymentSuccess(
+    @Param('orderId') orderId: string,
+    @Res() res: Response,
+    @Req() req: Request & { user?: any },
+  ) {
+    try {
+      const order = await this.paymentsService.getPaymentByUuid(orderId);
+      if (!order) {
+        req.flash('error', 'Order tidak ditemukan.');
+        return res.redirect('/');
+      }
+
+      const course = order.course;
+
+      res.render('payments/success', {
+        layout: 'main',
+        title: 'Pembayaran Berhasil',
+        order,
+        course,
+        user: req.user,
+        success: req.flash('success'),
+        error: req.flash('error'),
+      });
+    } catch (error: any) {
+      req.flash('error', 'Terjadi kesalahan.');
+      res.redirect('/');
+    }
+  }
+
+  @Roles('user')
+  @Get('failed/:orderId')
+  async paymentFailed(
+    @Param('orderId') orderId: string,
+    @Res() res: Response,
+    @Req() req: Request & { user?: any },
+  ) {
+    try {
+      const order = await this.paymentsService.getPaymentByUuid(orderId);
+      res.render('payments/failed', {
+        layout: 'main',
+        title: 'Pembayaran Gagal',
+        order,
+        user: req.user,
+        success: req.flash('success'),
+        error: req.flash('error'),
+      });
+    } catch (error: any) {
+      req.flash('error', 'Terjadi kesalahan.');
+      res.redirect('/');
+    }
+  }
+
+  // Simulasi webhook (khusus localhost / test mode)
+  @Roles('user')
+  @Post('simulate-payment/:orderId')
+  async simulatePayment(
+    @Param('orderId') orderId: string,
+    @Res() res: Response,
+    @Req() req: Request & { user?: any },
+  ) {
+    try {
+      await this.paymentsService.simulatePaymentSuccess(orderId);
+      req.flash('success', 'Pembayaran berhasil dikonfirmasi! Anda sekarang memiliki akses ke program.');
+      res.redirect(`/payment/success/${orderId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Gagal simulasi pembayaran.');
+      res.redirect(`/payment/success/${orderId}`);
+    }
+  }
+
   @Roles('user')
   @Post(':userId/:courseId')
-  @UseInterceptors(
-    FileInterceptor('file', multerConfigMemoryOnly),
-    ValidateImageInterceptor,
-  )
-  @ValidateImage({
-    maxSize: 5 * 1024 * 1024,
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-    folder: 'payment',
-  })
   async create(
-    @Param('userId') userId: number,
+    @Param('userId', ParseIntPipe) userId: number,
     @Param('courseId') courseId: number,
-    @Body() createPaymentDto: CreatePaymentDto,
+    @Body('paymentMethod') paymentMethod: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createPaymentDto.file = req.body.uploadedImageUrls?.[0];
-      createPaymentDto.courseId = courseId;
-      createPaymentDto.userId = userId;
-      createPaymentDto.process = 'process';
-      const payment =
-        await this.paymentsService.create(createPaymentDto);
-      if (payment == false) {
-        await this.paymentsService.deleteFile(createPaymentDto.file);
-        req.flash(
-          'info',
-          'You have already submitted the payment proof, please wait for further information from the admin.',
-        );
-        res.redirect(`/payment/history/${userId}`);
-      } else {
-        req.flash(
-          'success',
-          'Payment proof has been successfully submitted, please wait for the admin',
-        );
-        res.redirect(`/payment/history/${userId}`);
+      const orderData = await this.paymentsService.createXenditInvoice(
+        userId,
+        Number(courseId),
+        paymentMethod || 'XENDIT_UI',
+      );
+
+      if (orderData.payment_status === 'paid') {
+        req.flash('success', 'Pendaftaran berhasil!');
+        return res.redirect(`/payment/history/${userId}`);
       }
+
+      return res.redirect(orderData.xendit_invoice_url);
     } catch (error: any) {
-      req.flash('error', error.message || 'Payment proof submission failed');
-      res.redirect(`/payment/history/${userId}`);
+      req.flash('error', error.message || 'Payment initiation failed');
+      return res.redirect(`/payment/detail/${courseId}`);
     }
   }
 
@@ -84,7 +143,7 @@ export class PaymentsController {
   })
   async createInstallmentPayment(
     @Param('installmentsId') installmentsId: number,
-    @Param('userId') userId: number,
+    @Param('userId', ParseIntPipe) userId: number,
     @Param('courseId') courseId: number,
     @Body() createPaymentDto: CreatePaymentDto,
     @Res() res: Response,
@@ -121,21 +180,21 @@ export class PaymentsController {
 
  @Roles('user')
 @Get('api/payment/:userId')
-async getPayment(@Param('userId') userId: number, @Res() res: Response) {
+async getPayment(@Param('userId', ParseIntPipe) userId: number, @Res() res: Response) {
   const payment = await this.paymentsService.findPayment(userId);
   return res.json({ data: payment });
 }
 
 @Roles('user')
 @Get('api/registration/:userId')
-async getRegistration(@Param('userId') userId: number, @Res() res: Response) {
+async getRegistration(@Param('userId', ParseIntPipe) userId: number, @Res() res: Response) {
   const registration = await this.paymentsService.findRegistration(userId);
   return res.json({ data: registration });
 }
 
 @Roles('user')
 @Get('api/installment/:userId')
-async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
+async getInstallment(@Param('userId', ParseIntPipe) userId: number, @Res() res: Response) {
   const installments = await this.paymentsService.findInstallments(userId);
   return res.json({ data: installments });
 }
@@ -143,7 +202,7 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
   @Roles('user')
   @Get('history/:userId')
   async riwayat(
-    @Param('userId') userId: number,
+    @Param('userId', ParseIntPipe) userId: number,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -162,6 +221,20 @@ async getInstallment(@Param('userId') userId: number, @Res() res: Response) {
   ) {
     const course = await this.paymentsService.findCourse(courseId);
     res.render('user/payment', { user: req.user, course });
+  }
+
+  @Roles('user')
+  @Get('registration/:courseId')
+  async registrationPage(
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const course = await this.paymentsService.findCourse(courseId);
+    if (!course) {
+      throw new NotFoundException('Program tidak ditemukan');
+    }
+    res.render('payments/index', { user: req.user, course });
   }
 
   @Roles('super_admin')

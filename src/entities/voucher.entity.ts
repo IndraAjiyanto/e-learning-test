@@ -6,6 +6,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Generated,
 } from 'typeorm';
 import { Course } from './course.entity';
 import { Exclude } from 'class-transformer';
@@ -28,6 +29,13 @@ export class Voucher {
 
   @Column({ type: 'boolean', default: true })
   active: boolean;
+
+  @Column({ unique: true })
+  @Generated('uuid')
+  url_code: string;
+
+  @Column({ type: 'json', nullable: true })
+  allowed_user_ids: number[];
 
   @CreateDateColumn()
   createdAt: Date;

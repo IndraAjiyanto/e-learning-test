@@ -1,0 +1,78 @@
+<div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+  <div class="max-w-lg w-full bg-white rounded-2xl shadow-lg p-8 text-center">
+    
+    <!-- Success Icon -->
+    <div class="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+      <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </div>
+
+    {{#if (eq order.payment_status "paid")}}
+      <h1 class="text-2xl font-bold text-[#003060] mb-2">Pembayaran Berhasil! 🎉</h1>
+      <p class="text-gray-600 mb-6">Selamat! Pembayaran Anda telah dikonfirmasi. Anda sekarang memiliki akses penuh ke program berikut:</p>
+    {{else if (eq order.payment_status "free_confirmed")}}
+      <h1 class="text-2xl font-bold text-[#003060] mb-2">Pendaftaran Berhasil! 🎉</h1>
+      <p class="text-gray-600 mb-6">Anda mendapatkan akses gratis (100% diskon). Program berikut sudah tersedia:</p>
+    {{else}}
+      <h1 class="text-2xl font-bold text-[#003060] mb-2">Menunggu Konfirmasi Pembayaran</h1>
+      <p class="text-gray-600 mb-4">Pembayaran Anda sedang diproses. Status saat ini: <span class="font-semibold text-yellow-600">{{order.payment_status}}</span></p>
+      <p class="text-sm text-gray-500 mb-6">Halaman ini akan diperbarui setelah pembayaran terkonfirmasi oleh Xendit. Jika Anda sudah menyelesaikan pembayaran di halaman Xendit, silakan klik tombol di bawah untuk mengonfirmasi secara manual (Test Mode).</p>
+    {{/if}}
+
+    <!-- Order Details -->
+    <div class="bg-gray-50 rounded-xl p-5 mb-6 text-left space-y-3">
+      {{#if course}}
+      <div class="flex justify-between">
+        <span class="text-gray-500 text-sm">Program</span>
+        <span class="text-[#003060] font-semibold text-sm text-right max-w-[200px]">{{course.name}}</span>
+      </div>
+      {{/if}}
+      <div class="flex justify-between">
+        <span class="text-gray-500 text-sm">Total Bayar</span>
+        <span class="text-[#003060] font-bold">Rp{{order.final_total}}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500 text-sm">Metode</span>
+        <span class="text-gray-700 text-sm">{{order.payment_method}}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500 text-sm">Status</span>
+        {{#if (eq order.payment_status "paid")}}
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Lunas
+          </span>
+        {{else if (eq order.payment_status "free_confirmed")}}
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Gratis
+          </span>
+        {{else}}
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+            <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> {{order.payment_status}}
+          </span>
+        {{/if}}
+      </div>
+    </div>
+
+    {{#if (eq order.payment_status "paid")}}
+      <a href="/payment/history/{{user.id}}" class="block w-full h-[50px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-xl font-semibold text-base transition-colors shadow-sm leading-[50px]">
+        Lihat Riwayat Pembayaran
+      </a>
+    {{else if (eq order.payment_status "free_confirmed")}}
+      <a href="/payment/history/{{user.id}}" class="block w-full h-[50px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-xl font-semibold text-base transition-colors shadow-sm leading-[50px]">
+        Lihat Riwayat Pembayaran
+      </a>
+    {{else}}
+      <!-- Tombol Simulasi (Test Mode) -->
+      <form action="/payment/simulate-payment/{{order.uuid}}" method="POST" class="mb-3">
+        <button type="submit" class="w-full h-[50px] bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-base transition-colors shadow-sm">
+          ✅ Konfirmasi Pembayaran (Test Mode)
+        </button>
+      </form>
+      <a href="/payment/history/{{user.id}}" class="block text-[#003060] text-sm hover:underline">
+        Kembali ke Riwayat Pembayaran
+      </a>
+    {{/if}}
+
+  </div>
+</div>

@@ -7,6 +7,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Generated,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Course } from './course.entity';
@@ -50,6 +51,54 @@ export class Payment {
 
   @Column({nullable:true,})
   attend_program: boolean;
+
+  @Column({name:'user_email', nullable: true })
+  userEmail: string;
+
+  @Column({name:'user_name', nullable:true})
+  userName: string;
+
+  @Column({ name:'course_name', nullable:true})
+  courseName:string;
+
+  @Column({name:'voucher_code', nullable:true})
+  voucherCode:string;
+
+  @Column({type:'decimal', precision: 12, scale: 2,
+  nullable:true})
+  subtotal: number;
+
+  @Column({ type:'decimal', precision: 12, scale:2,
+  nullable:true, default: 0})
+  discount_amount: number;
+
+  @Column({ type: 'decimal', precision: 12, scale: 2,
+  nullable:true})
+  final_total: number;
+
+  @Column({ unique: true })
+  @Generated('uuid')
+  uuid: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['draft', 'pending_payment', 'paid', 'expired', 'failed'],
+    default: 'draft',
+    nullable: true
+  })
+  payment_status: string;
+
+  @Column({ nullable: true })
+  xendit_invoice_id: string;
+
+  @Column({ nullable: true })
+  xendit_invoice_url: string;
+
+  @Column({ nullable: true })
+  payment_method: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  paid_at: Date;
 
   @CreateDateColumn()
   createdAt: Date;
