@@ -1,0 +1,120 @@
+<section
+    x-data="{
+        activeIndex: null,
+        faqs: [
+            {
+                question: 'Apakah mitra harus mengikuti training terlebih dahulu sebelum mulai promosi?',
+                answer: 'Tidak. Mitra hanya perlu mengikuti sesi onboarding produk singkat (±1–2 jam), setelah itu dapat langsung memulai aktivitas pemasaran.'
+            },
+            {
+                question: 'Apakah mitra bertanggung jawab menyelesaikan proses closing?',
+                answer: 'Tidak. Tugas mitra adalah membawa calon peserta hingga tahap konsultasi/minat serius. Proses closing dan administrasi ditangani oleh tim admisi bootcamp.'
+            },
+            {
+                question: 'Apakah status mitra adalah karyawan tetap?',
+                answer: 'Bukan. Status mitra bersifat kemitraan lepas (freelance partner), bukan hubungan kerja formal, sehingga sesuai untuk mahasiswa aktif.'
+            },
+            {
+                question: 'Kapan komisi dicairkan?',
+                answer: 'Komisi dicairkan pada periode yang ditentukan (misalnya setiap tanggal 10 untuk closing bulan sebelumnya) melalui transfer bank atau e-wallet.'
+            },
+            {
+                question: 'Apakah ada target minimum yang wajib dipenuhi?',
+                answer: 'Tidak ada target wajib. Namun performa mitra menentukan tingkatan dan besaran komisi yang dapat diperoleh.'
+            },
+            {
+                question: 'Apakah mitra bisa dikeluarkan dari program?',
+                answer: 'Ya, apabila mitra terbukti melanggar kode etik pemasaran seperti spam atau memberikan informasi menyesatkan, tim pusat berhak memberi peringatan hingga memutus kemitraan.'
+            },
+            {
+                question: 'Bagaimana jika dua mitra membawa calon peserta yang sama?',
+                answer: 'Sistem tracking mencatat referral berdasarkan klik/kode pertama yang digunakan calon peserta (first-click attribution), sehingga komisi diberikan kepada mitra yang tercatat lebih dulu pada sistem.'
+            },
+        ]
+    }"
+    class="w-full bg-[url('/public/image/mpp/faq.png')] bg-cover bg-center py-16 lg:py-24"
+>
+    <div class="mx-auto max-w-[1728px] px-6 lg:px-12">
+        <div class="mb-14 text-center">
+            <h2 class=" text-[36px] font-bold leading-tight text-[#003060]">
+                FAQ
+            </h2>
+        </div>
+        <div class="mx-auto max-w-[1406px] space-y-4">
+            <template x-for="(faq, index) in faqs" :key="index">
+                <div class="overflow-hidden rounded-xl bg-white shadow-lg">
+                    <button
+                        type="button"
+                        @click="activeIndex = activeIndex === index ? null : index"
+                        :aria-expanded="activeIndex === index"
+                        :aria-controls="'faq-answer-' + index"
+                        class="group flex w-full items-center justify-between gap-6 px-6 py-5 text-left transition-colors duration-300 hover:bg-[#6EB6E5]/10 sm:px-8 sm:py-6"
+                    >
+                        <h3
+                            class="font-sans text-[25px] font-semibold leading-7 text-[#003060] sm:text-[20px] sm:leading-8 lg:text-[25px]"
+                            x-text="(index + 1) + '. ' + faq.question"
+                        ></h3>
+
+
+                        <span
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors duration-300"
+                        >
+                            <i
+                                class="fas fa-chevron-down text-[16px] text-[#003060] transition-transform duration-300"
+                                :class="activeIndex === index ? 'rotate-180' : ''"
+                            ></i>
+                        </span>
+
+                    </button>
+                    <div
+                        x-cloak
+                        x-show="activeIndex === index"
+                        x-collapse
+                        :id="'faq-answer-' + index"
+                        class="border-t border-gray-200"
+                    >
+                        <div class="px-6 py-5 sm:px-8 sm:py-6">
+                            <p
+                                class="font-sans text-[25px] leading-7 text-gray-900 sm:text-[18px] sm:leading-8 lg:text-[25px]"
+                                x-text="faq.answer"
+                            ></p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </template>
+
+        </div>
+
+        <div class="mx-auto mt-12 max-w-[1406px]">
+
+            <div class="rounded-2xl px-6 py-8 text-center sm:px-10">
+
+                <p class="font-sans text-[20px] text-gray-900 sm:text-[20px]">
+                    Punya pertanyaan lain? Gas tanya aja! 🚀
+                </p>
+
+                <p class="mt-2 font-sans text-[20px] text-gray-900 sm:text-[20px]">
+                    Jangan ragu buat hubungi tim kita kapan pun di:
+                </p>
+
+                <a
+                    href="https://wa.me/6289646834607"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="mx-auto mt-5 flex w-fit items-center gap-3 rounded-full px-5 py-3 transition-colors duration-300 hover:bg-green-100"
+                >
+                    <i class="fa-brands fa-whatsapp text-[28px] text-green-500"></i>
+
+                    <span class="font-sans text-[20px] font-semibold text-gray-900">
+                        +62 896 4683 4607
+                    </span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>

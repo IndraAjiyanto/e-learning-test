@@ -13,7 +13,7 @@
     
     <!-- Title with Animated Stabilo Highlight Sweep -->
     <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#000000] font-montserrat tracking-tight mb-6 flex flex-wrap items-center justify-center gap-2">
-      <span>Stories From</span>
+      <span>{{t 'test.special_program.alumni.title'}}</span>
       
       <span 
         class="relative inline-flex items-center justify-center overflow-hidden align-middle my-1"
@@ -33,7 +33,7 @@
       >
         <!-- Base Transparent Placeholder to Reserve Space -->
         <span class="opacity-0 font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap px-3 sm:px-4 py-1 sm:py-1.5">
-          Alumni In House Training
+          {{t 'test.special_program.alumni.title2'}} {{category.name}}
         </span>
 
         <!-- Blue Stabilo Highlight Layer (Sweeps from Left 0% to 100% Width) -->
@@ -42,7 +42,7 @@
           :class="isHighlighted ? 'w-full' : 'w-0'"
         >
           <span class="font-montserrat font-semibold text-white text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap min-w-max px-3 sm:px-4 py-1 sm:py-1.5">
-            Alumni In House Training
+            {{t 'test.special_program.alumni.title2'}} {{category.name}}
           </span>
         </span>
       </span>
@@ -50,7 +50,7 @@
     
     <!-- Subtitle -->
     <p class="text-base md:text-xl text-[#000000]/80 max-w-6xl mx-auto font-sans font-normal">
-      Hear how our in-house training programs have helped students gain practical skills, industry insights, and greater confidence for their future careers.
+      {{t 'test.special_program.alumni.description'}} 
     </p>
   </div>
 
@@ -162,13 +162,13 @@
     <!-- See All Link -->
     <div class="text-center mt-10">
       <p class="text-[#000000]/80 font-sans font-normal text-base md:text-xl mb-4">
-        And many more inspiring stories from our alumni
+        {{t 'test.special_program.alumni.footer'}}
       </p>
       <a
         href="/dashboard/alumni"
         class="inline-flex items-center gap-2 text-[#0B1F3B] font-normal text-base md:text-lg font-sans hover:underline"
       >
-        See all alumni stories
+                {{t 'test.special_program.alumni.allStories'}}
         <i class="fas fa-arrow-right text-sm"></i>
       </a>
     </div>

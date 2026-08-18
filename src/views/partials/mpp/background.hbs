@@ -1,0 +1,38 @@
+<section class="w-full bg-white py-16 lg:py-24">
+    <div class="container mx-auto px-6 lg:px-12 max-w-[1728px]">
+        <div class="flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-16">
+            <div class="w-full lg:w-1/2 flex flex-col gap-6 justify-center">
+                <h2 class="w-fit self-start text-2xl bg-[#6EB6E533] rounded-full border border-[#003060] text-[#003060] px-8 py-1 shadow-sm">Latar Belakang</h2>
+                <h1 class="text-[#003060] font-bold lg:text-[32px] leading-tight">
+                    Latar Belakang dan Konteks Pasar
+                </h1>
+                <p class="text-gray-900">Industri IT bootcamp di Indonesia tumbuh pesat seiring meningkatnya permintaan talenta digital, namun persaingan akuisisi peserta antar penyelenggara pelatihan turut meningkat. Di sisi lain, biaya akuisisi peserta (Cost per Acquisition) melalui kanal iklan berbayar konvensional cenderung terus naik, sementara tingkat kepercayaan calon peserta terhadap rekomendasi dari teman sebaya (peer recommendation) tetap tinggi.</p>
+                <div id="extra-content" class="hidden flex flex-col gap-6">
+                    <p class="text-gray-900">Pada saat yang sama, populasi mahasiswa aktif dan fresh graduate di Indonesia  merupakan segmen besar yang mencari penghasilan tambahan yang fleksibel, tidak terikat  jam kerja kantor, dan dapat dikerjakan di sela aktivitas kuliah atau pekerjaan lepas lainnya.  Kesesuaian antara kebutuhan bisnis (akuisisi peserta berbiaya efisien dan berbasis  kepercayaan) dengan kebutuhan target audiens (penghasilan tambahan fleksibel) menjadi  dasar rasional bagi perancangan program ini.</p>
+                </div>
+                <button id="toggle-btn" class="w-fit text-[#6EB6E5] font-semibold underline flex items-center gap-2"><span id="toggle-text">Lihat lebih</span><i id="toggle-icon" class="fas fa-chevron-down"></i></button>
+                <script>
+                    const btn = document.getElementById('toggle-btn');
+                    const extra = document.getElementById('extra-content');
+                    const text = document.getElementById('toggle-text');
+                    const icon = document.getElementById('toggle-icon');
+
+                    btn.onclick = () => {
+                        extra.classList.toggle('hidden');
+
+                        if (extra.classList.contains('hidden')) {
+                            text.innerText = 'Lihat lebih';
+                            icon.className = 'fas fa-chevron-down';
+                        } else {
+                            text.innerText = 'Lihat sedikit';
+                            icon.className = 'fas fa-chevron-up';
+                        }
+                    };
+                </script>
+            </div>
+            <div class="w-full lg:w-1/2">
+                <img src="/public/image/mpp/bg_background.png" alt="Latar Belakang">
+            </div>
+        </div>
+    </div>
+</section>

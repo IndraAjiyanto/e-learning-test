@@ -288,4 +288,9 @@ export class DashboardController {
 
     return res.render('partials/dashboard/gallery', { gallery, programs });
   }
+
+  @Get('mpp')
+  mpp(@Res() res: Response) {
+    return res.render('mpp');
+  }
 }

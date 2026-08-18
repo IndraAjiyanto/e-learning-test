@@ -257,6 +257,21 @@ isProgramActive() {
               </button>
 
               <div x-show='programOpen' x-collapse class='ml-4 mt-2 space-y-3'>
+                <a
+                  href='/dashboard/mpp'
+                  @click="setActive('/dashboard/mpp')"
+                  class='flex items-start rounded-xl p-3 border border-gray-300 hover:border-white/20 hover:bg-white/5 transition-all duration-300'
+                >
+                  <div
+                    class='w-[56px] h-[56px] bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
+                  >
+                    <i class='fas fa-gopuram text-white text-lg'></i>
+                  </div>
+                  <div class='flex-1 ml-3'>
+                    <p class='font-bold text-sm text-gray-900 text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                  </div>
+                </a>
                 <template x-for='kat in category' :key='kat.id'>
                   <a
                     :href="'/category/program/' + kat.name"
@@ -489,6 +504,22 @@ isProgramActive() {
               </button>
 
               <div x-show='programOpen' x-collapse class='ml-4 mt-2 space-y-3'>
+                <a
+                  href='/dashboard/mpp'
+                  @click="setActive('/dashboard/mpp')"
+                  class='flex items-start rounded-xl p-3 border border-gray-300 hover:border-gray-400 hover:bg-white/5 transition-all duration-300'
+                >
+                  <div
+                    class='w-[56px] h-[56px] bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
+                  >
+                    <i class='fas fa-gopuram text-white text-lg'></i>
+                  </div>
+                  <div class='flex-1 ml-3'>
+                    <p class='font-bold text-sm text-gray-900 text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+
+                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                  </div>
+                </a>
                 <template x-for='kat in category' :key='kat.id'>
                   <a
                     :href="'/category/program/' + kat.name"
@@ -683,6 +714,22 @@ isProgramActive() {
           >
             <div class='p-6 bg-white rounded-2xl shadow-xl border border-gray-100'>
               <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                 <a
+                  href='/dashboard/mpp'
+                  @click="setActive('/dashboard/mpp')"
+                  class='flex items-start rounded-xl p-3 border border-gray-300 hover:border-gray-400 hover:bg-white/5 transition-all duration-300'
+                >
+                  <div
+                    class='w-[56px] h-[56px] bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
+                  >
+                    <i class='fas fa-gopuram text-white text-lg'></i>
+                  </div>
+                  <div class='flex-1 ml-3'>
+                    <p class='font-bold text-sm text-gray-900 text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+
+                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                  </div>
+                </a>
                 <template x-for='kat in category' :key='kat.id'>
                   <a
                     :href="'/category/program/' + kat.name"
@@ -966,6 +1013,22 @@ isProgramActive() {
           >
             <div class='p-6 md:p-8 bg-white rounded-xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.25)] border border-gray-400'>
                   <div class='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
+                    <a
+                  href='/dashboard/mpp'
+                  @click="setActive('/dashboard/mpp')"
+                  class='flex items-start rounded-xl p-3 border border-gray-300 hover:border-gray-400 hover:bg-white/5 transition-all duration-300'
+                >
+                  <div
+                    class='w-[56px] h-[56px] bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
+                  >
+                    <i class='fas fa-gopuram text-white text-lg'></i>
+                  </div>
+                  <div class='flex-1 ml-3'>
+                    <p class='font-bold text-sm text-gray-900  text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+
+                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                  </div>
+                </a>
                       <template x-for='kat in category' :key='kat.id'>
                               <a
                                 :href="'/category/program/' + kat.name"
