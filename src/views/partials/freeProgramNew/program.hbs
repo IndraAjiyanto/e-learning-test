@@ -4,10 +4,10 @@
     <!-- Section Header -->
     <div class="text-center mb-14">
       <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl text-[#6EB6E5] leading-none tracking-normal text-center mb-7">
-        {{category.name}} <span class="text-black">for You</span>
+        {{category.name}} <span class="text-black">{{t 'test.categoryFreeProgram.program.title'}}</span>
       </h2>
       <p class="font-sans font-normal text-base sm:text-lg lg:text-xl leading-relaxed lg:leading-[45px] tracking-normal text-center text-black/80 max-w-auto mx-auto">
-        Choose the {{category.name}} that matches your interest and start learning practical skills.
+        {{t 'test.categoryFreeProgram.program.description1'}} {{category.name}} {{t 'test.categoryFreeProgram.program.description2'}}
       </p>
     </div>
 
@@ -37,13 +37,16 @@
               <!-- Badges Row -->
               <div class="flex flex-wrap items-center gap-[20px] mb-8">
                 <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-regular fa-clock text-xs text-[#003060]"></i> {{#if this.day}}{{this.day}} Day{{else}}1 Day{{/if}}
+                  <i class="fa-solid fa-tag text-xs text-[#003060]"></i> {{t 'test.categoryFreeProgram.program.free'}} 
+                </span>
+                <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
+                  <i class="fa-regular fa-clock text-xs text-[#003060]"></i> {{#if this.day}}{{this.day}} {{t 'test.categoryFreeProgram.program.day'}}{{else}}1 {{t 'test.categoryFreeProgram.program.day'}}{{/if}}
                 </span>
                 <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
                   <i class="fa-solid fa-location-dot text-xs text-[#003060]"></i> {{this.method}}
                 </span>
                 <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> {{this.quota}} Students
+                  <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> {{this.quota}} {{t 'test.categoryFreeProgram.program.students'}}
                 </span>
               </div>
             </div>
@@ -55,7 +58,7 @@
               href="/program/{{this.id}}" 
               class="w-full h-[64px] sm:h-[72px] flex items-center justify-center gap-3 bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-2.5 shadow-md hover:shadow-lg transition-all duration-300"
             >
-              <span class="font-montserrat font-medium text-lg sm:text-[22px] leading-none tracking-normal text-center">Detail Program</span>
+              <span class="font-montserrat font-medium text-lg sm:text-[22px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.program.detailProgram'}}</span>
               <i class="fa-solid fa-arrow-right text-base sm:text-lg"></i>
             </a>
           </div>
@@ -86,16 +89,16 @@
               <!-- Badges Row -->
               <div class="flex flex-wrap items-center gap-[20px] mb-9">
                 <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-tag text-xs text-[#003060]"></i> Free
+                  <i class="fa-solid fa-tag text-xs text-[#003060]"></i> {{t 'test.categoryFreeProgram.program.free'}}
                 </span>
                 <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-regular fa-clock text-xs text-[#003060]"></i> 1 Day
+                  <i class="fa-regular fa-clock text-xs text-[#003060]"></i> 1 {{t 'test.categoryFreeProgram.program.day'}}
                 </span>
                 <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
                   <i class="fa-solid fa-location-dot text-xs text-[#003060]"></i> Offline
                 </span>
                 <span class="inline-flex items-center gap-2 bg-[#CFE6F5] text-[#003060] font-sans font-normal text-[15px] leading-none text-center p-2.5 rounded-[8px]">
-                  <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> 100 Students
+                  <i class="fa-solid fa-graduation-cap text-xs text-[#003060]"></i> 100 {{t 'test.categoryFreeProgram.program.students'}}
                 </span>
               </div>
             </div>
@@ -107,7 +110,7 @@
               href="#program" 
               class="w-full h-[64px] sm:h-[72px] flex items-center justify-center gap-3 bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-2.5 shadow-md hover:shadow-lg transition-all duration-300"
             >
-              <span class="font-montserrat font-medium text-lg sm:text-[22px] leading-none tracking-normal text-center">Detail Program</span>
+              <span class="font-montserrat font-medium text-lg sm:text-[22px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.program.detailProgram'}}</span>
               <i class="fa-solid fa-arrow-right text-base sm:text-lg"></i>
             </a>
           </div>

@@ -13,7 +13,7 @@
     
     <!-- Title with Animated Stabilo Highlight Sweep -->
     <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#000000] font-montserrat tracking-tight mb-6 flex flex-wrap items-center justify-center gap-2">
-      <span>Stories From</span>
+      <span>{{t 'test.categoryFreeProgram.alumni.title'}}</span>
       
       <span 
         class="relative inline-flex items-center justify-center overflow-hidden align-middle my-1"
@@ -50,7 +50,7 @@
     
     <!-- Subtitle -->
     <p class="text-base md:text-xl text-[#000000]/80 max-w-6xl mx-auto font-sans font-normal">
-      See what our participants have to say about their learning experience and the impact of our {{category.name}}.
+      {{t 'test.categoryFreeProgram.alumni.description'}} {{category.name}}.
     </p>
   </div>
 
@@ -159,13 +159,13 @@
     <!-- See All Link -->
     <div class="text-center mt-10">
       <p class="text-[#000000]/80 font-sans font-normal text-base md:text-xl mb-4">
-        And many more inspiring stories from our alumni
+        {{t 'test.categoryFreeProgram.alumni.footer'}}
       </p>
       <a
         href="/dashboard/alumni"
         class="inline-flex items-center gap-2 text-[#0B1F3B] font-normal text-base md:text-lg font-sans hover:underline"
       >
-        See all alumni stories
+        {{t 'test.categoryFreeProgram.alumni.allStories'}}
         <i class="fas fa-arrow-right text-sm"></i>
       </a>
     </div>
