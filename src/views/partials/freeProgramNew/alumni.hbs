@@ -33,7 +33,7 @@
       >
         <!-- Base Transparent Placeholder to Reserve Space -->
         <span class="opacity-0 font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap px-3 sm:px-4 py-1 sm:py-1.5">
-          Alumni Short Class
+          Alumni {{category.name}}
         </span>
 
         <!-- Blue Stabilo Highlight Layer (Sweeps from Left 0% to 100% Width) -->
@@ -42,7 +42,7 @@
           :class="isHighlighted ? 'w-full' : 'w-0'"
         >
           <span class="font-montserrat font-semibold text-white text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap min-w-max px-3 sm:px-4 py-1 sm:py-1.5">
-            Alumni Short Class
+            Alumni {{category.name}}
           </span>
         </span>
       </span>
@@ -50,7 +50,7 @@
     
     <!-- Subtitle -->
     <p class="text-base md:text-xl text-[#000000]/80 max-w-6xl mx-auto font-sans font-normal">
-      See what our participants have to say about their learning experience and the impact of our short classes.
+      See what our participants have to say about their learning experience and the impact of our {{category.name}}.
     </p>
   </div>
 
