@@ -1,0 +1,377 @@
+<!-- FULL PAYMENT DETAIL VIEW (ACCEPTED / PROCESSING / REJECTED STATUSES) -->
+<div class="space-y-6 2xl:space-y-9 font-montserrat">
+  
+  <!-- Back Button Row -->
+  <div>
+    <button 
+      type="button" 
+      @click="showDetail = false"
+      class="w-10 h-10 rounded-full border border-[#003060] flex items-center justify-center text-[#003060] hover:bg-[#003060]/10 transition-all cursor-pointer shadow-xs"
+    >
+      <i class="fa-solid fa-arrow-left text-sm"></i>
+    </button>
+  </div>
+
+  <!-- Single Grid Container for All Cards (3 Columns) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 2xl:gap-9 items-stretch">
+    
+    <!-- CARD 1: Payment Information (Row 1, Col 1) -->
+    <div class="w-full max-w-[406px] h-full min-h-[238px] bg-white backdrop-blur-[6.6px] rounded-[12px] p-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col justify-between">
+      <div>
+        <!-- Top Row: Title + Type Badge -->
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-sans font-bold text-xs 2xl:text-[12px] leading-[15px] tracking-normal text-[#2D2D2D]">
+            Payment Information
+          </h3>
+          <span class="px-4 py-1 bg-[#6EB6E580] text-[#003060] border border-[#003060] rounded-[6px] font-sans font-normal text-[10px] leading-none text-center">
+            Full Payment
+          </span>
+        </div>
+
+        <!-- Program Icon + Title + Type -->
+        <div class="flex items-center gap-3.5 mb-4">
+          <div class="w-10 h-10 rounded-full bg-[#6EB6E5] flex items-center justify-center text-white text-lg flex-shrink-0 shadow-xs">
+            <i class="fa-solid fa-couch text-base text-[#003060]"></i>
+          </div>
+          <div>
+            <h4 class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-[#2D2D2D] mb-1" x-text="selectedTx?.program || 'Fullstack Developer'">
+              Fullstack Developer
+            </h4>
+            <p class="font-sans font-normal text-xs 2xl:text-xs leading-none text-[#2D2D2D]" x-text="selectedTx?.type || 'Bootcamp'">
+              Bootcamp
+            </p>
+          </div>
+        </div>
+
+        <!-- Detail Key-Value Table -->
+        <div class="space-y-3.5 font-sans text-xs 2xl:text-[12px] leading-[15px] border-t border-slate-100 pt-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[#666666] font-normal">Invoice Number</span>
+            <span class="font-bold text-black text-right" x-text="selectedTx?.invoiceNo || 'INV-20260708001'">INV-20260708001</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-[#666666] font-normal">Registration Date</span>
+            <span class="font-bold text-black text-right" x-text="selectedTx?.regDate || 'Mar 8, 2026'">Mar 8, 2026</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-[#666666] font-normal">Total Payment</span>
+            <span class="font-bold text-black text-right" x-text="selectedTx?.totalAmount || 'Rp 8.550.000'">Rp 8.550.000</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-[#666666] font-normal">Payment Gateway</span>
+            <span class="font-bold text-black text-right" x-text="selectedTx?.gateway || 'Xendit'">Xendit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2: Payment Status (Row 1, Col 2) -->
+    <div class="w-full max-w-[406px] h-full min-h-[238px] bg-white backdrop-blur-[6.6px] rounded-[12px] p-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col justify-between">
+      <div>
+        <!-- Top Row: Title + Dynamic Status Badge -->
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-sans font-bold text-xs 2xl:text-[12px] leading-[15px] tracking-normal text-[#2D2D2D]">
+            Payment Status
+          </h3>
+          <span 
+            class="px-4 py-1 rounded-[3px] font-sans font-semibold text-[10px] leading-none capitalize border-[0.1px]"
+            :class="{
+              'bg-[#F0FBF5] text-[#04B165] border-[#04B165]': !selectedTx || selectedTx?.status === 'accepted',
+              'bg-[#FEF3C7] text-[#FDA40B] border-[#FDA40B]/40': selectedTx?.status === 'processing',
+              'bg-[#FEE7E7] text-[#C80606] border-[#C80606]/40': selectedTx?.status === 'rejected'
+            }"
+            x-text="(!selectedTx || selectedTx?.status === 'accepted') ? 'Paid' : (selectedTx?.status === 'processing' ? 'Processing' : 'Rejected')"
+          >
+            Paid
+          </span>
+        </div>
+
+        <!-- Amount Paid -->
+        <div class="mb-2">
+          <span class="font-sans font-normal text-sm text-[#2D2D2D] block">Amount Paid</span>
+          <span 
+            class="font-montserrat font-semibold text-base sm:text-lg block mt-0.5"
+            :class="{
+              'text-[#04B165]': !selectedTx || selectedTx?.status === 'accepted',
+              'text-[#FDA40B]': selectedTx?.status === 'processing',
+              'text-[#C80606]': selectedTx?.status === 'rejected'
+            }"
+            x-text="selectedTx?.amountPaid || 'Rp 5.985.000'"
+          >
+            Rp 5.985.000
+          </span>
+        </div>
+
+        <!-- Paid On -->
+        <div class="mb-2">
+          <span class="font-sans font-normal text-sm text-[#2D2D2D] block">Paid On</span>
+          <span 
+            class="font-sans font-semibold text-xs block mt-0.5"
+            :class="{
+              'text-[#04B165]': !selectedTx || selectedTx?.status === 'accepted',
+              'text-[#FDA40B]': selectedTx?.status === 'processing',
+              'text-[#C80606]': selectedTx?.status === 'rejected'
+            }"
+            x-text="(selectedTx?.paidOn && selectedTx?.paidOn !== '-') ? selectedTx?.paidOn : 'Mar 8, 2026 14:32 WIB'"
+          >
+            Mar 8, 2026 14:32 WIB
+          </span>
+        </div>
+
+        <!-- Transaction ID -->
+        <div class="mb-3">
+          <span class="font-sans font-normal text-sm text-[#2D2D2D] block">Transaction ID (Xendit)</span>
+          <span class="font-montserrat font-semibold text-[15px] text-black block mt-0.5" x-text="(selectedTx?.trxId && selectedTx?.trxId !== '-') ? selectedTx?.trxId : '202603081432-123456789'">
+            202603081432-123456789
+          </span>
+        </div>
+      </div>
+
+      <!-- ACCEPTED BANNERS / BUTTONS -->
+      <div x-show="!selectedTx || selectedTx?.status === 'accepted'" class="space-y-2">
+        <button 
+          type="button"
+          class="w-full h-[24px] border border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] rounded-lg text-[#003060] font-montserrat font-medium text-[12px] leading-none text-center hover:bg-[#003060]/5 flex items-center justify-center transition-all cursor-pointer"
+        >
+          View Payment Receipt
+        </button>
+
+        <div class="bg-[#F0FBF5] border border-[#04B165]/30 text-[#04B165] text-[11px] font-medium py-1.5 px-3 rounded-lg flex items-center justify-center gap-2">
+          <div class="w-3.5 h-3.5 rounded-full bg-[#04B165] text-white flex items-center justify-center text-[8px] flex-shrink-0">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <span>Your Payment has been completed successfully.</span>
+        </div>
+      </div>
+
+      <!-- PROCESSING BANNERS / BOX -->
+      <div x-show="selectedTx?.status === 'processing'" class="space-y-2">
+        <div class="bg-[#FEF3C7] border border-[#FDA40B] rounded-lg p-3 text-left">
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-circle-info text-[#FDA40B] text-sm"></i>
+            <span class="font-montserrat font-semibold text-[15px] leading-none align-middle text-[#FDA40B]">Payment is being processed</span>
+          </div>
+          <p class="font-sans font-normal text-[12px] leading-none text-[#FDA40B] pl-6 mt-1">
+            Your payment is being processed. Please wait a moment.
+          </p>
+        </div>
+
+        <div class="bg-[#F0FBF5] border border-[#04B165]/30 text-[#04B165] font-montserrat font-medium text-[10px] leading-none text-center py-1.5 px-3 rounded-lg flex items-center justify-center gap-2">
+          <i class="fa-solid fa-shield-halved text-[#04B165] text-xs"></i>
+          <span>Notification will be sent once the status has been updated.</span>
+        </div>
+      </div>
+
+      <!-- REJECTED BANNERS / BOX -->
+      <div x-show="selectedTx?.status === 'rejected'" class="space-y-2.5">
+        <div class="bg-[#FEE7E7] border border-[#C80606] rounded-[8px] p-3.5 text-left">
+          <div class="flex items-start gap-2.5">
+            <i class="fa-solid fa-circle-info text-[#C80606] text-base mt-0.5 flex-shrink-0"></i>
+            <div>
+              <h5 class="font-montserrat font-bold text-sm text-[#C80606] leading-snug">Payment failed</h5>
+              <p class="font-sans font-normal text-xs text-[#C80606] leading-tight mt-1">
+                The transaction was declined or could not be processed by the payment system.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#F0FBF5] border border-[#04B165]/30 rounded-[8px] py-1.5 px-3 flex items-center justify-center gap-2 cursor-pointer hover:bg-[#F0FBF5]/80 transition-all">
+          <i class="fa-solid fa-shield-halved text-[#04B165] text-xs"></i>
+          <span class="font-sans font-medium text-xs text-[#04B165] underline">View Failure Details</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CARD 3: Payment Summary (Row 1, Col 3) -->
+    <div class="w-full max-w-[406px] h-full min-h-[238px] bg-white backdrop-blur-[6.6px] rounded-[12px] p-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col justify-between">
+      <div>
+        <!-- Title -->
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-sans font-bold text-xs 2xl:text-[12px] leading-[15px] tracking-normal text-[#2D2D2D]">
+            Payment Summary
+          </h3>
+        </div>
+
+        <!-- Rows -->
+        <div class="space-y-3.5 font-sans text-xs 2xl:text-[12px] leading-[15px]">
+          <div class="flex items-center justify-between">
+            <span class="text-[#2D2D2D] font-semibold">Total Program Fee</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.totalProgramFee || 'Rp 8.550.000'">Rp 8.550.000</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-[#2D2D2D] font-semibold">Discount</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.discount || 'Rp 2.655.000'">Rp 2.655.000</span>
+          </div>
+
+          <div class="flex items-center justify-between border-t border-slate-100 pt-2">
+            <span class="text-[#2D2D2D] font-semibold">Total Payment</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.amountPaid || 'Rp 5.985.000'">Rp 5.985.000</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-[#2D2D2D] font-semibold">Amount Paid</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.amountPaid || 'Rp 5.985.000'">Rp 5.985.000</span>
+          </div>
+
+          <div class="flex items-center justify-between border-t border-slate-100 pt-2">
+            <span class="text-[#2D2D2D] font-semibold">Amount to be Paid</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.amountToBePaid || 'Rp 0'">Rp 0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 4: Payment Timeline (Row 2, Merges Col 1 & Col 2 via lg:col-span-2) -->
+    <div class="md:col-span-2 lg:col-span-2 w-full min-h-[168px] bg-white backdrop-blur-[6.6px] rounded-[12px] p-5 2xl:p-6 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] border border-slate-200/80">
+      <h3 class="font-sans font-bold text-xs 2xl:text-[12px] text-[#2D2D2D] mb-6">
+        Payment Timeline
+      </h3>
+
+      <!-- Timeline Stepper (5 Nodes) -->
+      <div class="relative w-full pb-2">
+        
+        <!-- Connecting Line Segment 1: Node 1 -> Node 2 (Always Green #04B165) -->
+        <div class="absolute top-[13.5px] left-[55px] w-[25%] h-[3px] bg-[#04B165] z-0"></div>
+
+        <!-- Connecting Line Segment 2: Node 2 -> Node 3 (Green / Orange / Red) -->
+        <div 
+          class="absolute top-[13.5px] left-[calc(55px+25%)] w-[25%] h-[3px] z-0"
+          :class="{
+            'bg-[#04B165]': !selectedTx || selectedTx?.status === 'accepted',
+            'bg-[#FDA40B]': selectedTx?.status === 'processing',
+            'bg-[#C80606]': selectedTx?.status === 'rejected'
+          }"
+        ></div>
+
+        <!-- Connecting Line Segment 3: Node 3 -> Node 5 (Green / Grey) -->
+        <div 
+          class="absolute top-[13.5px] left-[calc(55px+50%)] right-[55px] h-[3px] z-0"
+          :class="{
+            'bg-[#04B165]': !selectedTx || selectedTx?.status === 'accepted',
+            'bg-[#E5E7EB]': selectedTx && selectedTx?.status !== 'accepted'
+          }"
+        ></div>
+
+        <!-- 5 Nodes Flex Layout -->
+        <div class="flex items-start justify-between relative z-10 w-full">
+
+          <!-- Node 1: Registration Submitted (Always Green #04B165) -->
+          <div class="flex flex-col items-center text-center w-[130px]">
+            <div class="w-[30px] h-[30px] rounded-full bg-[#04B165] text-white flex items-center justify-center text-xs font-bold shadow-sm mb-2">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="h-[30px] flex items-start justify-center">
+              <span class="font-sans font-normal text-[12px] leading-[15px] text-[#2D2D2D] text-center block">
+                Registration Submitted
+              </span>
+            </div>
+            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#2D2D2D] text-center block mt-1">
+              Mar 8, 2026 10:00
+            </span>
+          </div>
+
+          <!-- Node 2: Invoice Generated (Always Green #04B165) -->
+          <div class="flex flex-col items-center text-center w-[130px]">
+            <div class="w-[30px] h-[30px] rounded-full bg-[#04B165] text-white flex items-center justify-center text-xs font-bold shadow-sm mb-2">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="h-[30px] flex items-start justify-center">
+              <span class="font-sans font-normal text-[12px] leading-[15px] text-[#2D2D2D] text-center block">
+                Invoice Generated
+              </span>
+            </div>
+            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#2D2D2D] text-center block mt-1">
+              Mar 8, 2026 10:05
+            </span>
+          </div>
+
+          <!-- Node 3: Payment Processed / Rejected -->
+          <div class="flex flex-col items-center text-center w-[130px]">
+            <div 
+              class="w-[30px] h-[30px] rounded-full text-white flex items-center justify-center text-xs font-bold shadow-sm mb-2"
+              :class="{
+                'bg-[#04B165]': !selectedTx || selectedTx?.status === 'accepted',
+                'bg-[#FDA40B]': selectedTx?.status === 'processing',
+                'bg-[#C80606]': selectedTx?.status === 'rejected'
+              }"
+            >
+              <i class="fa-solid" :class="selectedTx?.status === 'rejected' ? 'fa-xmark' : 'fa-check'"></i>
+            </div>
+            <div class="h-[30px] flex items-start justify-center">
+              <span 
+                class="font-sans text-[12px] leading-[15px] text-[#2D2D2D] text-center block"
+                :class="selectedTx?.status === 'rejected' ? 'font-semibold' : 'font-normal'"
+                x-text="selectedTx?.status === 'rejected' ? 'Payment Rejected' : 'Payment Processed'"
+              >
+                Payment Processed
+              </span>
+            </div>
+            <span 
+              class="font-sans text-[10px] leading-[15px] text-[#2D2D2D] text-center block mt-1"
+              :class="selectedTx?.status === 'processing' || selectedTx?.status === 'rejected' ? 'font-bold' : 'font-normal'"
+            >
+              Mar 8, 2026 14:31
+            </span>
+          </div>
+
+          <!-- Node 4: Payment Verified -->
+          <div class="flex flex-col items-center text-center w-[130px]">
+            <div 
+              class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-xs font-bold shadow-sm mb-2"
+              :class="{
+                'bg-[#04B165] text-white': !selectedTx || selectedTx?.status === 'accepted',
+                'bg-[#E5E7EB] text-[#9CA3AF]': selectedTx && selectedTx?.status !== 'accepted'
+              }"
+            >
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="h-[30px] flex items-start justify-center">
+              <span class="font-sans font-normal text-[12px] leading-[15px] text-[#2D2D2D] text-center block">
+                Payment Verified
+              </span>
+            </div>
+            <span 
+              class="font-sans font-normal text-[10px] leading-[15px] text-[#2D2D2D] text-center block mt-1"
+              x-text="(!selectedTx || selectedTx?.status === 'accepted') ? 'Mar 8, 2026 14:32' : '-'"
+            >
+              Mar 8, 2026 14:32
+            </span>
+          </div>
+
+          <!-- Node 5: Completed -->
+          <div class="flex flex-col items-center text-center w-[130px]">
+            <div 
+              class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-xs font-bold shadow-sm mb-2"
+              :class="{
+                'bg-[#04B165] text-white': !selectedTx || selectedTx?.status === 'accepted',
+                'bg-[#E5E7EB] text-[#9CA3AF]': selectedTx && selectedTx?.status !== 'accepted'
+              }"
+            >
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="h-[30px] flex items-start justify-center">
+              <span class="font-sans font-normal text-[12px] leading-[15px] text-[#2D2D2D] text-center block">
+                Completed
+              </span>
+            </div>
+            <span 
+              class="font-sans font-normal text-[10px] leading-[15px] text-[#2D2D2D] text-center block mt-1"
+              x-text="(!selectedTx || selectedTx?.status === 'accepted') ? 'Mar 8, 2026 14:32' : '-'"
+            >
+              Mar 8, 2026 14:32
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

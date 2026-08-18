@@ -1,41 +1,88 @@
 <!-- REGISTRATION PAYMENT HISTORY SUB-PARTIAL -->
-<div class="pt-2" x-data="{
+<div x-data="{
+  showDetail: false,
+  selectedTx: null,
   transactions: [
     {
       id: 1,
       program: 'Seminar - Python For Data Analyst - from zero to insight',
-      type: 'Bootcamp',
+      type: 'Short Class',
       paymentType: 'Registration',
       status: 'accepted',
-      period: '10 Mei - 10 Agustus 2026',
-      location: 'Offline - Shoutgate Tercinta',
-      paymentDate: '20 Mei 2026',
-      amount: 'Rp 500.000'
+      date: '20 Juni 2026',
+      period: '20 Juni 2026',
+      time: '09:00',
+      timeDetails: '09:00 - 11:00 WIB',
+      location: 'Offline (Aula Fakultas Ilmu Komputer Amikom)',
+      classTypeDetails: 'Short Class - Free Class',
+      paymentDate: '15 Juni 2026',
+      regOn: '15 Juni 2026',
+      amount: 'Rp 0',
+      description: 'a seminar that will explore how data analysts work and think in line with current industry needs.',
+      fullName: 'Trisna',
+      email: 'trisna@gmail.com',
+      whatsapp: '0812-3456-7890',
+      currentStatus: 'Student',
+      referral: 'Friends',
+      attendance: 'Yes, I will attend',
+      receiveUpdates: 'Yes, I agree'
     },
     {
       id: 2,
-      program: 'Seminar - Python For Data Analyst - from zero to insight',
-      type: 'Bootcamp',
+      program: 'Webinar - Master Modern UI/UX Design Baseline',
+      type: 'Short Class',
       paymentType: 'Registration',
       status: 'processing',
-      period: '01 Juni - 01 September 2026',
-      location: 'Offline - Level Up Tercinta',
-      paymentDate: '05 Juni 2026',
-      amount: 'Rp 500.000'
+      date: '20 Juni 2026',
+      period: '20 Juni 2026',
+      time: '09:00',
+      timeDetails: '09:00 - 11:00 WIB',
+      location: 'Offline (Aula Fakultas Ilmu Komputer Amikom)',
+      classTypeDetails: 'Short Class - Free Class',
+      paymentDate: '15 Juni 2026',
+      regOn: '15 Juni 2026',
+      amount: 'Rp 0',
+      description: 'a seminar that will explore how data analysts work and think in line with current industry needs.',
+      fullName: 'Trisna',
+      email: 'trisna@gmail.com',
+      whatsapp: '0812-3456-7890',
+      currentStatus: 'Student',
+      referral: 'Friends',
+      attendance: 'Yes, I will attend',
+      receiveUpdates: 'Yes, I agree'
     },
     {
       id: 3,
       program: 'Seminar - Python For Data Analyst - from zero to insight',
-      type: 'Bootcamp',
+      type: 'Short Class',
       paymentType: 'Registration',
       status: 'rejected',
-      period: '15 Juli - 15 Oktober 2026',
-      location: 'Offline - Level Up Tercinta',
+      date: '20 Juni 2026',
+      period: '20 Juni 2026',
+      time: '09:00',
+      timeDetails: '09:00 - 11:00 WIB',
+      location: 'Offline (Aula Fakultas Ilmu Komputer Amikom)',
+      classTypeDetails: 'Short Class - Free Class',
       paymentDate: '18 Juli 2026',
-      amount: 'Rp 500.000'
+      regOn: '15 Juni 2026',
+      amount: 'Rp 0',
+      description: 'a seminar that will explore how data analysts work and think in line with current industry needs.',
+      fullName: 'Trisna',
+      email: 'trisna@gmail.com',
+      whatsapp: '0812-3456-7890',
+      currentStatus: 'Student',
+      referral: 'Friends',
+      attendance: 'Yes, I will attend',
+      receiveUpdates: 'Yes, I agree'
     }
   ]
-}">
+}"
+  x-init="$watch('showDetail', value => {
+    const overflowVal = value ? 'hidden' : '';
+    document.body.style.overflow = overflowVal;
+    document.documentElement.style.overflow = overflowVal;
+  })"
+>
 
   <!-- EMPTY STATE (When no registration payments exist) -->
   <div 
@@ -68,47 +115,55 @@
   </div>
 
   <!-- HAS DATA: Transaction Cards Grid -->
-  <div x-show="transactions.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 xl:gap-[29px]">
+  <div x-show="transactions.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 xl:gap-4 2xl:gap-6">
     <template x-for="tx in transactions" :key="tx.id">
       <div
         x-show="(statusFilter === 'all' || statusFilter === tx.status) && tx.program.toLowerCase().includes(searchQuery.toLowerCase())"
-        class="w-full max-w-[334px] xl:w-[334px] xl:h-[397px] bg-[#FFFFFF80] backdrop-blur-[6.6px] rounded-[12px] p-5 flex flex-col justify-between shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] border border-white/40"
+        class="w-full max-w-[334px] min-h-[397px] 2xl:w-[334px] 2xl:h-[397px] bg-[#FFFFFF80] backdrop-blur-[6.6px] rounded-xl p-4 xl:p-5 flex flex-col justify-between shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] border border-white/40"
       >
         <div>
           <!-- Badges Row (Top Right Aligned) -->
-          <div class="flex items-center justify-end gap-2 mb-3">
-            <span class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border border-[#003060] font-montserrat font-medium text-xs sm:text-[15px] text-[#003060] leading-none" x-text="tx.type">Bootcamp</span>
+          <div class="flex items-center justify-end gap-2 mb-5">
+            <span class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border border-[#003060] font-montserrat font-medium text-xs sm:text-[15px] text-[#003060] leading-none" x-text="tx.type">Short Class</span>
             <span 
-              class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border font-montserrat font-medium text-xs sm:text-[15px] leading-none" 
+              class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border font-montserrat font-medium text-xs sm:text-[15px] leading-none capitalize" 
               :class="tx.status === 'accepted' ? 'bg-[#F0FBF4] border-[#04B165] text-[#04B165]' : (tx.status === 'processing' ? 'bg-[#FEEFD6] border-[#FDA40B] text-[#FDA40B]' : 'bg-[#FEE7E7] border-[#F13639] text-[#F13639]')"
-              x-text="tx.paymentType"
-            >Registration</span>
+              x-text="tx.status"
+            >Accepted</span>
           </div>
 
           <!-- Program Title -->
-          <h4 class="font-montserrat font-semibold text-[15px] leading-[25px] text-[#003060] mb-3" x-text="tx.program">Full Stack Developer</h4>
+          <h4 class="font-montserrat font-semibold text-[15px] leading-[25px] text-[#003060] mb-5 line-clamp-2" x-text="tx.program">Seminar - Python For Data Analyst - from zero to insight</h4>
 
-          <!-- Meta: Period + Location -->
-          <div class="flex flex-col gap-1 mb-2">
+          <!-- Meta: Period + Time + Location -->
+          <div class="flex flex-col gap-1 mb-4">
             <div class="flex items-center gap-2.5">
               <i class="fa-regular fa-calendar text-[14px] text-[#003060] flex-shrink-0"></i>
-              <span class="font-open-sans font-normal text-[12px] leading-[30px] text-[#2D2D2D]" x-text="tx.period">21 April - 21 Juli 2026</span>
+              <span class="font-open-sans font-normal text-[12px] leading-[30px] text-[#2D2D2D]" x-text="tx.period">20 Juni 2026</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <i class="fa-regular fa-clock text-[14px] text-[#003060] flex-shrink-0"></i>
+              <span class="font-open-sans font-normal text-[12px] leading-[30px] text-[#2D2D2D]" x-text="tx.time">09:00</span>
             </div>
             <div class="flex items-center gap-2.5">
               <i class="fa-solid fa-location-dot text-[14px] text-[#003060] flex-shrink-0"></i>
-              <span class="font-open-sans font-normal text-[12px] leading-[30px] text-[#2D2D2D] truncate" x-text="tx.location">PT. Wiratek Solusi Asia and Kesatria Academy</span>
+              <span class="font-open-sans font-normal text-[12px] leading-[30px] text-[#2D2D2D] truncate" x-text="tx.location">Offline (Aula Fakultas Ilmu Komputer Amikom)</span>
             </div>
           </div>
 
           <!-- Payment Date -->
-          <p class="font-open-sans text-[15px] leading-[30px] text-black text-center my-3">
+          <p class="font-open-sans text-[15px] text-black text-center">
             <span class="font-semibold">Payment Date:</span> <span class="font-normal" x-text="tx.paymentDate">15 Juni 2026</span>
           </p>
         </div>
 
         <!-- Action Buttons (Height 35px, Font 15px) -->
         <div class="flex flex-col gap-2.5 mt-2">
-          <button type="button" class="w-full h-[35px] rounded-[12px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
+          <button 
+            type="button" 
+            @click="selectedTx = tx; showDetail = true"
+            class="w-full h-[35px] rounded-[12px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]"
+          >
             View Payment Details
           </button>
           <button type="button" class="w-full h-[35px] rounded-[12px] p-[10px] bg-white/80 hover:bg-white text-[#003060] border border-[#003060] font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.1)]">
@@ -139,5 +194,8 @@
       </p>
     </div>
   </div>
+
+  <!-- REGISTRATION DETAIL MODAL POP-UP -->
+  {{> user/sidebar_user_profile/history_payment/registration/detail/index }}
 
 </div>
