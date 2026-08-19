@@ -34,8 +34,9 @@ export class SessionController {
     @Req() req: Request,
   ) {
     try {
-      CreateSessionDto.sessionOrder =
-        await this.sessionService.getNextOrder(CreateSessionDto.weeksId);
+      CreateSessionDto.sessionOrder = await this.sessionService.getNextOrder(
+        CreateSessionDto.weeksId,
+      );
       await this.sessionService.create(CreateSessionDto);
       req.flash('success', 'session succesfuly create');
       res.redirect(`/week/${CreateSessionDto.weeksId}`);
@@ -95,7 +96,16 @@ export class SessionController {
   ) {
     const session = await this.sessionService.findOne(id);
     const course = await this.sessionService.findAllCourses();
-    res.render('admin/session/edit', { user: req.user, course, session });
+    let maxSession = 0;
+    if (session && session.weeks) {
+      maxSession = await this.sessionService.findWeekSessions(session.weeks.id);
+    }
+    res.render('admin/session/edit', {
+      user: req.user,
+      course,
+      session,
+      maxSession,
+    });
   }
 
   @Roles('admin')
@@ -121,10 +131,7 @@ export class SessionController {
 
   @Roles('admin')
   @Get('attendance/:sessionId')
-  async getAbsen(
-    @Param('sessionId') sessionId: number,
-    @Res() res: Response,
-  ) {
+  async getAbsen(@Param('sessionId') sessionId: number, @Res() res: Response) {
     const session = await this.sessionService.findOne(sessionId);
     const attendances = await this.sessionService.findStudentsInCourse(
       session.weeks.course.id,
@@ -135,10 +142,7 @@ export class SessionController {
 
   @Roles('admin')
   @Get('task/:sessionId')
-  async getTugas(
-    @Param('sessionId') sessionId: number,
-    @Res() res: Response,
-  ) {
+  async getTugas(@Param('sessionId') sessionId: number, @Res() res: Response) {
     const assignments = await this.sessionService.findTugas(sessionId);
     res.json(assignments);
   }
@@ -159,7 +163,8 @@ export class SessionController {
     @Param('sessionId') sessionId: number,
     @Res() res: Response,
   ) {
-    const materialVideo = await this.materialService.findMaterialVideo(sessionId);
+    const materialVideo =
+      await this.materialService.findMaterialVideo(sessionId);
     res.json(materialVideo);
   }
 
