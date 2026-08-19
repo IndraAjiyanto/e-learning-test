@@ -8,15 +8,15 @@
       </svg>
     </div>
 
-    {{#if (eq order.payment_status "paid")}}
+    {{#if (eq order.process "approved")}}
       <h1 class="text-2xl font-bold text-[#003060] mb-2">Pembayaran Berhasil! 🎉</h1>
       <p class="text-gray-600 mb-6">Selamat! Pembayaran Anda telah dikonfirmasi. Anda sekarang memiliki akses penuh ke program berikut:</p>
-    {{else if (eq order.payment_status "free_confirmed")}}
+    {{else if (eq order.process "free_confirmed")}}
       <h1 class="text-2xl font-bold text-[#003060] mb-2">Pendaftaran Berhasil! 🎉</h1>
       <p class="text-gray-600 mb-6">Anda mendapatkan akses gratis (100% diskon). Program berikut sudah tersedia:</p>
     {{else}}
       <h1 class="text-2xl font-bold text-[#003060] mb-2">Menunggu Konfirmasi Pembayaran</h1>
-      <p class="text-gray-600 mb-4">Pembayaran Anda sedang diproses. Status saat ini: <span class="font-semibold text-yellow-600">{{order.payment_status}}</span></p>
+      <p class="text-gray-600 mb-4">Pembayaran Anda sedang diproses. Status saat ini: <span class="font-semibold text-yellow-600">{{order.process}}</span></p>
       <p class="text-sm text-gray-500 mb-6">Halaman ini akan diperbarui setelah pembayaran terkonfirmasi oleh Xendit. Jika Anda sudah menyelesaikan pembayaran di halaman Xendit, silakan klik tombol di bawah untuk mengonfirmasi secara manual (Test Mode).</p>
     {{/if}}
 
@@ -30,41 +30,41 @@
       {{/if}}
       <div class="flex justify-between">
         <span class="text-gray-500 text-sm">Total Bayar</span>
-        <span class="text-[#003060] font-bold">Rp{{order.final_total}}</span>
+        <span class="text-[#003060] font-bold">Rp{{order.invoice.final_total}}</span>
       </div>
       <div class="flex justify-between">
         <span class="text-gray-500 text-sm">Metode</span>
-        <span class="text-gray-700 text-sm">{{order.payment_method}}</span>
+        <span class="text-gray-700 text-sm">{{order.invoice.payment_method}}</span>
       </div>
       <div class="flex justify-between">
         <span class="text-gray-500 text-sm">Status</span>
-        {{#if (eq order.payment_status "paid")}}
+        {{#if (eq order.process "approved")}}
           <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
             <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Lunas
           </span>
-        {{else if (eq order.payment_status "free_confirmed")}}
+        {{else if (eq order.process "free_confirmed")}}
           <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
             <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Gratis
           </span>
         {{else}}
           <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
-            <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> {{order.payment_status}}
+            <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> {{order.process}}
           </span>
         {{/if}}
       </div>
     </div>
 
-    {{#if (eq order.payment_status "paid")}}
+    {{#if (eq order.process "approved")}}
       <a href="/payment/history/{{user.id}}" class="block w-full h-[50px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-xl font-semibold text-base transition-colors shadow-sm leading-[50px]">
         Lihat Riwayat Pembayaran
       </a>
-    {{else if (eq order.payment_status "free_confirmed")}}
+    {{else if (eq order.process "free_confirmed")}}
       <a href="/payment/history/{{user.id}}" class="block w-full h-[50px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-xl font-semibold text-base transition-colors shadow-sm leading-[50px]">
         Lihat Riwayat Pembayaran
       </a>
     {{else}}
       <!-- Tombol Simulasi (Test Mode) -->
-      <form action="/payment/simulate-payment/{{order.uuid}}" method="POST" class="mb-3">
+      <form action="/invoice/simulate-success/{{order.no}}" method="POST" class="mb-3">
         <button type="submit" class="w-full h-[50px] bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-base transition-colors shadow-sm">
           ✅ Konfirmasi Pembayaran (Test Mode)
         </button>

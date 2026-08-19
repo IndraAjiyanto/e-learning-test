@@ -35,7 +35,7 @@ export class ApiPaymentController {
         promoCode
       );
 
-      if (orderData.payment_status === 'paid') {
+      if (orderData.process === 'approved') {
         // Redirect to success page for free courses
         return res.json({
           status: 'success',
@@ -47,7 +47,7 @@ export class ApiPaymentController {
       // Redirect to Xendit Invoice URL
       return res.json({
         status: 'success',
-        redirect_url: orderData.xendit_invoice_url,
+        redirect_url: orderData.invoice.xendit_invoice_url,
         message: 'Mengalihkan ke halaman pembayaran Xendit...'
       });
 

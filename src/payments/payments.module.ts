@@ -15,7 +15,7 @@ import { Weeks } from 'src/entities/weeks.entity';
 import { Session } from 'src/entities/session.entity';
 import { VoucherModule } from 'src/voucher/voucher.module';
 import { ApiPaymentController } from './api-payment.controller';
-import { ApiWebhookController } from './api-webhook.controller';
+import { InvoiceModule } from 'src/invoice/invoice.module';
 
 @Module({
   imports: [
@@ -33,8 +33,9 @@ import { ApiWebhookController } from './api-webhook.controller';
     ]),
     CommonModule,
     VoucherModule,
+    InvoiceModule,
   ],
-  controllers: [PaymentsController, ApiPaymentController, ApiWebhookController],
+  controllers: [PaymentsController, ApiPaymentController, ],
   providers: [PaymentsService],
   exports: [PaymentsService],
 })

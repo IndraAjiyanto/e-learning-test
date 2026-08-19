@@ -2,7 +2,7 @@
 <div 
   class="relative min-h-screen bg-[#FAFAFA] font-montserrat overflow-hidden"
   x-data="{
-    activeSection: 'profile',
+    activeSection: '{{#if activeTab}}{{activeTab}}{{else}}profile{{/if}}',
     openMyLearning: true,
     openUiUx: true,
     openRoblox: false,

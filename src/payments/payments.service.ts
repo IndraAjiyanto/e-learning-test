@@ -21,11 +21,10 @@ import { VoucherService } from 'src/voucher/voucher.service';
 import { Voucher } from 'src/entities/voucher.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import Xendit from 'xendit-node';
+import { InvoiceService } from 'src/invoice/invoice.service';
 
 @Injectable()
 export class PaymentsService {
-  private xenditClient: any;
 
   constructor(
     @InjectRepository(Payment)
@@ -49,12 +48,8 @@ export class PaymentsService {
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
     private readonly voucherService: VoucherService,
+    private readonly invoiceService: InvoiceService,
   ) {
-    if (process.env.XENDIT_SECRET_KEY) {
-      this.xenditClient = new Xendit({
-        secretKey: process.env.XENDIT_SECRET_KEY,
-      });
-    }
   }
 
   async create(createPaymentDto: CreatePaymentDto) {
@@ -281,7 +276,7 @@ export class PaymentsService {
         user: { id: userId },
         installment: IsNull(),
       },
-      relations: ['course', 'course.category', 'installment'],
+      relations: ['course', 'course.category', 'installment', 'invoice'],
     });
 
     return payments || [];
@@ -293,7 +288,7 @@ export class PaymentsService {
         user: { id: userId },
         installment: Not(IsNull()),
       },
-      relations: ['course', 'course.category', 'installment'],
+      relations: ['course', 'course.category', 'installment', 'invoice'],
     });
   }
 
@@ -310,14 +305,14 @@ export class PaymentsService {
   async findAll() {
     return await this.paymentRepository.find({
       where: { installment: IsNull() },
-      relations: ['user', 'course', 'course.category'],
+      relations: ['user', 'course', 'course.category', 'invoice'],
     });
   }
 
   async findAllInstallments() {
     return await this.paymentRepository.find({
       where: { installment: Not(IsNull()) },
-      relations: ['user', 'course', 'course.category', 'installment'],
+      relations: ['user', 'course', 'course.category', 'installment', 'invoice'],
     });
   }
 
@@ -330,7 +325,7 @@ export class PaymentsService {
   async findOne(paymentId: number) {
     const payment = await this.paymentRepository.findOne({
       where: { id: paymentId },
-      relations: ['user', 'course'],
+      relations: ['user', 'course', 'invoice'],
     });
     if (!payment) {
       throw new NotFoundException('Payment not found');
@@ -359,10 +354,6 @@ export class PaymentsService {
   }
 
   async createXenditInvoice(userId: number, courseId: number, paymentMethod: string, promoCode?: string) {
-    if (!this.xenditClient) {
-      throw new Error('Xendit is not configured. Please add XENDIT_SECRET_KEY to .env');
-    }
-
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['installments'],
@@ -394,15 +385,6 @@ export class PaymentsService {
     const payment = this.paymentRepository.create({
       user: user,
       course: course,
-      subtotal: basePrice,
-      discount_amount: discountAmount,
-      final_total: finalTotal,
-      voucherCode: appliedVoucherCode,
-      userName: user.username,
-      userEmail: user.email, 
-      courseName: course.name, 
-      payment_method: paymentMethod,
-      payment_status: finalTotal <= 0 ? 'paid' : 'pending_payment',
       process: finalTotal <= 0 ? 'approved' : 'process', 
       no: `INV-${Date.now()}`
     });
@@ -410,43 +392,17 @@ export class PaymentsService {
     await this.paymentRepository.save(payment);
 
     if (finalTotal <= 0) {
-      payment.paid_at = new Date();
-      await this.paymentRepository.save(payment);
       await this.addUserToCourse(userId, courseId);
-      return payment;
     }
 
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
-    try {
-      const invoice = await this.xenditClient.Invoice.createInvoice({
-        data: {
-          externalId: payment.uuid, 
-          amount: finalTotal,
-          payerEmail: user.email || 'guest@example.com',
-          description: `Payment for ${course.name} - ${paymentMethod}`,
-          successRedirectUrl: `${appUrl}/payment/success/${payment.uuid}`,
-          failureRedirectUrl: `${appUrl}/payment/failed/${payment.uuid}`,
-        },
-      });
-
-      payment.xendit_invoice_id = invoice.id;
-      payment.xendit_invoice_url = invoice.invoiceUrl;
-      await this.paymentRepository.save(payment);
-
-      return payment;
-    } catch (error) {
-      payment.payment_status = 'failed';
-      payment.process = 'rejected';
-      await this.paymentRepository.save(payment);
-      throw new Error('Gagal terhubung dengan Xendit Payment Gateway');
-    }
+    return this.invoiceService.createInvoiceForPayment(payment, finalTotal, user.email, course.name, paymentMethod, basePrice, discountAmount);
   }
 
-  // Get payment by UUID
-  async getPaymentByUuid(uuid: string) {
+  // Get payment by No
+  async getPaymentByNo(no: string) {
     return this.paymentRepository.findOne({
-      where: { uuid },
-      relations: ['course', 'user']
+      where: { no },
+      relations: ['course', 'user', 'invoice']
     });
   }
 
@@ -455,68 +411,4 @@ export class PaymentsService {
     return this.courseRepository.findOneBy({ id: courseId });
   }
 
-  // Simulate webhook for localhost testing
-  async simulatePaymentSuccess(uuid: string) {
-    const payment = await this.paymentRepository.findOne({ 
-       where: { uuid },
-       relations: ['user', 'course'] 
-    });
-    if (!payment) throw new Error('Payment tidak ditemukan');
-    if (payment.payment_status === 'paid') {
-      return payment; 
-    }
-
-    payment.payment_status = 'paid';
-    payment.process = 'approved';
-    payment.paid_at = new Date();
-    await this.paymentRepository.save(payment);
-
-    try {
-      await this.addUserToCourse(payment.user.id, payment.course.id);
-    } catch (err) {
-      console.error('Error auto-enrolling user after simulated payment:', err);
-    }
-
-    return payment;
-  }
-
-  async handleXenditWebhook(payload: any, callbackToken: string) {
-    const validToken = process.env.XENDIT_CALLBACK_TOKEN; 
-    
-    if (validToken && callbackToken !== validToken) {
-      throw new Error('Unauthorized: Token Webhook Tidak Valid!'); 
-    }
-
-    const externalId = payload.external_id; 
-    const status = payload.status; 
-
-    if (!externalId) return;
-
-    const payment = await this.paymentRepository.findOne({
-       where: { uuid: externalId },
-       relations: ['user', 'course'] 
-    });
-    if (!payment) return;
-
-    if (payment.payment_status === 'paid' || payment.payment_status === 'expired') {
-       return; 
-    }
-
-    if (status === 'PAID' || status === 'SETTLED') {
-      payment.payment_status = 'paid';
-      payment.process = 'approved'; 
-      payment.paid_at = new Date();
-      if (payload.payment_method) {
-        payment.payment_method = payload.payment_method;
-      }
-      
-      await this.paymentRepository.save(payment);
-      await this.addUserToCourse(payment.user.id, payment.course.id);
-    } 
-    else if (status === 'EXPIRED') {
-      payment.payment_status = 'expired';
-      payment.process = 'rejected';
-      await this.paymentRepository.save(payment);
-    }
-  }
 }

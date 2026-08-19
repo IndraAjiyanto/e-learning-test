@@ -17,7 +17,7 @@ export class Gallery {
     @Column({nullable:true})
     description: string
 
-    @Column({type:'enum', enum: [ '1', '2', '3', '4', '5', '6' ], nullable:true})
+    @Column({type:'enum', enum: [ '1', '2', '3', '4', '5', '6' ]})
     no:noGallery
 
      @ManyToOne(() => Category, (category) => category.gallery, {

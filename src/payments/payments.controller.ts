@@ -38,7 +38,7 @@ export class PaymentsController {
     @Req() req: Request & { user?: any },
   ) {
     try {
-      const order = await this.paymentsService.getPaymentByUuid(orderId);
+      const order = await this.paymentsService.getPaymentByNo(orderId);
       if (!order) {
         req.flash('error', 'Order tidak ditemukan.');
         return res.redirect('/');
@@ -69,7 +69,7 @@ export class PaymentsController {
     @Req() req: Request & { user?: any },
   ) {
     try {
-      const order = await this.paymentsService.getPaymentByUuid(orderId);
+      const order = await this.paymentsService.getPaymentByNo(orderId);
       res.render('payments/failed', {
         layout: 'main',
         title: 'Pembayaran Gagal',
@@ -86,21 +86,7 @@ export class PaymentsController {
 
   // Simulasi webhook (khusus localhost / test mode)
   @Roles('user')
-  @Post('simulate-payment/:orderId')
-  async simulatePayment(
-    @Param('orderId') orderId: string,
-    @Res() res: Response,
-    @Req() req: Request & { user?: any },
-  ) {
-    try {
-      await this.paymentsService.simulatePaymentSuccess(orderId);
-      req.flash('success', 'Pembayaran berhasil dikonfirmasi! Anda sekarang memiliki akses ke program.');
-      res.redirect(`/payment/success/${orderId}`);
-    } catch (error: any) {
-      req.flash('error', error.message || 'Gagal simulasi pembayaran.');
-      res.redirect(`/payment/success/${orderId}`);
-    }
-  }
+
 
   @Roles('user')
   @Post(':userId/:courseId')
@@ -118,12 +104,12 @@ export class PaymentsController {
         paymentMethod || 'XENDIT_UI',
       );
 
-      if (orderData.payment_status === 'paid') {
+      if (orderData.process === 'approved') {
         req.flash('success', 'Pendaftaran berhasil!');
         return res.redirect(`/payment/history/${userId}`);
       }
 
-      return res.redirect(orderData.xendit_invoice_url);
+      return res.redirect(orderData.invoice.xendit_invoice_url);
     } catch (error: any) {
       req.flash('error', error.message || 'Payment initiation failed');
       return res.redirect(`/payment/detail/${courseId}`);
