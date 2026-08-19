@@ -634,7 +634,7 @@ export class CoursesController {
             installments,
           });
         } else {
-          res.render('course/Bdetail', {
+          res.render('detail_program/paid_program/index', {
             user: req.user,
             course,
             kelass,

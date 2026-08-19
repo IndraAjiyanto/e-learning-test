@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { Voucher } from 'src/entities/voucher.entity';
 import { Course } from 'src/entities/course.entity';
+import { User } from 'src/entities/user.entity';
+
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 
@@ -33,6 +35,9 @@ export class VoucherService {
     // Dipakai untuk mencari Course berdasarkan array courseIds
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   // Buat voucher baru + assign daftar program
@@ -42,6 +47,7 @@ export class VoucherService {
       type: dto.type,
       percent: dto.type === 'discount' ? parseFloat(dto.percent) : null,
       active: parseBool(dto.active),
+      allowed_user_ids: parseIds(dto.allowed_user_ids),
     });
 
     // Jika ada courseIds, cari Course-nya lalu assign ke relasi
@@ -65,6 +71,14 @@ export class VoucherService {
     });
   }
 
+  // Ambil daftar seluruh user untuk dropdown
+  async findAllUsers(): Promise<User[]> {
+    return this.userRepository.find({
+      select: ['id', 'username', 'email'],
+      order: { username: 'ASC' }
+    });
+  }
+
   // Ambil satu voucher + daftar program lengkap (untuk halaman edit)
   async findOne(id: number): Promise<Voucher> {
     const voucher = await this.voucherRepository.findOne({
@@ -83,6 +97,7 @@ export class VoucherService {
     if (dto.code_voucher !== undefined) voucher.code_voucher = dto.code_voucher;
     if (dto.type !== undefined) voucher.type = dto.type;
     if (dto.active !== undefined) voucher.active = parseBool(dto.active);
+    if (dto.allowed_user_ids !== undefined) voucher.allowed_user_ids = parseIds(dto.allowed_user_ids);
 
     // percent hanya disimpan jika type = 'discount'
     if (dto.type === 'discount') {
@@ -116,5 +131,62 @@ export class VoucherService {
       select: ['id', 'name'],
       order: { name: 'ASC' },
     });
+  }
+
+  // Validasi voucher untuk frontend
+  async validateVoucher(code: string, courseId: number, subtotal: number, userId?: number): Promise<{ discountAmount: number, finalTotal: number, voucher: Voucher }> {
+    const voucher = await this.voucherRepository.findOne({
+      where: { code_voucher: ILike(code), active: true },
+      relations: ['courses'],
+    });
+
+    if (!voucher) {
+      throw new Error('Voucher tidak ditemukan atau tidak aktif.');
+    }
+
+    // Jika courses ada isinya, pastikan courseId pembeli ada di daftar tersebut
+    if (voucher.courses && voucher.courses.length > 0) {
+      const isCourseValid = voucher.courses.some(c => c.id == courseId);
+      if (!isCourseValid) {
+        throw new Error('Voucher tidak berlaku untuk program ini.');
+      }
+    }
+
+    if (userId) {
+      // 1. Pengecekan Targeted Voucher (Hanya user tertentu yang boleh pakai)
+      if (voucher.allowed_user_ids && voucher.allowed_user_ids.length > 0) {
+        if (!voucher.allowed_user_ids.includes(userId)) {
+          throw new Error('Anda tidak memiliki hak akses untuk menggunakan kode voucher ini.');
+        }
+      }
+
+      // 2. Pengecekan Kuota 1x Pakai per User (Menggunakan query langsung ke tabel Payment)
+      // Karena kita menghapus PromoUsageLog, pengecekan ini idealnya dilakukan di PaymentService,
+      // atau dengan menginjeksi DataSource/PaymentRepository ke sini.
+    }
+
+    let discountAmount = 0;
+    if (voucher.type === 'free') {
+      discountAmount = subtotal;
+    } else if (voucher.type === 'discount' && voucher.percent) {
+      discountAmount = subtotal * (voucher.percent / 100);
+    } 
+
+    if (discountAmount <= 0) {
+      throw new Error('Voucher ini tidak memberikan potongan harga. Silakan periksa konfigurasi persentase diskon di menu admin.');
+    }
+
+    // Ensure discount does not exceed subtotal
+    if (discountAmount > subtotal) {
+      discountAmount = subtotal;
+    }
+
+    const finalTotal = Math.max(0, subtotal - discountAmount);
+    
+    return {
+      discountAmount,
+      finalTotal,
+      voucher,
+    };
   }
 }

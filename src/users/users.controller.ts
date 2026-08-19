@@ -252,77 +252,7 @@ export class UsersController {
     }
     const user = await this.usersService.findOne(req.user.id);
     const portfolio = await this.usersService.findPortfolio(req.user.id);
-
-    // Get user's enrolled courses
-    const userCourses = await this.userCourseRepository.find({
-      where: { user: { id: req.user.id } },
-      relations: ['course', 'course.weeks', 'course.weeks.quiz'],
-    });
-
-    // Extract all quizzes from enrolled courses
-    const quizzes: Array<{
-      id: number;
-      title: string;
-      courseName: string;
-      weekNumber: number;
-      weekName: string;
-      duration: number;
-      minScore: number;
-      lastSubmitted: string | null;
-      submitDate: string | null;
-      isCompleted: boolean;
-      score: number | null;
-    }> = [];
-    for (const uc of userCourses) {
-      if (uc.course && uc.course.weeks) {
-        for (const week of uc.course.weeks) {
-          if (week.quiz && week.quiz.length > 0) {
-            for (const quiz of week.quiz) {
-              // Get quiz progress for this user
-              const quizProgress = await this.quizProgressRepository.findOne({
-                where: {
-                  user: { id: req.user.id },
-                  quiz: { id: quiz.id },
-                },
-              });
-
-              // Get score for this user
-              const score = await this.scoreRepository.findOne({
-                where: {
-                  user: { id: req.user.id },
-                  quiz: { id: quiz.id },
-                },
-                order: { createdAt: 'DESC' },
-              });
-
-              quizzes.push({
-                id: quiz.id,
-                title: quiz.quizName,
-                courseName: uc.course.name,
-                weekNumber: week.weekNumber,
-                weekName: week.description || `Week ${week.weekNumber}`,
-                duration: quiz.duration,
-                minScore: quiz.minScore,
-                lastSubmitted: quizProgress?.createdAt
-                  ? quizProgress.createdAt.toISOString().split('T')[0]
-                  : null,
-                submitDate: score?.createdAt
-                  ? score.createdAt.toISOString().split('T')[0]
-                  : null,
-                isCompleted: quizProgress?.process === true,
-                score: score?.score ?? null,
-              });
-            }
-          }
-        }
-      }
-    }
-
-    return res.render('user/user_profile/index', {
-      user: user,
-      portfolio,
-      quizzes,
-    });
+    return res.render('user/user_profile/index', { user: user, portfolio });
   }
 
   @Roles('user', 'admin', 'super_admin')
