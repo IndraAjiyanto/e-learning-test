@@ -2,8 +2,8 @@
 <div 
   class="relative min-h-[calc(100vh-62px)] flex flex-col justify-between bg-[#FAFAFA] font-montserrat overflow-hidden"
   x-data="{
-    activeSection: 'profile',
     sidebarOpen: true,
+    activeSection: '{{#if activeTab}}{{activeTab}}{{else}}profile{{/if}}',
     openMyLearning: true,
     openUiUx: true,
     openRoblox: false,

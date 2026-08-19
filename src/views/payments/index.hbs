@@ -98,10 +98,19 @@
 
     const savedStep = sessionStorage.getItem('currentPaymentStep');
     if (savedStep) {
-      goToStep(parseInt(savedStep), true); // Skip validation when restoring from reload
+      goToStep(parseInt(savedStep), true);
     }
   });
 </script>
+
+{{#if autoStep}}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    goToStep({{autoStep}}, true);
+    sessionStorage.removeItem('currentPaymentStep');
+  });
+</script>
+{{/if}}
 
 <style>
   @keyframes fadeIn {

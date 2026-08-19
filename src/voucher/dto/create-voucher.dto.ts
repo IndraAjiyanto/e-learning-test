@@ -6,4 +6,5 @@ export class CreateVoucherDto {
   percent?: any;
   active?: any;
   courseIds?: any;
+  allowed_user_ids?: any;
 }

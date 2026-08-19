@@ -233,7 +233,8 @@ export class UsersController {
     }
     const user = await this.usersService.findOne(req.user.id);
     const portfolio = await this.usersService.findPortfolio(req.user.id);
-    return res.render('user/user_profile/index', { user: user, portfolio });
+    const activeTab = req.query.tab || 'profile';
+    return res.render('user/user_profile/index', { user: user, portfolio, activeTab });
   }
 
   @Roles('user', 'admin', 'super_admin')

@@ -425,8 +425,8 @@ isProgramActive() {
                   <span>{{t 'test.navbar.myPortfolio'}}</span>
                 </a>
                 <a
-                  href='/payment/history/{{user.id}}'
-                  @click="setActive('/payment/history/{{user.id}}')"
+                  href='/users/profile?tab=history-payment'
+                  @click="setActive('/users/profile')"
                   class='flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors text-white/80'
                 >
                   <svg
@@ -914,9 +914,9 @@ isProgramActive() {
                 <span>{{t 'test.navbar.myPortfolio'}}</span>
               </a>
               <a
-                href='/payment/history/{{user.id}}'
-                @click="setActive('/payment/history/{{user.id}}')"
-                :class="isActive('/payment/history/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                href='/users/profile?tab=history-payment'
+                @click="setActive('/users/profile')"
+                :class="isActive('/users/profile') ? 'bg-gray-200' : 'hover:bg-gray-200'"
                 class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg

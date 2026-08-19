@@ -4,26 +4,38 @@ export class AddDateRegistrationColumn1786007252016 implements MigrationInterfac
 
     public async up(queryRunner: QueryRunner): Promise<void> {
 
-       await queryRunner.query(`
-            CREATE TYPE "payments_current_status_enum" AS ENUM(
-                'University Student', 'Fresh Graduate', 'Job Seeker', 
-                'Employee', 'Freelancer', 'Entrepreneur', 'Other'
-            )
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "payments" 
-            ADD "current_status" "payments_current_status_enum" NULL
-        `);
+        try {
+            await queryRunner.query(`
+                CREATE TYPE "payments_current_status_enum" AS ENUM(
+                    'University Student', 'Fresh Graduate', 'Job Seeker', 
+                    'Employee', 'Freelancer', 'Entrepreneur', 'Other'
+                )
+            `);
+            await queryRunner.query(`
+                ALTER TABLE "payments" 
+                ADD "current_status" "payments_current_status_enum" NULL
+            `);
+        } catch (e) {
+            console.log('Skipping payments_current_status_enum creation because it might already exist', e.message);
+        }
 
-        await queryRunner.query(`
-            ALTER TABLE "payments" 
-            ADD "attend_program" boolean NULL
-        `);
+        try {
+            await queryRunner.query(`
+                ALTER TABLE "payments" 
+                ADD "attend_program" boolean NULL
+            `);
+        } catch (e) {
+            console.log('Skipping attend_program creation', e.message);
+        }
 
-         await queryRunner.query(`
-      ALTER TABLE "course"
-      ADD COLUMN "date_registration" TIMESTAMP NULL;
-    `);
+        try {
+             await queryRunner.query(`
+          ALTER TABLE "course"
+          ADD COLUMN "date_registration" TIMESTAMP NULL;
+        `);
+        } catch (e) {
+            console.log('Skipping date_registration creation', e.message);
+        }
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
