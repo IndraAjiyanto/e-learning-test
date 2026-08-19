@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWeeksDto } from './dto/create-weeks.dto';
 import { UpdateWeeksDto } from './dto/update-weeks.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -88,9 +92,7 @@ export class WeeksService {
       });
 
       if (!weeks) {
-        throw new NotFoundException(
-          'Previous week must be created first',
-        );
+        throw new NotFoundException('Previous week must be created first');
       } else if (!weeks.isFinal) {
         if (createWeekDto.isFinalCheck === 'true') {
           createWeekDto.isFinal = true;
@@ -176,15 +178,17 @@ export class WeeksService {
       throw new NotFoundException('week not found');
     }
 
-    if (weeks.isFinal) {
-      throw new BadRequestException('Finalized week cannot be updated');
+    const finalWeek = await this.weeksRepository.findOne({
+      where: { course: { id: weeks.course.id }, isFinal: true },
+    });
+
+    if (finalWeek && finalWeek.id !== weeks.id) {
+      updateWeekDto.isFinal = false;
+      updateWeekDto.isFinalCheck = 'false';
+    } else {
+      updateWeekDto.isFinal = updateWeekDto.isFinalCheck === 'true';
     }
 
-    if (updateWeekDto.isFinalCheck === 'true') {
-      updateWeekDto.isFinal = true;
-    } else {
-      updateWeekDto.isFinal = false;
-    }
     Object.assign(weeks, updateWeekDto);
     return await this.weeksRepository.save(weeks);
   }

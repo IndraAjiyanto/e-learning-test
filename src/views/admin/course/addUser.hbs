@@ -133,10 +133,10 @@
           </div>
         </div>
 
-        {{#if murid.length}}
+        {{#if student.length}}
           <div class="max-h-40 overflow-y-auto">
             <ul class="space-y-2">
-              {{#each murid}}
+              {{#each student}}
               <li class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm hover:bg-gray-100 transition"
                   x-show="'{{username}}'.toLowerCase().includes(searchMurid.toLowerCase()) || searchMurid === ''">
                 <div class="flex items-center space-x-3">
