@@ -6,4 +6,5 @@ export class UpdateVoucherDto {
   percent?: any;
   active?: any;
   courseIds?: any;
+  allowed_user_ids?: any;
 }

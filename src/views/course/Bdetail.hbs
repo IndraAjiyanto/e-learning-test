@@ -259,41 +259,30 @@
       >
 {{> program_Bdetail/right_content/price}}
 
-        <!-- Card No Rekening -->
-        {{#if user}}
-    {{> program_Bdetail/right_content/card_no_rekening}}
-
-          <!-- Form Upload -->
-          {{#if check_user}}
+        {{#if check_user}}
+          <a
+            href='/program/{{course.id}}'
+            class='btn text-base w-full text-center  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold '
+          >
+            <i class='fas fa-play-circle mr-2'></i>
+            {{t "test.detailProgram.continueLearning"}}
+          </a>
+        {{else}}
+          {{#if (check studentList course.quota)}}
             <a
-              href='/program/{{course.id}}'
-              class='btn text-base w-full text-center  transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white rounded-xl font-semibold '
+              href='/payment/registration/{{course.id}}'
+              class='btn text-base w-full bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center border-none'
             >
-              <i class='fas fa-play-circle mr-2'></i>
-              {{t "test.detailProgram.continueLearning"}}
+              <i class='fas fa-sign-in-alt mr-2'></i>
+              Registration Now
             </a>
           {{else}}
-            {{#if course.checkPaid}}
-              {{#if (check daftar course.quota)}}
-{{> program_Bdetail/right_content/upload_proof_of_payment/full_payment}}
-
-{{> program_Bdetail/right_content/upload_proof_of_payment/installment}}
-              {{/if}}
-            {{else}}
-              {{#if (check daftar course.quota)}}
-{{> program_Bdetail/right_content/upload_proof_of_payment/free_payment}}
-              {{/if}}
-            {{/if}}
+            <div class='bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-5 text-center'>
+              <i class='fas fa-users text-red-500 text-2xl mb-2'></i>
+              <p class='font-semibold text-red-800'>{{ t "test.detailProgram.programIsFull" }}</p>
+              <p class='text-sm text-red-600'>{{ t "test.detailProgram.thisProgramMaximum" }}</p>
+            </div>
           {{/if}}
-
-        {{else}}
-          <a
-            href='/login'
-            class='btn text-base w-full bg-[#0B1F3B] hover:bg-[#0B1F3B]/90 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center border-none'
-          >
-            <i class='fas fa-sign-in-alt mr-2'></i>
-            Registration Now
-          </a>
         {{/if}}
       </div>
       </div>

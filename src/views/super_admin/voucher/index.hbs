@@ -19,6 +19,7 @@
           <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Percent</th>
           <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Active</th>
           <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Programs</th>
+          <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Target Users</th>
           <th class='px-6 py-3 text-left text-sm font-semibold text-gray-700'>Action</th>
         </tr>
       </thead>
@@ -44,6 +45,9 @@
             </td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               {{#if courses.length}}{{courses.length}} program{{else}}-{{/if}}
+            </td>
+            <td class='px-6 py-4 text-sm text-gray-800'>
+              {{target_users_label}}
             </td>
             <td class='px-6 py-4 text-sm text-gray-800 flex items-center gap-3'>
               <a

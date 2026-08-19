@@ -7,6 +7,7 @@ import {
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { InvoiceModule } from './invoice/invoice.module';
 import { AttendancesModule } from './attendances/attendances.module';
 import { MaterialsModule } from './materials/material.module';
 import { CoursesModule } from './courses/courses.module';
@@ -138,6 +139,7 @@ const TABLES_WITH_SEQUENCE = [
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
     UsersModule,
+    InvoiceModule,
     AttendancesModule,
     MaterialsModule,
     CoursesModule,

@@ -7,10 +7,12 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Generated,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Course } from './course.entity';
 import { Installment } from './installment.entity';
+import { Invoice } from './invoice.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 
@@ -50,6 +52,9 @@ export class Payment {
 
   @Column({nullable:true,})
   attend_program: boolean;
+
+  @OneToOne(() => Invoice, (invoice) => invoice.payment)
+  invoice: Invoice;
 
   @CreateDateColumn()
   createdAt: Date;
