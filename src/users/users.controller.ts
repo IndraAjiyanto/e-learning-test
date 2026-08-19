@@ -30,12 +30,34 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
+import { Quiz } from 'src/entities/quiz.entity';
+import { QuizProgress } from 'src/entities/quiz_progress.entity';
+import { Weeks } from 'src/entities/weeks.entity';
+import { Course } from 'src/entities/course.entity';
+import { UserCourse } from 'src/entities/user_course.entity';
+import { Score } from 'src/entities/score.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(
+    private readonly usersService: UsersService,
+    @InjectRepository(Quiz)
+    private readonly quizRepository: Repository<Quiz>,
+    @InjectRepository(QuizProgress)
+    private readonly quizProgressRepository: Repository<QuizProgress>,
+    @InjectRepository(Weeks)
+    private readonly weeksRepository: Repository<Weeks>,
+    @InjectRepository(Course)
+    private readonly courseRepository: Repository<Course>,
+    @InjectRepository(UserCourse)
+    private readonly userCourseRepository: Repository<UserCourse>,
+    @InjectRepository(Score)
+    private readonly scoreRepository: Repository<Score>,
+  ) {}
 
   // ============================================
   // PUBLIC ROUTES - Forgot & Reset Password (No Auth Required)
@@ -181,12 +203,9 @@ export class UsersController {
   }
 
   @Get('verify-email-success')
-  async verifyEmailSuccess(
-    @Res() res: Response
-  ){
-    res.render('verify-email-success')
+  async verifyEmailSuccess(@Res() res: Response) {
+    res.render('verify-email-success');
   }
-
 
   // ============================================
   // PROTECTED ROUTES - Require Authentication
@@ -233,7 +252,77 @@ export class UsersController {
     }
     const user = await this.usersService.findOne(req.user.id);
     const portfolio = await this.usersService.findPortfolio(req.user.id);
-    return res.render('user/user_profile/index', { user: user, portfolio });
+
+    // Get user's enrolled courses
+    const userCourses = await this.userCourseRepository.find({
+      where: { user: { id: req.user.id } },
+      relations: ['course', 'course.weeks', 'course.weeks.quiz'],
+    });
+
+    // Extract all quizzes from enrolled courses
+    const quizzes: Array<{
+      id: number;
+      title: string;
+      courseName: string;
+      weekNumber: number;
+      weekName: string;
+      duration: number;
+      minScore: number;
+      lastSubmitted: string | null;
+      submitDate: string | null;
+      isCompleted: boolean;
+      score: number | null;
+    }> = [];
+    for (const uc of userCourses) {
+      if (uc.course && uc.course.weeks) {
+        for (const week of uc.course.weeks) {
+          if (week.quiz && week.quiz.length > 0) {
+            for (const quiz of week.quiz) {
+              // Get quiz progress for this user
+              const quizProgress = await this.quizProgressRepository.findOne({
+                where: {
+                  user: { id: req.user.id },
+                  quiz: { id: quiz.id },
+                },
+              });
+
+              // Get score for this user
+              const score = await this.scoreRepository.findOne({
+                where: {
+                  user: { id: req.user.id },
+                  quiz: { id: quiz.id },
+                },
+                order: { createdAt: 'DESC' },
+              });
+
+              quizzes.push({
+                id: quiz.id,
+                title: quiz.quizName,
+                courseName: uc.course.name,
+                weekNumber: week.weekNumber,
+                weekName: week.description || `Week ${week.weekNumber}`,
+                duration: quiz.duration,
+                minScore: quiz.minScore,
+                lastSubmitted: quizProgress?.createdAt
+                  ? quizProgress.createdAt.toISOString().split('T')[0]
+                  : null,
+                submitDate: score?.createdAt
+                  ? score.createdAt.toISOString().split('T')[0]
+                  : null,
+                isCompleted: quizProgress?.process === true,
+                score: score?.score ?? null,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    return res.render('user/user_profile/index', {
+      user: user,
+      portfolio,
+      quizzes,
+    });
   }
 
   @Roles('user', 'admin', 'super_admin')
@@ -299,13 +388,8 @@ export class UsersController {
 
   @Roles('super_admin')
   @Get('profile/:id')
-  async detailUser(
-    @Param('id') userId: number,
-    @Res() res: Response,
-  ) {
-
+  async detailUser(@Param('id') userId: number, @Res() res: Response) {
     const user = await this.usersService.findOne(userId);
-    console.log('ID PARAM:', userId);
     return res.render('super_admin/user/detail', { user });
   }
 
