@@ -1,0 +1,473 @@
+{{! --- START LEARNING MAIN CONTAINER --- }}
+<div 
+  class="space-y-8 sm:space-y-10 md:space-y-12 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-6 sm:pt-10 mb-28"
+  x-data="{
+    activeMateri: null,
+    openWeek1: true,
+    openWeek2: false,
+    openWeek3: false,
+    selectedMaterial: null,
+    showMaterialModal: false,
+    showLogbookModal: false,
+    logbookForm: {
+      title: '',
+      notes: '',
+      date: new Date().toISOString().split('T')[0]
+    }
+  }"
+  x-init="$watch('showLogbookModal', value => document.body.classList.toggle('overflow-hidden', value))"
+>
+
+  {{! --- DASHBOARD UTAMA START LEARNING --- }}
+  <div x-show="!activeMateri" class="space-y-8 sm:space-y-10 md:space-y-12">
+
+    {{! --- HEADER SECTION --- }}
+  <div class="space-y-3">
+    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-[36px] text-[#003060] leading-none">
+      Start Learning
+    </h1>
+    <p class="font-sans font-normal text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
+      Complete each week to unlock the next
+    </p>
+  </div>
+
+  {{! --- PROGRAM CARD SECTION --- }}
+  <div class="w-full">
+    <div class="flex flex-col lg:flex-row items-center gap-6 lg:gap-[30px]">
+      
+      <!-- Program Image (326x216, radius 6px, shadow, vertically centered) -->
+      <div class="w-full lg:w-[326px] h-[216px] flex-shrink-0">
+        <img 
+          src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80" 
+          alt="UI/UX Designer" 
+          class="w-full h-full object-cover rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]"
+        >
+      </div>
+
+      <!-- Program Info Content -->
+      <div class="flex-1 w-full min-w-0 flex flex-col justify-between space-y-4">
+        
+        <!-- Header Row: Title + Bootcamp Badge (Left) & View Detail Program Link (Right) -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          
+          <!-- Title & Bootcamp Badge Inline Group -->
+          <div class="flex items-center gap-4 flex-wrap">
+            <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-[36px] text-[#003060] leading-none">
+              UI/UX Designer
+            </h2>
+            <span class="bg-[#CFE6F5] rounded-[6px] font-sans font-medium text-sm sm:text-base md:text-[18px] text-[#003060] px-4 py-1 inline-flex items-center justify-center min-w-[106px] h-[28px] leading-none">
+              Bootcamp
+            </span>
+          </div>
+
+          <!-- View Detail Program Link (Right) -->
+          <a 
+            href="#" 
+            class="font-montserrat font-light text-base sm:text-lg md:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors cursor-pointer whitespace-nowrap"
+          >
+            View Detail Program
+          </a>
+
+        </div>
+
+        <!-- Description (font-sans font-normal text-[20px] leading-[35px] text-[#000] text-justify) -->
+        <p class="font-sans font-normal text-sm sm:text-base md:text-[25px] leading-relaxed md:leading-[35px] text-black text-justify">
+          An intensive 12-week bootcamp that equips participants to design effective, modern, and user-centric user interfaces (UI) and user experiences (UX). The program covers user research, wireframing, and prototyping, up to handoff-ready interactive designs.
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+
+  {{! --- WEEK 1 SECTION --- }}
+  <div class="space-y-6">
+    
+    <!-- Week 1 Header (flex justify-between, font-montserrat font-semibold text-[25px] text-[#003060] + icon 35x35) -->
+    <button 
+      type="button" 
+      @click="openWeek1 = !openWeek1"
+      class="w-full flex items-center justify-between text-left cursor-pointer select-none py-2 group focus:outline-none"
+    >
+      <h3 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] group-hover:text-[#002244] transition-colors">
+        Week 1 : Minggu Pertama
+      </h3>
+      <div class="w-[35px] h-[35px] flex items-center justify-center text-[#003060] transition-transform duration-300 flex-shrink-0" :class="openWeek1 ? '' : 'rotate-180'">
+        <i class="fa-solid fa-chevron-up text-xl sm:text-[25px]"></i>
+      </div>
+    </button>
+
+    <!-- Week 1 Collapsible Content -->
+    <div x-show="openWeek1" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4">
+      
+      <!-- SESSION 1 CARD (Active Session with Details & Materials) -->
+      <div class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-5 sm:p-6 space-y-6">
+        
+        <!-- Session Header: Title + Logbook Button (Top Right) -->
+        <div class="flex items-start justify-between gap-4">
+          <div class="space-y-7">
+            <!-- Title (Montserrat 600, 20px, #003060, 100% line-height) -->
+            <h4 class="font-montserrat font-semibold text-lg sm:text-[20px] text-[#003060] leading-none">
+              Session 1 - Introduce UI/UX
+            </h4>
+
+            <!-- Date & Time Meta Details (Open Sans 400, 20px, #003060, 100% line-height) -->
+            <div class="space-y-4 pt-1 font-['Open_Sans'] font-normal text-base sm:text-[20px] text-[#003060] leading-none">
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-calendar text-base sm:text-[20px]"></i>
+                <span>Apr, 06 2026</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-regular fa-clock text-base sm:text-[20px]"></i>
+                <span>08:00 - 16:00 WIB</span>
+              </div>
+            </div>
+
+            <!-- Attendance Recorded Badge (178x24px, radius 12px, bg #E5F6D4, border 1px #12BD26) -->
+            <div class="pt-1">
+              <span class="w-auto sm:w-[178px] h-[24px] bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-3 font-sans font-normal text-xs sm:text-[14px] text-[#12BD26] inline-flex items-center justify-center leading-none">
+                <span>Attendance Recorded</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- '+ Logbook' Action Button (Top Right, Montserrat 500, 20px) -->
+          <button 
+            type="button" 
+            @click="showLogbookModal = true"
+            class="bg-[#003060] hover:bg-[#002244] text-white rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-4 py-2.5 flex items-center justify-center gap-2 font-montserrat font-medium text-base sm:text-[20px] leading-none transition-all cursor-pointer flex-shrink-0"
+          >
+            <i class="fa-solid fa-plus text-sm sm:text-base"></i>
+            <span>Logbook</span>
+          </button>
+        </div>
+
+        <!-- Materials Section -->
+        <div class="pt-2 space-y-7">
+          <!-- Materials Heading (Montserrat 500, 20px, #003060) -->
+          <h5 class="font-montserrat font-semibold text-base sm:text-[20px] text-[#003060] leading-none">
+            Materials
+          </h5>
+
+          <div class="space-y-12 pl-1">
+            <!-- Material Item 1: Pdf Material -->
+            <div class="space-y-4">
+              <span class="font-montserrat font-medium text-base sm:text-[20px] text-[#003060] block leading-none">
+                Click the material for today’s session:
+              </span>
+              {{#if pdfMaterial}}
+                <a 
+                  href="javascript:void(0)" 
+                  @click="activeMateri = 'pdf'"
+                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
+                >
+                  {{#if pdfMaterial.title}}{{pdfMaterial.title}}{{else}}Materi Session 1{{/if}}
+                </a>
+              {{else if (eq pdfMaterial false)}}
+                <span class="font-montserrat font-normal text-base sm:text-[20px] text-[#666666] block leading-none">
+                  No PDF material available
+                </span>
+              {{else}}
+                <a 
+                  href="javascript:void(0)" 
+                  @click="activeMateri = 'pdf'"
+                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
+                >
+                  Materi Session 1
+                </a>
+              {{/if}}
+            </div>
+
+            <!-- Material Item 2: Video Lessons -->
+            <div class="space-y-4">
+              <span class="font-montserrat font-medium text-base sm:text-[20px] text-[#003060] block leading-none">
+                Click the lesson video for today’s session:
+              </span>
+              {{#if videoMaterial}}
+                <a 
+                  href="javascript:void(0)" 
+                  @click="activeMateri = 'video'"
+                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
+                >
+                  {{#if videoMaterial.title}}{{videoMaterial.title}}{{else}}Video Session 1 Week 1{{/if}}
+                </a>
+              {{else if (eq videoMaterial false)}}
+                <span class="font-montserrat font-normal text-base sm:text-[20px] text-[#666666] block leading-none">
+                  No Video material available
+                </span>
+              {{else}}
+                <a 
+                  href="javascript:void(0)" 
+                  @click="activeMateri = 'video'"
+                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
+                >
+                  Video Session 1 Week 1
+                </a>
+              {{/if}}
+            </div>
+
+            <!-- Material Item 3: PPT Material -->
+            <div class="space-y-4">
+              <span class="font-montserrat font-medium text-base sm:text-[20px] text-[#003060] block leading-none">
+                Click the PowerPoint presentation for today’s session:
+              </span>
+              {{#if pptMaterial}}
+                <a 
+                  href="javascript:void(0)" 
+                  @click="activeMateri = 'ppt'"
+                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
+                >
+                  {{#if pptMaterial.title}}{{pptMaterial.title}}{{else}}PPT Session 1 Week 1{{/if}}
+                </a>
+              {{else}}
+                <span class="font-montserrat font-normal text-base sm:text-[20px] text-[#666666] block leading-none">
+                  No PPT material available
+                </span>
+              {{/if}}
+            </div>
+          </div></div>
+        </div>
+
+      </div>
+
+      <!-- SESSION 2 CARD (Locked Bar Layout Matching Figma) -->
+      <div class="w-full h-[54px] px-5 sm:px-6 bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-between">
+        <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none">
+          Session 2 - Layout Grid
+        </h4>
+        <div class="text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
+          <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
+        </div>
+      </div>
+
+      <!-- SESSION 3 CARD (Locked Bar Layout Matching Figma) -->
+      <div class="w-full h-[54px] px-5 sm:px-6 bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-between">
+        <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none">
+          Session 3 - Wheels Colors
+        </h4>
+        <div class="text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
+          <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
+        </div>
+      </div>
+
+      <!-- QUIZ BOX ('Quiz Week 1': centered title + lock icon at the far right edge matching Figma) -->
+      <a 
+        href="/quiz/start/1" 
+        class="relative w-full h-[54px] rounded-[12px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-5 sm:px-6 bg-[#D9D9D980] border-[0.1px] border-[#D9D9D980] backdrop-blur-[6.6px] flex items-center justify-center gap-3 transition-all cursor-pointer group mt-4"
+      >
+        <div class="w-6 h-6 flex items-center justify-center text-[#00000080] flex-shrink-0">
+          <i class="fa-solid fa-file-pen text-xl sm:text-[22px]"></i>
+        </div>
+        <span class="font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#00000080]">
+          Quiz Week 1
+        </span>
+        <div class="absolute right-5 sm:right-6 text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
+          <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
+        </div>
+      </a>
+
+    </div>
+
+    {{! --- WEEK 2 SECTION (Upcoming / Locked Week) --- }}
+    <div class="space-y-6 pt-2 border-t border-slate-200">
+      
+      <!-- Week 2 Header -->
+      <button 
+        type="button" 
+        @click="openWeek2 = !openWeek2"
+        class="w-full flex items-center justify-between text-left cursor-pointer select-none py-2 group focus:outline-none"
+      >
+        <div class="flex items-center gap-3">
+          <h3 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] group-hover:text-[#002244] transition-colors">
+            Week 2 : Minggu Kedua
+          </h3>
+          <span class="bg-[#F3F4F6] border border-[#D1D5DB] rounded-[12px] px-3 py-0.5 font-sans font-medium text-xs text-[#6B7280]">
+            Locked
+          </span>
+        </div>
+        <div class="w-[35px] h-[35px] flex items-center justify-center text-[#003060] transition-transform duration-300 flex-shrink-0" :class="openWeek2 ? '' : 'rotate-180'">
+          <i class="fa-solid fa-chevron-up text-xl sm:text-[25px]"></i>
+        </div>
+      </button>
+
+      <!-- Week 2 Collapsible Content (Locked) -->
+      <div x-show="openWeek2" x-transition class="space-y-4" style="display: none;">
+        <div class="p-6 bg-white/50 backdrop-blur-[3.3px] rounded-[12px] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] text-center space-y-2">
+          <div class="w-12 h-12 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060] mb-2">
+            <i class="fa-solid fa-lock text-xl"></i>
+          </div>
+          <h4 class="font-montserrat font-semibold text-lg text-[#003060]">
+            Week 2 is Currently Locked
+          </h4>
+          <p class="font-sans font-normal text-sm sm:text-base text-slate-600 max-w-md mx-auto">
+            Please complete all sessions and submit Quiz Week 1 to unlock Week 2 lessons and materials.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {{! --- END DASHBOARD UTAMA START LEARNING --- }}
+
+  {{! --- MATERI PDF TAB CONTENT --- }}
+  <div x-show="activeMateri === 'pdf'" x-cloak style="display: none;" class="!mt-0">
+    {{> user/sidebar_user_profile/my_learning/start_learning/materi/pdf/index }}
+  </div>
+
+  {{! --- MATERI VIDEO TAB CONTENT --- }}
+  <div x-show="activeMateri === 'video'" x-cloak style="display: none;" class="!mt-0">
+    {{> user/sidebar_user_profile/my_learning/start_learning/materi/video/index }}
+  </div>
+
+  {{! --- MATERI PPT TAB CONTENT --- }}
+  <div x-show="activeMateri === 'ppt'" x-cloak style="display: none;" class="!mt-0">
+    {{> user/sidebar_user_profile/my_learning/start_learning/materi/ppt/index }}
+  </div>
+
+
+  {{! --- LOGBOOK FORM POPUP MODAL --- }}
+  <div 
+    x-cloak
+    style="display: none;"
+    x-show="showLogbookModal" 
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+    @keydown.escape.window="showLogbookModal = false"
+  >
+    <div 
+      @click.away="showLogbookModal = false"
+      class="bg-white rounded-[12px] p-6 sm:p-8 md:p-10 max-w-4xl w-full shadow-2xl font-montserrat relative border border-slate-200"
+    >
+      <!-- Close Button (Top Right) -->
+      <button 
+        type="button" 
+        @click="showLogbookModal = false"
+        class="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center text-slate-500 hover:text-[#003060] hover:bg-slate-100 transition-all cursor-pointer"
+        aria-label="Close modal"
+      >
+        <i class="fa-solid fa-xmark text-2xl"></i>
+      </button>
+
+      <!-- Modal Title Header -->
+      <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-[36px] text-[#003060] leading-none mb-8 text-left">
+        Logbook Form
+      </h2>
+
+      <!-- Form Content -->
+      <form @submit.prevent="showLogbookModal = false" class="space-y-8">
+        
+        <!-- Two-Column Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          
+          <!-- LEFT COLUMN -->
+          <div class="space-y-6">
+            
+            <!-- Field Group 1: Activity -->
+            <div class="space-y-2">
+              <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
+                Activity
+              </label>
+              <input 
+                type="text" 
+                placeholder="Enter activity description..."
+                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+              >
+            </div>
+
+            <!-- Field Group 2: Activity Details -->
+            <div class="space-y-2">
+              <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
+                Activity Details
+              </label>
+              <textarea 
+                rows="6"
+                placeholder="Enter detailed description of your activity..."
+                class="w-full h-[180px] rounded-[6px] p-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] resize-none transition-colors"
+              ></textarea>
+            </div>
+
+          </div>
+
+          <!-- RIGHT COLUMN -->
+          <div class="space-y-6">
+            
+            <!-- Field Group 3: Obstacles -->
+            <div class="space-y-2">
+              <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
+                Obstacles
+              </label>
+              <input 
+                type="text" 
+                placeholder="Enter any obstacles faced..."
+                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+              >
+            </div>
+
+            <!-- Field Group 4: Photo Documentation -->
+            <div class="space-y-2" x-data="{ fileName: '' }">
+              <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
+                Photo Documentation
+              </label>
+              <div class="relative w-full h-[45px] bg-white border border-slate-300 rounded-[6px] p-1 flex items-center gap-3">
+                <label class="bg-[#E2E8F0] hover:bg-slate-300 text-[#003060] font-montserrat font-medium text-xs sm:text-sm px-3 py-1.5 rounded-[4px] cursor-pointer transition-colors flex-shrink-0 select-none">
+                  Choose File
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    class="hidden" 
+                    @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''"
+                  >
+                </label>
+                <span 
+                  class="font-montserrat font-medium text-xs sm:text-[18px] text-black/50 truncate"
+                  x-text="fileName || 'No file chosen'"
+                ></span>
+              </div>
+            </div>
+
+            <!-- Field Group 5: Link Documentation -->
+            <div class="space-y-2">
+              <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
+                Link Documentation
+              </label>
+              <input 
+                type="url" 
+                placeholder="Enter Link Documentation"
+                class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
+              >
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- BUTTONS ROW -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+          <!-- Save Button -->
+          <button 
+            type="submit" 
+            class="w-full sm:w-auto flex-1 max-w-[280px] h-[50px] bg-[#003060] hover:bg-[#002244] border border-[#003060] rounded-[6px] shadow-[0_0_4px_rgba(0,0,0,0.5)] px-6 font-montserrat font-medium text-base sm:text-[20px] text-white text-center transition-all cursor-pointer"
+          >
+            Save
+          </button>
+
+          <!-- Cancel Button -->
+          <button 
+            type="button" 
+            @click="showLogbookModal = false"
+            class="w-full sm:w-auto flex-1 max-w-[280px] h-[50px] bg-white hover:bg-slate-50 border border-[#003060] rounded-[6px] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 font-montserrat font-medium text-base sm:text-[20px] text-[#003060] text-center transition-all cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>

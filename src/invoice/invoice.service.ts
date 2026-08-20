@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Payment } from 'src/entities/payment.entity';
 import { Invoice } from 'src/entities/invoice.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
-import Xendit from 'xendit-node';
+import { Xendit } from 'xendit-node';
 import { Course } from 'src/entities/course.entity';
 
 @Injectable()
