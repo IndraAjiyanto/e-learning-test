@@ -30,9 +30,7 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('program')
 export class CoursesController {
-  constructor(
-    private readonly coursesService: CoursesService,
-  ) {}
+  constructor(private readonly coursesService: CoursesService) {}
 
   @Roles('admin', 'super_admin')
   @Post()
@@ -475,11 +473,12 @@ export class CoursesController {
     // const course = await this.coursesService.findMyCourse(id);
     const category = await this.coursesService.findCategoryMyProgram(id);
     const courseType = await this.coursesService.findMyProgramCourseTypes(id);
-    res.render('user/mycourse', {
+    res.render('user/user_profile/index', {
       // course,
       user: req.user,
       category,
       courseType,
+      activeSection: 'learning',
     });
   }
 
@@ -565,7 +564,7 @@ export class CoursesController {
           technologies,
           installments,
           userCourses,
-          faqs
+          faqs,
         });
       } else {
         res.render('detail_program/paid_program/index', {
