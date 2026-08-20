@@ -1,6 +1,6 @@
 {{!-- USER PROFILE INDEX VIEW --}}
 <div 
-  class="relative min-h-[calc(100vh-62px)] flex flex-col justify-between bg-[#FAFAFA] font-montserrat overflow-hidden"
+  class="relative min-h-[calc(100vh-62px)] flex flex-col justify-between bg-[#FAFAFA] font-montserrat overflow-x-hidden"
   x-data="{
     sidebarOpen: true,
     activeSection: '{{activeSection}}' || 'profile',
@@ -199,8 +199,8 @@
                     <span class="whitespace-nowrap">Certificate</span>
                   </button>
 
-                  <button 
-                    @click="toggleActiveSection('group-class');" 
+                  <button
+                    @click="toggleActiveSection('group-class');"
                     :class="activeSection === 'group-class' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
                     class="w-full h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
                   >
@@ -208,6 +208,17 @@
                       <img src="/public/image/user_profile/joinGroupClass.svg" alt="Join Group Class" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'group-class' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
                     <span class="whitespace-nowrap">Join Group Class</span>
+                  </button>
+
+                  <button
+                    @click="toggleActiveSection('attendance');"
+                    :class="activeSection === 'attendance' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
+                    class="w-full h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
+                  >
+                    <div class="w-5 flex justify-center items-center flex-shrink-0">
+                      <i class="fa-solid fa-clipboard-list text-sm" :class="activeSection === 'attendance' ? 'text-white' : 'text-slate-700'"></i>
+                    </div>
+                    <span class="whitespace-nowrap">Attendance</span>
                   </button>
 
                 </div>
@@ -316,8 +327,13 @@
           {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index }}
         </div>
 
+        <!-- Attendance Tab Content -->
+        <div x-show="activeSection === 'attendance'">
+          {{> user/sidebar_user_profile/my_learning/start_learning/attendance/index }}
+        </div>
+
         <!-- Other Tabs Placeholder Content -->
-        <div x-show="activeSection !== 'profile' && activeSection !== 'learning' && activeSection !== 'history-payment' && activeSection !== 'portfolio' && activeSection !== 'quiz' && activeSection !== 'quizDetail' && activeSection !== 'startQuiz' && activeSection !== 'group-class'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
+        <div x-show="activeSection !== 'profile' && activeSection !== 'learning' && activeSection !== 'history-payment' && activeSection !== 'portfolio' && activeSection !== 'quiz' && activeSection !== 'quizDetail' && activeSection !== 'startQuiz' && activeSection !== 'group-class' && activeSection !== 'attendance'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
           <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
             <i class="fas fa-folder-open text-2xl"></i>
           </div>
