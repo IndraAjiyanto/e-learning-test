@@ -450,7 +450,7 @@ export class CoursesService {
       where: {
         userCourses: { user: { id: userId } },
       },
-      relations: ['category', 'courseType'],
+      relations: ['category', 'courseType', 'weeks'],
     });
   }
 

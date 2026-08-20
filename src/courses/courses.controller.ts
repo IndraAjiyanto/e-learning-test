@@ -470,11 +470,11 @@ export class CoursesController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    // const course = await this.coursesService.findMyCourse(id);
+    const course = await this.coursesService.findMyCourse(id);
     const category = await this.coursesService.findCategoryMyProgram(id);
     const courseType = await this.coursesService.findMyProgramCourseTypes(id);
     res.render('user/user_profile/index', {
-      // course,
+      course,
       user: req.user,
       category,
       courseType,
