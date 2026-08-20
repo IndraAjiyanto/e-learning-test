@@ -5,17 +5,17 @@
 
           <!-- Quiz List Section -->
           <div class="space-y-3">
-            {{#each quizzes}}
             <div class="bg-white border border-[#D9D9D9] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               <div class="flex items-center justify-between px-5 py-3.5 gap-4">
                 <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
-                  {{this.weekName}} : {{this.title}}
+                  Quiz Week 1 : Minggu Pertama
                 </span>
-                <a href="/quiz/form/{{this.id}}"
-                   class="inline-flex items-center justify-center px-4 py-2 bg-[#003060] text-white rounded-lg font-montserrat font-medium text-[20px] hover:bg-[#001F3F] transition-colors whitespace-nowrap flex-shrink-0">Take Quiz               
+                <a href="#"
+                   @click.prevent="toggleActiveSection('quizDetail')"
+                   class="inline-flex items-center justify-center px-4 py-2 bg-[#003060] text-white rounded-lg font-montserrat font-medium text-[20px] hover:bg-[#001F3F] transition-colors whitespace-nowrap flex-shrink-0 cursor-pointer">Take Quiz
                 </a>
               </div>
             </div>
-            {{/each}}
           </div>
+        </div>
         </div>
