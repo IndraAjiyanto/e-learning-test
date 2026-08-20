@@ -64,11 +64,11 @@
     </div>
 
     <!-- Flex Main Layout (Flex-1 Full Height to Footer) -->
-    <div class="flex flex-col lg:flex-row gap-[30px] items-stretch w-full flex-1 min-h-[calc(100vh-140px)]">
+    <div class="flex flex-col lg:flex-row gap-[30px] items-stretch w-full flex-1 min-h-[calc(100vh-62px)]">
 
       <!-- Desktop Sidebar Navigation (Full Height self-stretch touching footer) -->
       <div 
-        class="hidden lg:flex flex-col justify-between flex-shrink-0 self-stretch bg-white/80 backdrop-blur-[6.6px] border-r border-t border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] rounded-tr-[12px] rounded-br-[12px] transition-all duration-300 pb-12 mb-0"
+        class="hidden lg:flex flex-col justify-between flex-shrink-0 self-stretch min-h-full bg-white/80 backdrop-blur-[6.6px] border-r border-t border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] rounded-tr-[12px] rounded-br-[12px] transition-all duration-300 pb-12 mb-0"
         :class="sidebarOpen ? 'w-[324px] p-7 pt-6' : 'w-[88px] px-3 pt-6'"
       >
         <nav class="space-y-[24px]">
@@ -129,12 +129,13 @@
               <!-- UI/UX Designer Sub-Accordion -->
               <div class="space-y-[20px]">
                 <button
-                  @click="openUiUx = !openUiUx"
-                  class="w-full h-[54px] px-[16px] py-[8px] gap-[12px] rounded-[6px] bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] text-slate-800 font-inter font-medium text-[17px] flex items-center justify-between transition-all cursor-pointer"
+                  @click="openUiUx = !openUiUx; toggleActiveSection('uiux');"
+                  :class="activeSection === 'uiux' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-800 border-[#D9D9D9] hover:bg-slate-50'"
+                  class="w-full h-[54px] px-[16px] py-[8px] gap-[12px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[17px] flex items-center justify-between transition-all cursor-pointer"
                 >
                   <div class="flex items-center gap-[12px]">
                     <div class="w-6 flex justify-center items-center flex-shrink-0">
-                      <img src="/public/image/user_profile/uiUxDesigner.svg" alt="UI/UX Designer" class="w-5 h-5 object-contain transition-all brightness-0">
+                      <img src="/public/image/user_profile/uiUxDesigner.svg" alt="UI/UX Designer" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'uiux' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
                     <span class="whitespace-nowrap">UI/UX Designer</span>
                   </div>
@@ -282,6 +283,11 @@
           {{> user/sidebar_user_profile/my_learning/index }}
         </div>
 
+        <!-- Start Learning Tab Content -->
+        <div x-show="activeSection === 'uiux'">
+          {{> user/sidebar_user_profile/my_learning/start_learning/index }}
+        </div>
+
         <!-- My Portfolio Tab Content -->
         <div x-show="activeSection === 'portfolio'">
           {{> user/sidebar_user_profile/my_portofolio/index }}
@@ -317,7 +323,20 @@
         </div>
 
         <!-- Other Tabs Placeholder Content -->
-        <div x-show="activeSection !== 'profile' && activeSection !== 'learning' && activeSection !== 'history-payment' && activeSection !== 'portfolio' && activeSection !== 'quiz' && activeSection !== 'quizDetail' && activeSection !== 'startQuiz' && activeSection !== 'group-class'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
+        <div x-show="
+        activeSection !== 'profile' 
+        && activeSection !== 'learning' 
+        && activeSection !== 'history-payment' 
+        && activeSection !== 'portfolio' 
+        && activeSection !== 'group-class'
+        && activeSection !== 'uiux'
+        && activeSection !== 'materi-pdf'
+        && activeSection !== 'materi-video'
+        && activeSection !== 'materi-ppt'
+        && activeSection !== 'quiz'
+        && activeSection !== 'quizDetail'
+        && activeSection !== 'startQuiz'
+        " class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
           <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
             <i class="fas fa-folder-open text-2xl"></i>
           </div>
