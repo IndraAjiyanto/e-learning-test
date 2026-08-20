@@ -55,12 +55,9 @@ export class UserAnswersService {
       });
 
       if (!questions)
-        throw new NotFoundException(
-          `Question id ${j.questionsId} not found`,
-        );
+        throw new NotFoundException(`Question id ${j.questionsId} not found`);
 
-      if (!user)
-        throw new NotFoundException(`User id ${j.userId} not found`);
+      if (!user) throw new NotFoundException(`User id ${j.userId} not found`);
 
       const answers = j.answersId
         ? await this.answerRepository.findOne({ where: { id: j.answersId } })
@@ -202,14 +199,19 @@ export class UserAnswersService {
     const weekProgresses = await this.weekProgressRepository.findOne({
       where: { week: { id: weeksId }, user: { id: userId } },
     });
-    if (!weekProgresses) {
-      throw new NotFoundException('weekProgresses not found');
+
+    if (weekProgresses) {
+      weekProgresses.quiz = true;
+      await this.weekProgressRepository.save(weekProgresses);
+      return weekProgresses;
     }
 
-    weekProgresses.quiz = true;
-    await this.weekProgressRepository.save(weekProgresses);
-
-    return weekProgresses;
+    return await this.weekProgressRepository.save({
+      week: { id: weeksId },
+      user: { id: userId },
+      process: true,
+      quiz: true,
+    });
   }
 
   async weekProgress(weeksId: number, userId: number) {

@@ -3,7 +3,7 @@
   class="relative min-h-[calc(100vh-62px)] flex flex-col justify-between bg-[#FAFAFA] font-montserrat overflow-hidden"
   x-data="{
     sidebarOpen: true,
-    activeSection: '{{#if activeTab}}{{activeTab}}{{else}}profile{{/if}}',
+    activeSection: '{{activeSection}}' || 'profile',
     openMyLearning: true,
     openUiUx: true,
     openRoblox: false,
@@ -292,19 +292,32 @@
           {{> user/sidebar_user_profile/history_payment/index }}
         </div>
 
+        <!-- Quiz Tab Content -->
+        <div x-show="activeSection === 'quiz'">
+          {{> user/sidebar_user_profile/my_learning/start_learning/quiz/index }}
+        </div>
+
+        <!-- Quiz Detail Content -->
+        {{#if quiz}}
+        <div x-show="activeSection === 'quizDetail'">
+          {{> user/sidebar_user_profile/my_learning/start_learning/quiz/week/index }}
+        </div>
+        {{/if}}
+
+        <!-- Start Quiz -->
+        {{#if quiz}}
+        <div x-show="activeSection === 'startQuiz'">
+          {{> user/sidebar_user_profile/my_learning/start_learning/quiz/week/start/index }}
+        </div>
+        {{/if}}
+
         <!-- Join Group Class Tab Content -->
         <div x-show="activeSection === 'group-class'">
           {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index }}
         </div>
 
         <!-- Other Tabs Placeholder Content -->
-        <div x-show="
-        activeSection !== 'profile' 
-        && activeSection !== 'learning' 
-        && activeSection !== 'history-payment' 
-        && activeSection !== 'portfolio' 
-        && activeSection !== 'group-class'
-        "class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
+        <div x-show="activeSection !== 'profile' && activeSection !== 'learning' && activeSection !== 'history-payment' && activeSection !== 'portfolio' && activeSection !== 'quiz' && activeSection !== 'quizDetail' && activeSection !== 'startQuiz' && activeSection !== 'group-class'" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
           <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
             <i class="fas fa-folder-open text-2xl"></i>
           </div>

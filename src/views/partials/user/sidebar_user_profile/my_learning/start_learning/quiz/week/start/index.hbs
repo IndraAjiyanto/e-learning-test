@@ -1,0 +1,538 @@
+<form method="POST" action="/answer-users/{{quizId}}" x-data="quiz()" x-init="init()" id="formSubmit">
+
+{{#if check}}
+<script>
+window.addEventListener("load", function(){
+    showTimeOverAlert(
+        "#formSubmit",
+        "Quiz time is over, submitting your answers.",
+        "Time's Up!"
+    );
+});
+</script>
+{{/if}}
+
+<div class="px-4 sm:px-8 md:px-14 py-10">
+
+    <!-- Header -->
+    <div class="space-y-2 mb-8">
+        <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060]">
+            Quiz {{quiz.weeks.description}}
+        </h1>
+
+        <p class="font-sans text-[20px] text-[#003060]">
+            Complete the quiz to assess your understanding of the learning material.
+        </p>
+    </div>
+
+
+    <!-- MAIN LAYOUT -->
+    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,810px)_320px] gap-6 items-start">
+
+        <!-- ================================= -->
+        <!-- LEFT : QUESTION & ANSWERS -->
+        <!-- ================================= -->
+        <div>
+
+            <!-- Question Card -->
+            <div class="bg-white border border-slate-200 shadow-sm overflow-hidden">
+
+                <!-- Question Navigation Header -->
+                <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+
+                    <span class="text-sm font-medium text-slate-600">
+                        {{t "test.quiz.start.question"}}
+                        <span x-text="currentQuestion + 1"></span>
+                        {{t "test.quiz.start.of"}}
+                        {{questions.length}}
+                    </span>
+
+                </div>
+
+
+                <!-- Question Content -->
+                <div class="p-6">
+
+                    {{#each questions}}
+
+                    <div x-show="currentQuestion === {{@index}}">
+
+                        <!-- Hidden Input -->
+                        <input type="hidden" name="q-{{id}}" value="">
+
+                        <!-- Question -->
+                        <div class="flex items-start gap-4 mb-6">
+
+                            <div class="flex-shrink-0 w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                {{addOne @index}}
+                            </div>
+
+                            <div class="flex-1 space-y-4">
+
+                                <!-- Image -->
+                                {{#if image}}
+                                <div class="w-full">
+                                    <div class="flex justify-center">
+
+                                        <img
+                                            src="{{image}}"
+                                            alt="Question Image"
+                                            class="max-h-64 rounded-xl border border-slate-200 shadow-sm object-contain"
+                                        >
+
+                                    </div>
+                                </div>
+                                {{/if}}
+
+                                <!-- Question Text -->
+                                <p class="font-semibold text-slate-900 text-lg leading-relaxed">
+                                    {{questionText}}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Answer Options -->
+                        <div class="px-8 space-y-3">
+
+                            {{#each answers}}
+
+                            <label
+                                class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-slate-50 hover:to-white hover:border-slate-300 transition-all duration-200 group/option"
+                            >
+
+                                <input
+                                    type="radio"
+                                    name="q-{{../id}}"
+                                    value="{{id}}"
+                                    class="w-5 h-5 radio border-gray-700 checked:text-gray-700 checked:bg-white"
+                                >
+
+                                <span class="ml-4 text-slate-800 font-medium group-hover/option:text-slate-900 transition-colors">
+                                    {{answer}}
+                                </span>
+
+                            </label>
+
+                            {{/each}}
+
+                        </div>
+
+                    </div>
+
+                    {{/each}}
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================= -->
+            <!-- QUESTION BUTTONS -->
+            <!-- ================================= -->
+            <div class="flex items-center justify-end mt-4">
+
+    <div class="flex items-center gap-2">
+
+        <!-- PREVIOUS -->
+        <button
+            type="button"
+            x-show="currentQuestion > 0"
+            @click="prevQuestion()"
+            class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
+        >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                ></path>
+            </svg>
+
+            {{t "test.quiz.start.previous"}}
+        </button>
+
+
+        <!-- NEXT -->
+        <button
+            type="button"
+            x-show="currentQuestion < {{questions.length}} - 1"
+            @click="nextQuestion()"
+            class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
+        >
+            {{t "test.quiz.start.next"}}
+
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                ></path>
+            </svg>
+        </button>
+
+
+        <!-- SUBMIT -->
+        <button
+            type="button"
+            x-show="currentQuestion === {{questions.length}} - 1"
+            @click="submitQuiz()"
+            :disabled="answeredCount !== {{questions.length}}"
+            :class="answeredCount !== {{questions.length}}
+                ? 'opacity-40 cursor-not-allowed'
+                : 'hover:shadow-xl hover:-translate-y-1'"
+            class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
+        >
+            Submit Answer
+
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 12h14m-6-6l6 6-6 6"
+                ></path>
+            </svg>
+        </button>
+
+    </div>
+
+</div>
+
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- RIGHT : QUESTION LIST -->
+        <!-- ================================= -->
+        <div>
+
+    <!-- ============================= -->
+    <!-- QUESTION LIST CARD -->
+    <!-- ============================= -->
+    <div class="bg-white border border-slate-200 shadow-sm p-6 sticky top-6">
+
+        <!-- Question List Header -->
+        <div class="flex items-center justify-between mb-4">
+
+            <h3 class="text-lg font-semibold text-slate-900 font-montserrat">
+                {{t "test.quiz.start.questionList"}}
+            </h3>
+
+            <!-- TIMER -->
+            {{#if check}}
+
+                <span class="text-red-500 font-semibold">
+                    {{t "test.quiz.start.timeIsOver"}}
+                </span>
+
+            {{else}}
+
+                <div id="countdownExample">
+                    <div class="values font-semibold text-slate-700"></div>
+                </div>
+
+                <script>
+                document.addEventListener("DOMContentLoaded", function () {
+
+                    const form = document.querySelector('#formSubmit');
+                    const timer = new easytimer.Timer();
+
+                    timer.start({
+                        countdown: true,
+                        startValues: {
+                            seconds: {{remainingTime}}
+                        }
+                    });
+
+                    function updateTimer() {
+                        document.querySelector('#countdownExample .values').innerHTML =
+                            timer.getTimeValues().toString();
+                    }
+
+                    updateTimer();
+
+                    timer.addEventListener('secondsUpdated', updateTimer);
+
+                    timer.addEventListener('targetAchieved', function () {
+                        clearQuizStorage();
+                        form.submit();
+                    });
+
+                });
+                </script>
+
+            {{/if}}
+
+        </div>
+
+
+        <!-- Question List -->
+        <div class="grid grid-cols-4 gap-3 max-h-[500px] overflow-y-auto">
+
+            {{#each questions}}
+
+            <button
+                type="button"
+                @click="currentQuestion = {{@index}}"
+                class="w-[54px] h-[54px] rounded-xl border flex items-center justify-center transition-all duration-200"
+                :class="{
+                    'bg-secondary text-white border-secondary shadow-md':
+                        currentQuestion === {{@index}},
+
+                    'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50':
+                        currentQuestion !== {{@index}} && !isAnswered({{@index}}),
+
+                    'bg-[#E5F6D4] text-[#003060] border-slate-200':
+                        currentQuestion !== {{@index}} && isAnswered({{@index}})
+                }"
+            >
+
+                <span class="text-base font-semibold">
+                    {{addOne @index}}
+                </span>
+
+            </button>
+
+            {{/each}}
+
+        </div>
+
+    </div>
+    <!-- END QUESTION LIST CARD -->
+
+
+    <!-- ============================= -->
+    <!-- PROGRESS CARD -->
+    <!-- ============================= -->
+    <div class="bg-white border border-slate-200 shadow-sm p-6 mt-4">
+
+        <div class="flex items-center justify-between mb-3">
+
+            <span class="text-sm font-semibold text-slate-700">
+                {{t "test.quiz.start.progress"}}
+            </span>
+
+            <span
+                class="text-sm font-semibold text-slate-600"
+                x-text="`${answeredCount}/{{questions.length}}`"
+            ></span>
+
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+
+            <div
+                class="bg-green-600 h-2.5 rounded-full transition-all duration-500"
+                :style="`width: ${(answeredCount / {{questions.length}}) * 100}%`"
+            ></div>
+
+        </div>
+
+    </div>
+    <!-- END PROGRESS CARD -->
+
+</div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+</form>
+
+
+<script>
+let saveTimeout;
+
+document.addEventListener("change", function(e){
+
+    if(e.target.type === "radio"){
+
+        const radio = e.target;
+        const name = radio.name;
+        const value = Number(radio.value);
+
+        const questionId = Number(name.replace("q-", ""));
+
+        // simpan ke localStorage dulu
+        localStorage.setItem(name, value);
+
+        // hentikan timer sebelumnya
+        clearTimeout(saveTimeout);
+
+        // tunggu user berhenti klik
+        saveTimeout = setTimeout(async () => {
+
+            try {
+
+                const response = await fetch("/answer-users/chose-answer", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: {{user.id}},
+                        questionsId: questionId,
+                        answersId: value
+                    })
+                });
+
+                if(!response.ok){
+                    throw new Error("Server error");
+                }
+
+            } catch(err){
+
+                console.error("Autosave gagal", err);
+
+                // kosongkan pertanyaan
+       document.querySelectorAll(`input[name="${name}"]`)
+.forEach(r => {
+    r.checked = false;
+    r.dispatchEvent(new Event('change', { bubbles: true }));
+});
+
+                localStorage.removeItem(name);
+
+            }
+
+        }, 700);
+
+    }
+
+});
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const form = document.querySelector('#formSubmit');
+    const radios = document.querySelectorAll("input[type='radio']");
+
+    radios.forEach(radio => {
+
+        const savedValue = localStorage.getItem(radio.name);
+
+        if(savedValue && savedValue === radio.value){
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+    });
+
+    function clearQuizStorage(){
+        Object.keys(localStorage)
+        .filter(key => key.startsWith("q-"))
+        .forEach(key => localStorage.removeItem(key));
+    }
+
+    // saat submit biasa
+    form.addEventListener("submit", clearQuizStorage);
+
+    // kalau submit via timer
+    window.clearQuizStorage = clearQuizStorage;
+
+});
+</script>
+
+<script>
+function quiz() {
+    return {
+        currentQuestion: 0,
+
+        answeredQuestions: [],
+
+
+        init() {
+
+            this.$el.addEventListener('change', (e) => {
+
+                if (e.target.type === 'radio') {
+                    this.updateAnsweredStatus();
+                }
+
+            });
+
+            this.updateAnsweredStatus();
+
+        },
+
+
+        updateAnsweredStatus() {
+
+            const questionIds = [
+                {{#each questions}}
+                    {{#unless @first}},{{/unless}}{{id}}
+                {{/each}}
+            ];
+
+            this.answeredQuestions = questionIds.map((qId, index) => {
+
+                const input = this.$el.querySelector(
+                    `input[name="q-${qId}"]:checked`
+                );
+
+                return input !== null;
+
+            });
+
+        },
+
+
+        get answeredCount() {
+
+            return this.answeredQuestions.filter(
+                answered => answered
+            ).length;
+
+        },
+
+
+        nextQuestion() {
+
+            if (this.currentQuestion < {{questions.length}} - 1) {
+                this.currentQuestion++;
+            }
+
+        },
+
+
+        prevQuestion() {
+
+            if (this.currentQuestion > 0) {
+                this.currentQuestion--;
+            }
+
+        },
+
+
+        isAnswered(index) {
+
+            return this.answeredQuestions[index] || false;
+
+        },
+
+
+        submitQuiz() {
+
+            if (this.answeredCount !== {{questions.length}}) {
+                return;
+            }
+
+            confirmAction(
+                document.querySelector('#formSubmit button[type="button"]'),
+                'Are you sure you want to submit your answers?'
+            );
+
+        }
+
+    }
+}
+</script>

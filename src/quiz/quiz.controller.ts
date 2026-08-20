@@ -16,11 +16,79 @@ import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { QuizProgress } from 'src/entities/quiz_progress.entity';
+import { Score } from 'src/entities/score.entity';
+import { UserCourse } from 'src/entities/user_course.entity';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('quiz')
 export class QuizController {
-  constructor(private readonly quizService: QuizService) {}
+  constructor(
+    private readonly quizService: QuizService,
+    @InjectRepository(QuizProgress)
+    private readonly quizProgressRepository: Repository<QuizProgress>,
+    @InjectRepository(Score)
+    private readonly scoreRepository: Repository<Score>,
+    @InjectRepository(UserCourse)
+    private readonly userCourseRepository: Repository<UserCourse>,
+  ) {}
+
+  private async getQuizzes(userId: number) {
+    const userCourses = await this.userCourseRepository.find({
+      where: { user: { id: userId } },
+      relations: ['course', 'course.weeks', 'course.weeks.quiz'],
+    });
+    const quizzes: Array<{
+      id: number;
+      title: string;
+      courseName: string;
+      weekNumber: number;
+      weekName: string;
+      duration: number;
+      minScore: number;
+      lastSubmitted: string | null;
+      submitDate: string | null;
+      isCompleted: boolean;
+      score: number | null;
+    }> = [];
+    for (const uc of userCourses) {
+      if (uc.course && uc.course.weeks) {
+        for (const week of uc.course.weeks) {
+          if (week.quiz && week.quiz.length > 0) {
+            for (const quiz of week.quiz) {
+              const quizProgress = await this.quizProgressRepository.findOne({
+                where: { user: { id: userId }, quiz: { id: quiz.id } },
+              });
+              const score = await this.scoreRepository.findOne({
+                where: { user: { id: userId }, quiz: { id: quiz.id } },
+                order: { createdAt: 'DESC' },
+              });
+              quizzes.push({
+                id: quiz.id,
+                title: quiz.quizName,
+                courseName: uc.course.name,
+                weekNumber: week.weekNumber,
+                weekName: week.description || `Week ${week.weekNumber}`,
+                duration: quiz.duration,
+                minScore: quiz.minScore,
+                lastSubmitted: quizProgress?.createdAt
+                  ? quizProgress.createdAt.toISOString().split('T')[0]
+                  : null,
+                submitDate: score?.createdAt
+                  ? score.createdAt.toISOString().split('T')[0]
+                  : null,
+                isCompleted: quizProgress?.process === true,
+                score: score?.score ?? null,
+              });
+            }
+          }
+        }
+      }
+    }
+    return quizzes;
+  }
 
   @Roles('admin')
   @Post(':weeksId')
@@ -90,7 +158,15 @@ export class QuizController {
     const quiz = await this.quizService.findOne(quizId);
     const scores = await this.quizService.findUserScore(req.user!.id, quizId);
     const questions = await this.quizService.findQuestions(quizId);
-    res.render('user/quiz/quiz', { user: req.user, quiz, scores, questions });
+    const quizzes = await this.getQuizzes(req.user!.id);
+    res.render('user/user_profile/index', {
+      user: req.user,
+      quiz,
+      scores,
+      questions,
+      quizzes,
+      activeSection: 'quizDetail',
+    });
   }
 
   @Roles('user')
@@ -105,24 +181,35 @@ export class QuizController {
       quizId,
     );
     const questions = await this.quizService.findQuestions(quizId);
+    const scores = await this.quizService.findUserScore(req.user!.id, quizId);
+    const quiz = await this.quizService.findOne(quizId);
+    const quizzes = await this.getQuizzes(req.user!.id);
     if (check) {
-      res.render('user/quiz/start', {
+      res.render('user/user_profile/index', {
         user: req.user,
+        quiz,
         quizId,
         questions,
+        scores,
         check,
+        quizzes,
+        activeSection: 'startQuiz',
       });
     } else {
       const remainingTime = await this.quizService.getRemainingTime(
         req.user!.id,
         quizId,
       );
-      res.render('user/quiz/start', {
+      res.render('user/user_profile/index', {
         user: req.user,
+        quiz,
         quizId,
         questions,
         remainingTime,
+        scores,
         check,
+        quizzes,
+        activeSection: 'startQuiz',
       });
     }
   }
