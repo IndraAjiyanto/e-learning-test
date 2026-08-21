@@ -68,17 +68,17 @@
     <template x-for="tx in transactions" :key="tx.id">
       <div
         x-show="(statusFilter === 'all' || statusFilter === tx.status) && tx.program.toLowerCase().includes(searchQuery.toLowerCase())"
-        class="w-full max-w-[334px] xl:w-[334px] xl:h-[397px] bg-[#FFFFFF80] backdrop-blur-[6.6px] rounded-[12px] p-5 flex flex-col justify-between shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] border border-white/40"
+        class="w-full max-w-[334px] min-h-[397px] 2xl:w-[334px] 2xl:h-[397px] bg-[#FFFFFF80] backdrop-blur-[6.6px] rounded-xl p-4 xl:p-5 flex flex-col justify-between shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] border border-white/40"
       >
         <div>
           <!-- Badges Row (Top Right Aligned) -->
           <div class="flex items-center justify-end gap-2 mb-3">
             <span class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border border-[#003060] font-montserrat font-medium text-xs sm:text-[15px] text-[#003060] leading-none" x-text="tx.type">Program</span>
             <span 
-              class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border font-montserrat font-medium text-xs sm:text-[15px] leading-none" 
+              class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border font-montserrat font-medium text-xs sm:text-[15px] leading-none capitalize" 
               :class="tx.status === 'accepted' ? 'bg-[#F0FBF4] border-[#04B165] text-[#04B165]' : (tx.status === 'processing' ? 'bg-[#FEEFD6] border-[#FDA40B] text-[#FDA40B]' : 'bg-[#FEE7E7] border-[#F13639] text-[#F13639]')"
-              x-text="tx.paymentType"
-            >Registration</span>
+              x-text="tx.status"
+            >Accepted</span>
           </div>
 
           <!-- Program Title -->
@@ -106,7 +106,11 @@
 
         <!-- Action Buttons (Height 35px, Font 15px) -->
         <div class="flex flex-col gap-2.5 mt-2">
-          <button type="button" class="w-full h-[35px] rounded-[12px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
+          <button 
+            type="button" 
+            @click="selectedTx = tx; showDetail = true"
+            class="w-full h-[35px] rounded-[12px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]"
+          >
             View Payment Details
           </button>
           <button type="button" :onclick="'window.location.href=/program/detail/' + tx.courseId" class="w-full h-[35px] rounded-[12px] p-[10px] bg-white/80 hover:bg-white text-[#003060] border border-[#003060] font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.1)]">
@@ -137,5 +141,8 @@
       </p>
     </div>
   </div>
+
+  <!-- REGISTRATION DETAIL MODAL POP-UP -->
+  {{> user/sidebar_user_profile/history_payment/registration/detail/index }}
 
 </div>
