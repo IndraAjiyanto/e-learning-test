@@ -52,7 +52,7 @@ export class InvoiceService {
       return payment;
     }
 
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.APP_URL_LMS || 'http://localhost:3000';
     try {
       const xenditResponse = await this.xenditInvoiceClient.createInvoice({
         data: {
