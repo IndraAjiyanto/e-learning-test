@@ -512,6 +512,9 @@ export class CoursesController {
       await this.coursesService.findCourseInstallments(courseId);
     const studentList = await this.coursesService.sumStudent(course.id);
 
+    const statusOptions = ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'];
+    const referalOptions = ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'];
+
     if (course.checkPaid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
       res.render('detail_program/free_program/index', {
@@ -526,6 +529,8 @@ export class CoursesController {
         // course_benefits,
         technologies,
         installments,
+        currentStatusOptions: statusOptions,
+        referalSourceOptions: referalOptions,
       });
     } else {
       res.render('course/Bdetail', {
@@ -563,6 +568,9 @@ export class CoursesController {
       const userCourses = await this.coursesService.findCourseUsers(id);
       const kelass = await this.coursesService.allClassExcept(course.id);
       const studentList = await this.coursesService.sumStudent(course.id);
+      const statusOptions = ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'];
+      const referalOptions = ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'];
+
       if (course.checkPaid === false) {
         res.render('detail_program/free_program/index', {
           course,
@@ -572,6 +580,8 @@ export class CoursesController {
           installments,
           userCourses,
           faqs,
+          currentStatusOptions: statusOptions,
+          referalSourceOptions: referalOptions,
         });
       } else {
         res.render('detail_program/paid_program/index', {
@@ -629,6 +639,9 @@ export class CoursesController {
         const userCourses = await this.coursesService.findCourseUsers(id);
         const kelass = await this.coursesService.allClassExcept(course.id);
         const studentList = await this.coursesService.sumStudent(course.id);
+        const statusOptions = ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'];
+        const referalOptions = ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'];
+
         if (course.checkPaid === false) {
           res.render('detail_program/free_program/index', {
             user: req.user,
@@ -638,6 +651,8 @@ export class CoursesController {
             technologies,
             userCourses,
             installments,
+            currentStatusOptions: statusOptions,
+            referalSourceOptions: referalOptions,
           });
         } else {
           res.render('detail_program/paid_program/index', {

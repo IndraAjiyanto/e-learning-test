@@ -4,12 +4,13 @@ import { Repository } from 'typeorm';
 import { Payment } from 'src/entities/payment.entity';
 import { Invoice } from 'src/entities/invoice.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
-import { Xendit } from 'xendit-node';
+import { Invoice as InvoiceClient } from 'xendit-node';
 import { Course } from 'src/entities/course.entity';
+import { UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class InvoiceService {
-  private xenditClient: any;
+  private xenditInvoiceClient: InvoiceClient;
 
   constructor(
     @InjectRepository(Invoice)
@@ -22,14 +23,14 @@ export class InvoiceService {
     private readonly courseRepository: Repository<Course>,
   ) {
     if (process.env.XENDIT_SECRET_KEY) {
-      this.xenditClient = new Xendit({
+      this.xenditInvoiceClient = new InvoiceClient({
         secretKey: process.env.XENDIT_SECRET_KEY,
       });
     }
   }
 
   async createInvoiceForPayment(payment: Payment, finalTotal: number, payerEmail: string, courseName: string, paymentMethod: string, subtotal: number, discountAmount: number) {
-    if (!this.xenditClient) {
+    if (!this.xenditInvoiceClient) {
       throw new Error('Xendit is not configured. Please add XENDIT_SECRET_KEY to .env');
     }
 
@@ -51,9 +52,9 @@ export class InvoiceService {
       return payment;
     }
 
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.APP_URL_LMS || 'http://localhost:3000';
     try {
-      const xenditResponse = await this.xenditClient.Invoice.createInvoice({
+      const xenditResponse = await this.xenditInvoiceClient.createInvoice({
         data: {
           externalId: payment.no,
           amount: finalTotal,
@@ -61,10 +62,11 @@ export class InvoiceService {
           description: `Payment for ${courseName} - ${paymentMethod}`,
           successRedirectUrl: `${appUrl}/payment/success/${payment.no}`,
           failureRedirectUrl: `${appUrl}/payment/failed/${payment.no}`,
+          currency: 'IDR',
         },
       });
 
-      invoice.xendit_invoice_id = xenditResponse.id;
+      invoice.xendit_invoice_id = xenditResponse.id || '';
       invoice.xendit_invoice_url = xenditResponse.invoiceUrl;
       await this.invoiceRepository.save(invoice);
 
@@ -127,7 +129,7 @@ export class InvoiceService {
     const validToken = process.env.XENDIT_CALLBACK_TOKEN; 
     
     if (validToken && callbackToken !== validToken) {
-      throw new Error('Unauthorized: Token Webhook Tidak Valid!'); 
+      throw new UnauthorizedException('Unauthorized: Token Webhook Tidak Valid!'); 
     }
 
     const externalId = payload.external_id; 

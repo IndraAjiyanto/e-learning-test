@@ -1,0 +1,88 @@
+<div class="w-full flex flex-col items-start p-16 gap-[15px]">
+  
+  <!-- Logbook Header -->
+  <div class="flex flex-col gap-2">
+    <h1 class="font-montserrat font-semibold text-[36px] leading-[44px] text-[#003060]">
+      My Logbook
+    </h1>
+    <p class="font-open-sans font-normal text-[20px] leading-[27px] text-[#003060]">
+      View and monitor your submitted logbook entries throughout the program.
+    </p>
+  </div>
+
+  <!-- Toolbar (Search & Export) -->
+  <div class="w-full max-w-[1265px] flex justify-between items-center mt-8 mb-4">
+    
+    <!-- Search Bar -->
+    <div class="flex items-center gap-[15px] w-full max-w-[479px] h-[45px] bg-white shadow-[0px_0px_5px_rgba(0,0,0,0.5)] rounded-[6px] px-[15px] focus-within:ring-2 focus-within:ring-[#003060]">
+      <i class="fas fa-search text-[24px] text-slate-500"></i>
+      <input 
+        type="text" 
+        placeholder="Search activities, details, or issues..." 
+        class="w-full bg-transparent border-none outline-none font-montserrat font-medium text-[16px] sm:text-[18px] text-slate-700 placeholder:text-[#676767]"
+      >
+    </div>
+
+    <!-- Export Button -->
+    <button class="flex items-center gap-[8px] h-[45px] px-[20px] bg-[#15833E] shadow-[0px_0px_4px_rgba(0,0,0,0.5)] rounded-[6px] hover:bg-[#106A31] transition cursor-pointer">
+      <i class="fas fa-file-excel text-white text-[20px]"></i>
+      <span class="font-montserrat font-medium text-[18px] sm:text-[20px] text-white">Export Excel</span>
+    </button>
+  </div>
+
+  <!-- Table Container -->
+  <div class="w-full max-w-[1265px] border-[0.5px] border-[#D9D9D9] rounded-b-[6px] flex flex-col bg-white">
+    
+    <!-- Table Header -->
+    <div class="w-full h-[44px] bg-[#003060] rounded-t-[6px] flex flex-row items-center">
+      <div class="w-[52px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">No</span></div>
+      <div class="w-[157px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Date</span></div>
+      <div class="w-[199px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Activity</span></div>
+      <div class="w-[229px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Details</span></div>
+      <div class="w-[128px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Issues</span></div>
+      <div class="w-[199px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Documentation</span></div>
+      <div class="w-[169px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Program</span></div>
+      <div class="w-[132px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Status</span></div>
+    </div>
+
+    <!-- Table Body (Rows) -->
+    <!-- Row 1 -->
+    <div class="w-full min-h-[56px] border-t-[0.5px] border-[#D9D9D9] flex flex-row items-center py-2 hover:bg-slate-50 transition">
+      <div class="w-[52px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767]">1</span></div>
+      <div class="w-[157px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767] text-center">Apr, 06 2026</span></div>
+      <div class="w-[199px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767] text-center">Introduce UI/UX</span></div>
+      <div class="w-[229px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767] text-center">Pengenalan UI/UX</span></div>
+      <div class="w-[128px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767] text-center">tidak ada</span></div>
+      
+      <!-- Documentation Image -->
+      <div class="w-[199px] flex justify-center">
+        <div class="w-[100px] h-[34px] bg-slate-200 rounded-[4px] flex items-center justify-center text-[10px] text-slate-500 overflow-hidden">
+          <i class="far fa-image text-slate-400 text-xl"></i>
+        </div>
+      </div>
+      
+      <!-- Program Badge -->
+      <div class="w-[169px] flex justify-center">
+        <div class="border border-[#003060] rounded-[12px] px-3 py-1 flex items-center justify-center">
+          <span class="font-open-sans text-[14px] sm:text-[16px] text-[#003060] text-center">UI/UX Designer</span>
+        </div>
+      </div>
+      
+      <!-- Status Badge -->
+      <div class="w-[132px] flex justify-center">
+        <div class="bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-3 py-1 flex items-center justify-center">
+          <span class="font-open-sans text-[14px] sm:text-[15px] text-[#12BD26]">Complete</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer Info -->
+  <div class="w-full max-w-[1265px] mt-2 flex justify-start">
+    <span class="font-open-sans font-normal text-[15px] leading-[20px] text-[#003060]">
+      Showing 1 of 1
+    </span>
+  </div>
+
+</div>

@@ -21,122 +21,84 @@
           <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Your Program<span class="text-red-500">*</span>
           </label>
-
           <span class="font-montserrat font-medium text-base sm:text-xl text-black">
-            SEMINAR - PYTHON FOR DATA ANALYST - from zero to insight
+            {{course.name}} <!-- Menampilkan nama kelas dari backend -->
           </span>
         </div>
-
-        <!-- Full Name -->
-        <div>
+      <div>
           <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Full Name<span class="text-red-500">*</span>
           </label>
-          <input type="text" required placeholder="Input Your Full Name" class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767] placeholder:font-medium placeholder:text-xl placeholder:leading-none">
+          <input type="text" name="user_fullname" value="{{user.username}}" required placeholder="Input Your Full Name" 
+            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
         </div>
 
-        <!-- Email -->
+        <!-- Email (Otomatis Terisi & Bisa Diedit) -->
         <div>
           <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Email<span class="text-red-500">*</span>
           </label>
-          <input type="email" required placeholder="Input Your Email" class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767] placeholder:font-medium placeholder:text-xl placeholder:leading-none">
+          <input type="email" name="user_email" value="{{user.email}}" required placeholder="Input Your Email" 
+            class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
         </div>
-
         <!-- WhatsApp Number -->
         <div>
           <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             WhatsApp Number<span class="text-red-500">*</span>
           </label>
-          <input type="tel" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767] placeholder:font-medium placeholder:text-xl placeholder:leading-none">
+          <input type="tel" name="user_no" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[900px] h-[60px] rounded-[6px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] font-montserrat font-medium text-xl leading-none tracking-normal text-slate-700 placeholder:text-[#676767]">
         </div>
 
         <!-- Current Status -->
+               <!-- Current Status -->
         <div>
           <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             Current Status<span class="text-red-500">*</span>
           </label>
-          
           <div class="relative w-full max-w-[900px] custom-dropdown" id="dropdown-status">
-            <input type="hidden" id="status-input" name="currentStatus" required value="">
-            
-            <button 
-              type="button" 
-              class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200"
-              aria-expanded="false"
-              aria-haspopup="listbox"
-            >
-              <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">
-                Select your current status
-              </span>
+            <input type="hidden" id="status-input" name="current_status" required value="">
+            <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
+              <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">Select your current status</span>
               <div class="size-[35px] flex items-center justify-center flex-shrink-0">
                 <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
               </div>
             </button>
-
-            <ul 
-              class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out origin-top font-montserrat max-h-60 overflow-y-auto"
-              role="listbox"
-            >
-              <li role="option" aria-selected="false" data-value="Student / Mahasiswa" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Student / Mahasiswa</span>
+            <ul class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out max-h-60 overflow-y-auto">
+              
+              <!-- LOOPING OTOMATIS DARI BACKEND -->
+              {{#each currentStatusOptions}}
+              <li data-value="{{this}}" class="dropdown-option px-4 py-3 rounded-lg text-xl font-medium cursor-pointer text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060]">
+                {{this}}
               </li>
-              <li role="option" aria-selected="false" data-value="Fresh Graduate" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Fresh Graduate</span>
-              </li>
-              <li role="option" aria-selected="false" data-value="Employee / Karyawan" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Employee / Karyawan</span>
-              </li>
-              <li role="option" aria-selected="false" data-value="Freelancer" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Freelancer</span>
-              </li>
-              <li role="option" aria-selected="false" data-value="Other" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Other</span>
-              </li>
+              {{/each}}
+              
             </ul>
           </div>
         </div>
 
         <!-- How did you know About the program? -->
+             <!-- How did you know About the program? -->
         <div>
           <label class="block font-montserrat font-semibold text-[25px] leading-none tracking-normal text-[#003060] mb-7">
             How did you know About the program?<span class="text-red-500">*</span>
           </label>
-          
           <div class="relative w-full max-w-[900px] custom-dropdown" id="dropdown-source">
-            <input type="hidden" id="source-input" name="source" required value="Friends">
-            
-            <button 
-              type="button" 
-              class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200"
-              aria-expanded="false"
-              aria-haspopup="listbox"
-            >
-              <span class="dropdown-label font-montserrat font-medium text-xl text-black truncate pr-4">
-                Friends
-              </span>
+            <input type="hidden" id="source-input" name="referal_source" required value="">
+            <button type="button" class="dropdown-trigger w-full max-w-[900px] h-[60px] rounded-[12px] p-[10px] px-6 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-[#003060] flex items-center justify-between cursor-pointer transition-all duration-200">
+              <span class="dropdown-label font-montserrat font-medium text-xl text-[#676767] truncate pr-4">Select Option</span>
               <div class="size-[35px] flex items-center justify-center flex-shrink-0">
                 <i class="dropdown-chevron text-xl text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
               </div>
             </button>
+            <ul class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out max-h-60 overflow-y-auto">
+              
+              <!-- LOOPING OTOMATIS DARI BACKEND -->
+              {{#each referalSourceOptions}}
+              <li data-value="{{this}}" class="dropdown-option px-4 py-3 rounded-lg text-xl font-medium cursor-pointer text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060]">
+                {{this}}
+              </li>
+              {{/each}}
 
-            <ul 
-              class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out origin-top font-montserrat max-h-60 overflow-y-auto"
-              role="listbox"
-            >
-              <li role="option" aria-selected="true" data-value="Friends" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-[#003060] bg-[#003060]/10 font-semibold flex items-center justify-between">
-                <span>Friends</span>
-                <i class="fa-solid fa-check text-sm text-[#003060]"></i>
-              </li>
-              <li role="option" aria-selected="false" data-value="Social Media" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Social Media</span>
-              </li>
-              <li role="option" aria-selected="false" data-value="Website" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Website</span>
-              </li>
-              <li role="option" aria-selected="false" data-value="Other" class="dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Other</span>
-              </li>
             </ul>
           </div>
         </div>
@@ -148,11 +110,11 @@
           </label>
           <div class="flex flex-wrap gap-4 max-w-[900px]">
             <label class="flex items-center gap-3 px-5 py-3.5 bg-white rounded-[6px] shadow-[0_0_5px_rgba(0,0,0,0.5)] cursor-pointer group hover:border-[#003060] transition-all">
-              <input type="radio" name="attend" value="yes" checked class="w-4 h-4 text-[#003060] focus:ring-[#003060] cursor-pointer">
+              <input type="radio" name="attend_program" value="true" class="w-4 h-4 text-[#003060] focus:ring-[#003060] cursor-pointer">
               <span class="text-slate-700 font-montserrat font-medium text-xl leading-none">Yes, I will attend</span>
             </label>
             <label class="flex items-center gap-3 px-5 py-3.5 bg-white rounded-[6px] shadow-[0_0_5px_rgba(0,0,0,0.5)] cursor-pointer group hover:border-[#003060] transition-all">
-              <input type="radio" name="attend" value="no" class="w-4 h-4 text-[#003060] focus:ring-[#003060] cursor-pointer">
+              <input type="radio" name="attend_program" value="false" checked class="w-4 h-4 text-[#003060] focus:ring-[#003060] cursor-pointer">
               <span class="text-slate-700 font-montserrat font-medium text-xl leading-none">No, I can't attend</span>
             </label>
           </div>
@@ -165,7 +127,7 @@
           </label>
           <label class="flex items-center gap-3 cursor-pointer group w-fit">
             <div class="relative flex items-center justify-center">
-              <input type="checkbox" required checked class="peer appearance-none w-5 h-5 border border-slate-300 rounded-sm bg-white checked:bg-[#0B3A68] checked:border-[#0B3A68] transition-all cursor-pointer">
+              <input type="checkbox" required class="peer appearance-none w-5 h-5 border border-slate-300 rounded-sm bg-white checked:bg-[#0B3A68] checked:border-[#0B3A68] transition-all cursor-pointer">
               <i class="fa-solid fa-check w-3.5 h-3.5 flex items-center justify-center text-white absolute opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></i>
             </div>
             <span class="text-slate-700 font-montserrat font-medium text-xl leading-none group-hover:text-[#0B3A68] transition-colors">Yes, I agree</span>
@@ -178,251 +140,280 @@
         <button type="submit" class="h-[56px] px-10 bg-[#003060] hover:bg-[#082a4d] text-white text-lg rounded-[12px] border border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.5)] flex items-center justify-center font-semibold transition-colors min-w-[180px]">
           Register Now
         </button>
-        <button type="button" @click="closeRegistrationModal ? closeRegistrationModal() : history.back()" class="h-[56px] px-10 bg-white hover:bg-slate-50 text-[#003060] text-lg rounded-[12px] border border-[#003060] shadow-[0_0_4px_rgba(0,0,0,0.5)] flex items-center justify-center font-semibold transition-colors min-w-[140px]">
-          Cancel
-        </button>
       </div>
 
     </form>
   </div>
 </div>
 
-<!-- Registration Success Popup Modal -->
-<div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs invisible opacity-0 transition-all duration-300 ease-out" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <!-- Modal Card -->
-  <div id="modal-card" class="bg-white rounded-[24px] shadow-2xl p-8 sm:p-12 w-full max-w-[540px] transform scale-90 transition-all duration-300 ease-out flex flex-col items-center text-center space-y-4 relative">
-    
-    <!-- Close Button -->
-    <button id="close-modal-btn" type="button" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 rounded-full focus:outline-none transition-colors" aria-label="Close modal">
-      <i class="fa-solid fa-xmark text-xl"></i>
-    </button>
-
-    <!-- Payment Success Icon Asset -->
-    <div class="mb-2">
-      <img src="/public/image/paymentSucces.svg" alt="Payment Success" class="w-24 h-24 sm:w-28 sm:h-28 object-contain mx-auto" />
+<!-- Confirmation Modal -->
+<div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 invisible opacity-0 transition-all duration-300">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-[480px] w-[90%] flex flex-col items-center text-center">
+    <div class="mb-5 text-[#003060]">
+      <i class="fa-solid fa-circle-question text-5xl"></i>
     </div>
-
-    <!-- Success Title -->
-    <h2 id="modal-title" class="text-2xl sm:text-[25px] font-montserrat font-medium text-[#003060]">
-      Success!
-    </h2>
-
-    <!-- Success Message -->
-    <p class="text-[#003060] font-montserrat font-normal text-base sm:text-xl leading-[30px] max-w-[440px] px-2">
-      Thank you for registering for our program. Stay tuned for updates and don't forget to join on the scheduled date.
-    </p>
-
+    <h2 class="text-2xl font-semibold text-[#003060] mb-3">Konfirmasi Pendaftaran</h2>
+    <p class="text-base text-slate-600 mb-8">Apakah kamu yakin ingin mendaftar program ini? Pastikan semua data yang diisi sudah benar.</p>
+    <div class="flex gap-4 w-full">
+      <button id="modal-cancel-btn" type="button" class="flex-1 h-[50px] rounded-[10px] border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 transition-colors">
+        Batal
+      </button>
+      <button id="modal-confirm-btn" type="button" class="flex-1 h-[50px] rounded-[10px] bg-[#003060] hover:bg-[#082a4d] text-white font-semibold transition-colors relative">
+        <span id="modal-confirm-text">Register</span>
+        <span id="modal-confirm-spinner" class="hidden absolute inset-0 flex items-center justify-center">
+          <i class="fa-solid fa-spinner fa-spin text-white"></i>
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- Custom Dropdown Modern JavaScript Component & Form Submit Modal Handler -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    // --- Modal Registration Success Handler ---
+    
+    // Inject ID dari Backend Handlebars
+    const USER_ID = "{{user.id}}";
+    const COURSE_ID = "{{course.id}}";
+
     const form = document.getElementById('short-class-form');
     const modal = document.getElementById('success-modal');
-    const modalCard = document.getElementById('modal-card');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-
+    const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+    
     function openModal() {
       modal.classList.remove('invisible', 'opacity-0');
       modal.classList.add('visible', 'opacity-100');
-      modalCard.classList.remove('scale-90');
-      modalCard.classList.add('scale-100');
-      document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
       modal.classList.add('invisible', 'opacity-0');
       modal.classList.remove('visible', 'opacity-100');
-      modalCard.classList.add('scale-90');
-      modalCard.classList.remove('scale-100');
-      document.body.style.overflow = '';
     }
 
     if (form) {
+      // Submit form → validasi + buka modal konfirmasi
       form.addEventListener('submit', function (e) {
         e.preventDefault();
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
         openModal();
       });
     }
 
-    if (closeModalBtn) {
-      closeModalBtn.addEventListener('click', closeModal);
+    // Tombol "Batal" di modal → tutup modal
+    if (modalCancelBtn) {
+      modalCancelBtn.addEventListener('click', function () {
+        closeModal();
+      });
     }
 
+    // Tombol "Register" di modal → POST ke backend
+    if (modalConfirmBtn) {
+      modalConfirmBtn.addEventListener('click', async function () {
+        const confirmText = document.getElementById('modal-confirm-text');
+        const confirmSpinner = document.getElementById('modal-confirm-spinner');
+
+        modalConfirmBtn.disabled = true;
+        confirmText.classList.add('hidden');
+        confirmSpinner.classList.remove('hidden');
+
+        try {
+          const formData = new FormData(form);
+
+          // Simpan ke localStorage sebagai backup
+          const dataObj = {};
+          formData.forEach((value, key) => { dataObj[key] = value; });
+          const storageKey = `registrations-${USER_ID}-${COURSE_ID}`;
+          localStorage.setItem(storageKey, JSON.stringify(dataObj));
+
+          const response = await fetch(`/registration/${USER_ID}/${COURSE_ID}`, {
+            method: 'POST',
+            body: formData,
+            redirect: 'follow',
+          });
+
+          if (response.redirected || response.ok) {
+            window.location.href = response.url;
+          } else {
+            throw new Error('Registration failed');
+          }
+        } catch (error) {
+          console.error('Registration error:', error);
+          alert('Terjadi kesalahan saat mendaftar. Silakan coba lagi.');
+          modalConfirmBtn.disabled = false;
+          confirmText.classList.remove('hidden');
+          confirmSpinner.classList.add('hidden');
+        }
+      });
+    }
+
+    // Klik overlay backdrop → tutup modal
     if (modal) {
       modal.addEventListener('click', function (e) {
         if (e.target === modal) {
           closeModal();
         }
       });
-
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && !modal.classList.contains('invisible')) {
-          closeModal();
-        }
-      });
     }
 
-    // --- Dropdown Handler ---
-    const dropdownContainers = document.querySelectorAll('.custom-dropdown');
+    // Init Custom Dropdowns
+    (function initCustomDropdowns() {
+      const dropdownContainers = document.querySelectorAll('.custom-dropdown');
 
-    dropdownContainers.forEach(container => {
-      const trigger = container.querySelector('.dropdown-trigger');
-      const menu = container.querySelector('.dropdown-menu');
-      const chevron = container.querySelector('.dropdown-chevron');
-      const label = container.querySelector('.dropdown-label');
-      const hiddenInput = container.querySelector('input[type="hidden"]');
-      const options = container.querySelectorAll('.dropdown-option');
+      dropdownContainers.forEach(container => {
+        const trigger = container.querySelector('.dropdown-trigger');
+        const menu = container.querySelector('.dropdown-menu');
+        const chevron = container.querySelector('.dropdown-chevron');
+        const label = container.querySelector('.dropdown-label');
+        const hiddenInput = container.querySelector('input[type="hidden"]');
+        const options = container.querySelectorAll('.dropdown-option');
 
-      let isOpen = false;
-      let highlightedIndex = -1;
+        if (!trigger || !menu) return;
 
-      // Toggle dropdown open/close state
-      function toggleDropdown(forceState) {
-        isOpen = forceState !== undefined ? forceState : !isOpen;
+        let isOpen = false;
+        let highlightedIndex = -1;
 
-        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        function toggleDropdown(forceState) {
+          isOpen = forceState !== undefined ? forceState : !isOpen;
+          trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 
-        if (isOpen) {
-          // Close all other open dropdowns first
-          dropdownContainers.forEach(otherContainer => {
-            if (otherContainer !== container) {
-              const otherTrigger = otherContainer.querySelector('.dropdown-trigger');
-              const otherMenu = otherContainer.querySelector('.dropdown-menu');
-              const otherChevron = otherContainer.querySelector('.dropdown-chevron');
-              if (otherMenu && !otherMenu.classList.contains('invisible')) {
-                otherMenu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
-                otherMenu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
-                if (otherChevron) otherChevron.classList.remove('rotate-180');
-                if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+          if (isOpen) {
+            dropdownContainers.forEach(otherContainer => {
+              if (otherContainer !== container) {
+                const otherTrigger = otherContainer.querySelector('.dropdown-trigger');
+                const otherMenu = otherContainer.querySelector('.dropdown-menu');
+                const otherChevron = otherContainer.querySelector('.dropdown-chevron');
+                if (otherMenu && !otherMenu.classList.contains('invisible')) {
+                  otherMenu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
+                  otherMenu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
+                  if (otherChevron) otherChevron.classList.remove('rotate-180');
+                  if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+                }
+              }
+            });
+
+            menu.classList.remove('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
+            menu.classList.add('visible', 'opacity-100', 'translate-y-0', 'scale-100');
+            if (chevron) chevron.classList.add('rotate-180');
+
+            highlightedIndex = Array.from(options).findIndex(opt => opt.getAttribute('aria-selected') === 'true');
+            if (highlightedIndex >= 0) {
+              updateFocusedOption(highlightedIndex);
+            }
+          } else {
+            menu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
+            menu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
+            if (chevron) chevron.classList.remove('rotate-180');
+            highlightedIndex = -1;
+          }
+        }
+
+        function updateFocusedOption(index) {
+          options.forEach((opt, idx) => {
+            if (idx === index) {
+              opt.classList.add('ring-2', 'ring-[#003060]');
+              opt.scrollIntoView({ block: 'nearest' });
+            } else {
+              opt.classList.remove('ring-2', 'ring-[#003060]');
+            }
+          });
+        }
+
+        function selectOption(option) {
+          const selectedValue = option.getAttribute('data-value');
+
+          if (hiddenInput) {
+            hiddenInput.value = selectedValue;
+          }
+
+          if (label) {
+            label.textContent = selectedValue;
+            label.classList.remove('text-[#676767]', 'text-slate-400');
+            label.classList.add('text-black');
+          }
+
+          options.forEach(opt => {
+            const isSelected = opt === option;
+            opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+
+            const checkIcon = opt.querySelector('.fa-check');
+            if (isSelected) {
+              opt.className = 'dropdown-option px-4 py-3 rounded-lg text-xl font-medium cursor-pointer transition-colors text-[#003060] bg-[#003060]/10 font-semibold flex items-center justify-between';
+              if (!checkIcon) {
+                opt.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-check text-sm text-[#003060]"></i>');
+              }
+            } else {
+              opt.className = 'dropdown-option px-4 py-3 rounded-lg text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between';
+              if (checkIcon) {
+                checkIcon.remove();
               }
             }
           });
 
-          // Open animation: opacity 0 -> 100%, translate Y: -8px -> 0, scale: 95% -> 100%
-          menu.classList.remove('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
-          menu.classList.add('visible', 'opacity-100', 'translate-y-0', 'scale-100');
-          chevron.classList.add('rotate-180');
-
-          // Highlight currently selected option index
-          highlightedIndex = Array.from(options).findIndex(opt => opt.getAttribute('aria-selected') === 'true');
-          if (highlightedIndex >= 0) {
-            updateFocusedOption(highlightedIndex);
-          }
-        } else {
-          // Close animation
-          menu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
-          menu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
-          chevron.classList.remove('rotate-180');
-          highlightedIndex = -1;
-        }
-      }
-
-      // Update highlighted option via keyboard
-      function updateFocusedOption(index) {
-        options.forEach((opt, idx) => {
-          if (idx === index) {
-            opt.classList.add('ring-2', 'ring-[#003060]');
-            opt.scrollIntoView({ block: 'nearest' });
-          } else {
-            opt.classList.remove('ring-2', 'ring-[#003060]');
-          }
-        });
-      }
-
-      // Select an option
-      function selectOption(option) {
-        const selectedValue = option.getAttribute('data-value');
-        
-        // Update hidden input
-        if (hiddenInput) {
-          hiddenInput.value = selectedValue;
+          toggleDropdown(false);
+          trigger.focus();
         }
 
-        // Update trigger label text
-        if (label) {
-          label.textContent = selectedValue;
-          label.classList.remove('text-[#676767]');
-          label.classList.add('text-black');
-        }
-
-        // Update aria-selected states and styling
-        options.forEach(opt => {
-          const isSelected = opt === option;
-          opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
-
-          const checkIcon = opt.querySelector('.fa-check');
-          if (isSelected) {
-            opt.className = 'dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-[#003060] bg-[#003060]/10 font-semibold flex items-center justify-between';
-            if (!checkIcon) {
-              opt.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-check text-sm text-[#003060]"></i>');
-            }
-          } else {
-            opt.className = 'dropdown-option px-4 py-3 rounded-lg text-base sm:text-xl font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between';
-            if (checkIcon) {
-              checkIcon.remove();
-            }
+        container.__selectOptionByValue = function(value) {
+          const option = Array.from(options).find(opt => opt.getAttribute('data-value') === value);
+          if (option) {
+            selectOption(option);
           }
-        });
+        };
 
-        toggleDropdown(false);
-        trigger.focus();
-      }
-
-      // Click trigger to toggle
-      trigger.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDropdown();
-      });
-
-      // Click options
-      options.forEach(option => {
-        option.addEventListener('click', function (e) {
-          e.stopPropagation();
-          selectOption(option);
-        });
-      });
-
-      // Keyboard Accessibility
-      trigger.addEventListener('keydown', function (e) {
-        if (['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Escape'].includes(e.key)) {
+        trigger.addEventListener('click', function (e) {
           e.preventDefault();
-        }
+          e.stopPropagation();
+          toggleDropdown();
+        });
 
-        if (e.key === 'Enter' || e.key === ' ') {
-          if (!isOpen) {
-            toggleDropdown(true);
-          } else if (highlightedIndex >= 0 && options[highlightedIndex]) {
-            selectOption(options[highlightedIndex]);
-          }
-        } else if (e.key === 'Escape') {
-          toggleDropdown(false);
-        } else if (e.key === 'ArrowDown') {
-          if (!isOpen) {
-            toggleDropdown(true);
-          } else {
-            highlightedIndex = (highlightedIndex + 1) % options.length;
-            updateFocusedOption(highlightedIndex);
-          }
-        } else if (e.key === 'ArrowUp') {
-          if (!isOpen) {
-            toggleDropdown(true);
-          } else {
-            highlightedIndex = (highlightedIndex - 1 + options.length) % options.length;
-            updateFocusedOption(highlightedIndex);
-          }
-        }
-      });
+        options.forEach(option => {
+          option.addEventListener('click', function (e) {
+            e.stopPropagation();
+            selectOption(option);
+          });
+        });
 
-      // Close when clicking outside
-      document.addEventListener('click', function (e) {
-        if (!container.contains(e.target) && isOpen) {
-          toggleDropdown(false);
-        }
+        trigger.addEventListener('keydown', function (e) {
+          if (['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Escape'].includes(e.key)) {
+            e.preventDefault();
+          }
+
+          if (e.key === 'Enter' || e.key === ' ') {
+            if (!isOpen) {
+              toggleDropdown(true);
+            } else if (highlightedIndex >= 0 && options[highlightedIndex]) {
+              selectOption(options[highlightedIndex]);
+            }
+          } else if (e.key === 'Escape') {
+            toggleDropdown(false);
+          } else if (e.key === 'ArrowDown') {
+            if (!isOpen) {
+              toggleDropdown(true);
+            } else {
+              highlightedIndex = (highlightedIndex + 1) % options.length;
+              updateFocusedOption(highlightedIndex);
+            }
+          } else if (e.key === 'ArrowUp') {
+            if (!isOpen) {
+              toggleDropdown(true);
+            } else {
+              highlightedIndex = (highlightedIndex - 1 + options.length) % options.length;
+              updateFocusedOption(highlightedIndex);
+            }
+          }
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!container.contains(e.target) && isOpen) {
+            toggleDropdown(false);
+          }
+        });
       });
-    });
+    })();
   });
 </script>

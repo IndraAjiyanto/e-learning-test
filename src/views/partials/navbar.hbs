@@ -132,9 +132,9 @@ isProgramActive() {
         });
       }
     }"
-    class='flex max-w-screen-xl px-4 items-center mx-auto md:px-6 lg:px-8 h-16 w-full relative'
+    class='flex max-w-[1728px] px-5 sm:px-8 lg:px-20 py-3 sm:py-4 items-center justify-between mx-auto h-auto w-full relative'
   >
-    <div class='flex items-center justify-start h-16 w-26'>
+    <div class='flex items-center justify-between w-full md:w-auto h-16'>
       <a
         href='/dashboard'
         class='inline-block'
@@ -143,20 +143,21 @@ isProgramActive() {
         <img
           src='/public/image/logo_baru.png'
           alt='Logo'
-          class='h-32 w-auto uppercase rounded-lg focus:outline-none focus:shadow-outline'
+          class='h-7 sm:h-12 w-auto object-contain focus:outline-none focus:shadow-outline'
         />
       </a>
 
-      <!-- Tombol toggle tetap di kanan -->
+      <!-- Tombol toggle mobile menu (Dark Navy rounded-[14px] button) -->
       <button
-        class='rounded-lg md:hidden focus:outline-none focus:shadow-outline p-2 transition-colors z-50'
+        class='w-9 h-9 sm:w-12 sm:h-12 bg-[#003060] rounded-[14px] md:hidden flex items-center justify-center text-white focus:outline-none shadow-md hover:bg-[#001f3f] transition-all z-50 shrink-0'
         @click='toggleMenu()'
+        aria-label="Toggle Navigation Menu"
       >
         <svg fill='currentColor' viewBox='0 0 20 20' class='w-6 h-6'>
           <path
             x-show='!open'
             fill-rule='evenodd'
-            d='M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z'
+            d='M3 5a1 1 0 011-1h14a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h14a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h14a1 1 0 110 2H4a1 1 0 01-1-1z'
             clip-rule='evenodd'
           ></path>
           <path

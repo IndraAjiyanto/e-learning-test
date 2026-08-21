@@ -50,7 +50,13 @@ export class RegistrationsController {
       console.log('🔵 [Registration] File URL:', createRegistrationDto.file);
       createRegistrationDto.courseId = courseId;
       createRegistrationDto.userId = userId;
-      createRegistrationDto.process = 'process';
+      createRegistrationDto.process = 'approved';
+      createRegistrationDto.user_fullname = req.body.user_fullname;
+      createRegistrationDto.user_email = req.body.user_email;
+      createRegistrationDto.user_no = req.body.user_no;
+      createRegistrationDto.current_status = req.body.current_status;
+      createRegistrationDto.referal_source = req.body.referal_source;
+      createRegistrationDto.attend_program = req.body.attend_program === 'true';
       const registration =
         await this.registrationsService.create(createRegistrationDto);
       console.log('🔵 [Registration] Result:', registration);
@@ -58,20 +64,23 @@ export class RegistrationsController {
         await this.registrationsService.deleteFile(createRegistrationDto.file);
         req.flash(
           'info',
-          'you have already submitted the registration proof, please wait for further information from the admin',
+          'you have already registered for this program',
         );
-        res.redirect(`/payment/history/${userId}#pendaftaran`);
+        res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
       } else {
+        try {
+          await this.registrationsService.addUserToCourse(userId, courseId);
+        } catch (error: any) {}
         req.flash(
           'success',
-          'registration proof successfully sent, please wait for the admin',
+          'Registration successful! You are now enrolled in the program.',
         );
-        res.redirect(`/payment/history/${userId}#pendaftaran`);
+        res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
       }
     } catch (error: any) {
       console.error('🔴 [Registration] Error:', error);
-      req.flash('error', error.message || 'bukti pembayaran gagal dikirim ');
-      res.redirect(`/payment/history/${userId}`);
+      req.flash('error', error.message || 'Registration failed');
+      res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
     }
   }
 

@@ -30,7 +30,7 @@
     <label class="block text-2xl md:text-3xl text-[#003060] font-montserrat font-semibold mb-7">
       WhatsApp Number<span class="text-red-500">*</span>
     </label>
-    <input type="tel" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400" value="{{user.no_telp}}">
+    <input type="tel" name="whatsappNumber" required placeholder="Input Your WhatsApp Number" class="w-full max-w-[760px] h-[60px] rounded-[6px] p-[10px] mb-4 bg-white shadow-[0_0_5px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 placeholder:text-slate-400" value="{{user.no_telp}}">
   </div>
 
   <!-- How did you know -->
@@ -83,7 +83,7 @@
     </label>
     <label class="flex items-center gap-3 cursor-pointer group w-fit">
       <div class="relative flex items-center justify-center">
-        <input type="checkbox" required class="peer appearance-none w-5 h-5 border border-slate-300 rounded-sm bg-white checked:bg-[#0B3A68] checked:border-[#0B3A68] transition-all cursor-pointer">
+        <input type="checkbox" name="agreement" required class="peer appearance-none w-5 h-5 border border-slate-300 rounded-sm bg-white checked:bg-[#0B3A68] checked:border-[#0B3A68] transition-all cursor-pointer">
         <i class="fa-solid fa-check w-3.5 h-3.5 flex items-center justify-center text-white absolute opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></i>
       </div>
       <span class="text-slate-700 group-hover:text-[#0B3A68] transition-colors font-montserrat font-medium text-base sm:text-2xl">Yes, I agree</span>
@@ -197,7 +197,20 @@
 
           toggleDropdown(false);
           trigger.focus();
+          container.dispatchEvent(
+            new CustomEvent('dropdown:change', {
+              bubbles: true,
+              detail: { value: selectedValue }
+            })
+          );
         }
+
+        container.__selectOptionByValue = function(value) {
+          const option = Array.from(options).find(opt => opt.getAttribute('data-value') === value);
+          if (option) {
+            selectOption(option);
+          }
+        };
 
         trigger.addEventListener('click', function (e) {
           e.preventDefault();
@@ -254,6 +267,128 @@
       document.addEventListener('DOMContentLoaded', setupDropdowns);
     } else {
       setupDropdowns();
+    }
+  })();
+</script>
+
+<script>
+  (function initRegistrationDraftStorage() {
+    const userId = Number('{{user.id}}') || 0;
+    const courseId = Number('{{course.id}}') || 0;
+    if (!userId || !courseId) return;
+
+    const storageKey =
+      typeof window.getPaymentProgressStorageKey === 'function'
+        ? window.getPaymentProgressStorageKey()
+        : `payment-${userId}-${courseId}-form`;
+    const form = document.getElementById('step-1-form');
+    if (!form) return;
+
+    const readDraft = () => {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return null;
+
+      try {
+        return JSON.parse(raw);
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const getCurrentProgress = () => {
+      const fromSession = Number(sessionStorage.getItem('currentPaymentStep') || 1);
+      const draft = readDraft();
+      return Number(draft?.form) || fromSession || 1;
+    };
+
+    const collectFormData = () => {
+      const fullName = form.querySelector('input[name="fullName"]')?.value?.trim() || '';
+      const email = form.querySelector('input[name="email"]')?.value?.trim() || '';
+      const whatsappNumber = form.querySelector('input[name="whatsappNumber"]')?.value?.trim() || '';
+      const source = form.querySelector('input[name="source"]')?.value || '';
+      const agreement = Boolean(form.querySelector('input[name="agreement"]')?.checked);
+
+      return {
+        fullName,
+        email,
+        whatsappNumber,
+        source,
+        agreement,
+      };
+    };
+
+    const applySourceValue = (sourceValue) => {
+      if (!sourceValue) return;
+      const sourceContainer = document.getElementById('dropdown-source');
+      if (!sourceContainer || typeof sourceContainer.__selectOptionByValue !== 'function') return;
+      sourceContainer.__selectOptionByValue(sourceValue);
+    };
+
+    const applyDraft = (draft) => {
+      if (!draft) return;
+
+      const form1 = draft.forms?.form1 || draft.formData;
+      if (!form1) return;
+
+      const { fullName, email, whatsappNumber, source, agreement } = form1;
+
+      const fullNameInput = form.querySelector('input[name="fullName"]');
+      const emailInput = form.querySelector('input[name="email"]');
+      const whatsappInput = form.querySelector('input[name="whatsappNumber"]');
+      const agreementInput = form.querySelector('input[name="agreement"]');
+
+      if (fullNameInput && fullName) fullNameInput.value = fullName;
+      if (emailInput && email) emailInput.value = email;
+      if (whatsappInput && whatsappNumber) whatsappInput.value = whatsappNumber;
+      if (agreementInput) agreementInput.checked = Boolean(agreement);
+      applySourceValue(source);
+    };
+
+    let lastSavedPayload = null;
+
+    const saveDraftIfChanged = () => {
+      const existingDraft = readDraft() || {};
+      const payload = {
+        ...existingDraft,
+        userId,
+        courseId,
+        form: getCurrentProgress(),
+        forms: {
+          ...(existingDraft.forms || {}),
+          form1: collectFormData(),
+        },
+      };
+      const payloadString = JSON.stringify(payload);
+      if (payloadString === lastSavedPayload) return;
+
+      const existingRaw = localStorage.getItem(storageKey);
+      if (existingRaw === payloadString) {
+        lastSavedPayload = payloadString;
+        return;
+      }
+
+      localStorage.setItem(storageKey, payloadString);
+      lastSavedPayload = payloadString;
+    };
+
+    const bootstrap = () => {
+      const existingDraft = readDraft();
+      if (existingDraft) {
+        applyDraft(existingDraft);
+        lastSavedPayload = JSON.stringify(existingDraft);
+      }
+
+      form.addEventListener('input', saveDraftIfChanged);
+      form.addEventListener('change', saveDraftIfChanged);
+      document.addEventListener('payment:step-changed', saveDraftIfChanged);
+
+      saveDraftIfChanged();
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrap);
+    } else {
+      bootstrap();
     }
   })();
 </script>
