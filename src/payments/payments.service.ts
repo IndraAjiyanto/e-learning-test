@@ -353,7 +353,7 @@ export class PaymentsService {
     } catch (error) {}
   }
 
-  async createXenditInvoice(userId: number, courseId: number, paymentMethod: string, promoCode?: string) {
+  async createXenditInvoice(userId: number, courseId: number, paymentMethod: string, promoCode?: string, formData?: any) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['installments'],
@@ -386,7 +386,14 @@ export class PaymentsService {
       user: user,
       course: course,
       process: finalTotal <= 0 ? 'approved' : 'process', 
-      no: `INV-${Date.now()}`
+      no: `INV-${Date.now()}`,
+      // Simpan data dari form
+      user_fullname: formData?.user_fullname || null,
+      user_email: formData?.user_email || null,
+      user_no: formData?.user_no || formData?.no || null,
+      current_status: formData?.current_status || null,
+      referalSource: formData?.referal_source || null,
+      attend_program: formData?.attend_program ? true : false
     });
     
     await this.paymentRepository.save(payment);

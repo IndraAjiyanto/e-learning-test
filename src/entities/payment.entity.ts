@@ -50,6 +50,15 @@ export class Payment {
   })
   current_status: currentStatus;
 
+  @Column({ nullable: true })
+  user_fullname: string;
+
+  @Column({ nullable: true })
+  user_email: string;
+
+  @Column({ nullable: true })
+  user_no: string;
+
   @Column({nullable:true,})
   attend_program: boolean;
 

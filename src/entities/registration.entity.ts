@@ -27,6 +27,32 @@ export class Registration {
   })
   process: ProcessStatus;
 
+  @Column({ nullable: true })
+  user_fullname: string;
+
+  @Column({ nullable: true })
+  user_email: string;
+
+  @Column({ nullable: true })
+  user_no: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'],
+    nullable: true,
+  })
+  current_status: string;
+
+  @Column({ nullable: true })
+  attend_program: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'],
+    nullable: true,
+  })
+  referal_source: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

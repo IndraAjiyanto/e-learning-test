@@ -31,6 +31,47 @@
 </div>
 
 <script>
+  const paymentStorageUserId = Number('{{user.id}}') || 0;
+  const paymentStorageCourseId = Number('{{course.id}}') || 0;
+  const paymentProgressStorageKey = paymentStorageUserId && paymentStorageCourseId
+    ? `payment-${paymentStorageUserId}-${paymentStorageCourseId}-form`
+    : null;
+
+  function readPaymentProgressDraft() {
+    if (!paymentProgressStorageKey) return null;
+
+    const raw = localStorage.getItem(paymentProgressStorageKey);
+    if (!raw) return null;
+
+    try {
+      return JSON.parse(raw);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function savePaymentProgressStep(step) {
+    if (!paymentProgressStorageKey) return;
+
+    const safeStep = [1, 2, 3].includes(Number(step)) ? Number(step) : 1;
+    const existingDraft = readPaymentProgressDraft() || {};
+    if (Number(existingDraft.form) === safeStep) return;
+
+    const nextDraft = {
+      ...existingDraft,
+      userId: paymentStorageUserId,
+      courseId: paymentStorageCourseId,
+      form: safeStep,
+      forms: existingDraft.forms || {},
+    };
+
+    localStorage.setItem(paymentProgressStorageKey, JSON.stringify(nextDraft));
+  }
+
+  window.getPaymentProgressStorageKey = function() {
+    return paymentProgressStorageKey;
+  };
+
   function goToStep(step, skipValidation = false) {
     // Validate step 1 if trying to go to step 2
     if (step === 2 && !skipValidation) {
@@ -80,6 +121,13 @@
     
     // Save step to sessionStorage
     sessionStorage.setItem('currentPaymentStep', step);
+    savePaymentProgressStep(step);
+
+    document.dispatchEvent(
+      new CustomEvent('payment:step-changed', {
+        detail: { step: Number(step) || 1 }
+      })
+    );
   }
 
   // Restore step on page reload and handle Back Button
@@ -88,7 +136,8 @@
     const backBtn = document.querySelector('a[href="javascript:history.back()"]');
     if (backBtn) {
       backBtn.addEventListener('click', (e) => {
-        const currentStep = parseInt(sessionStorage.getItem('currentPaymentStep') || '1');
+        const localDraft = readPaymentProgressDraft();
+        const currentStep = Number(localDraft?.form) || parseInt(sessionStorage.getItem('currentPaymentStep') || '1');
         if (currentStep > 1) {
           e.preventDefault(); // Prevent actually going back in browser history
           goToStep(currentStep - 1, true); // Go back one step
@@ -96,9 +145,20 @@
       });
     }
 
-    const savedStep = sessionStorage.getItem('currentPaymentStep');
-    if (savedStep) {
-      goToStep(parseInt(savedStep), true);
+    const navigationEntry = performance.getEntriesByType('navigation')[0];
+    const navigationType = navigationEntry ? navigationEntry.type : 'navigate';
+    const localDraft = readPaymentProgressDraft();
+    const savedStep = Number(localDraft?.form) || parseInt(sessionStorage.getItem('currentPaymentStep') || '1');
+
+    if (navigationType !== 'reload') {
+      goToStep(1, true);
+      return;
+    }
+
+    if (savedStep >= 1 && savedStep <= 3) {
+      goToStep(savedStep, true);
+    } else {
+      goToStep(1, true);
     }
   });
 </script>
