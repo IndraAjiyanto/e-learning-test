@@ -16,23 +16,33 @@ export class ApiPaymentController {
       courseId: number;
       paymentMethod: string; // 'Full Payment' | 'Installment'
       promoCode?: string;
+      formData?: any;
     },
     @Res() res: Response,
     @Req() req: Request & { user?: any }
   ) {
     try {
-      const { courseId, paymentMethod, promoCode } = body;
+      const { courseId, paymentMethod, promoCode, formData } = body;
       const userId = req.user?.id;
 
       if (!userId || !courseId || !paymentMethod) {
         return res.status(400).json({ status: 'error', message: 'Data tidak lengkap' });
       }
 
+      // Format formData to match the column names expected by PaymentsService
+      const formattedFormData = formData ? {
+        user_fullname: formData.fullName,
+        user_email: formData.email,
+        user_no: formData.whatsappNumber,
+        referal_source: formData.source,
+      } : undefined;
+
       const orderData = await this.paymentsService.createXenditInvoice(
         userId,
         Number(courseId),
         paymentMethod,
-        promoCode
+        promoCode,
+        formattedFormData
       );
 
       if (orderData.process === 'approved') {

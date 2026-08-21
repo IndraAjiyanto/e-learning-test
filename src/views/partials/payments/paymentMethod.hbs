@@ -315,18 +315,35 @@ function updatePricingUI(sub, disc, total) {
     spinner.classList.remove("hidden");
 
     try {
-      const response = await fetch('/api/payment/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({
-          courseId: '{{course.id}}',
-          paymentMethod: method,
-          promoCode: activePromo ? activePromo : null
-        }),
-      });
+        const storageKey =
+          typeof window.getPaymentProgressStorageKey === 'function'
+            ? window.getPaymentProgressStorageKey()
+            : `payment-${userId}-${courseId}-form`;
+        
+        let formData = null;
+        if (storageKey) {
+            const raw = localStorage.getItem(storageKey);
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    formData = parsed.forms && parsed.forms.form1 ? parsed.forms.form1 : null;
+                } catch(e) {}
+            }
+        }
+
+        const response = await fetch('/api/payment/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            courseId: '{{course.id}}',
+            paymentMethod: method,
+            promoCode: activePromo ? activePromo : null,
+            formData: formData
+          }),
+        });
 
       const data = await response.json();
 
@@ -372,4 +389,100 @@ function updatePricingUI(sub, disc, total) {
 
      togglePaymentMethod();
   });
+</script>
+
+<script>
+  (function initPaymentMethodDraftStorage() {
+    const userId = Number('{{user.id}}') || 0;
+    const courseId = Number('{{course.id}}') || 0;
+    if (!userId || !courseId) return;
+
+    const storageKey =
+      typeof window.getPaymentProgressStorageKey === 'function'
+        ? window.getPaymentProgressStorageKey()
+        : `payment-${userId}-${courseId}-form`;
+
+    const paymentMethodSelect = document.getElementById('payment-method-select');
+    const promoInput = document.getElementById('promo-input');
+    if (!paymentMethodSelect || !promoInput) return;
+
+    const readDraft = () => {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return null;
+
+      try {
+        return JSON.parse(raw);
+      } catch (error) {
+        return null;
+      }
+    };
+
+    let lastSavedPayload = null;
+
+    const collectForm2 = () => ({
+      paymentMethod: paymentMethodSelect.value || 'Full Payment',
+      voucherDiscount: (promoInput.value || '').trim().toUpperCase(),
+    });
+
+    const saveForm2IfChanged = () => {
+      const existingDraft = readDraft() || {};
+      const payload = {
+        ...existingDraft,
+        userId,
+        courseId,
+        form: Number(existingDraft.form) || Number(sessionStorage.getItem('currentPaymentStep') || 1),
+        forms: {
+          ...(existingDraft.forms || {}),
+          form2: collectForm2(),
+        },
+      };
+
+      const payloadString = JSON.stringify(payload);
+      if (payloadString === lastSavedPayload) return;
+
+      const existingRaw = localStorage.getItem(storageKey);
+      if (existingRaw === payloadString) {
+        lastSavedPayload = payloadString;
+        return;
+      }
+
+      localStorage.setItem(storageKey, payloadString);
+      lastSavedPayload = payloadString;
+    };
+
+    const applyForm2 = (form2) => {
+      if (!form2) return;
+
+      if (form2.paymentMethod) {
+        paymentMethodSelect.value = form2.paymentMethod;
+        togglePaymentMethod();
+      }
+
+      if (form2.voucherDiscount) {
+        promoInput.value = form2.voucherDiscount;
+        handlePromoInput();
+      }
+    };
+
+    const bootstrap = () => {
+      const existingDraft = readDraft();
+      if (existingDraft?.forms?.form2) {
+        applyForm2(existingDraft.forms.form2);
+        lastSavedPayload = JSON.stringify(existingDraft);
+      }
+
+      paymentMethodSelect.addEventListener('change', saveForm2IfChanged);
+      promoInput.addEventListener('input', saveForm2IfChanged);
+      promoInput.addEventListener('change', saveForm2IfChanged);
+      document.addEventListener('payment:step-changed', saveForm2IfChanged);
+
+      saveForm2IfChanged();
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrap);
+    } else {
+      bootstrap();
+    }
+  })();
 </script>

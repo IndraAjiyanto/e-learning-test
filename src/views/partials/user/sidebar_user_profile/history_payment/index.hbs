@@ -7,7 +7,12 @@
     searchQuery: '',
     sortBy: 'Newest',
     sortOpen: false,
-    payments: []
+    payments: [],
+    init() {
+      if (window.location.hash === '#pendaftaran') {
+        this.paymentType = 'registration';
+      }
+    }
   }"
 >
   
