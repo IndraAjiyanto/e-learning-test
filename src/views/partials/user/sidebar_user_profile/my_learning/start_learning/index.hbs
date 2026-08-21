@@ -252,7 +252,7 @@
                     <template x-if="session.materials && session.materials.find(m => m.fileType === 'pdf')">
                       <a
                         href="javascript:void(0)"
-                        @click="activeMateri = 'pdf'"
+                        @click="selectedMaterial = session; activeMateri = 'pdf'"
                         class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
                         x-text="session.materials.find(m => m.fileType === 'pdf').title || ('Materi ' + (session.topic || ('Session ' + session.sessionOrder)))"
                       ></a>
@@ -272,7 +272,7 @@
                     <template x-if="session.materials && session.materials.find(m => m.fileType === 'video')">
                       <a
                         href="javascript:void(0)"
-                        @click="activeMateri = 'video'"
+                        @click="selectedMaterial = session; activeMateri = 'video'"
                         class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
                         x-text="session.materials.find(m => m.fileType === 'video').title || ('Video ' + (session.topic || ('Session ' + session.sessionOrder)))"
                       ></a>
@@ -292,7 +292,7 @@
                     <template x-if="session.materials && session.materials.find(m => m.fileType === 'ppt')">
                       <a
                         href="javascript:void(0)"
-                        @click="activeMateri = 'ppt'"
+                        @click="selectedMaterial = session; activeMateri = 'ppt'"
                         class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
                         x-text="session.materials.find(m => m.fileType === 'ppt').title || ('PPT ' + (session.topic || ('Session ' + session.sessionOrder)))"
                       ></a>
