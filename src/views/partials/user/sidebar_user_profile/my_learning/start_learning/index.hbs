@@ -7,6 +7,7 @@
     selectedMaterial: null,
     showMaterialModal: false,
     showLogbookModal: false,
+    logbookSessionId: null,
     logbookForm: {
       title: '',
       notes: '',
@@ -33,6 +34,29 @@
       } finally {
         if (this.loadedWeekId === weekId) this.sessionsLoading = false;
       }
+    },
+    logbookProcess(session) {
+      const logbook = session.logbooks && session.logbooks[0];
+      return logbook ? logbook.process : null;
+    },
+    logbookStatusText(session) {
+      const process = this.logbookProcess(session);
+      if (process === 'process') return 'Logbook is being reviewed';
+      if (process === 'rejected') return 'Logbook has been rejected';
+      if (process === 'approved') return 'The logbook has been approved';
+      return 'Logbook';
+    },
+    logbookButtonColorClass(session) {
+      const process = this.logbookProcess(session);
+      if (process === 'process') return 'bg-[#FEEFD6] text-[#FDA40B] border border-[#FDA40B]';
+      if (process === 'rejected') return 'bg-[#FEE7E7] border border-red-700 text-red-700';
+      if (process === 'approved') return 'bg-[#E5F6D4] border border-[#12BD26] text-[#12BD26]';
+      return 'bg-[#003060] hover:bg-[#002244] text-white';
+    },
+    isSessionUnlocked(index) {
+      if (index === 0) return true;
+      const prev = this.sessions[index - 1];
+      return !!(prev && prev.sessionProgress && prev.sessionProgress[0] && prev.sessionProgress[0].isAttended === true);
     }
   }"
   x-init="$watch('showLogbookModal', value => document.body.classList.toggle('overflow-hidden', value))"
@@ -157,10 +181,10 @@
       </template>
 
       <!-- Session Cards -->
-      <template x-for="session in (openWeek === {{weekNumber}} ? sessions : [])" :key="session.id">
+      <template x-for="(session, sIndex) in (openWeek === {{weekNumber}} ? sessions : [])" :key="session.id">
         <div>
           <!-- Unlocked Session Card (Active Session with Details & Materials) -->
-          <template x-if="session.sessionProgress && session.sessionProgress[0] && session.sessionProgress[0].isAttended === true">
+          <template x-if="isSessionUnlocked(sIndex)">
             <div class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-5 sm:p-6 space-y-6">
 
               <!-- Session Header: Title + Logbook Button (Top Right) -->
@@ -192,11 +216,12 @@
                 <!-- '+ Logbook' Action Button (Top Right, Montserrat 500, 20px) -->
                 <button
                   type="button"
-                  @click="showLogbookModal = true"
-                  class="bg-[#003060] hover:bg-[#002244] text-white rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-4 py-2.5 flex items-center justify-center gap-2 font-montserrat font-medium text-base sm:text-[20px] leading-none transition-all cursor-pointer flex-shrink-0"
+                  @click="if (logbookProcess(session) === 'approved') { window.location.href = '/logbooks/' + session.logbooks[0].id } else if (logbookProcess(session) === 'process' || logbookProcess(session) === 'rejected') { window.location.href = '/logbooks/formEdit/' + session.logbooks[0].id } else { showLogbookModal = true; logbookSessionId = session.id }"
+                  :class="logbookButtonColorClass(session)"
+                  class="rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-4 py-2.5 flex items-center justify-center gap-2 font-montserrat font-medium text-base sm:text-[20px] leading-none transition-all cursor-pointer flex-shrink-0"
                 >
-                  <i class="fa-solid fa-plus text-sm sm:text-base"></i>
-                  <span>Logbook</span>
+                  <i class="fa-solid fa-plus text-sm sm:text-base" x-show="!logbookProcess(session)"></i>
+                  <span x-text="logbookStatusText(session)">Logbook</span>
                 </button>
               </div>
 
@@ -274,7 +299,7 @@
           </template>
 
           <!-- Locked Session Bar (Locked Bar Layout Matching Figma) -->
-          <template x-if="!(session.sessionProgress && session.sessionProgress[0] && session.sessionProgress[0].isAttended === true)">
+          <template x-if="!isSessionUnlocked(sIndex)">
             <div class="w-full h-[54px] px-5 sm:px-6 bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-between">
               <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none" x-text="session.topic || ('Session ' + session.sessionOrder)"></h4>
               <div class="text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
@@ -374,7 +399,12 @@
       </h2>
 
       <!-- Form Content -->
-      <form @submit.prevent="showLogbookModal = false" class="space-y-8">
+      <form
+        :action="'/logbooks/' + logbookSessionId"
+        method="POST"
+        enctype="multipart/form-data"
+        class="space-y-8"
+      >
         
         <!-- Two-Column Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
@@ -387,8 +417,10 @@
               <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
                 Activity
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
+                name="activity"
+                required
                 placeholder="Enter activity description..."
                 class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
               >
@@ -399,8 +431,10 @@
               <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
                 Activity Details
               </label>
-              <textarea 
+              <textarea
                 rows="6"
+                name="activityDetails"
+                required
                 placeholder="Enter detailed description of your activity..."
                 class="w-full h-[180px] rounded-[6px] p-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] resize-none transition-colors"
               ></textarea>
@@ -416,8 +450,10 @@
               <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
                 Obstacles
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
+                name="obstacles"
+                required
                 placeholder="Enter any obstacles faced..."
                 class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
               >
@@ -431,10 +467,11 @@
               <div class="relative w-full h-[45px] bg-white border border-slate-300 rounded-[6px] p-1 flex items-center gap-3">
                 <label class="bg-[#E2E8F0] hover:bg-slate-300 text-[#003060] font-montserrat font-medium text-xs sm:text-sm px-3 py-1.5 rounded-[4px] cursor-pointer transition-colors flex-shrink-0 select-none">
                   Choose File
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    class="hidden" 
+                  <input
+                    type="file"
+                    name="documentation"
+                    accept="image/*"
+                    class="hidden"
                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''"
                   >
                 </label>
@@ -450,8 +487,10 @@
               <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
                 Link Documentation
               </label>
-              <input 
-                type="url" 
+              <input
+                type="url"
+                name="otherDocumentation"
+                required
                 placeholder="Enter Link Documentation"
                 class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
               >
