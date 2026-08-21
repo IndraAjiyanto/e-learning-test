@@ -469,16 +469,23 @@ export class CoursesController {
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
     @Req() req: Request,
+    @Query('courseId') courseId?: string,
   ) {
     const course = await this.coursesService.findMyCourse(id);
     const category = await this.coursesService.findCategoryMyProgram(id);
     const courseType = await this.coursesService.findMyProgramCourseTypes(id);
+
+    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
     res.render('user/user_profile/index', {
       course,
+      activeCourse,
       user: req.user,
       category,
       courseType,
-      activeSection: 'learning',
+      activeSection: courseId ? 'uiux' : 'learning',
     });
   }
 

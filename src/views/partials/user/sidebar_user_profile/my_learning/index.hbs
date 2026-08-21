@@ -141,14 +141,13 @@
             </div>
           </div>
           <!-- Button -->
-          <button
-            type="button"
-            @click="toggleActiveSection('uiux')"
+          <a
+            href="/program/myProgram/{{../user.id}}?courseId={{this.id}}"
             class="w-full h-[39px] rounded-[12px] p-[10px] gap-[10px] border border-[#003060] bg-transparent shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-[#003060] hover:bg-[#003060] hover:text-white transition-all cursor-pointer"
           >
             <span class="text-sm sm:text-base lg:text-xl sm:leading-none">Continue</span>
             <i class="fa-solid fa-arrow-right text-sm"></i>
-          </button>
+          </a>
         </div>
         {{/each}}
       </div>
