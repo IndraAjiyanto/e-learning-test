@@ -7,6 +7,11 @@
     openMyLearning: true,
     openUiUx: true,
     openRoblox: false,
+    handledSections: [
+      'profile', 'learning', 'uiux', 'portfolio', 'history-payment',
+      'assignment', 'logbook', 'quiz', 'quizDetail', 'startQuiz',
+      'group-class', 'attendance'
+    ],
     toggleActiveSection(section) {
       this.activeSection = section;
     }
@@ -31,12 +36,13 @@
 
           <!-- My Learning Button -->
           <button
-            @click="toggleActiveSection('learning');"
+            @click="openMyLearning = !openMyLearning; toggleActiveSection('learning');"
             :class="activeSection === 'learning' ? 'bg-[#003060] text-white border-[0.5px] border-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]' : 'text-black bg-white/80 border-[0.5px] border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px]'"
             class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none"
           >
             <img src="/public/image/user_profile/myLearning.svg" alt="My Learning" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'learning' ? 'brightness-0 invert' : 'brightness-0'">
             <span>My Learning</span>
+            <i class="fas fa-chevron-down text-sm transition-transform duration-200" :class="openMyLearning ? 'rotate-180' : ''"></i>
           </button>
 
           <!-- My Portfolio Button -->
@@ -57,6 +63,85 @@
           >
             <img src="/public/image/user_profile/historyPayment.svg" alt="History Payment" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'history-payment' ? 'brightness-0 invert' : 'brightness-0'">
             <span>History Payment</span>
+          </button>
+
+        </nav>
+      </div>
+
+      <!-- My Learning Sub-Items (mobile mirror of the desktop UI/UX accordion) -->
+      <div x-show="openMyLearning" x-transition class="overflow-x-auto no-scrollbar">
+        <nav class="flex space-x-3 min-w-max pb-4">
+
+          <button
+            @click="toggleActiveSection('uiux');"
+            :class="activeSection === 'uiux' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-800 border-[#D9D9D9]'"
+            class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
+          >
+            <img src="/public/image/user_profile/uiUxDesigner.svg" alt="UI/UX Designer" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'uiux' ? 'brightness-0 invert' : 'brightness-0'">
+            <span>UI/UX Designer</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('presentation');"
+            :class="activeSection === 'presentation' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9]'"
+            class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
+          >
+            <img src="/public/image/user_profile/presentation.svg" alt="Presentation" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'presentation' ? 'brightness-0 invert' : 'brightness-0'">
+            <span>Presentation</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('logbook');"
+            :class="activeSection === 'logbook' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9]'"
+            class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
+          >
+            <img src="/public/image/user_profile/myLogbook.svg" alt="My Logbook" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'logbook' ? 'brightness-0 invert' : 'brightness-0'">
+            <span>My Logbook</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('assignment');"
+            :class="activeSection === 'assignment' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9]'"
+            class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
+          >
+            <img src="/public/image/user_profile/assignment.svg" alt="Assignment" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'assignment' ? 'brightness-0 invert' : 'brightness-0'">
+            <span>Assignment</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('quiz');"
+            :class="activeSection === 'quiz' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9]'"
+            class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
+          >
+            <img src="/public/image/user_profile/quiz.svg" alt="Quiz" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'quiz' ? 'brightness-0 invert' : 'brightness-0'">
+            <span>Quiz</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('certificate');"
+            :class="activeSection === 'certificate' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9]'"
+            class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
+          >
+            <img src="/public/image/user_profile/sertificate.svg" alt="Certificate" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'certificate' ? 'brightness-0 invert' : 'brightness-0'">
+            <span>Certificate</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('group-class');"
+            :class="activeSection === 'group-class' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9]'"
+            class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
+          >
+            <img src="/public/image/user_profile/joinGroupClass.svg" alt="Join Group Class" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'group-class' ? 'brightness-0 invert' : 'brightness-0'">
+            <span>Join Group Class</span>
+          </button>
+
+          <button
+            @click="toggleActiveSection('attendance');"
+            :class="activeSection === 'attendance' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9]'"
+            class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
+          >
+            <i class="fa-solid fa-clipboard-list text-sm" :class="activeSection === 'attendance' ? 'text-white' : 'text-slate-700'"></i>
+            <span>Attendance</span>
           </button>
 
         </nav>
@@ -319,7 +404,6 @@
           {{> user/sidebar_user_profile/logbook/index }}
         </div>
 
-        <!-- Other Tabs Placeholder Content --
         <!-- Quiz Tab Content -->
         <div x-show="activeSection === 'quiz'">
           {{> user/sidebar_user_profile/my_learning/start_learning/quiz/index }}
@@ -344,25 +428,11 @@
 
         <!-- Attendance Tab Content -->
         <div x-show="activeSection === 'attendance'">
-          {{> user/sidebar_user_profile/my_learning/start_learning/attendance/index }}
+          {{> user/sidebar_user_profile/my_learning/start_learning/attendance/index course=activeCourse }}
         </div>
 
         <!-- Other Tabs Placeholder Content -->
-        <div x-show="
-        activeSection !== 'profile' 
-        && activeSection !== 'learning' 
-        && activeSection !== 'history-payment' 
-        && activeSection !== 'portfolio' 
-        && activeSection !== 'group-class'
-        && activeSection !== 'uiux'
-        && activeSection !== 'materi-pdf'
-        && activeSection !== 'materi-video'
-        && activeSection !== 'materi-ppt'
-        && activeSection !== 'quiz'
-        && activeSection !== 'quizDetail'
-        && activeSection !== 'startQuiz'
-        && activeSection !== 'attendance'
-        " class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
+        <div x-show="!handledSections.includes(activeSection)" class="bg-white p-8 sm:p-12 rounded-[16px] border border-slate-200 shadow-sm text-center space-y-4">
           <div class="w-16 h-16 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060]">
             <i class="fas fa-folder-open text-2xl"></i>
           </div>

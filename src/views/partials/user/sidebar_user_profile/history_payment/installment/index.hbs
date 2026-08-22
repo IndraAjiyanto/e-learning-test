@@ -2,6 +2,8 @@
 <div class="pt-2" x-data="{
   transactions: [],
   loading: true,
+  showDetail: false,
+  selectedTx: null,
   async init() {
     try {
       const res = await fetch('/payment/api/installment/{{user.id}}');
@@ -43,10 +45,21 @@
       <img src="/public/image/userProfile/receiptDollar.svg" alt="Receipt Dollar" class="w-16 h-16 object-contain mx-auto">
     </div>
 
-    <!-- EMPTY STATE (When no installment payments exist) -->
-    <div 
-      x-show="transactions.length === 0" 
-      class="py-8 px-4 flex flex-col items-center justify-center text-center"
+    <!-- Heading -->
+    <h3 class="font-montserrat font-semibold text-xl sm:text-2xl xl:text-[30px] text-[#003060] mb-2">
+      No Installment Payment History
+    </h3>
+
+    <!-- Subtitle -->
+    <p class="font-sans font-normal text-base sm:text-lg xl:text-[20px] text-[#666666] mb-12">
+      You haven't made any installment payments yet.
+    </p>
+
+    <!-- Start Learning Button -->
+    <button
+      type="button"
+      onclick="window.location.href='/free-program'"
+      class="w-full max-w-[331px] h-[55px] rounded-[12px] p-[10px] gap-[10px] bg-[#003060] hover:bg-[#001f3f] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-lg sm:text-[20px] leading-none text-white transition-all duration-200 cursor-pointer"
     >
       Start Learning
     </button>
