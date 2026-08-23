@@ -121,12 +121,11 @@
         <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
           Project Overview
         </h3>
-        <p 
-          class="font-montserrat font-normal text-sm sm:text-base text-[#666666] leading-relaxed"
-          x-text="selectedPortfolio && selectedPortfolio.overview ? selectedPortfolio.overview : 'disini isinya adalah project overview'"
-        >
-          disini isinya adalah project overview
-        </p>
+        <div 
+          id="overviewDetail"
+          class="font-montserrat font-normal text-sm sm:text-base text-[#666666] leading-relaxed space-y-2"
+          x-html="selectedPortfolio && selectedPortfolio.overview ? renderOverview(selectedPortfolio.overview) : 'disini isinya adalah project overview'"
+        ></div>
       </div>
 
       <!-- Technologies Used Card -->
@@ -134,26 +133,21 @@
         <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
           Technologies Used
         </h3>
-        <div>
-          <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm sm:text-base">
-            <template x-if="selectedPortfolio && selectedPortfolio.category === 'Python'">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 96 96" class="w-5 h-5 flex-shrink-0">
-                <path fill="url(#python-detail-grad-a)" d="M47.6611 1.24463c-23.863 0-22.3728 10.34847-22.3728 10.34847l.0266 10.7209h22.7719v3.2189H16.27S1 23.8011 1 47.8792c-.000002 24.078 13.328 23.2241 13.328 23.2241h7.9542V59.9302s-.4288-13.328 13.1151-13.328H57.983s12.6895.2052 12.6895-12.2638V13.7213S72.5991 1.24463 47.6611 1.24463ZM35.1047 8.45396c2.2656 0 4.0968 1.83114 4.0968 4.09684 0 2.2656-1.8312 4.0968-4.0968 4.0968-2.2657 0-4.0968-1.8312-4.0968-4.0968 0-2.2657 1.8311-4.09684 4.0968-4.09684Z" />
-                <path fill="url(#python-detail-grad-b)" d="M48.3393 94.7555c23.8631 0 22.3729-10.3484 22.3729-10.3484l-.0266-10.7209H47.9137v-3.2189h31.8168s15.27 1.7317 15.27-22.3463-13.328-23.2242-13.328-23.2242h-7.9542v11.1731s.4288 13.328-13.1151 13.328H38.0175S25.328 49.1928 25.328 61.6618v20.6171s-1.9267 12.4766 23.0113 12.4766Zm12.5565-7.2093c-2.2657 0-4.0968-1.8312-4.0968-4.0968 0-2.2657 1.8311-4.0968 4.0968-4.0968 2.2656 0 4.0968 1.8311 4.0968 4.0968 0-2.2656-1.8312 4.0968-4.0968 4.0968Z" />
-                <defs>
-                  <linearGradient id="python-detail-grad-a" x1="904.358" x2="5562.66" y1="842.346" y2="5454.17" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#387eb8" />
-                    <stop offset="1" stop-color="#366994" />
-                  </linearGradient>
-                  <linearGradient id="python-detail-grad-b" x1="1358.62" x2="6361.13" y1="1462.61" y2="6191.63" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#ffe052" />
-                    <stop offset="1" stop-color="#ffc331" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </template>
-            <span x-text="selectedPortfolio ? selectedPortfolio.category : 'Python'">Python</span>
-          </span>
+        <div class="flex flex-wrap gap-2">
+          <template x-for="tech in (selectedPortfolio && selectedPortfolio.technologies ? selectedPortfolio.technologies : [])" :key="tech.id || tech.name">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm sm:text-base">
+              <template x-if="tech.svg">
+                <span x-html="tech.svg" class="w-5 h-5 flex-shrink-0 [&>svg]:w-5 [&>svg]:h-5"></span>
+              </template>
+              <template x-if="!tech.svg && tech.imgUrl">
+                <img :src="tech.imgUrl" :alt="tech.name" class="w-5 h-5 flex-shrink-0 object-contain">
+              </template>
+              <span x-text="tech.name"></span>
+            </span>
+          </template>
+          <template x-if="!selectedPortfolio || !selectedPortfolio.technologies || selectedPortfolio.technologies.length === 0">
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm sm:text-base" x-text="selectedPortfolio ? selectedPortfolio.category : 'Program'">Program</span>
+          </template>
         </div>
       </div>
 
