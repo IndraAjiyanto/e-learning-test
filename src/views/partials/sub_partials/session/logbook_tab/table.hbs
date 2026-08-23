@@ -63,7 +63,7 @@
             ></td>
             <td class='px-6 py-4 text-sm text-gray-800' x-text="logbook.user?.username"></td>
             <td class='px-6 py-4 text-sm text-gray-800'>
-              <template x-if="logbook.process === 'acc'">
+              <template x-if="logbook.process === 'approved'">
                 <span
                   class='px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800'
                 >Approved</span>
@@ -73,7 +73,7 @@
                   class='px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800'
                 >Rejected</span>
                 </template>
-                <template x-if="logbook.process === 'proces'">
+                <template x-if="logbook.process === 'process'">
                 <span
                   class='px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800'
                 >Pending</span>
@@ -83,7 +83,7 @@
               <div class='flex items-center justify-center gap-2'>
                 <!-- ACC Button -->
                 <form
-                  :action="`/logbooks/${logbook.id}/acc?_method=PATCH`"
+                  :action="`/logbooks/${logbook.id}/approved?_method=PATCH`"
                   method='post'
                   class='inline'
                 >

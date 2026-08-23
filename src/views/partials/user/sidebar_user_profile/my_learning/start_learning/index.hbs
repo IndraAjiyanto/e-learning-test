@@ -3,16 +3,71 @@
   class="space-y-8 sm:space-y-10 md:space-y-12 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-6 sm:pt-10 mb-28"
   x-data="{
     activeMateri: null,
-    openWeek1: true,
-    openWeek2: false,
-    openWeek3: false,
+    openWeek: null,
     selectedMaterial: null,
     showMaterialModal: false,
     showLogbookModal: false,
+    logbookSessionId: null,
     logbookForm: {
       title: '',
       notes: '',
       date: new Date().toISOString().split('T')[0]
+    },
+    sessions: [],
+    sessionsLoading: false,
+    sessionsError: false,
+    loadedWeekId: null,
+    async loadSessions(weekId) {
+      this.loadedWeekId = weekId;
+      this.sessions = [];
+      this.sessionsError = false;
+      this.sessionsLoading = true;
+      try {
+        const res = await fetch('/program/session/' + weekId);
+        if (!res.ok) throw new Error('Request failed');
+        const data = await res.json();
+        if (this.loadedWeekId !== weekId) return;
+        this.sessions = Array.isArray(data) ? data : [];
+      } catch (e) {
+        if (this.loadedWeekId !== weekId) return;
+        this.sessionsError = true;
+      } finally {
+        if (this.loadedWeekId === weekId) this.sessionsLoading = false;
+      }
+    },
+    logbookProcess(session) {
+      const logbook = session.logbooks && session.logbooks[0];
+      return logbook ? logbook.process : null;
+    },
+    logbookStatusText(session) {
+      const process = this.logbookProcess(session);
+      if (process === 'process') return 'Logbook is being reviewed';
+      if (process === 'rejected') return 'Logbook has been rejected';
+      if (process === 'approved') return 'The logbook has been approved';
+      return 'Logbook';
+    },
+    logbookButtonColorClass(session) {
+      const process = this.logbookProcess(session);
+      if (process === 'process') return 'bg-[#FEEFD6] text-[#FDA40B] border border-[#FDA40B]';
+      if (process === 'rejected') return 'bg-[#FEE7E7] border border-red-700 text-red-700';
+      if (process === 'approved') return 'bg-[#E5F6D4] border border-[#12BD26] text-[#12BD26]';
+      return 'bg-[#003060] hover:bg-[#002244] text-white';
+    },
+    isSessionUnlocked(index) {
+      if (index === 0) return true;
+      const prev = this.sessions[index - 1];
+      if (!prev) return false;
+      const attended = !!(prev.sessionProgress && prev.sessionProgress[0] && prev.sessionProgress[0].isAttended === true);
+      const logbookApproved = this.logbookProcess(prev) === 'approved';
+      return attended && logbookApproved;
+    },
+    isWeekQuizUnlocked(weekId) {
+      if (this.loadedWeekId !== weekId || this.sessionsLoading || this.sessionsError) return false;
+      if (!this.sessions.length) return false;
+      return this.sessions.every(session => {
+        const attended = !!(session.sessionProgress && session.sessionProgress[0] && session.sessionProgress[0].isAttended === true);
+        return attended && this.logbookProcess(session) === 'approved';
+      });
     }
   }"
   x-init="$watch('showLogbookModal', value => document.body.classList.toggle('overflow-hidden', value))"
@@ -37,9 +92,9 @@
       
       <!-- Program Image (326x216, radius 6px, shadow, vertically centered) -->
       <div class="w-full lg:w-[326px] h-[216px] flex-shrink-0">
-        <img 
-          src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80" 
-          alt="UI/UX Designer" 
+        <img
+          src="{{course.image}}"
+          alt="{{course.name}}"
           class="w-full h-full object-cover rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]"
         >
       </div>
@@ -53,10 +108,10 @@
           <!-- Title & Bootcamp Badge Inline Group -->
           <div class="flex items-center gap-4 flex-wrap">
             <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-[36px] text-[#003060] leading-none">
-              UI/UX Designer
+              {{course.name}}
             </h2>
             <span class="bg-[#CFE6F5] rounded-[6px] font-sans font-medium text-sm sm:text-base md:text-[18px] text-[#003060] px-4 py-1 inline-flex items-center justify-center min-w-[106px] h-[28px] leading-none">
-              Bootcamp
+              {{course.category.name}}
             </span>
           </div>
 
@@ -72,7 +127,7 @@
 
         <!-- Description (font-sans font-normal text-[20px] leading-[35px] text-[#000] text-justify) -->
         <p class="font-sans font-normal text-sm sm:text-base md:text-[25px] leading-relaxed md:leading-[35px] text-black text-justify">
-          An intensive 12-week bootcamp that equips participants to design effective, modern, and user-centric user interfaces (UI) and user experiences (UX). The program covers user research, wireframing, and prototyping, up to handoff-ready interactive designs.
+          {{getByLang course.description lang}}
         </p>
 
       </div>
@@ -80,232 +135,230 @@
     </div>
   </div>
 
-  {{! --- WEEK 1 SECTION --- }}
-  <div class="space-y-6">
-    
-    <!-- Week 1 Header (flex justify-between, font-montserrat font-semibold text-[25px] text-[#003060] + icon 35x35) -->
-    <button 
-      type="button" 
-      @click="openWeek1 = !openWeek1"
+  {{! --- WEEK SECTIONS (looped: a week is unlocked only when a WeekProgress row exists for it and the current user) --- }}
+  {{#each course.weeks}}
+  <div class="space-y-6 {{#unless @first}}pt-2 border-t border-slate-200{{/unless}}">
+
+    <!-- Week Header (flex justify-between, font-montserrat font-semibold text-[25px] text-[#003060] + icon 35x35) -->
+    <button
+      type="button"
+      @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; {{#if weekProgresses}}loadSessions({{id}}){{/if}} }"
       class="w-full flex items-center justify-between text-left cursor-pointer select-none py-2 group focus:outline-none"
     >
-      <h3 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] group-hover:text-[#002244] transition-colors">
-        Week 1 : Minggu Pertama
-      </h3>
-      <div class="w-[35px] h-[35px] flex items-center justify-center text-[#003060] transition-transform duration-300 flex-shrink-0" :class="openWeek1 ? '' : 'rotate-180'">
+      <div class="flex items-center gap-3">
+        <h3 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] group-hover:text-[#002244] transition-colors">
+          Week {{weekNumber}} : {{description}}
+        </h3>
+        {{#unless weekProgresses}}
+          <span class="bg-[#F3F4F6] border border-[#D1D5DB] rounded-[12px] px-3 py-0.5 font-sans font-medium text-xs text-[#6B7280]">
+            Locked
+          </span>
+        {{/unless}}
+      </div>
+      <div class="w-[35px] h-[35px] flex items-center justify-center text-[#003060] transition-transform duration-300 flex-shrink-0" :class="openWeek === {{weekNumber}} ? '' : 'rotate-180'">
         <i class="fa-solid fa-chevron-up text-xl sm:text-[25px]"></i>
       </div>
     </button>
 
-    <!-- Week 1 Collapsible Content -->
-    <div x-show="openWeek1" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4">
-      
-      <!-- SESSION 1 CARD (Active Session with Details & Materials) -->
-      <div class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-5 sm:p-6 space-y-6">
-        
-        <!-- Session Header: Title + Logbook Button (Top Right) -->
-        <div class="flex items-start justify-between gap-4">
-          <div class="space-y-7">
-            <!-- Title (Montserrat 600, 20px, #003060, 100% line-height) -->
-            <h4 class="font-montserrat font-semibold text-lg sm:text-[20px] text-[#003060] leading-none">
-              Session 1 - Introduce UI/UX
-            </h4>
+    {{#if weekProgresses}}
+    <!-- Unlocked Week Collapsible Content -->
+    <div x-show="openWeek === {{weekNumber}}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4" style="display: none;">
 
-            <!-- Date & Time Meta Details (Open Sans 400, 20px, #003060, 100% line-height) -->
-            <div class="space-y-4 pt-1 font-['Open_Sans'] font-normal text-base sm:text-[20px] text-[#003060] leading-none">
-              <div class="flex items-center gap-2">
-                <i class="fa-regular fa-calendar text-base sm:text-[20px]"></i>
-                <span>Apr, 06 2026</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <i class="fa-regular fa-clock text-base sm:text-[20px]"></i>
-                <span>08:00 - 16:00 WIB</span>
-              </div>
-            </div>
+      <!-- SESSION CARDS (fetched from GET /program/session/:weeksId, locked/unlocked via sessionProgress.isAttended AND logbooks[0].process === 'approved') -->
 
-            <!-- Attendance Recorded Badge (178x24px, radius 12px, bg #E5F6D4, border 1px #12BD26) -->
-            <div class="pt-1">
-              <span class="w-auto sm:w-[178px] h-[24px] bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-3 font-sans font-normal text-xs sm:text-[14px] text-[#12BD26] inline-flex items-center justify-center leading-none">
-                <span>Attendance Recorded</span>
-              </span>
-            </div>
-          </div>
+      <!-- Sessions Loading State -->
+      <template x-if="openWeek === {{weekNumber}} && sessionsLoading">
+        <div class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-6 text-center">
+          <div class="w-8 h-8 border-2 border-[#003060] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p class="font-montserrat font-medium text-sm sm:text-base text-[#003060]">Loading sessions...</p>
+        </div>
+      </template>
 
-          <!-- '+ Logbook' Action Button (Top Right, Montserrat 500, 20px) -->
-          <button 
-            type="button" 
-            @click="showLogbookModal = true"
-            class="bg-[#003060] hover:bg-[#002244] text-white rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-4 py-2.5 flex items-center justify-center gap-2 font-montserrat font-medium text-base sm:text-[20px] leading-none transition-all cursor-pointer flex-shrink-0"
-          >
-            <i class="fa-solid fa-plus text-sm sm:text-base"></i>
-            <span>Logbook</span>
+      <!-- Sessions Error State -->
+      <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && sessionsError">
+        <div class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-6 text-center space-y-3">
+          <p class="font-montserrat font-medium text-sm sm:text-base text-red-600">Failed to load sessions. Please try again.</p>
+          <button type="button" @click="loadSessions({{id}})" class="font-montserrat font-medium text-sm sm:text-base text-[#003060] underline cursor-pointer">
+            Retry
           </button>
         </div>
+      </template>
 
-        <!-- Materials Section -->
-        <div class="pt-2 space-y-7">
-          <!-- Materials Heading (Montserrat 500, 20px, #003060) -->
-          <h5 class="font-montserrat font-semibold text-base sm:text-[20px] text-[#003060] leading-none">
-            Materials
-          </h5>
-
-          <div class="space-y-12 pl-1">
-            <!-- Material Item 1: Pdf Material -->
-            <div class="space-y-4">
-              <span class="font-montserrat font-medium text-base sm:text-[20px] text-[#003060] block leading-none">
-                Click the material for today’s session:
-              </span>
-              {{#if pdfMaterial}}
-                <a 
-                  href="javascript:void(0)" 
-                  @click="activeMateri = 'pdf'"
-                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
-                >
-                  {{#if pdfMaterial.title}}{{pdfMaterial.title}}{{else}}Materi Session 1{{/if}}
-                </a>
-              {{else if (eq pdfMaterial false)}}
-                <span class="font-montserrat font-normal text-base sm:text-[20px] text-[#666666] block leading-none">
-                  No PDF material available
-                </span>
-              {{else}}
-                <a 
-                  href="javascript:void(0)" 
-                  @click="activeMateri = 'pdf'"
-                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
-                >
-                  Materi Session 1
-                </a>
-              {{/if}}
-            </div>
-
-            <!-- Material Item 2: Video Lessons -->
-            <div class="space-y-4">
-              <span class="font-montserrat font-medium text-base sm:text-[20px] text-[#003060] block leading-none">
-                Click the lesson video for today’s session:
-              </span>
-              {{#if videoMaterial}}
-                <a 
-                  href="javascript:void(0)" 
-                  @click="activeMateri = 'video'"
-                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
-                >
-                  {{#if videoMaterial.title}}{{videoMaterial.title}}{{else}}Video Session 1 Week 1{{/if}}
-                </a>
-              {{else if (eq videoMaterial false)}}
-                <span class="font-montserrat font-normal text-base sm:text-[20px] text-[#666666] block leading-none">
-                  No Video material available
-                </span>
-              {{else}}
-                <a 
-                  href="javascript:void(0)" 
-                  @click="activeMateri = 'video'"
-                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
-                >
-                  Video Session 1 Week 1
-                </a>
-              {{/if}}
-            </div>
-
-            <!-- Material Item 3: PPT Material -->
-            <div class="space-y-4">
-              <span class="font-montserrat font-medium text-base sm:text-[20px] text-[#003060] block leading-none">
-                Click the PowerPoint presentation for today’s session:
-              </span>
-              {{#if pptMaterial}}
-                <a 
-                  href="javascript:void(0)" 
-                  @click="activeMateri = 'ppt'"
-                  class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
-                >
-                  {{#if pptMaterial.title}}{{pptMaterial.title}}{{else}}PPT Session 1 Week 1{{/if}}
-                </a>
-              {{else}}
-                <span class="font-montserrat font-normal text-base sm:text-[20px] text-[#666666] block leading-none">
-                  No PPT material available
-                </span>
-              {{/if}}
-            </div>
-          </div></div>
+      <!-- Sessions Empty State -->
+      <template x-if="openWeek === {{weekNumber}} && !sessionsLoading && !sessionsError && sessions.length === 0">
+        <div class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-6 text-center">
+          <p class="font-montserrat font-medium text-sm sm:text-base text-[#003060]">No sessions available for this week.</p>
         </div>
+      </template>
 
-      </div>
+      <!-- Session Cards -->
+      <template x-for="(session, sIndex) in (openWeek === {{weekNumber}} ? sessions : [])" :key="session.id">
+        <div>
+          <!-- Unlocked Session Card (Active Session with Details & Materials) -->
+          <template x-if="isSessionUnlocked(sIndex)">
+            <div class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-5 sm:p-6 space-y-6">
 
-      <!-- SESSION 2 CARD (Locked Bar Layout Matching Figma) -->
-      <div class="w-full h-[54px] px-5 sm:px-6 bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-between">
-        <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none">
-          Session 2 - Layout Grid
-        </h4>
-        <div class="text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
-          <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
+              <!-- Session Header: Title + Logbook Button (Top Right) -->
+              <div class="flex items-start justify-between gap-4">
+                <div class="space-y-7">
+                  <!-- Title (Montserrat 600, 20px, #003060, 100% line-height) -->
+                  <h4 class="font-montserrat font-semibold text-lg sm:text-[20px] text-[#003060] leading-none" x-text="session.topic || ('Session ' + session.sessionOrder)"></h4>
+
+                  <!-- Date & Time Meta Details (Open Sans 400, 20px, #003060, 100% line-height) -->
+                  <div class="space-y-4 pt-1 font-['Open_Sans'] font-normal text-base sm:text-[20px] text-[#003060] leading-none">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-regular fa-calendar text-base sm:text-[20px]"></i>
+                      <span x-text="session.date ? new Date(session.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <i class="fa-regular fa-clock text-base sm:text-[20px]"></i>
+                      <span x-text="(session.startTime || '-') + ' - ' + (session.endTime || '-') + ' WIB'"></span>
+                    </div>
+                  </div>
+
+                  <!-- Attendance Recorded Badge (178x24px, radius 12px, bg #E5F6D4, border 1px #12BD26) -->
+                  <div class="pt-1">
+                    <span class="w-auto sm:w-[178px] h-[24px] bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-3 font-sans font-normal text-xs sm:text-[14px] text-[#12BD26] inline-flex items-center justify-center leading-none">
+                      <span>Attendance Recorded</span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- '+ Logbook' Action Button (Top Right, Montserrat 500, 20px) -->
+                <button
+                  type="button"
+                  @click="if (logbookProcess(session) === 'approved') { window.location.href = '/logbooks/' + session.logbooks[0].id } else if (logbookProcess(session) === 'process' || logbookProcess(session) === 'rejected') { window.location.href = '/logbooks/formEdit/' + session.logbooks[0].id } else { showLogbookModal = true; logbookSessionId = session.id }"
+                  :class="logbookButtonColorClass(session)"
+                  class="rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-4 py-2.5 flex items-center justify-center gap-2 font-montserrat font-medium text-base sm:text-[20px] leading-none transition-all cursor-pointer flex-shrink-0"
+                >
+                  <i class="fa-solid fa-plus text-sm sm:text-base" x-show="!logbookProcess(session)"></i>
+                  <span x-text="logbookStatusText(session)">Logbook</span>
+                </button>
+              </div>
+
+              <!-- Materials Section -->
+              <div class="pt-2 space-y-7">
+                <!-- Materials Heading (Montserrat 500, 20px, #003060) -->
+                <h5 class="font-montserrat font-semibold text-base sm:text-[20px] text-[#003060] leading-none">
+                  Materials
+                </h5>
+
+                <div class="space-y-12 pl-1">
+                  <!-- Material Item 1: Pdf Material -->
+                  <div class="space-y-4">
+                    <span class="font-montserrat font-medium text-base sm:text-[20px] text-[#003060] block leading-none">
+                      Click the material for today's session:
+                    </span>
+                    <template x-if="session.materials && session.materials.find(m => m.fileType === 'pdf')">
+                      <a
+                        href="javascript:void(0)"
+                        @click="selectedMaterial = session; activeMateri = 'pdf'"
+                        class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
+                        x-text="session.materials.find(m => m.fileType === 'pdf').title || ('Materi ' + (session.topic || ('Session ' + session.sessionOrder)))"
+                      ></a>
+                    </template>
+                    <template x-if="!(session.materials && session.materials.find(m => m.fileType === 'pdf'))">
+                      <span class="font-montserrat font-normal text-base sm:text-[20px] text-[#666666] block leading-none">
+                        No PDF material available
+                      </span>
+                    </template>
+                  </div>
+
+                  <!-- Material Item 2: Video Lessons -->
+                  <div class="space-y-4">
+                    <span class="font-montserrat font-medium text-base sm:text-[20px] text-[#003060] block leading-none">
+                      Click the lesson video for today's session:
+                    </span>
+                    <template x-if="session.materials && session.materials.find(m => m.fileType === 'video')">
+                      <a
+                        href="javascript:void(0)"
+                        @click="selectedMaterial = session; activeMateri = 'video'"
+                        class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
+                        x-text="session.materials.find(m => m.fileType === 'video').title || ('Video ' + (session.topic || ('Session ' + session.sessionOrder)))"
+                      ></a>
+                    </template>
+                    <template x-if="!(session.materials && session.materials.find(m => m.fileType === 'video'))">
+                      <span class="font-montserrat font-normal text-base sm:text-[20px] text-[#666666] block leading-none">
+                        No Video material available
+                      </span>
+                    </template>
+                  </div>
+
+                  <!-- Material Item 3: PPT Material -->
+                  <div class="space-y-4">
+                    <span class="font-montserrat font-medium text-base sm:text-[20px] text-[#003060] block leading-none">
+                      Click the PowerPoint presentation for today's session:
+                    </span>
+                    <template x-if="session.materials && session.materials.find(m => m.fileType === 'ppt')">
+                      <a
+                        href="javascript:void(0)"
+                        @click="selectedMaterial = session; activeMateri = 'ppt'"
+                        class="font-montserrat font-normal text-base sm:text-[20px] text-[#003060] underline hover:text-[#001f3f] transition-colors inline-block cursor-pointer leading-none"
+                        x-text="session.materials.find(m => m.fileType === 'ppt').title || ('PPT ' + (session.topic || ('Session ' + session.sessionOrder)))"
+                      ></a>
+                    </template>
+                    <template x-if="!(session.materials && session.materials.find(m => m.fileType === 'ppt'))">
+                      <span class="font-montserrat font-normal text-base sm:text-[20px] text-[#666666] block leading-none">
+                        No PPT material available
+                      </span>
+                    </template>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </template>
+
+          <!-- Locked Session Bar (Locked Bar Layout Matching Figma) -->
+          <template x-if="!isSessionUnlocked(sIndex)">
+            <div class="w-full h-[54px] px-5 sm:px-6 bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-between">
+              <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none" x-text="session.topic || ('Session ' + session.sessionOrder)"></h4>
+              <div class="text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
+                <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
+              </div>
+            </div>
+          </template>
         </div>
-      </div>
+      </template>
 
-      <!-- SESSION 3 CARD (Locked Bar Layout Matching Figma) -->
-      <div class="w-full h-[54px] px-5 sm:px-6 bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-between">
-        <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none">
-          Session 3 - Wheels Colors
-        </h4>
-        <div class="text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
-          <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
-        </div>
-      </div>
-
-      <!-- QUIZ BOX ('Quiz Week 1': centered title + lock icon at the far right edge matching Figma) -->
-      <a 
-        href="/quiz/start/1" 
-        class="relative w-full h-[54px] rounded-[12px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-5 sm:px-6 bg-[#D9D9D980] border-[0.1px] border-[#D9D9D980] backdrop-blur-[6.6px] flex items-center justify-center gap-3 transition-all cursor-pointer group mt-4"
+      <!-- QUIZ BOX (centered title + lock icon at the far right edge matching Figma; disabled until every session in this week is attended AND logbook-approved) -->
+      <a
+        href="#"
+        @click.prevent="if (isWeekQuizUnlocked({{id}})) { window.location.href = '{{#if quiz.[0].id}}/quiz/start/{{quiz.[0].id}}{{else}}#{{/if}}' }"
+        :class="isWeekQuizUnlocked({{id}}) ? 'cursor-pointer' : 'cursor-not-allowed'"
+        class="relative w-full h-[54px] rounded-[12px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-5 sm:px-6 bg-[#D9D9D980] border-[0.1px] border-[#D9D9D980] backdrop-blur-[6.6px] flex items-center justify-center gap-3 transition-all group mt-4"
       >
         <div class="w-6 h-6 flex items-center justify-center text-[#00000080] flex-shrink-0">
           <i class="fa-solid fa-file-pen text-xl sm:text-[22px]"></i>
         </div>
         <span class="font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#00000080]">
-          Quiz Week 1
+          Quiz Week {{weekNumber}}
         </span>
-        <div class="absolute right-5 sm:right-6 text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
+        <div x-show="!isWeekQuizUnlocked({{id}})" class="absolute right-5 sm:right-6 text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
           <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
         </div>
       </a>
 
     </div>
-
-    {{! --- WEEK 2 SECTION (Upcoming / Locked Week) --- }}
-    <div class="space-y-6 pt-2 border-t border-slate-200">
-      
-      <!-- Week 2 Header -->
-      <button 
-        type="button" 
-        @click="openWeek2 = !openWeek2"
-        class="w-full flex items-center justify-between text-left cursor-pointer select-none py-2 group focus:outline-none"
-      >
-        <div class="flex items-center gap-3">
-          <h3 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] group-hover:text-[#002244] transition-colors">
-            Week 2 : Minggu Kedua
-          </h3>
-          <span class="bg-[#F3F4F6] border border-[#D1D5DB] rounded-[12px] px-3 py-0.5 font-sans font-medium text-xs text-[#6B7280]">
-            Locked
-          </span>
+    {{else}}
+    <!-- Locked Week Collapsible Content -->
+    <div x-show="openWeek === {{weekNumber}}" x-transition class="space-y-4" style="display: none;">
+      <div class="p-6 bg-white/50 backdrop-blur-[3.3px] rounded-[12px] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] text-center space-y-2">
+        <div class="w-12 h-12 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060] mb-2">
+          <i class="fa-solid fa-lock text-xl"></i>
         </div>
-        <div class="w-[35px] h-[35px] flex items-center justify-center text-[#003060] transition-transform duration-300 flex-shrink-0" :class="openWeek2 ? '' : 'rotate-180'">
-          <i class="fa-solid fa-chevron-up text-xl sm:text-[25px]"></i>
-        </div>
-      </button>
-
-      <!-- Week 2 Collapsible Content (Locked) -->
-      <div x-show="openWeek2" x-transition class="space-y-4" style="display: none;">
-        <div class="p-6 bg-white/50 backdrop-blur-[3.3px] rounded-[12px] border border-[#D9D9D9] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] text-center space-y-2">
-          <div class="w-12 h-12 bg-[#003060]/10 rounded-full flex items-center justify-center mx-auto text-[#003060] mb-2">
-            <i class="fa-solid fa-lock text-xl"></i>
-          </div>
-          <h4 class="font-montserrat font-semibold text-lg text-[#003060]">
-            Week 2 is Currently Locked
-          </h4>
-          <p class="font-sans font-normal text-sm sm:text-base text-slate-600 max-w-md mx-auto">
-            Please complete all sessions and submit Quiz Week 1 to unlock Week 2 lessons and materials.
-          </p>
-        </div>
+        <h4 class="font-montserrat font-semibold text-lg text-[#003060]">
+          Week {{weekNumber}} is Currently Locked
+        </h4>
+        <p class="font-sans font-normal text-sm sm:text-base text-slate-600 max-w-md mx-auto">
+          Please complete all sessions and submit the previous week's quiz to unlock this week's lessons and materials.
+        </p>
       </div>
     </div>
+    {{/if}}
 
+  </div>
+  {{/each}}
   </div>
   {{! --- END DASHBOARD UTAMA START LEARNING --- }}
 
@@ -359,7 +412,12 @@
       </h2>
 
       <!-- Form Content -->
-      <form @submit.prevent="showLogbookModal = false" class="space-y-8">
+      <form
+        :action="'/logbooks/' + logbookSessionId"
+        method="POST"
+        enctype="multipart/form-data"
+        class="space-y-8"
+      >
         
         <!-- Two-Column Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
@@ -372,8 +430,10 @@
               <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
                 Activity
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
+                name="activity"
+                required
                 placeholder="Enter activity description..."
                 class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
               >
@@ -384,8 +444,10 @@
               <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
                 Activity Details
               </label>
-              <textarea 
+              <textarea
                 rows="6"
+                name="activityDetails"
+                required
                 placeholder="Enter detailed description of your activity..."
                 class="w-full h-[180px] rounded-[6px] p-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] resize-none transition-colors"
               ></textarea>
@@ -401,8 +463,10 @@
               <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
                 Obstacles
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
+                name="obstacles"
+                required
                 placeholder="Enter any obstacles faced..."
                 class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
               >
@@ -416,10 +480,11 @@
               <div class="relative w-full h-[45px] bg-white border border-slate-300 rounded-[6px] p-1 flex items-center gap-3">
                 <label class="bg-[#E2E8F0] hover:bg-slate-300 text-[#003060] font-montserrat font-medium text-xs sm:text-sm px-3 py-1.5 rounded-[4px] cursor-pointer transition-colors flex-shrink-0 select-none">
                   Choose File
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    class="hidden" 
+                  <input
+                    type="file"
+                    name="documentation"
+                    accept="image/*"
+                    class="hidden"
                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''"
                   >
                 </label>
@@ -435,8 +500,10 @@
               <label class="block font-montserrat font-medium text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
                 Link Documentation
               </label>
-              <input 
-                type="url" 
+              <input
+                type="url"
+                name="otherDocumentation"
+                required
                 placeholder="Enter Link Documentation"
                 class="w-full h-[45px] rounded-[6px] px-4 bg-white border border-slate-300 font-montserrat font-medium text-sm sm:text-[18px] text-slate-800 placeholder:text-black/50 placeholder:font-montserrat placeholder:font-medium placeholder:text-[18px] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
               >

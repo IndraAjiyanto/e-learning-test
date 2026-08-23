@@ -1,0 +1,161 @@
+<!-- ATTENDANCE FORM CONTENT PARTIAL -->
+<div class="px-4 sm:px-8 md:px-14 py-10 space-y-4 font-montserrat"
+  x-data="{
+    showEditModal: false,
+    showSuccessPopup: false,
+    statusDropdownOpen: false,
+    editAttendanceId: null,
+    editStatus: '',
+    editNotes: '',
+    statusLabels: {
+      'present': 'Present',
+      'sick': 'Sick',
+      'permission': 'Permission',
+      'absent': 'Absent',
+      'no_information': 'No Information'
+    },
+    openEditModal(attendanceId, currentStatus, currentNotes) {
+      this.editAttendanceId = attendanceId;
+      this.editStatus = currentStatus || '';
+      this.editNotes = currentNotes || '';
+      this.statusDropdownOpen = false;
+      this.showEditModal = true;
+    },
+    async saveAttendance() {
+      if (!this.editAttendanceId) return;
+      try {
+        const response = await fetch(`/attendance/edit/${this.editAttendanceId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: this.editStatus,
+            notes: this.editNotes
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          this.showEditModal = false;
+          this.showSuccessPopup = true;
+        } else {
+          alert(data.message || 'Failed to update attendance');
+        }
+      } catch (error) {
+        alert('An error occurred while updating attendance');
+      }
+    }
+  }"
+>
+
+  <!-- HEADER SECTION -->
+  <div class="space-y-[15px]">
+    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-[36px] text-[#003060] leading-none">
+      Attendance Form
+    </h1>
+    <p class="font-open-sans font-normal text-base sm:text-lg md:text-[20px] text-[#003060] leading-none">
+      Record your attendance to access each session's learning materials.
+    </p>
+  </div>
+
+  <!-- WEEK 1 : Minggu Pertama -->
+  <div class="mt-[40px]" x-data="{ openWeek: true }">
+    <button
+      @click="openWeek = !openWeek"
+      class="w-full flex items-center justify-between cursor-pointer"
+    >
+      <h2 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060]">
+        Week 1 : Minggu Pertama
+      </h2>
+      <div class="w-[35px] h-[35px] flex items-center justify-center flex-shrink-0">
+        <i
+          class="fa-solid fa-chevron-up text-[#003060] text-lg transition-transform duration-200"
+          :class="openWeek ? '' : 'rotate-180'"
+        ></i>
+      </div>
+    </button>
+
+    <div x-show="openWeek" x-transition class="mt-[31px] space-y-0">
+      <!-- Session 1 -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between py-[20px]">
+          <span class="font-montserrat font-medium text-xl sm:text-2xl md:text-[25px] text-[#003060]">
+            Session 1
+          </span>
+          <div class="flex items-center gap-[23px]">
+            <span class="inline-flex items-center h-[22px] px-3 bg-[#E5F6D4] border border-[#12BD26] rounded-[12px]">
+              <span class="font-open-sans font-normal text-[15px] text-[#12BD26] leading-none">
+                Attendance Recorded
+              </span>
+            </span>
+            <button @click="showEditModal = true" class="inline-flex items-center gap-[5px] cursor-pointer group">
+              <i class="fa-solid fa-pen text-[#003060] text-[24px]"></i>
+              <span class="font-montserrat font-medium text-[20px] text-[#003060] underline group-hover:opacity-80 transition-opacity">
+                Edit
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="w-full h-px bg-[#D9D9D9]"></div>
+      </div>
+
+      <!-- Session 2 -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between py-[20px]">
+          <span class="font-montserrat font-medium text-xl sm:text-2xl md:text-[25px] text-[#003060]">
+            Session 2
+          </span>
+          <div class="flex items-center gap-[23px]">
+            <span class="inline-flex items-center h-[22px] px-3 bg-[#F2DBDB] border border-[#F25151] rounded-[12px]">
+              <span class="font-open-sans font-normal text-[15px] text-[#F25151] leading-none">
+                Attendance Required
+              </span>
+            </span>
+            <button @click="showEditModal = true" class="inline-flex items-center gap-[5px] cursor-pointer group">
+              <i class="fa-solid fa-pen text-[#003060] text-[24px]"></i>
+              <span class="font-montserrat font-medium text-[20px] text-[#003060] underline group-hover:opacity-80 transition-opacity">
+                Edit
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="w-full h-px bg-[#D9D9D9]"></div>
+      </div>
+
+      <!-- Session 3 -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between py-[20px]">
+          <span class="font-montserrat font-medium text-xl sm:text-2xl md:text-[25px] text-[#003060]">
+            Session 3
+            
+          </span>
+          <div class="flex items-center gap-[23px]">
+            <span class="inline-flex items-center h-[22px] px-3 bg-[#F2DBDB] border border-[#F25151] rounded-[12px]">
+              <span class="font-open-sans font-normal text-[15px] text-[#F25151] leading-none">
+                Attendance Required
+              </span>
+            </span>
+            <span class="ml-2 text-[#F25151] text-sm">
+              <i class="fa-solid fa-lock text-[#F25151] text-[14px]"></i>
+            </span>
+          </div>
+        </div>
+        <div class="w-full h-px bg-[#D9D9D9]"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK 2 : Minggu Kedua -->
+  <div class="mt-[48px]">
+    <div class="w-full flex items-center justify-between">
+      <h2 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060]">
+        Week 2 : Minggu Kedua
+      </h2>
+      <div class="w-[35px] h-[35px] flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-lock text-[#12BD26] text-[14px]"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Attendance Modal -->
+  {{> user/sidebar_user_profile/my_learning/start_learning/attendance/edit_modal }}
+
+</div>

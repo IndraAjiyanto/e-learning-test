@@ -48,8 +48,6 @@ export class LogbookController {
     @Req() req: Request,
   ) {
     try {
-
-      
       // if (!req.body.uploadedImageUrls || !req.body.uploadedImageUrls[0]) {
       //   throw new Error('Image upload failed. Please try again.');
       // }
@@ -68,7 +66,9 @@ export class LogbookController {
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${session.weeks.course.id}`);
+        res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${session.weeks.course.id}`,
+        );
       }
     } catch (error: any) {
       const session = await this.logbookService.findSession(sessionId);
@@ -77,7 +77,9 @@ export class LogbookController {
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${sessionId}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${session.weeks.course.id}`);
+        res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${session.weeks.course.id}`,
+        );
       }
     }
   }
@@ -93,7 +95,12 @@ export class LogbookController {
       req.user!.id,
       courseId,
     );
-    res.render('user/logbooks/index', { user: req.user, logbooks, logbook: logbooks, courseId });
+    res.render('user/logbooks/index', {
+      user: req.user,
+      logbooks,
+      logbook: logbooks,
+      courseId,
+    });
   }
 
   @Roles('user')
@@ -170,8 +177,8 @@ export class LogbookController {
       const logbooks = await this.logbookService.findOne(logbookId);
       if (documentation && documentation.size > 0) {
         if (logbooks.documentation) {
-        await this.logbookService.deleteFile(logbooks.documentation);
-      }
+          await this.logbookService.deleteFile(logbooks.documentation);
+        }
         updateLogbookDto.documentation =
           req.body.uploadedImageUrls?.[0] || documentation.path;
       }
@@ -181,20 +188,22 @@ export class LogbookController {
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${logbooks.session.weeks.course.id}`);
+        res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${logbooks.session.weeks.course.id}`,
+        );
       }
     } catch (error: any) {
-
       console.log('====== ERROR UPDATE LOGBOOK ======');
       console.error(error.response || error.message || error);
-
 
       const logbooks = await this.logbookService.findOne(logbookId);
       req.flash('error', error.message || 'logbooks failed to update');
       if (req.user?.role === 'admin') {
         res.redirect(`/session/${logbooks.session.id}`);
       } else if (req.user?.role === 'user') {
-        res.redirect(`/program/${logbooks.session.weeks.course.id}`);
+        res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${logbooks.session.weeks.course.id}`,
+        );
       }
     }
   }

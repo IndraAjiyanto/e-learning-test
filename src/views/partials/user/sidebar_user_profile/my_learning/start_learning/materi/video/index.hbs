@@ -3,23 +3,7 @@
   class="w-full space-y-8 sm:space-y-10 md:space-y-12"
   x-data="{
     isPlaying: false,
-    currentVideo: {
-      id: 1,
-      title: '1. Tutorial Membuat UI/UX seperti Amatir',
-      src: 'https://youtu.be/dAAj1_lfvZA'
-    },
-    videoList: [
-      { id: 1, title: '1. Tutorial Membuat UI/UX seperti Amatir', src: 'https://youtu.be/dAAj1_lfvZA' },
-      { id: 2, title: '2. Pengenalan macam-macam agama', src: 'https://youtu.be/IJRz8htcUbA' },
-      { id: 3, title: '3. Cara Ubah Dosa Menjadi Saldo Dana', src: 'https://youtu.be/lT0lA__qmVk' },
-      { id: 4, title: '4. Apabila Atan beneran menjadi setan', src: 'https://youtu.be/f1dNbK-EAuA' },
-      { id: 5, title: '5. Coach Justin Marah gara-gara Arsenal', src: 'https://youtu.be/Fk96bR_zwMk' },
-      { id: 6, title: '6. Jokowi Masuk Gorong-Gorong', src: 'https://youtu.be/qCFV6vfQxOs' },
-      { id: 7, title: '7. Real Madrid 2017🥶🥶🥶', src: 'https://youtu.be/t3rvqpuRXYs' },
-      { id: 8, title: '8. Pembantain Barcelona oleh Bayern', src: 'https://youtu.be/rHZti48qPrE' },
-      { id: 9, title: '9. Last Jogo Bonito', src: 'https://youtu.be/OWOjRdmpM6I' },
-      { id: 10, title: '10. DJ Tiktok Terbaru bikin jago Coding', src: 'https://youtu.be/YqEcz5zKe-Y' },
-    ],
+    currentVideo: null,
     selectVideo(item) {
       this.currentVideo = item;
       this.isPlaying = true;
@@ -59,15 +43,15 @@
       <div class="w-full h-[240px] sm:h-[320px] md:h-[402px] bg-black rounded-[11px] shadow-[0px_0px_7.44px_0px_rgba(0,0,0,0.25)] relative flex items-center justify-center overflow-hidden group">
         
         <!-- Video Playing State -->
-        <template x-if="isPlaying && currentVideo && currentVideo.src">
+        <template x-if="isPlaying && currentVideo && currentVideo.file">
           <div class="w-full h-full">
-            <template x-if="currentVideo.src.includes('youtube.com') || currentVideo.src.includes('youtu.be')">
+            <template x-if="currentVideo.file.includes('youtube.com') || currentVideo.file.includes('youtu.be')">
               <iframe
-                :src="currentVideo.src.includes('watch?v=') 
-                  ? currentVideo.src.replace('watch?v=', 'embed/') 
-                  : currentVideo.src.includes('youtu.be/') 
-                    ? currentVideo.src.replace('youtu.be/', 'youtube.com/embed/') 
-                    : currentVideo.src"
+                :src="currentVideo.file.includes('watch?v=')
+                  ? currentVideo.file.replace('watch?v=', 'embed/')
+                  : currentVideo.file.includes('youtu.be/')
+                    ? currentVideo.file.replace('youtu.be/', 'youtube.com/embed/')
+                    : currentVideo.file"
                 class="w-full h-full rounded-[11px]"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -75,33 +59,42 @@
               ></iframe>
             </template>
 
-            <template x-if="!currentVideo.src.includes('youtube.com') && !currentVideo.src.includes('youtu.be')">
+            <template x-if="!currentVideo.file.includes('youtube.com') && !currentVideo.file.includes('youtu.be')">
               <video
                 controls
                 autoplay
                 class="w-full h-full rounded-[11px] object-cover bg-black"
-                :src="currentVideo.src"
+                :src="currentVideo.file"
               ></video>
             </template>
           </div>
         </template>
 
         <!-- Video Placeholder Preview State -->
-        <div 
-          x-show="!isPlaying" 
+        <div
+          x-show="!isPlaying"
           class="w-full h-full flex flex-col items-center justify-center relative cursor-pointer"
-          @click="isPlaying = true"
+          @click="currentVideo && (isPlaying = true)"
         >
           <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
 
           <!-- Centered Play Button -->
-          <button 
-            type="button" 
-            class="relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/40 flex items-center justify-center text-white shadow-2xl transition-all duration-300 transform group-hover:scale-110 active:scale-95 cursor-pointer"
-            aria-label="Play Video"
-          >
-            <i class="fa-solid fa-play text-2xl sm:text-3xl text-white ml-1"></i>
-          </button>
+          <template x-if="currentVideo">
+            <button
+              type="button"
+              class="relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/40 flex items-center justify-center text-white shadow-2xl transition-all duration-300 transform group-hover:scale-110 active:scale-95 cursor-pointer"
+              aria-label="Play Video"
+            >
+              <i class="fa-solid fa-play text-2xl sm:text-3xl text-white ml-1"></i>
+            </button>
+          </template>
+
+          <!-- No Video Selected Placeholder -->
+          <template x-if="!currentVideo">
+            <p class="relative z-10 font-montserrat text-white/80 text-sm sm:text-base px-6 text-center">
+              Select a video from the list to start watching
+            </p>
+          </template>
         </div>
 
       </div>
@@ -120,14 +113,24 @@
 
       <!-- List rows (Scrollable inside 510px card) -->
       <div class="flex-1 overflow-y-auto max-h-[444px] my-1">
-        <template x-for="item in videoList" :key="item.id">
-          <div 
+
+        <!-- Empty State -->
+        <template x-if="!(selectedMaterial && selectedMaterial.materials && selectedMaterial.materials.filter(m => m.fileType === 'video').length)">
+          <div class="h-full flex items-center justify-center px-6">
+            <p class="font-montserrat font-medium text-sm sm:text-base text-slate-400 text-center">
+              No Video material available for this session
+            </p>
+          </div>
+        </template>
+
+        <template x-for="item in (selectedMaterial && selectedMaterial.materials ? selectedMaterial.materials.filter(m => m.fileType === 'video') : [])" :key="item.id">
+          <div
             @click="selectVideo(item)"
-            :class="currentVideo.id === item.id ? 'bg-white' : 'bg-white hover:bg-slate-50'"
+            :class="currentVideo && currentVideo.id === item.id ? 'bg-white' : 'bg-white hover:bg-slate-50'"
             class="h-[60px] flex items-center px-6 border-y border-[#D9D9D9] transition-colors cursor-pointer"
           >
-            <span 
-              :class="currentVideo.id === item.id ? 'font-semibold text-black' : 'font-medium text-black'"
+            <span
+              :class="currentVideo && currentVideo.id === item.id ? 'font-semibold text-black' : 'font-medium text-black'"
               class="font-montserrat text-base sm:text-[18px] truncate leading-none"
               x-text="item.title"
             ></span>

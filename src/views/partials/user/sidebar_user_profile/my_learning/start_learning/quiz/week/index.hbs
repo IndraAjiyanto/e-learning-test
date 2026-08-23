@@ -7,15 +7,14 @@
   </div>
 
   <!-- Score Result Cards (one per attempt) -->
-  {{#each scores}}
   <div class="bg-white shadow-sm flex flex-col h-[198px] overflow-hidden rounded-2xl p-6 sm:p-3 mb-4 border border-slate-200 hover:shadow-lg transition-all duration-300 relative">
     <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
       <div class="flex items-center justify-between gap-4">
         <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
-          {{../quiz.weeks.description}} : {{../quiz.quizName}}
+          Quiz Week 1 : Minggu Pertama
         </span>
         <span class="font-montserrat text-[25px] text-[#003060] whitespace-nowrap">Score:
-          <span class="font-semibold">{{this.score}}/100</span>
+          <span class="font-semibold">0/100</span>
         </span>
       </div>
     </div>
@@ -25,7 +24,7 @@
         <p class="text-[#003060] text-[20px] font-semibold font-sans">
           {{t "test.quiz.totalQuestions"}} :
         </p>
-        <p class="text-[#003060] font-sans text-[20px]">{{../questions.length}}</p>
+        <p class="text-[#003060] font-sans text-[20px]">2</p>
       </div>
     </div>
     <div class="flex items-center space-x-2">
@@ -33,7 +32,7 @@
       <p class="text-[#003060] text-[20px] font-semibold font-sans">
         Duration :
       </p>
-      <p class="text-[#003060] font-sans text-[20px]">{{../quiz.duration}} minutes</p>
+      <p class="text-[#003060] font-sans text-[20px]">60 minutes</p>
     </div>
 
     <div class="flex items-center space-x-2">
@@ -41,10 +40,9 @@
       <p class="text-[#003060] text-[20px] font-semibold font-sans">
         {{t "test.quiz.minimumScore"}} :
       </p>
-      <p class="text-[#003060] font-sans text-[20px]">{{../quiz.minScore}} Poin</p>
+      <p class="text-[#003060] font-sans text-[20px]">50 Poin</p>
     </div>
   </div>
-  {{/each}}
 
   <!-- Info Quiz Card with Start Button -->
  <div class="bg-white shadow-sm flex flex-col h-[198px] overflow-hidden rounded-2xl p-6 sm:p-3 mb-8 border border-slate-200 hover:shadow-lg transition-all duration-300 relative">
@@ -52,7 +50,7 @@
 
       <div class="flex items-center justify-between gap-4">
         <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
-          {{quiz.weeks.description}} : {{quiz.quizName}}
+          Quiz Week 1 : Minggu Pertama
         </span>
       </div>
     <div class="flex items-center space-x-2">
@@ -61,7 +59,7 @@
         <p class="text-[#003060] text-[20px] font-semibold font-sans">
           {{t "test.quiz.totalQuestions"}} :
         </p>
-        <p class="text-[#003060] font-sans text-[20px]">{{questions.length}}</p>
+        <p class="text-[#003060] font-sans text-[20px]">2</p>
       </div>
     </div>
 
@@ -70,7 +68,7 @@
       <p class="text-[#003060] text-[20px] font-semibold font-sans">
         Duration :
       </p>
-      <p class="text-[#003060] font-sans text-[20px]">{{quiz.duration}} minutes</p>
+      <p class="text-[#003060] font-sans text-[20px]">60 minutes</p>
     </div>
 
     <div class="flex items-center space-x-2">
@@ -78,13 +76,13 @@
       <p class="text-[#003060] text-[20px] font-semibold font-sans">
         {{t "test.quiz.minimumScore"}} :
       </p>
-      <p class="text-[#003060] font-sans text-[20px]">{{quiz.minScore}} Poin</p>
+      <p class="text-[#003060] font-sans text-[20px]">50 Poin</p>
     </div>
 
   </div>
 
   <!-- Button kanan bawah -->
-  <a href="/quiz/start/{{quiz.id}}"
+  <a href="#"
    class="btn self-end mt-auto relative bottom-12 bg-[#003060] hover:bg-[#003060] text-white inline-flex items-center gap-2 px-5 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 font-semibold text-[15px] focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"><span>{{t "test.quiz.startQuiz"}}</span>
    </a>
 

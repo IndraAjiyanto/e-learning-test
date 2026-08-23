@@ -30,34 +30,12 @@ import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { Quiz } from 'src/entities/quiz.entity';
-import { QuizProgress } from 'src/entities/quiz_progress.entity';
-import { Weeks } from 'src/entities/weeks.entity';
-import { Course } from 'src/entities/course.entity';
-import { UserCourse } from 'src/entities/user_course.entity';
-import { Score } from 'src/entities/score.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    @InjectRepository(Quiz)
-    private readonly quizRepository: Repository<Quiz>,
-    @InjectRepository(QuizProgress)
-    private readonly quizProgressRepository: Repository<QuizProgress>,
-    @InjectRepository(Weeks)
-    private readonly weeksRepository: Repository<Weeks>,
-    @InjectRepository(Course)
-    private readonly courseRepository: Repository<Course>,
-    @InjectRepository(UserCourse)
-    private readonly userCourseRepository: Repository<UserCourse>,
-    @InjectRepository(Score)
-    private readonly scoreRepository: Repository<Score>,
-  ) {}
+  constructor(private readonly usersService: UsersService) { }
 
   // ============================================
   // PUBLIC ROUTES - Forgot & Reset Password (No Auth Required)
@@ -203,9 +181,12 @@ export class UsersController {
   }
 
   @Get('verify-email-success')
-  async verifyEmailSuccess(@Res() res: Response) {
-    res.render('verify-email-success');
+  async verifyEmailSuccess(
+    @Res() res: Response
+  ){
+    res.render('verify-email-success')
   }
+
 
   // ============================================
   // PROTECTED ROUTES - Require Authentication
@@ -318,8 +299,13 @@ export class UsersController {
 
   @Roles('super_admin')
   @Get('profile/:id')
-  async detailUser(@Param('id') userId: number, @Res() res: Response) {
+  async detailUser(
+    @Param('id') userId: number,
+    @Res() res: Response,
+  ) {
+
     const user = await this.usersService.findOne(userId);
+    console.log('ID PARAM:', userId);
     return res.render('super_admin/user/detail', { user });
   }
 

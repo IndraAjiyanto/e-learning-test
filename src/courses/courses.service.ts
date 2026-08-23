@@ -446,12 +446,26 @@ export class CoursesService {
       throw new NotFoundException(`User not found`);
     }
 
-    return await this.courseRepository.find({
-      where: {
-        userCourses: { user: { id: userId } },
-      },
-      relations: ['category', 'courseType'],
-    });
+    return await this.courseRepository
+      .createQueryBuilder('course')
+      .innerJoin(
+        'course.userCourses',
+        'userCourses',
+        'userCourses.userId = :userId',
+        { userId },
+      )
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('course.weeks', 'weeks')
+      .leftJoinAndSelect(
+        'weeks.weekProgresses',
+        'weekProgresses',
+        'weekProgresses.userId = :userId',
+        { userId },
+      )
+      .leftJoinAndSelect('weeks.quiz', 'quiz')
+      .orderBy('weeks.week_number', 'ASC')
+      .getMany();
   }
 
   async findMentoring() {
@@ -493,6 +507,7 @@ export class CoursesService {
   async findSession(weeksId: number, userId: number) {
     return await this.sessionRepository
       .createQueryBuilder('session')
+      .leftJoinAndSelect('session.materials', 'materials')
       .leftJoinAndSelect(
         'session.sessionProgress',
         'sessionProgress',
@@ -555,6 +570,33 @@ export class CoursesService {
       .orderBy('weeks.week_number', 'ASC')
       .getMany();
   }
+
+  // async findWeeksWithUnlock(courseId: number, userId: number) {
+  //   const weeks = await this.weeksRepository
+  //     .createQueryBuilder('weeks')
+  //     .leftJoinAndSelect('weeks.session', 'session')
+  //     .leftJoinAndSelect('session.materials', 'materials')
+  //     .leftJoinAndSelect(
+  //       'session.sessionProgress',
+  //       'sessionProgress',
+  //       'sessionProgress.userId = :userId',
+  //       { userId },
+  //     )
+  //     .where('weeks.courseId = :courseId', { courseId })
+  //     .orderBy('weeks.week_number', 'ASC')
+  //     .getMany();
+
+  //   return weeks.map((week, index) => {
+  //     let isUnlocked = index === 0;
+  //     if (index > 0) {
+  //       const prevWeek = weeks[index - 1];
+  //       isUnlocked = prevWeek.session.some((session) =>
+  //         session.sessionProgress.some((sp) => sp.isAttended),
+  //       );
+  //     }
+  //     return { ...week, isUnlocked };
+  //   });
+  // }
 
   async findLastWeek(courseId: number) {
     const weeks = await this.weeksRepository.find({
@@ -860,7 +902,13 @@ export class CoursesService {
   async findOneCourse(courseId: number) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
-      relations: ['category', 'courseType', 'technologies', 'userCourses'],
+      relations: [
+        'category',
+        'courseType',
+        'technologies',
+        'userCourses',
+        'weeks',
+      ],
     });
     if (!course) {
       throw new NotFoundException('Program not found');

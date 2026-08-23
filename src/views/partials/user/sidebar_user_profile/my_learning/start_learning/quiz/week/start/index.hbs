@@ -53,6 +53,8 @@ window.addEventListener("load", function(){
                 <!-- Question Content -->
                 <div class="p-6">
 
+                    {{#if questions.length}}
+
                     {{#each questions}}
 
                     <div x-show="currentQuestion === {{@index}}">
@@ -124,6 +126,41 @@ window.addEventListener("load", function(){
 
                     {{/each}}
 
+                    {{else}}
+
+                    <!-- Static fallback: 1 question per page -->
+                    <div x-show="currentQuestion === 0">
+                        <div class="flex items-start gap-4 mb-6">
+                            <div class="flex-shrink-0 w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-semibold">1</div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-slate-900 text-lg leading-relaxed">Static question 1?</p>
+                            </div>
+                        </div>
+                        <div class="px-8 space-y-3">
+                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-1" value="1" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer A</span></label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-1" value="2" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer B</span></label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-1" value="3" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer C</span></label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-1" value="4" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer D</span></label>
+                        </div>
+                    </div>
+
+                    <div x-show="currentQuestion === 1">
+                        <div class="flex items-start gap-4 mb-6">
+                            <div class="flex-shrink-0 w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-semibold">2</div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-slate-900 text-lg leading-relaxed">Static question 2?</p>
+                            </div>
+                        </div>
+                        <div class="px-8 space-y-3">
+                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-2" value="1" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer A</span></label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-2" value="2" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer B</span></label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-2" value="3" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer C</span></label>
+                            <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><input type="radio" name="q-2" value="4" class="w-5 h-5 radio"><span class="ml-4 text-slate-800 font-medium">Answer D</span></label>
+                        </div>
+                    </div>
+
+                    {{/if}}
+
                 </div>
 
             </div>
@@ -133,6 +170,8 @@ window.addEventListener("load", function(){
             <!-- QUESTION BUTTONS -->
             <!-- ================================= -->
             <div class="flex items-center justify-end mt-4">
+
+    {{#if questions.length}}
 
     <div class="flex items-center gap-2">
 
@@ -144,17 +183,10 @@ window.addEventListener("load", function(){
             class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
         >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 19l-7-7 7-7"
-                ></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
-
             {{t "test.quiz.start.previous"}}
         </button>
-
 
         <!-- NEXT -->
         <button
@@ -164,17 +196,10 @@ window.addEventListener("load", function(){
             class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
         >
             {{t "test.quiz.start.next"}}
-
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"
-                ></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
         </button>
-
 
         <!-- SUBMIT -->
         <button
@@ -182,24 +207,59 @@ window.addEventListener("load", function(){
             x-show="currentQuestion === {{questions.length}} - 1"
             @click="submitQuiz()"
             :disabled="answeredCount !== {{questions.length}}"
-            :class="answeredCount !== {{questions.length}}
-                ? 'opacity-40 cursor-not-allowed'
-                : 'hover:shadow-xl hover:-translate-y-1'"
+            :class="answeredCount !== {{questions.length}} ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-1'"
             class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
         >
             Submit Answer
-
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 12h14m-6-6l6 6-6 6"
-                ></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6l6 6-6 6"></path>
             </svg>
         </button>
 
     </div>
+
+    {{else}}
+
+    <div class="flex items-center gap-2">
+
+        <button
+            type="button"
+            x-show="currentQuestion > 0"
+            @click="currentQuestion--"
+            class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
+        >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Previous
+        </button>
+
+        <button
+            type="button"
+            x-show="currentQuestion < 1"
+            @click="currentQuestion++"
+            class="btn bg-secondary text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
+        >
+            Next
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+
+        <button
+            type="button"
+            x-show="currentQuestion === 1"
+            class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 text-white rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
+        >
+            Submit Answer
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6l6 6-6 6"></path>
+            </svg>
+        </button>
+
+    </div>
+
+    {{/if}}
 
 </div>
 
@@ -275,6 +335,8 @@ window.addEventListener("load", function(){
         <!-- Question List -->
         <div class="grid grid-cols-4 gap-3 max-h-[500px] overflow-y-auto">
 
+            {{#if questions.length}}
+
             {{#each questions}}
 
             <button
@@ -301,6 +363,13 @@ window.addEventListener("load", function(){
 
             {{/each}}
 
+            {{else}}
+
+            <button type="button" class="w-[54px] h-[54px] rounded-xl border flex items-center justify-center bg-secondary text-white">1</button>
+            <button type="button" class="w-[54px] h-[54px] rounded-xl border flex items-center justify-center bg-white text-slate-700 border-slate-200">2</button>
+
+            {{/if}}
+
         </div>
 
     </div>
@@ -312,28 +381,27 @@ window.addEventListener("load", function(){
     <!-- ============================= -->
     <div class="bg-white border border-slate-200 shadow-sm p-6 mt-4">
 
+        {{#if questions.length}}
+
         <div class="flex items-center justify-between mb-3">
-
-            <span class="text-sm font-semibold text-slate-700">
-                {{t "test.quiz.start.progress"}}
-            </span>
-
-            <span
-                class="text-sm font-semibold text-slate-600"
-                x-text="`${answeredCount}/{{questions.length}}`"
-            ></span>
-
+            <span class="text-sm font-semibold text-slate-700">{{t "test.quiz.start.progress"}}</span>
+            <span class="text-sm font-semibold text-slate-600" x-text="`${answeredCount}/{{questions.length}}`"></span>
         </div>
-
-        <!-- Progress Bar -->
         <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
-
-            <div
-                class="bg-green-600 h-2.5 rounded-full transition-all duration-500"
-                :style="`width: ${(answeredCount / {{questions.length}}) * 100}%`"
-            ></div>
-
+            <div class="bg-green-600 h-2.5 rounded-full transition-all duration-500" :style="`width: ${(answeredCount / {{questions.length}}) * 100}%`"></div>
         </div>
+
+        {{else}}
+
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-slate-700">Progress</span>
+            <span class="text-sm font-semibold text-slate-600">0/2</span>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+            <div class="bg-green-600 h-2.5 rounded-full" style="width: 0%"></div>
+        </div>
+
+        {{/if}}
 
     </div>
     <!-- END PROGRESS CARD -->
@@ -344,8 +412,6 @@ window.addEventListener("load", function(){
         </div>
 
     </div>
-
-</div>
 
 </form>
 
@@ -442,6 +508,7 @@ document.addEventListener("DOMContentLoaded", function(){
 });
 </script>
 
+{{#if questions.length}}
 <script>
 function quiz() {
     return {
@@ -536,3 +603,15 @@ function quiz() {
     }
 }
 </script>
+{{else}}
+<script>
+function quiz() {
+    return {
+        currentQuestion: 0,
+        init() {},
+        nextQuestion() { if (this.currentQuestion < 1) this.currentQuestion++; },
+        prevQuestion() { if (this.currentQuestion > 0) this.currentQuestion--; }
+    }
+}
+</script>
+{{/if}}

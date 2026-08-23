@@ -2,6 +2,8 @@
 <div class="pt-2" x-data="{
   transactions: [],
   loading: true,
+  showDetail: false,
+  selectedTx: null,
   async init() {
     try {
       const res = await fetch('/payment/api/registration/{{user.id}}');
