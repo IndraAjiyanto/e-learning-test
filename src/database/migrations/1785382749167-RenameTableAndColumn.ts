@@ -6,30 +6,33 @@ export class RenameTableAndColumn1785382749167 implements MigrationInterface {
 
      await queryRunner.query(`CREATE TYPE installment_month_enum_new AS ENUM ('3');`);
 
-  
-    await queryRunner.query(`
-        UPDATE installment
-        SET month = '3'
-        WHERE month IN ('6', '12');
-    `);
+     await queryRunner.query(`
+         UPDATE installments
+         SET month = '3'
+         WHERE month IN ('6', '12');
+     `);
 
-    await queryRunner.query(`
-        ALTER TABLE installment
-        ALTER COLUMN month
-        TYPE installment_month_enum_new
-        USING month::text::installment_month_enum_new;
-    `);
+     await queryRunner.query(`
+         ALTER TABLE installments
+         ALTER COLUMN month
+         TYPE installment_month_enum_new
+         USING month::text::installment_month_enum_new;
+     `);
 
-    await queryRunner.query(`
-        DROP TYPE installment_month_enum;
-    `);
+     await queryRunner.query(`
+         DROP TYPE installment_month_enum;
+     `);
 
-    await queryRunner.query(`
-        ALTER TYPE installment_month_enum_new
-        RENAME TO installment_month_enum;
-    `);
+     await queryRunner.query(`
+         ALTER TYPE installment_month_enum_new
+         RENAME TO installment_month_enum;
+     `);
 
-    await queryRunner.query(`ALTER TABLE "category_course_types_course_type" RENAME TO "category_course_types"`);
+    try {
+      await queryRunner.query(`ALTER TABLE "category_course_types_course_type" RENAME TO "category_course_types"`);
+    } catch (e) {
+      // table may not exist — skip safely
+    }
 
     await queryRunner.query(`DROP TABLE IF EXISTS "absen" CASCADE;`);
     await queryRunner.query(`DROP TABLE IF EXISTS "alur_kelas" CASCADE;`);

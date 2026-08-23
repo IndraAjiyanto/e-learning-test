@@ -1,4 +1,99 @@
-<footer class='bg-secondary text-white py-12'>
+<!-- MOBILE FOOTER (< 768px) -->
+<footer class="block md:hidden bg-secondary text-white pt-10 pb-8 px-4 font-montserrat">
+  <div class="max-w-md mx-auto space-y-8">
+    
+    <!-- Logo & Slogan Section -->
+    <div class="flex flex-col items-center text-center space-y-3">
+      <img
+        src="/public/image/logo_kotak_putih.png"
+        class="w-auto h-16 object-contain"
+        alt="Kesatria Academy Logo"
+      />
+      <p class="font-sans text-[14px] text-white font-normal leading-[22px] text-center max-w-[358px]">
+        Elevate your engineering and technical design skills with modern bootcamp methodology.
+      </p>
+    </div>
+
+    <!-- ADDRESS & CONTACT Section -->
+    <div class="space-y-4">
+      <h3 class="font-montserrat text-[16px] font-bold tracking-wider uppercase text-white leading-none">
+        ADDRESS & CONTACT
+      </h3>
+      <ul class="space-y-3 font-sans text-[14px] text-white font-normal leading-[22px]">
+        <li class="flex items-start gap-3">
+          <img src="/public/image/footer/map-pin.png" alt="Address" class="w-4 h-4 flex-shrink-0 mt-0.5 object-contain">
+          <span class="leading-[22px]">Jl. S. Parman No.62, Purwokerto Kulon, Kabupaten Banyumas, Jawa Tengah 53141</span>
+        </li>
+        <li class="flex items-center gap-3">
+          <img src="/public/image/footer/email.svg" alt="Email" class="w-4 h-4 flex-shrink-0 object-contain">
+          <a href="mailto:kesatriaacademy@gmail.com" class="hover:text-white transition-colors">kesatriaacademy@gmail.com</a>
+        </li>
+        <li class="flex items-center gap-3">
+          <img src="/public/image/footer/Vector-2.svg" alt="Phone" class="w-4 h-4 flex-shrink-0 object-contain">
+          <span>+62 896 4683 4607</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- QUICK LINKS Section -->
+    <div class="space-y-4">
+      <h3 class="font-montserrat text-[16px] font-bold tracking-wider uppercase text-white leading-none">
+        QUICK LINKS
+      </h3>
+      <ul class="space-y-3 font-sans text-[14px] text-white font-normal leading-none">
+        <li><a href="/dashboard" class="hover:text-white transition-colors">{{t 'test.footer.home'}}</a></li>
+        <li><a href="/dashboard/about" class="hover:text-white transition-colors">{{t 'test.footer.aboutUs'}}</a></li>
+        <li><a href="/dashboard/#courses-section" class="hover:text-white transition-colors">{{t 'test.footer.program'}}</a></li>
+        <li><a href="/dashboard/alumni" class="hover:text-white transition-colors">{{t 'test.footer.alumni'}}</a></li>
+        <li><a href="/dashboard/gallery" class="hover:text-white transition-colors">{{t 'test.footer.gallery'}}</a></li>
+      </ul>
+    </div>
+
+    <!-- OUR PROGRAM Section -->
+    <div class="space-y-4">
+      <h3 class="font-montserrat text-[16px] font-bold tracking-wider uppercase text-white leading-none">
+        OUR PROGRAM
+      </h3>
+      <ul class="space-y-3 font-sans text-[14px] text-white font-normal leading-none">
+        {{#each footerCategories}}
+        <li><a href="/category/program/{{this.name}}" class="hover:text-white transition-colors">{{this.name}}</a></li>
+        {{/each}}
+      </ul>
+    </div>
+
+    <!-- FOLLOW US Section -->
+    <div class="flex flex-col items-center space-y-4">
+      <h3 class="font-montserrat text-[16px] font-bold tracking-wider uppercase text-white leading-none text-center">
+        FOLLOW US
+      </h3>
+      <div class="flex items-center justify-center gap-6">
+        <!-- LinkedIn -->
+        <a href="{{footerData.linkedin}}" class="w-8 h-8 rounded flex items-center justify-center hover:opacity-80 transition">
+          <img src="/public/image/footer/linkedin.svg" alt="LinkedIn" class="w-7 h-7 object-contain">
+        </a>
+        <!-- Instagram -->
+        <a href="{{footerData.instagram}}" class="w-8 h-8 rounded flex items-center justify-center hover:opacity-80 transition">
+          <img src="/public/image/footer/instagram.svg" alt="Instagram" class="w-7 h-7 object-contain">
+        </a>
+        <!-- YouTube -->
+        <a href="{{footerData.youtube}}" class="w-8 h-8 rounded flex items-center justify-center hover:opacity-80 transition">
+          <img src="/public/image/footer/youtube.svg" alt="YouTube" class="w-7 h-7 object-contain">
+        </a>
+      </div>
+    </div>
+
+    <!-- Divider & Copyright Section -->
+    <div class="pt-6 border-t border-white/20 text-center">
+      <p class="font-montserrat text-[11px] text-white font-normal leading-[18px] text-center">
+        © 2026 <span class="font-montserrat font-semibold text-[11px] text-white leading-[18px]">Kesatria Academy</span> All Rights Reserved Owned by <span class="font-montserrat font-semibold text-[11px] text-white leading-[18px]">PT Wiratek Solusi Asia</span>
+      </p>
+    </div>
+
+  </div>
+</footer>
+
+<!-- DESKTOP FOOTER (>= 768px) -->
+<footer class='hidden md:block bg-secondary text-white py-12'>
   <div class='max-w-7xl mx-auto px-6'>
     <div class='text-white'>
 
@@ -69,9 +164,7 @@
                 <path d='M15 22v-3a2 2 0 014 0v3' />
               </svg>
 
-              <p>Jl. S. Parman No.62, RT.002/RW.RT 002, Karangbawang, Purwokerto
-                Kulon, Kec. Purwokerto Sel., Kabupaten Banyumas, Jawa Tengah
-                53141</p>
+              <p>Jl. S. Parman No.62, Karangbawang, Purwokerto Kulon, Kec. Purwokerto Sel., Kabupaten Banyumas, Jawa Tengah 53141</p>
             </li>
             <li class='flex items-center gap-3'>
               <svg
@@ -109,7 +202,7 @@
                 ></path>
               </svg>
 
-              <p>+62 896 4683 4607</p>
+              <p>+62 895 6184 52602</p>
             </li>
           </ul>
         </div>
@@ -122,23 +215,23 @@
           </h3>
           <ul class='space-y-3 text-gray-300'>
             <li><a
-                href='#'
+                href='/dashboard'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.home'}}</a></li>
             <li><a
-                href='#'
+                href='/dashboard/about'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.aboutUs'}}</a></li>
             <li><a
-                href='#'
+                href='/dashboard/#courses-section'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.program'}}</a></li>
             <li><a
-                href='#'
+                href='/dashboard/alumni'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.alumni'}}</a></li>
             <li><a
-                href='#'
+                href='/dashboard/gallery'
                 class='flex items-center gap-2 hover:text-white transition-colors'
               >{{t 'test.footer.gallery'}}</a></li>
           </ul>
@@ -150,23 +243,12 @@
             Our Program
           </h3>
           <ul class='space-y-3 text-gray-300'>
+            {{#each footerCategories}}
             <li><a
-                href='#'
+                href='/category/program/{{this.name}}'
                 class='flex items-center gap-2 hover:text-white transition-colors'
-              >Bootcamp</a></li>
-            <li><a
-                href='#'
-                class='flex items-center gap-2 hover:text-white transition-colors'
-              > Short Class</a></li>
-            <li><a
-                href='#'
-                class='flex items-center gap-2 hover:text-white transition-colors'
-              > In House Training</a>
-            </li>
-            <li><a
-                href='#'
-                class='flex items-center gap-2 hover:text-white transition-colors'
-              > Wiratek Internship Program</a></li>
+              >{{this.name}}</a></li>
+            {{/each}}
           </ul>
         </div>
       </div>
@@ -194,7 +276,7 @@
 
           {{! LOGO LINKEDIN }}
           <a
-            href='https://www.linkedin.com/company/wiratek-solusi-asia/'
+            href='{{footerData.linkedin}}'
             class='rounded hover:opacity-80 transition'
           ><svg
               class='w-5 h-5'
@@ -254,7 +336,7 @@
 
           {{! LOGO INSTAGRAM }}
           <a
-            href='https://www.instagram.com/kesatria.academy/'
+            href='{{footerData.instagram}}'
             class='rounded hover:opacity-80 transition'
           >
             <svg
@@ -297,7 +379,7 @@
 
           {{! LOGO YOUTUBE }}
           <a
-            href='https://www.youtube.com/@KesatriaAcademy'
+            href='{{footerData.youtube}}'
             class='rounded hover:opacity-80 transition'
           ><svg
               class='w-5 h-5'
@@ -330,18 +412,9 @@
         </h3>
       </div>
 
-      {{! <div class='mt-8 pt-8 border-t border-textSecondary/30 flex flex-col md:flex-row justify-between'> }}
-
       <div class='flex items-center justify-center space-x-4'>
         <p class='mb-4 md:mb-0'>{{{t 'test.footer.copyright'}}}</p>
-        {{!-- <a href='#' class='text-white hover:text-white transition-colors'>{{t
-            'test.footer.privacyPolicy'
-            }}</a>
-          <span class="text-gray-600">|</span> <a href='#' class='hover:text-white transition-colors'>{{t
-            'test.footer.termsOfService'}}</a> --}}
       </div>
-      {{!
-      </div> }}
 
     </div>
   </div>

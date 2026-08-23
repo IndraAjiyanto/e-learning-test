@@ -76,6 +76,9 @@ export class Course {
   @Column({ default: false })
   launch: boolean;
 
+  @Column({nullable:true})
+  date_registration: Date
+
   @ManyToMany(() => Technology, (technologies) => technologies.course)
   @JoinTable({
     name: 'course_technologies',
@@ -232,8 +235,14 @@ export class Course {
   @Exclude()
   registrations: Registration[];
 
-  @ManyToOne(() => Voucher, (voucher) => voucher.courses)
-  @JoinColumn({ name: 'voucherId' })
+  // Sisi inverse dari ManyToMany — @JoinTable ada di voucher.entity.ts
+  @ManyToMany(() => Voucher, (voucher) => voucher.courses)
   @Exclude()
-  voucher: Voucher;
+  vouchers: Voucher[];
+
+  @Column({name: 'time_start', nullable:true , type:'time'})
+  time_start: string
+
+  @Column({name: 'time_end', nullable:true , type:'time'})
+  time_end: string
 }

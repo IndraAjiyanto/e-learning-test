@@ -1,39 +1,65 @@
-<div class='pt-24 min-h-screen bg-[linear-gradient(180deg,_#FAFAFA_-33%,_#CEE5F6_33%,_#FAFAFA_93.51%)]' x-data='alumniApp()'>
+<div class='pt-24 min-h-screen bg-cover bg-top bg-no-repeat bg-fixed' style="background-image: url('/public/image/dashboard/bgAlumniPage.png');" x-data='alumniApp()'>
 
-  <div class='container mx-auto px-4 pb-16 max-w-5xl'>
+  <div class='container mx-auto px-4 pb-16 max-w-[1440px]'>
+    
     <!-- Header -->
-    <div class='text-center mb-8'>
-      <span class='inline-block text-sm border bg-[#6EB6E533] border-gray-300 px-5 py-1 rounded-full text-gray-900 font-montserrat mb-5'>{{t 'test.alumni.alumni'}}</span>
-      <h1 class='text-4xl font-bold text-gray-900 mb-4 font-montserrat'>{{{t
-          'test.alumni.tittle'
-        }}}</h1>
-      <div class="border border-b-2 border-slate-900 w-10 mx-auto my-2 rounded"></div>
-      <p class='text-gray-600 max-w-2xl mx-auto text-lg'>
-        {{t 'test.alumni.description'}}
-      </p>
-    </div>
+    <div class='flex flex-col items-center mb-[50px]'>
+      <!-- Badge -->
+      <div class='flex justify-center items-center rounded-full mb-[30px]' style="width: 250px; height: 35px; background: rgba(110, 182, 229, 0.2); border: 1px solid #003060;">
+        <span class='font-montserrat font-medium' style="font-size: 20px; color: #003060;">{{t 'test.alumni.alumni'}}</span>
+      </div>
 
-    <!-- Stats -->
-    <div class='max-w-3xl mx-auto mb-12'>
-      <div class='grid grid-cols-3 bg-white/70 border border-slate-200 rounded-2xl shadow-sm divide-x divide-slate-200'>
-        <div class='flex flex-col items-center justify-center py-5 px-3 text-center'>
-          <i class='fas fa-user-graduate text-blue-600 mb-1'></i>
-          <span class='text-2xl font-bold text-gray-900'>1000+</span>
-          <span class='text-xs text-gray-500'>Alumni</span>
-        </div>
-        <div class='flex flex-col items-center justify-center py-5 px-3 text-center'>
-          <i class='fas fa-chart-line text-blue-600 mb-1'></i>
-          <span class='text-2xl font-bold text-gray-900'>95%</span>
-          <span class='text-xs text-gray-500'>Career Growth</span>
-        </div>
-        <div class='flex flex-col items-center justify-center py-5 px-3 text-center'>
-          <i class='fas fa-handshake text-blue-600 mb-1'></i>
-          <span class='text-2xl font-bold text-gray-900'>200+</span>
-          <span class='text-xs text-gray-500'>Hiring Partners</span>
-        </div>
+      <!-- Title & Subtitle -->
+      <div class='flex flex-col items-center gap-[10px] w-full'>
+        <h1 class='font-montserrat font-semibold text-center text-black' style="font-size: 40px; line-height: 55px;">{{{t 'test.alumni.title'}}}</h1>
+        <div class="rounded-[6px]" style="width: 70px; height: 5px; background: #0B1F3B;"></div>
+        <p class='text-center' style="max-width: 1396px; font-family: 'Open Sans'; font-weight: 400; font-size: 25px; line-height: 45px; color: rgba(0, 0, 0, 0.8);">
+          {{t 'test.alumni.description'}}
+        </p>
       </div>
     </div>
 
+    <!-- Stats -->
+    <div class='mx-auto px-4' style="max-width: 819px; margin-bottom: 100px;">
+      <div class='flex flex-row items-center justify-between w-full' style="height: 102px; padding: 0 28px; background: rgba(224, 241, 249, 0.5); box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); backdrop-filter: blur(3.3px); border-radius: 12px;">
+        
+        <!-- Alumni -->
+        <div class='flex flex-row items-center gap-[10px]' style="width: 208.67px;">
+          <div class='flex items-center justify-center rounded-full flex-shrink-0' style="width: 59.67px; height: 59.67px; background: rgba(110, 182, 229, 0.3);">
+            <i class='fas fa-users text-[#0B1F3B] text-xl'></i>
+          </div>
+          <div class='flex flex-col'>
+            <span class='font-bold text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 25px; line-height: 34px;">1000+</span>
+            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">{{t 'test.alumni.statAlumni'}}</span>
+          </div>
+        </div>
+
+        <!-- Career Growth -->
+        <div class='flex flex-row items-center gap-[10px]' style="width: 199.67px;">
+          <div class='flex items-center justify-center rounded-full flex-shrink-0' style="width: 59.67px; height: 59.67px; background: rgba(110, 182, 229, 0.3);">
+            <i class='fas fa-chart-line text-[#0B1F3B] text-xl'></i>
+          </div>
+          <div class='flex flex-col'>
+            <span class='font-bold text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 25px; line-height: 34px;">95%</span>
+            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">{{t 'test.alumni.statCareerGrowth'}}</span>
+          </div>
+        </div>
+
+        <!-- Hiring Partners -->
+        <div class='flex flex-row items-center gap-[10px]' style="width: 201.67px;">
+          <div class='flex items-center justify-center rounded-full flex-shrink-0' style="width: 59.67px; height: 59.67px; background: rgba(110, 182, 229, 0.3);">
+            <i class='fas fa-briefcase text-[#0B1F3B] text-xl'></i>
+          </div>
+          <div class='flex flex-col'>
+            <span class='font-bold text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 25px; line-height: 34px;">200+</span>
+            <span class='font-normal text-[#2D2D2D]' style="font-family: 'Open Sans'; font-size: 18px; line-height: 25px;">{{t 'test.alumni.statHiringPartners'}}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Content & Sidebar -->
     <div class='w-full mx-auto mb-12'>
       {{> alumni/sidebar}}
       {{> alumni/content}}
@@ -60,6 +86,7 @@ function alumniApp() {
     loading: false,
     alumniItems: [],
     lang: '{{lang}}' || 'id',
+    unknown: "{{t 'test.alumni.unknown'}}",
 
     async init() {
       this.kelasList = this.kelasList.sort((a, b) =>
@@ -113,22 +140,19 @@ function alumniApp() {
       this.loading = true;
       try {
         const params = new URLSearchParams();
-         if (this.searchQuery && this.searchQuery.trim() !== '') {
-      params.set('search', this.searchQuery.trim());
-    }
         if (this.searchQuery && this.searchQuery.trim() !== '') {
-      params.set('search', this.searchQuery.trim());
-    }
-    
-    // 2. Parameter Kelas ID (Ditulis terpisah, tanpa ELSE IF)
-    if (this.selectedKelasId) {
-      params.set('course_id', this.selectedKelasId);
-    }
-    
-    // 3. Parameter Kategori ID (Selalu dikirim agar backend tahu category aktif saat ini)
-    if (this.selectedKategoriId) {
-      params.set('kategori_id', this.selectedKategoriId);
-    }
+          params.set('search', this.searchQuery.trim());
+        }
+
+        // 2. Parameter Kelas ID
+        if (this.selectedKelasId) {
+          params.set('course_id', this.selectedKelasId);
+        }
+
+        // 3. Parameter Kategori ID
+        if (this.selectedKategoriId) {
+          params.set('category_id', this.selectedKategoriId);
+        }
         params.set('page', this.currentPage);
         params.set('limit', 6);
 
@@ -175,7 +199,8 @@ function alumniApp() {
     },
 
     getKelasName(alumni) {
-      return alumni.course?.name || 'Unknown';
+      const name = alumni.course?.name;
+      return name ? (typeof name === 'object' ? this.getByLang(name, this.lang) : name) : this.unknown;
     }
   };
 }

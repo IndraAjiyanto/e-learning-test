@@ -4,17 +4,25 @@ import { UpdateSocialDto } from './dto/update-social.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Social } from 'src/entities/social.entity';
 import { Repository } from 'typeorm';
+import { FooterService } from 'src/footer/footer.service';
 
 @Injectable()
 export class SocialService {
   constructor(
     @InjectRepository(Social)
     private readonly socialRepository: Repository<Social>,
+    private readonly footerService: FooterService,
   ) {}
+
+  private async clearFooterCache() {
+    await this.footerService.invalidateFooterCache();
+  }
 
   async create(createSocialDto: CreateSocialDto) {
     const social = this.socialRepository.create(createSocialDto);
-    return await this.socialRepository.save(social);
+    await this.socialRepository.save(social);
+    await this.clearFooterCache();
+    return social;
   }
 
   async findAll() {
@@ -35,7 +43,9 @@ export class SocialService {
       throw new NotFoundException('Social not found');
     }
     Object.assign(social, updateSocialDto);
-    return await this.socialRepository.save(social);
+    await this.socialRepository.save(social);
+    await this.clearFooterCache();
+    return social;
   }
 
   async remove(id: number) {
@@ -44,5 +54,6 @@ export class SocialService {
       throw new NotFoundException('Social not found');
     }
     await this.socialRepository.remove(social);
+    await this.clearFooterCache();
   }
 }

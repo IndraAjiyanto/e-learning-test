@@ -44,23 +44,12 @@
               <div class="font-bold text-black text-[15px]">Down Payment (DP)</div>
               <div class="text-[13px] text-slate-600 pt-0.5">Pay now to enroll</div>
             </div>
-            <div class="font-bold text-black text-lg">Rp 550.000</div>
+            <div class="font-bold text-black text-lg" id="ui-dp-price">Rp {{#if course.installments.[0]}}{{course.installments.[0].downPayment}}{{else}}0{{/if}}</div>
           </div>
 
           <div class="text-black font-medium mb-3 text-[15px]">Monthly Installment (After DP)</div>
-          <div class="space-y-3 text-sm text-black">
-            <div class="flex justify-between items-center">
-              <span class="text-slate-600">Month 1</span>
-              <span class="font-bold">Rp 2.000.000</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-slate-600">Month 2</span>
-              <span class="font-bold">Rp 2.000.000</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-slate-600">Month 3</span>
-              <span class="font-bold">Rp 2.000.000</span>
-            </div>
+          <div class="space-y-3 text-sm text-black" id="ui-monthly-prices">
+             <!-- JS will render this dynamically to allow proper number formatting -->
           </div>
         </div>
       </div>
@@ -70,7 +59,11 @@
         <label class="block text-2xl md:text-[30px] font-semibold text-[#003060] mb-4">
           Voucher Discount
         </label>
-        <input type="text" placeholder="Input Voucher Code" class="w-full h-[50px] rounded-[6px] border border-slate-300 px-[16px] bg-white focus:outline-none focus:ring-1 focus:ring-[#003060] text-slate-700">
+        <div class="flex gap-2 items-center relative">
+          <input type="text" id="promo-input" oninput="handlePromoInput()" placeholder="Input Voucher Code" class="uppercase flex-1 h-[50px] rounded-[6px] border border-slate-300 px-[16px] bg-white focus:outline-none focus:ring-1 focus:ring-[#0B3A68] text-slate-700 transition-colors">
+          <button type="button" id="remove-promo-btn" onclick="removePromo()" class="px-6 h-[50px] bg-red-100 text-red-600 font-medium rounded-[6px] hover:bg-red-200 transition-colors hidden">Cancel</button>
+        </div>
+        <p id="promo-message" class="text-sm mt-2 font-medium hidden"></p>
       </div>
       
     </div>
@@ -86,26 +79,26 @@
         <!-- Item 1 -->
         <div class="flex justify-between items-start gap-4">
           <div class="text-black font-normal text-[15px] md:text-base leading-relaxed flex-1">
-            Batch 6.2: Flow Sense: UI/UX Design With Figma<br>
+            {{course.name}}<br>
             <span id="detail-payment-type">(Full Payment)</span>
           </div>
-          <div id="detail-price" class="text-[#003060] text-[15px] md:text-base font-medium whitespace-nowrap pt-0.5">Rp8.550.000</div>
+          <div id="detail-price" class="text-[#003060] text-[15px] md:text-base font-medium whitespace-nowrap pt-0.5">Rp {{course.promo}}</div>
         </div>
         
         <div class="h-[0.5px] w-full bg-[#D9D9D9]"></div>
         
         <!-- Item 2 -->
-        <div class="flex justify-between items-center gap-4">
-          <div class="text-black text-[15px] md:text-base">Discount Voucher</div>
-          <div id="detail-voucher" class="text-[#003060] text-[15px] md:text-base font-medium">Rp2.655.000</div>
+        <div id="discount-row" class="flex justify-between items-center gap-4 hidden">
+          <div class="text-green-600 text-[15px] md:text-base">Discount Voucher (<span id="display-promo-code"></span>)</div>
+          <div id="detail-voucher" class="text-green-600 text-[15px] md:text-base font-medium">- Rp 0</div>
         </div>
         
-        <div class="h-[0.5px] w-full bg-[#D9D9D9]"></div>
+        <div id="discount-divider" class="h-[0.5px] w-full bg-[#D9D9D9] hidden"></div>
         
         <!-- Item 3 -->
         <div class="flex justify-between items-center gap-4">
           <div class="text-black text-[15px] md:text-base">SubTotal</div>
-          <div id="detail-subtotal" class="text-[#003060] text-[15px] md:text-base font-medium">Rp5.895.000</div>
+          <div id="detail-subtotal" class="text-[#003060] text-[15px] md:text-base font-medium">Rp {{course.price}}</div>
         </div>
         
         <div class="h-[0.5px] w-full bg-[#D9D9D9]"></div>
@@ -113,13 +106,19 @@
         <!-- Total -->
         <div class="flex justify-between items-center pt-2">
           <div class="text-black font-bold text-lg md:text-xl">Total</div>
-          <div id="detail-total" class="text-[#003060] font-bold text-lg md:text-xl">Rp5.895.000</div>
+          <div id="detail-total" class="text-[#003060] font-bold text-lg md:text-xl">Rp {{course.price}}</div>
         </div>
         
         <!-- Pay Now Button -->
         <div class="pt-6">
-          <button type="button" onclick="goToStep(3)" class="w-full h-[56px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-[12px] font-semibold text-lg transition-colors shadow-sm">
-            Pay Now
+          <button type="button" onclick="proceedToPayment()" id="btn-pay-now" class="w-full h-[56px] bg-[#003060] hover:bg-[#082a4d] text-white rounded-[12px] font-semibold text-lg transition-colors shadow-sm relative">
+            <span id="btn-pay-now-text">Pay Now</span>
+            <span id="btn-pay-now-spinner" class="hidden absolute inset-0 flex items-center justify-center">
+              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </span>
           </button>
         </div>
       </div>
@@ -129,31 +128,361 @@
 </form>
 
 <script>
+// Load dynamic values from Backend Handlebars
+const coursePromo = Number('{{course.promo}}') || 0;
+const courseBasePrice = Number('{{course.price}}') || 0;
+const courseFullPrice = coursePromo > 0 ? coursePromo : courseBasePrice;
+
+const courseInstallmentDP = Number('{{#if course.installments.[0]}}{{course.installments.[0].downPayment}}{{else}}0{{/if}}') || 0;
+const installmentPrices = [{{#if course.installments.[0]}}{{#each course.installments.[0].price}}{{this}}{{#unless @last}},{{/unless}}{{/each}}{{/if}}];
+
+let currentSubtotal = courseFullPrice;
+let activePromo = null;
+let currentDiscountAmount = 0;
+
+// Debounce Utility
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+function showPromoMessage(text, type) {
+    const el = document.getElementById("promo-message");
+    el.textContent = text;
+    el.classList.remove("hidden");
+    if (type === 'success') {
+        el.className = "text-sm mt-2 font-medium block text-green-600";
+    } else if (type === 'error') {
+        el.className = "text-sm mt-2 font-medium block text-red-500";
+    } else {
+        el.className = "text-sm mt-2 font-medium block text-slate-500";
+    }
+}
+
+const checkPromo = debounce(async () => {
+    console.log("Debounce timer finished. Running checkPromo...");
+    const code = document.getElementById("promo-input").value.trim().toUpperCase();
+    
+    if (!code) {
+        console.log("Code is empty after trim, removing promo.");
+        removePromo();
+        return;
+    }
+
+    showPromoMessage("Mengecek kode voucher...", "neutral");
+
+    // Double check if input is still the same or not empty after delay
+    const currentCode = document.getElementById("promo-input").value.trim().toUpperCase();
+    if(currentCode !== code) return;
+
+    try {
+        const courseId = {{#if course.id}}{{course.id}}{{else}}1{{/if}};
+
+        const response = await fetch('/api/voucher/validate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                code: code,
+                courseId: courseId,
+                subtotal: currentSubtotal // Backend calculates against the selected subtotal
+            })
+        });
+
+        console.log("Response status:", response.status);
+        
+        if (!response.ok && response.status === 404) {
+            throw new Error("Endpoint API tidak ditemukan (404).");
+        }
+        
+        const result = await response.json();
+        console.log("API Result:", result);
+
+        if (response.ok && result.status === "success") {
+            const { discount_amount, final_total, promo_code } = result.data;
+            
+            activePromo = promo_code;
+            currentDiscountAmount = discount_amount;
+            updatePricingUI(currentSubtotal, discount_amount, final_total);
+            
+            document.getElementById("promo-input").disabled = true;
+            document.getElementById("promo-input").classList.add("bg-green-50", "border-green-300");
+            document.getElementById("remove-promo-btn").classList.remove("hidden");
+            
+            showPromoMessage(result.message || "Kode promo berhasil diterapkan!", "success");
+        } else {
+            activePromo = null;
+            currentDiscountAmount = 0;
+            updatePricingUI(currentSubtotal, 0, currentSubtotal);
+            showPromoMessage(result.message || "Kode promo tidak valid atau kadaluarsa.", "error");
+        }
+    } catch (error) {
+        console.error("Promo check error:", error);
+        activePromo = null;
+        currentDiscountAmount = 0;
+        updatePricingUI(currentSubtotal, 0, currentSubtotal);
+        showPromoMessage(error.message === "Endpoint API tidak ditemukan (404)." ? "Sistem sedang diperbarui, API tidak ditemukan." : "Terjadi kesalahan saat mengecek kode promo.", "error");
+    }
+}, 800);
+
+function handlePromoInput() {
+    const input = document.getElementById("promo-input");
+    input.classList.remove("bg-green-50", "border-green-300");
+    
+    if(input.value.trim() === "") {
+        removePromo();
+    } else {
+        showPromoMessage("Mengetik...", "neutral");
+        checkPromo();
+    }
+}
+
+function removePromo() {
+    activePromo = null;
+    currentDiscountAmount = 0;
+    const input = document.getElementById("promo-input");
+    input.value = "";
+    input.disabled = false;
+    input.classList.remove("bg-green-50", "border-green-300");
+    
+    document.getElementById("remove-promo-btn").classList.add("hidden");
+    
+    updatePricingUI(currentSubtotal, 0, currentSubtotal);
+    document.getElementById("promo-message").classList.add("hidden");
+}
+
+function updatePricingUI(sub, disc, total) {
+    document.getElementById("detail-price").textContent = `Rp${sub.toLocaleString('id-ID')}`;
+    document.getElementById("detail-subtotal").textContent = `Rp${sub.toLocaleString('id-ID')}`;
+    document.getElementById("detail-voucher").textContent = `- Rp${disc.toLocaleString('id-ID')}`;
+    document.getElementById("detail-total").textContent = `Rp${total.toLocaleString('id-ID')}`;
+    
+    const discRow = document.getElementById("discount-row");
+    const discDivider = document.getElementById("discount-divider");
+    
+    if (disc > 0) {
+        document.getElementById("display-promo-code").textContent = activePromo;
+        discRow.classList.remove("hidden");
+        discRow.classList.add("flex");
+        discDivider.classList.remove("hidden");
+    } else {
+        discRow.classList.add("hidden");
+        discRow.classList.remove("flex");
+        discDivider.classList.add("hidden");
+    }
+}
+</script>
+
+<script>
   function togglePaymentMethod() {
     const method = document.getElementById('payment-method-select').value;
     const installmentUi = document.getElementById('installment-ui');
-    
-    // Right column elements
     const detailType = document.getElementById('detail-payment-type');
-    const detailPrice = document.getElementById('detail-price');
-    const detailVoucher = document.getElementById('detail-voucher');
-    const detailSubtotal = document.getElementById('detail-subtotal');
-    const detailTotal = document.getElementById('detail-total');
 
     if (method === 'Installment') {
       installmentUi.classList.remove('hidden');
       detailType.innerText = '(Installment Payment - 3 month)';
-      detailPrice.innerText = 'Rp550.000';
-      detailVoucher.innerText = 'Rp0';
-      detailSubtotal.innerText = 'Rp550.000';
-      detailTotal.innerText = 'Rp550.000';
+      currentSubtotal = courseInstallmentDP;
     } else {
       installmentUi.classList.add('hidden');
       detailType.innerText = '(Full Payment)';
-      detailPrice.innerText = 'Rp8.550.000';
-      detailVoucher.innerText = 'Rp2.655.000';
-      detailSubtotal.innerText = 'Rp5.895.000';
-      detailTotal.innerText = 'Rp5.895.000';
+      currentSubtotal = courseFullPrice;
+    }
+
+    // Jika ada promo yang aktif, validasi ulang terhadap subtotal baru (DP/Full)
+    // Jika tidak ada promo, langsung update harga
+    if (activePromo) {
+        checkPromo(); // Backend will recalculate the discount against the new currentSubtotal
+    } else {
+        updatePricingUI(currentSubtotal, 0, currentSubtotal);
     }
   }
+
+  async function proceedToPayment() {
+    const btn = document.getElementById("btn-pay-now");
+    const text = document.getElementById("btn-pay-now-text");
+    const spinner = document.getElementById("btn-pay-now-spinner");
+
+    const method = document.getElementById("payment-method-select").value;
+
+    btn.disabled = true;
+    text.classList.add("hidden");
+    spinner.classList.remove("hidden");
+
+    try {
+        const storageKey =
+          typeof window.getPaymentProgressStorageKey === 'function'
+            ? window.getPaymentProgressStorageKey()
+            : `payment-${userId}-${courseId}-form`;
+        
+        let formData = null;
+        if (storageKey) {
+            const raw = localStorage.getItem(storageKey);
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    formData = parsed.forms && parsed.forms.form1 ? parsed.forms.form1 : null;
+                } catch(e) {}
+            }
+        }
+
+        const response = await fetch('/api/payment/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            courseId: '{{course.id}}',
+            paymentMethod: method,
+            promoCode: activePromo ? activePromo : null,
+            formData: formData
+          }),
+        });
+
+      const data = await response.json();
+
+      if (response.ok && data.status === 'success') {
+        window.location.href = data.redirect_url;
+      } else {
+        alert('Gagal memproses pembayaran: ' + (data.message || 'Unknown error'));
+        btn.disabled = false;
+        text.classList.remove("hidden");
+        spinner.classList.add("hidden");
+      }
+    } catch (error) {
+      console.error('Payment Error:', error);
+      alert('Terjadi kesalahan koneksi saat menghubungi server pembayaran.');
+      btn.disabled = false;
+      text.classList.remove("hidden");
+      spinner.classList.add("hidden");
+    }
+  }
+
+  // Initialize UI on page load to set correct Handlebars values
+  document.addEventListener("DOMContentLoaded", () => {
+     // Format the DP display box
+     const dpBox = document.getElementById("ui-dp-price");
+     if(dpBox) {
+         dpBox.innerText = `Rp ${courseInstallmentDP.toLocaleString('id-ID')}`;
+     }
+
+     // Render the monthly prices dynamically
+     const monthlyContainer = document.getElementById("ui-monthly-prices");
+     if(monthlyContainer && installmentPrices.length > 0) {
+         let htmlContent = "";
+         installmentPrices.forEach((price, index) => {
+             htmlContent += `
+             <div class="flex justify-between items-center">
+               <span class="text-slate-600">Month ${index + 1}</span>
+               <span class="font-bold">Rp ${price.toLocaleString('id-ID')}</span>
+             </div>
+             `;
+         });
+         monthlyContainer.innerHTML = htmlContent;
+     }
+
+     togglePaymentMethod();
+  });
+</script>
+
+<script>
+  (function initPaymentMethodDraftStorage() {
+    const userId = Number('{{user.id}}') || 0;
+    const courseId = Number('{{course.id}}') || 0;
+    if (!userId || !courseId) return;
+
+    const storageKey =
+      typeof window.getPaymentProgressStorageKey === 'function'
+        ? window.getPaymentProgressStorageKey()
+        : `payment-${userId}-${courseId}-form`;
+
+    const paymentMethodSelect = document.getElementById('payment-method-select');
+    const promoInput = document.getElementById('promo-input');
+    if (!paymentMethodSelect || !promoInput) return;
+
+    const readDraft = () => {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return null;
+
+      try {
+        return JSON.parse(raw);
+      } catch (error) {
+        return null;
+      }
+    };
+
+    let lastSavedPayload = null;
+
+    const collectForm2 = () => ({
+      paymentMethod: paymentMethodSelect.value || 'Full Payment',
+      voucherDiscount: (promoInput.value || '').trim().toUpperCase(),
+    });
+
+    const saveForm2IfChanged = () => {
+      const existingDraft = readDraft() || {};
+      const payload = {
+        ...existingDraft,
+        userId,
+        courseId,
+        form: Number(existingDraft.form) || Number(sessionStorage.getItem('currentPaymentStep') || 1),
+        forms: {
+          ...(existingDraft.forms || {}),
+          form2: collectForm2(),
+        },
+      };
+
+      const payloadString = JSON.stringify(payload);
+      if (payloadString === lastSavedPayload) return;
+
+      const existingRaw = localStorage.getItem(storageKey);
+      if (existingRaw === payloadString) {
+        lastSavedPayload = payloadString;
+        return;
+      }
+
+      localStorage.setItem(storageKey, payloadString);
+      lastSavedPayload = payloadString;
+    };
+
+    const applyForm2 = (form2) => {
+      if (!form2) return;
+
+      if (form2.paymentMethod) {
+        paymentMethodSelect.value = form2.paymentMethod;
+        togglePaymentMethod();
+      }
+
+      if (form2.voucherDiscount) {
+        promoInput.value = form2.voucherDiscount;
+        handlePromoInput();
+      }
+    };
+
+    const bootstrap = () => {
+      const existingDraft = readDraft();
+      if (existingDraft?.forms?.form2) {
+        applyForm2(existingDraft.forms.form2);
+        lastSavedPayload = JSON.stringify(existingDraft);
+      }
+
+      paymentMethodSelect.addEventListener('change', saveForm2IfChanged);
+      promoInput.addEventListener('input', saveForm2IfChanged);
+      promoInput.addEventListener('change', saveForm2IfChanged);
+      document.addEventListener('payment:step-changed', saveForm2IfChanged);
+
+      saveForm2IfChanged();
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrap);
+    } else {
+      bootstrap();
+    }
+  })();
 </script>

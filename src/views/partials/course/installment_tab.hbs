@@ -76,13 +76,13 @@
               class='hover:bg-gray-50 transition'
             >
               <td class='px-6 py-4 text-sm text-gray-800' x-text="pageNumber * size + index + 1"></td>
-              <td class='px-6 py-4 text-sm text-gray-800' x-text="installment.bulan + ' Months'"></td>
+              <td class='px-6 py-4 text-sm text-gray-800' x-text="installment.month + ' Months'"></td>
               <td class='px-6 py-4 text-sm text-gray-800'>
-                <div x-text="formatRupiah(installment.dp)"></div>
+                <div x-text="formatRupiah(installment.downPayment)"></div>
               </td>
               <td class='px-6 py-4 text-sm text-gray-800'>
                 <div class='space-y-1'>
-                  <template x-for="(harga, index) in installment.harga" :key="index">
+                  <template x-for="(harga, index) in installment.price" :key="index">
                     <div class='text-xs bg-gray-100 px-2 py-1 rounded' x-text="'Month ' + (index + 1) + ': ' + formatRupiah(harga)">
                     </div>
                   </template>
@@ -203,7 +203,7 @@ async fetchInstallment() {
 },
     get filteredData() {
       let filtered = this.data.filter(i =>
-                 (`${i.bulan}`).toLowerCase()
+                 (`${i.month}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
 

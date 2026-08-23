@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsBoolean,
+  isDateString,
   IsDateString,
   IsEnum,
   IsInt,
@@ -24,7 +25,7 @@ export class CreateCoursesDto {
   categoryId: number;
 
   @IsArray()
-  location: string[];
+  locations: string[];
 
   @IsInt()
   courseTypeId: number;
@@ -98,4 +99,13 @@ export class CreateCoursesDto {
   @IsArray()
   @IsOptional()
   criteria: string[];
+
+  @IsOptional()
+  date_registration: Date;
+
+  @IsOptional()
+  time_start?: string;
+
+  @IsOptional()
+  time_end?: string;
 }

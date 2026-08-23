@@ -1,0 +1,129 @@
+<div class="w-full flex flex-col items-start p-16 gap-[15px]">
+  
+  <!-- Logbook Header -->
+  <div class="flex flex-col gap-2">
+    <h1 class="font-montserrat font-semibold text-[36px] leading-[44px] text-[#003060]">
+      My Logbook
+    </h1>
+    <p class="font-open-sans font-normal text-[20px] leading-[27px] text-[#003060]">
+      View and monitor your submitted logbook entries throughout the program.
+    </p>
+  </div>
+
+  <!-- Toolbar (Search & Export) -->
+  <div class="w-full max-w-[1265px] flex justify-between items-center mt-8 mb-4">
+    
+    <!-- Search Bar -->
+    <div class="flex items-center gap-[15px] w-full max-w-[479px] h-[45px] bg-white shadow-[0px_0px_5px_rgba(0,0,0,0.5)] rounded-[6px] px-[15px] focus-within:ring-2 focus-within:ring-[#003060]">
+      <i class="fas fa-search text-[24px] text-slate-500"></i>
+      <input 
+        type="text" 
+        placeholder="Search activities, details, or issues..." 
+        class="w-full bg-transparent border-none outline-none font-montserrat font-medium text-[16px] sm:text-[18px] text-slate-700 placeholder:text-[#676767]"
+      >
+    </div>
+
+    <!-- Export Button -->
+    <button class="flex items-center gap-[8px] h-[45px] px-[20px] bg-[#15833E] shadow-[0px_0px_4px_rgba(0,0,0,0.5)] rounded-[6px] hover:bg-[#106A31] transition cursor-pointer">
+      <i class="fas fa-file-excel text-white text-[20px]"></i>
+      <span class="font-montserrat font-medium text-[18px] sm:text-[20px] text-white">Export Excel</span>
+    </button>
+  </div>
+
+  <!-- Table Container -->
+  <div class="w-full max-w-[1265px] border-[0.5px] border-[#D9D9D9] rounded-b-[6px] flex flex-col bg-white">
+    
+    <!-- Table Header -->
+    <div class="w-full h-[44px] bg-[#003060] rounded-t-[6px] flex flex-row items-center">
+      <div class="w-[52px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">No</span></div>
+      <div class="w-[157px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Date</span></div>
+      <div class="w-[199px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Activity</span></div>
+      <div class="w-[229px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Details</span></div>
+      <div class="w-[128px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Issues</span></div>
+      <div class="w-[199px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Documentation</span></div>
+      <div class="w-[169px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Program</span></div>
+      <div class="w-[132px] flex justify-center"><span class="font-montserrat font-medium text-[16px] sm:text-[20px] text-white">Status</span></div>
+    </div>
+
+    <!-- Table Body (Rows) -->
+    <template x-for="(logbook, index) in paginatedLogbooks" :key="logbook.id">
+      <div class="w-full min-h-[45px] border-t-[0.5px] border-[#D9D9D9] flex flex-row items-center py-1 hover:bg-slate-50 transition">
+        <div class="w-[52px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767]" x-text="(logbookCurrentPage - 1) * logbookItemsPerPage + index + 1"></span></div>
+        <div class="w-[157px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767] text-center" x-text="`${new Date(logbook.createdAt).toLocaleString('en-US', {month: 'short'})}, ${new Date(logbook.createdAt).getDate().toString().padStart(2, '0')} ${new Date(logbook.createdAt).getFullYear()}`"></span></div>
+        <div class="w-[199px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767] text-center" x-text="logbook.activity || '-'"></span></div>
+        <div class="w-[229px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767] text-center" x-text="logbook.activityDetails || '-'"></span></div>
+        <div class="w-[128px] flex justify-center"><span class="font-open-sans text-[18px] text-[#676767] text-center" x-text="logbook.obstacles || 'tidak ada'"></span></div>
+        
+        <!-- Documentation Image -->
+        <div class="w-[199px] flex justify-center">
+          <div class="w-[100px] h-[34px] bg-slate-200 rounded-[4px] flex items-center justify-center text-[10px] text-slate-500 overflow-hidden relative">
+            <a x-show="logbook.documentation && logbook.documentation !== 'null' && !logbookImageErrors[logbook.id]" :href="logbook.documentation" target="_blank" class="w-full h-full block">
+              <img :src="logbook.documentation" alt="Doc" class="w-full h-full object-cover" @error="logbookImageErrors[logbook.id] = true">
+            </a>
+            <i x-show="!logbook.documentation || logbook.documentation === 'null' || logbookImageErrors[logbook.id]" class="far fa-image text-slate-400 text-xl"></i>
+          </div>
+        </div>
+        
+        <!-- Program Badge -->
+        <div class="w-[169px] flex justify-center">
+          <div class="border border-[#003060] rounded-[12px] px-3 py-1 flex items-center justify-center">
+            <span class="font-open-sans text-[16px] sm:text-[18px] text-[#003060] text-center" x-text="logbook.session && logbook.session.weeks && logbook.session.weeks.course ? logbook.session.weeks.course.name : '-'"></span>
+          </div>
+        </div>
+        
+        <!-- Status Badge -->
+        <div class="w-[132px] flex justify-center">
+          <template x-if="logbook.process === 'approved'">
+            <div class="bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-3 py-1 flex items-center justify-center">
+              <span class="font-open-sans text-[14px] sm:text-[15px] text-[#12BD26]">Complete</span>
+            </div>
+          </template>
+          <template x-if="logbook.process === 'process'">
+            <div class="bg-[#FEF5E5] border border-[#FBA319] rounded-[12px] px-3 py-1 flex items-center justify-center">
+              <span class="font-open-sans text-[14px] sm:text-[15px] text-[#FBA319]">Process</span>
+            </div>
+          </template>
+          <template x-if="logbook.process === 'rejected'">
+            <div class="bg-[#FBE9E9] border border-[#E12C2C] rounded-[12px] px-3 py-1 flex items-center justify-center">
+              <span class="font-open-sans text-[14px] sm:text-[15px] text-[#E12C2C]">Rejected</span>
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <!-- Empty State -->
+    <template x-if="filteredLogbooks.length === 0">
+      <div class="w-full min-h-[45px] border-t-[0.5px] border-[#D9D9D9] flex flex-row items-center justify-center py-4">
+        <span class="font-open-sans text-[#676767]">No logbooks found for this program.</span>
+      </div>
+    </template>
+
+    <!-- Footer Info & Pagination -->
+    <div class="w-full h-[56px] border-t-[0.5px] border-[#D9D9D9] flex items-center justify-between px-[10px]">
+      <span class="font-open-sans font-normal text-[15px] leading-[20px] text-[#003060]" 
+            x-text="`Showing ${paginatedLogbooks.length} of ${filteredLogbooks.length}`">
+      </span>
+      
+      <div class="flex items-center gap-2" x-show="totalLogbookPages > 1">
+        <button 
+          @click="if(logbookCurrentPage > 1) logbookCurrentPage--"
+          :disabled="logbookCurrentPage === 1"
+          class="px-3 py-1 rounded text-sm font-medium border border-slate-300 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+        <span class="font-open-sans text-[14px] text-[#003060] font-medium" x-text="`${logbookCurrentPage} / ${totalLogbookPages}`"></span>
+        <button 
+          @click="if(logbookCurrentPage < totalLogbookPages) logbookCurrentPage++"
+          :disabled="logbookCurrentPage === totalLogbookPages"
+          class="px-3 py-1 rounded text-sm font-medium border border-[#003060] text-[#003060] hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -5,15 +5,15 @@
     
     <!-- 1. Badge Judul (Tengah) -->
     <div class="inline-flex items-center justify-center border border-[#7AA3C4] bg-[#EBF3F9] text-[#0B1F3B] px-10 py-2.5 rounded-full font-medium text-[16px] mb-14">
-      Schedule & Fees
+      {{t 'test.freeProgram.badge.schedule'}}
     </div>
 
     <!-- 2. Teks Status Pembayaran -->
     <h2 class="text-[#22C55E] text-[28px] md:text-[34px] font-bold mb-4 text-center">
-      No Payment Required
+      {{t 'test.freeProgram.schedule.title'}}
     </h2>
     <p class="text-gray-600 text-[16px] mb-10 text-center">
-      You only need to register to join this program.
+      {{t 'test.freeProgram.schedule.description'}}
     </p>
 
     <!-- 3. Kotak Jadwal (Abu-abu rounded) -->
@@ -21,15 +21,15 @@
       
       <!-- Baris Pendaftaran -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[18px] md:text-[20px] gap-2">
-        <span class="text-black font-bold">Registration</span>
+        <span class="text-black font-bold">{{t 'test.freeProgram.schedule.registration'}}</span>
         <span class="text-gray-800 text-left sm:text-right">
-          Until {{formatDate course.startEnd lang}}
+          Until {{formatDate course.date_registration lang}}
         </span>
       </div>
       
       <!-- Baris Mulai -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[18px] md:text-[20px] gap-2">
-        <span class="text-black font-bold">Start</span>
+        <span class="text-black font-bold">{{t 'test.freeProgram.schedule.start'}}</span>
         <span class="text-gray-800 text-left sm:text-right">
           {{formatDate course.startDate lang}}
         </span>
@@ -40,7 +40,7 @@
     <!-- 4. Tombol Pendaftaran -->
     <!-- Catatan: Sesuaikan href="#" dengan link form pendaftaran Anda -->
     <a @click.prevent="openRegistrationModal()" class="flex items-center justify-center w-full max-w-[340px] h-[58px] bg-[#032A55] hover:bg-[#021b3a] text-white font-medium text-[18px] rounded-[10px] transition-colors shadow-sm cursor-pointer">
-      Registration Now
+      {{t 'test.freeProgram.schedule.regisNow'}}
     </a>
 
   </div>

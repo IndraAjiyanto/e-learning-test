@@ -6,7 +6,7 @@
             coverHasFile: false,
             categorySelected: {{json category}},
             formData: { description: { id: "", en: "", ja: "" },
-                        lokasi: { id: "", en: "", ja: "" } },
+                        location: { id: "", en: "", ja: "" } },
             updateCoverValidation(isValid, hasFile) {
                 this.coverValid = isValid;
                 this.coverHasFile = hasFile;
@@ -326,6 +326,7 @@
                 type='radio'
                 name='method'
                 value='online'
+                required
                 class='hidden peer'
               />
               <div
@@ -339,6 +340,7 @@
                 type='radio'
                 name='method'
                 value='offline'
+                required
                 class='hidden peer'
               />
               <div
@@ -359,7 +361,7 @@
             <input
               type='text'
               x-model='formData.location.id'
-              name='lokasi[id]'
+              name='locations[]'
               placeholder='Enter location'
               required
               class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
@@ -370,7 +372,7 @@
             <input
               type='text'
               x-model='formData.location.en'
-              name='lokasi[en]'
+              name='locations[]'
               placeholder='Enter location'
               required
               class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
@@ -381,7 +383,7 @@
             <input
               type='text'
               x-model='formData.location.ja'
-              name='lokasi[ja]'
+              name='locations[]'
               placeholder='Enter location'
               required
               class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
@@ -391,13 +393,13 @@
 
         <div>
           <label
-            for='link_lokasi'
+            for='locationLink'
             class='block text-sm font-semibold text-gray-700 mb-1'
           >Link Location</label>
           <input
             type='text'
-            id='link_lokasi'
-            name='link_lokasi'
+            id='locationLink'
+            name='locationLink'
             placeholder='Enter location link'
             required
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
@@ -453,7 +455,7 @@
                   placeholder='Enter price'
                   class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
                 />
-                <input type='hidden' name='harga' x-model='value' />
+                <input type='hidden' name='price' x-model='value' />
               </div>
 
               <!-- Promo -->
@@ -612,7 +614,7 @@
           x-show="!categorySelected || categorySelected.name !== 'Short Class'"
         >
           <label
-            for='bulan'
+            for='month'
             class='block text-sm font-semibold text-gray-700 mb-1'
           >Month</label>
           <div
@@ -632,13 +634,13 @@
           >
             <input
               type='text'
-              id='bulan'
+              id='month'
               x-model='display'
               @input='formatBulan($event)'
               placeholder='Enter month (1-12)'
               class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
             />
-            <input type='hidden' name='bulan' x-model='value' />
+            <input type='hidden' name='month' x-model='value' />
           </div>
         </div>
 
@@ -647,7 +649,7 @@
           x-show="categorySelected && categorySelected.name === 'Short Class'"
         >
           <label
-            for='hari'
+            for='day'
             class='block text-sm font-semibold text-gray-700 mb-1'
           >Day</label>
           <div
@@ -667,15 +669,31 @@
           >
             <input
               type='text'
-              id='hari'
+              id='day'
               x-model='display'
               @input='formatHari($event)'
               placeholder='Enter day (1-31)'
               class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
             />
-            <input type='hidden' name='hari' x-model='value' />
+            <input type='hidden' name='day' x-model='value' />
           </div>
         </div>
+
+        <!-- Date Registration -->
+        <div>
+          <label
+            for='date_registration'
+            class='block text-sm font-semibold text-gray-700 mb-1'
+          >Date Registration</label>
+          <input
+            type='date'
+            id='date_registration'
+            name='date_registration'
+            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
+            style='color-scheme: light;'
+          />
+        </div>
+
 
         <!-- Start Date -->
         <div>
@@ -710,25 +728,29 @@
         </div>
 
         <!-- Mentoring -->
-        {{#if (roles user.role 'super_admin')}}
+        {{#if (roles user.role 'super_admin' 'admin')}}
           <div
             x-data="{
             search: '',
             selectedMentoring: null,
+            selectedMentoringId: '',
             showDropdown: false,
-            availableMentoring: {{json mentoring}},
+            availableMentoring: {{json mentorings}},
             get filteredMentoring() {
-              return this.availableMentoring.filter(m => 
+              return this.availableMentoring.filter(m =>
                 m.username.toLowerCase().includes(this.search.toLowerCase())
               );
             },
             selectMentoring(mentoring) {
+              console.log('Selected mentoring:', mentoring);
               this.selectedMentoring = mentoring;
+              this.selectedMentoringId = mentoring.id;
               this.search = mentoring.username;
               this.showDropdown = false;
             },
             clearMentoring() {
               this.selectedMentoring = null;
+              this.selectedMentoringId = '';
               this.search = '';
             }
           }"
@@ -777,7 +799,7 @@
               <input
                 type='hidden'
                 name='mentoringId'
-                x-model='selectedMentoring ? selectedMentoring.id : ""'
+                x-model='selectedMentoringId'
               />
             </div>
           </div>
@@ -907,12 +929,12 @@
           <div x-data="{ materis_id: [''] }">
 
             <label class='block text-xs text-gray-600 mb-1'>ID</label>
-            <template x-for='(materi_id, index) in materis_id' :key='index'>
+            <template x-for='(materialsId, index) in materis_id' :key='index'>
               <div class='flex items-center gap-3 mb-3'>
                 <input
                   type='text'
                   x-model='materis_id[index]'
-                  name='materi_id[]'
+                  name='materialsId[]'
                   placeholder='Enter a lesson'
                   class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                 />
@@ -937,12 +959,12 @@
 
           <div x-data="{ materis_en: [''] }">
             <label class='block text-xs text-gray-600 mb-1'>EN</label>
-            <template x-for='(materi_en, index) in materis_en' :key='index'>
+            <template x-for='(materialsEn, index) in materis_en' :key='index'>
               <div class='flex items-center gap-3 mb-3'>
                 <input
                   type='text'
                   x-model='materis_en[index]'
-                  name='materi_en[]'
+                  name='materialsEn[]'
                   placeholder='Enter a lesson'
                   class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                 />
@@ -967,12 +989,12 @@
 
           <div x-data="{ materis_ja: [''] }">
             <label class='block text-xs text-gray-600 mb-1'>JP</label>
-            <template x-for='(materi_ja, index) in materis_ja' :key='index'>
+            <template x-for='(materialsJa, index) in materis_ja' :key='index'>
               <div class='flex items-center gap-3 mb-3'>
                 <input
                   type='text'
                   x-model='materis_ja[index]'
-                  name='materi_ja[]'
+                  name='materialsJa[]'
                   placeholder='Enter a lesson'
                   class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                 />
@@ -1008,7 +1030,7 @@
                 <input
                   type='text'
                   x-model='targets_id[index]'
-                  name='target_pembelajaran_id[]'
+                  name='learningTargetsId[]'
                   placeholder='Enter a learning target'
                   class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                 />
@@ -1039,7 +1061,7 @@
                 <input
                   type='text'
                   x-model='targets_en[index]'
-                  name='target_pembelajaran_en[]'
+                  name='learningTargetsEn[]'
                   placeholder='Enter a learning target'
                   class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                 />
@@ -1070,7 +1092,7 @@
                 <input
                   type='text'
                   x-model='targets_ja[index]'
-                  name='target_pembelajaran_ja[]'
+                  name='learningTargetsJa[]'
                   placeholder='Enter a learning target'
                   class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                 />
@@ -1098,25 +1120,25 @@
             <label
               class='block text-sm font-semibold text-gray-700 mb-2'
             >Criteria</label>
-            <div x-data="{ kriterias_id: [''] }">
+            <div x-data="{ criterias_id: [''] }">
 
               <label class='block text-xs text-gray-600 mb-1'>ID</label>
               <template
-                x-for='(kriteria_id, index) in kriterias_id'
+                x-for='(criteriaId, index) in criterias_id'
                 :key='index'
               >
                 <div class='flex items-center gap-3 mb-3'>
                   <input
                     type='text'
-                    x-model='kriterias_id[index]'
-                    name='kriteria_id[]'
+                    x-model='criterias_id[index]'
+                    name='criteriaId[]'
                     placeholder='Enter criteria'
                     class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                   />
                   <button
                     type='button'
-                    @click='kriterias_id.splice(index,1)'
-                    x-show='kriterias_id.length > 1'
+                    @click='criterias_id.splice(index,1)'
+                    x-show='criterias_id.length > 1'
                     class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
                   >
                     ✕
@@ -1125,32 +1147,32 @@
               </template>
               <button
                 type='button'
-                @click="kriterias_id.push('')"
+                @click="criterias_id.push('')"
                 class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
               >
                 + Add Criteria
               </button>
             </div>
 
-            <div x-data="{ kriterias_en: [''] }">
+            <div x-data="{ criterias_en: [''] }">
 
               <label class='block text-xs text-gray-600 mb-1'>EN</label>
               <template
-                x-for='(kriteria_en, index) in kriterias_en'
+                x-for='(criteriaEn, index) in criterias_en'
                 :key='index'
               >
                 <div class='flex items-center gap-3 mb-3'>
                   <input
                     type='text'
-                    x-model='kriterias_en[index]'
-                    name='kriteria_en[]'
+                    x-model='criterias_en[index]'
+                    name='criteriaEn[]'
                     placeholder='Enter criteria'
                     class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                   />
                   <button
                     type='button'
-                    @click='kriterias_en.splice(index,1)'
-                    x-show='kriterias_en.length > 1'
+                    @click='criterias_en.splice(index,1)'
+                    x-show='criterias_en.length > 1'
                     class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
                   >
                     ✕
@@ -1159,32 +1181,32 @@
               </template>
               <button
                 type='button'
-                @click="kriterias_en.push('')"
+                @click="criterias_en.push('')"
                 class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
               >
                 + Add Criteria
               </button>
             </div>
 
-            <div x-data="{ kriterias_ja: [''] }">
+            <div x-data="{ criterias_ja: [''] }">
 
               <label class='block text-xs text-gray-600 mb-1'>JP</label>
               <template
-                x-for='(kriteria_ja, index) in kriterias_ja'
+                x-for='(criteriaJa, index) in criterias_ja'
                 :key='index'
               >
                 <div class='flex items-center gap-3 mb-3'>
                   <input
                     type='text'
-                    x-model='kriterias_ja[index]'
-                    name='kriteria_ja[]'
+                    x-model='criterias_ja[index]'
+                    name='criteriaJa[]'
                     placeholder='Enter criteria'
                     class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
                   />
                   <button
                     type='button'
-                    @click='kriterias_ja.splice(index,1)'
-                    x-show='kriterias_ja.length > 1'
+                    @click='criterias_ja.splice(index,1)'
+                    x-show='criterias_ja.length > 1'
                     class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
                   >
                     ✕
@@ -1193,7 +1215,7 @@
               </template>
               <button
                 type='button'
-                @click="kriterias_ja.push('')"
+                @click="criterias_ja.push('')"
                 class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
               >
                 + Add Criteria

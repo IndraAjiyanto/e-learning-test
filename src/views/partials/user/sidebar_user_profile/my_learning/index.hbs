@@ -1,0 +1,388 @@
+{{! --- MY LEARNING CONTENT PARTIAL --- }}
+<div class="space-y-14 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 mb-28">
+
+  {{! --- HEADER SECTION --- }}
+  <div>
+    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-4xl text-[#003060] leading-none mb-[15px]">
+      My Learning
+    </h1>
+    <p class="font-sans font-normal text-base sm:text-lg md:text-xl text-[#003060] leading-none">
+      Continue your learning journey and track your progress.
+    </p>
+  </div>
+
+  {{! --- SEARCH & FILTER BAR SECTION --- }}
+  <div class="flex flex-col md:flex-row items-stretch md:items-center gap-[25px]">
+    
+    <!-- Search Input -->
+    <div class="w-full md:w-[320px] h-[42px] bg-white rounded-md flex items-center gap-[15px] px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]">
+      <i class="fa-solid fa-magnifying-glass text-[#003060] text-base sm:text-lg flex-shrink-0"></i>
+      <input 
+        type="text" 
+        placeholder="Search learning" 
+        class="w-full bg-transparent font-montserrat font-medium text-base sm:text-lg md:text-xl text-black placeholder:text-[#676767] focus:outline-none"
+      >
+    </div>
+
+    <!-- Dropdown All Programs -->
+    <div class="relative w-full md:w-[254px]" x-data="{ open: false, selected: 'All Programs', options: ['All Programs'{{#each category}}, '{{this.name}}'{{/each}}] }">
+      <input type="hidden" name="program_filter" :value="selected">
+      <button
+        type="button"
+        @click="open = !open"
+        @click.outside="open = false"
+        class="w-full h-[43px] bg-white rounded-md flex justify-between items-center px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] cursor-pointer"
+        :aria-expanded="open"
+      >
+        <span class="font-montserrat font-medium text-base sm:text-lg md:text-xl text-[#666666] truncate pr-2" x-text="selected"></span>
+        <i class="fa-solid fa-chevron-down text-[#003060] text-sm transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180' : ''"></i>
+      </button>
+      <ul
+        x-show="open"
+        x-transition
+        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-montserrat max-h-60 overflow-y-auto"
+        style="display: none;"
+      >
+        <template x-for="option in options" :key="option">
+          <li
+            @click="selected = option; open = false"
+            class="px-4 py-3 rounded-lg text-sm sm:text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
+            :class="selected === option ? 'text-[#003060] bg-[#003060]/10 font-semibold' : ''"
+          >
+            <span x-text="option"></span>
+            <i x-show="selected === option" class="fa-solid fa-check text-sm text-[#003060]"></i>
+          </li>
+        </template>
+      </ul>
+    </div>
+
+    <!-- Dropdown All Method -->
+    <div class="relative w-full md:w-[254px]" x-data="{ open: false, selected: 'All Method' }">
+      <input type="hidden" name="method_filter" :value="selected">
+      <button 
+        type="button" 
+        @click="open = !open"
+        @click.outside="open = false"
+        class="w-full h-[43px] bg-white rounded-md flex justify-between items-center px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] cursor-pointer"
+        :aria-expanded="open"
+      >
+        <span class="font-montserrat font-medium text-base sm:text-lg md:text-xl text-[#666666] truncate pr-2" x-text="selected"></span>
+        <i class="fa-solid fa-chevron-down text-[#003060] text-sm transition-transform duration-200 flex-shrink-0" :class="open ? 'rotate-180' : ''"></i>
+      </button>
+      <ul 
+        x-show="open" 
+        x-transition
+        class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-montserrat max-h-60 overflow-y-auto"
+        style="display: none;"
+      >
+        <template x-for="option in ['All Method', 'Offline', 'Online', 'Hybrid']" :key="option">
+          <li 
+            @click="selected = option; open = false" 
+            class="px-4 py-3 rounded-lg text-sm sm:text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
+            :class="selected === option ? 'text-[#003060] bg-[#003060]/10 font-semibold' : ''"
+          >
+            <span x-text="option"></span>
+            <i x-show="selected === option" class="fa-solid fa-check text-sm text-[#003060]"></i>
+          </li>
+        </template>
+      </ul>
+    </div>
+
+  </div>
+
+  {{! --- PROGRAM CARDS + RECENT ACTIVITY SECTION (sejajar: cards kiri, recent activity kanan) --- }}
+  <div class="flex flex-col xl:flex-row gap-8 xl:gap-[67px] items-start">
+    
+    <!-- Cards Section (kiri, w841 di Figma) -->
+    <div class="flex-1 w-full min-w-0">
+      <h2 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] mb-7">
+        Learning Path
+      </h2>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 xl:gap-[29px]">
+      
+        <!-- Card 1: UI/UX Designer -->
+        {{#each course}}
+        <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[386px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] rounded-xl p-[13px] flex flex-col justify-between gap-[12px] mx-auto sm:mx-0">      
+          <div class="flex flex-col gap-[12px]">
+            <!-- Badge -->
+            <div class="w-[65px] h-[23px] bg-[#0B1F3B1A]/10 rounded-md flex items-center justify-center">
+              <span class="font-montserrat font-medium text-[10px] text-[#003060]">{{this.category.name}}</span>
+            </div>
+            <!-- Image -->
+            <img
+              src="{{image}}"
+              alt="{{this.name}}"
+              class="w-full h-[138px] rounded-xl object-cover"
+            >
+            <!-- Course Title -->
+            <h3 class="font-montserrat font-semibold text-[15px] text-[#003060]">
+              {{this.name}}
+            </h3>
+            <!-- Tag Row -->
+            <div class="flex items-center gap-[6px] flex-wrap">
+              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-[10px] text-[#003060]">
+                <i class="fa-solid fa-location-dot text-[10px]"></i>
+                {{this.method}}
+              </span>
+              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-[10px] text-[#003060]">
+                <i class="fa-solid fa-graduation-cap text-[10px]"></i>
+                {{this.weeks.length}} Weeks
+              </span>
+              <span class="bg-[#CFE6F5] rounded-md px-2 py-1 flex items-center gap-1 font-montserrat font-medium text-[10px] text-[#003060]">
+                <i class="fa-solid fa-user text-[10px]"></i>
+                Beginner
+              </span>
+            </div>
+            <!-- Next Lesson -->
+            <div class="flex items-center gap-1 text-[#003060]">
+              <i class="fa-solid fa-circle-play text-[10px]"></i>
+              <span class="font-open-sans text-[10px]">Next: User Interface Design</span>
+            </div>
+          </div>
+          <!-- Button -->
+          <a
+            href="/program/myProgram/{{../user.id}}?courseId={{this.id}}"
+            class="w-full h-[39px] rounded-[12px] p-[10px] gap-[10px] border border-[#003060] bg-transparent shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-[#003060] hover:bg-[#003060] hover:text-white transition-all cursor-pointer"
+          >
+            <span class="text-sm sm:text-base lg:text-xl sm:leading-none">Continue</span>
+            <i class="fa-solid fa-arrow-right text-sm"></i>
+          </a>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Recent Activity Column (kanan, w245 di Figma) -->
+    <div class="w-full lg:w-[245px] flex-shrink-0">
+      <h2 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] mb-7">
+        Recent Activity
+      </h2>
+      <div class="relative pl-6 space-y-6">
+        <!-- Vertical Connecting Line (starts at top bullet, stops at last bullet) -->
+        <div class="absolute left-[1px] top-[12px] bottom-[75px] w-[1px] bg-[#D9D9D9]"></div>
+
+        <!-- Item 1 -->
+        <div class="relative flex items-start">
+          <div class="absolute -left-[30px] top-[5px] w-[15px] h-[15px] rounded-full bg-[#003060] z-10"></div>
+          <div class="flex flex-col space-y-2">
+            <h4 class="font-montserrat font-semibold text-sm sm:text-[15px] text-[#2D2D2D]">
+              Completed Quiz
+            </h4>
+            <p class="font-open-sans font-normal text-sm sm:text-[15px] text-[#2D2D2D]">
+              Quiz 5 - User Interface Design
+            </p>
+            <span class="font-open-sans font-normal text-xs text-[#666666]">
+              Yesterday
+            </span>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="relative flex items-start">
+          <div class="absolute -left-[30px] top-[5px] w-[15px] h-[15px] rounded-full bg-[#003060] z-10"></div>
+          <div class="flex flex-col space-y-2">
+            <h4 class="font-montserrat font-semibold text-sm sm:text-[15px] text-[#2D2D2D]">
+              Finished Lesson
+            </h4>
+            <p class="font-open-sans font-normal text-sm sm:text-[15px] text-[#2D2D2D]">
+              User Interface Design
+            </p>
+            <span class="font-open-sans font-normal text-xs text-[#666666]">
+              1 Day Ago
+            </span>
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="relative flex items-start">
+          <div class="absolute -left-[30px] top-[5px] w-[15px] h-[15px] rounded-full bg-[#003060] z-10"></div>
+          <div class="flex flex-col space-y-2">
+            <h4 class="font-montserrat font-semibold text-sm sm:text-[15px] text-[#2D2D2D]">
+              Started Learning
+            </h4>
+            <p class="font-open-sans font-normal text-sm sm:text-[15px] text-[#2D2D2D]">
+              UI/UX Designer
+            </p>
+            <span class="font-open-sans font-normal text-xs text-[#666666]">
+              7 Day Ago
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {{! --- STATS CARDS SECTION --- }}
+  <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-4 xl:gap-[50px]">
+    
+    <!-- Stats 1: Learning Enrolled -->
+    <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[126px] bg-white rounded-xl p-4 xl:p-[26px] flex items-center gap-3 xl:gap-[26px] shadow-sm border border-slate-100 mx-auto sm:mx-0">
+      <div class="w-[60px] h-[60px] rounded-full bg-[#E1EAFD] flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-receipt text-[40px] text-[#003060]"></i>
+      </div>
+      <div class="flex flex-col justify-center">
+        <span class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#2D2D2D] leading-tight">2</span>
+        <span class="font-open-sans font-normal text-xs sm:text-sm md:text-[15px] text-[#2D2D2D]">Learning Enrolled</span>
+        <span class="font-open-sans font-normal text-xs text-[#2D2D2D] opacity-75">All Time</span>
+      </div>
+    </div>
+
+    <!-- Stats 2: Completed -->
+    <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[126px] bg-white rounded-xl p-4 xl:p-[26px] flex items-center gap-3 xl:gap-[26px] shadow-sm border border-slate-100 mx-auto sm:mx-0">
+      <div class="w-[60px] h-[60px] rounded-full bg-[#DEF5E9] flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-circle-check text-[40px] text-[#01B065]"></i>
+      </div>
+      <div class="flex flex-col justify-center">
+        <span class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#2D2D2D] leading-tight">1</span>
+        <span class="font-open-sans font-normal text-xs sm:text-sm md:text-[15px] text-[#2D2D2D]">Completed</span>
+        <span class="font-open-sans font-normal text-xs text-[#2D2D2D] opacity-75">40% of total</span>
+      </div>
+    </div>
+
+    <!-- Stats 3: In Progress -->
+    <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[126px] bg-white rounded-xl p-4 xl:p-[26px] flex items-center gap-3 xl:gap-[26px] shadow-sm border border-slate-100 mx-auto sm:mx-0">
+      <div class="w-[60px] h-[60px] rounded-full bg-[#FEEFD6] flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-clock text-[40px] text-[#FDA40B]"></i>
+      </div>
+      <div class="flex flex-col justify-center">
+        <span class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#2D2D2D] leading-tight">1</span>
+        <span class="font-open-sans font-normal text-xs sm:text-sm md:text-[15px] text-[#2D2D2D]">In Progress</span>
+        <span class="font-open-sans font-normal text-xs text-[#2D2D2D] opacity-75">60% of total</span>
+      </div>
+    </div>
+
+    <!-- Stats 4: Learning Time -->
+    <div class="w-full max-w-[300px] 2xl:max-w-[261px] min-h-[126px] bg-white rounded-xl p-4 xl:p-[26px] flex items-center gap-3 xl:gap-[26px] shadow-sm border border-slate-100 mx-auto sm:mx-0">
+      <div class="w-[60px] h-[60px] rounded-full bg-[#FEE7E7] flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-xmark text-[40px] text-[#F13639]"></i>
+      </div>
+      <div class="flex flex-col justify-center">
+        <span class="font-montserrat font-semibold text-xl sm:text-xl md:text-[25px] text-[#2D2D2D] leading-tight">8 Hours</span>
+        <span class="font-open-sans font-normal text-xs sm:text-sm md:text-[15px] text-[#2D2D2D]">Learning Time</span>
+        <span class="font-open-sans font-normal text-xs text-[#2D2D2D] opacity-75">All Time</span>
+      </div>
+    </div>
+
+  </div>
+
+  {{! --- COMPLETED LEARNING & WEEKLY PROGRESS SECTION --- }}
+  <div class="flex flex-col lg:flex-row items-stretch gap-8 xl:gap-[40px]">
+    
+    <!-- Completed Learning -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060]">
+          Completed Learning
+        </h3>
+        <a href="#" class="font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060] underline">
+          View All
+        </a>
+      </div>
+
+      <!-- Completed Item Card -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <!-- Image + Info -->
+        <div class="flex items-center gap-3">
+          <img 
+            src="https://static.robloximageidcdn.com/images/1181/832a62e634a2a30635cbd35aaefd44d7.webp" 
+            alt="Fullstack Developer" 
+            class="w-[83px] h-[52px] rounded-md object-cover flex-shrink-0"
+          >
+          <div class="flex flex-col">
+            <h4 class="font-montserrat font-semibold text-[15px] text-black">
+              Fullstack Developer
+            </h4>
+            <span class="font-open-sans font-normal text-[10px] text-black">
+              Beginner
+            </span>
+          </div>
+        </div>
+
+        <!-- Date Info -->
+        <div class="flex flex-col">
+          <span class="font-montserrat font-semibold text-[15px] text-black">
+            Completed on
+          </span>
+          <span class="font-open-sans font-normal text-[15px] text-black">
+            12 Maret 2025
+          </span>
+        </div>
+
+        <!-- Certificate Button -->
+        <button 
+          type="button" 
+          class="border border-[#003060] rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] bg-white/80 px-4 py-2 font-montserrat font-medium text-[15px] text-[#003060] hover:bg-[#003060] hover:text-white flex items-center gap-2 transition-all cursor-pointer self-start sm:self-center"
+        >
+          <i class="fa-solid fa-download text-sm"></i>
+          <span>Certificate</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Vertical Divider Line (266px height, #D9D9D9 border) -->
+    <div class="hidden lg:block w-[1px] h-[266px] bg-[#D9D9D9] self-center flex-shrink-0"></div>
+
+    <!-- Learning This Week (Bar Chart) -->
+    <div class="flex-1 min-w-0">
+      <h3 class="font-montserrat font-semibold text-[25px] text-[#003060]">
+        Learning This Week
+      </h3>
+      <p class="font-open-sans font-normal text-xs text-[#666666] mb-6">
+        Keep it up! You're doing great this week.
+      </p>
+
+      <!-- Bar Chart Container -->
+      <div class="rounded-xl p-6">
+        <div class="flex items-end justify-between h-[160px] pt-4 px-2 border-b border-slate-100">
+          
+          <!-- Mon (45px) -->
+          <div class="flex flex-col items-center gap-2 flex-1">
+            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 45px;" title="45 mins"></div>
+            <span class="font-open-sans font-normal text-[15px] text-black">Mon</span>
+          </div>
+
+          <!-- Tue (98px) -->
+          <div class="flex flex-col items-center gap-2 flex-1">
+            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 98px;" title="98 mins"></div>
+            <span class="font-open-sans font-normal text-[15px] text-black">Tue</span>
+          </div>
+
+          <!-- Wed (122px) -->
+          <div class="flex flex-col items-center gap-2 flex-1">
+            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 122px;" title="122 mins"></div>
+            <span class="font-open-sans font-normal text-[15px] text-black">Wed</span>
+          </div>
+
+          <!-- Thu (77px) -->
+          <div class="flex flex-col items-center gap-2 flex-1">
+            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 77px;" title="77 mins"></div>
+            <span class="font-open-sans font-normal text-[15px] text-black">Thu</span>
+          </div>
+
+          <!-- Fri (131px) -->
+          <div class="flex flex-col items-center gap-2 flex-1">
+            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 131px;" title="131 mins"></div>
+            <span class="font-open-sans font-normal text-[15px] text-black">Fri</span>
+          </div>
+
+          <!-- Sat (24px) -->
+          <div class="flex flex-col items-center gap-2 flex-1">
+            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 24px;" title="24 mins"></div>
+            <span class="font-open-sans font-normal text-[15px] text-black">Sat</span>
+          </div>
+
+          <!-- Sun (14px) -->
+          <div class="flex flex-col items-center gap-2 flex-1">
+            <div class="w-6 sm:w-8 bg-[#003060] rounded-t-[3px] transition-all hover:opacity-80" style="height: 14px;" title="14 mins"></div>
+            <span class="font-open-sans font-normal text-[15px] text-black">Sun</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,189 @@
+<section
+  class="py-20 relative overflow-hidden"
+  style="background: linear-gradient(122.58deg, rgba(220, 220, 220, 0.5) -3.76%, #CEE6F6 79.97%);"
+  x-data="testimonialCarousel(window.__alumniCarousel)"
+>
+  <!-- Background Blur Effects -->
+  <div class="absolute top-0 right-0 opacity-10 pointer-events-none">
+    <div class="w-64 h-64 bg-white rounded-full blur-3xl absolute -top-20 -right-20"></div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="text-center mb-8 relative z-10 px-6 lg:px-20">
+    
+    <!-- Title with Animated Stabilo Highlight Sweep -->
+    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#000000] font-montserrat tracking-tight mb-6 flex flex-wrap items-center justify-center gap-2">
+      <span>{{t 'test.categoryFreeProgram.alumni.title'}}</span>
+      
+      <span 
+        class="relative inline-flex items-center justify-center overflow-hidden align-middle my-1"
+        x-data="{
+          isHighlighted: false,
+          init() {
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  this.isHighlighted = true;
+                }
+              });
+            }, { threshold: 0.4, rootMargin: '0px 0px -50px 0px' });
+            observer.observe(this.$el);
+          }
+        }"
+      >
+        <!-- Base Transparent Placeholder to Reserve Space -->
+        <span class="opacity-0 font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap px-3 sm:px-4 py-1 sm:py-1.5">
+          Alumni {{category.name}}
+        </span>
+
+        <!-- Blue Stabilo Highlight Layer (Sweeps from Left 0% to 100% Width) -->
+        <span 
+          class="absolute inset-y-0 left-0 bg-[#003060] rounded-[8px] sm:rounded-[10px] transition-all duration-[800ms] ease-out overflow-hidden flex items-center justify-center whitespace-nowrap shadow-md pointer-events-none"
+          :class="isHighlighted ? 'w-full' : 'w-0'"
+        >
+          <span class="font-montserrat font-semibold text-white text-2xl sm:text-3xl lg:text-4xl whitespace-nowrap min-w-max px-3 sm:px-4 py-1 sm:py-1.5">
+            Alumni {{category.name}}
+          </span>
+        </span>
+      </span>
+    </h2>
+    
+    <!-- Subtitle -->
+    <p class="text-base md:text-xl text-[#000000]/80 max-w-6xl mx-auto font-sans font-normal">
+      {{t 'test.categoryFreeProgram.alumni.description'}} {{category.name}}.
+    </p>
+  </div>
+
+  <!-- Carousel Container -->
+  <div class="relative w-full mx-auto z-10">
+    
+    <!-- Slide Viewport -->
+    <div class="overflow-hidden md:overflow-visible py-8 w-full">
+      <!-- Slide Track with 500ms smooth translation -->
+      <div
+        class="flex gap-4 md:gap-8 transition-transform duration-500 ease-in-out"
+        :style="`transform: translateX(calc(50vw - ${(active * (window.innerWidth < 768 ? 336 : 527.45)) + (window.innerWidth < 768 ? 160 : 247.725)}px)); width: max-content;`"
+      >
+        <!-- Dynamic Testimonial Cards -->
+        <template x-for="(item, index) in testimonials" :key="item.id || index">
+          <div
+            class="w-[320px] md:w-[495.45px] flex-shrink-0 transition-all duration-500 ease-in-out transform cursor-pointer origin-center"
+            :class="isCenter(index) 
+              ? 'scale-100 opacity-100 z-10 shadow-[0px_0px_4.41px_0px_rgba(0,0,0,0.25)]' 
+              : 'scale-[0.906] opacity-60 z-0 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] hidden md:block'"
+            @click="goTo(index)"
+          >
+            <div 
+              class="w-full h-[500px] md:h-[559.45px] p-6 md:p-8 flex flex-col bg-gradient-to-b from-[#FFFFFF] to-[#E0F2F9] transition-all duration-500 border border-white/60"
+              :class="isCenter(index) ? 'rounded-[13.24px]' : 'rounded-[12px]'"
+            >
+              <span class="text-[50px] md:text-[60px] text-[#0B1F3B] font-serif leading-none mb-2 select-none">❝</span>
+              <p class="text-[#333333] font-sans font-[400] text-[16px] md:text-[19.86px] leading-[28px] md:leading-[33.1px] mb-6 flex-1 overflow-y-auto" x-text="item.testimonial"></p>
+              
+              <div class="w-full h-px bg-gray-300/60 mb-6"></div>
+              
+              <div class="flex items-center gap-4">
+                <img :src="item.photo" :alt="item.name" class="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover shadow-sm"/>
+                <div>
+                  <p class="font-montserrat font-[600] text-[#000000] text-[18px] md:text-[22.07px] leading-[100%] mb-1" x-text="item.name"></p>
+                  <p class="font-sans font-[400] text-[#000000]/80 text-[14px] md:text-[18px] leading-snug">
+                    <span x-text="item.position"></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Navigation & Pagination Controls -->
+    <div class="flex justify-center items-center mt-8 gap-4 min-h-[52px]">
+      
+      <!-- Previous Button (Hidden completely when active === 0) -->
+      <button
+        x-show="active > 0"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-75"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-75"
+        class="w-12 h-12 flex items-center justify-center rounded-full bg-[#003060] text-white shadow-md hover:bg-[#0B1F3B] transition-all hover:scale-105"
+        @click="prev()"
+        aria-label="Previous Testimonial"
+      >
+        <i class="fas fa-chevron-left text-lg"></i>
+      </button>
+
+      <!-- 2-Way Physical Swipe Swap Dots Track -->
+      <div class="relative flex items-center gap-4 mx-4 py-2">
+        <!-- Render physical animated dots -->
+        <template x-for="(item, index) in testimonials" :key="'swap-dot-' + index">
+          <div
+            class="w-5 h-5 rounded-full transition-all duration-500 ease-in-out transform pointer-events-none"
+            :class="getDotClass(index)"
+            :style="`transform: translateX(${getDotOffset(index)}px);`"
+          ></div>
+        </template>
+
+        <!-- Fixed Click Overlay Buttons -->
+        <div class="absolute inset-0 flex items-center gap-4">
+          <template x-for="(item, index) in testimonials" :key="'click-dot-' + index">
+            <button
+              class="w-5 h-5 rounded-full cursor-pointer focus:outline-none opacity-0"
+              @click="goTo(index)"
+              :aria-label="'Go to slide ' + (index + 1)"
+            ></button>
+          </template>
+        </div>
+      </div>
+
+      <!-- Next Button (Hidden completely when active === maxIndex) -->
+      <button
+        x-show="active < maxIndex"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-75"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-75"
+        class="w-12 h-12 flex items-center justify-center rounded-full bg-[#003060] text-white shadow-md hover:bg-[#0B1F3B] transition-all hover:scale-105"
+        @click="next()"
+        aria-label="Next Testimonial"
+      >
+        <i class="fas fa-chevron-right text-lg"></i>
+      </button>
+    </div>
+
+    <!-- See All Link -->
+    <div class="text-center mt-10">
+      <p class="text-[#000000]/80 font-sans font-normal text-base md:text-xl mb-4">
+        {{t 'test.categoryFreeProgram.alumni.footer'}}
+      </p>
+      <a
+        href="/dashboard/alumni"
+        class="inline-flex items-center gap-2 text-[#0B1F3B] font-normal text-base md:text-lg font-sans hover:underline"
+      >
+        {{t 'test.categoryFreeProgram.alumni.allStories'}}
+        <i class="fas fa-arrow-right text-sm"></i>
+      </a>
+    </div>
+  </div>
+</section>
+<script>
+  // Data alumni dari database untuk carousel testimonial
+  // getByLang mengambil teks sesuai bahasa aktif (id/en/ja)
+  window.__alumniCarousel = [
+    {{#each alumni}}
+    {
+      id: {{this.id}},
+      name: {{{json (getByLang this.name ../lang)}}},
+      position: {{{json (getByLang this.currentPosition ../lang)}}},
+      company: {{{json (default this.course.name '')}}},
+      photo: {{{json (default this.profile '')}}},
+      testimonial: {{{json (getByLang this.message ../lang)}}}
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  ];
+</script>

@@ -1,4 +1,10 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateVoucherDto } from './create-voucher.dto';
+import { VoucherType } from 'src/entities/voucher.entity';
 
-export class UpdateVoucherDto extends PartialType(CreateVoucherDto) {}
+export class UpdateVoucherDto {
+  code_voucher?: string;
+  type?: VoucherType;
+  percent?: any;
+  active?: any;
+  courseIds?: any;
+  allowed_user_ids?: any;
+}

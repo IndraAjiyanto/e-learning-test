@@ -55,7 +55,7 @@ export class PortfoliosController {
   }
 
   @Roles('user')
-  @Post('create/:courseId')
+  @Post('create')
   @UseInterceptors(
     FilesInterceptor('image', 100, multerConfigMemoryOnly),
     ValidateImageInterceptor,
@@ -68,11 +68,12 @@ export class PortfoliosController {
     folder: 'portfolio',
   })
   async create(
-    @Param('courseId') courseId: number,
     @Body() createPortfolioDto: CreatePortfolioDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'));
+    
     try {
       const editorjsData = await this.portfoliosService.ChangeImageEditorJS(
         createPortfolioDto.content,
@@ -87,17 +88,26 @@ export class PortfoliosController {
 
       createPortfolioDto.contentHtml = html;
 
-      createPortfolioDto.courseId = courseId;
+      const courseId = createPortfolioDto.courseId;
       createPortfolioDto.image = req.body.uploadedImageUrls;
       if (req.user) {
         createPortfolioDto.userId = req.user.id;
       }
-      await this.portfoliosService.create(createPortfolioDto);
+      const newPortfolio = await this.portfoliosService.create(createPortfolioDto);
+      
+      if (isAjax) {
+        return res.status(201).json({ success: true, message: 'Portfolio successfully created', data: newPortfolio });
+      }
+
       req.flash('success', 'portofolios successfully upload');
       res.redirect(`/program/${courseId}`);
     } catch (error: any) {
+      if (isAjax) {
+        return res.status(400).json({ success: false, message: error.message || 'Failed to upload portofolios' });
+      }
+      
       req.flash('error', error.message || 'Failed to upload portofolios');
-      res.redirect(`/program/${courseId}`);
+      res.redirect(`/program/${createPortfolioDto.courseId || ''}`);
     }
   }
 

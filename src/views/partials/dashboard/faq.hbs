@@ -1,5 +1,106 @@
-<!-- FAQ SECTION -->
-<section id="faq" class="bg-[#FAFAFA] py-20 font-montserrat overflow-hidden"
+<!-- MOBILE FAQ SECTION (< 640px) -->
+<section id="faq-mobile" class="block sm:hidden w-full py-12 px-5 bg-[#FAFAFA] font-montserrat"
+  x-data="{
+    activeIndex: 0,
+    faqs: [
+      {{#if faqs.length}}
+        {{#each faqs}}
+          { question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
+        {{/each}}
+      {{else if faq.length}}
+        {{#each faq}}
+          { question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
+        {{/each}}
+      {{else}}
+        { question: 'What will I learn in this bootcamp?', answer: 'You will learn hands-on industry skills, tools, and methodologies tailored to help you build real-world projects and accelerate your career.' },
+        { question: 'Is the bootcamp online or offline?', answer: 'We offer flexible learning options including interactive live online classes and hybrid offline sessions depending on your program.' },
+        { question: 'Do I need prior programming experience?', answer: 'No prior experience is required! We welcome beginners and guide you step-by-step from the basics to advanced concepts.' },
+        { question: 'Will I receive a certificate after completing the bootcamp?', answer: 'Yes! Upon successful completion of the coursework and capstone project, you will receive an official certificate of completion.' },
+        { question: 'What if I miss a class?', answer: 'All live sessions are recorded and made available on our learning platform so you can catch up anytime.' },
+        { question: 'How can I register?', answer: 'You can register directly through our website by choosing your desired program and completing the enrollment form.' },
+        { question: 'Is there career support after graduation?', answer: 'Yes, we provide dedicated career support including resume reviews, portfolio building, mock interviews, and hiring partner connections.' }
+      {{/if}}
+    ],
+    toggle(index) {
+      this.activeIndex = this.activeIndex === index ? null : index;
+    }
+  }"
+>
+  <div class="w-full flex flex-col items-center">
+    
+    <!-- Header Section -->
+    <div class="text-center mb-7 relative z-10 flex flex-col items-center">
+      <!-- Badge -->
+      <div class="inline-flex items-center justify-center bg-[#6EB6E5]/20 border border-[#003060] text-[#003060] rounded-[50px] px-5 py-2 text-[14px] font-medium font-montserrat mx-auto mb-4 shadow-sm">
+        {{t 'test.home.faq.question'}}
+      </div>
+      
+      <!-- Title -->
+      <h2 class="font-montserrat font-bold text-2xl text-[#0B1F3B] leading-tight text-center">
+        {{t 'test.home.faq.title'}}
+      </h2>
+      <h2 class="font-montserrat font-bold text-2xl text-[#6EB6E5] leading-tight text-center mb-3">
+         {{t 'test.home.faq.title2'}}
+      </h2>
+      
+      <!-- Divider -->
+      <div class="w-[68px] h-[5px] bg-[#0B1F3B] mx-auto mb-4 rounded-full"></div>
+
+      <!-- Subtitle -->
+      <p class="font-sans font-normal text-[14px] leading-[22px] text-[#2D2D2D] text-center max-w-[340px] mx-auto">
+        {{t 'test.home.faq.description'}}
+      </p>
+    </div>
+
+    <!-- Mobile Accordion Cards -->
+    <div class="flex flex-col gap-3 w-full">
+      <template x-for="(faq, index) in faqs" :key="index">
+        <div class="bg-white border border-[#D9D9D9] rounded-[16px] overflow-hidden shadow-[0px_4px_12px_0px_#00000010]">
+          <!-- Button -->
+          <button
+            @click="toggle(index)"
+            class="w-full text-left p-4 focus:outline-none flex items-center justify-between transition-colors duration-300"
+            :class="activeIndex === index ? 'bg-[#003060] text-white' : 'bg-white text-[#0B1F3B]'"
+          >
+            <div class="flex items-center gap-3">
+              <div class="w-1.5 h-1.5 rounded-full shrink-0"
+                   :class="activeIndex === index ? 'bg-white' : 'bg-[#0B1F3B]'"></div>
+              <h3 class="font-montserrat font-semibold text-[15px] leading-snug" 
+                  :class="activeIndex === index ? 'text-white' : 'text-[#0B1F3B]'" 
+                  x-text="faq.question"></h3>
+            </div>
+            
+            <div class="shrink-0 ml-3">
+              <i class="fas fa-chevron-down text-sm transition-transform duration-300"
+                 :class="activeIndex === index ? 'text-white rotate-180' : 'text-[#8F8F8F]'">
+              </i>
+            </div>
+          </button>
+          
+          <!-- Answer -->
+          <div
+            x-show="activeIndex === index"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 max-h-0"
+            x-transition:enter-end="opacity-100 max-h-[500px]"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 max-h-[500px]"
+            x-transition:leave-end="opacity-0 max-h-0"
+            class="overflow-hidden bg-[#FAFAFA] border-t border-slate-100"
+          >
+            <div class="p-4 text-[#2D2D2D] text-[13px] leading-[20px] font-sans">
+              <p x-html="faq.answer"></p>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+  </div>
+</section>
+
+<!-- DESKTOP FAQ SECTION (>= 640px / Figma Baseline W1728) -->
+<section id="faq" class="hidden sm:block bg-[#FAFAFA] py-12 sm:py-20 px-5 sm:px-4 lg:px-12 font-montserrat overflow-hidden"
   x-data="{
     isVisible: false,
     init() {
@@ -14,32 +115,32 @@
     }
   }"
 >
-  <div class="container mx-auto px-4 lg:px-12 max-w-[1400px] flex flex-col lg:flex-row justify-between items-center gap-12 lg:gap-16">
+  <div class="container mx-auto max-w-[1400px] flex flex-col lg:flex-row justify-between items-center lg:items-start gap-8 sm:gap-12 lg:gap-16">
     
     <!-- LEFT COLUMN: Badge, Title, Description (Slides in from Left to Right) -->
     <div 
-      class="w-full lg:w-5/12 flex flex-col items-start text-left transition-all duration-1000 ease-out transform"
+      class="w-full lg:w-5/12 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-1000 ease-out transform"
       :class="isVisible ? 'translate-x-0 opacity-100' : '-translate-x-32 opacity-0'"
     >
       <!-- Pill Badge -->
-      <div class="border border-[#003060] text-[#003060] w-[200px] h-[45px] flex items-center justify-center rounded-[50px] text-lg font-medium font-montserrat transition-all bg-[#6EB6E5]/20 mb-8">
-        Questions
+      <div class="flex items-center justify-center bg-[#6EB6E5]/20 border border-[#003060] text-[#003060] rounded-[50px] w-[200px] h-[45px] text-lg font-medium font-montserrat transition-all mb-8 mx-auto lg:mx-0">
+        {{t 'test.home.faq.question'}}
       </div>
 
       <!-- Title -->
-      <h2 class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#0F0F0F]">
-        Frequently Asked
+      <h2 class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#0F0F0F] text-center lg:text-left">
+        {{t 'test.home.faq.title'}}
       </h2>
-      <h2 class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#6EB6E5] mt-1">
-        Questions
+      <h2 class="font-montserrat font-semibold text-4xl leading-none tracking-normal text-[#6EB6E5] mt-1 text-center lg:text-left">
+         {{t 'test.home.faq.title2'}}
       </h2>
       
       <!-- Underline -->
-      <div class="w-[70px] h-[6px] bg-[#0B1F3B] mt-3 mb-6 rounded-full"></div>
+      <div class="w-[70px] h-[6px] bg-[#0B1F3B] mt-3 mb-6 rounded-full mx-auto lg:mx-0"></div>
       
       <!-- Subtitle / Description -->
-      <p class="text-[#545454] text-base leading-relaxed max-w-xs md:max-w-sm font-sans font-normal">
-        Browse common questions and get the information you need quickly and easily.
+      <p class="text-[#545454] text-base leading-relaxed max-w-sm font-sans font-normal text-center lg:text-left">
+        {{t 'test.home.faq.description'}}
       </p>
     </div>
 
@@ -52,7 +153,7 @@
         faqs: [
           {{#if faqs.length}}
             {{#each faqs}}
-              { question: `{{getByLang pertanyaan ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
+              { question: `{{getByLang question ../lang}}`, answer: `{{getByLang answer ../lang}}` }{{#unless @last}},{{/unless}}
             {{/each}}
           {{else if faq.length}}
             {{#each faq}}
@@ -75,9 +176,9 @@
     >
       
       <!-- Wrapper Daftar FAQ -->
-      <div class="border-t border-[#E0E0E0]">
+      <div class="flex flex-col border-t border-[#E0E0E0]">
         <template x-for="(faq, index) in faqs" :key="index">
-          <div class="border-b border-[#E0E0E0]">
+          <div class="border-b border-[#E0E0E0] overflow-hidden transition-all">
             
             <!-- Tombol Pertanyaan -->
             <button
@@ -100,7 +201,7 @@
               
               <!-- Icon Chevron -->
               <div class="flex-shrink-0 ml-4">
-                <i class="fas fa-chevron-down transition-transform duration-300 group-hover:text-white"
+                <i class="fas fa-chevron-down text-base transition-transform duration-300 group-hover:text-white"
                    :class="activeIndex === index ? 'text-white rotate-180' : 'text-[#8F8F8F]'">
                 </i>
               </div>

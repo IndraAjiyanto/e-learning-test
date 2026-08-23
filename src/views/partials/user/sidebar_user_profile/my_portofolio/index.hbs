@@ -1,0 +1,862 @@
+<!-- MY PORTOFOLIO PARTIAL -->
+<script>
+  window.backendPortfolioData = {{{json portfolio}}};
+  window.userCoursesData = {{{json userWithCourses.userCourses}}};
+</script>
+<div 
+  class="space-y-12 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 min-h-screen mb-28"
+  x-data="{
+    searchQuery: '',
+    categoryFilter: 'all',
+    classTypeFilter: 'all',
+    sortBy: 'newest',
+    categoryOpen: false,
+    classTypeOpen: false,
+    sortOpen: false,
+    createPortofolio: false,
+    modalProgramOpen: false,
+    showDetail: false,
+    selectedPortfolio: null,
+    imageUploads: [{ id: 1, file: null, name: 'No file chosen' }],
+    userCourses: window.userCoursesData || [],
+    newForm: {
+      title: '',
+      description: '',
+      link: '',
+      overview: '',
+      program: 'Data Analyst',
+      courseId: 10
+    },
+    overviewEditorInstance: null,
+    portfolios: window.backendPortfolioData || [],
+    filteredPortfolios() {
+      if (!this.portfolios) return [];
+      return this.portfolios.filter(item => {
+        const matchCategory = this.categoryFilter === 'all' || 
+                              this.categoryFilter === item.category ||
+                              (this.categoryFilter === 'Web Development' && (item.category === 'Web Dev' || item.category === 'Fullstack Web Developer')) ||
+                              (this.categoryFilter === 'UI/UX Design' && (item.category === 'UI/UX' || item.category === 'UI/UX Design')) ||
+                              (this.categoryFilter === 'Python' && (item.category === 'Python' || item.category === 'Data Analyst'));
+        const matchClassType = this.classTypeFilter === 'all' || this.classTypeFilter === item.classType;
+        const matchSearch = item.title.toLowerCase().includes(this.searchQuery.toLowerCase()) || item.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+        return matchCategory && matchClassType && matchSearch;
+      });
+    },
+    init() {
+      if (window.backendPortfolioData && window.backendPortfolioData.length > 0) {
+        this.portfolios = window.backendPortfolioData.map(p => ({
+          id: p.id,
+          title: p.title || 'Untitled Portfolio',
+          description: p.description || '',
+          link: p.link || '',
+          overview: p.contentHtml || p.content || '',
+          classType: (p.course && p.course.category && p.course.category.name) ? p.course.category.name : 'Class',
+          category: (p.course && p.course.category && p.course.category.name) ? p.course.category.name : (p.course && p.course.title) ? p.course.title : 'Program',
+          technologies: (p.course && p.course.technologies) ? p.course.technologies : [],
+          author: (p.user && p.user.username) ? p.user.username : 'Author',
+          email: (p.user && p.user.email) ? p.user.email : '',
+          avatar: (p.user && p.user.profile) ? p.user.profile : '',
+          image: p.image && p.image.length > 0 ? p.image : ['https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80'],
+          images: p.image && Array.isArray(p.image) ? p.image : []
+        }));
+      }
+
+      this.$watch('createPortofolio', value => {
+        const overflowVal = value ? 'hidden' : '';
+        document.body.style.overflow = overflowVal;
+        document.documentElement.style.overflow = overflowVal;
+        if (value) {
+          setTimeout(() => this.initOverviewEditor(), 300);
+        } else {
+          if (this.overviewEditorInstance) {
+            try { this.overviewEditorInstance.destroy(); } catch(e) {}
+            this.overviewEditorInstance = null;
+          }
+        }
+      });
+    },
+    resetFilters() {
+      this.searchQuery = '';
+      this.categoryFilter = 'all';
+      this.classTypeFilter = 'all';
+      this.sortBy = 'newest';
+      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen' }];
+    },
+    handleFile(event, idx) {
+      const file = event.target.files[0];
+      if (file) {
+        this.imageUploads[idx].file = file;
+        this.imageUploads[idx].name = file.name;
+      }
+    },
+    addImageRow() {
+      this.imageUploads.push({ id: Date.now(), file: null, name: 'No file chosen' });
+    },
+    async initOverviewEditor() {
+      // Destroy previous instance if exists (for re-open scenarios)
+      if (this.overviewEditorInstance) {
+        try { this.overviewEditorInstance.destroy(); } catch(e) {}
+        this.overviewEditorInstance = null;
+      }
+
+      // Wait for EditorJS library to load
+      let libAttempts = 0;
+      while (!window.EditorJS || !window.EditorTools) {
+        libAttempts++;
+        if (libAttempts > 30) {
+          console.error('[Portfolio] EditorJS library not loaded after 6s.');
+          this.fallbackOverviewTextarea();
+          return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+
+      // Wait for the holder element to be visible in the DOM
+      let domAttempts = 0;
+      const waitForVisible = () => new Promise((resolve, reject) => {
+        const check = () => {
+          domAttempts++;
+          const el = document.getElementById('overviewEditor');
+          if (el && el.offsetParent !== null) {
+            resolve(el);
+          } else if (domAttempts > 30) {
+            reject(new Error('overviewEditor element not visible after 6s'));
+          } else {
+            setTimeout(check, 200);
+          }
+        };
+        check();
+      });
+
+      try {
+        await waitForVisible();
+      } catch(e) {
+        console.error('[Portfolio]', e.message);
+        this.fallbackOverviewTextarea();
+        return;
+      }
+
+      // Clear holder innerHTML before re-init
+      const holder = document.getElementById('overviewEditor');
+      if (holder) holder.innerHTML = '';
+
+      try {
+        this.overviewEditorInstance = new window.EditorJS({
+          holder: 'overviewEditor',
+          placeholder: 'Enter your content here...',
+          tools: {
+            header: {
+              class: window.EditorTools.Header,
+              inlineToolbar: ['link']
+            },
+            paragraph: {
+              class: window.EditorTools.Paragraph,
+              inlineToolbar: true
+            },
+            list: {
+              class: window.EditorTools.List,
+              inlineToolbar: true
+            },
+            marker: {
+              class: window.EditorTools.Marker,
+              shortcut: 'CMD+SHIFT+M'
+            },
+            image: {
+              class: window.EditorTools.ImageTool,
+              tunes: {
+                stretched: false,
+                withBorder: false,
+                withBackground: false
+              },
+              config: {
+                endpoints: {
+                  byFile: '/portfolio/upload-image',
+                  byUrl: '/portfolio/fetch-image'
+                }
+              }
+            },
+            linkTool: {
+              class: window.EditorTools.LinkTool,
+              config: {
+                endpoint: '/portfolio/fetch-link'
+              }
+            }
+          }
+        });
+        console.log('[Portfolio] Overview editor initialized successfully');
+      } catch (e) {
+        console.error('[Portfolio] Failed to initialize EditorJS:', e);
+        this.fallbackOverviewTextarea();
+      }
+    },
+    fallbackOverviewTextarea() {
+      const holder = document.getElementById('overviewEditor');
+      if (!holder) return;
+      if (holder.tagName.toLowerCase() === 'textarea') return;
+      
+      const ta = document.createElement('textarea');
+      ta.id = 'overviewEditor';
+      ta.rows = 8;
+      ta.placeholder = 'FALLBACK MODE: Enter your content here... (EditorJS failed to load)';
+      ta.value = this.newForm.overview || '';
+      ta.className = 'w-full min-h-[300px] rounded-[10px] border border-slate-300 p-4 font-montserrat text-sm sm:text-base text-black bg-white placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]';
+      const self = this;
+      ta.addEventListener('input', function () { self.newForm.overview = ta.value; });
+      holder.replaceWith(ta);
+    },
+    async submitPortfolio() {
+      if (!this.newForm.title.trim()) {
+        alert('Portofolio title is required!');
+        return;
+      }
+
+      let overviewData = this.newForm.overview;
+      if (this.overviewEditorInstance) {
+        try {
+          const output = await this.overviewEditorInstance.save();
+          overviewData = JSON.stringify(output);
+        } catch (e) {
+          console.error('Failed to save editor content:', e);
+        }
+      }
+
+      const formData = new FormData();
+      formData.append('title', this.newForm.title);
+      formData.append('description', this.newForm.description || '');
+      formData.append('link', this.newForm.link || '');
+      formData.append('content', overviewData);
+      
+      let hasImage = false;
+      this.imageUploads.forEach(item => {
+        if (item.file) {
+          formData.append('image', item.file);
+          hasImage = true;
+        }
+      });
+      
+      if (!hasImage) {
+        alert('Please upload at least one image.');
+        return;
+      }
+
+      const courseId = this.newForm.courseId;
+      if (!courseId) {
+        alert('Please select a valid Program/Course first.');
+        return;
+      }
+
+      formData.append('courseId', courseId);
+
+      try {
+        const response = await fetch('/portfolio/create', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        const result = await response.json().catch(() => ({}));
+        
+        if (response.ok) {
+          window.location.href = window.location.pathname + '?tab=portfolio';
+        } else {
+          alert('Failed to save portfolio: ' + (result.message || 'Unknown error occurred.'));
+        }
+      } catch (err) {
+        console.error('Error saving portfolio:', err);
+        alert('An error occurred while saving portfolio.');
+      }
+    },
+  }"
+>
+  <!-- LIST PORTOFOLIO VIEW -->
+  <div x-show="!showDetail" class="space-y-12">
+    <!-- HEADER SECTION -->
+    <div class="text-center w-full space-y-5">
+      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl xl:text-[36px] text-[#003060] leading-none mb-[15px]">
+        My Portofolio
+      </h1>
+      <p class="font-montserrat font-normal text-base sm:text-lg xl:text-[20px] text-[#003060] leading-[30px] max-w-4xl mx-auto">
+        Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.
+      </p>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="max-w-[839px] mx-auto w-full">
+      <div class="w-full h-[42px] bg-[#E0F1F9] rounded-md flex items-center gap-3 px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]">
+        <i class="fa-solid fa-magnifying-glass text-[#003060] text-base sm:text-lg flex-shrink-0"></i>
+        <input 
+          type="text" 
+          x-model="searchQuery"
+          placeholder="Search portfolio" 
+          class="w-full bg-transparent font-montserrat font-medium text-base sm:text-lg xl:text-xl text-black placeholder:text-[#676767] focus:outline-none"
+        >
+      </div>
+    </div>
+
+    <!-- FILTERS & SORTING ROW -->
+    <div class="w-full flex flex-wrap items-end justify-between gap-4 sm:gap-6">
+      <div class="flex flex-wrap items-end gap-4 sm:gap-6 flex-1 min-w-0">
+        
+        <!-- Filter 1: Category -->
+        <div class="flex flex-col gap-2 flex-1 min-w-[200px]">
+          <label class="font-montserrat font-semibold text-lg xl:text-[25px] text-[#003060] leading-none">Category</label>
+          <div class="relative" @click.away="categoryOpen = false">
+            <button 
+              type="button"
+              @click="categoryOpen = !categoryOpen"
+              class="w-full h-[48px] bg-white rounded-[12px] border border-[#003060] px-4 flex items-center justify-between font-montserrat font-medium text-base sm:text-[20px] text-black shadow-sm cursor-pointer"
+            >
+              <span class="truncate" x-text="categoryFilter === 'all' ? 'All Categories' : categoryFilter">All Categories</span>
+              <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200 text-[#003060] flex-shrink-0" :class="categoryOpen ? 'rotate-180' : ''"></i>
+            </button>
+            <div 
+              x-show="categoryOpen" 
+              x-transition
+              class="absolute top-full left-0 mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-lg py-2 z-30 font-montserrat text-sm sm:text-base text-black"
+            >
+              <button type="button" @click="categoryFilter = 'all'; categoryOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">All Categories</button>
+              <button type="button" @click="categoryFilter = 'Short Class'; categoryOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Short Class</button>
+              <button type="button" @click="categoryFilter = 'Bootcamp'; categoryOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Bootcamp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter 2: Class Type -->
+        <div class="flex flex-col gap-2 flex-1 min-w-[200px]">
+          <label class="font-montserrat font-semibold text-lg xl:text-[25px] text-[#003060] leading-none">Class Type</label>
+          <div class="relative" @click.away="classTypeOpen = false">
+            <button 
+              type="button"
+              @click="classTypeOpen = !classTypeOpen"
+              class="w-full h-[48px] bg-white rounded-[12px] border border-[#003060] px-4 flex items-center justify-between font-montserrat font-medium text-base sm:text-[20px] text-black shadow-sm cursor-pointer"
+            >
+              <span class="truncate" x-text="classTypeFilter === 'all' ? 'All Class Type' : classTypeFilter">All Class Type</span>
+              <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200 text-[#003060] flex-shrink-0" :class="classTypeOpen ? 'rotate-180' : ''"></i>
+            </button>
+            <div 
+              x-show="classTypeOpen" 
+              x-transition
+              class="absolute top-full left-0 mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-lg py-2 z-30 font-montserrat text-sm sm:text-base text-black"
+            >
+              <button type="button" @click="classTypeFilter = 'all'; classTypeOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">All Class Type</button>
+              <button type="button" @click="classTypeFilter = 'Python'; classTypeOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Python</button>
+              <button type="button" @click="classTypeFilter = 'Web Development'; classTypeOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Web Development</button>
+              <button type="button" @click="classTypeFilter = 'UI/UX Design'; classTypeOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">UI/UX Design</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter 3: Sort by -->
+        <div class="flex flex-col gap-2 flex-1 min-w-[200px]">
+          <label class="font-montserrat font-semibold text-lg xl:text-[25px] text-[#003060] leading-none">Sort by</label>
+          <div class="relative" @click.away="sortOpen = false">
+            <button 
+              type="button"
+              @click="sortOpen = !sortOpen"
+              class="w-full h-[48px] bg-white rounded-[12px] border border-[#003060] px-4 flex items-center justify-between font-montserrat font-medium text-base sm:text-[20px] text-black shadow-sm cursor-pointer"
+            >
+              <span class="truncate" x-text="sortBy === 'newest' ? 'Newest' : (sortBy === 'oldest' ? 'Oldest' : sortBy)">Newest</span>
+              <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200 text-[#003060] flex-shrink-0" :class="sortOpen ? 'rotate-180' : ''"></i>
+            </button>
+            <div 
+              x-show="sortOpen" 
+              x-transition
+              class="absolute top-full left-0 mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-lg py-2 z-30 font-montserrat text-sm sm:text-base text-black"
+            >
+              <button type="button" @click="sortBy = 'newest'; sortOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Newest</button>
+              <button type="button" @click="sortBy = 'oldest'; sortOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Oldest</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Clear Filter Button -->
+      <button 
+        type="button"
+        @click="resetFilters()"
+        class="flex items-center gap-2 font-montserrat font-medium text-sm sm:text-base text-[#666666] hover:text-[#003060] transition-colors cursor-pointer pb-3 sm:pb-3.5 pl-1 flex-shrink-0"
+      >
+        <i class="fa-regular fa-trash-can text-base"></i>
+        <span>Clear Filter</span>
+      </button>
+    </div>
+
+    <!-- HAS DATA ACTION: Create Portofolio Button -->
+    <div x-show="filteredPortfolios().length > 0" class="w-full">
+      <button 
+        type="button"
+        @click="createPortofolio = true"
+        class="w-[219px] h-[45px] rounded-[6px] p-[10px] gap-[5px] border border-[#003060] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-lg sm:text-[20px] leading-none flex items-center justify-center cursor-pointer shadow-md transition-all"
+      >
+        <i class="fa-solid fa-plus text-base"></i>
+        <span>Create Portofolio</span>
+      </button>
+    </div>
+
+    <!-- EMPTY STATE: Project Not Found -->
+    <div 
+      x-show="filteredPortfolios().length === 0" 
+      class="pt-16 pb-12 flex flex-col items-center justify-center text-center"
+    >
+      <!-- Search Magnifier Badge Icon -->
+      <div class="w-20 h-20 rounded-full bg-[#5FB8E6] flex items-center justify-center mx-auto mb-12 shadow-sm">
+        <i class="fa-solid fa-magnifying-glass text-2xl text-white"></i>
+      </div>
+
+      <!-- Heading -->
+      <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl xl:text-[30px] text-[#003060] leading-none mb-3 text-center">
+        Project Not Found
+      </h2>
+
+      <!-- Subtitle -->
+      <p class="font-montserrat font-normal text-base sm:text-lg xl:text-[20px] text-[#666666] leading-none text-center mb-10">
+        Try adjusting your filters to find more projects.
+      </p>
+
+      <!-- Create Portofolio Button -->
+      <button 
+        type="button"
+        @click="createPortofolio = true"
+        class="w-[219px] h-[45px] rounded-[6px] p-[10px] gap-[5px] border border-[#003060] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-lg sm:text-[20px] leading-none flex items-center justify-center cursor-pointer shadow-md mx-auto transition-all"
+      >
+        <i class="fa-solid fa-plus text-base"></i>
+        <span>Create Portofolio</span>
+      </button>
+    </div>
+
+    <!-- HAS DATA STATE: Portfolios Grid -->
+    <div x-show="filteredPortfolios().length > 0" class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6 w-full pb-12">
+      <template x-for="item in filteredPortfolios()" :key="item.id">
+        <div 
+          class="w-full h-auto 2xl:h-[686px] bg-[#FFFFFF80] backdrop-blur-[6.6px] rounded-[12px] p-5 2xl:p-6 flex flex-col justify-between shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] border border-white/40 transition-all"
+        >
+          <div>
+            <!-- Badge: Class Type -->
+            <div class="mb-4">
+              <span class="inline-flex items-center justify-center w-full max-w-[125px] h-[47px] p-1 bg-[#0B1F3B1A] text-black rounded-[6px] font-montserrat font-medium text-base 2xl:text-[20px]" x-text="item.classType">Short Class</span>
+            </div>
+
+            <!-- Portfolio Image Slider Container -->
+            <div class="mb-4 overflow-hidden rounded-[12px] h-[200px] 2xl:h-[262px] bg-slate-200 relative group" x-data="{ currentImg: 0 }">
+              <!-- Images -->
+              <template x-for="(imgSrc, imgIdx) in (item.images && item.images.length ? item.images : [item.image])" :key="imgIdx">
+                <img 
+                  :src="imgSrc" 
+                  :alt="item.title" 
+                  x-show="currentImg === imgIdx" 
+                  x-transition:enter="transition ease-out duration-300"
+                  x-transition:enter-start="opacity-0 scale-95"
+                  x-transition:enter-end="opacity-100 scale-100"
+                  class="w-full h-full object-cover absolute inset-0"
+                >
+              </template>
+
+              <!-- Left/Right Arrow Navigation Controls (only if > 1 image) -->
+              <template x-if="item.images && item.images.length > 1">
+                <div class="absolute inset-0 flex items-center justify-between p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                  <button 
+                    type="button" 
+                    @click.stop="currentImg = (currentImg === 0) ? item.images.length - 1 : currentImg - 1"
+                    class="w-7 h-7 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center pointer-events-auto transition-transform active:scale-95 shadow-md cursor-pointer"
+                  >
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                  </button>
+                  <button 
+                    type="button" 
+                    @click.stop="currentImg = (currentImg === item.images.length - 1) ? 0 : currentImg + 1"
+                    class="w-7 h-7 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center pointer-events-auto transition-transform active:scale-95 shadow-md cursor-pointer"
+                  >
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                  </button>
+                </div>
+              </template>
+
+              <!-- Indicator Dots (only if > 1 image) -->
+              <template x-if="item.images && item.images.length > 1">
+                <div class="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-1.5 z-10 pointer-events-none">
+                  <template x-for="(imgSrc, imgIdx) in item.images" :key="imgIdx">
+                    <button 
+                      type="button" 
+                      @click.stop="currentImg = imgIdx"
+                      class="h-1.5 rounded-full transition-all pointer-events-auto cursor-pointer"
+                      :class="currentImg === imgIdx ? 'w-4 bg-white' : 'w-1.5 bg-white/60 hover:bg-white'"
+                    ></button>
+                  </template>
+                </div>
+              </template>
+            </div>
+
+            <!-- Title -->
+            <h3 class="font-montserrat font-semibold text-xl 2xl:text-[25px] text-[#003060] leading-none mb-5" x-text="item.title">Judul Portofolio</h3>
+
+            <!-- Description -->
+            <p class="font-sans font-normal text-base 2xl:text-[20px] text-black leading-relaxed 2xl:leading-[30px] mb-5 line-clamp-2" x-text="item.description">Deskripsi Portofolio</p>
+
+            <!-- Technologies Tags -->
+            <div class="mb-5 flex flex-wrap gap-2">
+              <template x-for="tech in (item.technologies || [])" :key="tech.id || tech.name">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm 2xl:text-base">
+                  <template x-if="tech.svg">
+                    <span x-html="tech.svg" class="w-4 h-4 flex-shrink-0 [&>svg]:w-4 [&>svg]:h-4"></span>
+                  </template>
+                  <template x-if="!tech.svg && tech.imgUrl">
+                    <img :src="tech.imgUrl" :alt="tech.name" class="w-4 h-4 flex-shrink-0 object-contain">
+                  </template>
+                  <span x-text="tech.name"></span>
+                </span>
+              </template>
+              <template x-if="!item.technologies || item.technologies.length === 0">
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm 2xl:text-base" x-text="item.category">Program</span>
+              </template>
+            </div>
+
+            <!-- Author Info Row -->
+            <div class="flex items-center gap-2.5 mb-5">
+              <div class="w-8 h-8 rounded-full bg-[#E0F1F9] flex items-center justify-center flex-shrink-0 text-[#003060] font-semibold text-xs overflow-hidden">
+                <img :src="item.avatar" alt="Author Avatar" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                <span x-text="item.author.charAt(0)">T</span>
+              </div>
+              <div class="flex flex-col min-w-0">
+                <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] text-black leading-none truncate mb-0.5" x-text="item.author">Trisna</span>
+                <span class="font-sans font-normal text-xs 2xl:text-[12px] text-[#666666] leading-[15px] truncate" x-text="item.email">trisna@gmail.com</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- View Detail Button -->
+          <button 
+            type="button" 
+            @click="selectedPortfolio = item; showDetail = true;"
+            class="w-full h-[50px] 2xl:h-[60px] rounded-[12px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-xl 2xl:text-[25px] leading-none flex items-center justify-center text-center transition-all cursor-pointer shadow-md"
+          >
+            View Detail
+          </button>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- DETAIL PORTOFOLIO VIEW -->
+  <div x-show="showDetail" x-cloak style="display: none;" class="!mt-0">
+    {{> user/sidebar_user_profile/my_portofolio/detail/index }}
+  </div>
+
+  <!-- POP UP CREATE PORTOFOLIO MODAL -->
+  <div 
+    x-cloak
+    style="display: none;"
+    x-show="createPortofolio" 
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    @keydown.escape.window="createPortofolio = false"
+  >
+    <div 
+      id="overviewModal"
+      @click.away="createPortofolio = false"
+      class="bg-white rounded-[24px] p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl font-montserrat relative"
+      style="color-scheme: light;"
+    >
+      <!-- Title Header -->
+      <h2 class="font-montserrat font-semibold text-2xl sm:text-4xl text-[#003060] leading-none mb-8">
+        Create Your Portofolio
+      </h2>
+
+      <!-- Form Grid (2 Columns on Desktop) -->
+      <form @submit.prevent="submitPortfolio()" class="space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- LEFT COLUMN -->
+          <div class="space-y-6">
+            <!-- Portofolio Title -->
+            <div class="space-y-3">
+              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+                Portofolio Title
+              </label>
+              <input 
+                type="text" 
+                x-model="newForm.title"
+                placeholder="Enter portofolio title"
+                class="w-full h-[48px] bg-white rounded-[10px] border border-slate-300 px-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
+              >
+            </div>
+
+            <!-- Description -->
+            <div class="space-y-3">
+              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+                Description
+              </label>
+              <textarea 
+                rows="4"
+                x-model="newForm.description"
+                placeholder="write a description..."
+                class="w-full bg-white rounded-[10px] border border-slate-300 p-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
+              ></textarea>
+            </div>
+
+
+            <!-- Program Dropdown -->
+            <div class="space-y-3">
+              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+                Program<span class="text-red-500">*</span>
+              </label>
+              <div class="relative" @click.away="modalProgramOpen = false">
+                <button 
+                  type="button"
+                  @click="modalProgramOpen = !modalProgramOpen"
+                  class="w-full h-[48px] bg-white rounded-[10px] border border-slate-300 px-4 flex items-center justify-between font-montserrat text-sm sm:text-base text-black shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] cursor-pointer"
+                >
+                  <span x-text="newForm.program || 'Select Program'">Select Program</span>
+                  <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200 text-[#003060]" :class="modalProgramOpen ? 'rotate-180' : ''"></i>
+                </button>
+                <div 
+                  x-show="modalProgramOpen" 
+                  x-transition
+                  class="absolute top-full left-0 mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-lg py-2 z-30 font-montserrat text-sm sm:text-base text-black max-h-[200px] overflow-y-auto"
+                >
+                  <template x-for="uc in userCourses" :key="uc.course.id">
+                    <button type="button" @click="newForm.program = uc.course.name; newForm.courseId = uc.course.id; modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors" x-text="uc.course.name"></button>
+                  </template>
+                  <template x-if="!userCourses || userCourses.length === 0">
+                    <div class="px-4 py-2 text-gray-400 text-sm">No programs enrolled</div>
+                  </template>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Link* -->
+            <div>
+              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060] mb-3">
+                Link<span class="text-red-500">*</span>
+              </label>
+              <input 
+                type="text" 
+                x-model="newForm.link"
+                placeholder="Enter link (e.g., https://example.com)..."
+                class="w-full h-[48px] bg-white rounded-[10px] border border-slate-300 px-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
+              >
+              <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666] pt-1">
+                Enter a valid URL starting with http:// or https://
+              </p>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN -->
+          <div class="space-y-6">
+
+            <!-- Project Overview -->
+            <div class="space-y-3">
+              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+                Project Overview
+              </label>
+              <div 
+                id="overviewEditor"
+                x-ignore
+                class="w-full min-h-[300px] rounded-[10px] border border-slate-300 p-4 font-montserrat text-sm sm:text-base text-black bg-white focus-within:border-[#003060] transition-colors shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] max-w-none text-left"
+              ></div>
+            </div>
+
+            <!-- Upload Images* -->
+            <div class="space-y-3">
+              <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
+                Upload Images<span class="text-red-500">*</span>
+              </label>
+              
+              <!-- Dynamic File Chooser Rows -->
+              <div class="space-y-3 max-h-[185px] overflow-y-auto p-1">
+                <template x-for="(upload, idx) in imageUploads" :key="upload.id">
+                  <div class="w-full h-[52px] rounded-[10px] border border-slate-300 px-3 flex items-center justify-between gap-3 bg-white shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <label class="cursor-pointer bg-[#0B1F3B1A] hover:bg-slate-200 text-black font-montserrat font-medium text-sm px-4 py-2 rounded-[6px] transition-colors flex-shrink-0">
+                        Choose File
+                        <input type="file" class="hidden" accept="image/*" @change="handleFile($event, idx)">
+                      </label>
+                      <span class="font-montserrat text-sm text-[#676767] truncate" x-text="upload.name">No file chosen</span>
+                    </div>
+                    <!-- Remove row button if more than 1 -->
+                    <button 
+                      type="button" 
+                      x-show="imageUploads.length > 1" 
+                      @click="imageUploads.splice(idx, 1)" 
+                      class="text-red-500 hover:text-red-700 text-xs px-2 py-1 transition-colors"
+                      title="Remove image"
+                    >
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </div>
+                </template>
+              </div>
+
+              <!-- Allowed format subtitle -->
+              <p class="font-montserrat font-normal text-xs text-[#666666] pt-0.5">
+                Allowed: JPG, JPEG, PNG, GIF. Max size: 5MB per image
+              </p>
+
+              <!-- Dotted Add Image Box -->
+              <div 
+                @click="addImageRow()" 
+                class="w-full h-[52px] rounded-[10px] border border-dashed border-slate-400 flex items-center justify-center gap-2 cursor-pointer hover:bg-slate-50 text-[#666666] font-montserrat font-medium text-sm sm:text-base transition-colors mt-3"
+              >
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>Add Image</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ACTION BUTTONS ROW (SAVE & CANCEL) -->
+        <div class="flex items-center justify-center gap-4 pt-6">
+          <button 
+            type="submit"
+            class="w-full max-w-[240px] h-[48px] rounded-[8px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-md"
+          >
+            Save
+          </button>
+          <button 
+            type="button"
+            @click="createPortofolio = false"
+            class="w-full max-w-[240px] h-[48px] rounded-[8px] border border-[#003060] bg-white hover:bg-slate-50 text-[#003060] font-montserrat font-semibold text-base sm:text-lg flex items-center justify-center transition-all cursor-pointer shadow-sm"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  #overviewModal {
+    color-scheme: light;
+  }
+
+  #overviewModal input,
+  #overviewModal textarea {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  #overviewModal input::placeholder,
+  #overviewModal textarea::placeholder {
+    color: #676767 !important;
+    opacity: 1;
+  }
+
+  #overviewEditor {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  #overviewEditor .codex-editor,
+  #overviewEditor .codex-editor__redactor,
+  #overviewEditor .ce-toolbar__content,
+  #overviewEditor .ce-block__content,
+  #overviewEditor .ce-inline-toolbar,
+  #overviewEditor .ce-toolbox,
+  #overviewEditor .ce-settings,
+  #overviewEditor .ce-conversion-toolbar {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  #overviewEditor .ce-placeholder {
+    color: #676767 !important;
+  }
+
+  .codex-editor .ce-block__content,
+  .codex-editor .ce-toolbar__content {
+    max-width: 100% !important;
+    margin-left: 16px !important;
+    margin-right: auto !important;
+  }
+
+  .codex-editor__redactor {
+    padding-left: 0 !important;
+    min-height: 280px;
+  }
+
+  #overviewEditor img,
+  #overviewDetail img {
+    max-width: 300px;
+    margin: auto;
+    border-radius: 1rem;
+  }
+
+  #overviewEditor h4,
+  #overviewDetail h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+  }
+
+  #overviewEditor h5,
+  #overviewDetail h5 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 500;
+  }
+
+  #overviewEditor h6,
+  #overviewDetail h6 {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+  }
+</style>
+
+<script>
+  function renderOverview(raw) {
+    if (!raw) return '';
+    if (typeof raw === 'string' && raw.trim().startsWith('{')) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.blocks)) {
+          return parsed.blocks.map(function (b) {
+            const d = b.data || {};
+            switch (b.type) {
+              case 'header': {
+                const lvl = Math.min(Math.max(d.level || 2, 1), 6);
+                return '<h' + lvl + '>' + (d.text || '') + '</h' + lvl + '>';
+              }
+              case 'list': {
+                const items = (d.items || []).map(function (i) { 
+                  const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                  return '<li>' + content + '</li>'; 
+                }).join('');
+                return d.style === 'ordered' ? '<ol class="list-decimal pl-5">' + items + '</ol>' : '<ul class="list-disc pl-5">' + items + '</ul>';
+              }
+              case 'image':
+                return '<figure class="my-4"><img src="' + ((d.file && d.file.url) || '') + '" alt="overview image" class="max-w-full rounded-lg"/>' +
+                  (d.caption ? '<figcaption class="text-center text-sm text-gray-500 mt-2">' + d.caption + '</figcaption>' : '') + '</figure>';
+              case 'quote':
+                return '<blockquote class="border-l-4 border-gray-300 pl-4 italic my-4">' + (d.text || '') + '</blockquote>';
+              case 'code':
+                return '<pre class="bg-gray-100 p-4 rounded-md my-4 overflow-x-auto"><code>' + (d.code || '') + '</code></pre>';
+              case 'delimiter':
+                return '<hr class="my-6 border-t-2 border-gray-200"/>';
+              default:
+                return '<p class="my-2">' + (d.text || '') + '</p>';
+            }
+          }).join('');
+        }
+      } catch (e) {
+        // not editor JSON, fallback below
+      }
+    }
+    const el = document.createElement('div');
+    el.textContent = raw;
+    return el.innerHTML;
+  }
+</script>

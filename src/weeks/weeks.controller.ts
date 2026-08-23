@@ -14,10 +14,14 @@ import { CreateWeeksDto } from './dto/create-weeks.dto';
 import { UpdateWeeksDto } from './dto/update-weeks.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { CoursesService } from 'src/courses/courses.service';
 
 @Controller('week')
 export class WeeksController {
-  constructor(private readonly weeksService: WeeksService) {}
+  constructor(
+    private readonly weeksService: WeeksService,
+    private readonly coursesService: CoursesService,
+  ) {}
 
   @Roles('admin')
   @Post(':courseId')
@@ -28,7 +32,8 @@ export class WeeksController {
     @Req() req: Request,
   ) {
     try {
-      createWeekDto.weekNumber = await this.weeksService.getSessionNumber(courseId);
+      createWeekDto.weekNumber =
+        await this.weeksService.getSessionNumber(courseId);
       await this.weeksService.create(createWeekDto, courseId);
       req.flash('success', 'session succesfuly create');
       res.redirect(`/program/detail/program/admin/${courseId}`);
@@ -56,8 +61,7 @@ export class WeeksController {
     @Req() req: Request,
   ) {
     const weeks = await this.weeksService.findOne(weeksId);
-    const lastSession =
-      await this.weeksService.findLastSession(weeksId);
+    const lastSession = await this.weeksService.findLastSession(weeksId);
     res.render('admin/weeks/detail', {
       user: req.user,
       weeks,
@@ -87,7 +91,18 @@ export class WeeksController {
     @Req() req: Request,
   ) {
     const weeks = await this.weeksService.findOne(weeksId);
-    res.render('admin/weeks/edit', { user: req.user, weeks });
+    let lastWeek = false;
+    let maxWeek = 0;
+    if (weeks && weeks.course) {
+      lastWeek = await this.coursesService.findLastWeek(weeks.course.id);
+      maxWeek = await this.weeksService.findCourseWeeks(weeks.course.id);
+    }
+    res.render('admin/weeks/edit', {
+      user: req.user,
+      weeks,
+      lastWeek,
+      maxWeek,
+    });
   }
 
   @Roles('admin')

@@ -1,0 +1,236 @@
+<!-- DETAIL PORTOFOLIO PARTIAL -->
+<div class="w-full space-y-8 pb-12 font-montserrat mb-28">
+  
+  <!-- Back Button -->
+  <div>
+    <button 
+      type="button" 
+      @click="showDetail = false"
+      class="inline-flex items-center gap-2 font-montserrat font-medium text-sm sm:text-base text-[#003060] hover:text-[#001f3f] transition-colors cursor-pointer"
+    >
+      <i class="fa-solid fa-arrow-left text-sm"></i>
+      <span>Back to Portfolio List</span>
+    </button>
+  </div>
+
+  <!-- HEADER SECTION -->
+    <div class="text-center max-w-4xl mx-auto space-y-5">
+      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl xl:text-[36px] text-[#003060] leading-none mb-[15px]">
+        My Portofolio
+      </h1>
+      <p class="font-montserrat font-normal text-base sm:text-lg xl:text-[20px] text-[#003060] leading-[30px] max-w-4xl mx-auto">
+        Explore our collection of exceptional projects from bootcamp alumni. Each portfolio showcases technical skills and creative solutions.
+      </p>
+    </div>
+
+  <!-- Hero Image Showcase Carousel -->
+  <div class="text-center space-y-6">
+    <div 
+      class="w-full max-w-[600px] h-[280px] sm:h-[340px] mx-auto rounded-[16px] overflow-hidden bg-slate-200 shadow-md border border-slate-200/80 relative group"
+      x-data="{ currentDetailImg: 0 }"
+      x-effect="if (selectedPortfolio) currentDetailImg = 0"
+    >
+      <!-- Images -->
+      <template x-for="(imgSrc, imgIdx) in (selectedPortfolio && selectedPortfolio.images && selectedPortfolio.images.length ? selectedPortfolio.images : [selectedPortfolio ? selectedPortfolio.image : 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80'])" :key="imgIdx">
+        <img 
+          :src="imgSrc" 
+          :alt="selectedPortfolio ? selectedPortfolio.title : 'Judul Portofolio'" 
+          x-show="currentDetailImg === imgIdx" 
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="opacity-0 scale-95"
+          x-transition:enter-end="opacity-100 scale-100"
+          class="w-full h-full object-cover absolute inset-0"
+        >
+      </template>
+
+      <!-- Left/Right Arrow Navigation Controls -->
+      <template x-if="selectedPortfolio && selectedPortfolio.images && selectedPortfolio.images.length > 1">
+        <div class="absolute inset-0 flex items-center justify-between p-3 opacity-90 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+          <button 
+            type="button" 
+            @click="currentDetailImg = (currentDetailImg === 0) ? selectedPortfolio.images.length - 1 : currentDetailImg - 1"
+            class="w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center pointer-events-auto transition-transform active:scale-95 shadow-md cursor-pointer"
+          >
+            <i class="fa-solid fa-chevron-left text-sm"></i>
+          </button>
+          <button 
+            type="button" 
+            @click="currentDetailImg = (currentDetailImg === selectedPortfolio.images.length - 1) ? 0 : currentDetailImg + 1"
+            class="w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center pointer-events-auto transition-transform active:scale-95 shadow-md cursor-pointer"
+          >
+            <i class="fa-solid fa-chevron-right text-sm"></i>
+          </button>
+        </div>
+      </template>
+
+      <!-- Indicator Dots -->
+      <template x-if="selectedPortfolio && selectedPortfolio.images && selectedPortfolio.images.length > 1">
+        <div class="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5 z-10 pointer-events-none">
+          <template x-for="(imgSrc, imgIdx) in selectedPortfolio.images" :key="imgIdx">
+            <button 
+              type="button" 
+              @click="currentDetailImg = imgIdx"
+              class="h-2 rounded-full transition-all pointer-events-auto cursor-pointer"
+              :class="currentDetailImg === imgIdx ? 'w-5 bg-white' : 'w-2 bg-white/60 hover:bg-white'"
+            ></button>
+          </template>
+        </div>
+      </template>
+    </div>
+
+    <!-- Portfolio Title -->
+    <h2 
+      class="font-montserrat font-semibold text-2xl sm:text-3xl xl:text-[36px] text-[#003060] leading-none text-center"
+      x-text="selectedPortfolio ? selectedPortfolio.title : 'Judul Portofolio'"
+    >
+      Judul Portofolio
+    </h2>
+
+    <!-- Class Type Badge -->
+    <div class="text-center">
+      <span 
+        class="inline-flex items-center justify-center bg-[#0B1F3B1A] text-black font-montserrat font-medium text-base sm:text-lg px-6 py-2 rounded-[6px]"
+        x-text="selectedPortfolio ? selectedPortfolio.classType : 'Short Class'"
+      >
+        Short Class
+      </span>
+    </div>
+  </div>
+
+  <!-- 2-Column Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-4">
+    
+    <!-- LEFT COLUMN (Span 7) -->
+    <div class="lg:col-span-7 space-y-6">
+      
+      <!-- Project Description Card -->
+      <div class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-3">
+        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+          Project Description
+        </h3>
+        <p 
+          class="font-montserrat font-normal text-sm sm:text-base text-[#666666] leading-relaxed"
+          x-text="selectedPortfolio ? selectedPortfolio.description : 'disini isinya adalah deskripsi project yang dibuat'"
+        >
+          disini isinya adalah deskripsi project yang dibuat
+        </p>
+      </div>
+
+      <!-- Project Overview Card -->
+      <div class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-3">
+        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+          Project Overview
+        </h3>
+        <div 
+          id="overviewDetail"
+          class="font-montserrat font-normal text-sm sm:text-base text-[#666666] leading-relaxed space-y-2"
+          x-html="selectedPortfolio && selectedPortfolio.overview ? renderOverview(selectedPortfolio.overview) : 'disini isinya adalah project overview'"
+        ></div>
+      </div>
+
+      <!-- Technologies Used Card -->
+      <div class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-4">
+        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+          Technologies Used
+        </h3>
+        <div class="flex flex-wrap gap-2">
+          <template x-for="tech in (selectedPortfolio && selectedPortfolio.technologies ? selectedPortfolio.technologies : [])" :key="tech.id || tech.name">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm sm:text-base">
+              <template x-if="tech.svg">
+                <span x-html="tech.svg" class="w-5 h-5 flex-shrink-0 [&>svg]:w-5 [&>svg]:h-5"></span>
+              </template>
+              <template x-if="!tech.svg && tech.imgUrl">
+                <img :src="tech.imgUrl" :alt="tech.name" class="w-5 h-5 flex-shrink-0 object-contain">
+              </template>
+              <span x-text="tech.name"></span>
+            </span>
+          </template>
+          <template x-if="!selectedPortfolio || !selectedPortfolio.technologies || selectedPortfolio.technologies.length === 0">
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm sm:text-base" x-text="selectedPortfolio ? selectedPortfolio.category : 'Program'">Program</span>
+          </template>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN (Span 5) -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- Student Profile Card -->
+      <div class="bg-white border border-slate-200/80 rounded-[12px] p-6 shadow-sm space-y-6 font-montserrat">
+        <h3 class="font-montserrat font-semibold text-lg sm:text-xl text-[#003060] leading-none">
+          Student Profile
+        </h3>
+
+        <!-- Author Profile Row -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[#E0F1F9] flex items-center justify-center flex-shrink-0 text-[#003060] font-semibold text-sm overflow-hidden">
+            <img 
+              :src="selectedPortfolio ? selectedPortfolio.avatar : 'https://static.robloximageidcdn.com/images/1181/832a62e634a2a30635cbd35aaefd44d7.webp'" 
+              alt="Author Avatar" 
+              class="w-full h-full object-cover" 
+              onerror="this.style.display='none'"
+            >
+            <span x-text="selectedPortfolio ? selectedPortfolio.author.charAt(0) : 'T'">T</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-montserrat font-semibold text-base text-black leading-tight truncate" x-text="selectedPortfolio ? selectedPortfolio.author : 'Trisna'">Trisna</span>
+            <span class="font-sans font-normal text-xs text-[#666666] truncate" x-text="selectedPortfolio ? selectedPortfolio.email : 'trisna@gmail.com'">trisna@gmail.com</span>
+          </div>
+        </div>
+
+        <!-- Detail Item 1: Program Completed -->
+        <div class="flex items-start gap-3">
+          <i class="fa-regular fa-circle-check text-base text-black mt-1 flex-shrink-0"></i>
+          <div class="space-y-1">
+            <p class="font-montserrat font-semibold text-sm sm:text-base text-[#003060] leading-none">
+              Program Completed
+            </p>
+            <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]">
+              Seminar - PYTHON FOR DATA ANALYST - From zero to insight
+            </p>
+          </div>
+        </div>
+
+        <!-- Detail Item 2: Completion Date -->
+        <div class="flex items-start gap-3">
+          <i class="fa-regular fa-calendar text-base text-black mt-1 flex-shrink-0"></i>
+          <div class="space-y-1">
+            <p class="font-montserrat font-semibold text-sm sm:text-base text-[#003060] leading-none">
+              Completion Date
+            </p>
+            <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]">
+              Saturday 20 June 2026
+            </p>
+          </div>
+        </div>
+
+        <!-- Detail Item 3: Project Duration -->
+        <div class="flex items-start gap-3">
+          <i class="fa-regular fa-clock text-base text-black mt-1 flex-shrink-0"></i>
+          <div class="space-y-1">
+            <p class="font-montserrat font-semibold text-sm sm:text-base text-[#003060] leading-none">
+              Project Duration
+            </p>
+            <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666]">
+              0 Months
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- View Portofolio Button -->
+      <a 
+        :href="selectedPortfolio && selectedPortfolio.link ? selectedPortfolio.link : '#'" 
+        target="_blank"
+        class="w-full h-[54px] rounded-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-base sm:text-lg flex items-center justify-center text-center transition-all cursor-pointer shadow-md no-underline"
+      >
+        View Portofolio
+      </a>
+
+    </div>
+
+  </div>
+
+</div>

@@ -7,7 +7,7 @@
   <div x-show="!loading.faq && faq" x-data="{ openFaq: null }">
     <div class='bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200'>
       <h3 class='font-montserrat w-fit mx-auto border border-gray-400 text-lg rounded-full px-4 font-light mb-6 bg-[#6EB6E5]/20  text-gray-900'>
-        {{t "test.detailProgram.faq.tittle"}}
+        {{t "test.detailProgram.faq.title"}}
       </h3>
       <div class='space-y-4'>
         <template x-for="item in (faq?.course_questions || [])" :key="item.id">

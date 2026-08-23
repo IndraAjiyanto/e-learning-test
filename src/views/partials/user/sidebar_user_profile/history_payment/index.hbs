@@ -1,0 +1,232 @@
+<!-- HISTORY PAYMENT PARTIAL -->
+<div 
+  class="space-y-6 sm:space-y-8 md:space-y-12 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 mb-28"
+  x-data="{ 
+    paymentType: 'full', 
+    statusFilter: 'all',
+    searchQuery: '',
+    sortBy: 'Newest',
+    sortOpen: false,
+    payments: [],
+    init() {
+      if (window.location.hash === '#pendaftaran') {
+        this.paymentType = 'registration';
+      }
+    }
+  }"
+>
+  
+  {{! --- HEADER SECTION --- }}
+    <div>
+      <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl md:text-4xl text-[#003060] leading-none mb-[15px]">
+        History Payment
+      </h1>
+      <p class="font-sans font-normal text-base sm:text-lg md:text-xl text-[#003060] leading-none">
+        Track and manage all your payments and registrations.
+      </p>
+    </div>
+
+  {{! --- STATS CARDS SECTION --- }}
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 lg:gap-4 xl:gap-12">
+    
+    <!-- Stats 1: Total Payment -->
+    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
+      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#E1EAFD] flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-receipt text-[20px] xl:text-[24px] text-[#003060]"></i>
+      </div>
+      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
+        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight" x-text="payments.length">0</span>
+        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Total Payment</span>
+        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">All Time</span>
+      </div>
+    </div>
+
+    <!-- Stats 2: Accepted -->
+    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
+      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#DEF5E9] flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-circle-check text-[20px] xl:text-[24px] text-[#01B065]"></i>
+      </div>
+      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
+        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight">0</span>
+        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Accepted</span>
+        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">Successful Payments</span>
+      </div>
+    </div>
+
+    <!-- Stats 3: Processing -->
+    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
+      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#FEEFD6] flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-clock text-[20px] xl:text-[24px] text-[#FDA40B]"></i>
+      </div>
+      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
+        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight">0</span>
+        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Processing</span>
+        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">In Progress</span>
+      </div>
+    </div>
+
+    <!-- Stats 4: Rejected -->
+    <div class="w-full h-[100px] xl:h-[126px] bg-white/80 backdrop-blur-[6.6px] rounded-xl p-3 xl:p-[20px] flex items-center gap-3 xl:gap-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]">
+      <div class="w-[42px] h-[42px] xl:w-[50px] xl:h-[50px] rounded-full bg-[#FEE7E7] flex items-center justify-center flex-shrink-0">
+        <i class="fa-solid fa-circle-xmark text-[20px] xl:text-[24px] text-[#F13639]"></i>
+      </div>
+      <div class="flex flex-col justify-center min-w-0 space-y-0 md:space-y-2">
+        <span class="font-montserrat font-semibold text-lg sm:text-xl xl:text-[25px] text-[#2D2D2D] leading-tight">0</span>
+        <span class="font-sans font-medium text-xs xl:text-[15px] text-[#2D2D2D]">Rejected</span>
+        <span class="font-sans font-normal text-[9px] xl:text-xs text-[#2D2D2D]">Failed Payments</span>
+      </div>
+    </div>
+
+  </div>
+
+  {{! --- FILTERS & SEARCH CONTROLS GROUP --- }}
+  <div class="space-y-4 sm:space-y-6">
+    
+    <!-- Filters Section (Payment Type & Status) -->
+    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+      
+      <!-- Payment Type Filter Pills -->
+      <div>
+        <h3 class="font-montserrat font-semibold text-base sm:text-lg md:text-2xl text-[#003060] mb-2">
+          Payment Type
+        </h3>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button 
+            type="button" 
+            @click="paymentType = 'full'"
+            :class="paymentType === 'full' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
+            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
+          >
+            Full Payment
+          </button>
+          <button 
+            type="button" 
+            @click="paymentType = 'registration'"
+            :class="paymentType === 'registration' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
+            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
+          >
+            Registration
+          </button>
+          <button 
+            type="button" 
+            @click="paymentType = 'installment'"
+            :class="paymentType === 'installment' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
+            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
+          >
+            Installment
+          </button>
+        </div>
+      </div>
+
+      <!-- Status Filter Pills -->
+      <div>
+        <h3 class="font-montserrat font-semibold text-base sm:text-lg md:text-2xl text-[#003060] mb-2">
+          Status
+        </h3>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button 
+            type="button" 
+            @click="statusFilter = 'all'"
+            :class="statusFilter === 'all' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
+            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer min-w-[60px] text-center"
+          >
+            All
+          </button>
+          <button 
+            type="button" 
+            @click="statusFilter = 'accepted'"
+            :class="statusFilter === 'accepted' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
+            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
+          >
+            Accepted
+          </button>
+          <button 
+            type="button" 
+            @click="statusFilter = 'processing'"
+            :class="statusFilter === 'processing' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
+            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
+          >
+            Processing
+          </button>
+          <button 
+            type="button" 
+            @click="statusFilter = 'rejected'"
+            :class="statusFilter === 'rejected' ? 'bg-[#003060] text-white shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]' : 'bg-white/80 text-[#003060] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)]'"
+            class="rounded-[6px] px-4 py-2 font-montserrat font-medium text-sm sm:text-base xl:text-lg border border-[#003060] transition-all cursor-pointer"
+          >
+            Rejected
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Search & Sort Bar Section -->
+    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      
+      <!-- Search Bar Input -->
+      <div class="flex-1 max-w-[839px] h-[42px] bg-[#E0F1F9] rounded-md flex items-center gap-3 px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]">
+        <i class="fa-solid fa-magnifying-glass text-[#003060] text-base sm:text-lg flex-shrink-0"></i>
+        <input 
+          type="text" 
+          x-model="searchQuery"
+          placeholder="Search Transaction" 
+          class="w-full bg-transparent font-montserrat font-medium text-base sm:text-lg xl:text-xl text-black placeholder:text-[#676767] focus:outline-none"
+        >
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div class="relative w-full md:w-[220px]">
+        <button 
+          type="button" 
+          @click="sortOpen = !sortOpen"
+          @click.outside="sortOpen = false"
+          class="w-full h-[43px] bg-white/50 backdrop-blur-[6.6px] rounded-md flex justify-between items-center px-4 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] cursor-pointer"
+        >
+          <span class="font-montserrat font-medium text-sm sm:text-base text-[#666666] truncate pr-2" x-text="'Sort by: ' + sortBy">Sort by: Newest</span>
+          <i class="fa-solid fa-chevron-down text-[#003060] text-xs transition-transform duration-200 flex-shrink-0" :class="sortOpen ? 'rotate-180' : ''"></i>
+        </button>
+        <ul 
+          x-show="sortOpen" 
+          x-transition
+          class="absolute right-0 top-full mt-2 w-full bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-2 z-50 font-montserrat"
+          style="display: none;"
+        >
+          <template x-for="option in ['Newest', 'Oldest', 'Highest Amount', 'Lowest Amount']" :key="option">
+            <li 
+              @click="sortBy = option; sortOpen = false" 
+              class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between"
+              :class="sortBy === option ? 'text-[#003060] bg-[#003060]/10 font-semibold' : ''"
+            >
+              <span x-text="option"></span>
+              <i x-show="sortBy === option" class="fa-solid fa-check text-xs text-[#003060]"></i>
+            </li>
+          </template>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+
+  {{! --- DYNAMIC CONTENT AREA / SUB-PARTIALS --- }}
+  <div>
+    
+    <!-- Full Payment Sub-Partial -->
+    <div x-show="paymentType === 'full'">
+      {{> user/sidebar_user_profile/history_payment/full_payment/index }}
+    </div>
+
+    <!-- Registration Sub-Partial -->
+    <div x-show="paymentType === 'registration'">
+      {{> user/sidebar_user_profile/history_payment/registration/index }}
+    </div>
+
+    <!-- Installment Sub-Partial -->
+    <div x-show="paymentType === 'installment'">
+      {{> user/sidebar_user_profile/history_payment/installment/index }}
+    </div>
+
+  </div>
+
+</div>

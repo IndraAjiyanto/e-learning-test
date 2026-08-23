@@ -5,6 +5,7 @@
         enctype='multipart/form-data'
         x-data='{ loading: false }'
         @submit='loading = true'
+        x-init='initEditorJS()'
       >
         <div class='grid grid-cols-1 lg:grid-cols-2 gap-8'>
 
@@ -58,9 +59,18 @@
             <input type='hidden' name='content' id='content' />
 
 <script>
-  document.addEventListener("DOMContentLoaded", async () => {
+  let portfolioEditor = null;
 
-    const editor = new EditorJS({
+  function initEditorJS() {
+    if (portfolioEditor) return; // Prevent duplicate initialization
+
+    // Ensure EditorJS is loaded (since it's deferred)
+    if (typeof EditorJS === 'undefined' || typeof EditorTools === 'undefined') {
+      setTimeout(initEditorJS, 100);
+      return;
+    }
+
+    portfolioEditor = new EditorJS({
       holder: "editor",
       placeholder: "enter your content here...",
 
@@ -69,22 +79,18 @@
           class: EditorTools.Header,
           inlineToolbar: ["link"]
         },
-
         paragraph: {
           class: EditorTools.Paragraph,
           inlineToolbar: true
         },
-
         list: {
           class: EditorTools.List,
           inlineToolbar: true
         },
-
         marker: {
           class: EditorTools.Marker,
           shortcut: "CMD+SHIFT+M"
         },
-
         image: {
           class: EditorTools.ImageTool,
           tunes: {
@@ -99,7 +105,6 @@
             }
           }
         },
-
         linkTool: {
           class: EditorTools.LinkTool,
           config: {
@@ -108,19 +113,20 @@
         }
       }
     });
+  }
 
-    const form = document.getElementById("portfolioForm");
-
-    form.addEventListener("submit", async (e) => {
+  // Bind submit listener globally so it works even if form is re-rendered
+  document.addEventListener("submit", async (e) => {
+    if (e.target && e.target.id === "portfolioForm") {
       e.preventDefault();
-
-      const output = await editor.save();
-
-      document.getElementById("content").value = JSON.stringify(output);
-
-      form.submit();
-    });
-
+      
+      if (portfolioEditor) {
+        const output = await portfolioEditor.save();
+        document.getElementById("content").value = JSON.stringify(output);
+      }
+      
+      e.target.submit();
+    }
   });
 </script>
 

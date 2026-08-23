@@ -7,27 +7,27 @@
             categorySelected: null,
             paidClass: false,
             formData: { description: { id: "", en: "", ja: "" },
-                        lokasi: { id: "", en: "", ja: "" },
-                        link_lokasi: "" },
-            formErrors: { link_lokasi: "" },
-            formValid: { link_lokasi: false },
+                        location: { id: "", en: "", ja: "" },
+                        locationLink: "" },
+            formErrors: { locationLink: "" },
+            formValid: { locationLink: false },
             updateCoverValidation(isValid, hasFile) {
                 this.coverValid = isValid;
                 this.coverHasFile = hasFile;
             },
             validateField(field, value) {
-                if (field === "link_lokasi") {
+                if (field === "locationLink") {
                     if (!value.trim()) {
-                        this.formErrors.link_lokasi = "Link Location is required";
-                        this.formValid.link_lokasi = false;
+                        this.formErrors.locationLink = "Link Location is required";
+                        this.formValid.locationLink = false;
                     } else {
                         try {
                             new URL(value);
-                            this.formErrors.link_lokasi = "";
-                            this.formValid.link_lokasi = true;
+                            this.formErrors.locationLink = "";
+                            this.formValid.locationLink = true;
                         } catch {
-                            this.formErrors.link_lokasi = "Please enter a valid URL";
-                            this.formValid.link_lokasi = false;
+                            this.formErrors.locationLink = "Please enter a valid URL";
+                            this.formValid.locationLink = false;
                         }
                     }
                     return;
@@ -84,6 +84,12 @@
 {{> admin/program/create/right_column/month_input}}
 
 {{> admin/program/create/right_column/day_input}}
+
+{{> admin/program/create/right_column/time_start_input}}
+
+{{> admin/program/create/right_column/time_end_input}}
+
+{{> admin/program/create/right_column/date_registration_input}}
 
 {{> admin/program/create/right_column/start_date_input}}
 

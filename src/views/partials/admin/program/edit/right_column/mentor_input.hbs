@@ -2,17 +2,19 @@
                     <!-- Mentoring -->
                     <div
                       x-data="{
-                        search: '{{#if course.mentoring.[0].user}}{{course.mentoring.[0].user.username}}{{/if}}',
-                        selectedMentoring: {{#if course.mentoring.[0].user}}{{json course.mentoring.[0].user}}{{else}}null{{/if}},
+                        search: '{{#if course.mentorings.[0].user}}{{course.mentorings.[0].user.username}}{{/if}}',
+                        selectedMentoring: {{#if course.mentorings.[0].user}}{{json course.mentorings.[0].user}}{{else}}null{{/if}},
+                        selectedMentoringId: '{{#if course.mentorings.[0].user}}{{course.mentorings.[0].user.id}}{{/if}}',
                         showDropdown: false,
-                        availableMentoring: {{json mentoring}},
+                        availableMentoring: {{json mentorings}},
                         get filteredMentoring() {
-                          return this.availableMentoring.filter(m => 
+                          return this.availableMentoring.filter(m =>
                             m.username.toLowerCase().includes(this.search.toLowerCase())
                           );
                         },
                         selectMentoring(mentoring) {
                           this.selectedMentoring = mentoring;
+                          this.selectedMentoringId = mentoring.id;
                           this.search = mentoring.username;
                           this.showDropdown = false;
                         }
@@ -49,7 +51,7 @@
                           </template>
                         </div>
                         
-                        <input type='hidden' name='mentoringId' x-model='selectedMentoring ? selectedMentoring.id : ""' />
+                        <input type='hidden' name='mentoringsId' x-model='selectedMentoringId' />
                       </div>
                     </div>
 {{/if}}

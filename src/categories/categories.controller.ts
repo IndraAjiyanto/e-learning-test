@@ -81,6 +81,7 @@ export class CategoriesController {
     @Res() res: Response,
   ) {
     const category = await this.categoriesService.findOneCategory(categoryName);
+    category.contact = category.contact?.replace(/^0/, '62')
     const benefit_category = await this.categoriesService.findBenefitByCategory(
       category.id,
     );
@@ -90,30 +91,44 @@ export class CategoriesController {
     const superiority = await this.categoriesService.findSuperiorityByCategory(
       category.id,
     );
-    const faqs = await this.categoriesService.findFaqByCategory(
+    const gallery = await this.categoriesService.findGalleryByCategory(
       category.id,
     );
+    const faqs = await this.categoriesService.findFaqByCategory(category.id);
     const alumni = await this.categoriesService.findAlumniByCategory(
       category.id,
     );
-    // const courses = await this.categoriesService.findCourseByCategory(category.id);
+    const courses = await this.categoriesService.findCourseByCategory(category.id);
     if (category?.type === 'Special Program') {
       res.render('special_program', {
         category,
         user: req.user,
-        // courses,
+        courses,
         alumni,
         benefit_category,
         flow_category,
         superiority,
         faqs,
+        gallery,
+      });
+    } else if (category?.type === 'Paid Program') {
+      const portfolio =
+        await this.categoriesService.findPortfolioByCategory(category.id);
+      res.render('paid_program', {
+        category,
+        user: req.user,
+        courses,
+        alumni,
+        portfolio,
+        benefit_category,
+        flow_category,
+        superiority,
+        faqs,
+        gallery,
       });
     } else if (category?.type === 'Free Program') {
-      if (category.name === 'Short Class') {
-        res.render('short_class', { category, user: req.user, alumni });
-      } else {
-        res.render('program', { category, user: req.user, alumni });
-      }
+        res.render('free_program', { category, user: req.user, courses, benefit_category,alumni, gallery });
+      
     }
   }
 
@@ -156,8 +171,7 @@ export class CategoriesController {
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
-    const faqs =
-      await this.categoriesService.findFaqByCategory(categoryId);
+    const faqs = await this.categoriesService.findFaqByCategory(categoryId);
     res.json(faqs);
   }
 
@@ -178,7 +192,8 @@ export class CategoriesController {
     @Param('categoryId') categoryId: number,
     @Res() res: Response,
   ) {
-    const alumni = await this.categoriesService.findAlumniByCategory(categoryId);
+    const alumni =
+      await this.categoriesService.findAlumniByCategory(categoryId);
     res.json(alumni);
   }
 

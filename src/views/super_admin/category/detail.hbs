@@ -273,7 +273,6 @@
       Gallery
     </button>
 
-    {{#if (eq category.type 'Special Program') }}
       <button
         @click="toggleFetch('/category/faq/{{category.id}}', 'faq')"
         :class="tab === 'faq' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
@@ -302,7 +301,6 @@
       >
         Flow
       </button>
-    {{/if}}
 
     </div>
 

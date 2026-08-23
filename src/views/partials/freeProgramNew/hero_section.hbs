@@ -1,0 +1,83 @@
+<section 
+  class="relative z-10 w-full font-montserrat min-h-[calc(100vh-80px)] flex flex-col justify-end bg-[#FAFAFA] overflow-hidden pt-12 lg:pt-16 pb-0"
+  x-data="{
+    currentIndex: 0,
+    intervalId: null,
+    images: [
+      '/public/image/freeProgram/bg1.png',
+      '/public/image/freeProgram/bg2.png',
+      '/public/image/freeProgram/bg3.png'
+    ],
+    init() {
+      // Preload all 4 background images to prevent flashing/blank frames
+      this.images.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+
+      // Respect prefers-reduced-motion settings
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+
+      // Continuous loop: hold briefly (2.5s) + 0.5s smooth crossfade transition
+      this.intervalId = setInterval(() => {
+        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+      }, 1500);
+    }
+  }"
+>
+  <!-- Animated Background Stack Layers (bg2 -> bg1 -> bg4 -> bg3) -->
+  <div class="absolute inset-0 z-0 w-full h-full pointer-events-none select-none overflow-hidden">
+    <img 
+      src="/public/image/freeProgram/bg1.png" 
+      alt="" 
+      class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
+      :class="currentIndex === 0 ? 'opacity-100' : 'opacity-0'"
+    />
+    <img 
+      src="/public/image/freeProgram/bg2.png" 
+      alt="" 
+      class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
+      :class="currentIndex === 1 ? 'opacity-100' : 'opacity-0'"
+    />
+    <img 
+      src="/public/image/freeProgram/bg3.png" 
+      alt="" 
+      class="absolute inset-0 w-full h-full object-cover object-bottom transition-opacity duration-500 ease-in-out"
+      :class="currentIndex === 2 ? 'opacity-100' : 'opacity-0'"
+    />
+
+  </div>
+
+  <!-- Content Container (Left Aligned Wide Text + Flush-to-Bottom Right Image) -->
+  <div class="relative z-10 container mx-auto mt-32 px-6 sm:px-10 lg:px-12 max-w-[1440px] xl:max-w-[1536px] w-full flex-1 flex flex-col lg:flex-row items-center lg:items-end justify-between gap-6 lg:gap-8 pt-8">
+    
+    <!-- Left Column: Title & Button (Vertically centered) -->
+    <div class="flex-1 max-w-[960px] flex flex-col items-start text-left mb-10 lg:mb-64 self-center lg:self-center">
+      <!-- Title -->
+      <h1 class="font-montserrat font-semibold text-3xl sm:text-5xl lg:text-[70px] text-[#000000] leading-tight lg:leading-[85px] tracking-normal text-left mb-8">
+        {{t 'test.categoryFreeProgram.hero.title'}} {{category.name}} {{t 'test.categoryFreeProgram.hero.title1'}} <br class="hidden sm:inline"> {{t 'test.categoryFreeProgram.hero.title2'}} <br class="hidden sm:inline"> {{t 'test.categoryFreeProgram.hero.title3'}}
+      </h1>
+
+      <!-- View Program Button -->
+      <button
+        onclick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
+        class="inline-flex items-center justify-center gap-[10px] bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060] rounded-[12px] p-8 w-full sm:w-[281px] h-[54px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer"
+      >
+        <span class="font-montserrat font-medium text-lg sm:text-[25px] leading-none tracking-normal text-center">{{t 'test.categoryFreeProgram.hero.button'}}</span>
+        <i class="fa-solid fa-arrow-down text-base sm:text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Right Column: Kylian Mbappé Render Image (Mepet Kebawah / Flush to Bottom) -->
+    <div class="w-full lg:w-auto flex justify-center lg:justify-end flex-shrink-0 self-end">
+      <img 
+        src="{{category.icon}}" 
+        alt="{{category.name}}" 
+        class="max-h-[420px] sm:max-h-[520px] lg:max-h-[620px] xl:max-h-[660px] w-auto object-contain object-bottom drop-shadow-2xl transition-transform duration-300 hover:scale-102"
+      >
+    </div>
+
+  </div>
+</section>

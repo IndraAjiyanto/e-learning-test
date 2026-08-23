@@ -4,20 +4,24 @@
             x-data="{
             search: '',
             selectedMentoring: null,
+            selectedMentoringId: '',
             showDropdown: false,
-            availableMentoring: {{json mentoring}},
+            availableMentoring: {{json mentorings}},
             get filteredMentoring() {
               return this.availableMentoring.filter(m => 
                 m.username.toLowerCase().includes(this.search.toLowerCase())
               );
             },
             selectMentoring(mentoring) {
+              console.log('Selected:', mentoring);
               this.selectedMentoring = mentoring;
+              this.selectedMentoringId = mentoring.id;
               this.search = mentoring.username;
               this.showDropdown = false;
             },
             clearMentoring() {
               this.selectedMentoring = null;
+              this.selectedMentoringId = '';
               this.search = '';
             }
           }"
@@ -65,8 +69,8 @@
 
               <input
                 type='hidden'
-                name='mentoringId'
-                x-model='selectedMentoring ? selectedMentoring.id : ""'
+                name='mentoringsId'
+                x-model='selectedMentoringId'
               />
             </div>
           </div>

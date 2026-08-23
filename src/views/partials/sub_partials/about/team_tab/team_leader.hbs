@@ -1,222 +1,151 @@
-          <!-- CEO Card - Special Design -->
-          <div
-            class='bg-[#E0F1F980] border-2 border-slate-300 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 mb-6 sm:mb-8 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1'
-            x-data='{ educationOpen: false, achievementOpen: false, portfolioOpen: false }'
-          >
-            <div class='flex flex-col md:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6'>
-              <div class='flex-shrink-0 mx-auto md:mx-0'>
-                <div
-                  class='w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-gradient-to-br from-slate-700 to-slate-900 rounded-full flex items-center justify-center ring-4 ring-slate-300'
-                >
-                  <img src="{{#if teamLead.[0]}}{{teamLead.[0].profile}}{{else}}https://placehold.co/128x128?text=No+Image{{/if}}" alt="Profile Picture" class="w-full h-full rounded-full object-cover">
-                </div>
-              </div>
-              <div class='flex-1 text-center md:text-left'>
-                <div
-                  class='flex items-center justify-center md:justify-start gap-2 mb-2'
-                >
-                  <h3
-                    class='text-xl sm:text-2xl lg:text-3xl font-bold text-slate-800 font-montserrat'
-                  >
-                    {{#if teamLead.[0]}}
-                      {{teamLead.[0].name}}
-                    {{else}}
-                      Faisal Wirakusuma, S.Kom., M.Sc
-                    {{/if}}
-                  </h3>
+<!-- CEO Card - Special Design -->
+<div
+  class='w-full max-w-[1110px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] px-8 sm:px-16 py-4 sm:py-8 mb-24'
+  x-data='{ educationOpen: false, portfolioOpen: false }'
+>
+  <div class='flex flex-col md:flex-row gap-6 md:gap-10 mb-6 items-center md:items-start'>
+    <div class='flex-shrink-0 mx-auto md:mx-0 mt-3 md:mt-4'>
+      <div class='w-[145px] h-[148px] rounded-full overflow-hidden border-[5px] border-[#9D9D9D] flex items-center justify-center'>
+        <img src="{{#if teamLead.[0].profile}}{{teamLead.[0].profile}}{{else}}/public/image/about/orang.png{{/if}}" alt="Profile Picture" class="w-[75%] translate-y-[8%]">
+      </div>
+    </div>
+    <div class='flex-1 text-center md:text-left'>
+      <h3 class='text-2xl md:text-4xl font-semibold text-[#000000] font-montserrat leading-none tracking-normal mb-4'>
+        {{#if teamLead.[0]}}
+          {{teamLead.[0].name}}
+        {{else}}
+          Faisal Wirakusuma, S.Kom., M.Sc.
+        {{/if}}
+      </h3>
+      <p class='text-[#000000] font-medium mb-4 text-base md:text-3xl font-montserrat'>
+        {{#if teamLead.[0]}}
+          {{getByLang teamLead.[0].position lang}}
+        {{else}}
+          Chief Executive Officer
+        {{/if}}
+      </p>
 
-                </div>
-                <p
-                  class='text-slate-600 font-semibold mb-2 sm:mb-3 text-base sm:text-lg font-inter'
-                >
-                  {{#if teamLead.[0]}}
-                    {{getByLang teamLead.[0].position lang}}
-                  {{else}}
-                    Founder & Chief Executive Officer
-                  {{/if}}
-                </p>
+      <div class='flex justify-center md:justify-start space-x-3 mb-7'>
+        <a
+          href='{{#if teamLead.[0]}}{{teamLead.[0].linkedin}}{{else}}https://linkedin.com{{/if}}' target="_blank"
+          class='w-[40px] h-[40px] bg-white rounded-full flex items-center justify-center'
+        >
+          <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-5 h-5 object-contain" />
+        </a>
+        <a
+          href='{{#if teamLead.[0]}}{{teamLead.[0].instagram}}{{else}}https://instagram.com{{/if}}' target="_blank"
+          class='w-[40px] h-[40px] bg-white rounded-full flex items-center justify-center'
+        >
+          <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-5 h-5 object-contain" />
+        </a>
+      </div>
+    </div>
+  </div>
 
-                  {{#if teamLead.[0]}}
-                                  <p
-                  class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'
-                >
-                    {{getByLang teamLead.[0].description lang}}
-                </p>
+  {{#if teamLead.[0]}}
+    <p class='text-[#000000CC] font-sans font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
+      {{getByLang teamLead.[0].description lang}}
+    </p>
+  {{else}}
+    <p class='text-[#000000CC] font-sans font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
+      Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. 
+      He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including notable names such as Pertamina, Biofarma, 
+      Angkasa Pura II, and Bank DBS Indonesia.
+      His deep expertise in technology and data analytics, combined with his experience serving major clients, 
+      serves as the core foundation for his vision to build an Edutech company. His goal is to bridge the gap and 
+      democratize technical up-skilling, leveraging technology to create flexible, scalable, and high-quality learning solutions that can significantly enhance the competitiveness 
+      of digital talent across Asia. His passion for continuous learning and commitment to achieving client business objectives now extends to a mission of elevating the competence of the wider community.
+    </p>
+  {{/if}}
 
-                  {{else}}
-                  <p class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
-                    Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including notable names such as Pertamina, Biofarma, Angkasa Pura II, and Bank DBS Indonesia.
-                    </p>
-                    <p class='text-slate-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 font-inter text-justify'>
-                    His deep expertise in technology and data analytics, combined with his experience serving major clients, serves as the core foundation for his vision to build an Edutech company. His goal is to bridge the gap and democratize technical up-skilling, leveraging technology to create flexible, scalable, and high-quality learning solutions that can significantly enhance the competitiveness of digital talent across Asia. His passion for continuous learning and commitment to achieving client business objectives now extends to a mission of elevating the competence of the wider community.
-                    </p>
-                  {{/if}}
-                <div class='flex justify-center md:justify-start space-x-3'>
-                  <a
-                    href='{{#if teamLead.[0]}}{{teamLead.[0].linkedin}}{{else}}https://linkedin.com{{/if}}' target="_blank"
-                    class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
-                  >
-                    <i class='fab fa-linkedin text-slate-700 text-base'></i>
-                  </a>
-                  <a
-                    href='{{#if teamLead.[0]}}{{teamLead.[0].instagram}}{{else}}https://instagram.com{{/if}}' target="_blank"
-                    class='w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors shadow-sm'
-                  >
-                    <i class='fab fa-instagram text-slate-700 text-base'></i>
-                  </a>
-                </div>
-              </div>
-            </div>
+  <!-- Accordion Dropdowns -->
+  <div class='space-y-[30px] mt-6'>
+    <!-- Education Background Accordion -->
+    <div class='bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] overflow-hidden'>
+      <button
+        @click='educationOpen = !educationOpen'
+        class='w-full px-5 py-3.5 flex items-center justify-between text-left'
+      >
+        <div class='flex items-center space-x-3'>
+          <img src="/public/image/about/team/educational.svg" alt="Education" class="w-7 object-contain" />
+          <span class='font-medium text-[#000000] text-sm sm:text-2xl font-montserrat'>
+            {{t 'test.about.team.educationBackground'}}
+          </span>
+        </div>
+        <i
+          class='fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200'
+          :class="educationOpen ? 'rotate-180' : ''"
+        ></i>
+      </button>
+      
+      <div
+        x-show='educationOpen'
+        x-transition:enter='transition ease-out duration-200'
+        x-transition:enter-start='opacity-0 transform -translate-y-2'
+        x-transition:enter-end='opacity-100 transform translate-y-0'
+        class='px-6 py-5 border-t border-[#000000]/15 bg-[#E0F1F9]/50 shadow-[inset_0_4px_6px_-2px_rgba(0,0,0,0.1)]'
+      >
+        <ul class='list-disc pl-6 space-y-3 font-sans text-xl leading-[35px] text-justify text-black'>
+          {{#if background.length}}
+            {{#each background}}
+              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+                <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
+              </li>
+            {{/each}}
+          {{else}}
+            <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+              <span class='font-semibold'>Bachelor of Science, Information Technology (S.Kom)</span> - Indonesia Islamic University (2005 - 2010)
+            </li>
+            <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+              <span class='font-semibold'>Master of Science, Advanced Computer Science (M.Sc)</span> - The University of Manchester (2014 - 2015)
+            </li>
+          {{/if}}
+        </ul>
+      </div>
+    </div>
 
-            <!-- Dropdown Sections -->
-            <div class='space-y-3'>
-              <!-- Education Background -->
-              <div
-                class='border border-gray-300 rounded-lg bg-[#E0F1F980] overflow-hidden shadow-lg'
-              >
-                <button
-                  @click='educationOpen = !educationOpen'
-                  class='w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors'
-                >
-                  <div class='flex items-center space-x-3'>
-                    <i class='fas fa-graduation-cap text-slate-700'></i>
-                    <span
-                      class='font-semibold text-slate-800 text-sm sm:text-base'
-                    >{{t 'test.about.team.educationBackground'}}</span>
-                  </div>
-                  <i
-                    class='fas fa-chevron-down text-slate-600 transition-transform duration-200'
-                    :class="educationOpen ? 'rotate-180' : ''"
-                  ></i>
-                </button>
-                <div
-                  x-show='educationOpen'
-                  x-transition:enter='transition ease-out duration-200'
-                  x-transition:enter-start='opacity-0 transform -translate-y-2'
-                  x-transition:enter-end='opacity-100 transform translate-y-0'
-                  class='px-4 py-3 border-t border-slate-200 bg-slate-50'
-                >
-                  <ul class='space-y-2 text-sm sm:text-base text-slate-700'>
-                    {{#if background.length}}
-                    {{#each background}}
-                    <li class='flex items-center space-x-2'>
-                                                                <i
-                      class='fa-solid fa-circle fa-2xs text-gray-500 flex-shrink-0'
-                    ></i>
-                      <span><strong>{{getByLang content ../lang}}</strong>
-                        - {{getByLang isi ../lang}}</span>
-                    </li>
-                    {{/each}}
-                    {{else}}
-                    <li class='flex items-start space-x-2'>
-                      <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
-                      <span><strong>Bachelor's Degree (S.Kom)</strong>
-                        - Information Technology at Universitas Islam Indonesia</span>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fa-solid fa-circle fa-2xs text-gray-500 mt-2 flex-shrink-0'></i>
-                      <span><strong>Master's Degree (M.Sc)</strong>
-                        - Advanced Computer Science with Artificial Intelligence Pathway at Manchester University</span>
-                    </li>
-                    {{/if}}
-                  </ul>
-                </div>
-              </div>
+    <!-- Portfolio Accordion -->
+    <div class='bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] overflow-hidden'>
+      <button
+        @click='portfolioOpen = !portfolioOpen'
+        class='w-full px-5 py-3.5 flex items-center justify-between text-left'
+      >
+        <div class='flex items-center space-x-3'>
+          <img src="/public/image/about/team/portofolio.svg" alt="Portfolio" class="w-7 object-contain" />
+          <span class='font-medium text-[#000000] text-sm sm:text-2xl font-montserrat'>
+            {{t 'test.about.team.portfolioExperience'}}
+          </span>
+        </div>
+        <i
+          class='fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200'
+          :class="portfolioOpen ? 'rotate-180' : ''"
+        ></i>
+      </button>
 
-              <!-- Portfolio -->
-              <div
-                class='border border-slate-300 rounded-lg bg-[#E0F1F980] overflow-hidden shadow-lg'
-              >
-                <button
-                  @click='portfolioOpen = !portfolioOpen'
-                  class='w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors'
-                >
-                  <div class='flex items-center space-x-3'>
-                    <i class='fas fa-briefcase text-slate-700'></i>
-                    <span
-                      class='font-semibold text-slate-800 text-sm sm:text-base'
-                    >{{t 'test.about.team.portfolioExperience'}}</span>
-                  </div>
-                  <i
-                    class='fas fa-chevron-down text-slate-600 transition-transform duration-200'
-                    :class="portfolioOpen ? 'rotate-180' : ''"
-                  ></i>
-                </button>
-                <div
-                  x-show='portfolioOpen'
-                  x-transition:enter='transition ease-out duration-200'
-                  x-transition:enter-start='opacity-0 transform -translate-y-2'
-                  x-transition:enter-end='opacity-100 transform translate-y-0'
-                  class='px-4 py-3 border-t border-slate-200 bg-slate-50'
-                >
-                  <ul class='space-y-2 text-sm sm:text-base text-slate-700'>
-                    {{#if experience.length}}
-                    {{#each experience}}
-                    <li class='flex items-start space-x-2'>
-                      <i class='fa-solid fa-circle fa-2xs mt-3 text-gray-500 flex-shrink-0'></i>
-                        <span><strong>{{getByLang content ../lang}}</strong> - {{getByLang isi ../lang}}</span>
-                    </li>
-                    {{/each}}
-                    {{else}}
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div class="flex items-center gap-1">
-                        <strong>Founder & Chief Executive Officer</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'> - PT. Wiratek Solusi Asia</p>
-                      </div>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div>
-                        <strong>Co-Founder & Chief Technology Officer</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'> - Bunga Desa GIS</p>
-                      </div>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div>
-                        <strong>Information Technology Consultant</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'> - Kementerian Komunikasi dan Informatika Republik Indonesia</p>
-                      </div>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div>
-                        <strong>Co-Founder</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'> - My Coach Indonesia</p>
-                      </div>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div>
-                        <strong>Chief Technology Officer</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'> - Shopciety Indonesia</p>
-                      </div>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div>
-                        <strong>Data Science Assistant Manager</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'> - BDO in Indonesia</p>
-                      </div>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div>
-                        <strong>Lead Java Developer and System Analyst</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'> - Direktorat Jenderal Bea dan Cukai</p>
-                      </div>
-                    </li>
-                    <li class='flex items-start space-x-2'>
-                      <i class='fas fa-building text-slate-600 mt-1'></i>
-                      <div>
-                        <strong>Web Developer</strong>
-                        <p class='text-xs sm:text-sm text-slate-600'> - Board of Information Systems at Universitas Islam Indonesia</p>
-                      </div>
-                    </li>
-                    {{/if}}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        x-show='portfolioOpen'
+        x-transition:enter='transition ease-out duration-200'
+        x-transition:enter-start='opacity-0 transform -translate-y-2'
+        x-transition:enter-end='opacity-100 transform translate-y-0'
+        class='px-6 py-5 border-t border-[#000000]/15 bg-[#E0F1F9]/50 shadow-[inset_0_4px_6px_-2px_rgba(0,0,0,0.1)]'
+      >
+        <ul class='list-disc pl-6 space-y-3 font-sans text-xl leading-[35px] text-justify text-black'>
+          {{#if experience.length}}
+            {{#each experience}}
+              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+                <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
+              </li>
+            {{/each}}
+          {{else}}
+            <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+              <span class='font-semibold'>CEO & Founder</span> - PT Wiratek Solusi Asia (2015 - Present)
+            </li>
+            <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+              <span class='font-semibold'>Senior IT & Data Consultant</span> - Handling enterprise solutions for BUMN & private sectors
+            </li>
+          {{/if}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

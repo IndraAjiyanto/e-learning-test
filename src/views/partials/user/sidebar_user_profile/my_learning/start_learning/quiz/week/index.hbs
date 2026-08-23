@@ -1,0 +1,106 @@
+<div class="px-4 sm:px-8 md:px-14 py-10 space-y-4">
+  <!-- Header Quiz -->
+  <div class=" space-y-4">
+    <!-- Enhanced header with gradient text and better spacing -->
+    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060]">Quiz</h1>
+    <p class="font-sans text-[20px] text-[#003060]">Complete the quiz to assess your understanding of the learning material.</p>
+  </div>
+
+  <!-- Score Result Cards (one per attempt) -->
+  <div class="bg-white shadow-sm flex flex-col h-[198px] overflow-hidden rounded-2xl p-6 sm:p-3 mb-4 border border-slate-200 hover:shadow-lg transition-all duration-300 relative">
+    <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
+      <div class="flex items-center justify-between gap-4">
+        <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
+          Quiz Week 1 : Minggu Pertama
+        </span>
+        <span class="font-montserrat text-[25px] text-[#003060] whitespace-nowrap">Score:
+          <span class="font-semibold">0/100</span>
+        </span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-2">
+      <i class="fa-regular fa-calendar-days text-[20px] text-gray-900"></i>
+      <div class="flex items-center gap-2">
+        <p class="text-[#003060] text-[20px] font-semibold font-sans">
+          {{t "test.quiz.totalQuestions"}} :
+        </p>
+        <p class="text-[#003060] font-sans text-[20px]">2</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-2">
+      <i class="fa-regular fa-clock text-[20px] text-gray-900"></i>
+      <p class="text-[#003060] text-[20px] font-semibold font-sans">
+        Duration :
+      </p>
+      <p class="text-[#003060] font-sans text-[20px]">60 minutes</p>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <i class="fa-regular fa-clock text-[20px] text-gray-900"></i>
+      <p class="text-[#003060] text-[20px] font-semibold font-sans">
+        {{t "test.quiz.minimumScore"}} :
+      </p>
+      <p class="text-[#003060] font-sans text-[20px]">50 Poin</p>
+    </div>
+  </div>
+
+  <!-- Info Quiz Card with Start Button -->
+ <div class="bg-white shadow-sm flex flex-col h-[198px] overflow-hidden rounded-2xl p-6 sm:p-3 mb-8 border border-slate-200 hover:shadow-lg transition-all duration-300 relative">
+  <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
+
+      <div class="flex items-center justify-between gap-4">
+        <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
+          Quiz Week 1 : Minggu Pertama
+        </span>
+      </div>
+    <div class="flex items-center space-x-2">
+      <i class="fa-regular fa-calendar-days text-[20px] text-gray-900"></i>
+      <div class="flex items-center gap-2">
+        <p class="text-[#003060] text-[20px] font-semibold font-sans">
+          {{t "test.quiz.totalQuestions"}} :
+        </p>
+        <p class="text-[#003060] font-sans text-[20px]">2</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <i class="fa-regular fa-clock text-[20px] text-gray-900"></i>
+      <p class="text-[#003060] text-[20px] font-semibold font-sans">
+        Duration :
+      </p>
+      <p class="text-[#003060] font-sans text-[20px]">60 minutes</p>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <i class="fa-regular fa-clock text-[20px] text-gray-900"></i>
+      <p class="text-[#003060] text-[20px] font-semibold font-sans">
+        {{t "test.quiz.minimumScore"}} :
+      </p>
+      <p class="text-[#003060] font-sans text-[20px]">50 Poin</p>
+    </div>
+
+  </div>
+
+  <!-- Button kanan bawah -->
+  <a href="#"
+   class="btn self-end mt-auto relative bottom-12 bg-[#003060] hover:bg-[#003060] text-white inline-flex items-center gap-2 px-5 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 font-semibold text-[15px] focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"><span>{{t "test.quiz.startQuiz"}}</span>
+   </a>
+
+</div>
+
+
+  <div class="mb-8 flex items-center">
+  <button @click="toggleActiveSection('quiz')"
+     class="w-12 h-12 aspect-square p-0 rounded-full bg-white inline-flex items-center justify-center border border-slate-300 shadow-md hover:shadow-lg text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 cursor-pointer">
+
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <path stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M19 12H5m6-6l-6 6 6 6">
+  </path>
+</svg>
+  </button>
+</div>
+
+</div>

@@ -18,7 +18,8 @@
     "myPortfolio": "マイポートフォリオ",
     "historyPayment": "支払い履歴",
     "logout": "ログアウト",
-    "gallery": "ギャラリー"
+    "gallery": "ギャラリー",
+    "mpp":"Marketing Program Partner"
   },
   "footer": {
     "description": "質の高いテクノロジー教育を通じて、インドネシアのデジタル世代を強化する",
@@ -34,7 +35,7 @@
     "gallery": "ギャラリー"
   },
   "login": {
-    "tittle": "KESATRIA E-ラーニング",
+    "title": "KESATRIA E-ラーニング",
     "description": "ケサトリアへようこそ！いつでも、どこでも学べます。スキルを向上させ、ポートフォリオを構築し、競争の激しい仕事の世界に備えましょう。",
     "email": "メールアドレス",
     "placeholderEmail": "email@example.com",
@@ -45,14 +46,15 @@
     "signUp": "今すぐ登録"
   },
   "forgotPassword": {
-    "tittle": "パスワードをお忘れですか",
+    "title": "パスワードをお忘れですか",
     "description": "以下のメールアドレスを入力すると、パスワードリセット用のリンクをお送りします。",
     "email": "メールアドレス",
-    "placeholderEmail": "email@example.com",
+    "placeholderEmail": "メールアドレスを入力してください",
     "emailHelp": "このメールアドレスにパスワードリセットリンクを送信します。",
     "sendButton": "リセットリンクを送信",
     "rememberPassword": "パスワードを思い出しましたか？",
-    "backToLogin": "ログインに戻る",
+    "login": "ログイン",
+    "backTo":"画面に戻る",
     "tittleHelp": "お困りですか？",
     "Help": "5分以内にメールが届かない場合は、スパムフォルダを確認するか、再度お試しください。リセットリンクは2分で期限切れになります。",
     "day": "日",
@@ -73,7 +75,7 @@
     "alertSuccess": "パスワードが一致します"
   },
   "signUp": {
-    "tittle": "アカウント登録",
+    "title": "アカウント登録",
     "description": "ラーニング管理システムにアクセスするための新しいアカウントを作成します",
     "username": "ユーザー名",
     "placeholderUsername": "ユーザー名を入力",
@@ -90,11 +92,17 @@
   "verify": {
     "verifyEmail": "メールを確認する",
     "description": "メールアドレスを確認するには、先ほど送信したリンクをクリックしてください。",
+    "description2": "ご登録のメールアドレスに確認用リンクが送信されました。リンクをクリックして、アカウントの確認と有効化を行ってください。",
     "day": "日",
     "hour": "時間",
     "minute": "分",
     "second": "秒",
     "sendButton": "確認メールを送信"
+  },
+  "verifySuccess":{
+    "title": "メールアドレスの確認が完了しました!",
+    "description":"メールアドレスの確認が完了しました。これでログインして、プラットフォームの利用を開始できます。",
+    "login": "ログイン画面に戻る"
   },
   "home": {
     "heroSection": {
@@ -103,23 +111,24 @@
       "buttonConsultation": "相談",
       "jobPlacment": "就職支援",
       "support": "24/7サポート",
-      "capstoneProject": "キャップストーンプロジェクト"
+      "capstoneProject": "キャップストーンプロジェクト",
+      "buttonExplorePrograms": "プログラムを探す"
     },
     "experienceSection": {
-      "tittle": "私たちの経験",
+      "title": "私たちの経験",
       "description": "私たちは、すべての専門家が主要なキャリアを諦めずに成長する機会を得るべきだと信じています。柔軟なプログラムと専門家のメンターシップを通じて、Kesatria Academyは必要なITスキルを習得し、世界のテクノロジー業界で競争できるようお手伝いします。"
     },
     "imagine": {
       "whyChooseUs": "当社を選ぶ理由",
-      "tittle": "なぜ<span class='text-[#6EB6E5] font-bold'>ケサトリア</span>アカデミーを選ぶべきなのでしょうか？",
-      "description": "私たちは、皆様が需要の高いITスキルを身につけ、実務経験を積み、夢のキャリアを実現できるよう全力でサポートいたします。",
+      "title": "なぜ<span class='text-[#003060] font-[700]'>ケサトリア</span>アカデミーを選ぶべきなのでしょうか？",
+      "description": "私たちは、需要の高いITスキルを習得し、実践的な経験を積み、理想のキャリアを実現できるよう、皆様を全力で支援いたします。",
       "mostWanted": "最も求められている",
       "spanMostWanted": "これは、ほとんどの学習者が最も望むメリットです。"
     },
     "programSection": {
       "ourProgram": "当プログラム",
-      "tittle": "プログラムを<span class='text-[#6EB6E5] font-bold'>選択</span> してください",
-      "description": "需要の高いスキルを身につけ、実務経験を積み、キャリアアップを加速させるために設計された当社の学習プログラムをご覧ください。",
+      "title": "プログラムを選ぶ",
+      "description": "需要の高いスキルを身につけ、実践的な経験を積み、キャリアを加速させるための学習プログラムをぜひご覧ください。",
       "find": "あなたにぴったりのプログラムを見つける",
       "category": "カテゴリー",
       "allCategory": "すべてのカテゴリー",
@@ -149,7 +158,7 @@
       "clearFilters": "すべてのフィルターをクリア"
     },
     "specialProgram": {
-      "tittle": "特別プログラム",
+      "title": "特別プログラム",
       "description": "プロフェッショナルなインターンシップから企業研修ソリューションまで、異なる目標に対応する特別プログラムの選択肢。",
       "buttonViewProgram": "プログラムを見る",
       "heroSection": {
@@ -158,34 +167,36 @@
     },
     "alumniSection": {
       "badge": "卒業生の体験談",
-      "tittle": "実話。真の影響。実在の人々。",
+      "title": "実話。真の影響。実在の人々。",
       "description": "当校の卒業生はさまざまな背景を持っていますが、成長、変革、そして成功という同じ目標を共有しています。",
       "moreStories": "さらに多くの卒業生の感動的なストーリーがあります",
       "seeAll": "卒業生のストーリーをすべて見る"
     },
     "partnerSection": {
       "ourPartners": "パートナー企業",
-      "tittle": "<span class='text-[#6EB6E5] font-bold'>主要パートナー企業から</span>信頼されています",
+      "title": "<span class='text-[#6EB6E5] font-bold'>主要パートナー企業から</span>信頼されています",
       "description": "私たちは大学、教育機関、企業と連携し、業界に即した学習体験を提供するとともに、受講生のために有意義なキャリアの機会を創出しています。"
     },
     "faq": {
-      "tittle": "よくある<span class='text-[#6EB6E5]'>質問</span>",
-      "description": "よくある質問をご覧いただき、必要な情報を素早く簡単に手に入れましょう。",
+      "title": "よくある",
+      "title2": "質問",
+      "description": "よくある質問をご覧になり、必要な情報を素早く簡単に入手してください。",
       "question": "質問"
     },
     "needHelp": {
-      "tittle": "お困りですか？お問い合わせください！"
+      "title": "お困りですか？お問い合わせください！"
     },
     "gallery": {
-      "title": "<span class='text-[#6EB6E5] font-bold'>ケサトリア</span> ・アカデミーの実際の様子をご覧ください",
-      "description": "授業、メンタリングセッション、ネットワーキングイベント、学生プロジェクトの発表会など、実際の様子を通じて、当プログラムの活気をぜひ体感してください。",
+      "title": "Kesatria Academyの活動を体験する",
+      "description": "授業、メンタリング・セッション、ネットワーキング・イベント、学生プロジェクトの発表会など、実際の活動風景を通じて、私たちのプログラムが持つエネルギーを体感してください。",
       "gallery": "当ギャラリー",
-      "chooseProgram": "ギャラリーをすべて見る"
+      "chooseGallery": "ギャラリーをすべて見る"
     },
     "exploreProgram": {
-      "tittle": "あなたのスキルを<span class='text-[#6EB6E5]'>次のレベルへ</span>",
-      "description": "実践的なスキルを習得し、新しい機会を開拓し、<span class='text-[#6EB6E5]'>Kesatria Academy</span>でキャリア目標を達成しましょう",
-      "exploreButton": "プログラムを探索"
+      "title": "スキルを向上させましょう",
+      "title2": "次のレベルへ",
+      "description": "実践的なスキルを身につけ、新たな機会を開拓し、キャリア目標に近づきましょう。",
+      "exploreButton": "プログラムを探す"
     }
   },
   "gallery": {
@@ -193,42 +204,52 @@
     "description": "私たちのプログラム、イベント、そして節目を巡る視覚的な旅――私たちの使命を鼓舞する人々、瞬間、そしてその影響力を捉えています。",
     "program": "プログラムを選択してください",
     "allPrograms": "すべてのプログラム",
-    "gallery": "当ギャラリー"
+    "gallery": "当ギャラリー",
+    "searchPlaceholder": "ギャラリーを検索",
+    "noResults": "ギャラリーが見つかりません"
   },
   "about": {
     "tabAbout": {
-      "story": "ストーリー",
+      "story": "話",
       "visiMisi": "ミッション＆ビジョン",
+      "visionsMisi":"ビジョンとミッション",
       "team": "チーム",
       "value": "価値観",
       "contact": "お問い合わせ"
     },
     "ourStory": {
-      "tittle": "Kesatria Academy",
-      "description": "未来のデジタル技術人材を育成する",
-      "commitment": "私たちのコミットメント"
+      "title": "Kesatria Academy",
+      "description": "次世代のデジタル技術人材を育成する",
+      "commitment": "私たちの取り組み"
     },
     "visiMisi": {
-      "tittle": "ミッション＆ビジョン",
+      "title": "ミッション＆ビジョン",
       "visi": "私たちのビジョン",
       "misi": "私たちのミッション"
     },
+    "visionsMisi": {
+      "title": "ビジョンとミッション",
+      "visi": "私たちのビジョン",
+      "misi": "私たちの使命",
+      "visions": "私たちのビジョン",
+      "missions": "私たちの使命"
+    },
     "team": {
-      "tittle": "私たちのチーム",
-      "description": "あなたの学習成功に専念する専門家をご紹介",
+      "title": "私たちのチーム",
+      "description": "あなたの学習の成功を支える専門家たちをご紹介します",
       "educationBackground": "学歴",
       "awardAchievement": "受賞歴＆業績",
-      "joinOurTeam": "チームに参加する",
+      "joinOurTeam": "私たちのチームに参加しませんか",
       "portfolioExperience": "ポートフォリオ＆経験",
-      "joinDescription": "テクノロジーを通じて国を教育するという使命に、最優秀な人材を常に探しています",
-      "buttonJob": "求人情報を見る"
+      "joinDescription": " 私たちは、テクノロジーを通じて国を教育するというミッションに参加してくれる、最高の才能を常に求めています。",
+      "buttonJob": "求人を見る"
     },
     "value": {
-      "tittle": "私たちの価値観",
+      "title": "私たちの価値観",
       "description": "私たちの旅のすべてのステップを導く原則"
     },
     "contact": {
-      "tittle": "お問い合わせ",
+      "title": "お問い合わせ",
       "description": "あなたのテクノロジー学習の旅をお手伝いします",
       "address": "住所",
       "email": "メールアドレス",
@@ -239,23 +260,23 @@
   },
   "specialProgram": {
     "benefitSection": {
-      "tittle": "選ばれる理由",
+      "title": "選ばれる理由",
       "description": "参加するメリット"
     },
     "trainingSection": {
-      "tittle": "研修トピック",
+      "title": "研修トピック",
       "description": "このプログラムで利用可能な人気トピック"
     },
     "programProses": {
-      "tittle": "プログラムのプロセス",
+      "title": "プログラムのプロセス",
       "description": "このプログラムに参加するための手順"
     },
     "alumniSection": {
-      "tittle": "卒業生からの声",
+      "title": "卒業生からの声",
       "description": "卒業生一人ひとりに独自のストーリーがあります——学習の第一歩から、困難に直面し、最終的にテクノロジー分野で成功したキャリアを築くまで。Kesatria Academyでの経験がどのように新たな機会を開き、彼らの未来を変えたかを聞いてください。"
     },
     "programSection": {
-      "tittle": "利用可能なプログラム",
+      "title": "利用可能なプログラム",
       "description": "キャリア目標に合ったプログラムを選択",
       "findProgram": "適切なプログラムを見つける",
       "programType": "プログラム種別",
@@ -282,16 +303,16 @@
       "clearFilters": "すべてのフィルターをクリア"
     },
     "contactSection": {
-      "tittle": "今すぐチームを変革する",
+      "title": "今すぐチームを変革する",
       "description": "組織に合わせたトレーニング提案を入手",
       "buttonViewProgram": "プログラムを見る",
       "buttonContactUs": "お問い合わせ"
     },
     "chooseSection": {
-      "tittle": "なぜこのプログラムを選ぶのか？"
+      "title": "なぜこのプログラムを選ぶのか？"
     },
     "faqSection": {
-      "tittle": "よくある質問"
+      "title": "よくある質問"
     },
     "heroSection": {
       "buttonExploreLearningPath": "学習パスを探索",
@@ -335,7 +356,7 @@
     "clearFilters": "すべてのフィルターをクリア"
   },
   "portfolio": {
-    "tittle": "ポートフォリオ",
+    "title": "ポートフォリオ",
     "description": "ブートキャンプ卒業生による優れたプロジェクトのコレクションをご覧ください。各ポートフォリオは技術的スキルと創造的なソリューションを紹介しています。",
     "filterTittle": "アクティブなフィルター",
     "resetFilters": "リセット",
@@ -353,7 +374,7 @@
     "resetAllFilters": "フィルターをリセット"
   },
   "blog": {
-    "tittle": "ブログ",
+    "title": "ブログ",
     "trending": "トレンド",
     "readMore": "続きを読む",
     "description": "専門の著者による洞察に富んだ記事、ヒント、業界トレンドを探りましょう。テクノロジーと学習の最新情報を常に把握できます。",
@@ -382,7 +403,7 @@
     "relatedBlog": "関連ブログ",
     "buttonViewAllBlog": "すべてのブログを見る",
     "commentSection": {
-      "tittle": "コメントセクション",
+      "title": "コメントセクション",
       "placeholderComment": "コメントをここに書いてください...",
       "submitButton": "コメントを送信",
       "login": "コメントするにはログインしてください",
@@ -399,7 +420,7 @@
     }
   },
   "alumni": {
-    "tittle": "卒業生",
+    "title": "卒業生は、私たちの<span class='text-[#6EB6E5] font-bold'>誇り</span>",
     "description": "プログラムを成功裏に修了し、業界に影響を与えている才能ある卒業生をご紹介します。",
     "activeFilters": "アクティブなフィルター",
     "resetFilters": "リセット",
@@ -414,8 +435,12 @@
     "program": "プログラム",
     "noAlumni": "卒業生が見つかりません",
     "tryAdjusting": "フィルターを調整して、より多くの卒業生を見つけてください。",
-    "bootcampProgram": "Bootcamp Program",
-    "searchAlumniPlaceholder": "Search Alumni"
+    "bootcampProgram": "ブートキャンププログラム",
+    "searchAlumniPlaceholder": "卒業生を検索",
+    "statAlumni": "卒業生",
+    "statCareerGrowth": "キャリア成長",
+    "statHiringPartners": "採用パートナー",
+    "unknown": "不明"
   },
   "detailProgram": {
     "accountNumber": "口座番号",
@@ -458,19 +483,19 @@
       "weeks": "週間"
     },
     "benefitProgram": {
-      "tittle": "プログラム"
+      "title": "プログラム"
     },
     "faq": {
-      "tittle": "よくある質問"
+      "title": "よくある質問"
     },
     "flowProgram": {
-      "tittle": "プログラム学習の流れ"
+      "title": "プログラム学習の流れ"
     },
     "mentor": {
-      "tittle": "メンターをご紹介"
+      "title": "メンターをご紹介"
     },
     "fullPayment": {
-      "tittle": "一括払い",
+      "title": "一括払い",
       "paymentType": "支払い種別",
       "oneTimePayment": "一括払い",
       "amount": "金額",
@@ -496,7 +521,7 @@
       "buttonSubmitProof": "今すぐ登録 - 一括払い"
     },
     "installment": {
-      "tittle": "分割払い",
+      "title": "分割払い",
       "installment": "分割払い",
       "chooseInstallmentPeriod": "分割払い期間を選択",
       "months": "ヶ月",
@@ -576,7 +601,7 @@
     "months": "ヶ月"
   },
   "historyPayment": {
-    "tittle": "取引履歴",
+    "title": "取引履歴",
     "description": "すべての支払いと登録を追跡・管理",
     "tabFullPayment": "一括払い",
     "tabRegistration": "登録",
@@ -654,7 +679,7 @@
     }
   },
   "profile": {
-    "tittle": "マイプロフィール",
+    "title": "マイプロフィール",
     "description": "個人情報とアカウント設定を管理",
     "accountlInfo": "アカウント情報",
     "personalInfo": "個人情報",
@@ -684,14 +709,14 @@
     "diploma": "専門学校（D3/D4）",
     "bachelorDegree": "学士号（S1）",
     "editInfoProfile": {
-      "tittle": "プロフィール情報を編集",
+      "title": "プロフィール情報を編集",
       "username": "ユーザー名",
       "email": "メールアドレス",
       "cancel": "キャンセル",
       "saveChanges": "変更を保存"
     },
     "editPassword": {
-      "tittle": "パスワード変更",
+      "title": "パスワード変更",
       "currentPassword": "現在のパスワード",
       "placeholderCurrentPassword": "現在のパスワードを入力",
       "newPassword": "新しいパスワード",
@@ -701,7 +726,7 @@
       "saveChanges": "変更を保存"
     },
     "createBiodata": {
-      "tittle": "プロフィールを完成させる",
+      "title": "プロフィールを完成させる",
       "fullName": "フルネーム",
       "placeholderFullName": "フルネームを入力",
       "whatsAppNumber": "WhatsApp番号",
@@ -723,7 +748,7 @@
       "backToProfile": "プロフィールに戻る"
     },
     "editBiodata": {
-      "tittle": "プロフィールを編集",
+      "title": "プロフィールを編集",
       "fullName": "フルネーム",
       "placeholderFullName": "フルネームを入力",
       "whatsAppNumber": "WhatsApp番号",
@@ -746,7 +771,7 @@
     }
   },
   "myLearning": {
-    "tittle": "マイラーニング",
+    "title": "マイラーニング",
     "description": "学習の旅を続け、進捗状況を追跡",
     "ongoingProgram": "進行中のプログラム",
     "completedProgram": "完了したプログラム",
@@ -756,7 +781,7 @@
     "spanNoCompletedProgram": "まだどのプログラムも完了していません。継続して学習目標を達成しましょう！"
   },
   "myPortfolio": {
-    "tittle": "マイポートフォリオ",
+    "title": "マイポートフォリオ",
     "description": "ブートキャンプ卒業生による優れたプロジェクトのコレクションをご覧ください。各ポートフォリオは技術的スキルと創造的なソリューションを紹介しています。",
     "filterTittle": "アクティブなフィルター",
     "resetFilters": "リセット",
@@ -859,7 +884,7 @@
     "previousWeekQuizRequirement": "前週のクイズは最小スコアを満たす必要があります。"
   },
   "attendance": {
-    "tittle": "出席フォーム",
+    "title": "出席フォーム",
     "attendanceStatus": "出席状況",
     "present": "出席",
     "permission": "許可",
@@ -1013,5 +1038,184 @@
     "showAllMethods": "すべての学習方法を表示",
     "learnFromAnywhere": "オンラインクラスでどこからでも学習",
     "inPersonClasses": "物理的な場所での対面クラス"
+  },
+  "paidProgram":{
+    "header":{
+      "startLearning":"学習を始める",
+      "learningDate": "学習日",
+      "location": "場所",
+      "capacity":"容量",
+      "students": "生徒",
+      "registrationTime": "登録受付は～まで",
+      "registrationNow": "今すぐ登録"
+    },
+    "navbarMenu":{
+      "participants": "参加者",
+      "whatYouLearn": "学習内容",
+      "benefits": "メリット",
+      "learningFlow": "学習の流れ",
+      "schedule&Fees": "スケジュールと費用",
+      "gallery": "ギャラリー",
+      "FAQ": "FAQ"
+    },
+    "title":{
+      "participants": "参加者",
+      "whatYouLearn":"学習内容",
+      "benefits": "メリット",
+      "learningFlow": "学習の流れ",
+      "schedule&Fees":" スケジュールと費用",
+      "gallery":"ギャラリー",
+      "frequentlyAskedQuestions": "よくある質問"
+    },
+    "schedule&Fees":{
+      "badge": "スケジュールと費用",
+      "title": "今日からキャリアをスタートさせましょう",
+      "fullPayment": "全額支払い",
+      "installment": "分割払い",
+      "save": "節約",
+      "flexible": "最大～までの柔軟な支払いプラン",
+      "months":"ヶ月",
+      "offerEnd": "オファーの終了まであと",
+      "until": "まで",
+      "freeConsultation":"無料相談",
+      "installmentInfo":"分割払いに関する情報",
+      "installmentPoint":{
+        "sentence1": "登録の初回支払いとして、頭金（DP）のお支払いが必要です",
+        "sentence2": "追加の手数料や利息はかかりません",
+        "sentence3": "以下のスケジュールに従って毎月お支払いください",
+        "sentence4": "DPのお支払い後、すべての機能をご利用いただけます"
+      },
+      "registration": "登録",
+      "startLearning":"勉強を始める",
+      "registrationNow":"今すぐ登録"
+    },
+    "gallery":{
+      "description":"このプログラムを意義深いものにした重要な瞬間や体験をご覧ください。",
+      "seeAllOurGallery": "当社のギャラリーをすべて見る"
+    }
+    
+  },
+  "special_program": {
+    "heroSection":{
+      "alumni": "卒業生",
+      "hiringPartners":"採用パートナー",
+      "placement":"就職率"
+    },
+    "program":{
+      "title":"プログラムを選ぶ",
+      "description":"自身の目標や情熱に合ったプログラムを選んでください。",
+      "month":"数ヶ月",
+      "student":"学生"
+    },
+    "whyChooseUs":{
+      "title": "当社が選ばれる理由",
+      "description": "経験豊富な専門家の指導による実践的かつ体験型の学習を通じ、学生に業界で求められるスキルを習得させるよう設計されています。"
+    },
+    "topic":{
+      "title":"<span class='text-black'>トレーニングのトピック</span>",
+      "description": "このプログラムで利用可能な人気のトピック"
+    },
+    "alumni":{
+      "title": "～の物語",
+      "title2":"卒業生の活躍",
+      "description": "当社の社内研修プログラムが、受講者が実践的なスキルや業界への理解を深め、将来のキャリアに向けて自信を育む上でどのように役立ったか、その声をお聞きください。",
+      "footer": "他にも、卒業生による感動的なストーリーが数多くあります。",
+      "allStories":"卒業生の体験談をすべて見る"
+    },
+    "gallery":{
+      "title":"<span class='text-black'>当ギャラリー</span>",
+      "description": "このプログラムを意義深いものにした重要な瞬間や体験をご覧ください。",
+      "allGaleries":"ギャラリーをすべて見る"
+    },
+    "contact":{
+      "title": "<span class='text-white'>今すぐチームを変革しましょう</span>",
+      "description":"貴社に合わせた研修プランをご提案いたします",
+      "contact": "お問い合わせ"
+    },
+    "faq":{
+      "title":"<span class='text-black'>よくある質問</span>",
+      "description":"当プログラムについて知っておくべきすべてのこと"
+    }
+  },
+  "freeProgram":{
+    "hero":{
+      "learn":"もっと詳しく知る",
+      "saveDate":"日程を空けておいてください",
+      "location": "位置",
+      "time":"時間",
+      "capacity":"容量",
+      "students":"学生",
+      "regisUntil":"登録受付期間：～",
+      "regisNow":"ただいま登録受付中"
+    },
+    "navMenu":{
+      "participants":"参加者",
+      "benefit":"お届けするもの",
+      "schedule":"スケジュール・料金",
+      "gallery":"ギャラリー",
+      "faq":"よくある質問"
+    },
+    "badge":{
+      "participants":"参加者",
+      "benefit":"お届けするもの",
+      "schedule":"スケジュール・料金",
+      "gallery":"ギャラリー",
+      "faq":"よくある質問"
+    },
+    "schedule":{
+      "title":"お支払いは不要です",
+      "description":"このプログラムに参加するには、登録するだけで済みます。",
+      "registration":"登録",
+      "start":"始める",
+      "regisNow":"ただいま登録受付中"
+    },
+    "gallery":{
+      "description":"このプログラムを意義深いものにした重要な瞬間や体験をご覧ください。",
+      "allGaleries":"ギャラリーをすべて見る"
+    },
+    "faq":{
+      "title":"よくある質問",
+      "description":"よくある質問をご覧になり、必要な情報を素早く簡単に入手してください。"
+    }
+  },
+  "categoryFreeProgram":{
+    "hero":{
+      "title":"無料",
+      "title1":" ",
+      "title2":"Kesatria Academyで キャリアを飛躍させよう",
+      "title3":" ",
+      "button":"プログラムを見る"
+    },
+    "program":{
+      "title":"あなたのために",
+      "description1":"興味のある",
+      "description2":"を選択し、実践的なスキルを学び始めましょう。",
+      "free":"無料",
+      "day":"日",
+      "students":"学生",
+      "detailProgram":"詳細プログラム"
+    },
+    "benefit":{
+      "title":"～に参加するメリット",
+      "description1":"当社の無料サービスを最大限にご活用ください",
+      "description2":"有益な学習効果を伴う"
+    },
+    "alumni":{
+      "title":"卒業生の声",
+      "description":"参加者が語る学習体験や、私たちのプログラムがもたらした影響についてご覧ください。",
+      "footer":"他にも、卒業生による感動的なストーリーが数多くあります。",
+      "allStories":"卒業生ストーリーをすべて見る"
+    },
+    "gallery":{
+      "title":"<span class='text-black'>私たちの</span> <span class='text-[#6EB6E5]'>ギャラリー</span>",
+      "description":"このプログラムを意義深いものにした重要な瞬間や体験をご覧ください。",
+      "allGaleries":"ギャラリーをすべて見る"
+    },
+    "cta":{
+      "title":"<span class='text-white font-semibold'>この無料の</span><span class='text-black font-semibold'>学習機会</span>",
+      "description":"実践的なスキルを身につけ、将来のキャリアに備えている何千人もの学習者が",
+      "description2":"を通じて学んでいます。",
+      "button":"今すぐ参加する"
+    }
   }
 }

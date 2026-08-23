@@ -1,9 +1,11 @@
 # compiled output
 /dist
+*.tsbuildinfo
 /node_modules
 /build
 /public
 /src/common/public/css/style.css
+/src/common/public/assets/main.js
 
 
 # Logs
@@ -64,3 +66,18 @@ docker-entrypoint.sh
 .editorconfig
 
 backup_db_elearning.sql
+
+# Backup database dumps
+*.dump
+
+# Backup source folder
+src_backup/
+
+# Test files
+test-hbs.js
+test-voucher.json
+
+# Junk / temp files
+out.txt
+dummy.jpg
+search.js

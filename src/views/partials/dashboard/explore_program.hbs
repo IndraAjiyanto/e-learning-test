@@ -1,33 +1,70 @@
-<!-- EXPLORE PROGRAM SECTION (CTA) -->
-<section id="explore-program" class="w-full mt-16 mb-24 md:mt-20 md:mb-32 font-montserrat relative">
-  <div class="w-full relative min-h-[372px] flex items-center justify-center py-12 px-6">
+<!-- MOBILE EXPLORE PROGRAM SECTION (< 640px) -->
+<section id="explore-program-mobile" class="block sm:hidden w-full my-12 font-montserrat relative">
+  <div class="w-full relative min-h-[300px] flex items-center justify-center py-12 px-5">
+    
+    <!-- Background Image -->
+    <div class="absolute inset-0 z-0 bg-[#6EB6E5]"
+         style="background-image: url('/public/image/dashboard/bgBenefit.png'); background-size: cover; background-position: center;"></div>
+
+    <!-- Content -->
+    <div class="w-full text-center flex flex-col items-center justify-center relative z-10">
+      
+      <!-- Title -->
+      <h2 class="font-montserrat font-bold text-2xl leading-tight text-center">
+        <span class="text-[#0B1F3B] font-semibold">{{t 'test.home.exploreProgram.title'}}</span> 
+        <span class="text-white font-semibold block mt-1">{{t 'test.home.exploreProgram.title2'}}</span>
+      </h2>
+
+      <!-- Subtitle -->
+      <p class="font-sans font-normal text-[14px] leading-[22px] text-[#2D2D2D] text-center my-6 max-w-[340px] mx-auto">
+        {{t 'test.home.exploreProgram.description'}}
+      </p>
+
+      <!-- Button -->
+      <div class="w-full">
+        <a
+          href="#courses-section-mobile"
+          class="inline-flex items-center justify-center gap-[12px] w-full h-[56px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-sm rounded-[12px] border border-[#003060] transition-all duration-300 shadow-md active:scale-95"
+        >
+          <i class="fas fa-rocket text-lg"></i>
+          <span>{{t 'test.home.exploreProgram.exploreButton'}}</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DESKTOP EXPLORE PROGRAM SECTION (>= 640px / Figma Baseline W1728) -->
+<section id="explore-program" class="hidden sm:block w-full sm:mt-16 sm:mb-24 md:mt-20 md:mb-32 font-montserrat relative">
+  <div class="w-full relative sm:min-h-[372px] flex items-center justify-center py-12 sm:px-6">
     
     <!-- Figma Layer Blur 10 Banner Rectangle -->
-    <div class="absolute inset-0 z-0 bg-[#6EB6E5] filter blur-[4px] pointer-events-none"
+    <div class="absolute inset-0 z-0 bg-[#6EB6E5]"
          style="background-image: url('/public/image/dashboard/bgBenefit.png'); background-size: cover; background-position: center;"></div>
 
     <!-- Content (Crisp & Clear) -->
     <div class="max-w-4xl mx-auto text-center flex flex-col items-center justify-center relative z-10">
       
       <!-- Title -->
-      <h2 class="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight leading-tight">
-        <span class="text-[#000000] font-semibold">Take Your Skills</span> 
-        <span class="text-white font-semibold">to the Next Level</span>
+      <h2 class="sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight leading-tight text-center">
+        <span class="text-[#000000] font-semibold">{{t 'test.home.exploreProgram.title'}}</span> 
+        <span class="text-white font-semibold inline sm:mt-0">{{t 'test.home.exploreProgram.title2'}}</span>
       </h2>
 
       <!-- Subtitle -->
-      <p class="text-[#0B1F3B]/80 text-sm md:text-base lg:text-[18px] font-sans max-w-full mx-auto my-12 leading-relaxed text-center lg:whitespace-nowrap">
-        Develop practical skills, unlock new opportunities, and move closer to your career goals with
+      <p class="text-[#0B1F3B]/80 sm:text-sm md:text-base lg:text-[18px] font-sans max-w-full mx-auto my-12 leading-relaxed text-center lg:whitespace-nowrap">
+        {{t 'test.home.exploreProgram.description'}}
       </p>
 
       <!-- Button -->
-      <div>
+      <div class="w-auto">
         <a
           href="#courses-section"
-          class="inline-flex items-center justify-center gap-[15px] w-full sm:w-[370px] h-[85px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-semibold text-xl rounded-[12px] border border-[#003060] transition-all duration-300 shadow-md opacity-100"
+          class="inline-flex items-center justify-center gap-[15px] w-[370px] h-[85px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-semibold text-xl rounded-[12px] border border-[#003060] transition-all duration-300 shadow-md opacity-100 active:scale-95"
         >
           <i class="fas fa-rocket text-2xl"></i>
-          <span>Explore Programs</span>
+          <span>{{t 'test.home.exploreProgram.exploreButton'}}</span>
         </a>
       </div>
 

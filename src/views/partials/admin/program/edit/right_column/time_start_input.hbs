@@ -1,0 +1,7 @@
+<!-- Time Start -->
+<div x-show='!paidClass'>
+    <label for='time_start'
+    class='block text-sm font-semibold text-gray-700 mb-1'>Time Start (Optional)</label>
+    <input type='time' id='time_start' name='time_start' :disabled='paidClass' value='{{formatTime course.time_start}}'
+    class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed' />
+</div>

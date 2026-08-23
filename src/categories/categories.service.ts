@@ -11,6 +11,8 @@ import { CategoryFaq } from 'src/entities/faqs.entity';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { FlowCategory } from 'src/entities/flow_category.entity';
 import { Superiority } from 'src/entities/superiority.entity';
+import { Gallery } from 'src/entities/gallery.entity';
+import { Portofolios } from 'src/entities/portofolios.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -33,6 +35,10 @@ export class CategoriesService {
     private readonly flowCategoryRepository: Repository<FlowCategory>,
     @InjectRepository(Superiority)
     private readonly superiorityRepository: Repository<Superiority>,
+    @InjectRepository(Gallery)
+    private readonly galleryRepository: Repository<Gallery>,
+    @InjectRepository(Portofolios)
+    private readonly portfolioRepository: Repository<Portofolios>,
   ) {}
 
   async create(createCategoriesDto: CreateCategoriesDto) {
@@ -123,6 +129,28 @@ export class CategoriesService {
   async findFlowByCategory(categoryId: number) {
     return await this.flowCategoryRepository.find({
       where: { category: { id: categoryId } },
+    });
+  }
+
+  async findGalleryByCategory(categoryId: number) {
+    const gallery = await this.galleryRepository.find({
+      where: { category: { id: categoryId } },
+      order: { no: 'ASC' },
+      take: 6,
+    });
+
+    return gallery.reduce((items, item) => {
+      items[Number(item.no) - 1] = item;
+      return items;
+    }, Array(6).fill(null));
+  }
+
+  async findPortfolioByCategory(categoryId: number) {
+    return await this.portfolioRepository.find({
+      where: { course: { category: { id: categoryId } } },
+      relations: ['course', 'course.category'],
+      order: { createdAt: 'DESC' },
+      take: 3,
     });
   }
 

@@ -7,12 +7,16 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Generated,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Course } from './course.entity';
 import { Installment } from './installment.entity';
+import { Invoice } from './invoice.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
+
+export type currentStatus = 'University Student'| 'Fresh Graduate'| 'Job Seeker'| 'Employee'| 'Freelancer'| 'Entrepreneur'| 'Other';
 
 @Entity('payments')
 export class Payment {
@@ -38,6 +42,28 @@ export class Payment {
     default: 'rejected',
   })
   process: ProcessStatus;
+
+  @Column({
+    type:'enum',
+    enum:['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'],
+    nullable:true,
+  })
+  current_status: currentStatus;
+
+  @Column({ nullable: true })
+  user_fullname: string;
+
+  @Column({ nullable: true })
+  user_email: string;
+
+  @Column({ nullable: true })
+  user_no: string;
+
+  @Column({nullable:true,})
+  attend_program: boolean;
+
+  @OneToOne(() => Invoice, (invoice) => invoice.payment)
+  invoice: Invoice;
 
   @CreateDateColumn()
   createdAt: Date;

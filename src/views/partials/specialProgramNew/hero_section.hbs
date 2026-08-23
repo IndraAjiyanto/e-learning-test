@@ -1,0 +1,187 @@
+<section class="relative z-20 w-full min-h-[600px] lg:min-h-[750px] flex items-center font-montserrat py-16 lg:py-24">
+  <!-- Background Image with 80% Opacity -->
+  <div 
+    class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
+    style="background-image: url('{{category.icon}}');"
+  ></div>
+
+  <!-- Content Container -->
+  <div class="relative z-10 container mx-20 max-w-[1400px]">
+    <div class="flex flex-col items-start justify-center mb-24">
+      
+      <!-- Left Hero Content -->
+      <div class="w-full flex flex-col items-start text-left">
+        
+        <!-- Typewriter Title -->
+        <h1 
+          class="font-montserrat font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[70px] text-[#003060] leading-tight mb-6"
+          x-data="{
+            words: ['{{#if category.name}}{{category.name}}{{else}}In House Training{{/if}}'],
+            wordIndex: 0,
+            charIndex: 0,
+            currentText: '',
+                speed: 500,
+            init() {
+              this.type();
+            },
+            type() {
+              const target = this.words[this.wordIndex];
+              if (this.charIndex < target.length) {
+                this.charIndex = Math.min(this.charIndex + 2, target.length);
+                this.currentText = target.substring(0, this.charIndex);
+                setTimeout(() => this.type(), this.speed);
+              } else {
+                setTimeout(() => {
+                  this.currentText = '';
+                  this.charIndex = 0;
+                  setTimeout(() => this.type(), 300);
+                }, 2500);
+              }
+            }
+          }"
+        >
+          <span x-text="currentText">In House Training</span><span class="animate-pulse text-[#6EB6E5] font-light">|</span>
+        </h1>
+
+        <!-- Description Paragraph -->
+        <p class="w-full max-w-[562px] font-['Open_Sans'] font-normal text-base sm:text-lg md:text-xl lg:text-[25px] leading-relaxed md:leading-normal lg:leading-[50px] text-justify text-[#003060] mb-8 lg:mb-12">
+          {{#if category.description}}{{getByLang category.description lang}}{{else}}Standardize competencies and boost your team's productivity through corporate training tailored to your company's business objectives.{{/if}}
+        </p>
+
+        <!-- View Program Button -->
+        <button
+          onclick="document.getElementById('programs') ? document.getElementById('programs').scrollIntoView({ behavior: 'smooth', block: 'start' }) : window.scrollTo({ top: 600, behavior: 'smooth' })"
+          class="font-montserrat font-semibold text-lg sm:text-xl lg:text-[22px] text-white bg-[#003060] hover:bg-[#002244] w-full sm:w-auto md:w-[300px] lg:w-[370px] h-[60px] md:h-[68px] lg:h-[85px] rounded-[12px] p-[10px] gap-[10px] flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
+        >
+          <span>{{#if (t "test.specialProgram.contactSection.buttonViewProgram")}}{{t "test.specialProgram.contactSection.buttonViewProgram"}}{{else}}View Program{{/if}}</span>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Floating Stats Bar (Overlapping bottom boundary) -->
+  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-full max-w-[95%] md:max-w-[90%] lg:w-[1224px] lg:max-w-[1224px] px-4 sm:px-6 z-20 hidden md:block">
+    <div class="bg-white/90 backdrop-blur-[6.6px] rounded-[24px] shadow-[0_0_6px_rgba(0,0,0,0.25)] p-4 md:p-6 lg:h-[147px] grid grid-cols-3 gap-4 md:gap-6 items-center">
+      
+      <!-- Stat 1: Alumni (Slot Machine Reel) -->
+      <div 
+        class="flex items-center gap-3 lg:gap-5 justify-center border-r border-slate-200/80 pr-3 lg:pr-6"
+        x-data="{ isSpun: false }"
+        x-init="
+          const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+              setTimeout(() => { isSpun = true; }, 100);
+              observer.disconnect();
+            }
+          }, { threshold: 0.2 });
+          observer.observe($el);
+        "
+      >
+        <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-[#E0F1F9] flex items-center justify-center text-[#003060] shrink-0">
+          <i class="fas fa-users text-lg lg:text-2xl"></i>
+        </div>
+        <div>
+          <h4 class="font-sans font-semibold text-sm sm:text-base lg:text-lg text-[#2D2D2D] flex items-center gap-0.5">
+            <!-- Slot Machine Viewport Window -->
+            <span class="h-[1.25em] overflow-hidden inline-block relative align-top">
+              <span 
+                class="flex flex-col transition-transform duration-[2000ms] ease-[cubic-bezier(0.15,0.85,0.2,1)] transform-gpu"
+                :style="isSpun ? 'transform: translateY(-83.333%);' : 'transform: translateY(0%);'"
+              >
+                <span class="h-[1.25em] flex items-center justify-center">0</span>
+                <span class="h-[1.25em] flex items-center justify-center">100</span>
+                <span class="h-[1.25em] flex items-center justify-center">200</span>
+                <span class="h-[1.25em] flex items-center justify-center">300</span>
+                <span class="h-[1.25em] flex items-center justify-center">400</span>
+                <span class="h-[1.25em] flex items-center justify-center">500</span>
+              </span>
+            </span>
+            <span>+</span>
+          </h4>
+          <p class="font-sans font-normal text-sm sm:text-base lg:text-lg text-[#2D2D2D]">{{t 'test.special_program.heroSection.alumni'}}</p>
+        </div>
+      </div>
+
+      <!-- Stat 2: Hiring Partners (Slot Machine Reel) -->
+      <div 
+        class="flex items-center gap-3 lg:gap-5 justify-center border-r border-slate-200/80 pr-3 lg:pr-6"
+        x-data="{ isSpun: false }"
+        x-init="
+          const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+              setTimeout(() => { isSpun = true; }, 300);
+              observer.disconnect();
+            }
+          }, { threshold: 0.2 });
+          observer.observe($el);
+        "
+      >
+        <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-[#E0F1F9] flex items-center justify-center text-[#003060] shrink-0">
+          <i class="fas fa-briefcase text-lg lg:text-2xl"></i>
+        </div>
+        <div>
+          <h4 class="font-sans font-semibold text-sm sm:text-base lg:text-lg text-[#2D2D2D] flex items-center gap-0.5">
+            <!-- Slot Machine Viewport Window -->
+            <span class="h-[1.25em] overflow-hidden inline-block relative align-top">
+              <span 
+                class="flex flex-col transition-transform duration-[2000ms] ease-[cubic-bezier(0.15,0.85,0.2,1)] transform-gpu"
+                :style="isSpun ? 'transform: translateY(-83.333%);' : 'transform: translateY(0%);'"
+              >
+                <span class="h-[1.25em] flex items-center justify-center">0</span>
+                <span class="h-[1.25em] flex items-center justify-center">2</span>
+                <span class="h-[1.25em] flex items-center justify-center">4</span>
+                <span class="h-[1.25em] flex items-center justify-center">6</span>
+                <span class="h-[1.25em] flex items-center justify-center">8</span>
+                <span class="h-[1.25em] flex items-center justify-center">10</span>
+              </span>
+            </span>
+            <span>+</span>
+          </h4>
+          <p class="font-sans font-normal text-sm sm:text-base lg:text-lg text-[#2D2D2D]">{{t 'test.special_program.heroSection.hiringPartners'}}</p>
+        </div>
+      </div>
+
+      <!-- Stat 3: Placement Rate (Slot Machine Reel) -->
+      <div 
+        class="flex items-center gap-3 lg:gap-5 justify-center"
+        x-data="{ isSpun: false }"
+        x-init="
+          const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+              setTimeout(() => { isSpun = true; }, 500);
+              observer.disconnect();
+            }
+          }, { threshold: 0.2 });
+          observer.observe($el);
+        "
+      >
+        <div class="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-[#E0F1F9] flex items-center justify-center text-[#003060] shrink-0">
+          <i class="fas fa-chart-line text-lg lg:text-2xl"></i>
+        </div>
+        <div>
+          <h4 class="font-sans font-semibold text-sm sm:text-base lg:text-lg text-[#2D2D2D] flex items-center gap-0.5">
+            <!-- Slot Machine Viewport Window -->
+            <span class="h-[1.25em] overflow-hidden inline-block relative align-top">
+              <span 
+                class="flex flex-col transition-transform duration-[2000ms] ease-[cubic-bezier(0.15,0.85,0.2,1)] transform-gpu"
+                :style="isSpun ? 'transform: translateY(-83.333%);' : 'transform: translateY(0%);'"
+              >
+                <span class="h-[1.25em] flex items-center justify-center">0</span>
+                <span class="h-[1.25em] flex items-center justify-center">10</span>
+                <span class="h-[1.25em] flex items-center justify-center">20</span>
+                <span class="h-[1.25em] flex items-center justify-center">30</span>
+                <span class="h-[1.25em] flex items-center justify-center">40</span>
+                <span class="h-[1.25em] flex items-center justify-center">50</span>
+              </span>
+            </span>
+            <span>%</span>
+          </h4>
+          <p class="font-sans font-normal text-sm sm:text-base lg:text-lg text-[#2D2D2D]">{{t 'test.special_program.heroSection.placement'}}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

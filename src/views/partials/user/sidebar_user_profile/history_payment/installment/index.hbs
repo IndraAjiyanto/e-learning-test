@@ -1,0 +1,175 @@
+<!-- INSTALLMENT PAYMENT HISTORY SUB-PARTIAL -->
+<div class="pt-2" x-data="{
+  transactions: [],
+  loading: true,
+  showDetail: false,
+  selectedTx: null,
+  async init() {
+    try {
+      const res = await fetch('/payment/api/installment/{{user.id}}');
+      const json = await res.json();
+      const data = json.data || [];
+      this.transactions = data.map(p => ({
+        id: p.id,
+        program: p.course ? p.course.name : 'Program',
+        type: p.course && p.course.category ? p.course.category.name : 'Program',
+        paymentType: 'Installment',
+        status: p.process === 'approved' ? 'accepted' : (p.process === 'process' ? 'processing' : 'rejected'),
+        period: p.course && p.course.startDate ? new Date(p.course.startDate).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}) + ' - ' + new Date(p.course.endDate).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}) : '',
+        location: p.course && p.course.locationLink ? p.course.locationLink : (p.course && p.course.method === 'offline' ? 'Offline' : 'Online'),
+        paymentDate: p.createdAt ? new Date(p.createdAt).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}) : '',
+        amount: p.installment && p.installment.downPayment ? 'Rp ' + Number(p.installment.downPayment).toLocaleString('id-ID') : (p.course && p.course.promo > 0 ? 'Rp ' + Number(p.course.promo).toLocaleString('id-ID') : (p.course && p.course.price ? 'Rp ' + Number(p.course.price).toLocaleString('id-ID') : 'Free')),
+        courseId: p.course ? p.course.id : null
+      }));
+    } catch(e) {
+      console.error('Failed to load installments:', e);
+    } finally {
+      this.loading = false;
+    }
+  }
+}">
+
+  <!-- LOADING STATE -->
+  <div x-show="loading" class="py-12 flex flex-col items-center justify-center text-center">
+    <i class="fa-solid fa-spinner fa-spin text-3xl text-[#003060] mb-4"></i>
+    <p class="font-montserrat font-medium text-lg text-[#666666]">Loading installments...</p>
+  </div>
+
+  <!-- EMPTY STATE (When no installment payments exist) -->
+  <div 
+    x-show="!loading && transactions.length === 0" 
+    class="py-8 px-4 flex flex-col items-center justify-center text-center"
+  >
+    <!-- Receipt Dollar Icon -->
+    <div class="mb-12">
+      <img src="/public/image/userProfile/receiptDollar.svg" alt="Receipt Dollar" class="w-16 h-16 object-contain mx-auto">
+    </div>
+
+    <!-- Heading -->
+    <h3 class="font-montserrat font-semibold text-xl sm:text-2xl xl:text-[30px] text-[#003060] mb-2">
+      No Installment Payment History
+    </h3>
+
+    <!-- Subtitle -->
+    <p class="font-sans font-normal text-base sm:text-lg xl:text-[20px] text-[#666666] mb-12">
+      You haven't made any installment payments yet.
+    </p>
+
+    <!-- Start Learning Button -->
+    <button
+      type="button"
+      onclick="window.location.href='/free-program'"
+      class="w-full max-w-[331px] h-[55px] rounded-[12px] p-[10px] gap-[10px] bg-[#003060] hover:bg-[#001f3f] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-lg sm:text-[20px] leading-none text-white transition-all duration-200 cursor-pointer"
+    >
+      Start Learning
+    </button>
+  </div>
+
+    <!-- Filter Empty Search State -->
+    <div
+      x-show="transactions.length > 0 && transactions.filter(t => (statusFilter === 'all' || statusFilter === t.status) && t.program.toLowerCase().includes(searchQuery.toLowerCase())).length === 0"
+      class="col-span-full py-8 px-4 flex flex-col items-center justify-center text-center"
+    >
+      <div class="w-16 h-16 rounded-full bg-[#E0F1F9] flex items-center justify-center mx-auto mb-12">
+        <i class="fa-solid fa-receipt text-[30px] text-[#003060]"></i>
+      </div>
+      <h3 class="font-montserrat font-semibold text-xl sm:text-2xl xl:text-[30px] text-[#003060] mb-2">
+        No Installment Payment History
+      </h3>
+      <p class="font-sans font-normal text-base sm:text-lg xl:text-[20px] text-[#666666]">
+        Try adjusting your status filter or search query.
+      </p>
+
+      <!-- Start Learning Button -->
+      <button 
+        type="button"
+        onclick="window.location.href='/free-program'"
+        class="w-full max-w-[331px] h-[55px] rounded-[12px] p-[10px] gap-[10px] bg-[#003060] hover:bg-[#001f3f] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-lg sm:text-[20px] leading-none text-white transition-all duration-200 cursor-pointer"
+      >
+        Start Learning
+      </button>
+    </div>
+
+    <!-- HAS DATA: Transaction Cards Grid -->
+    <div x-show="transactions.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 xl:gap-4 2xl:gap-6">
+      <template x-for="tx in transactions" :key="tx.id">
+        <div
+          x-show="(statusFilter === 'all' || statusFilter === tx.status) && tx.program.toLowerCase().includes(searchQuery.toLowerCase())"
+          class="w-full max-w-[334px] min-h-[397px] 2xl:w-[334px] 2xl:h-[397px] bg-[#FFFFFF80] backdrop-blur-[6.6px] rounded-xl p-4 xl:p-5 flex flex-col justify-between shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] border border-white/40"
+        >
+          <div>
+            <!-- Badges Row (Top Right Aligned) -->
+            <div class="flex items-center justify-end gap-2 mb-5">
+              <span class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border border-[#003060] font-montserrat font-medium text-xs sm:text-[15px] text-[#003060] leading-none" x-text="tx.type">Bootcamp</span>
+              <span 
+                class="h-[24px] px-3 flex items-center justify-center rounded-[6px] border font-montserrat font-medium text-xs sm:text-[15px] leading-none capitalize" 
+                :class="tx.status === 'accepted' ? 'bg-[#F0FBF4] border-[#04B165] text-[#04B165]' : (tx.status === 'processing' ? 'bg-[#FEEFD6] border-[#FDA40B] text-[#FDA40B]' : 'bg-[#FEE7E7] border-[#F13639] text-[#F13639]')"
+                x-text="tx.status"
+              >Accepted</span>
+            </div>
+
+            <!-- Program Title -->
+            <h4 class="font-montserrat font-semibold text-[15px] leading-[25px] text-[#003060] mb-5" x-text="tx.program">UI/UX Designer</h4>
+
+            <!-- Meta: Period + Location -->
+            <div class="flex flex-col gap-1 mb-9">
+              <div class="flex items-center gap-2.5">
+                <i class="fa-regular fa-calendar text-[14px] text-[#003060] flex-shrink-0"></i>
+                <span class="font-open-sans font-normal text-[12px] leading-[30px] text-[#2D2D2D]" x-text="tx.period">21 April - 21 Juli 2026</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-location-dot text-[14px] text-[#003060] flex-shrink-0"></i>
+                <span class="font-open-sans font-normal text-[12px] leading-[30px] text-[#2D2D2D]" x-text="tx.location">PT. Wiratek Solusi Asia and Kesatria Academy</span>
+              </div>
+            </div>
+
+            <!-- Payment Date -->
+            <p class="font-open-sans text-[15px] text-black text-center">
+              <span class="font-semibold">Payment Date:</span> <span class="font-normal" x-text="tx.paymentDate">25 April 2026</span>
+            </p>
+          </div>
+
+          <!-- Action Buttons (Height 35px, Font 15px) -->
+          <div class="flex flex-col gap-2.5 mt-2">
+            <button 
+              type="button" 
+              @click="selectedTx = tx; showDetail = true"
+              class="w-full h-[35px] rounded-[12px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]"
+            >
+              View Payment Details
+            </button>
+            <button type="button" class="w-full h-[35px] rounded-[12px] p-[10px] bg-white/80 hover:bg-white text-[#003060] border border-[#003060] font-montserrat font-medium text-[15px] leading-none flex items-center justify-center transition-all cursor-pointer shadow-[0px_0px_4px_0px_rgba(0,0,0,0.1)]">
+              View Program
+            </button>
+          </div>
+        </div>
+      </template>
+
+      <!-- Filter Empty Search State -->
+      <div
+        x-show="transactions.length > 0 && transactions.filter(t => (statusFilter === 'all' || statusFilter === t.status) && t.program.toLowerCase().includes(searchQuery.toLowerCase())).length === 0"
+        class="col-span-full py-8 px-4 flex flex-col items-center justify-center text-center"
+      >
+        <!-- Search Receipt Icon (64x64px size matching) -->
+        <div class="w-16 h-16 rounded-full bg-[#E0F1F9] flex items-center justify-center mx-auto mb-12">
+          <i class="fa-solid fa-receipt text-[30px] text-[#003060]"></i>
+        </div>
+
+        <!-- Heading -->
+        <h3 class="font-montserrat font-semibold text-xl sm:text-2xl xl:text-[30px] text-[#003060] mb-2">
+          No Transactions Found
+        </h3>
+
+        <!-- Subtitle -->
+        <p class="font-sans font-normal text-base sm:text-lg xl:text-[20px] text-[#666666]">
+          Try adjusting your status filter or search query.
+        </p>
+      </div>
+    </div>
+
+  <!-- DETAIL VIEW (When showDetail is true) -->
+  <div x-show="showDetail">
+    {{> user/sidebar_user_profile/history_payment/installment/detail/index }}
+  </div>
+
+</div>

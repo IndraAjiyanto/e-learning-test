@@ -13,15 +13,19 @@ import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Registration } from 'src/entities/registration.entity';
 import { Installment } from 'src/entities/installment.entity';
+import { Session } from 'src/entities/session.entity';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { Weeks } from 'src/entities/weeks.entity';
-import { Session } from 'src/entities/session.entity';
+import { VoucherService } from 'src/voucher/voucher.service';
+import { Voucher } from 'src/entities/voucher.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { InvoiceService } from 'src/invoice/invoice.service';
 
 @Injectable()
 export class PaymentsService {
+
   constructor(
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
@@ -43,7 +47,10 @@ export class PaymentsService {
     private readonly weeksRepository: Repository<Weeks>,
     @InjectRepository(Session)
     private readonly sessionRepository: Repository<Session>,
-  ) {}
+    private readonly voucherService: VoucherService,
+    private readonly invoiceService: InvoiceService,
+  ) {
+  }
 
   async create(createPaymentDto: CreatePaymentDto) {
     const user = await this.userRepository.findOne({
@@ -254,7 +261,7 @@ export class PaymentsService {
   async findCourse(courseId: number) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
-      relations: ['weeks', 'category'],
+      relations: ['weeks', 'category', 'installments'],
     });
     if (!course) {
       return;
@@ -264,19 +271,15 @@ export class PaymentsService {
   }
 
   async findPayment(userId: number) {
-    const payment = await this.paymentRepository.find({
+    const payments = await this.paymentRepository.find({
       where: {
         user: { id: userId },
         installment: IsNull(),
       },
-      relations: ['course', 'course.category', 'installment'],
+      relations: ['course', 'course.category', 'installment', 'invoice'],
     });
 
-    if (!payment) {
-      return;
-    } else {
-      return payment;
-    }
+    return payments || [];
   }
 
   async findInstallments(userId: number) {
@@ -285,7 +288,7 @@ export class PaymentsService {
         user: { id: userId },
         installment: Not(IsNull()),
       },
-      relations: ['course', 'course.category', 'installment'],
+      relations: ['course', 'course.category', 'installment', 'invoice'],
     });
   }
 
@@ -302,14 +305,14 @@ export class PaymentsService {
   async findAll() {
     return await this.paymentRepository.find({
       where: { installment: IsNull() },
-      relations: ['user', 'course', 'course.category'],
+      relations: ['user', 'course', 'course.category', 'invoice'],
     });
   }
 
   async findAllInstallments() {
     return await this.paymentRepository.find({
       where: { installment: Not(IsNull()) },
-      relations: ['user', 'course', 'course.category', 'installment'],
+      relations: ['user', 'course', 'course.category', 'installment', 'invoice'],
     });
   }
 
@@ -322,7 +325,7 @@ export class PaymentsService {
   async findOne(paymentId: number) {
     const payment = await this.paymentRepository.findOne({
       where: { id: paymentId },
-      relations: ['user', 'course'],
+      relations: ['user', 'course', 'invoice'],
     });
     if (!payment) {
       throw new NotFoundException('Payment not found');
@@ -349,4 +352,70 @@ export class PaymentsService {
       await fs.unlink(filePath);
     } catch (error) {}
   }
+
+  async createXenditInvoice(userId: number, courseId: number, paymentMethod: string, promoCode?: string, formData?: any) {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+      relations: ['installments'],
+    });
+    if (!course) throw new Error('Course not found');
+
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) throw new Error('User not found');
+
+    let basePrice = course.promo && course.promo > 0 ? course.promo : course.price;
+    if (paymentMethod === 'Installment') {
+      if (!course.installments || course.installments.length === 0) {
+        throw new Error('Installment plan is not available for this course');
+      }
+      basePrice = course.installments[0].downPayment;
+    }
+
+    let discountAmount = 0;
+    let finalTotal = basePrice;
+    let appliedVoucherCode: string | undefined = undefined;
+
+    if (promoCode) {
+       const validationResult = await this.voucherService.validateVoucher(promoCode, courseId, basePrice, userId);
+       discountAmount = validationResult.discountAmount;
+       finalTotal = validationResult.finalTotal;
+       appliedVoucherCode = promoCode; 
+    }
+
+    const payment = this.paymentRepository.create({
+      user: user,
+      course: course,
+      process: finalTotal <= 0 ? 'approved' : 'process', 
+      no: `INV-${Date.now()}`,
+      // Simpan data dari form
+      user_fullname: formData?.user_fullname || null,
+      user_email: formData?.user_email || null,
+      user_no: formData?.user_no || formData?.no || null,
+      current_status: formData?.current_status || null,
+      referalSource: formData?.referal_source || null,
+      attend_program: formData?.attend_program ? true : false
+    });
+    
+    await this.paymentRepository.save(payment);
+
+    if (finalTotal <= 0) {
+      await this.addUserToCourse(userId, courseId);
+    }
+
+    return this.invoiceService.createInvoiceForPayment(payment, finalTotal, user.email, course.name, paymentMethod, basePrice, discountAmount);
+  }
+
+  // Get payment by No
+  async getPaymentByNo(no: string) {
+    return this.paymentRepository.findOne({
+      where: { no },
+      relations: ['course', 'user', 'invoice']
+    });
+  }
+
+  // Get course by ID
+  async findCourseById(courseId: number) {
+    return this.courseRepository.findOneBy({ id: courseId });
+  }
+
 }

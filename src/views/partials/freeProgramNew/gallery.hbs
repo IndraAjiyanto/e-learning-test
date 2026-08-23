@@ -1,0 +1,65 @@
+<!-- GALLERY SECTION -->
+<section id="gallery" class="w-full py-20 font-montserrat">
+  
+  <div class="w-auto mx-auto px-8 lg:px-16 flex flex-col items-center">
+    
+    <!-- Header Section -->
+    <div class="text-center mb-14">
+      <h2 class="font-montserrat font-semibold text-3xl sm:text-4xl lg:text-4xl text-center mb-12">
+        {{{t 'test.categoryFreeProgram.gallery.title'}}}
+      </h2>
+      <p class="font-sans font-normal text-base sm:text-lg lg:text-xl text-[#000000]/80 text-center max-w-auto mx-auto">
+        {{t 'test.categoryFreeProgram.gallery.description'}}
+      </p>
+    </div>
+
+    <!-- 2. Gallery Grid (3 Kolom) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 justify-items-center w-full max-w-[1200px]">
+      
+      <!-- KOLOM 1 -->
+      <div class="flex flex-col gap-6 lg:gap-8 w-full">
+        <div class="overflow-hidden rounded-[16px] shadow-sm bg-gray-200 transform-gpu w-full h-[225px] md:h-[240px]">
+          <img src="{{#if gallery.[0]}}{{gallery.[0].filePath}}{{else}}https://upload.wikimedia.org/wikipedia/commons/2/29/Kepala_Badan_Koordinasi_Penanaman_Modal_Bahlil_Lahadalia_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled{{/if}}" 
+               alt="Gallery 1" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
+        </div>
+        <div class="overflow-hidden rounded-[16px] shadow-sm bg-gray-200 transform-gpu w-full h-[433px] md:h-[460px]">
+          <img src="{{#if gallery.[3]}}{{gallery.[3].filePath}}{{else}}https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&h=800&fit=crop{{/if}}"
+               alt="Gallery 2" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
+        </div>
+      </div>
+      
+      <!-- KOLOM 2 -->
+      <div class="flex flex-col gap-6 lg:gap-8 w-full">
+        <div class="overflow-hidden rounded-[16px] shadow-sm bg-gray-200 transform-gpu w-full h-[433px] md:h-[460px]">
+          <img src="{{#if gallery.[1]}}{{gallery.[1].filePath}}{{else}}https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&h=800&fit=crop{{/if}}"
+               alt="Gallery 3" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
+        </div>
+        <div class="overflow-hidden rounded-[16px] shadow-sm bg-gray-200 transform-gpu w-full h-[225px] md:h-[240px]">
+          <img src="{{#if gallery.[4]}}{{gallery.[4].filePath}}{{else}}https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&h=400&fit=crop{{/if}}"
+               alt="Gallery 4" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
+        </div>
+      </div>
+      
+      <!-- KOLOM 3 -->
+      <div class="flex flex-col gap-6 lg:gap-8 w-full">
+        <div class="overflow-hidden rounded-[16px] shadow-sm bg-gray-200 transform-gpu w-full h-[225px] md:h-[240px]">
+          <img src="{{#if gallery.[2]}}{{gallery.[2].filePath}}{{else}}https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=600&h=400&fit=crop{{/if}}" 
+               alt="Gallery 5" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
+        </div>
+        <div class="overflow-hidden rounded-[16px] shadow-sm bg-gray-200 transform-gpu w-full h-[433px] md:h-[460px]">
+          <img src="{{#if gallery.[5]}}{{gallery.[5].filePath}}{{else}}https://images.unsplash.com/photo-1515169067868-5387ec356754?q=80&w=600&h=800&fit=crop{{/if}}" 
+               alt="Gallery 6" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- 3. Teks Bawah (Tautan) -->
+    <div class="mt-16">
+      <a href="/dashboard/gallery" class="inline-flex items-center gap-2 text-[#0B1F3B] text-[16px] font-semibold transition-all hover:text-[#7AA3C4] border-b-[1.5px] border-[#0B1F3B] hover:border-[#7AA3C4] pb-1">
+        {{t 'test.categoryFreeProgram.gallery.allGaleries'}} <i class="fa-solid fa-arrow-right-long text-[15px]"></i>
+      </a>
+    </div>
+
+  </div>
+</section>

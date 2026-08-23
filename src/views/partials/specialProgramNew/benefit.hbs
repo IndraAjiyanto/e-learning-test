@@ -1,0 +1,62 @@
+<section 
+  class="w-full relative pt-16 pb-24 z-0 overflow-hidden bg-[#FAFAFA]"
+  x-data="{ sectionShown: false }"
+  x-init="
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        sectionShown = true;
+        observer.disconnect();
+      }
+    }, { threshold: 0.25, rootMargin: '0px 0px -50px 0px' });
+    observer.observe($el);
+  "
+>
+  
+  <!-- Background Image without gradient overlay -->
+  <div class="absolute inset-0 -z-10">
+    <img src="/public/image/specialProgram/bgBenefit.png" alt="Benefit Background" class="w-full h-full object-cover">
+  </div>
+
+  <div class="container mx-auto px-4 lg:px-8 max-w-[1324px] relative z-10 text-center">
+    
+    <!-- Header Section (Silky Smooth Fade & Float Up) -->
+    <div 
+      :class="sectionShown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+      class="transition-all duration-700 ease-out text-center mb-16 space-y-4 transform"
+    >
+      <!-- Title: Montserrat 600, 36px (text-4xl), leading-none, text-center -->
+      <h2 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-4xl leading-none tracking-normal text-center text-[#000000] mb-4">
+        {{t 'test.special_program.whyChooseUs.title'}}<span class="text-[#003060]"> {{category.name}}</span>?
+      </h2>
+      
+      <!-- Subtitle: Open Sans 400, 20px (text-xl), leading-none, text-center, #000000CC -->
+      <p class="font-sans font-normal text-base sm:text-lg lg:text-xl leading-none tracking-normal text-center text-[#000000]/80 max-w-3xl mx-auto">
+        {{t 'test.special_program.whyChooseUs.description'}}
+      </p>
+    </div>
+
+    <!-- Cards Grid Container (Smooth Fade & Float Up with 150ms delay) -->
+    <div 
+      :class="sectionShown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center transition-all duration-700 ease-out delay-150 transform"
+    >
+
+    {{#each benefit_category}}
+      <!-- Card -->
+      <div class="w-full sm:w-[360px] h-[360px] bg-[linear-gradient(180deg,rgba(240,240,240,0.8)_33.18%,rgba(224,241,249,0.8)_94.72%)] backdrop-blur-[6.6px] rounded-[12px] px-6 py-8 shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center text-center">
+        <div class="w-16 h-16 rounded-full bg-[#003060] flex items-center justify-center mb-6 shadow-md shrink-0">
+         <i class="{{computeIcon icon}} text-white text-2xl"></i>
+        </div>
+        <h3 class="font-montserrat font-semibold text-[20px] leading-snug text-[#003060] mb-4">
+          {{getByLang this.title ../lang}}
+        </h3>
+        <p class="font-sans font-normal text-[15px] leading-relaxed text-[#4B5563]">
+          {{getByLang this.description ../lang}}
+        </p>
+      </div>
+    {{/each}}
+
+    </div>
+    
+  </div>
+</section>

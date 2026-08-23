@@ -116,7 +116,7 @@
     >
       Session
     </button>
-    {{#if pertemuanAkhir}}
+    {{#if lastSession}}
       <button
         @click="toggleFetch('/week/quiz/{{weeks.id}}', 'quiz')"
         :class="tab === 'quiz' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"

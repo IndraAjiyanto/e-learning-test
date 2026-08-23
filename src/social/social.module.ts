@@ -3,9 +3,10 @@ import { SocialService } from './social.service';
 import { SocialController } from './social.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Social } from 'src/entities/social.entity';
+import { FooterModule } from 'src/footer/footer.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Social])],
+  imports: [TypeOrmModule.forFeature([Social]), FooterModule],
   controllers: [SocialController],
   providers: [SocialService],
 })

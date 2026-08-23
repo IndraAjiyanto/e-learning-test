@@ -139,6 +139,9 @@
             {{else}}
             <p><span class="font-medium text-gray-600">Duration:</span> <span class="text-gray-800">{{course.month}} month</span></p>
             {{/if}}
+            <p><span class="font-medium text-gray-600">Time Start:</span> <span class="text-gray-800">{{#if course.time_start}}{{formatTime course.time_start}}{{else}}Not set{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">Time End:</span> <span class="text-gray-800">{{#if course.time_end}}{{formatTime course.time_end}}{{else}}Not set{{/if}}</span></p>
+            <p><span class="font-medium text-gray-600">Registration Date:</span> <span class="text-gray-800">{{#if course.date_registration}}{{formatDate course.date_registration}}{{else}}Not set{{/if}}</span></p>
             <p><span class="font-medium text-gray-600">Start Date:</span> <span class="text-gray-800">{{#if course.startDate}}{{formatDate course.startDate}}{{else}}Not set{{/if}}</span></p>
             <p><span class="font-medium text-gray-600">End Date:</span> <span class="text-gray-800">{{#if course.startEnd}}{{formatDate course.startEnd}}{{else}}Not set{{/if}}</span></p>
           </div>
@@ -154,7 +157,7 @@
           </h3>
           <div class="space-y-1 text-xs">
             <p><span class="font-medium text-gray-600">Capacity:</span> <span class="text-gray-800">{{course.quota}} students</span></p>
-            <p><span class="font-medium text-gray-600">Enrolled:</span> <span class="text-gray-800">{{userCourses.length}} students</span></p>
+            <p><span class="font-medium text-gray-600">Enrolled:</span> <span class="text-gray-800">{{course.userCourses.length}} students</span></p>
             <div class="mt-2">
               <div class="flex justify-between text-xs text-gray-600 mb-1">
                 <span>Progress</span>

@@ -132,9 +132,9 @@ isProgramActive() {
         });
       }
     }"
-    class='flex max-w-screen-xl px-4 items-center mx-auto md:px-6 lg:px-8 h-16 w-full relative'
+    class='flex max-w-[1728px] px-5 sm:px-8 lg:px-20 py-3 sm:py-4 items-center justify-between mx-auto h-auto w-full relative'
   >
-    <div class='flex items-center justify-start h-16 w-26'>
+    <div class='flex items-center justify-between w-full md:w-auto h-16'>
       <a
         href='/dashboard'
         class='inline-block'
@@ -143,20 +143,21 @@ isProgramActive() {
         <img
           src='/public/image/logo_baru.png'
           alt='Logo'
-          class='h-32 w-auto uppercase rounded-lg focus:outline-none focus:shadow-outline'
+          class='h-7 sm:h-12 w-auto object-contain focus:outline-none focus:shadow-outline'
         />
       </a>
 
-      <!-- Tombol toggle tetap di kanan -->
+      <!-- Tombol toggle mobile menu (Dark Navy rounded-[14px] button) -->
       <button
-        class='rounded-lg md:hidden focus:outline-none focus:shadow-outline p-2 transition-colors z-50'
+        class='w-9 h-9 sm:w-12 sm:h-12 bg-[#003060] rounded-[14px] md:hidden flex items-center justify-center text-white focus:outline-none shadow-md hover:bg-[#001f3f] transition-all z-50 shrink-0'
         @click='toggleMenu()'
+        aria-label="Toggle Navigation Menu"
       >
         <svg fill='currentColor' viewBox='0 0 20 20' class='w-6 h-6'>
           <path
             x-show='!open'
             fill-rule='evenodd'
-            d='M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z'
+            d='M3 5a1 1 0 011-1h14a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h14a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h14a1 1 0 110 2H4a1 1 0 01-1-1z'
             clip-rule='evenodd'
           ></path>
           <path
@@ -219,7 +220,7 @@ isProgramActive() {
 
         <!-- Mobile Menu Content -->
         <div class='flex-1 py-4'>
-          {{#if (roles user.role 'user')}}
+          {{#if isAuthenticated}}
             <a
               href='/dashboard'
               @click="setActive('/dashboard')"
@@ -257,6 +258,21 @@ isProgramActive() {
               </button>
 
               <div x-show='programOpen' x-collapse class='ml-4 mt-2 space-y-3'>
+                <a
+                  href='/dashboard/mpp'
+                  @click="setActive('/dashboard/mpp')"
+                  class='flex items-start rounded-xl p-3 border border-gray-300 hover:border-white/20 hover:bg-white/5 transition-all duration-300'
+                >
+                  <div
+                    class='w-[56px] h-[56px] bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
+                  >
+                    <i class='fas fa-gopuram text-white text-lg'></i>
+                  </div>
+                  <div class='flex-1 ml-3'>
+                    <p class='font-bold text-sm text-gray-900 text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                  </div>
+                </a>
                 <template x-for='kat in category' :key='kat.id'>
                   <a
                     :href="'/category/program/' + kat.name"
@@ -410,8 +426,8 @@ isProgramActive() {
                   <span>{{t 'test.navbar.myPortfolio'}}</span>
                 </a>
                 <a
-                  href='/payment/history/{{user.id}}'
-                  @click="setActive('/payment/history/{{user.id}}')"
+                  href='/users/profile?tab=history-payment'
+                  @click="setActive('/users/profile')"
                   class='flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors text-white/80'
                 >
                   <svg
@@ -489,6 +505,22 @@ isProgramActive() {
               </button>
 
               <div x-show='programOpen' x-collapse class='ml-4 mt-2 space-y-3'>
+                <a
+                  href='/dashboard/mpp'
+                  @click="setActive('/dashboard/mpp')"
+                  class='flex items-start rounded-xl p-3 border border-gray-300 hover:border-gray-400 hover:bg-white/5 transition-all duration-300'
+                >
+                  <div
+                    class='w-[56px] h-[56px] bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
+                  >
+                    <i class='fas fa-gopuram text-white text-lg'></i>
+                  </div>
+                  <div class='flex-1 ml-3'>
+                    <p class='font-bold text-sm text-gray-900 text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+
+                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                  </div>
+                </a>
                 <template x-for='kat in category' :key='kat.id'>
                   <a
                     :href="'/category/program/' + kat.name"
@@ -630,7 +662,7 @@ isProgramActive() {
       class='hidden md:flex flex-1 items-center justify-center space-x-8 h-full'
       x-show='isDesktop'
     >
-      {{#if (roles user.role 'user')}}
+      {{#if isAuthenticated}}
         <a
           href='/dashboard'
           @click="setActive('/dashboard')"
@@ -683,6 +715,22 @@ isProgramActive() {
           >
             <div class='p-6 bg-white rounded-2xl shadow-xl border border-gray-100'>
               <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                 <a
+                  href='/dashboard/mpp'
+                  @click="setActive('/dashboard/mpp')"
+                  class='flex items-start rounded-xl p-3 border border-gray-300 hover:border-gray-400 hover:bg-white/5 transition-all duration-300'
+                >
+                  <div
+                    class='w-[56px] h-[56px] bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
+                  >
+                    <i class='fas fa-gopuram text-white text-lg'></i>
+                  </div>
+                  <div class='flex-1 ml-3'>
+                    <p class='font-bold text-sm text-gray-900 text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+
+                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                  </div>
+                </a>
                 <template x-for='kat in category' :key='kat.id'>
                   <a
                     :href="'/category/program/' + kat.name"
@@ -867,9 +915,9 @@ isProgramActive() {
                 <span>{{t 'test.navbar.myPortfolio'}}</span>
               </a>
               <a
-                href='/payment/history/{{user.id}}'
-                @click="setActive('/payment/history/{{user.id}}')"
-                :class="isActive('/payment/history/{{user.id}}') ? 'bg-gray-200' : 'hover:bg-gray-200'"
+                href='/users/profile?tab=history-payment'
+                @click="setActive('/users/profile')"
+                :class="isActive('/users/profile') ? 'bg-gray-200' : 'hover:bg-gray-200'"
                 class='flex items-center gap-2 px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg'
               >
                 <svg
@@ -966,6 +1014,22 @@ isProgramActive() {
           >
             <div class='p-6 md:p-8 bg-white rounded-xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.25)] border border-gray-400'>
                   <div class='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5'>
+                    <a
+                  href='/dashboard/mpp'
+                  @click="setActive('/dashboard/mpp')"
+                  class='flex items-start rounded-xl p-3 border border-gray-300 hover:border-gray-400 hover:bg-white/5 transition-all duration-300'
+                >
+                  <div
+                    class='w-[56px] h-[56px] bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
+                  >
+                    <i class='fas fa-gopuram text-white text-lg'></i>
+                  </div>
+                  <div class='flex-1 ml-3'>
+                    <p class='font-bold text-sm text-gray-900  text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+
+                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                  </div>
+                </a>
                       <template x-for='kat in category' :key='kat.id'>
                               <a
                                 :href="'/category/program/' + kat.name"

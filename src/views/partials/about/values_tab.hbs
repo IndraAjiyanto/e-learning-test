@@ -4,71 +4,119 @@
   x-transition:enter-start='opacity-0 transform translate-y-4'
   x-transition:enter-end='opacity-100 transform translate-y-0'
 >
+  <!-- Header -->
   <div class='mb-6 sm:mb-8'>
-    <h1
-      class='text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-    >{{t 'test.about.value.tittle'}}</h1>
-    <p
-      class='text-base sm:text-lg lg:text-xl text-slate-600 font-inter'
-    >{{t 'test.about.value.description'}}</p>
+    <h1 class='text-xl sm:text-2xl md:text-4xl font-semibold text-[#003060] mb-2 font-montserrat'>
+      {{t 'test.about.value.title'}}
+    </h1>
+    <p class='text-lg sm:text-xl md:text-2xl text-[#003060] font-montserrat font-normal tracking-normal'>
+      {{t 'test.about.value.description'}}
+    </p>
   </div>
 
-  <div class='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8'>
+  <!-- Values Grid (2 Columns) -->
+  <div class='grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center md:justify-items-start'>
     {{#each value}}
-      <div
-        class='bg-[#E0F1F980] border-gray-300 border rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 shadow-lg'
-      >
-        <div
-          class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
-        >
-          <i
-            class='{{computeIcon icon}}
-              text-white text-lg sm:text-xl lg:text-2xl'
-          ></i>
+      <div class='w-full max-w-[530px] min-h-[280px] flex flex-col items-start justify-start p-6 sm:p-8 bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
+        <div class='w-12 h-12 bg-[#003060] rounded-full flex items-center justify-center text-white mb-4 text-xl shadow-sm flex-shrink-0'>
+          <img src="/public/image/about/values/{{icon}}" alt="{{getByLang title ../lang}}" class="w-6 h-6 object-contain" onerror="this.onerror=null; this.src='/public/image/about/values/adaptability.svg';" />
         </div>
-        <h3
-          class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-        >{{getByLang title ../lang}}</h3>
-        <p
-          class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-        >
+        <h3 class='text-xl sm:text-xl font-semibold text-[#0B1F3B] mb-3 font-montserrat leading-none tracking-normal'>
+          {{getByLang title ../lang}}
+        </h3>
+        <p class='text-[#000000CC] text-base leading-[35px] tracking-normal font-sans font-normal'>
           {{getByLang description ../lang}}
         </p>
       </div>
     {{else}}
-      <div
-        class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1'
-      >
-        <div
-          class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
-        >
-          <i class='fas fa-heart text-white text-lg sm:text-xl lg:text-2xl'></i>
+      <!-- Card 1: Adaptability -->
+      <div class='w-full max-w-[530px] min-h-[280px] flex flex-col items-start justify-start p-6 sm:p-8 bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
+        <div class='w-12 h-12 bg-[#003060] rounded-full flex items-center justify-center text-white mb-4 text-xl shadow-sm flex-shrink-0'>
+          <img src="/public/image/about/values/adaptability.svg" alt="Adaptability" class="w-6 h-6 object-contain" />
         </div>
-        <h3
-          class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-        >Integrity</h3>
-        <p
-          class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-        >
-          We uphold the highest standards of honesty and transparency in
-          everything we do.
+        <h3 class='text-xl sm:text-xl font-semibold text-[#0B1F3B] mb-3 font-montserrat leading-none tracking-normal'>
+          Adaptability
+        </h3>
+        <p class='text-[#000000CC] text-base leading-[35px] tracking-normal font-sans font-normal'>
+          We uphold speed and agility in facing technological trend shifts. We encourage continuous skill improvement to adapt effectively.
         </p>
       </div>
-      <div
-        class='bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1'
-      >
-        <div
-          class='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg sm:rounded-xl flex items-center justify-center mb-4 sm:mb-6'
-        >
-          <i class='fas fa-users text-white text-lg sm:text-xl lg:text-2xl'></i>
+
+      <!-- Card 2: Authenticity -->
+      <div class='w-full max-w-[530px] min-h-[280px] flex flex-col items-start justify-start p-6 sm:p-8 bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
+        <div class='w-12 h-12 bg-[#003060] rounded-full flex items-center justify-center text-white mb-4 text-xl shadow-sm flex-shrink-0'>
+          <img src="/public/image/about/values/authenticity.svg" alt="Authenticity" class="w-6 h-6 object-contain" />
         </div>
-        <h3
-          class='text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 mb-3 sm:mb-4 font-montserrat'
-        >Collaboration</h3>
-        <p
-          class='text-sm sm:text-base text-slate-700 leading-relaxed font-inter'
-        >
-          We believe in the power of teamwork and collective achievement.
+        <h3 class='text-xl sm:text-xl font-semibold text-[#0B1F3B] mb-3 font-montserrat leading-none tracking-normal'>
+          Authenticity
+        </h3>
+        <p class='text-[#000000CC] text-base leading-[35px] tracking-normal font-sans font-normal'>
+          We highly value the uniqueness of every individual and total transparency. We encourage every member to contribute with their true ideas and character.
+        </p>
+      </div>
+
+      <!-- Card 3: Impact -->
+      <div class='w-full max-w-[530px] min-h-[280px] flex flex-col items-start justify-start p-6 sm:p-8 bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
+        <div class='w-12 h-12 bg-[#003060] rounded-full flex items-center justify-center text-white mb-4 text-xl shadow-sm flex-shrink-0'>
+          <img src="/public/image/about/values/impact.svg" alt="Impact" class="w-6 h-6 object-contain" />
+        </div>
+        <h3 class='text-xl sm:text-xl font-semibold text-[#0B1F3B] mb-3 font-montserrat leading-none tracking-normal'>
+          Impact
+        </h3>
+        <p class='text-[#000000CC] text-base leading-[35px] tracking-normal font-sans font-normal'>
+          Every learning process must yield a tangible contribution. We are committed to creating solutions that have a positive and significant impact on our surrounding environment.
+        </p>
+      </div>
+
+      <!-- Card 4: Curiosity -->
+      <div class='w-full max-w-[530px] min-h-[280px] flex flex-col items-start justify-start p-6 sm:p-8 bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
+        <div class='w-12 h-12 bg-[#003060] rounded-full flex items-center justify-center text-white mb-4 text-xl shadow-sm flex-shrink-0'>
+          <img src="/public/image/about/values/curiosity.svg" alt="Curiosity" class="w-6 h-6 object-contain" />
+        </div>
+        <h3 class='text-xl sm:text-xl font-semibold text-[#0B1F3B] mb-3 font-montserrat leading-none tracking-normal'>
+          Curiosity
+        </h3>
+        <p class='text-[#000000CC] text-base leading-[35px] tracking-normal font-sans font-normal'>
+          We position curiosity as the main key to innovation. We motivate unlimited exploration, continuous critical questioning, and the discovery of new frontiers.
+        </p>
+      </div>
+
+      <!-- Card 5: Resilience -->
+      <div class='w-full max-w-[530px] min-h-[280px] flex flex-col items-start justify-start p-6 sm:p-8 bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
+        <div class='w-12 h-12 bg-[#003060] rounded-full flex items-center justify-center text-white mb-4 text-xl shadow-sm flex-shrink-0'>
+          <img src="/public/image/about/values/resilience.svg" alt="Resilience" class="w-6 h-6 object-contain" />
+        </div>
+        <h3 class='text-xl sm:text-xl font-semibold text-[#0B1F3B] mb-3 font-montserrat leading-none tracking-normal'>
+          Resilience
+        </h3>
+        <p class='text-[#000000CC] text-base leading-[35px] tracking-normal font-sans font-normal'>
+          For us, resilience is the main foundation of teamwork. Every member supports one another, stays adaptable, and continues to grow together in facing challenges and achieving greater goals.
+        </p>
+      </div>
+
+      <!-- Card 6: Integrity -->
+      <div class='w-full max-w-[530px] min-h-[280px] flex flex-col items-start justify-start p-6 sm:p-8 bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
+        <div class='w-12 h-12 bg-[#003060] rounded-full flex items-center justify-center text-white mb-4 text-xl shadow-sm flex-shrink-0'>
+          <img src="/public/image/about/values/integrity.svg" alt="Integrity" class="w-6 h-6 object-contain" />
+        </div>
+        <h3 class='text-xl sm:text-xl font-semibold text-[#0B1F3B] mb-3 font-montserrat leading-none tracking-normal'>
+          Integrity
+        </h3>
+        <p class='text-[#000000CC] text-base leading-[35px] tracking-normal font-sans font-normal'>
+          We uphold honesty, responsibility, and professionalism in every learning and working.
+        </p>
+      </div>
+
+      <!-- Card 7: Ability -->
+      <div class='w-full max-w-[530px] min-h-[280px] flex flex-col items-start justify-start p-6 sm:p-8 bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)]'>
+        <div class='w-12 h-12 bg-[#003060] rounded-full flex items-center justify-center text-white mb-4 text-xl shadow-sm flex-shrink-0'>
+          <img src="/public/image/about/values/ability.svg" alt="Ability" class="w-6 h-6 object-contain" />
+        </div>
+        <h3 class='text-xl sm:text-xl font-semibold text-[#0B1F3B] mb-3 font-montserrat leading-none tracking-normal'>
+          Ability
+        </h3>
+        <p class='text-[#000000CC] text-base leading-[35px] tracking-normal font-sans font-normal'>
+          We are committed to professionally developing the potential, skills, and capabilities of the next generation of digital talent in the IT industry.
         </p>
       </div>
     {{/each}}

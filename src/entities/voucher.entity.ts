@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Generated,
 } from 'typeorm';
 import { Course } from './course.entity';
 import { Exclude } from 'class-transformer';
@@ -22,8 +24,18 @@ export class Voucher {
   @Column({ type: 'enum', enum: ['free', 'discount'] })
   type: VoucherType;
 
+  @Column({ type: 'float', nullable: true })
+  percent?: number | null;
+
   @Column({ type: 'boolean', default: true })
   active: boolean;
+
+  @Column({ unique: true })
+  @Generated('uuid')
+  url_code: string;
+
+  @Column({ type: 'json', nullable: true })
+  allowed_user_ids: number[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -31,7 +43,15 @@ export class Voucher {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Course, (course) => course.voucher)
+  // Satu voucher bisa berlaku untuk banyak program (kelas).
+  // @JoinTable ada di sini (sisi "owning") → TypeORM membuat tabel junction
+  // bernama "voucher_programs" dengan kolom voucherId dan courseId.
+  @ManyToMany(() => Course, (course) => course.vouchers)
+  @JoinTable({
+    name: 'voucher_programs',
+    joinColumn: { name: 'voucherId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'courseId', referencedColumnName: 'id' },
+  })
   @Exclude()
   courses: Course[];
 }

@@ -68,7 +68,8 @@ export class AboutController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const about = await this.aboutService.findAll();
-    res.render('super_admin/about/index', { user: req.user, about });
+    res.json(about);
+    // res.render('super_admin/about/index', { user: req.user, about });
   }
 
   @Roles('super_admin')

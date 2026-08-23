@@ -97,6 +97,7 @@
       </div>
 
       <!-- Toggle Pertemuan Terakhir -->
+      {{#if (eq session.sessionOrder maxSession)}}
       <div
         x-data='{ launch: {{session.isFinal}} }'
         class='flex items-center gap-3'
@@ -116,6 +117,7 @@
           session</span>
         <input type='hidden' name='isFinalCheck' :value='launch' />
       </div>
+      {{/if}}
 
       <!-- Tombol di Kiri -->
       <div class='flex justify-start gap-3'>

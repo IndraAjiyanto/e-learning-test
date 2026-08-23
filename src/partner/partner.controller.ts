@@ -30,7 +30,7 @@ import { CategoryPartnerService } from 'src/category_partner/category_partner.se
 @UseGuards(AuthenticatedGuard)
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
-@Controller('partner')
+@Controller('partnership')
 export class PartnerController {
   constructor(
     private readonly PartnerService: PartnerService,
@@ -61,10 +61,10 @@ export class PartnerController {
       createPartnerDto.image = req.body.uploadedImageUrls?.[0];
       await this.PartnerService.create(createPartnerDto);
       req.flash('success', 'partner successfully created');
-      res.redirect('/partner');
+      res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to create');
-      res.redirect('/partner');
+      res.redirect('/partnership');
     }
   }
 
@@ -142,10 +142,10 @@ export class PartnerController {
       }
       await this.PartnerService.update(partnerId, updatePartnerDto);
       req.flash('success', 'partner successfully updated');
-      res.redirect('/partner');
+      res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to update');
-      res.redirect('/partner');
+      res.redirect('/partnership');
     }
   }
 
@@ -160,16 +160,16 @@ export class PartnerController {
       const partner = await this.PartnerService.findOne(partnerId);
       if (!partner) {
         req.flash('error', 'partner not found');
-        res.redirect('/partner');
+        res.redirect('/partnership');
         return;
       }
       await this.PartnerService.deleteFile(partner.image);
       await this.PartnerService.remove(partnerId);
       req.flash('success', 'partner successfully removed');
-      res.redirect('/partner');
+      res.redirect('/partnership');
     } catch (error: any) {
       req.flash('error', error.message || 'partner failed to remove');
-      res.redirect('/partner');
+      res.redirect('/partnership');
     }
   }
 }

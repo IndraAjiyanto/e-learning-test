@@ -97,18 +97,15 @@ export class CoursesService {
   async findNo(courseId: number) {
     const installment = await this.findCourseInstallments(courseId);
     const usedNumbers = installment.map((i) => Number(i.month));
-      
-    const availableNumbers = [3, 6, 12].filter(
-      (n) => !usedNumbers.includes(n)
-    );
+
+    const availableNumbers = [3].filter((n) => !usedNumbers.includes(n));
     return availableNumbers;
   }
 
   async create(createCourseDto: CreateCoursesDto) {
-
     if (!createCourseDto.image || createCourseDto.image.trim() === '') {
-    throw new BadRequestException('Image file is required');
-  }
+      throw new BadRequestException('Image file is required');
+    }
 
     const category = await this.categoryRepository.findOne({
       where: { id: createCourseDto.categoryId },
@@ -306,16 +303,14 @@ export class CoursesService {
             }
           }
         } else if (lastWeek) {
-          const lastWeekProgress = await this.weekProgressRepository.findOne(
-            {
-              where: {
-                week: { id: lastWeek.id },
-                user: { id: userId },
-                process: true,
-                quiz: true,
-              },
+          const lastWeekProgress = await this.weekProgressRepository.findOne({
+            where: {
+              week: { id: lastWeek.id },
+              user: { id: userId },
+              process: true,
+              quiz: true,
             },
-          );
+          });
           if (lastWeekProgress) {
             await this.userCourseRepository.update(userCourses.id, {
               progress: true,
@@ -404,16 +399,14 @@ export class CoursesService {
             }
           }
         } else if (lastWeek) {
-          const lastWeekProgress = await this.weekProgressRepository.findOne(
-            {
-              where: {
-                week: { id: lastWeek.id },
-                user: { id: userId },
-                process: true,
-                quiz: true,
-              },
+          const lastWeekProgress = await this.weekProgressRepository.findOne({
+            where: {
+              week: { id: lastWeek.id },
+              user: { id: userId },
+              process: true,
+              quiz: true,
             },
-          );
+          });
           if (lastWeekProgress) {
             await this.userCourseRepository.update(userCourses.id, {
               progress: true,
@@ -453,12 +446,26 @@ export class CoursesService {
       throw new NotFoundException(`User not found`);
     }
 
-    return await this.courseRepository.find({
-      where: {
-        userCourses: { user: { id: userId } },
-      },
-      relations: ['category', 'courseType'],
-    });
+    return await this.courseRepository
+      .createQueryBuilder('course')
+      .innerJoin(
+        'course.userCourses',
+        'userCourses',
+        'userCourses.userId = :userId',
+        { userId },
+      )
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.courseType', 'courseType')
+      .leftJoinAndSelect('course.weeks', 'weeks')
+      .leftJoinAndSelect(
+        'weeks.weekProgresses',
+        'weekProgresses',
+        'weekProgresses.userId = :userId',
+        { userId },
+      )
+      .leftJoinAndSelect('weeks.quiz', 'quiz')
+      .orderBy('weeks.week_number', 'ASC')
+      .getMany();
   }
 
   async findMentoring() {
@@ -500,6 +507,7 @@ export class CoursesService {
   async findSession(weeksId: number, userId: number) {
     return await this.sessionRepository
       .createQueryBuilder('session')
+      .leftJoinAndSelect('session.materials', 'materials')
       .leftJoinAndSelect(
         'session.sessionProgress',
         'sessionProgress',
@@ -511,9 +519,14 @@ export class CoursesService {
         'logbooks',
         'logbooks.userId = :userId',
       )
-      .leftJoinAndSelect('session.attendances', 'attendances', 'attendances.userId = :userId', {
-        userId,
-      })
+      .leftJoinAndSelect(
+        'session.attendances',
+        'attendances',
+        'attendances.userId = :userId',
+        {
+          userId,
+        },
+      )
       .leftJoinAndSelect('session.assignments', 'assignments')
       .leftJoinAndSelect(
         'assignments.taskAnswers',
@@ -557,6 +570,33 @@ export class CoursesService {
       .orderBy('weeks.week_number', 'ASC')
       .getMany();
   }
+
+  // async findWeeksWithUnlock(courseId: number, userId: number) {
+  //   const weeks = await this.weeksRepository
+  //     .createQueryBuilder('weeks')
+  //     .leftJoinAndSelect('weeks.session', 'session')
+  //     .leftJoinAndSelect('session.materials', 'materials')
+  //     .leftJoinAndSelect(
+  //       'session.sessionProgress',
+  //       'sessionProgress',
+  //       'sessionProgress.userId = :userId',
+  //       { userId },
+  //     )
+  //     .where('weeks.courseId = :courseId', { courseId })
+  //     .orderBy('weeks.week_number', 'ASC')
+  //     .getMany();
+
+  //   return weeks.map((week, index) => {
+  //     let isUnlocked = index === 0;
+  //     if (index > 0) {
+  //       const prevWeek = weeks[index - 1];
+  //       isUnlocked = prevWeek.session.some((session) =>
+  //         session.sessionProgress.some((sp) => sp.isAttended),
+  //       );
+  //     }
+  //     return { ...week, isUnlocked };
+  //   });
+  // }
 
   async findLastWeek(courseId: number) {
     const weeks = await this.weeksRepository.find({
@@ -660,13 +700,16 @@ export class CoursesService {
     return await this.userRepository.find({ where: { role: 'user' } });
   }
 
-  async findCategoryMyProgram(userId: number){
-    return await this.categoryRepository.find({where: { courses: { userCourses: { user: { id: userId } } } } });
+  async findCategoryMyProgram(userId: number) {
+    return await this.categoryRepository.find({
+      where: { courses: { userCourses: { user: { id: userId } } } },
+    });
   }
 
-
-  async findMyProgramCourseTypes(userId: number){
-    return await this.courseTypeRepository.find({where: {classes: { userCourses: { user: { id: userId } } } } });
+  async findMyProgramCourseTypes(userId: number) {
+    return await this.courseTypeRepository.find({
+      where: { classes: { userCourses: { user: { id: userId } } } },
+    });
   }
 
   async findCategory() {
@@ -681,43 +724,45 @@ export class CoursesService {
   }
 
   async findPaginatedCourses(params: {
-  search?: string;
-  alphabet?: string;
-  page: number;
-  limit: number;
-  userId?: number; // kalau ada = admin, kalau tidak = super_admin
-}) {
-  const query = this.courseRepository.createQueryBuilder('course')
-    .leftJoinAndSelect('course.category', 'category')
-    .leftJoinAndSelect('course.userCourses', 'userCourses')
-    .leftJoinAndSelect('course.mentorings', 'mentorings')
-    .leftJoinAndSelect('mentorings.user', 'mentorUser')
-    .orderBy('course.id', 'DESC');
+    search?: string;
+    alphabet?: string;
+    page: number;
+    limit: number;
+    userId?: number; // kalau ada = admin, kalau tidak = super_admin
+  }) {
+    const query = this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoinAndSelect('course.category', 'category')
+      .leftJoinAndSelect('course.userCourses', 'userCourses')
+      .leftJoinAndSelect('course.mentorings', 'mentorings')
+      .leftJoinAndSelect('mentorings.user', 'mentorUser')
+      .orderBy('course.id', 'DESC');
 
-  // Filter by mentor (admin only)
-  if (params.userId) {
-    query.innerJoin('course.mentorings', 'm')
-      .andWhere('m.userId = :userId', { userId: params.userId });
+    // Filter by mentor (admin only)
+    if (params.userId) {
+      query
+        .innerJoin('course.mentorings', 'm')
+        .andWhere('m.userId = :userId', { userId: params.userId });
+    }
+
+    if (params.search) {
+      query.andWhere(
+        '(course.name ILIKE :search OR category.name ILIKE :search)',
+        { search: `%${params.search}%` },
+      );
+    }
+
+    if (params.alphabet) {
+      query.andWhere('course.name ILIKE :alphabet', {
+        alphabet: `${params.alphabet}%`,
+      });
+    }
+
+    query.skip((params.page - 1) * params.limit).take(params.limit);
+
+    const [data, total] = await query.getManyAndCount();
+    return { data, total };
   }
-
-if (params.search) {
-  query.andWhere(
-    '(course.name ILIKE :search OR category.name ILIKE :search)',
-    { search: `%${params.search}%` }
-  );
-}
-
-  if (params.alphabet) {
-    query.andWhere('course.name ILIKE :alphabet', {
-      alphabet: `${params.alphabet}%`,
-    });
-  }
-
-  query.skip((params.page - 1) * params.limit).take(params.limit);
-
-  const [data, total] = await query.getManyAndCount();
-  return { data, total };
-}
 
   async findAllLaunch() {
     return await this.courseRepository.find({
@@ -738,85 +783,85 @@ if (params.search) {
     });
   }
 
-async allClassExcept(courseId: number) {
-  const course = await this.courseRepository.findOne({
-    where: { id: courseId },
-    relations: ['category', 'courseType'],
-  });
+  async allClassExcept(courseId: number) {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+      relations: ['category', 'courseType'],
+    });
 
-  if (!course) {
-    throw new NotFoundException('Program not found');
+    if (!course) {
+      throw new NotFoundException('Program not found');
+    }
+
+    const usedIds = [courseId];
+    let results: any[] = [];
+
+    // 1. category & courseType sama (1 data)
+    const sameAll = await this.courseRepository.find({
+      where: {
+        id: Not(In(usedIds)),
+        launch: true,
+        category: { id: course.category.id },
+        courseType: { id: course.courseType.id },
+      },
+      relations: ['userCourses', 'category', 'courseType'],
+      order: { id: 'DESC' },
+      take: 1,
+    });
+
+    results.push(...sameAll);
+    usedIds.push(...sameAll.map((k) => k.id));
+
+    // 2. category sama (1 data)
+    const sameKategori = await this.courseRepository.find({
+      where: {
+        id: Not(In(usedIds)),
+        launch: true,
+        category: { id: course.category.id },
+      },
+      relations: ['userCourses', 'category', 'courseType'],
+      order: { id: 'DESC' },
+      take: 1,
+    });
+
+    results.push(...sameKategori);
+    usedIds.push(...sameKategori.map((k) => k.id));
+
+    // 3. courseType sama (1 data)
+    const sameJenis = await this.courseRepository.find({
+      where: {
+        id: Not(In(usedIds)),
+        launch: true,
+        courseType: { id: course.courseType.id },
+      },
+      relations: ['userCourses', 'category', 'courseType'],
+      order: { id: 'DESC' },
+      take: 1,
+    });
+
+    results.push(...sameJenis);
+    usedIds.push(...sameJenis.map((k) => k.id));
+
+    // 🔥 fallback kalau kurang dari 3
+    if (results.length < 3) {
+      const remaining = 3 - results.length;
+
+      const filler = await this.courseRepository
+        .createQueryBuilder('course')
+        .leftJoinAndSelect('course.userCourses', 'userCourses')
+        .leftJoinAndSelect('course.category', 'category')
+        .leftJoinAndSelect('course.courseType', 'courseType')
+        .where('course.id NOT IN (:...ids)', { ids: usedIds })
+        .andWhere('course.launch = true')
+        .orderBy('RANDOM()')
+        .limit(remaining)
+        .getMany();
+
+      results.push(...filler);
+    }
+
+    return results;
   }
-
-  const usedIds = [courseId];
-  let results: any[] = [];
-
-  // 1. category & courseType sama (1 data)
-  const sameAll = await this.courseRepository.find({
-    where: {
-      id: Not(In(usedIds)),
-      launch: true,
-      category: { id: course.category.id },
-      courseType: { id: course.courseType.id },
-    },
-    relations: ['userCourses', 'category', 'courseType'],
-    order: { id: 'DESC' },
-    take: 1,
-  });
-
-  results.push(...sameAll);
-  usedIds.push(...sameAll.map(k => k.id));
-
-  // 2. category sama (1 data)
-  const sameKategori = await this.courseRepository.find({
-    where: {
-      id: Not(In(usedIds)),
-      launch: true,
-      category: { id: course.category.id },
-    },
-    relations: ['userCourses', 'category', 'courseType'],
-    order: { id: 'DESC' },
-    take: 1,
-  });
-
-  results.push(...sameKategori);
-  usedIds.push(...sameKategori.map(k => k.id));
-
-  // 3. courseType sama (1 data)
-  const sameJenis = await this.courseRepository.find({
-    where: {
-      id: Not(In(usedIds)),
-      launch: true,
-      courseType: { id: course.courseType.id },
-    },
-    relations: ['userCourses', 'category', 'courseType'],
-    order: { id: 'DESC' },
-    take: 1,
-  });
-
-  results.push(...sameJenis);
-  usedIds.push(...sameJenis.map(k => k.id));
-
-  // 🔥 fallback kalau kurang dari 3
-  if (results.length < 3) {
-    const remaining = 3 - results.length;
-
-    const filler = await this.courseRepository
-      .createQueryBuilder('course')
-      .leftJoinAndSelect('course.userCourses', 'userCourses')
-      .leftJoinAndSelect('course.category', 'category')
-      .leftJoinAndSelect('course.courseType', 'courseType')
-      .where('course.id NOT IN (:...ids)', { ids: usedIds })
-      .andWhere('course.launch = true')
-      .orderBy('RANDOM()')
-      .limit(remaining)
-      .getMany();
-
-    results.push(...filler);
-  }
-
-  return results;
-}
 
   async checkUserInCourse(courseId: number, userId: number) {
     return await this.userCourseRepository.findOne({
@@ -857,7 +902,13 @@ async allClassExcept(courseId: number) {
   async findOneCourse(courseId: number) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
-      relations: ['category', 'courseType', 'technologies', 'userCourses'],
+      relations: [
+        'category',
+        'courseType',
+        'technologies',
+        'userCourses',
+        'weeks',
+      ],
     });
     if (!course) {
       throw new NotFoundException('Program not found');
@@ -868,7 +919,15 @@ async allClassExcept(courseId: number) {
   async findOneUserCourse(courseId: number) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId, launch: true },
-      relations: ['category', 'courseType', 'userCourses', 'userCourses.user'],
+      relations: [
+        'category',
+        'category.gallery',
+        'courseType',
+        'userCourses',
+        'userCourses.user',
+        'programBenefits',
+        'courseFlow',
+      ],
     });
     if (!course) {
       throw new NotFoundException('Program not found');
@@ -884,7 +943,7 @@ async allClassExcept(courseId: number) {
 
   async findOnePortfolio(userId: number, courseId: number) {
     return await this.portfolioRepository.findOne({
-      where: { user: { id: userId },  course: { id: courseId } },
+      where: { user: { id: userId }, course: { id: courseId } },
     });
   }
 
@@ -1047,8 +1106,13 @@ async allClassExcept(courseId: number) {
       }
     }
 
-    const { courseTypeId, categoryId, technologiesIds, endDate, ...otherProperties } =
-      updateCourseDto;
+    const {
+      courseTypeId,
+      categoryId,
+      technologiesIds,
+      endDate,
+      ...otherProperties
+    } = updateCourseDto;
     Object.assign(course, otherProperties, { startEnd: endDate });
 
     return await this.courseRepository.save(course);
@@ -1079,7 +1143,6 @@ async allClassExcept(courseId: number) {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 }

@@ -1,7 +1,13 @@
-import { Logger, MiddlewareConsumer, Module, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Logger,
+  MiddlewareConsumer,
+  Module,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { InvoiceModule } from './invoice/invoice.module';
 import { AttendancesModule } from './attendances/attendances.module';
 import { MaterialsModule } from './materials/material.module';
 import { CoursesModule } from './courses/courses.module';
@@ -28,7 +34,6 @@ import { FaqsModule } from './faqs/faqs.module';
 import { AlumniModule } from './alumni/alumni.module';
 import { CourseTypesModule } from './course_types/course_types.module';
 import { CertificatesModule } from './certificates/certificates.module';
-import { CollaborationsModule } from './collaborations/collaborations.module';
 import { CourseQuestionsModule } from './course_questions/course_questions.module';
 import { MentorLogbookModule } from './mentor_logbook/mentor_logbook.module';
 import { BenefitModule } from './benefit/benefit.module';
@@ -66,18 +71,51 @@ import {
 import { OurExperienceModule } from './our_experience/our_experience.module';
 import { GalleryModule } from './gallery/gallery.module';
 import { CategoryPartnerModule } from './category_partner/category_partner.module';
+import { PartnerModule } from './partner/partner.module';
+import { VoucherModule } from './voucher/voucher.module';
+import { FooterModule } from './footer/footer.module';
+import { FooterMiddleware } from './footer/footer.middleware';
 import path from 'path';
 import { DataSource } from 'typeorm';
 
 const TABLES_WITH_SEQUENCE = [
-  'material', 'comments', 'answer_task', 'assignments', 'portofolios',
-  'course_type', 'faqs', 'category', 'installment', 'payments',
-  'certificates', 'user_courses', 'course_questions', 'technologies', 'mentors',
-  'course_flow', 'program_benefits', 'registrations', 'course', 'user_answers',
-  'answers', 'questions', 'scores', 'quiz_progresses', 'weeks',
-  'session_progresses', 'mentor_logbook', 'session', 'attendance', 'mentor_biodata',
-  'week_progresses', 'visions', 'paragraph', 'mission', 'image_benefit',
-  'collaborations', 'about',
+  'material',
+  'comments',
+  'answer_task',
+  'assignments',
+  'portofolios',
+  'course_type',
+  'faqs',
+  'category',
+  'installment',
+  'payments',
+  'certificates',
+  'user_courses',
+  'course_questions',
+  'technologies',
+  'mentors',
+  'course_flow',
+  'program_benefits',
+  'registrations',
+  'course',
+  'user_answers',
+  'answers',
+  'questions',
+  'scores',
+  'quiz_progresses',
+  'weeks',
+  'session_progresses',
+  'mentor_logbook',
+  'session',
+  'attendance',
+  'mentor_biodata',
+  'week_progresses',
+  'visions',
+  'paragraph',
+  'mission',
+  'image_benefit',
+  'category_partner',
+  'about',
 ];
 
 @Module({
@@ -101,6 +139,7 @@ const TABLES_WITH_SEQUENCE = [
     //   rootPath: join(__dirname, '..','src', 'common','public'),
     // }),
     UsersModule,
+    InvoiceModule,
     AttendancesModule,
     MaterialsModule,
     CoursesModule,
@@ -124,7 +163,6 @@ const TABLES_WITH_SEQUENCE = [
     AlumniModule,
     CourseTypesModule,
     CertificatesModule,
-    CollaborationsModule,
     CourseQuestionsModule,
     MentorLogbookModule,
     BenefitModule,
@@ -155,6 +193,9 @@ const TABLES_WITH_SEQUENCE = [
     OurExperienceModule,
     GalleryModule,
     CategoryPartnerModule,
+    PartnerModule,
+    VoucherModule,
+    FooterModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -189,29 +230,32 @@ export class AppModule implements OnApplicationBootstrap {
 
   configure(consumer: MiddlewareConsumer) {
     // consumer.apply(I18nMiddleware).forRoutes('*');
-     consumer
-            .apply(AuthMiddleware)
-            .exclude(
-            '/',
-            '/login',
-            '/translation',
-            '/register',
-            'program/*path',
-            'category/*path',
-            'blog/*path',
-            '/register/:id',
-            '/session-expired',
-            '/users/send-verify-email',
-            '/users/verify-email',
-            '/users/reset-password',
-            '/users/forgot-password',
-            '/public/*path',
-            '/asset/*path',
-            '/uploads/*path',
-            '/alumni/filter',
-            '/dashboard',
-            '/dashboard/*path',
-            )
-            .forRoutes('*');
+    consumer
+      .apply(AuthMiddleware)
+      .exclude(
+        '/',
+        '/login',
+        '/translation',
+        '/register',
+        'program/*path',
+        'category/*path',
+        'blog/*path',
+        '/register/:id',
+        '/session-expired',
+        '/users/send-verify-email',
+        '/users/verify-email-success',
+        '/users/verify-email',
+        '/users/reset-password',
+        '/users/forgot-password',
+        '/public/*path',
+        '/asset/*path',
+        '/uploads/*path',
+        '/alumni/filter',
+        '/dashboard',
+        '/dashboard/*path',
+      )
+      .forRoutes('*');
+
+    consumer.apply(FooterMiddleware).forRoutes('*');
   }
 }

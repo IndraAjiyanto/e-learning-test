@@ -1,0 +1,289 @@
+<!-- INSTALLMENT PAYMENT DETAIL -->
+<div class="space-y-6 font-montserrat">
+  
+  <!-- Back Button Row -->
+  <div>
+    <button 
+      type="button" 
+      @click="showDetail = false"
+      class="w-10 h-10 rounded-full border border-[#003060] flex items-center justify-center text-[#003060] hover:bg-[#003060]/10 transition-all cursor-pointer shadow-[0_0_4px_rgba(0,0,0,0.25)]"
+    >
+      <i class="fa-solid fa-arrow-left text-sm"></i>
+    </button>
+  </div>
+
+  <!-- Top Row: Payment Overview (Left 2 cols) + Next Payment (Right 1 col) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <!-- LEFT CARD: Payment Overview -->
+    <div class="lg:col-span-2 bg-white backdrop-blur-[3.3px] rounded-xl p-6 shadow-[0_0_4px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col">
+      <div>
+        <!-- Top Row: Title + Plan Badge -->
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-sans font-bold text-[12px] leading-[15px] text-[#2D2D2D]">
+            Payment Overview
+          </h3>
+          <span class="px-3 py-1 text-[#003060] border-[0.1px] border-[#003060] rounded-[3px] font-sans font-normal text-[10px] leading-none text-center" x-text="selectedTx?.planType || '3 Months Plan'">
+            3 Months Plan
+          </span>
+        </div>
+
+        <!-- Program Icon + Title + Type -->
+        <div class="flex items-center gap-3.5 mb-12">
+          <div class="w-10 h-10 rounded-full bg-[#6EB6E5] flex items-center justify-center text-white text-lg flex-shrink-0 shadow-xs">
+            <i class="fa-solid fa-couch text-base text-[#003060]"></i>
+          </div>
+          <div>
+            <h4 class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-[#2D2D2D] mb-1" x-text="selectedTx?.program || 'UI/UX Designer'">
+              UI/UX Designer
+            </h4>
+            <p class="font-sans font-normal text-xs 2xl:text-xs leading-[15px] text-[#2D2D2D]" x-text="selectedTx?.type || 'Bootcamp'">
+              Bootcamp
+            </p>
+          </div>
+        </div>
+
+        <!-- Metrics Row (4 Items) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-7">
+          <div>
+            <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block mb-1">Total Program Fee</span>
+            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="selectedTx?.totalProgramFee || 'Rp 6.550.000'">Rp 6.550.000</span>
+          </div>
+
+          <div>
+            <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block mb-1">Down Payment (Paid)</span>
+            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="selectedTx?.dpPaid || 'Rp 550.000'">Rp 550.000</span>
+          </div>
+
+          <div>
+            <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block mb-1">Amount to be Paid (3x)</span>
+            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="selectedTx?.amountToBePaid3x || 'Rp 6.000.000'">Rp 6.000.000</span>
+          </div>
+
+          <div>
+            <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block mb-1">Remaining Balance</span>
+            <span class="font-montserrat font-semibold text-sm 2xl:text-[15px] leading-none text-black" x-text="selectedTx?.remainingBalance || 'Rp 6.000.000'">Rp 6.000.000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Progress Bar -->
+      <div class="pt-4">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-sans font-bold text-xs 2xl:text-[12px] leading-[15px] text-[#2D2D2D]">Payment Progress</span>
+          <span class="font-montserrat font-semibold text-xs text-black" x-text="selectedTx?.progressPercentage || '8.4%'">8.4%</span>
+        </div>
+
+        <!-- Bar Track -->
+        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-3">
+          <div class="h-full bg-[#003060] rounded-full transition-all duration-500" style="width: 8.4%;"></div>
+        </div>
+
+        <span class="font-sans font-normal text-xs 2xl:text-[12px] leading-[15px] text-[#666666] block">
+          You have paid <span class="font-medium text-black" x-text="selectedTx?.paidSoFar || 'Rp 550.000'">Rp 550.000</span> of <span class="font-medium text-black" x-text="selectedTx?.totalProgramFee || 'Rp 6.550.000'">Rp 6.550.000</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- RIGHT CARD: Next Payment -->
+    <div class="lg:col-span-1 bg-white backdrop-blur-[3.3px] rounded-xl p-6 shadow-[0_0_4px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col justify-between">
+      <div>
+        <h3 class="font-sans font-bold text-[12px] leading-[15px] text-[#2D2D2D] mb-5">
+          Next Payment
+        </h3>
+
+        <!-- Installment 1 Block -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#FFF4E2] flex items-center justify-center text-[#F9AB1C] text-base flex-shrink-0">
+              <i class="fa-solid fa-couch text-base text-[#F9AB1C]"></i>
+            </div>
+            <div>
+              <h4 class="font-montserrat font-semibold text-[15px] text-[#2D2D2D]">
+                Installment 1
+              </h4>
+            </div>
+          </div>
+          <span class="px-3 py-1 bg-[#FFF4E2] border-[0.1px] border-[#F9AB1C] text-[#F9AB1C] rounded-[3px] font-sans font-normal text-[10px] leading-none text-center">
+            Due Soon
+          </span>
+        </div>
+
+        <!-- Key Values (2-Column Grid for Due Date & Remaining Time) -->
+        <div class="space-y-4 mb-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <span class="font-sans font-normal text-xs text-[#666666] block">Due Date</span>
+              <span class="font-montserrat font-semibold text-sm sm:text-base text-[#2D2D2D] block mt-1" x-text="selectedTx?.nextDueDate || 'Apr 30, 2026'">Apr 30, 2026</span>
+            </div>
+
+            <div>
+              <span class="font-sans font-normal text-xs text-[#666666] block">Remaining Time</span>
+              <span class="font-montserrat font-semibold text-sm sm:text-base text-[#F9AB1C] block mt-1" x-text="selectedTx?.remainingDays || '8 Days'">8 Days</span>
+            </div>
+          </div>
+
+          <div>
+            <span class="font-sans font-normal text-xs text-[#666666] block">Amount</span>
+            <span class="font-montserrat font-semibold text-base sm:text-lg text-[#2D2D2D] block mt-1" x-text="selectedTx?.nextAmount || 'Rp 2.000.000'">Rp 2.000.000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pay Now Button -->
+      <button 
+        type="button" 
+        class="w-full py-3 bg-[#003060] hover:bg-[#002347] text-white font-montserrat font-semibold text-base sm:text-lg rounded-full shadow-md hover:shadow-lg transition-all cursor-pointer text-center"
+      >
+        Pay Now
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Bottom Row: Installment Progress (Left 2 cols) + Payment Summary (Right 1 col) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <!-- BOTTOM LEFT CARD: Installment Progress (3 Months) Stepper -->
+    <div class="lg:col-span-2 bg-white backdrop-blur-[3.3px] rounded-xl p-5 2xl:p-6 shadow-[0_0_4px_rgba(0,0,0,0.25)] border border-slate-200/80">
+      <h3 class="font-sans font-bold text-[12px] leading-[15px] text-[#2D2D2D] mb-6">
+        Installment Progress (3 Months)
+      </h3>
+
+      <!-- Horizontal Stepper (4 Nodes) -->
+      <div class="w-full max-w-[540px] mx-auto pb-2 pt-2">
+        
+        <!-- Top Circles + Connected Lines Row -->
+        <div class="flex items-center w-full px-8 mb-3">
+          
+          <!-- Node 1 Circle -->
+          <div class="w-[28px] h-[28px] rounded-full bg-[#04B165] text-white flex items-center justify-center text-[11px] font-bold shadow-xs flex-shrink-0">
+            <i class="fa-solid fa-check"></i>
+          </div>
+
+          <!-- Solid Green Line (Node 1 -> Node 2) -->
+          <div class="flex-1 h-[2px] bg-[#04B165]"></div>
+
+          <!-- Node 2 Circle -->
+          <div class="w-[28px] h-[28px] rounded-full border-[1.5px] border-[#F9AB1C] bg-white text-[#F9AB1C] flex items-center justify-center text-[11px] font-semibold shadow-xs flex-shrink-0">
+            2
+          </div>
+
+          <!-- Solid Yellow/Orange Line (Node 2 -> Node 3) -->
+          <div class="flex-1 h-[2px] bg-[#F9AB1C]"></div>
+
+          <!-- Node 3 Circle -->
+          <div class="w-[28px] h-[28px] rounded-full border-[1.5px] border-[#D1D5DB] bg-white text-[#D1D5DB] flex items-center justify-center text-[11px] font-normal shadow-xs flex-shrink-0">
+            3
+          </div>
+
+          <!-- Dashed Gray Line (Node 3 -> Node 4) -->
+          <div class="flex-1 h-0 border-b border-dashed border-[#D1D5DB]"></div>
+
+          <!-- Node 4 Circle -->
+          <div class="w-[28px] h-[28px] rounded-full border-[1.5px] border-[#D1D5DB] bg-white text-[#D1D5DB] flex items-center justify-center text-[11px] font-normal shadow-xs flex-shrink-0">
+            4
+          </div>
+
+        </div>
+
+        <!-- Bottom Labels 4-Column Grid -->
+        <div class="grid grid-cols-4 w-full text-center">
+          
+          <!-- Node 1 Labels -->
+          <div class="flex flex-col items-center">
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block">
+              Down Payment
+            </span>
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#04B165] block">
+              (Paid)
+            </span>
+            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5">
+              Mar 30, 2026 10:00
+            </span>
+          </div>
+
+          <!-- Node 2 Labels -->
+          <div class="flex flex-col items-center">
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block">
+              Installment 1
+            </span>
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#F9AB1C] block">
+              (Due Soon)
+            </span>
+            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5">
+              Apr 30, 2026
+            </span>
+          </div>
+
+          <!-- Node 3 Labels -->
+          <div class="flex flex-col items-center">
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block">
+              Installment 2
+            </span>
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-slate-400 block">
+              (Up Coming)
+            </span>
+            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5">
+              May 30, 2026
+            </span>
+          </div>
+
+          <!-- Node 4 Labels -->
+          <div class="flex flex-col items-center">
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-[#2D2D2D] block">
+              Installment 3
+            </span>
+            <span class="font-sans font-normal text-[12px] leading-[18px] text-slate-400 block">
+              (Up Coming)
+            </span>
+            <span class="font-sans font-normal text-[10px] leading-[15px] text-[#666666] block mt-0.5">
+              Jun 30, 2026
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTTOM RIGHT CARD: Payment Summary -->
+    <div class="lg:col-span-1 bg-white backdrop-blur-[3.3px] rounded-xl p-6 shadow-[0_0_4px_rgba(0,0,0,0.25)] border border-slate-200/80 flex flex-col justify-between">
+      <div>
+        <h3 class="font-sans font-bold text-[12px] leading-[15px] text-[#2D2D2D] mb-6">
+          Payment Summary
+        </h3>
+
+        <!-- Rows -->
+        <div class="space-y-3 font-sans text-xs sm:text-sm">
+          <div class="flex items-center justify-between">
+            <span class="font-sans text-xs text-[#2D2D2D] font-semibold">Total Program Fee</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.totalProgramFee || 'Rp 6.550.000'">Rp 6.550.000</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="font-sans text-xs text-[#2D2D2D] font-normal">Down Payment (Paid)</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.dpPaid || 'Rp 550.000'">Rp 550.000</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="font-sans text-xs text-[#2D2D2D] font-normal">Amount to be paid (3x)</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.amountToBePaid3x || 'Rp 6.000.000'">Rp 6.000.000</span>
+          </div>
+
+          <div class="flex items-center justify-between border-t border-slate-100 pt-3">
+            <span class="font-sans text-xs text-[#2D2D2D] font-semibold">Total Paid</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.totalPaid || 'Rp 550.000'">Rp 550.000</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="font-sans text-xs text-[#2D2D2D] font-semibold">Remaining Balance</span>
+            <span class="font-normal text-[#2D2D2D]" x-text="selectedTx?.remainingBalance || 'Rp 6.000.000'">Rp 6.000.000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
