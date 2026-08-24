@@ -13,6 +13,10 @@ export class CreateCategoriesDto {
   @IsString()
   icon: string;
 
+  @IsOptional()
+  @IsString()
+  hero_section_image?: string;
+
   @IsArray()
   description: string[];
 

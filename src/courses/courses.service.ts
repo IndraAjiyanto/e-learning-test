@@ -1145,4 +1145,27 @@ export class CoursesService {
       await fs.unlink(filePath);
     } catch (error) {}
   }
+
+  async findPortfolio(userId: number) {
+    return await this.portfolioRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user', 'course', 'course.courseType', 'course.category', 'course.technologies'],
+    });
+  }
+
+  async findCompletedCoursesByUser(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['userCourses', 'userCourses.course', 'userCourses.course.category'],
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const completedCourses = user.userCourses.filter(
+      uc => uc.progress === true && uc.course && uc.course.process === 'approved',
+    );
+    return { userCourses: completedCourses };
+  }
 }

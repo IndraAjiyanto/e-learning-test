@@ -57,9 +57,7 @@ import { ExperienceModule } from './experience/experience.module';
 import { BackgroundModule } from './background/background.module';
 import { MissionsModule } from './missions/missions.module';
 import { BenefitCategoryModule } from './benefit_category/benefit_category.module';
-import { FlowCategoryModule } from './flow_category/flow_category.module';
 import { FaqModule } from './faq/faq.module';
-import { SuperiorityModule } from './superiority/superiority.module';
 import { AuthMiddleware } from './auth/auth.middleware';
 import {
   AcceptLanguageResolver,
@@ -67,7 +65,6 @@ import {
   I18nMiddleware,
   I18nModule,
 } from 'nestjs-i18n';
-import { OurExperienceModule } from './our_experience/our_experience.module';
 import { GalleryModule } from './gallery/gallery.module';
 import { CategoryPartnerModule } from './category_partner/category_partner.module';
 import { PartnerModule } from './partner/partner.module';
@@ -184,10 +181,7 @@ const TABLES_WITH_SEQUENCE = [
     BackgroundModule,
     MissionsModule,
     BenefitCategoryModule,
-    FlowCategoryModule,
     FaqModule,
-    SuperiorityModule,
-    OurExperienceModule,
     GalleryModule,
     CategoryPartnerModule,
     PartnerModule,

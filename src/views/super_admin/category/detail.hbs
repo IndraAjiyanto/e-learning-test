@@ -90,21 +90,21 @@
       </form>
     </div>
 
-    <!-- Image and Description Row -->
-    <div class='space-y-4 mb-4'>
+    <!-- Gambar Kategori (Icon) -->
+    {{#if category.icon}}
+    <div class='flex justify-center mb-6'>
+      <img
+        src="{{category.icon}}"
+        alt='Icon {{category.name}}'
+        class='w-48 h-32 lg:w-56 lg:h-40 object-cover rounded-lg shadow-md'
+      />
+    </div>
+    {{/if}}
 
-      <!-- Gambar Kategori -->
-      <div class='flex justify-center'>
-        <img
-          src="{{category.icon}}"
-          alt='Icon {{category.name}}'
-          class='w-64 h-48 object-cover rounded-lg shadow-md'
-        />
-      </div>
-
-      <!-- Description Section -->
-      <div class='bg-gray-50 rounded-lg p-4'>
-        <h3 class='text-base font-semibold text-gray-800 mb-3 flex items-center'>
+    <!-- Description Section (Basic Information Card) -->
+    <div class='mb-4'>
+      <div class='w-full bg-gray-50 rounded-lg p-4 border border-gray-200'>
+        <h3 class='text-base font-semibold text-gray-800 mb-6 flex items-center border-b pb-3 border-gray-200'>
           <svg
             class='w-5 h-5 mr-2 text-blue-600'
             fill='none'
@@ -120,110 +120,142 @@
           </svg>
           Basic Information
         </h3>
-<div class='space-y-4 text-sm'>
+        
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm'>
+          
+          <!-- Left Column Fields -->
+          <div class='space-y-4'>
+            <div class='space-y-1'>
+              <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Category Name</span>
+              <p class='text-gray-800'>{{category.name}}</p>
+            </div>
 
-  {{! Field pendek - pakai grid 2 kolom }}
-  <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div class='space-y-1'>
+              <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Type</span>
+              <p class='text-gray-800'>{{category.type}}</p>
+            </div>
 
-    <div class='space-y-1'>
-      <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Category Name</span>
-      <p class='text-gray-800'>{{category.name}}</p>
-    </div>
+            {{#if category.contact}}
+              <div class='space-y-1'>
+                <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Contact</span>
+                <p class='text-gray-800'>{{category.contact}}</p>
+              </div>
+            {{/if}}
 
-    <div class='space-y-1'>
-      <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Type</span>
-      <p class='text-gray-800'>{{category.type}}</p>
-    </div>
+            {{#if category.courseTypes}}
+              <div class='space-y-2 pt-2'>
+                <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Type Program</span>
+                <div class='flex flex-wrap gap-2'>
+                  {{#each category.courseTypes}}
+                    <span class='inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-medium'>
+                      <i class="{{computeIcon this.icon}}"></i>
+                      {{this.nameClassesType}}
+                    </span>
+                  {{/each}}
+                </div>
+              </div>
+            {{/if}}
 
-    {{#if category.contact}}
-      <div class='space-y-1'>
-        <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Contact</span>
-        <p class='text-gray-800'>{{category.contact}}</p>
-      </div>
-    {{/if}}
+            {{#if category.hero_section_image}}
+              <div class='space-y-2 pt-4 border-t border-gray-200 md:border-none md:pt-2'>
+                <span class='text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1 block'>Hero Image</span>
+                <img
+                  src="{{category.hero_section_image}}"
+                  alt='Hero {{category.name}}'
+                  class='w-48 h-32 lg:w-56 lg:h-40 object-cover rounded-lg shadow-md'
+                />
+              </div>
+            {{/if}}
+          </div>
 
-  </div>
+          <!-- Right Column Fields -->
+          <div class='space-y-4'>
+            {{#if category.info}}
+              <div class='space-y-2'>
+                <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Info</span>
+                <div class='space-y-1'>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-blue-100 text-blue-700 rounded px-1.5 py-0.5'>ID</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.info.id}}</p>
+                  </div>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-green-100 text-green-700 rounded px-1.5 py-0.5'>EN</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.info.en}}</p>
+                  </div>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-red-100 text-red-700 rounded px-1.5 py-0.5'>JA</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.info.ja}}</p>
+                  </div>
+                </div>
+              </div>
+            {{/if}}
 
-  {{! Field multilingual - full width dengan badge bahasa }}
-  {{#if category.info}}
-    <div class='space-y-2 border-t pt-4'>
-      <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Info</span>
-      <div class='space-y-1'>
-        <div class='flex gap-2'>
-          <span class='shrink-0 text-xs font-medium bg-blue-100 text-blue-700 rounded px-1.5 py-0.5'>ID</span>
-          <p class='text-gray-800'>{{category.info.id}}</p>
-        </div>
-        <div class='flex gap-2'>
-          <span class='shrink-0 text-xs font-medium bg-green-100 text-green-700 rounded px-1.5 py-0.5'>EN</span>
-          <p class='text-gray-800'>{{category.info.en}}</p>
-        </div>
-        <div class='flex gap-2'>
-          <span class='shrink-0 text-xs font-medium bg-red-100 text-red-700 rounded px-1.5 py-0.5'>JA</span>
-          <p class='text-gray-800'>{{category.info.ja}}</p>
-        </div>
-      </div>
-    </div>
-  {{/if}}
+            {{#if category.text}}
+              <div class='space-y-2 border-t border-gray-200 pt-4'>
+                <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Text</span>
+                <div class='space-y-1'>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-blue-100 text-blue-700 rounded px-1.5 py-0.5'>ID</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.text.id}}</p>
+                  </div>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-green-100 text-green-700 rounded px-1.5 py-0.5'>EN</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.text.en}}</p>
+                  </div>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-red-100 text-red-700 rounded px-1.5 py-0.5'>JA</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.text.ja}}</p>
+                  </div>
+                </div>
+              </div>
+            {{/if}}
 
-  {{#if category.text}}
-    <div class='space-y-2 border-t pt-4'>
-      <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Text</span>
-      <div class='space-y-1'>
-        <div class='flex gap-2'>
-          <span class='shrink-0 text-xs font-medium bg-blue-100 text-blue-700 rounded px-1.5 py-0.5'>ID</span>
-          <p class='text-gray-800'>{{category.text.id}}</p>
-        </div>
-        <div class='flex gap-2'>
-          <span class='shrink-0 text-xs font-medium bg-green-100 text-green-700 rounded px-1.5 py-0.5'>EN</span>
-          <p class='text-gray-800'>{{category.text.en}}</p>
-        </div>
-        <div class='flex gap-2'>
-          <span class='shrink-0 text-xs font-medium bg-red-100 text-red-700 rounded px-1.5 py-0.5'>JA</span>
-          <p class='text-gray-800'>{{category.text.ja}}</p>
-        </div>
-      </div>
-    </div>
-  {{/if}}
+            {{#if category.for}}
+              <div class='space-y-2 border-t border-gray-200 pt-4'>
+                <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>For</span>
+                <div class='space-y-1'>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-blue-100 text-blue-700 rounded px-1.5 py-0.5'>ID</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.for.id}}</p>
+                  </div>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-green-100 text-green-700 rounded px-1.5 py-0.5'>EN</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.for.en}}</p>
+                  </div>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-red-100 text-red-700 rounded px-1.5 py-0.5'>JA</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.for.ja}}</p>
+                  </div>
+                </div>
+              </div>
+            {{/if}}
 
-  {{#if category.description}}
-    <div class='space-y-2 border-t pt-4'>
-      <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Description</span>
-      <div class='space-y-1'>
-        <div class='flex gap-2'>
-          <span class='shrink-0 text-xs font-medium bg-blue-100 text-blue-700 rounded px-1.5 py-0.5'>ID</span>
-          <p class='text-gray-800'>{{category.description.id}}</p>
-        </div>
-        <div class='flex gap-2'>
-          <span class='shrink-0 text-xs font-medium bg-green-100 text-green-700 rounded px-1.5 py-0.5'>EN</span>
-          <p class='text-gray-800'>{{category.description.en}}</p>
-        </div>
-        <div class='flex gap-2'>
-          <span class='shrink-0 text-xs font-medium bg-red-100 text-red-700 rounded px-1.5 py-0.5'>JA</span>
-          <p class='text-gray-800'>{{category.description.ja}}</p>
-        </div>
-      </div>
-    </div>
-  {{/if}}
+            {{#if category.description}}
+              <div class='space-y-2 border-t border-gray-200 pt-4'>
+                <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Description</span>
+                <div class='space-y-1'>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-blue-100 text-blue-700 rounded px-1.5 py-0.5'>ID</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.description.id}}</p>
+                  </div>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-green-100 text-green-700 rounded px-1.5 py-0.5'>EN</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.description.en}}</p>
+                  </div>
+                  <div class='flex gap-2'>
+                    <span class='shrink-0 text-xs font-medium bg-red-100 text-red-700 rounded px-1.5 py-0.5'>JA</span>
+                    <p class='text-gray-800 line-clamp-2'>{{category.description.ja}}</p>
+                  </div>
+                </div>
+              </div>
+            {{/if}}
+          </div> <!-- Ends right column -->
 
-  {{#if category.courseTypes}}
-    <div class='space-y-2 border-t pt-4'>
-      <span class='text-xs font-semibold uppercase tracking-wide text-gray-500'>Type Program</span>
-      <div class='flex flex-wrap gap-2'>
-        {{#each category.courseTypes}}
-          <span class='inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium'>
-            <i class="{{computeIcon this.icon}}"></i>
-            {{this.nameClassesType}}
-          </span>
-        {{/each}}
-      </div>
-    </div>
-  {{/if}}
+        </div> <!-- Ends grid -->
+      </div> <!-- Ends Basic Information card -->
+    </div> <!-- Ends mb-4 -->
 
-</div>
-      </div>
-    </div>
-
-  </div>
+  </div> <!-- Ends main container -->
 
   <!-- ===================== TAB SECTION ===================== -->
   <div
@@ -267,20 +299,6 @@
       >
         Benefit
       </button>
-      <button
-        @click="toggleFetch('/category/superiority/{{category.id}}', 'superiority')"
-        :class="tab === 'superiority' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
-        class='px-4 py-2 rounded-lg shadow transition'
-      >
-        Superiority
-      </button>
-      <button
-        @click="toggleFetch('/category/flow/{{category.id}}', 'flow')"
-        :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
-        class='px-4 py-2 rounded-lg shadow transition'
-      >
-        Flow
-      </button>
 
     </div>
 
@@ -289,13 +307,11 @@
 
     {{> category/alumni_tab }}
 
+    {{#unless (eq category.type 'Free Program')}}
     {{> category/faq_tab }}
 
+    {{/unless}}
     {{> category/benefit_tab }}
-
-    {{> category/superiority_tab }}
-
-    {{> category/flow_tab }}
 
 {{> category/gallery_tab category=category}}
 </div>
@@ -311,7 +327,8 @@ function tabData() {
       : [],
 
     async init() {
-      if( !this.tab ) {
+      const disabledTabs = {{#if (eq category.type 'Free Program')}}['faq']{{else}}[]{{/if}};
+      if( !this.tab || disabledTabs.includes(this.tab) ) {
           this.tab = 'course';
           localStorage.setItem('activeTabKategori', 'course');
       }

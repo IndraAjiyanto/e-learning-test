@@ -1,150 +1,256 @@
-<!-- CEO Card - Special Design -->
-<div
-  class='w-full max-w-[1110px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] px-8 sm:px-16 py-4 sm:py-8 mb-24'
-  x-data='{ educationOpen: false, portfolioOpen: false }'
->
-  <div class='flex flex-col md:flex-row gap-6 md:gap-10 mb-6 items-center md:items-start'>
-    <div class='flex-shrink-0 mx-auto md:mx-0 mt-3 md:mt-4'>
-      <div class='w-[145px] h-[148px] rounded-full overflow-hidden border-[5px] border-[#9D9D9D] flex items-center justify-center'>
-        <img src="{{#if teamLead.[0].profile}}{{teamLead.[0].profile}}{{else}}/public/image/about/orang.png{{/if}}" alt="Profile Picture" class="w-[75%] translate-y-[8%]">
-      </div>
+<!-- CEO Card Container -->
+<div>
+  <!-- MOBILE CEO CARD (< 640px) -->
+  <div
+    class="block sm:hidden w-full bg-[#F0F8FF] border border-[#E0F1F9] rounded-[24px] p-4 shadow-xs mb-8 space-y-5 font-montserrat text-center flex flex-col items-center relative overflow-hidden"
+    x-data="{ mobEduOpen: false, mobPortOpen: false }"
+  >
+    <!-- Centered Avatar Circle -->
+    <div class="w-24 h-24 rounded-full overflow-hidden border-[3px] border-[#9D9D9D] shrink-0 bg-white flex items-center justify-center shadow-xs">
+      <img src="{{#if teamLead.[0].profile}}{{teamLead.[0].profile}}{{else}}/public/image/about/orang.png{{/if}}" alt="Profile Picture" class="w-[75%] translate-y-[8%]" />
     </div>
-    <div class='flex-1 text-center md:text-left'>
-      <h3 class='text-2xl md:text-4xl font-semibold text-[#000000] font-montserrat leading-none tracking-normal mb-4'>
-        {{#if teamLead.[0]}}
-          {{teamLead.[0].name}}
-        {{else}}
-          Faisal Wirakusuma, S.Kom., M.Sc.
-        {{/if}}
-      </h3>
-      <p class='text-[#000000] font-medium mb-4 text-base md:text-3xl font-montserrat'>
-        {{#if teamLead.[0]}}
-          {{getByLang teamLead.[0].position lang}}
-        {{else}}
-          Chief Executive Officer
-        {{/if}}
-      </p>
 
-      <div class='flex justify-center md:justify-start space-x-3 mb-7'>
-        <a
-          href='{{#if teamLead.[0]}}{{teamLead.[0].linkedin}}{{else}}https://linkedin.com{{/if}}' target="_blank"
-          class='w-[40px] h-[40px] bg-white rounded-full flex items-center justify-center'
-        >
-          <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-5 h-5 object-contain" />
-        </a>
-        <a
-          href='{{#if teamLead.[0]}}{{teamLead.[0].instagram}}{{else}}https://instagram.com{{/if}}' target="_blank"
-          class='w-[40px] h-[40px] bg-white rounded-full flex items-center justify-center'
-        >
-          <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-5 h-5 object-contain" />
-        </a>
+    <!-- CEO Name -->
+    <h3 class="font-montserrat font-bold text-[18px] leading-none text-[#003060] text-center tracking-normal">
+      {{#if teamLead.[0]}}
+        {{teamLead.[0].name}}
+      {{else}}
+        Faisal Wirakusuma, S.Kom., M.Sc.
+      {{/if}}
+    </h3>
+
+    <!-- CEO Position -->
+    <p class="font-montserrat font-semibold text-[14px] leading-none text-[#555555] text-center tracking-normal">
+      {{#if teamLead.[0]}}
+        {{getByLang teamLead.[0].position lang}}
+      {{else}}
+        Chief Executive Officer
+      {{/if}}
+    </p>
+
+    <!-- Social Links -->
+    <div class="flex items-center justify-center gap-3">
+      <a href="{{#if teamLead.[0]}}{{teamLead.[0].linkedin}}{{else}}https://linkedin.com{{/if}}" target="_blank" class="hover:opacity-80 transition-opacity w-[36px] h-[36px] bg-white rounded-full flex items-center justify-center">
+        <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-5 h-5 object-contain" />
+      </a>
+      <a href="{{#if teamLead.[0]}}{{teamLead.[0].instagram}}{{else}}https://instagram.com{{/if}}" target="_blank" class="hover:opacity-80 transition-opacity w-[36px] h-[36px] bg-white rounded-full flex items-center justify-center">
+        <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-5 h-5 object-contain" />
+      </a>
+    </div>
+
+    <!-- CEO Bio Description -->
+    {{#if teamLead.[0]}}
+      <p class="font-sans font-normal text-[13px] leading-[20px] text-[#333333] text-justify w-full tracking-normal">
+        {{getByLang teamLead.[0].description lang}}
+      </p>
+    {{else}}
+      <p class="font-sans font-normal text-[13px] leading-[20px] text-[#333333] text-justify w-full tracking-normal">
+        Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including Pertamina, Biofarma, Angkasa Pura II, and Bank DBS Indonesia. His deep expertise in technology and data analytics, combined with his experience serving major clients, serves as the core foundation for his vision to build an Edutech company.
+      </p>
+    {{/if}}
+
+    <!-- Mobile Accordions -->
+    <div class="w-full space-y-3">
+      <!-- Mobile Education Accordion -->
+      <div class="bg-white/90 backdrop-blur-xs rounded-[14px] border border-[#E0F1F9] overflow-hidden shadow-2xs">
+        <button @click="mobEduOpen = !mobEduOpen" class="w-full px-4 py-3 flex items-center justify-between text-left">
+          <div class="flex items-center space-x-2.5">
+            <img src="/public/image/about/team/educational.svg" alt="Education" class="w-5 h-5 object-contain" />
+            <span class="font-montserrat font-semibold text-[13px] text-[#003060]">
+              {{t 'test.about.team.educationBackground'}}
+            </span>
+          </div>
+          <i class="fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200" :class="mobEduOpen ? 'rotate-180' : ''"></i>
+        </button>
+        <div x-show="mobEduOpen" x-transition class="px-4 py-3 border-t border-[#000000]/10 bg-white/50 text-left">
+          <ul class="list-disc pl-5 space-y-2 font-sans text-[12px] leading-[18px] text-[#000000CC]">
+            {{#if background.length}}
+              {{#each background}}
+                <li><span class="font-semibold">{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}</li>
+              {{/each}}
+            {{else}}
+              <li><span class="font-semibold">Bachelor of Science, IT (S.Kom)</span> - Indonesia Islamic University (2005 - 2010)</li>
+              <li><span class="font-semibold">Master of Science, CS (M.Sc)</span> - The University of Manchester (2014 - 2015)</li>
+            {{/if}}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Mobile Portfolio Accordion -->
+      <div class="bg-white/90 backdrop-blur-xs rounded-[14px] border border-[#E0F1F9] overflow-hidden shadow-2xs">
+        <button @click="mobPortOpen = !mobPortOpen" class="w-full px-4 py-3 flex items-center justify-between text-left">
+          <div class="flex items-center space-x-2.5">
+            <img src="/public/image/about/team/portofolio.svg" alt="Portfolio" class="w-5 h-5 object-contain" />
+            <span class="font-montserrat font-semibold text-[13px] text-[#003060]">
+              {{t 'test.about.team.portfolioExperience'}}
+            </span>
+          </div>
+          <i class="fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200" :class="mobPortOpen ? 'rotate-180' : ''"></i>
+        </button>
+        <div x-show="mobPortOpen" x-transition class="px-4 py-3 border-t border-[#000000]/10 bg-white/50 text-left">
+          <ul class="list-disc pl-5 space-y-2 font-sans text-[12px] leading-[18px] text-[#000000CC]">
+            {{#if experience.length}}
+              {{#each experience}}
+                <li><span class="font-semibold">{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}</li>
+              {{/each}}
+            {{else}}
+              <li><span class="font-semibold">CEO & Founder</span> - PT Wiratek Solusi Asia (2015 - Present)</li>
+              <li><span class="font-semibold">Senior IT & Data Consultant</span> - Enterprise Solutions for BUMN</li>
+            {{/if}}
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
-  {{#if teamLead.[0]}}
-    <p class='text-[#000000CC] font-sans font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
-      {{getByLang teamLead.[0].description lang}}
-    </p>
-  {{else}}
-    <p class='text-[#000000CC] font-sans font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
-      Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. 
-      He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including notable names such as Pertamina, Biofarma, 
-      Angkasa Pura II, and Bank DBS Indonesia.
-      His deep expertise in technology and data analytics, combined with his experience serving major clients, 
-      serves as the core foundation for his vision to build an Edutech company. His goal is to bridge the gap and 
-      democratize technical up-skilling, leveraging technology to create flexible, scalable, and high-quality learning solutions that can significantly enhance the competitiveness 
-      of digital talent across Asia. His passion for continuous learning and commitment to achieving client business objectives now extends to a mission of elevating the competence of the wider community.
-    </p>
-  {{/if}}
-
-  <!-- Accordion Dropdowns -->
-  <div class='space-y-[30px] mt-6'>
-    <!-- Education Background Accordion -->
-    <div class='bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] overflow-hidden'>
-      <button
-        @click='educationOpen = !educationOpen'
-        class='w-full px-5 py-3.5 flex items-center justify-between text-left'
-      >
-        <div class='flex items-center space-x-3'>
-          <img src="/public/image/about/team/educational.svg" alt="Education" class="w-7 object-contain" />
-          <span class='font-medium text-[#000000] text-sm sm:text-2xl font-montserrat'>
-            {{t 'test.about.team.educationBackground'}}
-          </span>
+  <!-- DESKTOP CEO CARD (>= 640px) -->
+  <div
+    class='hidden sm:block w-full max-w-[1110px] bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_6px_0px_rgba(0,0,0,0.5)] px-8 sm:px-16 py-4 sm:py-8 mb-24'
+    x-data='{ educationOpen: false, portfolioOpen: false }'
+  >
+    <div class='flex flex-col md:flex-row gap-6 md:gap-10 mb-6 items-center md:items-start'>
+      <div class='flex-shrink-0 mx-auto md:mx-0 mt-3 md:mt-4'>
+        <div class='w-[145px] h-[148px] rounded-full overflow-hidden border-[5px] border-[#9D9D9D] flex items-center justify-center'>
+          <img src="{{#if teamLead.[0].profile}}{{teamLead.[0].profile}}{{else}}/public/image/about/orang.png{{/if}}" alt="Profile Picture" class="w-[75%] translate-y-[8%]">
         </div>
-        <i
-          class='fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200'
-          :class="educationOpen ? 'rotate-180' : ''"
-        ></i>
-      </button>
-      
-      <div
-        x-show='educationOpen'
-        x-transition:enter='transition ease-out duration-200'
-        x-transition:enter-start='opacity-0 transform -translate-y-2'
-        x-transition:enter-end='opacity-100 transform translate-y-0'
-        class='px-6 py-5 border-t border-[#000000]/15 bg-[#E0F1F9]/50 shadow-[inset_0_4px_6px_-2px_rgba(0,0,0,0.1)]'
-      >
-        <ul class='list-disc pl-6 space-y-3 font-sans text-xl leading-[35px] text-justify text-black'>
-          {{#if background.length}}
-            {{#each background}}
-              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
-                <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
-              </li>
-            {{/each}}
+      </div>
+      <div class='flex-1 text-center md:text-left'>
+        <h3 class='text-2xl md:text-4xl font-semibold text-[#000000] font-montserrat leading-none tracking-normal mb-4'>
+          {{#if teamLead.[0]}}
+            {{teamLead.[0].name}}
           {{else}}
-            <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
-              <span class='font-semibold'>Bachelor of Science, Information Technology (S.Kom)</span> - Indonesia Islamic University (2005 - 2010)
-            </li>
-            <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
-              <span class='font-semibold'>Master of Science, Advanced Computer Science (M.Sc)</span> - The University of Manchester (2014 - 2015)
-            </li>
+            Faisal Wirakusuma, S.Kom., M.Sc.
           {{/if}}
-        </ul>
+        </h3>
+        <p class='text-[#000000] font-medium mb-4 text-base md:text-3xl font-montserrat'>
+          {{#if teamLead.[0]}}
+            {{getByLang teamLead.[0].position lang}}
+          {{else}}
+            Chief Executive Officer
+          {{/if}}
+        </p>
+
+        <div class='flex justify-center md:justify-start space-x-3 mb-7'>
+          <a
+            href='{{#if teamLead.[0]}}{{teamLead.[0].linkedin}}{{else}}https://linkedin.com{{/if}}' target="_blank"
+            class='w-[40px] h-[40px] bg-white rounded-full flex items-center justify-center'
+          >
+            <img src="/public/image/about/team/linkedin.svg" alt="LinkedIn" class="w-5 h-5 object-contain" />
+          </a>
+          <a
+            href='{{#if teamLead.[0]}}{{teamLead.[0].instagram}}{{else}}https://instagram.com{{/if}}' target="_blank"
+            class='w-[40px] h-[40px] bg-white rounded-full flex items-center justify-center'
+          >
+            <img src="/public/image/about/team/instagram.svg" alt="Instagram" class="w-5 h-5 object-contain" />
+          </a>
+        </div>
       </div>
     </div>
 
-    <!-- Portfolio Accordion -->
-    <div class='bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] overflow-hidden'>
-      <button
-        @click='portfolioOpen = !portfolioOpen'
-        class='w-full px-5 py-3.5 flex items-center justify-between text-left'
-      >
-        <div class='flex items-center space-x-3'>
-          <img src="/public/image/about/team/portofolio.svg" alt="Portfolio" class="w-7 object-contain" />
-          <span class='font-medium text-[#000000] text-sm sm:text-2xl font-montserrat'>
-            {{t 'test.about.team.portfolioExperience'}}
-          </span>
-        </div>
-        <i
-          class='fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200'
-          :class="portfolioOpen ? 'rotate-180' : ''"
-        ></i>
-      </button>
+    {{#if teamLead.[0]}}
+      <p class='text-[#000000CC] font-sans font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
+        {{getByLang teamLead.[0].description lang}}
+      </p>
+    {{else}}
+      <p class='text-[#000000CC] font-sans font-normal text-xl leading-[35px] tracking-normal text-justify mb-7'>
+        Faisal is the Founder and CEO of Wiratek Solusi Asia, bringing over 11 years of experience in web application development, API creation, data science, and analytics. 
+        He is experienced in handling projects for State-Owned Enterprises (BUMN), government agencies, and private companies, including notable names such as Pertamina, Biofarma, 
+        Angkasa Pura II, and Bank DBS Indonesia.
+        His deep expertise in technology and data analytics, combined with his experience serving major clients, 
+        serves as the core foundation for his vision to build an Edutech company. His goal is to bridge the gap and 
+        democratize technical up-skilling, leveraging technology to create flexible, scalable, and high-quality learning solutions that can significantly enhance the competitiveness 
+        of digital talent across Asia. His passion for continuous learning and commitment to achieving client business objectives now extends to a mission of elevating the competence of the wider community.
+      </p>
+    {{/if}}
 
-      <div
-        x-show='portfolioOpen'
-        x-transition:enter='transition ease-out duration-200'
-        x-transition:enter-start='opacity-0 transform -translate-y-2'
-        x-transition:enter-end='opacity-100 transform translate-y-0'
-        class='px-6 py-5 border-t border-[#000000]/15 bg-[#E0F1F9]/50 shadow-[inset_0_4px_6px_-2px_rgba(0,0,0,0.1)]'
-      >
-        <ul class='list-disc pl-6 space-y-3 font-sans text-xl leading-[35px] text-justify text-black'>
-          {{#if experience.length}}
-            {{#each experience}}
+    <!-- Accordion Dropdowns -->
+    <div class='space-y-[30px] mt-6'>
+      <!-- Education Background Accordion -->
+      <div class='bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] overflow-hidden'>
+        <button
+          @click='educationOpen = !educationOpen'
+          class='w-full px-5 py-3.5 flex items-center justify-between text-left'
+        >
+          <div class='flex items-center space-x-3'>
+            <img src="/public/image/about/team/educational.svg" alt="Education" class="w-7 object-contain" />
+            <span class='font-medium text-[#000000] text-sm sm:text-2xl font-montserrat'>
+              {{t 'test.about.team.educationBackground'}}
+            </span>
+          </div>
+          <i
+            class='fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200'
+            :class="educationOpen ? 'rotate-180' : ''"
+          ></i>
+        </button>
+        
+        <div
+          x-show='educationOpen'
+          x-transition:enter='transition ease-out duration-200'
+          x-transition:enter-start='opacity-0 transform -translate-y-2'
+          x-transition:enter-end='opacity-100 transform translate-y-0'
+          class='px-6 py-5 border-t border-[#000000]/15 bg-[#E0F1F9]/50 shadow-[inset_0_4px_6px_-2px_rgba(0,0,0,0.1)]'
+        >
+          <ul class='list-disc pl-6 space-y-3 font-sans text-xl leading-[35px] text-justify text-black'>
+            {{#if background.length}}
+              {{#each background}}
+                <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+                  <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
+                </li>
+              {{/each}}
+            {{else}}
               <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
-                <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
+                <span class='font-semibold'>Bachelor of Science, Information Technology (S.Kom)</span> - Indonesia Islamic University (2005 - 2010)
               </li>
-            {{/each}}
-          {{else}}
-            <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
-              <span class='font-semibold'>CEO & Founder</span> - PT Wiratek Solusi Asia (2015 - Present)
-            </li>
-            <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
-              <span class='font-semibold'>Senior IT & Data Consultant</span> - Handling enterprise solutions for BUMN & private sectors
-            </li>
-          {{/if}}
-        </ul>
+              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+                <span class='font-semibold'>Master of Science, Advanced Computer Science (M.Sc)</span> - The University of Manchester (2014 - 2015)
+              </li>
+            {{/if}}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Portfolio Accordion -->
+      <div class='bg-[#E0F1F9]/50 backdrop-blur-[6.6px] rounded-[12px] shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] overflow-hidden'>
+        <button
+          @click='portfolioOpen = !portfolioOpen'
+          class='w-full px-5 py-3.5 flex items-center justify-between text-left'
+        >
+          <div class='flex items-center space-x-3'>
+            <img src="/public/image/about/team/portofolio.svg" alt="Portfolio" class="w-7 object-contain" />
+            <span class='font-medium text-[#000000] text-sm sm:text-2xl font-montserrat'>
+              {{t 'test.about.team.portfolioExperience'}}
+            </span>
+          </div>
+          <i
+            class='fas fa-chevron-down text-[#003060] text-xs transition-transform duration-200'
+            :class="portfolioOpen ? 'rotate-180' : ''"
+          ></i>
+        </button>
+
+        <div
+          x-show='portfolioOpen'
+          x-transition:enter='transition ease-out duration-200'
+          x-transition:enter-start='opacity-0 transform -translate-y-2'
+          x-transition:enter-end='opacity-100 transform translate-y-0'
+          class='px-6 py-5 border-t border-[#000000]/15 bg-[#E0F1F9]/50 shadow-[inset_0_4px_6px_-2px_rgba(0,0,0,0.1)]'
+        >
+          <ul class='list-disc pl-6 space-y-3 font-sans text-xl leading-[35px] text-justify text-black'>
+            {{#if experience.length}}
+              {{#each experience}}
+                <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+                  <span class='font-semibold'>{{getByLang content ../lang}}</span> - {{getByLang details ../lang}}
+                </li>
+              {{/each}}
+            {{else}}
+              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+                <span class='font-semibold'>CEO & Founder</span> - PT Wiratek Solusi Asia (2015 - Present)
+              </li>
+              <li class='font-sans text-xl leading-[35px] text-justify text-black font-normal'>
+                <span class='font-semibold'>Senior IT & Data Consultant</span> - Handling enterprise solutions for BUMN & private sectors
+              </li>
+            {{/if}}
+          </ul>
+        </div>
       </div>
     </div>
   </div>

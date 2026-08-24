@@ -1,8 +1,41 @@
 <!-- Alumni Grid -->
-<div class='w-full mt-8'>
-  <!-- Alumni Cards -->
-  <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-       <template x-for='alumni in alumniItems' :key='alumni.id'>
+<div class='w-full mt-8 flex flex-col justify-between'>
+  <!-- MOBILE ALUMNI CARDS STACK (< 640px) -->
+  <div x-show="alumniItems.length > 0" class="block sm:hidden flex flex-col gap-4 min-h-[1280px]">
+    <template x-for="alumni in alumniItems" :key="alumni.id">
+      <div class="bg-white border border-[#E0F1F9] rounded-[20px] p-5 shadow-xs flex flex-col">
+        <!-- Top Profile Row -->
+        <div class="flex items-center gap-3.5 mb-3">
+          <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-[#9D9D9D] shrink-0 bg-white flex items-center justify-center shadow-2xs">
+            <img
+              :src="alumni.profile || '/public/image/about/orang.png'"
+              :alt="getByLang(alumni.name, lang)"
+              class="w-[75%] translate-y-[8%]"
+            />
+          </div>
+          <div class="flex flex-col overflow-hidden">
+            <h4 class="font-sans font-bold text-[15px] leading-none text-[#2D2D2D] truncate tracking-normal" x-text="getByLang(alumni.name, lang)"></h4>
+            <p class="font-sans font-normal text-[12px] leading-none text-[#676767] mt-1 line-clamp-1 tracking-normal" x-text="getByLang(alumni.currentPosition, lang)"></p>
+          </div>
+        </div>
+
+        <!-- Quote Icon -->
+        <i class="fas fa-quote-left text-[#0B1F3B] text-[16px] mb-2"></i>
+
+        <!-- Testimonial Message -->
+        <p class="font-sans font-normal text-[13px] leading-[20px] text-[#2D2D2D] text-justify mb-4 tracking-normal" x-text="getByLang(alumni.message, lang)"></p>
+
+        <!-- Program Tag Badge -->
+        <div class="self-start bg-[#F1EDFD] text-[#4F2CD7] text-[11px] font-semibold leading-none px-3 py-1.5 rounded-[6px] tracking-normal">
+          <span x-text="(alumni.course?.category?.nama_kategori ? alumni.course.category.nama_kategori + ' ' : '') + getKelasName(alumni)"></span>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- DESKTOP ALUMNI CARDS GRID (>= 640px) -->
+  <div x-show="alumniItems.length > 0" class='hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[1036px]'>
+    <template x-for='alumni in alumniItems' :key='alumni.id'>
       
       <!-- Desain Card (Glassmorphism & Layout presisi dari Figma) -->
       <div 
@@ -69,7 +102,7 @@
 
   <!-- Pagination -->
   <div
-    class='flex justify-center items-center gap-2 mt-12'
+    class='flex justify-center items-center gap-2 mt-auto pt-10'
     x-show='totalPages > 1'
   >
     <button

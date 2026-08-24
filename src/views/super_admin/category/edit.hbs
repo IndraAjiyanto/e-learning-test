@@ -17,6 +17,16 @@
     hasOldIcon: `{{category.icon}}` ? true : false,
     oldIcon: `{{category.icon}}` || '',
 
+    // Hero Section Image state
+    heroSectionPreviewUrl: `{{category.hero_section_image}}` ? (`{{category.hero_section_image}}`.startsWith('/') ? `{{category.hero_section_image}}` : '/' + `{{category.hero_section_image}}`) : null,
+    heroSectionFileName: `{{category.hero_section_image}}` ? 'Current Hero Image' : '',
+    heroSectionFileSize: 0,
+    heroSectionHasFile: `{{category.hero_section_image}}` ? true : false,
+    heroSectionHasOld: `{{category.hero_section_image}}` ? true : false,
+    heroSectionOld: `{{category.hero_section_image}}` || '',
+    heroSectionIsValid: true,
+    heroSectionErrorMessage: '',
+
     formData: {
       name: `{{category.name}}`,
       description: {
@@ -102,11 +112,11 @@
       this.errorMessage = '';
       this.isValid = true;
 
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
       const maxSize = 5 * 1024 * 1024;
 
       if (!allowedTypes.includes(file.type)) {
-        this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
+        this.errorMessage = 'Only JPEG, JPG, PNG, and SVG formats are allowed';
         this.isValid = false;
         this.previewUrl = null;
         return;
@@ -126,6 +136,14 @@
       img.onload = () => {
         this.imageWidth = img.width;
         this.imageHeight = img.height;
+
+        if (file.type === 'image/svg+xml') {
+          this.previewUrl = objectUrl;
+          this.isValid = true;
+          this.errorMessage = '';
+          URL.revokeObjectURL(objectUrl);
+          return;
+        }
 
         if (img.width < 1000 || img.width > 2000 || img.height < 1000 || img.height > 2000) {
           this.errorMessage =
@@ -251,16 +269,65 @@ case 'contact':
     },
 
     /* ============================================================
+     * HERO SECTION IMAGE
+     * ============================================================ */
+
+    validateHeroSectionImage(file) {
+      if (!file) {
+        this.heroSectionHasFile = this.heroSectionHasOld;
+        return;
+      }
+
+      this.heroSectionHasFile = true;
+      this.heroSectionFileName = file.name;
+      this.heroSectionFileSize = file.size;
+      this.heroSectionErrorMessage = '';
+
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
+      if (!allowedTypes.includes(file.type)) {
+        this.heroSectionErrorMessage = 'Only JPEG, JPG, PNG, and SVG formats are allowed';
+        this.heroSectionIsValid = false;
+        this.heroSectionPreviewUrl = this.heroSectionHasOld ? this.heroSectionOld : null;
+        return;
+      }
+
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        this.heroSectionErrorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
+        this.heroSectionIsValid = false;
+        this.heroSectionPreviewUrl = this.heroSectionHasOld ? this.heroSectionOld : null;
+        return;
+      }
+
+      this.heroSectionPreviewUrl = URL.createObjectURL(file);
+      this.heroSectionIsValid = true;
+    },
+
+    clearHeroSectionFile() {
+      this.heroSectionPreviewUrl = this.heroSectionHasOld ? this.heroSectionOld : null;
+      this.heroSectionFileName = this.heroSectionHasOld ? 'Current Hero Image' : '';
+      this.heroSectionFileSize = 0;
+      this.heroSectionHasFile = this.heroSectionHasOld;
+      this.heroSectionIsValid = true;
+      this.heroSectionErrorMessage = '';
+
+      if (this.$refs.heroSectionFileInput) {
+        this.$refs.heroSectionFileInput.value = null;
+      }
+    },
+
+    /* ============================================================
      * FORM HELPERS
      * ============================================================ */
 
     canSubmit() {
       const imageValid       = (this.hasOldIcon && !this.hasFile) || (this.hasFile && this.isValid);
+      const heroValid        = (this.heroSectionHasOld && !this.heroSectionHasFile) || (this.heroSectionHasFile && this.heroSectionIsValid);
       const namaKategoriValid = this.formValid.name;
       const deskripsiValid   = Object.values(this.formValid.description).every(v => v);
       const typeValid        = this.formValid.type;
 
-      return imageValid && namaKategoriValid && deskripsiValid && typeValid;
+      return imageValid && heroValid && namaKategoriValid && deskripsiValid && typeValid && infoValid;
     },
 
     hasFormErrors() {
@@ -299,6 +366,7 @@ case 'contact':
         <div class='space-y-6'>
 
         {{> super_admin/category/edit/left_column/name_input }}
+        {{> super_admin/category/edit/left_column/hero_section_image_input }}
         {{> super_admin/category/edit/left_column/text_input }}
         {{> super_admin/category/edit/left_column/contact_input }}
         {{> super_admin/category/edit/left_column/type_program_input }}

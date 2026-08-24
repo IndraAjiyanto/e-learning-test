@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
+  BadRequestException,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
@@ -18,10 +19,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
 import { FileUploadExceptionFilter } from 'src/common/filters/file-upload-exception.filter';
 import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.interceptor';
-import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
-import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 
 @UseFilters(FileUploadExceptionFilter)
 @UseInterceptors(MulterErrorInterceptor)
@@ -32,25 +31,59 @@ export class CategoriesController {
   @Roles('super_admin')
   @Post()
   @UseInterceptors(
-    FileInterceptor('icon', multerConfigMemoryOnly),
-    ValidateImageInterceptor,
+    FileFieldsInterceptor(
+      [
+        { name: 'icon', maxCount: 1 },
+        { name: 'hero_section_image', maxCount: 1 },
+      ],
+      multerConfigMemoryOnly,
+    ),
   )
-  @ValidateImage({
-    minWidth: 1000,
-    maxWidth: 2000,
-    minHeight: 1000,
-    maxHeight: 2000,
-    folder: 'category',
-    maxSize: 5 * 1024 * 1024,
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-  })
   async create(
     @Body() createCategoriesDto: CreateCategoriesDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
     try {
-      createCategoriesDto.icon = req.body.uploadedImageUrls?.[0];
+      const files = req.files as {
+        icon?: Express.Multer.File[];
+        hero_section_image?: Express.Multer.File[];
+      };
+
+      const iconFile = files?.icon?.[0];
+      const heroFile = files?.hero_section_image?.[0];
+
+      if (iconFile && iconFile.size > 0) {
+        await this.categoriesService.validateImage(iconFile, {
+          maxSize: 5 * 1024 * 1024,
+          allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+        });
+
+        if (!iconFile.mimetype.includes('svg')) {
+          await this.categoriesService.validateImageDimensions(iconFile, {
+            minWidth: 1000,
+            maxWidth: 2000,
+            minHeight: 1000,
+            maxHeight: 2000,
+          });
+        }
+
+        createCategoriesDto.icon = await this.categoriesService.saveFile(
+          iconFile,
+          'category',
+        );
+      }
+
+      if (heroFile && heroFile.size > 0) {
+        await this.categoriesService.validateImage(heroFile, {
+          maxSize: 5 * 1024 * 1024,
+          allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+        });
+
+        createCategoriesDto.hero_section_image =
+          await this.categoriesService.saveFile(heroFile, 'category');
+      }
+
       await this.categoriesService.create(createCategoriesDto);
       req.flash('success', 'category successfully created');
       res.redirect('/category');
@@ -231,18 +264,14 @@ export class CategoriesController {
   @Roles('super_admin')
   @Patch(':categoryId')
   @UseInterceptors(
-    FileInterceptor('icon', multerConfigMemoryOnly),
-    ValidateImageInterceptor,
+    FileFieldsInterceptor(
+      [
+        { name: 'icon', maxCount: 1 },
+        { name: 'hero_section_image', maxCount: 1 },
+      ],
+      multerConfigMemoryOnly,
+    ),
   )
-  @ValidateImage({
-    minWidth: 1000,
-    maxWidth: 2000,
-    minHeight: 1000,
-    maxHeight: 2000,
-    folder: 'category',
-    maxSize: 5 * 1024 * 1024,
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-  })
   async update(
     @Param('categoryId') categoryId: number,
     @Body() updateCategoriesDto: UpdateCategoriesDto,
@@ -251,10 +280,54 @@ export class CategoriesController {
   ) {
     try {
       const category = await this.categoriesService.findOne(categoryId);
-      if (req.body.uploadedImageUrls) {
-        await this.categoriesService.deleteFile(category.icon);
-        updateCategoriesDto.icon = req.body.uploadedImageUrls?.[0];
+
+      const files = req.files as {
+        icon?: Express.Multer.File[];
+        hero_section_image?: Express.Multer.File[];
+      };
+
+      const iconFile = files?.icon?.[0];
+      const heroFile = files?.hero_section_image?.[0];
+
+      if (iconFile && iconFile.size > 0) {
+        await this.categoriesService.validateImage(iconFile, {
+          maxSize: 5 * 1024 * 1024,
+          allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+        });
+
+        if (!iconFile.mimetype.includes('svg')) {
+          await this.categoriesService.validateImageDimensions(iconFile, {
+            minWidth: 1000,
+            maxWidth: 2000,
+            minHeight: 1000,
+            maxHeight: 2000,
+          });
+        }
+
+        if (category.icon) {
+          await this.categoriesService.deleteFile(category.icon);
+        }
+
+        updateCategoriesDto.icon = await this.categoriesService.saveFile(
+          iconFile,
+          'category',
+        );
       }
+
+      if (heroFile && heroFile.size > 0) {
+        await this.categoriesService.validateImage(heroFile, {
+          maxSize: 5 * 1024 * 1024,
+          allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+        });
+
+        if (category.hero_section_image) {
+          await this.categoriesService.deleteFile(category.hero_section_image);
+        }
+
+        updateCategoriesDto.hero_section_image =
+          await this.categoriesService.saveFile(heroFile, 'category');
+      }
+
       await this.categoriesService.update(categoryId, updateCategoriesDto);
       req.flash('success', 'category successfully updated');
       res.redirect('/category/' + categoryId);
@@ -275,6 +348,7 @@ export class CategoriesController {
     try {
       const category = await this.categoriesService.findOne(categoryId);
       await this.categoriesService.deleteFile(category.icon);
+      await this.categoriesService.deleteFile(category.hero_section_image);
       await this.categoriesService.remove(categoryId);
       req.flash('success', 'category successfully deleted');
       res.redirect('/category');
