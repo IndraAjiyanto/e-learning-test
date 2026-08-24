@@ -5,16 +5,16 @@
           >Lessons</label>
           <div x-data="{ materis_id: [''] }">
 
-            <label class='block text-xs text-gray-600 mb-1'>ID</label>
-            <template x-for='(materialsId, index) in materis_id' :key='index'>
+            <label class='block text-xs text-gray-600 mb-1'>ID</label>            <template x-for='(materialsId, index) in materis_id' :key='index'>
               <div class='flex items-center gap-3 mb-3'>
-                <input
-                  type='text'
-                  x-model='materis_id[index]'
-                  name='materialsId[]'
-                  placeholder='Enter a lesson'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                />
+              <input
+                type='text'
+                x-model='materis_id[index]'
+                name='materialsId[]'
+                placeholder='Enter a lesson'
+                :class="borderClass('materis_id')"
+                class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+              />
                 <button
                   type='button'
                   @click='materis_id.splice(index,1)'
@@ -32,19 +32,21 @@
             >
               + Add Lesson
             </button>
+            <div id='materis_id_error' class='hidden text-red-500 text-xs mt-1'></div>
           </div>
 
           <div x-data="{ materis_en: [''] }">
             <label class='block text-xs text-gray-600 mb-1'>EN</label>
             <template x-for='(materialsEn, index) in materis_en' :key='index'>
               <div class='flex items-center gap-3 mb-3'>
-                <input
-                  type='text'
-                  x-model='materis_en[index]'
-                  name='materialsEn[]'
-                  placeholder='Enter a lesson'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                />
+              <input
+                type='text'
+                x-model='materis_en[index]'
+                name='materialsEn[]'
+                placeholder='Enter a lesson'
+                :class="borderClass('materis_en')"
+                class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+              />
                 <button
                   type='button'
                   @click='materis_en.splice(index,1)'
@@ -62,19 +64,21 @@
             >
               + Add Lesson
             </button>
+            <div id='materis_en_error' class='hidden text-red-500 text-xs mt-1'></div>
           </div>
 
           <div x-data="{ materis_ja: [''] }">
             <label class='block text-xs text-gray-600 mb-1'>JP</label>
             <template x-for='(materialsJa, index) in materis_ja' :key='index'>
               <div class='flex items-center gap-3 mb-3'>
-                <input
-                  type='text'
-                  x-model='materis_ja[index]'
-                  name='materialsJa[]'
-                  placeholder='Enter a lesson'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                />
+              <input
+                type='text'
+                x-model='materis_ja[index]'
+                name='materialsJa[]'
+                placeholder='Enter a lesson'
+                :class="borderClass('materis_ja')"
+                class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
+              />
                 <button
                   type='button'
                   @click='materis_ja.splice(index,1)'
@@ -92,5 +96,6 @@
             >
               + Add Lesson
             </button>
+            <div id='materis_ja_error' class='hidden text-red-500 text-xs mt-1'></div>
           </div>
         </div>

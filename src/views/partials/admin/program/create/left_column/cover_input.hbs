@@ -110,6 +110,9 @@
             @change='validateImage($event.target.files[0])'
           />
 
+          <!-- Required Error Message -->
+          <div id='image_error' class='hidden text-red-500 text-xs mt-1'></div>
+
           <!-- Error Message -->
           <template x-if='!isValid && errorMessage'>
             <div
