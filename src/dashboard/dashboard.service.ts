@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
-import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Partner } from 'src/entities/partner.entity';
@@ -35,8 +34,6 @@ export class DashboardService {
     private readonly alumniRepository: Repository<Alumni>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
-    @InjectRepository(ImageBenefit)
-    private readonly imageBenefitRepository: Repository<ImageBenefit>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(CourseType)
@@ -400,22 +397,6 @@ export class DashboardService {
 
   async findCourseTypes() {
     return await this.courseTypeRepository.find();
-  }
-
-  async findImage1() {
-    return await this.imageBenefitRepository.findOne({ where: { no: 1 } });
-  }
-
-  async findImage2() {
-    return await this.imageBenefitRepository.findOne({ where: { no: 2 } });
-  }
-
-  async findImage3() {
-    return await this.imageBenefitRepository.findOne({ where: { no: 3 } });
-  }
-
-  async findImage4() {
-    return await this.imageBenefitRepository.findOne({ where: { no: 4 } });
   }
 
   async findAllGallery(): Promise<Gallery[]> {

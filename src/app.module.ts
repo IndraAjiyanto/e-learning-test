@@ -44,7 +44,6 @@ import { TeamModule } from './team/team.module';
 import { VisionsModule } from './visions/visions.module';
 import { SocialModule } from './social/social.module';
 import { InstallmentsModule } from './installments/installments.module';
-import { ImageBenefitModule } from './image_benefit/image_benefit.module';
 import { AboutModule } from './about/about.module';
 import { TechnologiesModule } from './technologies/technologies.module';
 import { TeamLeadModule } from './team_lead/team_lead.module';
@@ -113,7 +112,6 @@ const TABLES_WITH_SEQUENCE = [
   'visions',
   'paragraph',
   'mission',
-  'image_benefit',
   'category_partner',
   'about',
 ];
@@ -173,7 +171,6 @@ const TABLES_WITH_SEQUENCE = [
     VisionsModule,
     SocialModule,
     InstallmentsModule,
-    ImageBenefitModule,
     AboutModule,
     TechnologiesModule,
     TeamLeadModule,

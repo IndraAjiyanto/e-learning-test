@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
-import { ImageBenefit } from 'src/entities/image_benefit.entity';
 import { Category } from 'src/entities/category.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Partner } from 'src/entities/partner.entity';
@@ -45,7 +44,6 @@ import { CategoriesModule } from 'src/categories/categories.module';
       Faq,
       Alumni,
       Portofolios,
-      ImageBenefit,
       Category,
       CourseType,
       Partner,

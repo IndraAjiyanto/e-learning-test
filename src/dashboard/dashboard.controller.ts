@@ -58,14 +58,10 @@ export class DashboardController {
         const our_experience = await this.dashboardService.findOurExperience();
         const special_program =
           await this.dashboardService.findSpecialProgram();
-        const faq = await this.dashboardService.findFAQ();
-        const benefit_images_1 = await this.dashboardService.findImage1();
-        const benefit_images_2 = await this.dashboardService.findImage2();
-        const benefit_images_3 = await this.dashboardService.findImage3();
-        const benefit_images_4 = await this.dashboardService.findImage4();
-        const courseType = await this.dashboardService.findCourseTypes();
-        const category = await this.dashboardService.findCategories();
-        const alumni = await this.dashboardService.findAllAlumni();
+      const faq = await this.dashboardService.findFAQ();
+      const courseType = await this.dashboardService.findCourseTypes();
+      const category = await this.dashboardService.findCategories();
+      const alumni = await this.dashboardService.findAllAlumni();
         const collaborations = await this.dashboardService.findCollaborations();
         const categoryPartner =
           await this.dashboardService.findCategoryPartners();
@@ -83,10 +79,6 @@ export class DashboardController {
           programs,
           // kelas,
           faq,
-          benefit_images_1,
-          benefit_images_2,
-          benefit_images_3,
-          benefit_images_4,
           courseType,
           category,
           alumni,
@@ -102,10 +94,6 @@ export class DashboardController {
       const our_experience = await this.dashboardService.findOurExperience();
       const special_program = await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
-      const benefit_images_1 = await this.dashboardService.findImage1();
-      const benefit_images_2 = await this.dashboardService.findImage2();
-      const benefit_images_3 = await this.dashboardService.findImage3();
-      const benefit_images_4 = await this.dashboardService.findImage4();
       const courseType = await this.dashboardService.findCourseTypes();
       const category = await this.dashboardService.findCategories();
       const alumni = await this.dashboardService.findAllAlumni();
@@ -126,10 +114,6 @@ export class DashboardController {
         programs,
         // kelas,
         faq,
-        benefit_images_1,
-        benefit_images_2,
-        benefit_images_3,
-        benefit_images_4,
         courseType,
         category,
         alumni,
