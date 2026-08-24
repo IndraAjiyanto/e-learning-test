@@ -132,28 +132,28 @@ isProgramActive() {
         });
       }
     }"
-    class='flex max-w-[1728px] px-5 sm:px-8 lg:px-20 py-3 sm:py-4 items-center justify-between mx-auto h-auto w-full relative'
+    class='flex max-w-[1728px] px-5 sm:px-8 lg:px-20 items-center justify-between mx-auto h-14 sm:h-16 w-full relative'
   >
-    <div class='flex items-center justify-between w-full md:w-auto h-16'>
+    <div class='flex items-center justify-between w-full md:w-auto h-full'>
       <a
         href='/dashboard'
-        class='inline-block'
+        class='inline-block flex items-center'
         @click="setActive('/dashboard')"
       >
         <img
           src='/public/image/logo_baru.png'
           alt='Logo'
-          class='h-7 sm:h-12 w-auto object-contain focus:outline-none focus:shadow-outline'
+          class='h-6 sm:h-8 md:h-9 w-auto object-contain focus:outline-none focus:shadow-outline'
         />
       </a>
 
       <!-- Tombol toggle mobile menu (Dark Navy rounded-[14px] button) -->
       <button
-        class='w-9 h-9 sm:w-12 sm:h-12 bg-[#003060] rounded-[14px] md:hidden flex items-center justify-center text-white focus:outline-none shadow-md hover:bg-[#001f3f] transition-all z-50 shrink-0'
+        class='w-9 h-9 sm:w-10 sm:h-10 bg-[#003060] rounded-[12px] md:hidden flex items-center justify-center text-white focus:outline-none shadow-md hover:bg-[#001f3f] transition-all z-50 shrink-0'
         @click='toggleMenu()'
         aria-label="Toggle Navigation Menu"
       >
-        <svg fill='currentColor' viewBox='0 0 20 20' class='w-6 h-6'>
+        <svg fill='currentColor' viewBox='0 0 20 20' class='w-5 h-5'>
           <path
             x-show='!open'
             fill-rule='evenodd'
@@ -269,8 +269,8 @@ isProgramActive() {
                     <i class='fas fa-gopuram text-white text-lg'></i>
                   </div>
                   <div class='flex-1 ml-3'>
-                    <p class='font-bold text-sm text-gray-900 text-[20px]'>{{t 'test.navbar.mpp'}}</p>
-                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                    <p class='font-bold text-sm text-white text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+                    <p class="text-white text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
                   </div>
                 </a>
                 <template x-for='kat in category' :key='kat.id'>
@@ -516,9 +516,9 @@ isProgramActive() {
                     <i class='fas fa-gopuram text-white text-lg'></i>
                   </div>
                   <div class='flex-1 ml-3'>
-                    <p class='font-bold text-sm text-gray-900 text-[20px]'>{{t 'test.navbar.mpp'}}</p>
+                    <p class='font-bold text-sm text-white text-[20px]'>{{t 'test.navbar.mpp'}}</p>
 
-                    <p class="text-gray-900 text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
+                    <p class="text-white text-[15px]">Program Kemitraan Pemasaran IT Bootcamp untuk Mahasiswa & Fresh Graduate By Kesatria Academy</p>
                   </div>
                 </a>
                 <template x-for='kat in category' :key='kat.id'>
