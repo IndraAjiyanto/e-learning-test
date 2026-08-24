@@ -67,12 +67,7 @@ export class LogbookService {
         user: { id: userId },
         session: { weeks: { course: { id: courseId } } },
       },
-      relations: [
-        'user',
-        'session',
-        'session.weeks',
-        'session.weeks.course',
-      ],
+      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
     });
   }
 
@@ -91,23 +86,13 @@ export class LogbookService {
 
   async findAll() {
     return await this.logBookRepository.find({
-      relations: [
-        'user',
-        'session',
-        'session.weeks',
-        'session.weeks.course',
-      ],
+      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
     });
   }
 
   async findMentorLogbook() {
     return await this.mentorLogbookRepository.find({
-      relations: [
-        'user',
-        'session',
-        'session.weeks',
-        'session.weeks.course',
-      ],
+      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
     });
   }
 
@@ -146,12 +131,7 @@ export class LogbookService {
   async findOne(logbookId: number) {
     const logbooks = await this.logBookRepository.findOne({
       where: { id: logbookId },
-      relations: [
-        'session',
-        'session.weeks',
-        'session.weeks.course',
-        'user',
-      ],
+      relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
     });
     if (!logbooks) {
       throw new NotFoundException('log book not found');
@@ -167,9 +147,10 @@ export class LogbookService {
       .orderBy('logbook.createdAt', 'DESC');
 
     // Join necessary relations to filter by kategoriId
-    query.leftJoin('logbook.pertemuan', 'pertemuan')
-         .leftJoin('pertemuan.minggu', 'minggu')
-         .leftJoin('minggu.kelas', 'kelas');
+    query
+      .leftJoin('logbook.pertemuan', 'pertemuan')
+      .leftJoin('pertemuan.minggu', 'minggu')
+      .leftJoin('minggu.kelas', 'kelas');
 
     if (kategoriId) {
       query.andWhere('kelas.id = :kategoriId', {
@@ -223,20 +204,23 @@ export class LogbookService {
           if (quiz) {
             const existingQuizProgress =
               await this.progresQuizRepository.findOne({
-                where: { quiz: { id: quiz.id }, user: { id: logbooks.user.id } },
+                where: {
+                  quiz: { id: quiz.id },
+                  user: { id: logbooks.user.id },
+                },
               });
             if (existingQuizProgress) {
               await this.progresQuizRepository.save({
                 id: existingQuizProgress.id,
                 quiz: { id: quiz.id },
                 user: { id: logbooks.user.id },
-                proses: true,
+                process: true,
               });
             } else {
               await this.progresQuizRepository.save({
                 quiz: { id: quiz.id },
                 user: { id: logbooks.user.id },
-                proses: true,
+                process: true,
               });
             }
           }

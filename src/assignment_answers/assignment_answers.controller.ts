@@ -30,17 +30,36 @@ export class AnswerTasksController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
+    const wantsJson = req.headers.accept?.includes('application/json');
     try {
       createAssignmentAnswerDto.process = 'process';
       if (req.user) {
         createAssignmentAnswerDto.userId = req.user.id;
       }
       createAssignmentAnswerDto.taskId = assignmentId;
-      await this.answerTasksService.create(createAssignmentAnswerDto);
+      const answer = await this.answerTasksService.create(
+        createAssignmentAnswerDto,
+      );
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: 'submission successfuly send',
+          answer: {
+            id: answer.id,
+            file: answer.file,
+            process: answer.process,
+            createdAt: answer.createdAt,
+          },
+        });
+      }
       req.flash('success', 'submission successfuly send');
       res.redirect(`/answer-assigment/${sessionId}/${assignmentId}`);
     } catch (error: any) {
-      req.flash('error', error.message || 'submission unsuccess send');
+      const message = error.message || 'submission unsuccess send';
+      if (wantsJson) {
+        return res.status(400).json({ success: false, message });
+      }
+      req.flash('error', message);
       res.redirect(`/answer-assigment/${sessionId}/${assignmentId}`);
     }
   }
@@ -54,7 +73,8 @@ export class AnswerTasksController {
     @Res() res: Response,
   ) {
     if (req.user) {
-      const assignments = await this.answerTasksService.findAssignment(assignmentId);
+      const assignments =
+        await this.answerTasksService.findAssignment(assignmentId);
       const taskAnswers = await this.answerTasksService.findAssignmentAnswer(
         req.user.id,
         assignmentId,
@@ -79,7 +99,8 @@ export class AnswerTasksController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const assignments = await this.answerTasksService.findAssignment(assignmentId);
+    const assignments =
+      await this.answerTasksService.findAssignment(assignmentId);
     const taskAnswers =
       await this.answerTasksService.findAllAssignmentAnswers(assignmentId);
     res.render('admin/answers-assignments/index', {
@@ -98,12 +119,14 @@ export class AnswerTasksController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const wantsJson = req.headers.accept?.includes('application/json');
     try {
-      const assignments = await this.answerTasksService.findAssignment(assignmentId);
+      const assignments =
+        await this.answerTasksService.findAssignment(assignmentId);
       if (!updateAssignmentAnswerDto.process) {
         updateAssignmentAnswerDto.process = 'process';
       }
-      await this.answerTasksService.update(
+      const answer = await this.answerTasksService.update(
         assignment_answerId,
         updateAssignmentAnswerDto,
       );
@@ -113,21 +136,42 @@ export class AnswerTasksController {
           assignment_answerId,
         );
       }
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: 'Update answer successfuly',
+          answer: {
+            id: answer.id,
+            file: answer.file,
+            process: answer.process,
+            createdAt: answer.createdAt,
+          },
+        });
+      }
       if (req.user?.role.includes('admin')) {
         req.flash('success', 'Update answer successfuly');
         res.redirect(`/answer-assigment/${assignmentId}`);
       } else if (req.user?.role.includes('user')) {
         req.flash('success', 'Update answer successfuly');
-        res.redirect(`/answer-assigment/${assignments.session.id}/${assignments.id}`);
+        res.redirect(
+          `/answer-assigment/${assignments.session.id}/${assignments.id}`,
+        );
       }
     } catch (error: any) {
-      const assignments = await this.answerTasksService.findAssignment(assignmentId);
+      const message = error.message || 'Update answer unsuccessfully';
+      if (wantsJson) {
+        return res.status(400).json({ success: false, message });
+      }
+      const assignments =
+        await this.answerTasksService.findAssignment(assignmentId);
       if (req.user?.role.includes('admin')) {
-        req.flash('error', error.message || 'Update answer unsuccessfully');
+        req.flash('error', message);
         res.redirect(`/answer-assigment/${assignmentId}`);
       } else if (req.user?.role.includes('user')) {
-        req.flash('error', error.message || 'Update answer unsuccessfully');
-        res.redirect(`/answer-assigment/${assignments.session.id}/${assignments.id}`);
+        req.flash('error', message);
+        res.redirect(
+          `/answer-assigment/${assignments.session.id}/${assignments.id}`,
+        );
       }
     }
   }

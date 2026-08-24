@@ -48,7 +48,33 @@ export class AttendanceService {
       user: user,
     });
 
-    return await this.attendanceRepository.save(attendance);
+    const saved = await this.attendanceRepository.save(attendance);
+
+    // Mirrors the upsert pattern used elsewhere (courses.service.ts,
+    // payments.service.ts, logbook.service.ts, session.service.ts) for
+    // writing to SessionProgress. Without this, a real attendance
+    // submission never flips sessionProgress.isAttended, so the
+    // frontend's isAttended() (which requires both this row AND that
+    // flag) can never become true through normal use.
+    const existingSessionProgress =
+      await this.sessionProgressRepository.findOne({
+        where: { user: { id: user.id }, session: { id: session.id } },
+      });
+    if (existingSessionProgress) {
+      await this.sessionProgressRepository.save({
+        id: existingSessionProgress.id,
+        isAttended: true,
+      });
+    } else {
+      await this.sessionProgressRepository.save({
+        user,
+        session,
+        isAttended: true,
+        logbook: false,
+      });
+    }
+
+    return saved;
   }
 
   async findAll() {
