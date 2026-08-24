@@ -1,9 +1,59 @@
 <div class='pt-24 min-h-screen bg-cover bg-top bg-no-repeat bg-fixed' style="background-image: url('/public/image/dashboard/bgAlumniPage.png');" x-data='alumniApp()'>
 
-  <div class='container mx-auto px-4 pb-16 max-w-[1440px]'>
+  <div class='container mx-auto px-5 pb-16 max-w-[1440px]'>
     
-    <!-- Header -->
-    <div class='flex flex-col items-center mb-[50px]'>
+    <!-- MOBILE HEADER (< 640px) -->
+    <div class="block sm:hidden flex flex-col items-center mb-6 pt-4">
+      <div class="flex justify-center items-center rounded-full px-4 py-1 mb-4 border border-[#003060] bg-[#6EB6E5]/20">
+        <span class="font-montserrat font-medium text-[13px] text-[#003060]">{{t 'test.alumni.alumni'}}</span>
+      </div>
+      <h1 class="font-montserrat font-bold text-center text-[#003060] text-[28px] leading-[34px] mb-2 tracking-normal">
+        {{{t 'test.alumni.title'}}}
+      </h1>
+      <div class="w-10 h-1 bg-[#0B1F3B] rounded-full mx-auto mb-3"></div>
+      <p class="font-sans font-normal text-[14px] leading-[20px] text-[#000000]/80 text-center px-2 tracking-normal">
+        {{t 'test.alumni.description'}}
+      </p>
+    </div>
+
+    <!-- MOBILE STATS (< 640px) -->
+    <div class="block sm:hidden flex flex-col gap-3 mb-8">
+      <!-- Alumni Stat -->
+      <div class="bg-white/90 backdrop-blur-xs border border-[#E0F1F9] rounded-[16px] p-4 flex items-center gap-4 shadow-xs">
+        <div class="w-12 h-12 rounded-[12px] bg-[#E0F1F9] flex items-center justify-center text-[#0B1F3B] shrink-0">
+          <i class="fas fa-users text-lg"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-sans font-bold text-[22px] leading-none text-[#2D2D2D]">1,000+</span>
+          <span class="font-sans font-normal text-[13px] leading-none text-[#676767] mt-1">{{t 'test.alumni.statAlumni'}}</span>
+        </div>
+      </div>
+
+      <!-- Career Growth Stat -->
+      <div class="bg-white/90 backdrop-blur-xs border border-[#E0F1F9] rounded-[16px] p-4 flex items-center gap-4 shadow-xs">
+        <div class="w-12 h-12 rounded-[12px] bg-[#E0F1F9] flex items-center justify-center text-[#0B1F3B] shrink-0">
+          <i class="fas fa-chart-line text-lg"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-sans font-bold text-[22px] leading-none text-[#2D2D2D]">95%</span>
+          <span class="font-sans font-normal text-[13px] leading-none text-[#676767] mt-1">{{t 'test.alumni.statCareerGrowth'}}</span>
+        </div>
+      </div>
+
+      <!-- Hiring Partners Stat -->
+      <div class="bg-white/90 backdrop-blur-xs border border-[#E0F1F9] rounded-[16px] p-4 flex items-center gap-4 shadow-xs">
+        <div class="w-12 h-12 rounded-[12px] bg-[#E0F1F9] flex items-center justify-center text-[#0B1F3B] shrink-0">
+          <i class="fas fa-briefcase text-lg"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-sans font-bold text-[22px] leading-none text-[#2D2D2D]">200+</span>
+          <span class="font-sans font-normal text-[13px] leading-none text-[#676767] mt-1">{{t 'test.alumni.statHiringPartners'}}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESKTOP HEADER (>= 640px) -->
+    <div class='hidden sm:flex flex-col items-center mb-[50px]'>
       <!-- Badge -->
       <div class='flex justify-center items-center rounded-full mb-[30px]' style="width: 250px; height: 35px; background: rgba(110, 182, 229, 0.2); border: 1px solid #003060;">
         <span class='font-montserrat font-medium' style="font-size: 20px; color: #003060;">{{t 'test.alumni.alumni'}}</span>
@@ -19,8 +69,8 @@
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class='mx-auto px-4' style="max-width: 819px; margin-bottom: 100px;">
+    <!-- DESKTOP STATS (>= 640px) -->
+    <div class='hidden sm:block mx-auto px-4' style="max-width: 819px; margin-bottom: 100px;">
       <div class='flex flex-row items-center justify-between w-full' style="height: 102px; padding: 0 28px; background: rgba(224, 241, 249, 0.5); box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); backdrop-filter: blur(3.3px); border-radius: 12px;">
         
         <!-- Alumni -->
@@ -82,38 +132,29 @@ function alumniApp() {
 
     currentPage: 1,
     totalPages: 1,
-    totalItems: 0,
-    loading: false,
     alumniItems: [],
     lang: '{{lang}}' || 'id',
     unknown: "{{t 'test.alumni.unknown'}}",
+    loading: false,
 
     async init() {
       this.kelasList = this.kelasList.sort((a, b) =>
         (a.name || '').localeCompare(b.name || '')
       );
-       this.filterKelasByKategori();
+      this.filterKelasByKategori();
       await this.fetchAlumni();
     },
     filterKelasByKategori() {
       if (this.selectedKategoriId) {
-        this.filteredKelasList = this.kelasList.filter(k =>  k.category?.id  == this.selectedKategoriId);
+        this.filteredKelasList = this.kelasList.filter(k => k.category?.id == this.selectedKategoriId);
       } else {
         this.filteredKelasList = [...this.kelasList];
-           }
-    },
-
-    // Hanya kelas/program yang sesuai kategori terpilih
-    get filteredKelasList() {
-      if (this.selectedKategoriId) {
-        return this.kelasList.filter(k => k.kategori?.id == this.selectedKategoriId);
       }
-      return this.kelasList;
     },
 
-     async selectKategori(kategoriId) {
+    async selectKategori(kategoriId) {
       this.selectedKategoriId = kategoriId;
-  this.selectedKelasId = null;
+      this.selectedKelasId = null;
       this.selectedKelas = '';
       this.currentPage = 1;
       
@@ -122,16 +163,18 @@ function alumniApp() {
     },
 
     getByLang(obj, lang) {
-      if (!obj || typeof obj !== 'object') return '';
+      if (!obj) return '';
+      if (typeof obj === 'string') return obj;
+      if (typeof obj !== 'object') return '';
       return obj[lang] || obj.id || obj.en || '';
     },
 
     filterPrograms() {
       const query = this.searchQuery.toLowerCase().trim();
-       const baseList = this.selectedKategoriId 
+      const baseList = this.selectedKategoriId 
         ? this.kelasList.filter(k => k.category?.id == this.selectedKategoriId)
         : this.kelasList;
-         this.filteredKelasList = query
+      this.filteredKelasList = query
         ? baseList.filter(k => k.name.toLowerCase().includes(query))
         : [...baseList];
     },
@@ -144,12 +187,10 @@ function alumniApp() {
           params.set('search', this.searchQuery.trim());
         }
 
-        // 2. Parameter Kelas ID
         if (this.selectedKelasId) {
           params.set('course_id', this.selectedKelasId);
         }
 
-        // 3. Parameter Kategori ID
         if (this.selectedKategoriId) {
           params.set('category_id', this.selectedKategoriId);
         }
