@@ -67,7 +67,6 @@ import {
   I18nMiddleware,
   I18nModule,
 } from 'nestjs-i18n';
-import { OurExperienceModule } from './our_experience/our_experience.module';
 import { GalleryModule } from './gallery/gallery.module';
 import { CategoryPartnerModule } from './category_partner/category_partner.module';
 import { PartnerModule } from './partner/partner.module';
@@ -187,7 +186,6 @@ const TABLES_WITH_SEQUENCE = [
     FlowCategoryModule,
     FaqModule,
     SuperiorityModule,
-    OurExperienceModule,
     GalleryModule,
     CategoryPartnerModule,
     PartnerModule,

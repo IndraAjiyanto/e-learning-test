@@ -55,7 +55,6 @@ export class DashboardController {
       } else if (req.user.role === 'admin') {
         res.redirect('/program');
       } else if (req.user.role === 'user') {
-        const our_experience = await this.dashboardService.findOurExperience();
         const special_program =
           await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
@@ -87,11 +86,9 @@ export class DashboardController {
           benefits,
           about,
           social,
-          our_experience,
         });
       }
     } else {
-      const our_experience = await this.dashboardService.findOurExperience();
       const special_program = await this.dashboardService.findSpecialProgram();
       const faq = await this.dashboardService.findFAQ();
       const courseType = await this.dashboardService.findCourseTypes();
@@ -122,7 +119,6 @@ export class DashboardController {
         benefits,
         about,
         social,
-        our_experience,
       });
     }
   }

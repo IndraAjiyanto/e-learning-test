@@ -22,7 +22,6 @@ import { Award } from 'src/entities/award.entity';
 import { Background } from 'src/entities/background.entity';
 import { Paragraph } from 'src/entities/paragraph.entity';
 import { Faq } from 'src/entities/faq.entity';
-import { OurExperience } from 'src/entities/our_experience.entity';
 import { Gallery } from 'src/entities/gallery.entity';
 
 @Injectable()
@@ -70,8 +69,6 @@ export class DashboardService {
     private readonly paragraphRepository: Repository<Paragraph>,
     @InjectRepository(Faq)
     private readonly faqRepository: Repository<Faq>,
-    @InjectRepository(OurExperience)
-    private readonly ourExperienceRepository: Repository<OurExperience>,
     @InjectRepository(Gallery)
     private readonly galleryRepository: Repository<Gallery>,
   ) {}
@@ -84,12 +81,6 @@ export class DashboardService {
     return await this.partnerRepository.find({
       relations: ['categoryPartner'],
       order: { createdAt: 'ASC' },
-    });
-  }
-
-  async findOurExperience() {
-    return await this.ourExperienceRepository.find({
-      order: { id: 'ASC' },
     });
   }
 
