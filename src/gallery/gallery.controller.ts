@@ -42,11 +42,11 @@ export class GalleryController {
   // }
 
   @Get()
-  async index(@Res() res: Response) {
+  async index(@Res() res: Response, @Req() req: Request) {
     const gallery = await this.galleryService.findAll();
     const programs = await this.kategorisService.findAll();
 
-    res.render('super_admin/gallery/index', { gallery, programs });
+    res.render('super_admin/gallery/index', { user: req.user, gallery, programs });
   }
 
   @Roles('super_admin')
