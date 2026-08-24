@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
 import { UpdateCategoriesDto } from './dto/update-categories.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,6 +13,7 @@ import { Gallery } from 'src/entities/gallery.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { imageSize } from 'image-size';
 
 @Injectable()
 export class CategoriesService {
@@ -166,6 +167,89 @@ export class CategoriesService {
 
       await fs.unlink(filePath);
     } catch (error) {}
+  }
+
+  async validateImage(
+    file: Express.Multer.File,
+    options: {
+      maxSize: number;
+      allowedTypes: string[];
+    },
+  ) {
+    if (!file || file.size === 0) return;
+
+    if (options.maxSize && file.size > options.maxSize) {
+      throw new BadRequestException(
+        `File size too large. Maximum ${(options.maxSize / 1024 / 1024).toFixed(0)}MB`,
+      );
+    }
+
+    if (
+      options.allowedTypes &&
+      !options.allowedTypes.includes(file.mimetype)
+    ) {
+      throw new BadRequestException(
+        `File type not allowed. Only: ${options.allowedTypes.join(', ')}`,
+      );
+    }
+  }
+
+  async validateImageDimensions(
+    file: Express.Multer.File,
+    options: {
+      minWidth: number;
+      maxWidth: number;
+      minHeight: number;
+      maxHeight: number;
+    },
+  ) {
+    if (!file || file.size === 0) return;
+
+    try {
+      const dimensions = imageSize(file.buffer);
+
+      if (!dimensions.width || !dimensions.height) {
+        throw new BadRequestException('Could not determine image dimensions');
+      }
+
+      if (
+        dimensions.width < options.minWidth ||
+        dimensions.width > options.maxWidth ||
+        dimensions.height < options.minHeight ||
+        dimensions.height > options.maxHeight
+      ) {
+        throw new BadRequestException(
+          `Image dimensions ${dimensions.width}x${dimensions.height}px. Required: ${options.minWidth}x${options.minHeight} to ${options.maxWidth}x${options.maxHeight} pixels`,
+        );
+      }
+    } catch (error) {
+      if (error instanceof BadRequestException) throw error;
+      throw new BadRequestException('Invalid or corrupted image file');
+    }
+  }
+
+  async saveFile(
+    file: Express.Multer.File,
+    folder: string,
+  ): Promise<string> {
+    const uploadDir = path.join(
+      process.cwd(),
+      'public',
+      'asset',
+      folder,
+    );
+
+    await fs.mkdir(uploadDir, { recursive: true });
+
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileExtension = path.extname(file.originalname);
+    const filename = `${timestamp}-${randomString}${fileExtension}`;
+    const filePath = path.join(uploadDir, filename);
+
+    await fs.writeFile(filePath, file.buffer);
+
+    return `/asset/${folder}/${filename}`;
   }
 
   async remove(categoryId: number) {
