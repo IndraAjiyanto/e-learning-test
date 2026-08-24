@@ -1,5 +1,8 @@
 <!-- PROFILE CONTENT PARTIAL -->
-<div class="space-y-24 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 pb-10 mb-28">
+<div 
+  class="space-y-24 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 pb-10 mb-28"
+  x-data="profilePictureCrop()"
+>
   
   <!-- Welcome & Account Information Section -->
   <div>
@@ -16,23 +19,91 @@
     <!-- Avatar Section (avatar to form spacing: 55px) -->
     <div class="relative w-[100px] h-[100px] mb-12">
       <div class="w-[100px] h-[100px] rounded-[50px] bg-[#003060] text-white p-[10px] gap-[5px] flex items-center justify-center shadow-md overflow-hidden">
-        {{#if user.profile}}
-          <img src="{{user.profile}}" alt="Profile" class="w-full h-full object-cover rounded-full">
-        {{else}}
-          <span class="font-montserrat font-medium text-white text-[20px] leading-none">{{substring user.username 0 2}}</span>
-        {{/if}}
+        <template x-if="previewUrl">
+          <img :src="previewUrl" alt="Profile" class="w-full h-full object-cover rounded-full">
+        </template>
+        <template x-if="!previewUrl">
+          {{#if user.profile}}
+            <img src="{{user.profile}}" alt="Profile" class="w-full h-full object-cover rounded-full">
+          {{else}}
+            <span class="font-montserrat font-medium text-white text-[20px] leading-none">{{substring user.username 0 2}}</span>
+          {{/if}}
+        </template>
       </div>
-      <button 
-        type="button" 
+      <label 
+        for="profile-upload-sidebar"
         class="absolute bottom-0 -right-5 w-[35px] h-[35px] flex items-center justify-center transition-opacity hover:opacity-80 cursor-pointer"
         aria-label="Edit Profile Picture"
       >
         <img src="/public/image/user_profile/edit.svg" alt="Edit" class="w-[35px] h-[35px] object-contain">
-      </button>
+      </label>
+      <form 
+        x-ref="profileForm"
+        action="/users/update/profile/{{user.id}}?_method=PATCH" 
+        method="post" 
+        enctype="multipart/form-data"
+        class="hidden"
+      >
+        <input 
+          id="profile-upload-sidebar" 
+          type="file" 
+          name="profile" 
+          accept="image/jpeg,image/jpg,image/png"
+          class="hidden" 
+          x-ref="fileInput"
+          @change="handleFileUpload($event)"
+        >
+      </form>
     </div>
 
     <!-- Account Inputs Form (input spacing: 30px, label to input spacing: 25px) -->
-    <form class="space-y-[30px] max-w-[1146px]">
+    <form 
+      class="space-y-[30px] max-w-[1146px]"
+      x-data="{
+        originalUsername: '{{user.username}}',
+        originalEmail: '{{user.email}}',
+        username: '{{user.username}}',
+        email: '{{user.email}}',
+        editingField: null,
+        saving: false,
+        get hasChanges() {
+          return this.username !== this.originalUsername || this.email !== this.originalEmail;
+        },
+        startEditing(field) {
+          this.editingField = field;
+        },
+        cancelEditing() {
+          this.editingField = null;
+        },
+        checkChanges() {
+          this.username = this.username.trim();
+          this.email = this.email.trim();
+        },
+        async save() {
+          if (!this.hasChanges || this.saving) return;
+          this.saving = true;
+          try {
+            const res = await fetch('/users/{{user.id}}', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: this.username, email: this.email }),
+              redirect: 'manual'
+            });
+            if (res.type === 'opaqueredirect' || res.ok) {
+              window.location.href = '/users/profile';
+            } else {
+              const data = await res.json().catch(() => null);
+              alert(data?.message || 'Failed to update profile');
+            }
+          } catch (err) {
+            alert('Failed to update profile');
+          } finally {
+            this.saving = false;
+          }
+        }
+      }"
+      @submit.prevent="save()"
+    >
       <!-- Username -->
       <div>
         <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
@@ -40,9 +111,13 @@
         </label>
         <input 
           type="text" 
-          value="{{user.username}}" 
+          x-model="username"
+          :readonly="editingField !== 'username'"
+          @click="startEditing('username')"
+          @blur="checkChanges()"
+          :class="editingField === 'username' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
           placeholder="Input Your Username" 
-          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-colors"
         >
       </div>
 
@@ -53,27 +128,34 @@
         </label>
         <input 
           type="email" 
-          value="{{user.email}}" 
+          x-model="email"
+          :readonly="editingField !== 'email'"
+          @click="startEditing('email')"
+          @blur="checkChanges()"
+          :class="editingField === 'email' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
           placeholder="Input Your Email" 
-          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-colors"
         >
       </div>
 
       <!-- Save Changes Button -->
       <div>
         <button 
-          type="button" 
-          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] bg-[#D9D9D9] hover:bg-[#003060] opacity-90 hover:opacity-100 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-base text-white transition-all duration-200 cursor-pointer"
+          type="submit" 
+          :disabled="!hasChanges || saving"
+          :class="hasChanges && !saving ? 'bg-[#003060] cursor-pointer hover:opacity-90' : 'bg-[#D9D9D9] cursor-not-allowed pointer-events-none'"
+          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-base text-white transition-all duration-200"
         >
-          Save Changes
+          <span x-show="!saving">Save Changes</span>
+          <span x-show="saving" x-cloak>Saving...</span>
         </button>
       </div>
     </form>
   </div>
 
-  <!-- Your Biodata Section (Section 1 to Section 2 spacing: 96px / space-y-24) -->
+  <!-- Your Biodata Section -->
   <div>
-    <!-- Header Block (h2 to p spacing: 15px, header to form spacing: 64px) -->
+    <!-- Header Block -->
     <div class="mb-12">
       <h2 class="font-montserrat font-semibold text-[36px] text-[#003060] leading-none mb-[15px]">
         Your Biodata
@@ -83,8 +165,78 @@
       </p>
     </div>
 
-    <!-- Biodata Form (input spacing: 30px, label to input spacing: 25px, Education-to-Studi Program gap-x: 117px) -->
-    <form class="space-y-[30px] max-w-[1146px]">
+    <!-- Biodata Form -->
+    <form 
+      class="space-y-[30px] max-w-[1146px]"
+      x-data="{
+        originalValues: {
+          fullName: '{{user.biodata.fullName}}',
+          city: '{{user.biodata.city}}',
+          education: '{{user.biodata.education}}',
+          studyProgram: '{{user.biodata.studyProgram}}',
+          gender: '{{user.biodata.gender}}',
+          no: '{{user.biodata.no}}'
+        },
+        currentValues: {
+          fullName: '{{user.biodata.fullName}}',
+          city: '{{user.biodata.city}}',
+          education: '{{user.biodata.education}}',
+          studyProgram: '{{user.biodata.studyProgram}}',
+          gender: '{{user.biodata.gender}}',
+          no: '{{user.biodata.no}}'
+        },
+        editingField: null,
+        saving: false,
+        get hasChanges() {
+          return this.currentValues.fullName !== this.originalValues.fullName
+            || this.currentValues.city !== this.originalValues.city
+            || this.currentValues.education !== this.originalValues.education
+            || this.currentValues.studyProgram !== this.originalValues.studyProgram
+            || this.currentValues.gender !== this.originalValues.gender
+            || this.currentValues.no !== this.originalValues.no;
+        },
+        startEditing(field) {
+          this.editingField = field;
+        },
+        checkChanges() {
+          for (const key in this.currentValues) {
+            if (typeof this.currentValues[key] === 'string') {
+              this.currentValues[key] = this.currentValues[key].trim();
+            }
+          }
+        },
+        async save() {
+          if (!this.hasChanges || this.saving) return;
+          this.saving = true;
+          try {
+            const res = await fetch('/biodata/{{user.biodata.id}}', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fullName: this.currentValues.fullName,
+                city: this.currentValues.city,
+                education: this.currentValues.education,
+                studyProgram: this.currentValues.studyProgram,
+                gender: this.currentValues.gender,
+                no: this.currentValues.no
+              }),
+              redirect: 'manual'
+            });
+            if (res.type === 'opaqueredirect' || res.ok) {
+              window.location.href = '/users/profile';
+            } else {
+              const data = await res.json().catch(() => null);
+              alert(data?.message || 'Failed to update biodata');
+            }
+          } catch (err) {
+            alert('Failed to update biodata');
+          } finally {
+            this.saving = false;
+          }
+        }
+      }"
+      @submit.prevent="save()"
+    >
       <!-- Full Name -->
       <div>
         <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
@@ -92,10 +244,14 @@
         </label>
         <input 
           type="text" 
-          required 
-          value="{{user.biodata.fullName}}"
+          required
+          x-model="currentValues.fullName"
+          :readonly="editingField !== 'fullName'"
+          @click="startEditing('fullName')"
+          @blur="checkChanges()"
+          :class="editingField === 'fullName' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
           placeholder="Input Your Full Name" 
-          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-colors"
         >
       </div>
 
@@ -106,55 +262,36 @@
         </label>
         <input 
           type="text" 
-          value="{{user.biodata.city}}"
+          x-model="currentValues.city"
+          :readonly="editingField !== 'city'"
+          @click="startEditing('city')"
+          @blur="checkChanges()"
+          :class="editingField === 'city' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
           placeholder="Input Your City" 
-          class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-colors"
         >
       </div>
 
-      <!-- Grid 2 Columns (Education to Studi Program gap-x: 117px, gap-y: 30px) -->
+      <!-- Grid 2 Columns -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[117px] gap-y-[30px] max-w-[1146px]">
         
-        <!-- Education Dropdown -->
+        <!-- Education Select -->
         <div>
           <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
             Education
           </label>
-          <div class="relative w-full custom-dropdown" id="dropdown-education">
-            <input type="hidden" id="education-input" name="education" value="{{user.biodata.education}}">
-
-            <button
-              type="button"
-              class="dropdown-trigger w-full h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer transition-all duration-200"
-              aria-expanded="false"
-              aria-haspopup="listbox"
-            >
-              <span class="dropdown-label font-montserrat font-medium text-xl {{#if user.biodata.education}}text-black{{else}}text-[#676767]{{/if}} truncate pr-4">
-                {{#if user.biodata.education}}{{user.biodata.education}}{{else}}Select Your Education Level{{/if}}
-              </span>
-              <div class="size-[24px] flex items-center justify-center flex-shrink-0">
-                <i class="dropdown-chevron text-sm text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
-              </div>
-            </button>
-
-            <ul 
-              class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out origin-top font-montserrat max-h-60 overflow-y-auto"
-              role="listbox"
-            >
-              <li role="option" aria-selected="false" data-value="High School / SMA" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>High School / SMA</span>
-              </li>
-              <li role="option" aria-selected="false" data-value="Bachelor / S1" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Bachelor / S1</span>
-              </li>
-              <li role="option" aria-selected="false" data-value="Master / S2" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Master / S2</span>
-              </li>
-              <li role="option" aria-selected="false" data-value="Other" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Other</span>
-              </li>
-            </ul>
-          </div>
+          <select
+            x-model="currentValues.education"
+            @click="startEditing('education')"
+            :class="editingField === 'education' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black transition-all duration-200"
+          >
+            <option value="" disabled>Select Your Education Level</option>
+            <option value="SMP/Sederajat">SMP / Sederajat</option>
+            <option value="SMA/SMK/Sederajat">SMA / SMK / Sederajat</option>
+            <option value="Diploma(D3/D4)">Diploma (D3/D4)</option>
+            <option value="Sarjana(S1)">Sarjana (S1)</option>
+          </select>
         </div>
 
         <!-- Studi Program -->
@@ -164,46 +301,31 @@
           </label>
           <input 
             type="text" 
-            value="{{user.biodata.studyProgram}}"
+            x-model="currentValues.studyProgram"
+            :readonly="editingField !== 'studyProgram'"
+            @click="startEditing('studyProgram')"
+            @blur="checkChanges()"
+            :class="editingField === 'studyProgram' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
             placeholder="Input Your Studi Program" 
-            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-colors"
           >
         </div>
 
-        <!-- Gender Dropdown -->
+        <!-- Gender Select -->
         <div>
           <label class="block font-montserrat font-semibold text-[25px] text-[#003060] leading-none mb-[25px]">
             Gender
           </label>
-          <div class="relative w-full custom-dropdown" id="dropdown-gender">
-            <input type="hidden" id="gender-input" name="gender" value="{{user.biodata.gender}}">
-
-            <button
-              type="button"
-              class="dropdown-trigger w-full h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] flex items-center justify-between cursor-pointer transition-all duration-200"
-              aria-expanded="false"
-              aria-haspopup="listbox"
-            >
-              <span class="dropdown-label font-montserrat font-medium text-xl {{#if user.biodata.gender}}text-black{{else}}text-[#676767]{{/if}} truncate pr-4">
-                {{#if user.biodata.gender}}{{user.biodata.gender}}{{else}}Select Your Gender{{/if}}
-              </span>
-              <div class="size-[24px] flex items-center justify-center flex-shrink-0">
-                <i class="dropdown-chevron text-sm text-[#003060] fa-solid fa-chevron-down transition-transform duration-200 ease-out"></i>
-              </div>
-            </button>
-
-            <ul 
-              class="dropdown-menu absolute left-0 right-0 top-full mt-2 bg-white rounded-[12px] shadow-lg border border-[#E2E8F0] p-2 z-50 invisible opacity-0 -translate-y-2 scale-95 transition-all duration-200 ease-out origin-top font-montserrat max-h-60 overflow-y-auto"
-              role="listbox"
-            >
-              <li role="option" aria-selected="false" data-value="Male" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Male</span>
-              </li>
-              <li role="option" aria-selected="false" data-value="Female" class="dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between">
-                <span>Female</span>
-              </li>
-            </ul>
-          </div>
+          <select
+            x-model="currentValues.gender"
+            @click="startEditing('gender')"
+            :class="editingField === 'gender' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black transition-all duration-200"
+          >
+            <option value="" disabled>Select Your Gender</option>
+            <option value="Laki laki">Laki laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
         </div>
 
         <!-- WhatsApp Number -->
@@ -213,9 +335,13 @@
           </label>
           <input 
             type="tel" 
-            value="{{user.biodata.no}}"
+            x-model="currentValues.no"
+            :readonly="editingField !== 'no'"
+            @click="startEditing('no')"
+            @blur="checkChanges()"
+            :class="editingField === 'no' ? 'bg-white cursor-text ring-1 ring-[#0B3A68] border-[#0B3A68]' : 'bg-white/50 cursor-default border-slate-200/80'"
+            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 border shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-all duration-200"
             placeholder="Input Your WhatsApp Number" 
-            class="w-full max-w-[1146px] h-[43px] rounded-[6px] p-[10px] px-4 bg-white/50 border border-slate-200/80 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-1 focus:ring-[#0B3A68] focus:border-[#0B3A68] font-montserrat font-medium text-xl text-black placeholder:text-[#676767] transition-colors"
           >
         </div>
       </div>
@@ -223,175 +349,280 @@
       <!-- Save Changes Button -->
       <div class="pt-2">
         <button 
-          type="button" 
-          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] bg-[#D9D9D9] hover:bg-[#003060] opacity-90 hover:opacity-100 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-base text-white transition-all duration-200 cursor-pointer"
+          type="submit"
+          :disabled="!hasChanges || saving"
+          :class="hasChanges && !saving ? 'bg-[#003060] cursor-pointer hover:opacity-90' : 'bg-[#D9D9D9] cursor-not-allowed pointer-events-none'"
+          class="w-[234px] h-[44px] rounded-[6px] p-[10px] gap-[5px] opacity-90 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-center font-montserrat font-medium text-base text-white transition-all duration-200"
         >
-          Save Changes
+          <span x-show="!saving">Save Changes</span>
+          <span x-show="saving" x-cloak>Saving...</span>
         </button>
       </div>
     </form>
   </div>
 
+  <!-- Crop Modal -->
+  <div
+    x-show="showCropModal"
+    x-cloak
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+    @click.self="closeCropModal()"
+  >
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+      <div class="p-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold text-slate-900">Crop Profile Photo</h3>
+        <p class="text-sm text-slate-600 mt-1">Sesuaikan area crop untuk foto profil kamu</p>
+      </div>
+      <div class="p-6 overflow-auto max-h-[60vh]">
+        <img id="cropImageSidebar" :src="tempImageUrl" class="max-w-full" style="display: block;"/>
+      </div>
+      <div class="p-6 border-t border-gray-200 flex justify-end gap-3">
+        <button type="button"
+          class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+          @click="closeCropModal()">
+          Batal
+        </button>
+        <button type="button"
+          class="px-6 py-2 rounded-lg bg-[#003060] text-white hover:bg-[#0B3A68] transition"
+          @click="applyCrop()">
+          Apply Crop
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Picture Preview Modal -->
+  <div
+    x-show="open"
+    x-cloak
+    class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
+    x-transition
+    @click.self="closeModal()"
+  >
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+      <button
+        @click="closeModal()"
+        class="absolute top-4 right-4 text-slate-600 hover:text-slate-900 text-2xl w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-all duration-300"
+      >
+        &times;
+      </button>
+
+      <h3 class="text-xl font-bold text-slate-800 mb-4 font-montserrat">Preview Profile Photo</h3>
+
+      <!-- Validation Error Alert -->
+      <div
+        x-show="validationError"
+        x-transition
+        class="mb-4 p-4 rounded-xl bg-red-50 border-2 border-red-300"
+      >
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-exclamation-triangle text-white text-lg"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-bold text-red-800 text-base mb-1">Invalid Image</p>
+            <p class="text-red-700 text-sm" x-text="validationError"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Preview -->
+      <img
+        :src="previewUrl"
+        alt="Preview Profile"
+        class="rounded-xl w-full object-contain max-h-[60vh] border border-slate-200"
+      />
+
+      <!-- Image Info -->
+      <div
+        x-show="imageInfo"
+        class="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200"
+      >
+        <div class="flex items-center justify-between text-sm">
+          <div>
+            <i class="fas fa-image text-slate-600 mr-2"></i>
+            <span class="text-slate-700 font-medium" x-text="imageInfo"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button
+          @click="closeModal()"
+          class="px-6 py-3 rounded-xl border-2 border-slate-300 hover:bg-slate-50 text-slate-700 transition-all duration-300 font-semibold"
+        >
+          Cancel
+        </button>
+
+        <button
+          @click="
+            if (croppedBlob) {
+              const file = new File([croppedBlob], fileName || 'profile.jpg', { type: 'image/jpeg' });
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(file);
+              $refs.fileInput.files = dataTransfer.files;
+            }
+            $refs.profileForm.submit();
+          "
+          :disabled="validationError !== ''"
+          :class="validationError !== '' ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl'"
+          class="px-6 py-3 rounded-xl bg-[#003060] text-white shadow-lg transition-all duration-300 font-semibold"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- Custom Dropdown JavaScript Component -->
+<!-- Profile Picture Crop Function -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const dropdownContainers = document.querySelectorAll('.custom-dropdown');
+  function profilePictureCrop() {
+    return {
+      previewUrl: '',
+      open: false,
+      validationError: '',
+      imageInfo: '',
+      cropper: null,
+      showCropModal: false,
+      tempImageUrl: null,
+      croppedBlob: null,
+      fileName: '',
 
-    dropdownContainers.forEach(container => {
-      const trigger = container.querySelector('.dropdown-trigger');
-      const menu = container.querySelector('.dropdown-menu');
-      const chevron = container.querySelector('.dropdown-chevron');
-      const label = container.querySelector('.dropdown-label');
-      const hiddenInput = container.querySelector('input[type="hidden"]');
-      const options = container.querySelectorAll('.dropdown-option');
+      handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-      let isOpen = false;
-      let highlightedIndex = -1;
+        this.previewUrl = '';
+        this.validationError = '';
+        this.imageInfo = '';
+        this.croppedBlob = null;
+        this.fileName = file.name;
 
-      function toggleDropdown(forceState) {
-        isOpen = forceState !== undefined ? forceState : !isOpen;
-
-        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-
-        if (isOpen) {
-          dropdownContainers.forEach(otherContainer => {
-            if (otherContainer !== container) {
-              const otherTrigger = otherContainer.querySelector('.dropdown-trigger');
-              const otherMenu = otherContainer.querySelector('.dropdown-menu');
-              const otherChevron = otherContainer.querySelector('.dropdown-chevron');
-              if (otherMenu && !otherMenu.classList.contains('invisible')) {
-                otherMenu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
-                otherMenu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
-                if (otherChevron) otherChevron.classList.remove('rotate-180');
-                if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
-              }
-            }
-          });
-
-          menu.classList.remove('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
-          menu.classList.add('visible', 'opacity-100', 'translate-y-0', 'scale-100');
-          if (chevron) chevron.classList.add('rotate-180');
-
-          highlightedIndex = Array.from(options).findIndex(opt => opt.getAttribute('aria-selected') === 'true');
-          if (highlightedIndex >= 0) {
-            updateFocusedOption(highlightedIndex);
-          }
-        } else {
-          menu.classList.add('invisible', 'opacity-0', '-translate-y-2', 'scale-95');
-          menu.classList.remove('visible', 'opacity-100', 'translate-y-0', 'scale-100');
-          if (chevron) chevron.classList.remove('rotate-180');
-          highlightedIndex = -1;
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+          this.validationError = 'File type not allowed! Please upload JPG, JPEG, or PNG image only.';
+          this.open = true;
+          return;
         }
-      }
 
-      function updateFocusedOption(index) {
-        options.forEach((opt, idx) => {
-          if (idx === index) {
-            opt.classList.add('ring-2', 'ring-[#003060]');
-            opt.scrollIntoView({ block: 'nearest' });
-          } else {
-            opt.classList.remove('ring-2', 'ring-[#003060]');
-          }
+        const maxSize = 5 * 1024 * 1024;
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        if (file.size > maxSize) {
+          this.validationError = `File size too large! Maximum 5MB allowed. Your file: ${fileSizeMB}MB`;
+          this.open = true;
+          return;
+        }
+
+        this.tempImageUrl = URL.createObjectURL(file);
+        this.showCropModal = true;
+
+        this.$nextTick(() => {
+          this.initCropper();
         });
-      }
+      },
 
-      function selectOption(option) {
-        const selectedValue = option.getAttribute('data-value');
-        
-        if (hiddenInput) {
-          hiddenInput.value = selectedValue;
+      initCropper() {
+        const image = document.getElementById('cropImageSidebar');
+        if (this.cropper) {
+          this.cropper.destroy();
         }
 
-        if (label) {
-          label.textContent = selectedValue;
-          label.classList.remove('text-[#676767]');
-          label.classList.add('text-black');
-        }
-
-        options.forEach(opt => {
-          const isSelected = opt === option;
-          opt.setAttribute('aria-selected', isSelected ? 'true' : 'false');
-
-          const checkIcon = opt.querySelector('.fa-check');
-          if (isSelected) {
-            opt.className = 'dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-[#003060] bg-[#003060]/10 font-semibold flex items-center justify-between';
-            if (!checkIcon) {
-              opt.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-check text-sm text-[#003060]"></i>');
-            }
-          } else {
-            opt.className = 'dropdown-option px-4 py-3 rounded-lg text-base font-medium cursor-pointer transition-colors text-slate-700 hover:bg-[#E0F1F9]/50 hover:text-[#003060] flex items-center justify-between';
-            if (checkIcon) {
-              checkIcon.remove();
-            }
-          }
+        this.cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 0.8,
+          restore: false,
+          guides: false,
+          center: true,
+          highlight: false,
+          cropBoxMovable: true,
+          cropBoxResizable: true,
+          toggleDragModeOnDblclick: false,
+          ready() {
+            const cropBox = this.cropper.cropBox;
+            cropBox.querySelector('.cropper-view-box').style.borderRadius = '50%';
+            cropBox.querySelector('.cropper-face').style.borderRadius = '50%';
+          },
         });
+      },
 
-        toggleDropdown(false);
-        trigger.focus();
-      }
+      applyCrop() {
+        if (!this.cropper) return;
 
-      trigger.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDropdown();
-      });
+        this.cropper.getCroppedCanvas({
+          width: 400,
+          height: 400,
+          imageSmoothingEnabled: true,
+          imageSmoothingQuality: 'high',
+        }).toBlob((blob) => {
+          this.croppedBlob = blob;
 
-      options.forEach(option => {
-        option.addEventListener('click', function (e) {
-          e.stopPropagation();
-          selectOption(option);
-        });
-      });
+          const fileSizeMB = (blob.size / (1024 * 1024)).toFixed(2);
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(blob);
 
-      trigger.addEventListener('keydown', function (e) {
-        if (['Enter', ' ', 'ArrowDown', 'ArrowUp', 'Escape'].includes(e.key)) {
-          e.preventDefault();
+          img.onload = () => {
+            this.previewUrl = objectUrl;
+            this.imageInfo = `${img.width}x${img.height}px • ${fileSizeMB}MB • Ready to upload`;
+            this.validationError = '';
+            this.open = true;
+          };
+
+          img.src = objectUrl;
+          this.closeCropModal();
+        }, 'image/jpeg', 0.9);
+      },
+
+      closeCropModal() {
+        this.showCropModal = false;
+        if (this.cropper) {
+          this.cropper.destroy();
+          this.cropper = null;
+        }
+        if (this.tempImageUrl) {
+          URL.revokeObjectURL(this.tempImageUrl);
+          this.tempImageUrl = null;
+        }
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = null;
+        }
+      },
+
+      closeModal() {
+        this.open = false;
+
+        if (this.previewUrl) {
+          URL.revokeObjectURL(this.previewUrl);
         }
 
-        if (e.key === 'Enter' || e.key === ' ') {
-          if (!isOpen) {
-            toggleDropdown(true);
-          } else if (highlightedIndex >= 0 && options[highlightedIndex]) {
-            selectOption(options[highlightedIndex]);
-          }
-        } else if (e.key === 'Escape') {
-          toggleDropdown(false);
-        } else if (e.key === 'ArrowDown') {
-          if (!isOpen) {
-            toggleDropdown(true);
-          } else {
-            highlightedIndex = (highlightedIndex + 1) % options.length;
-            updateFocusedOption(highlightedIndex);
-          }
-        } else if (e.key === 'ArrowUp') {
-          if (!isOpen) {
-            toggleDropdown(true);
-          } else {
-            highlightedIndex = (highlightedIndex - 1 + options.length) % options.length;
-            updateFocusedOption(highlightedIndex);
-          }
-        }
-      });
+        this.previewUrl = '';
+        this.validationError = '';
+        this.imageInfo = '';
+        this.croppedBlob = null;
 
-      document.addEventListener('click', function (e) {
-        if (!container.contains(e.target) && isOpen) {
-          toggleDropdown(false);
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = null;
         }
-      });
-
-      // Reflect pre-saved value on load (from server-rendered hidden input)
-      const savedValue = hiddenInput ? hiddenInput.value : '';
-      if (savedValue) {
-        const match = Array.from(options).find(o => o.getAttribute('data-value') === savedValue);
-        if (match) {
-          label.textContent = savedValue;
-          label.classList.remove('text-[#676767]');
-          label.classList.add('text-black');
-          match.setAttribute('aria-selected', 'true');
-        }
-      }
-    });
-  });
+      },
+    };
+  }
 </script>
+
+<style>
+  [x-cloak] { display: none !important; }
+  .cropper-view-box,
+  .cropper-face {
+    border-radius: 50% !important;
+    border: 3px solid #10b981 !important;
+  }
+  .cropper-point {
+    width: 10px !important;
+    height: 10px !important;
+    background-color: #10b981 !important;
+    border-radius: 50% !important;
+    opacity: 1 !important;
+  }
+</style>

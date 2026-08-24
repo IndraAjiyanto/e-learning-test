@@ -39,18 +39,6 @@ export class Category {
   @Column({ nullable: true })
   contact: string;
 
-  @Column('jsonb', { nullable: true })
-  for: string[];
-
-  @Column({ nullable: true, type: 'jsonb' })
-  infoId: string[];
-
-  @Column({ nullable: true, type: 'jsonb' })
-  infoEn: string[];
-
-  @Column({ nullable: true, type: 'jsonb' })
-  infoJa: string[];
-
   @Column({
     type: 'enum',
     enum: ['Special Program', 'Paid Program', 'Free Program'],

@@ -30,15 +30,7 @@
         ja: `{{category.text.ja}}`
       },
       contact: `{{category.contact}}`,
-      for: {
-        id: `{{category.for.id}}`,
-        en: `{{category.for.en}}`,
-        ja: `{{category.for.ja}}`
-      },
       courseTypes: [],
-      infoId: {{#if category.infoId}}{{{json category.infoId}}}{{else}}['']{{/if}},
-      infoEn: {{#if category.infoEn}}{{{json category.infoEn}}}{{else}}['']{{/if}},
-      infoJa: {{#if category.infoJa}}{{{json category.infoJa}}}{{else}}['']{{/if}},
       type: `{{category.type}}`,
     },
 
@@ -46,12 +38,6 @@
     searchJenisKelas: '',
     showJenisKelasDropdown: false,
     availableJenisKelas: {{{json courseTypes}}},
-
-    infos: {{#if category.info}}
-      {{{json category.info}}}
-    {{else}}
-      ['']
-    {{/if}},
 
     /* ============================================================
      * ERROR STATES
@@ -62,11 +48,7 @@
       description: { id: '', en: '', ja: '' },
       text:       { id: '', en: '', ja: '' },
       contact: '',
-      for:        { id: '', en: '', ja: '' },
       courseTypes: '',
-      infoId: '',
-      infoEn: '',
-      infoJa: '',
       type: '',
     },
 
@@ -79,11 +61,7 @@
       description: { id: true, en: true, ja: true },
       text:      { id: false, en: false, ja: false },
       contact: false,
-      for:       { id: false, en: false, ja: false },
       courseTypes: ({{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}}).length > 0,
-      infoId: ({{#if category.infoId}}{{{json category.infoId}}}{{else}}[]{{/if}}).some(info => info.trim()),
-      infoEn: ({{#if category.infoEn}}{{{json category.infoEn}}}{{else}}[]{{/if}}).some(info => info.trim()),
-      infoJa: ({{#if category.infoJa}}{{{json category.infoJa}}}{{else}}[]{{/if}}).some(info => info.trim()),
       type: true,
     },
 
@@ -96,11 +74,7 @@
       description: { id: true, en: true, ja: true },
       text:      { id: false, en: false, ja: false },
       contact: false,
-      for:       { id: false, en: false, ja: false },
       courseTypes: ({{#if category.courseTypes}}{{{json category.courseTypes}}}{{else}}[]{{/if}}).length > 0,
-      infoId: true,
-      infoEn: true,
-      infoJa: true,
       type: true,
     },
 
@@ -179,24 +153,6 @@
     },
 
     /* ============================================================
-     * INFO VALIDATION
-     * ============================================================ */
-
-    validateInfo(lang, infos) {
-      this.formTouched['info_' + lang] = true;
-
-      const hasValidInfo = infos && infos.some(info => info.trim());
-
-      if (!hasValidInfo) {
-        this.formErrors['info_' + lang] = 'At least one info item is required for ' + lang.toUpperCase();
-        this.formValid['info_' + lang] = false;
-      } else {
-        this.formErrors['info_' + lang] = '';
-        this.formValid['info_' + lang] = true;
-      }
-    },
-
-    /* ============================================================
      * FIELD VALIDATION (ALL TYPES)
      * ============================================================ */
 
@@ -240,11 +196,6 @@ case 'contact':
     this.formValid.contact = value.toString().trim().length > 0;
   }
   break;
-
-        case 'for':
-          this.formValid.for[lang] = value.trim().length > 0;
-          this.formErrors.for[lang] = '';
-          break;
 
         case 'courseType':
           this.formValid.courseTypes = Array.isArray(value) && value.length > 0;
@@ -308,9 +259,8 @@ case 'contact':
       const namaKategoriValid = this.formValid.name;
       const deskripsiValid   = Object.values(this.formValid.description).every(v => v);
       const typeValid        = this.formValid.type;
-      const infoValid        = this.formValid.infoId || this.formValid.infoEn || this.formValid.infoJa;
 
-      return imageValid && namaKategoriValid && deskripsiValid && typeValid && infoValid;
+      return imageValid && namaKategoriValid && deskripsiValid && typeValid;
     },
 
     hasFormErrors() {
@@ -351,7 +301,6 @@ case 'contact':
         {{> super_admin/category/edit/left_column/name_input }}
         {{> super_admin/category/edit/left_column/text_input }}
         {{> super_admin/category/edit/left_column/contact_input }}
-        {{> super_admin/category/edit/left_column/for_input }}
         {{> super_admin/category/edit/left_column/type_program_input }}
 
         </div>
@@ -362,7 +311,6 @@ case 'contact':
         {{> super_admin/category/edit/right_column/type_input }}
         {{> super_admin/category/edit/right_column/image_input }}
         {{> super_admin/category/edit/right_column/description_input }}
-        {{> super_admin/category/edit/right_column/info_input }}
 
         </div>
       </div>

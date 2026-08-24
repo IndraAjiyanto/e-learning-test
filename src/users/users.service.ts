@@ -15,6 +15,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { Logbook } from 'src/entities/logbook.entity';
 import { EmailService } from 'src/common/email/email.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -27,6 +28,9 @@ export class UsersService {
 
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
+
+    @InjectRepository(Logbook)
+    private readonly logbookRepository: Repository<Logbook>,
 
     private readonly emailService: EmailService,
   ) { }
@@ -79,7 +83,14 @@ export class UsersService {
   async findPortfolio(userId: number) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
-      relations: ['user', 'course', 'course.courseType', 'course.category'],
+      relations: ['user', 'course', 'course.courseType', 'course.category', 'course.technologies'],
+    });
+  }
+
+  async findAllLogbooks(userId: number) {
+    return await this.logbookRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
     });
   }
 

@@ -15,11 +15,7 @@ function categoryCreateData() {
           description: { id: '', en: '', ja: '' },
           text: { id: '', en: '', ja: '' },
           contact: '',
-          for: { id: '', en: '', ja: '' },
           courseType: [],
-          infoId: [''],
-          infoEn: [''],
-          infoJa: [''],
           type: ''
         },
         formErrors: {
@@ -27,11 +23,7 @@ function categoryCreateData() {
           description: { id: '', en: '', ja: '' },
           text: { id: '', en: '', ja: '' },
           contact: '',
-          for: { id: '', en: '', ja: '' },
           courseType: '',
-          infoId: '',
-          infoEn: '',
-          infoJa: '',
           type: ''
         },
         formValid: {
@@ -39,11 +31,7 @@ function categoryCreateData() {
           description: { id: false, en: false, ja: false },
           text: { id: false, en: false, ja: false },
           contact: false,
-          for: { id: false, en: false, ja: false },
           courseType: false,
-          infoId: false,
-          infoEn: false,
-          infoJa: false,
           type: false
         },
         
@@ -52,9 +40,7 @@ function categoryCreateData() {
           description: { id: false, en: false, ja: false },
           text: { id: false, en: false, ja: false },
           contact: false,
-          for: { id: false, en: false, ja: false },
           courseType: false,
-          info: false,
           type: false
         },
 
@@ -144,20 +130,6 @@ function categoryCreateData() {
           img.src = objectUrl;
         },
 
-        validateInfo(lang, infos) {
-          const keyMap = { id: 'infoId', en: 'infoEn', ja: 'infoJa' };
-          const key = keyMap[lang];
-          this.formTouched[key] = true;
-          const hasValidInfo = infos && infos.some(info => info.trim());
-          if (!hasValidInfo) {
-            this.formErrors[key] = 'At least one info item is required for ' + lang.toUpperCase();
-            this.formValid[key] = false;
-          } else {
-            this.formErrors[key] = '';
-            this.formValid[key] = true;
-          }
-        },
-
         validateField(field, value, lang = null) {
           if (lang) {
             // Multi-language field
@@ -212,24 +184,10 @@ function categoryCreateData() {
                 this.formValid.contact = value.toString().trim().length > 0;
               }
               break;
-            case 'for':
-              // Optional field
-              this.formErrors.for[lang] = '';
-              this.formValid.for[lang] = value.trim().length > 0;
-              break;
             case 'courseType':
               // Optional array
               this.formErrors.courseType = '';
               this.formValid.courseType = Array.isArray(value) && value.length > 0;
-              break;
-            case 'infoId':
-              // Handled by validateInfo
-              break;
-            case 'infoEn':
-              // Handled by validateInfo
-              break;
-            case 'infoJa':
-              // Handled by validateInfo
               break;
           }
         },
@@ -249,13 +207,11 @@ function categoryCreateData() {
         canSubmit() {
           const imageValid = this.hasFile && this.isValid;
           // Required fields: name, description (all languages), type
-          // At least one info language must have valid info
           const namaKategoriValid = this.formValid.name;
           const deskripsiValid = Object.values(this.formValid.description).every(v => v);
           const typeValid = this.formValid.type;
-          const infoValid = this.formValid.infoId || this.formValid.infoEn || this.formValid.infoJa;
           
-          return imageValid && namaKategoriValid && deskripsiValid && typeValid && infoValid;
+          return imageValid && namaKategoriValid && deskripsiValid && typeValid;
         },
 
         hasFormErrors() {
@@ -295,7 +251,6 @@ function categoryCreateData() {
         {{> super_admin/category/create/left_column/name_input }}
         {{> super_admin/category/create/left_column/text_input }}
         {{> super_admin/category/create/left_column/contact_input }}
-        {{> super_admin/category/create/left_column/for_input }}
         {{> super_admin/category/create/left_column/type_program_input }}
 
         </div>
@@ -305,7 +260,6 @@ function categoryCreateData() {
         {{> super_admin/category/create/right_column/type_input }}
         {{> super_admin/category/create/right_column/image_input }}
         {{> super_admin/category/create/right_column/description_input }}
-        {{> super_admin/category/create/right_column/info_input }}
 
         </div>
       </div>
