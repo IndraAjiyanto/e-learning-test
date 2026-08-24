@@ -1,9 +1,76 @@
 <div class='pt-24 min-h-screen bg-cover bg-top bg-no-repeat bg-fixed' style="background-image: url('/public/image/dashboard/bgGallery.png');" x-data='galleryTable({ gallery: {{{json gallery}}}, programs: {{{json programs}}} })'>
 
-  <div class='container mx-auto px-4 pb-16 max-w-[1440px]'>
+  <div class='container mx-auto px-5 pb-16 max-w-[1440px]'>
     
-    <!-- Header -->
-    <div class='flex flex-col items-center mb-[50px]'>
+    <!-- MOBILE HEADER (< 640px) -->
+    <div class="block sm:hidden flex flex-col items-center mb-6 pt-4">
+      <div class="flex justify-center items-center rounded-full px-4 py-1 mb-4 border border-[#003060] bg-[#6EB6E5]/20">
+        <span class="font-montserrat font-medium text-[13px] text-[#003060]">{{t 'test.gallery.gallery'}}</span>
+      </div>
+      <h1 class="font-montserrat font-bold text-center text-[#003060] text-[28px] leading-[36px] mb-2 tracking-normal">
+        {{{t 'test.gallery.title'}}}
+      </h1>
+      <div class="w-10 h-1 bg-[#0B1F3B] rounded-full mx-auto mb-3"></div>
+      <p class="font-sans font-normal text-[14px] leading-[22px] text-[#555555] text-center px-2 tracking-normal">
+        {{t 'test.gallery.description'}}
+      </p>
+    </div>
+
+    <!-- MOBILE FILTERS (< 640px) -->
+    <div class="block sm:hidden flex flex-col gap-3 mb-6">
+      <!-- Search Box -->
+      <div class="relative w-full">
+        <input
+          type="text"
+          placeholder="{{t 'test.gallery.searchPlaceholder'}}"
+          x-model="searchInput"
+          @input.debounce.500ms="search = searchInput; pageNumber = 0"
+          class="w-full pl-9 pr-3 py-2.5 bg-white border border-[#E0F1F9] rounded-[12px] font-montserrat font-medium text-[13px] placeholder-[#676767] focus:outline-none shadow-2xs"
+        />
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+      </div>
+
+      <!-- Program Dropdown -->
+      <div class="relative w-full" x-data="{ open: false }" @click.outside="open = false">
+        <button
+          @click="open = !open"
+          type="button"
+          class="w-full px-4 py-2.5 bg-[#E0F1F9] text-[#0B1F3B] font-montserrat font-semibold text-[13px] rounded-[12px] flex items-center justify-between shadow-2xs"
+        >
+          <span class="truncate text-left flex-1" x-text="selectedProgramName || '{{t 'test.gallery.allPrograms'}}'"></span>
+          <i class="fas fa-chevron-down text-[#003060] text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
+        </button>
+
+        <div
+          x-show="open"
+          x-transition
+          class="absolute left-0 mt-1 w-full max-h-56 overflow-y-auto bg-white border border-[#E0F1F9] rounded-[12px] shadow-lg z-50 p-1.5 space-y-1"
+        >
+          <button
+            @click="selectProgram(null); open = false"
+            :class="!selectedProgram ? 'bg-[#0B1F3B] text-white' : 'text-gray-700 hover:bg-gray-50'"
+            class="w-full px-3 py-2 rounded-lg font-montserrat font-medium text-[12px] text-left flex items-center justify-between"
+          >
+            <span>{{t 'test.gallery.allPrograms'}}</span>
+            <i x-show="!selectedProgram" class="fas fa-check"></i>
+          </button>
+
+          {{#each programs}}
+            <button
+              @click="selectProgram('{{this.id}}'); open = false"
+              :class="selectedProgram == '{{this.id}}' ? 'bg-[#0B1F3B] text-white' : 'text-gray-700 hover:bg-gray-50'"
+              class="w-full px-3 py-2 rounded-lg font-montserrat font-medium text-[12px] text-left flex items-center justify-between"
+            >
+              <span>{{{getByLang this.text lang}}}</span>
+              <i x-show="selectedProgram == '{{this.id}}'" class="fas fa-check"></i>
+            </button>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
+    <!-- DESKTOP HEADER (>= 640px) -->
+    <div class='hidden sm:flex flex-col items-center mb-[50px]'>
       <!-- Badge -->
       <div class='flex justify-center items-center rounded-full mb-[30px]' style="width: 250px; height: 35px; background: rgba(110, 182, 229, 0.2); border: 1px solid #003060;">
         <span class='font-montserrat font-medium' style="font-size: 20px; color: #003060;">{{t 'test.gallery.gallery'}}</span>
@@ -19,8 +86,8 @@
       </div>
     </div>
 
-    <!-- Filters (Dropdown & Search) -->
-    <div class='flex flex-row flex-wrap justify-end items-center w-full mb-[50px]' style="gap: 30px;">
+    <!-- DESKTOP FILTERS (>= 640px) -->
+    <div class='hidden sm:flex flex-row flex-wrap justify-end items-center w-full mb-[50px]' style="gap: 30px;">
       <!-- Dropdown Program -->
       <div class='relative flex-shrink-0' x-data='{ open: false }' @click.outside='open = false' style="width: 423px;">
         <button
@@ -78,8 +145,31 @@
       </div>
     </div>
 
-    <!-- Grid Cards -->
-    <div class='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3' style="gap: 30px;">
+    <!-- MOBILE GALLERY CARDS GRID (< 640px - 2 COLUMNS) -->
+    <div x-show="amount > 0" class="block sm:hidden grid grid-cols-2 gap-3.5 mb-8">
+      {{#each gallery}}
+        <div
+          class="bg-white border border-[#E0F1F9] rounded-[16px] overflow-hidden shadow-xs flex flex-col transition-all"
+          x-show="filteredGallery.includes('{{id}}')"
+        >
+          <div class="w-full aspect-[4/3] bg-gray-100 overflow-hidden">
+            <img
+              src="{{filePath}}"
+              alt="{{title}}"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <div class="p-3 bg-white text-center flex items-center justify-center min-h-[44px]">
+            <h4 class="font-montserrat font-bold text-[12px] leading-tight text-[#111111] line-clamp-2 text-center tracking-normal">
+              {{title}}
+            </h4>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+
+    <!-- DESKTOP GALLERY CARDS GRID (>= 640px - 3 COLUMNS) -->
+    <div x-show="amount > 0" class='hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3' style="gap: 30px;">
       {{#each gallery}}
         <div
           class='flex flex-col relative transition-all duration-300 hover:-translate-y-2'
