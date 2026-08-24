@@ -479,6 +479,9 @@ export class CoursesController {
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
 
+    const userWithCourses = await this.coursesService.findCompletedCoursesByUser(req.user!.id);
+    const portfolio = await this.coursesService.findPortfolio(req.user!.id);
+
     res.render('user/user_profile/index', {
       course,
       activeCourse,
@@ -486,6 +489,8 @@ export class CoursesController {
       category,
       courseType,
       activeSection: courseId ? 'uiux' : 'learning',
+      userWithCourses,
+      portfolio,
     });
   }
 

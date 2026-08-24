@@ -31,6 +31,9 @@ export class Category {
   @Column()
   icon: string;
 
+  @Column({ nullable: true })
+  hero_section_image: string;
+
   @Column('jsonb', { nullable: true })
   description: string[];
 
