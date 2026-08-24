@@ -1,4 +1,8 @@
 <!-- MY PORTOFOLIO PARTIAL -->
+<script>
+  window.backendPortfolioData = {{{json portfolio}}};
+  window.userCoursesData = {{{json userWithCourses.userCourses}}};
+</script>
 <div 
   class="space-y-12 font-montserrat bg-[#FAFAFA] px-6 sm:px-12 md:px-16 pt-10 min-h-screen mb-28"
   x-data="{
@@ -14,34 +18,17 @@
     showDetail: false,
     selectedPortfolio: null,
     imageUploads: [{ id: 1, file: null, name: 'No file chosen' }],
+    userCourses: window.userCoursesData || [],
     newForm: {
       title: '',
       description: '',
       link: '',
       overview: '',
-      program: 'Data Analyst'
+      program: 'Data Analyst',
+      courseId: 10
     },
-    portfolios: [
-      {
-        id: 1,
-        title: 'Judul Portofolio',
-        description: 'Deskripsi Portofolio',
-        link: 'https://example.com',
-        overview: 'disini isinya adalah project overview',
-        classType: 'Short Class',
-        category: 'Python',
-        skillTag: 'https://static.robloximageidcdn.com/images/1181/832a62e634a2a30635cbd35aaefd44d7.webp',
-        author: 'Trisna',
-        email: 'trisna@gmail.com',
-        avatar: 'https://static.robloximageidcdn.com/images/1181/832a62e634a2a30635cbd35aaefd44d7.webp',
-        image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
-        images: [
-          'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
-          'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80',
-          'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80'
-        ]
-      }
-    ],
+    overviewEditorInstance: null,
+    portfolios: window.backendPortfolioData || [],
     filteredPortfolios() {
       if (!this.portfolios) return [];
       return this.portfolios.filter(item => {
@@ -53,6 +40,39 @@
         const matchClassType = this.classTypeFilter === 'all' || this.classTypeFilter === item.classType;
         const matchSearch = item.title.toLowerCase().includes(this.searchQuery.toLowerCase()) || item.description.toLowerCase().includes(this.searchQuery.toLowerCase());
         return matchCategory && matchClassType && matchSearch;
+      });
+    },
+    init() {
+      if (window.backendPortfolioData && window.backendPortfolioData.length > 0) {
+        this.portfolios = window.backendPortfolioData.map(p => ({
+          id: p.id,
+          title: p.title || 'Untitled Portfolio',
+          description: p.description || '',
+          link: p.link || '',
+          overview: p.contentHtml || p.content || '',
+          classType: (p.course && p.course.category && p.course.category.name) ? p.course.category.name : 'Class',
+          category: (p.course && p.course.category && p.course.category.name) ? p.course.category.name : (p.course && p.course.title) ? p.course.title : 'Program',
+          technologies: (p.course && p.course.technologies) ? p.course.technologies : [],
+          author: (p.user && p.user.username) ? p.user.username : 'Author',
+          email: (p.user && p.user.email) ? p.user.email : '',
+          avatar: (p.user && p.user.profile) ? p.user.profile : '',
+          image: p.image && p.image.length > 0 ? p.image : ['https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80'],
+          images: p.image && Array.isArray(p.image) ? p.image : []
+        }));
+      }
+
+      this.$watch('createPortofolio', value => {
+        const overflowVal = value ? 'hidden' : '';
+        document.body.style.overflow = overflowVal;
+        document.documentElement.style.overflow = overflowVal;
+        if (value) {
+          setTimeout(() => this.initOverviewEditor(), 300);
+        } else {
+          if (this.overviewEditorInstance) {
+            try { this.overviewEditorInstance.destroy(); } catch(e) {}
+            this.overviewEditorInstance = null;
+          }
+        }
       });
     },
     resetFilters() {
@@ -72,50 +92,183 @@
     addImageRow() {
       this.imageUploads.push({ id: Date.now(), file: null, name: 'No file chosen' });
     },
-    submitPortfolio() {
+    async initOverviewEditor() {
+      // Destroy previous instance if exists (for re-open scenarios)
+      if (this.overviewEditorInstance) {
+        try { this.overviewEditorInstance.destroy(); } catch(e) {}
+        this.overviewEditorInstance = null;
+      }
+
+      // Wait for EditorJS library to load
+      let libAttempts = 0;
+      while (!window.EditorJS || !window.EditorTools) {
+        libAttempts++;
+        if (libAttempts > 30) {
+          console.error('[Portfolio] EditorJS library not loaded after 6s.');
+          this.fallbackOverviewTextarea();
+          return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+
+      // Wait for the holder element to be visible in the DOM
+      let domAttempts = 0;
+      const waitForVisible = () => new Promise((resolve, reject) => {
+        const check = () => {
+          domAttempts++;
+          const el = document.getElementById('overviewEditor');
+          if (el && el.offsetParent !== null) {
+            resolve(el);
+          } else if (domAttempts > 30) {
+            reject(new Error('overviewEditor element not visible after 6s'));
+          } else {
+            setTimeout(check, 200);
+          }
+        };
+        check();
+      });
+
+      try {
+        await waitForVisible();
+      } catch(e) {
+        console.error('[Portfolio]', e.message);
+        this.fallbackOverviewTextarea();
+        return;
+      }
+
+      // Clear holder innerHTML before re-init
+      const holder = document.getElementById('overviewEditor');
+      if (holder) holder.innerHTML = '';
+
+      try {
+        this.overviewEditorInstance = new window.EditorJS({
+          holder: 'overviewEditor',
+          placeholder: 'Enter your content here...',
+          tools: {
+            header: {
+              class: window.EditorTools.Header,
+              inlineToolbar: ['link']
+            },
+            paragraph: {
+              class: window.EditorTools.Paragraph,
+              inlineToolbar: true
+            },
+            list: {
+              class: window.EditorTools.List,
+              inlineToolbar: true
+            },
+            marker: {
+              class: window.EditorTools.Marker,
+              shortcut: 'CMD+SHIFT+M'
+            },
+            image: {
+              class: window.EditorTools.ImageTool,
+              tunes: {
+                stretched: false,
+                withBorder: false,
+                withBackground: false
+              },
+              config: {
+                endpoints: {
+                  byFile: '/portfolio/upload-image',
+                  byUrl: '/portfolio/fetch-image'
+                }
+              }
+            },
+            linkTool: {
+              class: window.EditorTools.LinkTool,
+              config: {
+                endpoint: '/portfolio/fetch-link'
+              }
+            }
+          }
+        });
+        console.log('[Portfolio] Overview editor initialized successfully');
+      } catch (e) {
+        console.error('[Portfolio] Failed to initialize EditorJS:', e);
+        this.fallbackOverviewTextarea();
+      }
+    },
+    fallbackOverviewTextarea() {
+      const holder = document.getElementById('overviewEditor');
+      if (!holder) return;
+      if (holder.tagName.toLowerCase() === 'textarea') return;
+      
+      const ta = document.createElement('textarea');
+      ta.id = 'overviewEditor';
+      ta.rows = 8;
+      ta.placeholder = 'FALLBACK MODE: Enter your content here... (EditorJS failed to load)';
+      ta.value = this.newForm.overview || '';
+      ta.className = 'w-full min-h-[300px] rounded-[10px] border border-slate-300 p-4 font-montserrat text-sm sm:text-base text-black bg-white placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]';
+      const self = this;
+      ta.addEventListener('input', function () { self.newForm.overview = ta.value; });
+      holder.replaceWith(ta);
+    },
+    async submitPortfolio() {
       if (!this.newForm.title.trim()) {
         alert('Portofolio title is required!');
         return;
       }
 
-      let images = [];
-      this.imageUploads.forEach(item => {
-        if (item.file) {
-          images.push(URL.createObjectURL(item.file));
+      let overviewData = this.newForm.overview;
+      if (this.overviewEditorInstance) {
+        try {
+          const output = await this.overviewEditorInstance.save();
+          overviewData = JSON.stringify(output);
+        } catch (e) {
+          console.error('Failed to save editor content:', e);
         }
-      });
-
-      if (images.length === 0) {
-        images.push('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80');
       }
 
-      const newCard = {
-        id: Date.now(),
-        title: this.newForm.title,
-        description: this.newForm.description || 'Deskripsi Portofolio Baru',
-        link: this.newForm.link || 'https://example.com',
-        overview: this.newForm.overview || 'disini isinya adalah project overview',
-        classType: 'Short Class',
-        category: this.newForm.program || 'Data Analyst',
-        skillTag: 'https://static.robloximageidcdn.com/images/1181/832a62e634a2a30635cbd35aaefd44d7.webp',
-        author: 'Trisna',
-        email: 'trisna@gmail.com',
-        avatar: 'https://static.robloximageidcdn.com/images/1181/832a62e634a2a30635cbd35aaefd44d7.webp',
-        image: images[0],
-        images: images
-      };
+      const formData = new FormData();
+      formData.append('title', this.newForm.title);
+      formData.append('description', this.newForm.description || '');
+      formData.append('link', this.newForm.link || '');
+      formData.append('content', overviewData);
+      
+      let hasImage = false;
+      this.imageUploads.forEach(item => {
+        if (item.file) {
+          formData.append('image', item.file);
+          hasImage = true;
+        }
+      });
+      
+      if (!hasImage) {
+        alert('Please upload at least one image.');
+        return;
+      }
 
-      this.portfolios.unshift(newCard);
-      this.newForm = { title: '', description: '', link: '', overview: '', program: 'Data Analyst' };
-      this.imageUploads = [{ id: 1, file: null, name: 'No file chosen' }];
-      this.createPortofolio = false;
-    }
+      const courseId = this.newForm.courseId;
+      if (!courseId) {
+        alert('Please select a valid Program/Course first.');
+        return;
+      }
+
+      formData.append('courseId', courseId);
+
+      try {
+        const response = await fetch('/portfolio/create', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        const result = await response.json().catch(() => ({}));
+        
+        if (response.ok) {
+          window.location.href = window.location.pathname + '?tab=portfolio';
+        } else {
+          alert('Failed to save portfolio: ' + (result.message || 'Unknown error occurred.'));
+        }
+      } catch (err) {
+        console.error('Error saving portfolio:', err);
+        alert('An error occurred while saving portfolio.');
+      }
+    },
   }"
-  x-init="$watch('createPortofolio', value => {
-    const overflowVal = value ? 'hidden' : '';
-    document.body.style.overflow = overflowVal;
-    document.documentElement.style.overflow = overflowVal;
-  })"
 >
   <!-- LIST PORTOFOLIO VIEW -->
   <div x-show="!showDetail" class="space-y-12">
@@ -342,27 +495,22 @@
             <!-- Description -->
             <p class="font-sans font-normal text-base 2xl:text-[20px] text-black leading-relaxed 2xl:leading-[30px] mb-5 line-clamp-2" x-text="item.description">Deskripsi Portofolio</p>
 
-            <!-- Skill Tag (e.g. Python / Web Dev / UI/UX) -->
-            <div class="mb-5">
-              <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm 2xl:text-base">
-                <template x-if="item.category === 'Python'">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 96 96" class="w-4 h-4 flex-shrink-0">
-                    <path fill="url(#python-grad-a)" d="M47.6611 1.24463c-23.863 0-22.3728 10.34847-22.3728 10.34847l.0266 10.7209h22.7719v3.2189H16.27S1 23.8011 1 47.8792c-.000002 24.078 13.328 23.2241 13.328 23.2241h7.9542V59.9302s-.4288-13.328 13.1151-13.328H57.983s12.6895.2052 12.6895-12.2638V13.7213S72.5991 1.24463 47.6611 1.24463ZM35.1047 8.45396c2.2656 0 4.0968 1.83114 4.0968 4.09684 0 2.2656-1.8312 4.0968-4.0968 4.0968-2.2657 0-4.0968-1.8312-4.0968-4.0968 0-2.2657 1.8311-4.09684 4.0968-4.09684Z" />
-                    <path fill="url(#python-grad-b)" d="M48.3393 94.7555c23.8631 0 22.3729-10.3484 22.3729-10.3484l-.0266-10.7209H47.9137v-3.2189h31.8168s15.27 1.7317 15.27-22.3463-13.328-23.2242-13.328-23.2242h-7.9542v11.1731s.4288 13.328-13.1151 13.328H38.0175S25.328 49.1928 25.328 61.6618v20.6171s-1.9267 12.4766 23.0113 12.4766Zm12.5565-7.2093c-2.2657 0-4.0968-1.8312-4.0968-4.0968 0-2.2657 1.8311-4.0968 4.0968-4.0968 2.2656 0 4.0968 1.8311 4.0968 4.0968 0-2.2656-1.8312 4.0968-4.0968 4.0968Z" />
-                    <defs>
-                      <linearGradient id="python-grad-a" x1="904.358" x2="5562.66" y1="842.346" y2="5454.17" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#387eb8" />
-                        <stop offset="1" stop-color="#366994" />
-                      </linearGradient>
-                      <linearGradient id="python-grad-b" x1="1358.62" x2="6361.13" y1="1462.61" y2="6191.63" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#ffe052" />
-                        <stop offset="1" stop-color="#ffc331" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </template>
-                <span x-text="item.category">Python</span>
-              </span>
+            <!-- Technologies Tags -->
+            <div class="mb-5 flex flex-wrap gap-2">
+              <template x-for="tech in (item.technologies || [])" :key="tech.id || tech.name">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm 2xl:text-base">
+                  <template x-if="tech.svg">
+                    <span x-html="tech.svg" class="w-4 h-4 flex-shrink-0 [&>svg]:w-4 [&>svg]:h-4"></span>
+                  </template>
+                  <template x-if="!tech.svg && tech.imgUrl">
+                    <img :src="tech.imgUrl" :alt="tech.name" class="w-4 h-4 flex-shrink-0 object-contain">
+                  </template>
+                  <span x-text="tech.name"></span>
+                </span>
+              </template>
+              <template x-if="!item.technologies || item.technologies.length === 0">
+                <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#CFE6F5] text-[#003060] rounded-[6px] font-montserrat font-medium text-sm 2xl:text-base" x-text="item.category">Program</span>
+              </template>
             </div>
 
             <!-- Author Info Row -->
@@ -411,8 +559,10 @@
     @keydown.escape.window="createPortofolio = false"
   >
     <div 
+      id="overviewModal"
       @click.away="createPortofolio = false"
       class="bg-white rounded-[24px] p-6 sm:p-10 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl font-montserrat relative"
+      style="color-scheme: light;"
     >
       <!-- Title Header -->
       <h2 class="font-montserrat font-semibold text-2xl sm:text-4xl text-[#003060] leading-none mb-8">
@@ -434,7 +584,7 @@
                 type="text" 
                 x-model="newForm.title"
                 placeholder="Enter portofolio title"
-                class="w-full h-[48px] rounded-[10px] border border-slate-300 px-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
+                class="w-full h-[48px] bg-white rounded-[10px] border border-slate-300 px-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
               >
             </div>
 
@@ -447,7 +597,7 @@
                 rows="4"
                 x-model="newForm.description"
                 placeholder="write a description..."
-                class="w-full rounded-[10px] border border-slate-300 p-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
+                class="w-full bg-white rounded-[10px] border border-slate-300 p-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
               ></textarea>
             </div>
 
@@ -463,19 +613,20 @@
                   @click="modalProgramOpen = !modalProgramOpen"
                   class="w-full h-[48px] bg-white rounded-[10px] border border-slate-300 px-4 flex items-center justify-between font-montserrat text-sm sm:text-base text-black shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] cursor-pointer"
                 >
-                  <span x-text="newForm.program || 'Data Analyst'">Data Analyst</span>
+                  <span x-text="newForm.program || 'Select Program'">Select Program</span>
                   <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200 text-[#003060]" :class="modalProgramOpen ? 'rotate-180' : ''"></i>
                 </button>
                 <div 
                   x-show="modalProgramOpen" 
                   x-transition
-                  class="absolute top-full left-0 mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-lg py-2 z-30 font-montserrat text-sm sm:text-base text-black"
+                  class="absolute top-full left-0 mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-lg py-2 z-30 font-montserrat text-sm sm:text-base text-black max-h-[200px] overflow-y-auto"
                 >
-                  <button type="button" @click="newForm.program = 'Data Analyst'; modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Data Analyst</button>
-                  <button type="button" @click="newForm.program = 'Front-End Web Developer'; modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Front-End Web Developer</button>
-                  <button type="button" @click="newForm.program = 'Back-End Web Developer'; modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Back-End Web Developer</button>
-                  <button type="button" @click="newForm.program = 'Fullstack Web Developer'; modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">Fullstack Web Developer</button>
-                  <button type="button" @click="newForm.program = 'UI/UX Design'; modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors">UI/UX Design</button>
+                  <template x-for="uc in userCourses" :key="uc.course.id">
+                    <button type="button" @click="newForm.program = uc.course.name; newForm.courseId = uc.course.id; modalProgramOpen = false" class="w-full text-left px-4 py-2 hover:bg-[#E0F1F9] transition-colors" x-text="uc.course.name"></button>
+                  </template>
+                  <template x-if="!userCourses || userCourses.length === 0">
+                    <div class="px-4 py-2 text-gray-400 text-sm">No programs enrolled</div>
+                  </template>
                 </div>
               </div>
             </div>
@@ -489,7 +640,7 @@
                 type="text" 
                 x-model="newForm.link"
                 placeholder="Enter link (e.g., https://example.com)..."
-                class="w-full h-[48px] rounded-[10px] border border-slate-300 px-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
+                class="w-full h-[48px] bg-white rounded-[10px] border border-slate-300 px-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
               >
               <p class="font-montserrat font-normal text-xs sm:text-sm text-[#666666] pt-1">
                 Enter a valid URL starting with http:// or https://
@@ -505,12 +656,11 @@
               <label class="block font-montserrat font-semibold text-base sm:text-lg md:text-xl text-[#003060]">
                 Project Overview
               </label>
-              <textarea 
-                rows="4"
-                x-model="newForm.overview"
-                placeholder="Enter your content here"
-                class="w-full rounded-[10px] border border-slate-300 p-4 font-montserrat text-sm sm:text-base text-black placeholder:text-[#676767] focus:outline-none focus:border-[#003060] transition-colors resize-none shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)]"
-              ></textarea>
+              <div 
+                id="overviewEditor"
+                x-ignore
+                class="w-full min-h-[300px] rounded-[10px] border border-slate-300 p-4 font-montserrat text-sm sm:text-base text-black bg-white focus-within:border-[#003060] transition-colors shadow-[0px_0px_5px_0px_rgba(0,0,0,0.5)] max-w-none text-left"
+              ></div>
             </div>
 
             <!-- Upload Images* -->
@@ -583,3 +733,130 @@
   </div>
 
 </div>
+
+<style>
+  #overviewModal {
+    color-scheme: light;
+  }
+
+  #overviewModal input,
+  #overviewModal textarea {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  #overviewModal input::placeholder,
+  #overviewModal textarea::placeholder {
+    color: #676767 !important;
+    opacity: 1;
+  }
+
+  #overviewEditor {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  #overviewEditor .codex-editor,
+  #overviewEditor .codex-editor__redactor,
+  #overviewEditor .ce-toolbar__content,
+  #overviewEditor .ce-block__content,
+  #overviewEditor .ce-inline-toolbar,
+  #overviewEditor .ce-toolbox,
+  #overviewEditor .ce-settings,
+  #overviewEditor .ce-conversion-toolbar {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  #overviewEditor .ce-placeholder {
+    color: #676767 !important;
+  }
+
+  .codex-editor .ce-block__content,
+  .codex-editor .ce-toolbar__content {
+    max-width: 100% !important;
+    margin-left: 16px !important;
+    margin-right: auto !important;
+  }
+
+  .codex-editor__redactor {
+    padding-left: 0 !important;
+    min-height: 280px;
+  }
+
+  #overviewEditor img,
+  #overviewDetail img {
+    max-width: 300px;
+    margin: auto;
+    border-radius: 1rem;
+  }
+
+  #overviewEditor h4,
+  #overviewDetail h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+  }
+
+  #overviewEditor h5,
+  #overviewDetail h5 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 500;
+  }
+
+  #overviewEditor h6,
+  #overviewDetail h6 {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+  }
+</style>
+
+<script>
+  function renderOverview(raw) {
+    if (!raw) return '';
+    if (typeof raw === 'string' && raw.trim().startsWith('{')) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.blocks)) {
+          return parsed.blocks.map(function (b) {
+            const d = b.data || {};
+            switch (b.type) {
+              case 'header': {
+                const lvl = Math.min(Math.max(d.level || 2, 1), 6);
+                return '<h' + lvl + '>' + (d.text || '') + '</h' + lvl + '>';
+              }
+              case 'list': {
+                const items = (d.items || []).map(function (i) { 
+                  const content = (typeof i === 'object' && i !== null) ? (i.content || '') : i;
+                  return '<li>' + content + '</li>'; 
+                }).join('');
+                return d.style === 'ordered' ? '<ol class="list-decimal pl-5">' + items + '</ol>' : '<ul class="list-disc pl-5">' + items + '</ul>';
+              }
+              case 'image':
+                return '<figure class="my-4"><img src="' + ((d.file && d.file.url) || '') + '" alt="overview image" class="max-w-full rounded-lg"/>' +
+                  (d.caption ? '<figcaption class="text-center text-sm text-gray-500 mt-2">' + d.caption + '</figcaption>' : '') + '</figure>';
+              case 'quote':
+                return '<blockquote class="border-l-4 border-gray-300 pl-4 italic my-4">' + (d.text || '') + '</blockquote>';
+              case 'code':
+                return '<pre class="bg-gray-100 p-4 rounded-md my-4 overflow-x-auto"><code>' + (d.code || '') + '</code></pre>';
+              case 'delimiter':
+                return '<hr class="my-6 border-t-2 border-gray-200"/>';
+              default:
+                return '<p class="my-2">' + (d.text || '') + '</p>';
+            }
+          }).join('');
+        }
+      } catch (e) {
+        // not editor JSON, fallback below
+      }
+    }
+    const el = document.createElement('div');
+    el.textContent = raw;
+    return el.innerHTML;
+  }
+</script>
