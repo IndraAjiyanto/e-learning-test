@@ -1,4 +1,4 @@
-<div x-data="{ view: 'list' }" class="w-full">
+<div x-data="{ view: 'list', selectedAssignment: null }" class="w-full">
   
   <!-- ==================== VIEW: LIST (DEFAULT) ==================== -->
   <div x-show="view === 'list'" x-transition class="w-full flex flex-col items-start p-16 gap-[15px]">
@@ -13,139 +13,254 @@
       </p>
     </div>
 
-    <!-- Week Section Dropdown (Dynamic with Alpine.js) -->
-    <div x-data="{ openWeek: true }" class="w-full">
-      
+    <!-- Week Sections (Dynamic with Alpine.js): one collapsible block per real week -->
+    {{#each course.weeks}}
+    <div
+      class="w-full"
+      x-data="{
+        openWeek: false,
+        sessions: [],
+        sessionsLoading: false,
+        sessionsError: false,
+        loadedWeekId: null,
+        async loadSessions(weekId) {
+          this.loadedWeekId = weekId;
+          this.sessions = [];
+          this.sessionsError = false;
+          this.sessionsLoading = true;
+          try {
+            const res = await fetch('/program/session/' + weekId);
+            if (!res.ok) throw new Error('Request failed');
+            const data = await res.json();
+            if (this.loadedWeekId !== weekId) return;
+            this.sessions = Array.isArray(data) ? data : [];
+          } catch (e) {
+            if (this.loadedWeekId !== weekId) return;
+            this.sessionsError = true;
+          } finally {
+            if (this.loadedWeekId === weekId) this.sessionsLoading = false;
+          }
+        }
+      }"
+    >
+
       <!-- Week Header -->
-      <div class="w-full flex justify-between items-center mt-8 mb-4 cursor-pointer" @click="openWeek = !openWeek">
+      <div class="w-full flex justify-between items-center mt-8 mb-4 cursor-pointer" @click="openWeek = !openWeek; if (openWeek && loadedWeekId !== {{id}}) loadSessions({{id}})">
         <h2 class="font-montserrat font-semibold text-[25px] leading-[30px] text-[#003060]">
-          Week 1 : Minggu Pertama
+          Week {{weekNumber}} : {{description}}
         </h2>
         <div class="w-[35px] h-[35px] flex items-center justify-center rounded-full bg-[#003060]/10 text-[#003060] hover:bg-[#003060]/20 transition">
           <i class="fas fa-chevron-up transition-transform duration-300" :class="openWeek ? '' : 'rotate-180'"></i>
         </div>
       </div>
 
-      <!-- Assignment Card (Collapsible Content) -->
-      <div x-data="{ status: 'pending', answerUrl: '' }" x-show="openWeek" x-transition class="relative w-full max-w-[1232px] p-6 sm:p-8 bg-white/50 shadow-[0px_0px_4px_rgba(0,0,0,0.25)] backdrop-blur-[3.3px] rounded-[12px] flex flex-col gap-6">
-        
-        <!-- Status Badge (Under Review) -->
-        <!-- Hint: Click this badge to simulate Admin Approval -->
-        <div x-show="status === 'review'" x-cloak @click="status = 'approved'" class="absolute top-6 right-6 sm:top-8 sm:right-8 bg-[#FEEFD6] border border-[#FDA40B] rounded-[12px] px-[14px] py-[1px] flex items-center justify-center cursor-pointer hover:opacity-80" title="Klik untuk simulasi di-Approve Admin">
-          <span class="font-open-sans font-normal text-[15px] leading-[20px] text-[#FDA40B]">Under Review</span>
-        </div>
+      <!-- Week Content (Collapsible, sessions fetched from GET /program/session/:weeksId) -->
+      <div x-show="openWeek" x-transition class="w-full flex flex-col gap-6">
 
-        <!-- Status Badge (Approve) -->
-        <!-- Hint: Click this badge to reset to pending -->
-        <div x-show="status === 'approved'" x-cloak @click="status = 'pending'" class="absolute top-6 right-6 sm:top-8 sm:right-8 bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-[14px] py-[1px] flex items-center justify-center cursor-pointer hover:opacity-80" title="Klik untuk reset simulasi">
-          <span class="font-open-sans font-normal text-[15px] leading-[20px] text-[#12BD26]">Approve</span>
-        </div>
-
-        <!-- Header Card -->
-        <div class="flex flex-col gap-4">
-          <h3 class="font-montserrat font-semibold text-[20px] leading-[24px] text-[#003060]">
-            Session 1 - Introduce UI/UX
-          </h3>
-          
-          <!-- Date & Time Info -->
-          <div class="flex flex-col gap-[10px]">
-            <div class="flex items-center gap-[8px] text-[#003060]">
-              <i class="far fa-calendar text-[20px]"></i>
-              <span class="font-open-sans font-semibold text-[18px] sm:text-[20px] leading-[27px]">
-                Due date: Apr, 10 2026
-              </span>
-            </div>
-            <div class="flex items-center gap-[8px] text-[#003060]">
-              <i class="far fa-clock text-[20px]"></i>
-              <span class="font-open-sans font-semibold text-[18px] sm:text-[20px] leading-[27px]">
-                Deadline time: 23:59 WIB
-              </span>
-            </div>
+        <!-- Sessions Loading State -->
+        <template x-if="sessionsLoading">
+          <div class="w-full max-w-[1232px] bg-white/50 shadow-[0px_0px_4px_rgba(0,0,0,0.25)] backdrop-blur-[3.3px] rounded-[12px] p-6 sm:p-8 text-center">
+            <div class="w-8 h-8 border-2 border-[#003060] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <p class="font-montserrat font-medium text-[#003060]">Loading sessions...</p>
           </div>
-        </div>
+        </template>
 
-        <!-- Assignment Link -->
-        <div class="flex flex-col gap-2 mt-2">
-          <h4 class="font-montserrat font-semibold text-[20px] leading-[24px] text-[#003060]">
-            Your Assignment here:
-          </h4>
-          <a href="#" @click.prevent="view = 'detail'" class="font-montserrat font-medium text-[20px] leading-[24px] text-[#003060] underline hover:text-blue-700">
-            Introduce UI/UX.pdf
-          </a>
-        </div>
-
-        <!-- Default State: Form Submission -->
-        <form x-show="status === 'pending'" @submit.prevent="status = 'review'" class="flex flex-col gap-4 mt-4">
-          <h4 class="font-montserrat font-semibold text-[20px] leading-[24px] text-[#003060]">
-            Your Answer:
-          </h4>
-          <p class="font-montserrat font-medium text-[16px] sm:text-[20px] leading-[24px] text-[#003060]">
-            Enter a GitHub link, Google Drive, or any online file sharing link.
-          </p>
-          
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-[15px] mt-2">
-            <div class="w-full max-w-[504px] h-[60px] bg-white shadow-[0px_0px_5px_rgba(0,0,0,0.5)] rounded-[12px] flex items-center px-[20px] focus-within:ring-2 focus-within:ring-[#003060]">
-              <input 
-                type="url" 
-                x-model="answerUrl"
-                placeholder="https://drive.google.com/..." 
-                required
-                title="Harap masukkan URL yang valid, contoh: https://drive.google.com"
-                class="w-full bg-transparent border-none outline-none font-montserrat font-medium text-[18px] leading-[22px] text-slate-700 placeholder:text-black/50"
-              >
-            </div>
-          </div>
-          
-          <button type="submit" class="w-[214px] h-[45px] mt-6 bg-[#003060] border border-[#003060] shadow-[0px_0px_4px_rgba(0,0,0,0.5)] rounded-[6px] flex items-center justify-center font-montserrat font-medium text-[20px] leading-[24px] text-white hover:bg-[#002244] transition cursor-pointer">
-            Submit Answer
-          </button>
-        </form>
-
-        <!-- Submitted State: Under Review / Approved -->
-        <div x-show="status === 'review' || status === 'approved'" x-cloak class="flex flex-col gap-4 mt-4">
-          <h4 class="font-montserrat font-semibold text-[20px] leading-[24px] text-[#003060]">
-            Your Answer:
-          </h4>
-          
-          <!-- Submission Date & Time Info -->
-          <div class="flex flex-col gap-[10px]">
-            <div class="flex items-center gap-[8px] text-[#003060]">
-              <i class="far fa-calendar text-[20px]"></i>
-              <span class="font-open-sans font-semibold text-[18px] sm:text-[20px] leading-[27px]">
-                Submission Date: <span class="text-[#12BD26]">Apr, 10 2026</span>
-              </span>
-            </div>
-            <div class="flex items-center gap-[8px] text-[#003060]">
-              <i class="far fa-clock text-[20px]"></i>
-              <span class="font-open-sans font-semibold text-[18px] sm:text-[20px] leading-[27px]">
-                Submission Time: <span class="text-[#12BD26]">14:00 WIB</span>
-              </span>
-            </div>
-          </div>
-          
-          <!-- Submitted URL -->
-          <div class="flex items-center mt-2 px-[18px] bg-white h-[27px] w-fit">
-            <span class="font-montserrat font-medium text-[18px] leading-[22px] text-black" x-text="answerUrl"></span>
-          </div>
-          
-          <!-- Action / Result Area -->
-          <div class="mt-4">
-            <!-- Button shown only when Under Review -->
-            <button x-show="status === 'review'" type="button" @click="status = 'pending'" class="w-[214px] h-[45px] mt-2 bg-transparent border border-[#003060] shadow-[0px_0px_4px_rgba(0,0,0,0.5)] rounded-[6px] flex items-center justify-center font-montserrat font-medium text-[20px] leading-[24px] text-[#003060] hover:bg-[#003060]/5 transition cursor-pointer">
-              Edit Submission
+        <!-- Sessions Error State -->
+        <template x-if="!sessionsLoading && sessionsError">
+          <div class="w-full max-w-[1232px] bg-white/50 shadow-[0px_0px_4px_rgba(0,0,0,0.25)] backdrop-blur-[3.3px] rounded-[12px] p-6 sm:p-8 text-center space-y-3">
+            <p class="font-montserrat font-medium text-red-600">Failed to load sessions. Please try again.</p>
+            <button type="button" @click="loadSessions({{id}})" class="font-montserrat font-medium text-[#003060] underline cursor-pointer">
+              Retry
             </button>
-
-            <!-- Score shown only when Approved -->
-            <div x-show="status === 'approved'" class="mt-4">
-              <p class="font-montserrat font-medium text-[20px] leading-[30px] text-[#003060]">
-                Poin: 90/100 Good Job
-              </p>
-            </div>
           </div>
-        </div>
+        </template>
+
+        <!-- Sessions Empty State -->
+        <template x-if="!sessionsLoading && !sessionsError && sessions.length === 0">
+          <div class="w-full max-w-[1232px] bg-white/50 shadow-[0px_0px_4px_rgba(0,0,0,0.25)] backdrop-blur-[3.3px] rounded-[12px] p-6 sm:p-8 text-center">
+            <p class="font-montserrat font-medium text-[#003060]">No sessions available for this week.</p>
+          </div>
+        </template>
+
+        <!-- Assignment Card (one per Session) -->
+        <template x-for="session in sessions" :key="session.id">
+          <div x-data="{
+            open: false,
+            answer: session.assignments?.[0]?.taskAnswers?.[0] ?? null,
+            get status() {
+              if (!this.answer) return 'pending';
+              return this.answer.process === 'approved' ? 'approved' : 'review';
+            },
+            get submissionDate() {
+              if (!this.answer?.createdAt) return '';
+              return new Date(this.answer.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            },
+            get submissionTime() {
+              if (!this.answer?.createdAt) return '';
+              return new Date(this.answer.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            },
+            answerUrl: session.assignments?.[0]?.taskAnswers?.[0]?.file ?? '',
+            editing: false,
+            submitting: false,
+            submitError: '',
+            async submitAnswer() {
+              const assignmentId = session.assignments?.[0]?.id;
+              this.submitting = true;
+              this.submitError = '';
+              try {
+                const res = await fetch(
+                  this.answer
+                    ? `/answer-assigment/${assignmentId}/${this.answer.id}`
+                    : `/answer-assigment/${assignmentId}/${session.id}`,
+                  {
+                    method: this.answer ? 'PATCH' : 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({ file: this.answerUrl }),
+                  },
+                );
+                const data = await res.json();
+                if (!res.ok || !data.success) throw new Error(data.message || 'Submission failed');
+                this.answer = data.answer;
+                this.editing = false;
+              } catch (e) {
+                this.submitError = e.message || 'Submission failed';
+              } finally {
+                this.submitting = false;
+              }
+            },
+          }" class="relative w-full max-w-[1232px] p-6 sm:p-8 bg-white/50 shadow-[0px_0px_4px_rgba(0,0,0,0.25)] backdrop-blur-[3.3px] rounded-[12px] flex flex-col gap-6">
+
+            <!-- Status Badge (Under Review) -->
+            <div x-show="status === 'review'" x-cloak class="absolute top-6 right-6 sm:top-8 sm:right-8 bg-[#FEEFD6] border border-[#FDA40B] rounded-[12px] px-[14px] py-[1px] flex items-center justify-center" title="Waiting for admin review">
+              <span class="font-open-sans font-normal text-[15px] leading-[20px] text-[#FDA40B]">Under Review</span>
+            </div>
+
+            <!-- Status Badge (Approve) -->
+            <div x-show="status === 'approved'" x-cloak class="absolute top-6 right-6 sm:top-8 sm:right-8 bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-[14px] py-[1px] flex items-center justify-center" title="Approved by admin">
+              <span class="font-open-sans font-normal text-[15px] leading-[20px] text-[#12BD26]">Approve</span>
+            </div>
+
+            <!-- Header Card (click to expand/collapse this session's assignment) -->
+            <div class="flex items-center justify-between gap-4 cursor-pointer" @click="open = !open">
+              <h3 class="font-montserrat font-semibold text-[20px] leading-[24px] text-[#003060]" x-text="'Session ' + session.sessionOrder + ' - ' + session.topic"></h3>
+              <div class="w-[35px] h-[35px] shrink-0 flex items-center justify-center rounded-full bg-[#003060]/10 text-[#003060] hover:bg-[#003060]/20 transition">
+                <i class="fas fa-chevron-up transition-transform duration-300" :class="open ? '' : 'rotate-180'"></i>
+              </div>
+            </div>
+
+            <!-- Session Content (Collapsible) -->
+            <div x-show="open" x-transition class="flex flex-col gap-6">
+
+              <!-- Date & Time Info: no due_date/deadline_time column exists yet on session/assignment, left blank until backend adds it -->
+              <div class="flex flex-col gap-[10px]">
+                <div class="flex items-center gap-[8px] text-[#003060]">
+                  <i class="far fa-calendar text-[20px]"></i>
+                  <span class="font-open-sans font-semibold text-[18px] sm:text-[20px] leading-[27px]">
+                    Due date:Apr, 10 2026
+                  </span>
+                </div>
+                <div class="flex items-center gap-[8px] text-[#003060]">
+                  <i class="far fa-clock text-[20px]"></i>
+                  <span class="font-open-sans font-semibold text-[18px] sm:text-[20px] leading-[27px]">
+                    Deadline time:23:59 WIB
+                  </span>
+                </div>
+              </div>
+
+              <!-- Assignment Link -->
+              <div class="flex flex-col gap-2" x-show="session.assignments?.[0]?.file">
+                <h4 class="font-montserrat font-semibold text-[20px] leading-[24px] text-[#003060]">
+                  Your Assignment here:
+                </h4>
+                <a :href="session.assignments?.[0]?.file || '#'" @click.prevent="selectedAssignment = session.assignments?.[0]; view = 'detail'" class="font-montserrat font-medium text-[20px] leading-[24px] text-[#003060] underline hover:text-blue-700" x-text="session.assignments?.[0]?.file"></a>
+              </div>
+
+              <!-- Default State: Form Submission -->
+              <form x-show="status === 'pending' || editing" @submit.prevent="submitAnswer" class="flex flex-col gap-4">
+                <h4 class="font-montserrat font-semibold text-[20px] leading-[24px] text-[#003060]">
+                  Your Answer:
+                </h4>
+                <p class="font-montserrat font-medium text-[16px] sm:text-[20px] leading-[24px] text-[#003060]">
+                  Enter a GitHub link, Google Drive, or any online file sharing link.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-[15px] mt-2">
+                  <div class="w-full max-w-[504px] h-[60px] bg-white shadow-[0px_0px_5px_rgba(0,0,0,0.5)] rounded-[12px] flex items-center px-[20px] focus-within:ring-2 focus-within:ring-[#003060]">
+                    <input
+                      type="url"
+                      x-model="answerUrl"
+                      placeholder="https://drive.google.com/..."
+                      required
+                      title="Harap masukkan URL yang valid, contoh: https://drive.google.com"
+                      class="w-full bg-transparent border-none outline-none font-montserrat font-medium text-[18px] leading-[22px] text-slate-700 placeholder:text-black/50"
+                    >
+                  </div>
+                </div>
+
+                <p x-show="submitError" x-cloak x-text="submitError" class="font-open-sans text-[15px] text-red-600"></p>
+
+                <div class="flex items-center gap-4 mt-6">
+                  <button type="submit" :disabled="submitting" class="w-[214px] h-[45px] bg-[#003060] border border-[#003060] shadow-[0px_0px_4px_rgba(0,0,0,0.5)] rounded-[6px] flex items-center justify-center font-montserrat font-medium text-[20px] leading-[24px] text-white hover:bg-[#002244] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+                    <span x-show="!submitting">Submit Answer</span>
+                    <span x-show="submitting" x-cloak>Submitting...</span>
+                  </button>
+                  <button x-show="editing" type="button" @click="editing = false" class="font-montserrat font-medium text-[18px] text-[#003060] underline cursor-pointer">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+
+              <!-- Submitted State: Under Review / Approved -->
+              <div x-show="(status === 'review' || status === 'approved') && !editing" x-cloak class="flex flex-col gap-4">
+                <h4 class="font-montserrat font-semibold text-[20px] leading-[24px] text-[#003060]">
+                  Your Answer:
+                </h4>
+
+                <!-- Submission Date & Time Info -->
+                <div class="flex flex-col gap-[10px]">
+                  <div class="flex items-center gap-[8px] text-[#003060]">
+                    <i class="far fa-calendar text-[20px]"></i>
+                    <span class="font-open-sans font-semibold text-[18px] sm:text-[20px] leading-[27px]">
+                      Submission Date: <span class="text-[#12BD26]" x-text="submissionDate"></span>
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-[8px] text-[#003060]">
+                    <i class="far fa-clock text-[20px]"></i>
+                    <span class="font-open-sans font-semibold text-[18px] sm:text-[20px] leading-[27px]">
+                      Submission Time: <span class="text-[#12BD26]" x-text="submissionTime"></span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Submitted URL -->
+                <div class="flex items-center mt-2 px-[18px] bg-white h-[27px] w-fit">
+                  <span class="font-montserrat font-medium text-[18px] leading-[22px] text-black" x-text="answerUrl"></span>
+                </div>
+
+                <!-- Action / Result Area -->
+                <div class="mt-4">
+                  <!-- Button shown only when Under Review -->
+                  <button x-show="status === 'review'" type="button" @click="editing = true" class="w-[214px] h-[45px] mt-2 bg-transparent border border-[#003060] shadow-[0px_0px_4px_rgba(0,0,0,0.5)] rounded-[6px] flex items-center justify-center font-montserrat font-medium text-[20px] leading-[24px] text-[#003060] hover:bg-[#003060]/5 transition cursor-pointer">
+                    Edit Submission
+                  </button>
+
+                  <!-- Score shown only when Approved: no score/grade column exists yet on answer_task, left as a placeholder until backend adds it -->
+                  <div x-show="status === 'approved'" class="mt-4">
+                    <p class="font-montserrat font-medium text-[20px] leading-[30px] text-[#003060]">
+                      Poin: 90/100 Good Job
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </template>
 
       </div>
     </div>
+    {{/each}}
 
   </div>
 
@@ -172,28 +287,12 @@
       
       <!-- Left: PDF Preview Box -->
       <div class="w-full max-w-[732px] h-[540px] bg-white rounded-[12px] shadow-[0px_0px_4px_rgba(0,0,0,0.25)] flex items-center justify-center overflow-hidden relative">
-        <span class="text-slate-400 font-medium text-lg">PDF Viewer Placeholder</span>
-      </div>
-
-      <!-- Right: Sidebar Info -->
-      <div class="w-full max-w-[438px] flex flex-col bg-white shadow-[0px_0px_4px_rgba(0,0,0,0.25)] rounded-[12px] pb-[444px]">
-        
-        <!-- Sidebar Header -->
-        <div class="w-full h-[66px] bg-[#6EB6E5] rounded-t-[12px] shadow-[0px_0px_4px_rgba(0,0,0,0.25)] flex items-center px-[30px] gap-4">
-          <i class="fas fa-pen-nib text-[#2D2D2D] text-[24px]"></i>
-          <h2 class="font-montserrat font-semibold text-[20px] leading-[24px] text-[#2D2D2D]">
-            Assignment
-          </h2>
-        </div>
-
-        <!-- File Row -->
-        <div class="w-full h-[50px] border-y border-[#D9D9D9] flex items-center justify-between px-3 cursor-pointer hover:bg-slate-50 transition">
-          <span class="font-montserrat font-medium text-[15px] leading-[18px] text-black">
-            Assignment.pdf
-          </span>
-          <i class="fas fa-download text-black text-[20px]"></i>
-        </div>
-
+        <template x-if="selectedAssignment?.file">
+          <iframe :src="selectedAssignment.file" type="application/pdf" class="w-full h-full" title="Assignment PDF"></iframe>
+        </template>
+        <template x-if="!selectedAssignment?.file">
+          <span class="text-slate-400 font-medium text-lg">No file available</span>
+        </template>
       </div>
 
     </div>
