@@ -68,6 +68,25 @@ async function bootstrap() {
         eq: (a: any, b: any) => a == b,
         gte: (a: number, b: number) => a >= b,
         gt: (a: number, b: number) => a > b,
+        or: (...args: any[]) => {
+          args.pop(); // trailing Handlebars options object
+          return args.some(Boolean);
+        },
+        and: (...args: any[]) => {
+          args.pop(); // trailing Handlebars options object
+          return args.every(Boolean);
+        },
+        // A WeekProgress row existing is not the same as the week being
+        // unlocked — `process` is the actual flag (set true only once the
+        // previous week's quiz is passed, see weeks.service.ts /
+        // user_answers.service.ts#weekProgress). Checking row-existence
+        // alone (the previous behavior) is a weaker, easy-to-drift proxy.
+        weekUnlocked: (weekProgresses: { process?: boolean }[]) =>
+          !!(
+            weekProgresses &&
+            weekProgresses.length &&
+            weekProgresses[0].process === true
+          ),
         multiply: (a: number, b: number) => a * b,
         divide: (a: number, b: number) => (b !== 0 ? a / b : 0),
         subtract: (a: number, b: number) => a - b,

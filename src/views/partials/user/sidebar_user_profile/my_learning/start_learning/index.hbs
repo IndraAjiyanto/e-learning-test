@@ -35,9 +35,11 @@
         if (this.loadedWeekId === weekId) this.sessionsLoading = false;
       }
     },
+    // Unlock/attendance/logbook status is derived from the single shared
+    // helper (Alpine.store('sessionUnlock')) — see PRD-sequential-session-unlock.md.
+    // No unlock condition is written here; these are thin delegations.
     logbookProcess(session) {
-      const logbook = session.logbooks && session.logbooks[0];
-      return logbook ? logbook.process : null;
+      return Alpine.store('sessionUnlock').logbookProcessOf(session);
     },
     logbookStatusText(session) {
       const process = this.logbookProcess(session);
@@ -53,21 +55,29 @@
       if (process === 'approved') return 'bg-[#E5F6D4] border border-[#12BD26] text-[#12BD26]';
       return 'bg-[#003060] hover:bg-[#002244] text-white';
     },
+    isSessionAttended(session) {
+      return Alpine.store('sessionUnlock').isAttended(session);
+    },
+    logbookDone(session) {
+      return Alpine.store('sessionUnlock').logbookApproved(session);
+    },
+    canOpenNextSession(session) {
+      return Alpine.store('sessionUnlock').canOpenNextSession(session);
+    },
     isSessionUnlocked(index) {
-      if (index === 0) return true;
-      const prev = this.sessions[index - 1];
-      if (!prev) return false;
-      const attended = !!(prev.sessionProgress && prev.sessionProgress[0] && prev.sessionProgress[0].isAttended === true);
-      const logbookApproved = this.logbookProcess(prev) === 'approved';
-      return attended && logbookApproved;
+      return Alpine.store('sessionUnlock').isSessionUnlocked(this.sessions, this.sessions[index]);
+    },
+    startLearningStatus(index) {
+      return Alpine.store('sessionUnlock').getStartLearningStatus(this.sessions, this.sessions[index]);
+    },
+    startLearningLockedMessage(index) {
+      return this.startLearningStatus(index) === 'WAITING_FOR_ATTENDANCE'
+        ? 'Isi Attendance terlebih dahulu.'
+        : 'Selesaikan sesi sebelumnya terlebih dahulu.';
     },
     isWeekQuizUnlocked(weekId) {
       if (this.loadedWeekId !== weekId || this.sessionsLoading || this.sessionsError) return false;
-      if (!this.sessions.length) return false;
-      return this.sessions.every(session => {
-        const attended = !!(session.sessionProgress && session.sessionProgress[0] && session.sessionProgress[0].isAttended === true);
-        return attended && this.logbookProcess(session) === 'approved';
-      });
+      return Alpine.store('sessionUnlock').isWeekQuizUnlocked(this.sessions);
     }
   }"
   x-init="$watch('showLogbookModal', value => document.body.classList.toggle('overflow-hidden', value))"
@@ -135,21 +145,21 @@
     </div>
   </div>
 
-  {{! --- WEEK SECTIONS (looped: a week is unlocked only when a WeekProgress row exists for it and the current user) --- }}
+  {{! --- WEEK SECTIONS (looped: the first week is always unlocked; any later week unlocks only when a WeekProgress row exists for it and the current user) --- }}
   {{#each course.weeks}}
   <div class="space-y-6 {{#unless @first}}pt-2 border-t border-slate-200{{/unless}}">
 
     <!-- Week Header (flex justify-between, font-montserrat font-semibold text-[25px] text-[#003060] + icon 35x35) -->
     <button
       type="button"
-      @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; {{#if weekProgresses}}loadSessions({{id}}){{/if}} }"
+      @click="if (openWeek === {{weekNumber}}) { openWeek = null } else { openWeek = {{weekNumber}}; {{#if (or (weekUnlocked weekProgresses) @first)}}loadSessions({{id}}){{/if}} }"
       class="w-full flex items-center justify-between text-left cursor-pointer select-none py-2 group focus:outline-none"
     >
       <div class="flex items-center gap-3">
         <h3 class="font-montserrat font-semibold text-xl sm:text-2xl md:text-[25px] text-[#003060] group-hover:text-[#002244] transition-colors">
           Week {{weekNumber}} : {{description}}
         </h3>
-        {{#unless weekProgresses}}
+        {{#unless (or (weekUnlocked weekProgresses) @first)}}
           <span class="bg-[#F3F4F6] border border-[#D1D5DB] rounded-[12px] px-3 py-0.5 font-sans font-medium text-xs text-[#6B7280]">
             Locked
           </span>
@@ -160,11 +170,11 @@
       </div>
     </button>
 
-    {{#if weekProgresses}}
+    {{#if (or (weekUnlocked weekProgresses) @first)}}
     <!-- Unlocked Week Collapsible Content -->
     <div x-show="openWeek === {{weekNumber}}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4" style="display: none;">
 
-      <!-- SESSION CARDS (fetched from GET /program/session/:weeksId, locked/unlocked via sessionProgress.isAttended AND logbooks[0].process === 'approved') -->
+      <!-- SESSION CARDS (fetched from GET /program/session/:weeksId; a session unlocks only when the previous one has sessionProgress.isAttended === true AND sessionProgress.logbook === true for the current user) -->
 
       <!-- Sessions Loading State -->
       <template x-if="openWeek === {{weekNumber}} && sessionsLoading">
@@ -194,15 +204,15 @@
       <!-- Session Cards -->
       <template x-for="(session, sIndex) in (openWeek === {{weekNumber}} ? sessions : [])" :key="session.id">
         <div>
-          <!-- Unlocked Session Card (Active Session with Details & Materials) -->
-          <template x-if="isSessionUnlocked(sIndex)">
-            <div class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-5 sm:p-6 space-y-6">
+          <!-- Unlocked Session Card (Active Session with Details & Materials): shown once this session's own attendance is filled (ALLOWED) or fully done (COMPLETED) -->
+          <template x-if="startLearningStatus(sIndex) === 'ALLOWED' || startLearningStatus(sIndex) === 'COMPLETED'">
+            <div x-data="{ open: false }" class="w-full bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] p-5 sm:p-6 space-y-6">
 
               <!-- Session Header: Title + Logbook Button (Top Right) -->
               <div class="flex items-start justify-between gap-4">
                 <div class="space-y-7">
                   <!-- Title (Montserrat 600, 20px, #003060, 100% line-height) -->
-                  <h4 class="font-montserrat font-semibold text-lg sm:text-[20px] text-[#003060] leading-none" x-text="session.topic || ('Session ' + session.sessionOrder)"></h4>
+                  <h4 class="font-montserrat font-semibold text-lg sm:text-[20px] text-[#003060] leading-none" x-text="'Session ' + session.sessionOrder + ' : ' + session.topic"></h4>
 
                   <!-- Date & Time Meta Details (Open Sans 400, 20px, #003060, 100% line-height) -->
                   <div class="space-y-4 pt-1 font-['Open_Sans'] font-normal text-base sm:text-[20px] text-[#003060] leading-none">
@@ -217,27 +227,46 @@
                   </div>
 
                   <!-- Attendance Recorded Badge (178x24px, radius 12px, bg #E5F6D4, border 1px #12BD26) -->
-                  <div class="pt-1">
+                  <div class="pt-1" x-show="isSessionAttended(session)">
                     <span class="w-auto sm:w-[178px] h-[24px] bg-[#E5F6D4] border border-[#12BD26] rounded-[12px] px-3 font-sans font-normal text-xs sm:text-[14px] text-[#12BD26] inline-flex items-center justify-center leading-none">
                       <span>Attendance Recorded</span>
                     </span>
                   </div>
                 </div>
 
-                <!-- '+ Logbook' Action Button (Top Right, Montserrat 500, 20px) -->
-                <button
-                  type="button"
-                  @click="if (logbookProcess(session) === 'approved') { window.location.href = '/logbooks/' + session.logbooks[0].id } else if (logbookProcess(session) === 'process' || logbookProcess(session) === 'rejected') { window.location.href = '/logbooks/formEdit/' + session.logbooks[0].id } else { showLogbookModal = true; logbookSessionId = session.id }"
-                  :class="logbookButtonColorClass(session)"
-                  class="rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-4 py-2.5 flex items-center justify-center gap-2 font-montserrat font-medium text-base sm:text-[20px] leading-none transition-all cursor-pointer flex-shrink-0"
-                >
-                  <i class="fa-solid fa-plus text-sm sm:text-base" x-show="!logbookProcess(session)"></i>
-                  <span x-text="logbookStatusText(session)">Logbook</span>
-                </button>
+                <div class="flex items-center gap-3 flex-shrink-0">
+                  <!-- '+ Logbook' Action Button (Top Right, Montserrat 500, 20px) -->
+                  <button
+                    type="button"
+                    @click="if (logbookProcess(session) === 'approved') { window.location.href = '/logbooks/' + session.logbooks[0].id } else if (logbookProcess(session) === 'process' || logbookProcess(session) === 'rejected') { window.location.href = '/logbooks/formEdit/' + session.logbooks[0].id } else { showLogbookModal = true; logbookSessionId = session.id }"
+                    :class="logbookButtonColorClass(session)"
+                    class="rounded-[6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] px-4 py-2.5 flex items-center justify-center gap-2 font-montserrat font-medium text-base sm:text-[20px] leading-none transition-all cursor-pointer flex-shrink-0"
+                  >
+                    <i class="fa-solid fa-plus text-sm sm:text-base" x-show="!logbookProcess(session)"></i>
+                    <span x-text="logbookStatusText(session)">Logbook</span>
+                  </button>
+
+                  <!-- Session Dropdown Toggle (mirrors the Week header chevron) -->
+                  <button
+                    type="button"
+                    @click="open = !open"
+                    class="w-[35px] h-[35px] flex items-center justify-center text-[#003060] transition-transform duration-300 flex-shrink-0 cursor-pointer"
+                    :class="open ? '' : 'rotate-180'"
+                    aria-label="Toggle session details"
+                  >
+                    <i class="fa-solid fa-chevron-up text-xl sm:text-[25px]"></i>
+                  </button>
+                </div>
               </div>
 
               <!-- Materials Section -->
-              <div class="pt-2 space-y-7">
+              <div
+                x-show="open"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 -translate-y-2"
+                x-transition:enter-end="opacity-100 translate-y-0"
+                class="pt-2 space-y-7"
+              >
                 <!-- Materials Heading (Montserrat 500, 20px, #003060) -->
                 <h5 class="font-montserrat font-semibold text-base sm:text-[20px] text-[#003060] leading-none">
                   Materials
@@ -309,10 +338,26 @@
             </div>
           </template>
 
+          <!-- Waiting-for-attendance Session Bar: session is unlocked but this session's own attendance hasn't been filled yet (PRD §5.3/§7.3) -->
+          <template x-if="startLearningStatus(sIndex) === 'WAITING_FOR_ATTENDANCE'">
+            <div class="w-full min-h-[54px] px-5 sm:px-6 py-3 bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-between gap-4">
+              <div class="space-y-1">
+                <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none" x-text="session.topic || ('Session ' + session.sessionOrder)"></h4>
+                <p class="font-sans font-normal text-xs sm:text-sm text-[#FDA40B] leading-none" x-text="startLearningLockedMessage(sIndex)"></p>
+              </div>
+              <div class="text-[#FDA40B] flex items-center justify-center flex-shrink-0" title="Waiting for attendance">
+                <i class="fa-regular fa-clock text-xl"></i>
+              </div>
+            </div>
+          </template>
+
           <!-- Locked Session Bar (Locked Bar Layout Matching Figma) -->
-          <template x-if="!isSessionUnlocked(sIndex)">
-            <div class="w-full h-[54px] px-5 sm:px-6 bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-between">
-              <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none" x-text="session.topic || ('Session ' + session.sessionOrder)"></h4>
+          <template x-if="startLearningStatus(sIndex) === 'LOCKED'">
+            <div class="w-full min-h-[54px] px-5 sm:px-6 py-3 bg-white/50 backdrop-blur-[6.6px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex items-center justify-between gap-4">
+              <div class="space-y-1">
+                <h4 class="font-montserrat font-semibold text-base sm:text-xl text-[#003060] leading-none" x-text="session.topic || ('Session ' + session.sessionOrder)"></h4>
+                <p class="font-sans font-normal text-xs sm:text-sm text-[#6B7280] leading-none" x-text="startLearningLockedMessage(sIndex)"></p>
+              </div>
               <div class="text-[#003060] flex items-center justify-center flex-shrink-0" title="Locked">
                 <img src="/public/image/user_profile/lock.svg" alt="Locked Session" class="w-6 h-6 object-contain">
               </div>

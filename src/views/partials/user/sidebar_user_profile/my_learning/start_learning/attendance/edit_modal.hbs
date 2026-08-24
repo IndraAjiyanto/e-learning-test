@@ -17,18 +17,42 @@
             Attendance Status
           </p>
         </div>
-        <div class="bg-white content-stretch flex items-center relative shrink-0 w-full">
-          <div class="bg-white content-stretch drop-shadow-[0px_0px_2.5px_rgba(0,0,0,0.5)] flex gap-[15px] h-[60px] items-center p-[10px] relative rounded-[12px] shrink-0 w-[503px]">
-            <p class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[27px] leading-[normal] relative shrink-0 text-[18px] text-[rgba(0,0,0,0.5)] w-[430px]">
-              Select attendance status
-            </p>
+        <div class="bg-white content-stretch flex items-center relative shrink-0 w-full" @click.outside="statusDropdownOpen = false">
+          <button
+            type="button"
+            @click="statusDropdownOpen = !statusDropdownOpen"
+            class="bg-white content-stretch drop-shadow-[0px_0px_2.5px_rgba(0,0,0,0.5)] flex gap-[15px] h-[60px] items-center justify-between p-[10px] relative rounded-[12px] shrink-0 w-[503px] cursor-pointer"
+          >
+            <p
+              class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[27px] leading-[normal] relative shrink-0 text-[18px] text-left"
+              :class="editStatus ? 'text-[#003060]' : 'text-[rgba(0,0,0,0.5)]'"
+              x-text="editStatus ? statusLabels[editStatus] : 'Select attendance status'"
+            ></p>
             <div class="flex items-center justify-center relative shrink-0">
-              <div class="-scale-y-100 flex-none">
+              <div class="-scale-y-100 flex-none transition-transform duration-200" :class="statusDropdownOpen ? 'rotate-180' : ''">
                 <div class="relative size-[35px]">
                   <img alt="" class="absolute block inset-0 max-w-none size-full" src="/public/image/user_profile/arrow-down.svg" />
                 </div>
               </div>
             </div>
+          </button>
+
+          <!-- Status Options -->
+          <div
+            x-show="statusDropdownOpen"
+            x-transition
+            class="absolute mt-[70px] bg-white rounded-[12px] drop-shadow-[0px_0px_2.5px_rgba(0,0,0,0.5)] w-[503px] py-[10px] z-10"
+            style="display: none;"
+          >
+            <template x-for="key in Object.keys(statusLabels)" :key="key">
+              <button
+                type="button"
+                @click="editStatus = key; statusDropdownOpen = false"
+                class="w-full text-left px-[20px] py-[10px] font-['Montserrat:Medium'] font-medium text-[18px] cursor-pointer hover:bg-[#F3F4F6]"
+                :class="editStatus === key ? 'text-[#003060]' : 'text-black'"
+                x-text="statusLabels[key]"
+              ></button>
+            </template>
           </div>
         </div>
       </div>
@@ -40,19 +64,22 @@
             Notes
           </p>
         </div>
-        <div class="bg-white content-stretch flex items-center relative shrink-0 w-[370px]">
-          <div class="bg-white content-stretch drop-shadow-[0px_0px_2.5px_rgba(0,0,0,0.5)] flex h-[60px] items-center p-[10px] relative rounded-[12px] shrink-0 w-[504px]">
-            <p class="[word-break:break-word] font-['Montserrat:Medium'] font-medium h-[27px] leading-[normal] relative shrink-0 text-[18px] text-[rgba(0,0,0,0.5)] w-[310px]">
-              Enter attendance notes...
-            </p>
-          </div>
+        <div class="bg-white content-stretch flex items-center relative shrink-0 w-full">
+          <textarea
+            x-model="editNotes"
+            placeholder="Enter attendance notes..."
+            rows="2"
+            class="bg-white content-stretch drop-shadow-[0px_0px_2.5px_rgba(0,0,0,0.5)] flex items-start p-[10px] relative rounded-[12px] shrink-0 w-[503px] font-['Montserrat:Medium'] font-medium leading-[normal] text-[18px] text-[#003060] placeholder:text-[rgba(0,0,0,0.5)] resize-none focus:outline-none"
+          ></textarea>
         </div>
       </div>
 
       <!-- Buttons -->
       <div class="content-stretch cursor-pointer flex gap-[15px] items-center justify-center relative shrink-0">
         <button
-          @click="showEditModal = false; showSuccessPopup = true"
+          @click="saveAttendance()"
+          :disabled="!editStatus"
+          :class="!editStatus ? 'opacity-50 cursor-not-allowed' : ''"
           class="bg-[#003060] border border-[#003060] border-solid content-stretch drop-shadow-[0px_0px_2px_rgba(0,0,0,0.5)] flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] shrink-0 w-[244px]"
         >
           <span class="font-['Montserrat:Medium'] font-medium leading-[normal] text-[20px] text-white">Save</span>

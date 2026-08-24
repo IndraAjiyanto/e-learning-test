@@ -27,24 +27,47 @@ export class AttendanceController {
   async create(
     @Param('sessionId') sessionId: number,
     @Param('courseId') courseId: number,
-    @Param('userId') userId: number,
     @Res() res: Response,
     @Body() createAttendanceDto: CreateAttendanceDto,
     @Req() req: Request,
   ) {
+    // :userId in the path is legacy — kept so the existing HTML form
+    // (src/views/user/attendance/create.hbs) keeps working unmodified —
+    // but the authoritative value is always the authenticated user, never
+    // a client-supplied param (that param was previously trusted as-is,
+    // letting any 'user'-role caller submit attendance for someone else's
+    // id by editing the URL).
+    const wantsJson = req.headers.accept?.includes('application/json');
+    if (!req.user) {
+      if (wantsJson) {
+        return res
+          .status(401)
+          .json({ success: false, message: 'Unauthorized' });
+      }
+      return res.redirect('/login');
+    }
+    const userId = req.user.id;
     try {
       createAttendanceDto.sessionId = sessionId;
       createAttendanceDto.userId = userId;
       createAttendanceDto.attendanceTime = new Date();
       await this.attendanceService.create(createAttendanceDto);
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: 'Successfully submitted attendance',
+        });
+      }
       req.flash('success', 'Successfully submitted attendance');
       res.redirect(`/program/${courseId}`);
     } catch (error: any) {
-      req.flash(
-        'error',
+      const message =
         error.message ||
-          'You have already submitted attendance for this meeting',
-      );
+        'You have already submitted attendance for this meeting';
+      if (wantsJson) {
+        return res.status(400).json({ success: false, message });
+      }
+      req.flash('error', message);
       res.redirect(`/program/${courseId}`);
     }
   }

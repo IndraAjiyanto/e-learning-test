@@ -10,7 +10,7 @@
     handledSections: [
       'profile', 'learning', 'uiux', 'portfolio', 'history-payment',
       'assignment', 'logbook', 'quiz', 'quizDetail', 'startQuiz',
-      'group-class', 'attendance'
+      'group-class', 'presentation'
     ],
     toggleActiveSection(section) {
       this.activeSection = section;
@@ -77,8 +77,8 @@
             :class="activeSection === 'uiux' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-800 border-[#D9D9D9]'"
             class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
           >
-            <img src="/public/image/user_profile/uiUxDesigner.svg" alt="UI/UX Designer" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'uiux' ? 'brightness-0 invert' : 'brightness-0'">
-            <span>UI/UX Designer</span>
+            <img src="/public/image/user_profile/uiUxDesigner.svg" alt="{{activeCourse.name}}" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'uiux' ? 'brightness-0 invert' : 'brightness-0'">
+            <span>{{#if activeCourse.name}}{{activeCourse.name}}{{else}}My Program{{/if}}</span>
           </button>
 
           <button
@@ -133,15 +133,6 @@
           >
             <img src="/public/image/user_profile/joinGroupClass.svg" alt="Join Group Class" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'group-class' ? 'brightness-0 invert' : 'brightness-0'">
             <span>Join Group Class</span>
-          </button>
-
-          <button
-            @click="toggleActiveSection('attendance');"
-            :class="activeSection === 'attendance' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9]'"
-            class="h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center whitespace-nowrap transition-all cursor-pointer"
-          >
-            <i class="fa-solid fa-clipboard-list text-sm" :class="activeSection === 'attendance' ? 'text-white' : 'text-slate-700'"></i>
-            <span>Attendance</span>
           </button>
 
         </nav>
@@ -220,9 +211,9 @@
                 >
                   <div class="flex items-center gap-[12px]">
                     <div class="w-6 flex justify-center items-center flex-shrink-0">
-                      <img src="/public/image/user_profile/uiUxDesigner.svg" alt="UI/UX Designer" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'uiux' ? 'brightness-0 invert' : 'brightness-0'">
+                      <img src="/public/image/user_profile/uiUxDesigner.svg" alt="{{activeCourse.name}}" class="w-5 h-5 object-contain transition-all" :class="activeSection === 'uiux' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
-                    <span class="whitespace-nowrap">UI/UX Designer</span>
+                    <span class="whitespace-nowrap">{{#if activeCourse.name}}{{activeCourse.name}}{{else}}My Program{{/if}}</span>
                   </div>
                   <i class="fas fa-chevron-down text-xs transition-transform duration-200" :class="openUiUx ? 'rotate-180' : ''"></i>
                 </button>
@@ -294,17 +285,6 @@
                       <img src="/public/image/user_profile/joinGroupClass.svg" alt="Join Group Class" class="w-4 h-4 object-contain transition-all" :class="activeSection === 'group-class' ? 'brightness-0 invert' : 'brightness-0'">
                     </div>
                     <span class="whitespace-nowrap">Join Group Class</span>
-                  </button>
-
-                  <button
-                    @click="toggleActiveSection('attendance');"
-                    :class="activeSection === 'attendance' ? 'bg-[#003060] text-white border-[#003060]' : 'bg-white/80 text-slate-700 border-[#D9D9D9] hover:bg-slate-50'"
-                    class="w-full h-[48px] px-[16px] gap-[10px] rounded-[6px] border-[0.5px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] backdrop-blur-[6.6px] font-inter font-medium text-[15px] flex items-center transition-all cursor-pointer"
-                  >
-                    <div class="w-5 flex justify-center items-center flex-shrink-0">
-                      <i class="fa-solid fa-clipboard-list text-sm" :class="activeSection === 'attendance' ? 'text-white' : 'text-slate-700'"></i>
-                    </div>
-                    <span class="whitespace-nowrap">Attendance</span>
                   </button>
 
                 </div>
@@ -426,8 +406,8 @@
           {{> user/sidebar_user_profile/my_learning/start_learning/join_group/index }}
         </div>
 
-        <!-- Attendance Tab Content -->
-        <div x-show="activeSection === 'attendance'">
+        <!-- Presentation Tab Content -->
+        <div x-show="activeSection === 'presentation'">
           {{> user/sidebar_user_profile/my_learning/start_learning/attendance/index course=activeCourse }}
         </div>
 
