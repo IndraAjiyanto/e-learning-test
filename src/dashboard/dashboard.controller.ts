@@ -271,17 +271,20 @@ export class DashboardController {
     res.json(category);
   }
 
-  // 1. Menampilkan halaman pertama (Lengkap)
-  @Get('gallery') 
-  async index(@Res() res: Response) {
+  @Get('gallery')
+  async index(@Req() req: Request, @Res() res: Response) {
     const gallery = await this.dashboardService.findAllGallery();
     const programs = await this.dashboardService.findCategories();
 
-    return res.render('public/gallery/index', { gallery, programs });
+    return res.render('public/gallery/index', {
+      user: req.user,
+      gallery,
+      programs,
+    });
   }
 
   // 2. Menampilkan halaman kedua (Fitur yang dikurangi)
-  @Get('galeri') 
+  @Get('galeri')
   async dashboard(@Res() res: Response) {
     const gallery = await this.dashboardService.findAllGallery();
     const programs = await this.dashboardService.findCategories();
