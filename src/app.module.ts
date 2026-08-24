@@ -57,9 +57,7 @@ import { ExperienceModule } from './experience/experience.module';
 import { BackgroundModule } from './background/background.module';
 import { MissionsModule } from './missions/missions.module';
 import { BenefitCategoryModule } from './benefit_category/benefit_category.module';
-import { FlowCategoryModule } from './flow_category/flow_category.module';
 import { FaqModule } from './faq/faq.module';
-import { SuperiorityModule } from './superiority/superiority.module';
 import { AuthMiddleware } from './auth/auth.middleware';
 import {
   AcceptLanguageResolver,
@@ -183,9 +181,7 @@ const TABLES_WITH_SEQUENCE = [
     BackgroundModule,
     MissionsModule,
     BenefitCategoryModule,
-    FlowCategoryModule,
     FaqModule,
-    SuperiorityModule,
     GalleryModule,
     CategoryPartnerModule,
     PartnerModule,

@@ -85,12 +85,6 @@ export class CategoriesController {
     const benefit_category = await this.categoriesService.findBenefitByCategory(
       category.id,
     );
-    const flow_category = await this.categoriesService.findFlowByCategory(
-      category.id,
-    );
-    const superiority = await this.categoriesService.findSuperiorityByCategory(
-      category.id,
-    );
     const gallery = await this.categoriesService.findGalleryByCategory(
       category.id,
     );
@@ -106,8 +100,6 @@ export class CategoriesController {
         courses,
         alumni,
         benefit_category,
-        flow_category,
-        superiority,
         faqs,
         gallery,
       });
@@ -121,8 +113,6 @@ export class CategoriesController {
         alumni,
         portfolio,
         benefit_category,
-        flow_category,
-        superiority,
         faqs,
         gallery,
       });
@@ -141,28 +131,6 @@ export class CategoriesController {
     const benefit_category =
       await this.categoriesService.findBenefitByCategory(categoryId);
     res.json(benefit_category);
-  }
-
-  @Roles('super_admin')
-  @Get('flow/:categoryId')
-  async findFlowByCategory(
-    @Param('categoryId') categoryId: number,
-    @Res() res: Response,
-  ) {
-    const flow_category =
-      await this.categoriesService.findFlowByCategory(categoryId);
-    res.json(flow_category);
-  }
-
-  @Roles('super_admin')
-  @Get('superiority/:categoryId')
-  async findSuperiorityByCategory(
-    @Param('categoryId') categoryId: number,
-    @Res() res: Response,
-  ) {
-    const superiority =
-      await this.categoriesService.findSuperiorityByCategory(categoryId);
-    res.json(superiority);
   }
 
   @Roles('super_admin')
