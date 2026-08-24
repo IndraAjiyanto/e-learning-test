@@ -267,20 +267,6 @@
       >
         Benefit
       </button>
-      <button
-        @click="toggleFetch('/category/superiority/{{category.id}}', 'superiority')"
-        :class="tab === 'superiority' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
-        class='px-4 py-2 rounded-lg shadow transition'
-      >
-        Superiority
-      </button>
-      <button
-        @click="toggleFetch('/category/flow/{{category.id}}', 'flow')"
-        :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'"
-        class='px-4 py-2 rounded-lg shadow transition'
-      >
-        Flow
-      </button>
 
     </div>
 
@@ -289,13 +275,11 @@
 
     {{> category/alumni_tab }}
 
+    {{#unless (eq category.type 'Free Program')}}
     {{> category/faq_tab }}
 
+    {{/unless}}
     {{> category/benefit_tab }}
-
-    {{> category/superiority_tab }}
-
-    {{> category/flow_tab }}
 
 {{> category/gallery_tab category=category}}
 </div>
@@ -311,7 +295,8 @@ function tabData() {
       : [],
 
     async init() {
-      if( !this.tab ) {
+      const disabledTabs = {{#if (eq category.type 'Free Program')}}['faq']{{else}}[]{{/if}};
+      if( !this.tab || disabledTabs.includes(this.tab) ) {
           this.tab = 'course';
           localStorage.setItem('activeTabKategori', 'course');
       }

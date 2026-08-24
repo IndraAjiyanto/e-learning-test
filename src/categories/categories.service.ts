@@ -9,8 +9,6 @@ import { CourseType } from 'src/entities/course_type.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { CategoryFaq } from 'src/entities/faqs.entity';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
-import { FlowCategory } from 'src/entities/flow_category.entity';
-import { Superiority } from 'src/entities/superiority.entity';
 import { Gallery } from 'src/entities/gallery.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
 import * as fs from 'fs/promises';
@@ -31,10 +29,6 @@ export class CategoriesService {
     private readonly faqRepository: Repository<CategoryFaq>,
     @InjectRepository(BenefitCategory)
     private readonly benefitCategoryRepository: Repository<BenefitCategory>,
-    @InjectRepository(FlowCategory)
-    private readonly flowCategoryRepository: Repository<FlowCategory>,
-    @InjectRepository(Superiority)
-    private readonly superiorityRepository: Repository<Superiority>,
     @InjectRepository(Gallery)
     private readonly galleryRepository: Repository<Gallery>,
     @InjectRepository(Portofolios)
@@ -114,20 +108,8 @@ export class CategoriesService {
     });
   }
 
-  async findSuperiorityByCategory(categoryId: number) {
-    return await this.superiorityRepository.find({
-      where: { category: { id: categoryId } },
-    });
-  }
-
   async findBenefitByCategory(categoryId: number) {
     return await this.benefitCategoryRepository.find({
-      where: { category: { id: categoryId } },
-    });
-  }
-
-  async findFlowByCategory(categoryId: number) {
-    return await this.flowCategoryRepository.find({
       where: { category: { id: categoryId } },
     });
   }
