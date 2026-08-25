@@ -234,11 +234,21 @@ export class UsersController {
       req.user.id,
     );
     const logbooks = await this.usersService.findAllLogbooks(req.user.id);
+    const course = (userWithCourses?.userCourses ?? []).map((uc) => uc.course);
+    const category = [
+      ...new Map(
+        course
+          .filter((c) => c.category)
+          .map((c) => [c.category.id, c.category]),
+      ).values(),
+    ];
     return res.render('user/user_profile/index', {
       user: user,
       portfolio,
       userWithCourses,
       logbooks,
+      course,
+      category,
     });
   }
 
