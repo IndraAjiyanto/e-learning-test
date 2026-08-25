@@ -138,6 +138,15 @@
             <span>History Payment</span>
           </button>
 
+          <!-- Logout Button -->
+          <a
+            href='/logout'
+            class="h-[60px] px-[20px] py-[10px] gap-[10px] rounded-[6px] transition-all duration-200 flex items-center whitespace-nowrap text-base sm:text-lg font-medium font-inter leading-none text-white bg-[#CC2B2B] hover:bg-red-700 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
+          >
+            <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+            <span>Log Out</span>
+          </a>
+
         </nav>
       </div>
 
@@ -407,6 +416,23 @@
           </button>
 
         </nav>
+
+        <!-- Sidebar Bottom: Logout Button -->
+        <div class="w-full mt-auto pt-6">
+          <hr class="border-t border-[#D9D9D9] mb-[24px]">
+          <a
+            href='/logout'
+            :class="[
+              'transition-all duration-200 flex items-center font-inter font-medium leading-none cursor-pointer',
+              !sidebarOpen ? 'w-10 h-10 justify-center mx-auto rounded-[10px] bg-transparent text-[#CC2B2B] hover:bg-red-50' : 'w-full h-[60px] px-[20px] py-[10px] gap-[18px] rounded-[6px] text-white bg-[#CC2B2B] hover:bg-red-700 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]'
+            ]"
+          >
+            <div class="w-7 flex justify-center items-center flex-shrink-0">
+              <i class="fa-solid fa-arrow-right-from-bracket text-lg" :class="!sidebarOpen ? 'text-[#CC2B2B]' : 'text-white'"></i>
+            </div>
+            <span x-show="sidebarOpen" class="whitespace-nowrap text-[20px]">Log Out</span>
+          </a>
+        </div>
       </div>
 
       <!-- Right Content Section -->
