@@ -29,6 +29,7 @@
             <span class='text-red-500'>*</span>
           </label>
           <input type="text" style="position:absolute; opacity:0; pointer-events:none;" :required="selectedTechs.length === 0" />
+          <div id='technologies_error' class='hidden text-red-500 text-xs mt-1'></div>
 
           <!-- Selected Technologies -->
           <div

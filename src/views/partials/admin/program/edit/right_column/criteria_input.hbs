@@ -14,7 +14,8 @@
                             x-model='criterias_id[index]'
                             name='criteriaId[]'
                             placeholder='Enter criteria'
-                            class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                            :class="borderClass('criterias_id')"
+                            class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
                           />
                           <button
                             type='button'
@@ -33,6 +34,7 @@
                       >
                         + Add Criteria
                       </button>
+                      <div id='criterias_id_error' class='hidden text-red-500 text-xs mt-1'></div>
                     </div>
 
                     <div x-data="{ criterias_en: {{json course.criteriaEn}} || [''] }">
@@ -46,7 +48,8 @@
                             x-model='criterias_en[index]'
                             name='criteriaEn[]'
                             placeholder='Enter criteria'
-                            class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                            :class="borderClass('criterias_en')"
+                            class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
                           />
                           <button
                             type='button'
@@ -65,6 +68,7 @@
                       >
                         + Add Criteria
                       </button>
+                      <div id='criterias_en_error' class='hidden text-red-500 text-xs mt-1'></div>
                     </div>
 
                     <div x-data="{ criterias_ja: {{json course.criteriaJa}} || [''] }">
@@ -78,7 +82,8 @@
                             x-model='criterias_ja[index]'
                             name='criteriaJa[]'
                             placeholder='Enter criteria'
-                            class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                            :class="borderClass('criterias_ja')"
+                            class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
                           />
                           <button
                             type='button'
@@ -97,5 +102,6 @@
                       >
                         + Add Criteria
                       </button>
+                      <div id='criterias_ja_error' class='hidden text-red-500 text-xs mt-1'></div>
                     </div>
                     </div>

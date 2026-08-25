@@ -16,7 +16,8 @@
               @blur="validateField('description', 'id')"
               rows='3'
               placeholder='Tulis description dalam bahasa Indonesia...'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              :class="borderClass('deskripsi_id')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             ></textarea>
             <div
               id='deskripsi_id_error'
@@ -36,7 +37,8 @@
               @blur="validateField('description', 'en')"
               rows='3'
               placeholder='Write description in English...'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              :class="borderClass('deskripsi_en')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             ></textarea>
             <div
               id='deskripsi_en_error'
@@ -56,7 +58,8 @@
               @blur="validateField('description', 'ja')"
               rows='3'
               placeholder='日本語で説明を書いてください...'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+              :class="borderClass('deskripsi_ja')"
+              class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             ></textarea>
             <div
               id='deskripsi_ja_error'
