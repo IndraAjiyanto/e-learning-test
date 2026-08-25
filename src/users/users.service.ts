@@ -18,6 +18,7 @@ import { Portofolios } from 'src/entities/portofolios.entity';
 import { Logbook } from 'src/entities/logbook.entity';
 import { EmailService } from 'src/common/email/email.service';
 import * as fs from 'fs/promises';
+import { assertStrongPassword } from 'src/common/utils/password.util';
 import * as path from 'path';
 
 @Injectable()
@@ -277,6 +278,8 @@ export class UsersService {
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { token, password, confirmPassword } = resetPasswordDto;
+
+    assertStrongPassword(password);
 
     if (password !== confirmPassword) {
       throw new BadRequestException('Passwords do not match');
