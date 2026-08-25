@@ -89,7 +89,10 @@ export class UsersService {
       where: { id: userId },
       relations: {
         userCourses: {
-          course: true,
+          course: {
+            category: true,
+            weeks: true,
+          },
         },
       },
     });
@@ -111,7 +114,11 @@ export class UsersService {
   async findCompletedCoursesByUser(userId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['userCourses', 'userCourses.course', 'userCourses.course.category'],
+      relations: [
+        'userCourses',
+        'userCourses.course',
+        'userCourses.course.category',
+      ],
     });
 
     if (!user) {
@@ -119,7 +126,8 @@ export class UsersService {
     }
 
     const completedCourses = user.userCourses.filter(
-      uc => uc.progress === true && uc.course && uc.course.process === 'approved',
+      (uc) =>
+        uc.progress === true && uc.course && uc.course.process === 'approved',
     );
     return { userCourses: completedCourses };
   }
