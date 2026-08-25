@@ -15,6 +15,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
+import { UsersService } from 'src/users/users.service';
 import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import { Request, Response } from 'express';
@@ -30,7 +31,10 @@ import { MulterErrorInterceptor } from 'src/common/interceptors/multer-error.int
 @UseInterceptors(MulterErrorInterceptor)
 @Controller('program')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(
+    private readonly coursesService: CoursesService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Roles('admin', 'super_admin')
   @Post()
@@ -474,12 +478,14 @@ export class CoursesController {
     const course = await this.coursesService.findMyCourse(id);
     const category = await this.coursesService.findCategoryMyProgram(id);
     const courseType = await this.coursesService.findMyProgramCourseTypes(id);
+    const userWithCourses = { userCourses: course.map((c) => ({ course: c })) };
 
     const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
     const activeCourse =
       course.find((c) => c.id === selectedCourseId) ?? course[0];
+    const logbooks = await this.usersService.findAllLogbooks(id);
 
-    const userWithCourses = await this.coursesService.findCompletedCoursesByUser(req.user!.id);
+    // const userWithCourses = await this.coursesService.findCompletedCoursesByUser(req.user!.id);
     const portfolio = await this.coursesService.findPortfolio(req.user!.id);
 
     res.render('user/user_profile/index', {
@@ -488,10 +494,95 @@ export class CoursesController {
       user: req.user,
       category,
       courseType,
-      activeSection: courseId ? 'uiux' : 'learning',
       userWithCourses,
+      logbooks,
+      activeSection: courseId ? 'uiux' : 'learning',
+      // userWithCourses,
       portfolio,
     });
+  }
+
+  @Roles('user')
+  @Get('myProgram/:id/fragment')
+  async myCourseFragment(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/index',
+      {
+        course: activeCourse,
+        layout: false,
+      },
+    );
+  }
+
+  @Roles('user')
+  @Get('myProgram/:id/fragment/assignment')
+  async myCourseAssignmentFragment(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    return res.render('partials/user/sidebar_user_profile/assignment/index', {
+      course: activeCourse,
+      layout: false,
+    });
+  }
+
+  @Roles('user')
+  @Get('myProgram/:id/fragment/presentation')
+  async myCoursePresentationFragment(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/attendance/index',
+      {
+        course: activeCourse,
+        user: req.user,
+        layout: false,
+      },
+    );
+  }
+
+  @Roles('user')
+  @Get('myProgram/:id/fragment/quiz')
+  async myCourseQuizFragment(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+    @Query('courseId') courseId?: string,
+  ) {
+    const course = await this.coursesService.findMyCourse(id);
+    const selectedCourseId = courseId ? Number(courseId) : course[0]?.id;
+    const activeCourse =
+      course.find((c) => c.id === selectedCourseId) ?? course[0];
+
+    return res.render(
+      'partials/user/sidebar_user_profile/my_learning/start_learning/quiz/index',
+      {
+        course: activeCourse,
+        layout: false,
+      },
+    );
   }
 
   @Roles('user')
@@ -517,8 +608,26 @@ export class CoursesController {
       await this.coursesService.findCourseInstallments(courseId);
     const studentList = await this.coursesService.sumStudent(course.id);
 
-    const statusOptions = ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'];
-    const referalOptions = ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'];
+    const statusOptions = [
+      'University Student',
+      'Fresh Graduate',
+      'Job Seeker',
+      'Employee',
+      'Freelancer',
+      'Entrepreneur',
+      'Other',
+    ];
+    const referalOptions = [
+      'Instagram',
+      'TikTok',
+      'LinkedIn',
+      'Friends',
+      'University',
+      'WhatsApp Group',
+      'Webinar/Event',
+      'Website',
+      'Other',
+    ];
 
     if (course.checkPaid === false) {
       // 1. DI SINI JALURNYA SUDAH DIUBAH KE FOLDER BARU
@@ -573,8 +682,26 @@ export class CoursesController {
       const userCourses = await this.coursesService.findCourseUsers(id);
       const kelass = await this.coursesService.allClassExcept(course.id);
       const studentList = await this.coursesService.sumStudent(course.id);
-      const statusOptions = ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'];
-      const referalOptions = ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'];
+      const statusOptions = [
+        'University Student',
+        'Fresh Graduate',
+        'Job Seeker',
+        'Employee',
+        'Freelancer',
+        'Entrepreneur',
+        'Other',
+      ];
+      const referalOptions = [
+        'Instagram',
+        'TikTok',
+        'LinkedIn',
+        'Friends',
+        'University',
+        'WhatsApp Group',
+        'Webinar/Event',
+        'Website',
+        'Other',
+      ];
 
       if (course.checkPaid === false) {
         res.render('detail_program/free_program/index', {
@@ -644,8 +771,26 @@ export class CoursesController {
         const userCourses = await this.coursesService.findCourseUsers(id);
         const kelass = await this.coursesService.allClassExcept(course.id);
         const studentList = await this.coursesService.sumStudent(course.id);
-        const statusOptions = ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'];
-        const referalOptions = ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'];
+        const statusOptions = [
+          'University Student',
+          'Fresh Graduate',
+          'Job Seeker',
+          'Employee',
+          'Freelancer',
+          'Entrepreneur',
+          'Other',
+        ];
+        const referalOptions = [
+          'Instagram',
+          'TikTok',
+          'LinkedIn',
+          'Friends',
+          'University',
+          'WhatsApp Group',
+          'Webinar/Event',
+          'Website',
+          'Other',
+        ];
 
         if (course.checkPaid === false) {
           res.render('detail_program/free_program/index', {

@@ -12,7 +12,8 @@
                   x-model='targets_id[index]'
                   name='learningTargetsId[]'
                   placeholder='Enter a learning target'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                  :class="borderClass('targets_id')"
+                  class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
                 />
                 <button
                   type='button'
@@ -31,6 +32,7 @@
             >
               + Add Target
             </button>
+            <div id='targets_id_error' class='hidden text-red-500 text-xs mt-1'></div>
           </div>
 
           <div x-data="{ targets_en: [''] }">
@@ -43,7 +45,8 @@
                   x-model='targets_en[index]'
                   name='learningTargetsEn[]'
                   placeholder='Enter a learning target'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                  :class="borderClass('targets_en')"
+                  class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
                 />
                 <button
                   type='button'
@@ -62,6 +65,7 @@
             >
               + Add Target
             </button>
+            <div id='targets_en_error' class='hidden text-red-500 text-xs mt-1'></div>
           </div>
 
           <div x-data="{ targets_ja: [''] }">
@@ -74,7 +78,8 @@
                   x-model='targets_ja[index]'
                   name='learningTargetsJa[]'
                   placeholder='Enter a learning target'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+                  :class="borderClass('targets_ja')"
+                  class='flex-1 border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
                 />
                 <button
                   type='button'
@@ -93,5 +98,6 @@
             >
               + Add Target
             </button>
+            <div id='targets_ja_error' class='hidden text-red-500 text-xs mt-1'></div>
           </div>
         </div>
