@@ -128,8 +128,20 @@
               if (!value) {
                 this.formErrors.password = 'Password is required';
                 this.formValid.password = false;
-              } else if (value.length < 6) {
-                this.formErrors.password = 'Password must be at least 6 characters';
+              } else if (value.length < 8) {
+                this.formErrors.password = 'Password must be at least 8 characters';
+                this.formValid.password = false;
+              } else if (!/[A-Z]/.test(value)) {
+                this.formErrors.password = 'Password must contain at least one uppercase letter';
+                this.formValid.password = false;
+              } else if (!/[a-z]/.test(value)) {
+                this.formErrors.password = 'Password must contain at least one lowercase letter';
+                this.formValid.password = false;
+              } else if (!/[0-9]/.test(value)) {
+                this.formErrors.password = 'Password must contain at least one number';
+                this.formValid.password = false;
+              } else if (!/[^A-Za-z0-9]/.test(value)) {
+                this.formErrors.password = 'Password must contain at least one special character';
                 this.formValid.password = false;
               } else {
                 this.formErrors.password = '';
