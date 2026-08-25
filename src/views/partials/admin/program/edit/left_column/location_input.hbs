@@ -12,8 +12,10 @@
             name='locations[id]'
             placeholder='Enter location'
             required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            :class="borderClass('lokasi_id')"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           />
+          <div id='lokasi_id_error' class='hidden text-red-500 text-xs mt-1'></div>
           </div>
           <div>
             <label class="block text-xs text-gray-600 my-2">EN</label>
@@ -23,8 +25,10 @@
             name='locations[en]'
             placeholder='Enter location'
             required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            :class="borderClass('lokasi_en')"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           />
+          <div id='lokasi_en_error' class='hidden text-red-500 text-xs mt-1'></div>
           </div>
           <div>
             <label class="block text-xs text-gray-600 my-2">JP</label>
@@ -34,7 +38,9 @@
             name='locations[ja]'
             placeholder='Enter location'
             required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
+            :class="borderClass('lokasi_ja')"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
           />
+          <div id='lokasi_ja_error' class='hidden text-red-500 text-xs mt-1'></div>
           </div>
         </div>

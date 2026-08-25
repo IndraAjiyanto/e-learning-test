@@ -8,7 +8,9 @@
             type='date'
             id='date_registration'
             name='date_registration'
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
+            :class="borderClass('date_registration')"
+            class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 cursor-pointer'
             style='color-scheme: light;'
           />
+          <div id='date_registration_error' class='hidden text-red-500 text-xs mt-1'></div>
         </div>

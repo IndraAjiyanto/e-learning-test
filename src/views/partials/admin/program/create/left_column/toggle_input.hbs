@@ -45,9 +45,11 @@
                   x-model='display'
                   @input='formatHarga($event)'
                   placeholder='Enter price'
-                  class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
+                  :class="borderClass('harga1')"
+                  class='w-full border bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
                 />
                 <input type='hidden' name='price' x-model='value' />
+                <div id='harga1_error' class='hidden text-red-500 text-xs mt-1'></div>
               </div>
 
               <!-- Promo -->
@@ -72,9 +74,11 @@
                   x-model='display'
                   @input='formatPromo($event)'
                   placeholder='Enter promo price'
-                  class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
+                  :class="borderClass('promo1')"
+                  class='w-full border bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
                 />
                 <input type='hidden' name='promo' x-model='value' />
+                <div id='promo1_error' class='hidden text-red-500 text-xs mt-1'></div>
               </div>
             </div>
 
@@ -91,8 +95,10 @@
                   id='form'
                   placeholder='https://forms.google.com/...'
                   name='form'
-                  class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
+                  :class="borderClass('form')"
+                  class='w-full border bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
                 />
+                <div id='form_error' class='hidden text-red-500 text-xs mt-1'></div>
               </div>
             </div>
 
@@ -118,9 +124,11 @@
                 x-model='display'
                 @input='formatKuota($event)'
                 placeholder='Enter quota'
-                class='w-full border border-gray-300 bg-blue-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700'
+                :class="borderClass('kuota1')"
+                class='w-full border bg-blue-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
               />
               <input type='hidden' name='quota' x-model='value' />
+              <div id='kuota1_error' class='hidden text-red-500 text-xs mt-1'></div>
             </div>
           {{/if}}
         </div>
