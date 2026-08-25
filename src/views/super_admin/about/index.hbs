@@ -54,15 +54,15 @@
             <!-- Image -->
             <td class='px-6 py-4 text-sm text-gray-800'>
               <img
-                src="{{gambar}}"
-                alt='{{judul}}'
+                src="{{image}}"
+                alt='{{title}}'
                 class='w-12 h-12 object-cover rounded-full border'
               />
             </td>
 
             <!-- Judul -->
             <td class='px-6 py-4 text-sm text-gray-800 max-w-xs'>
-              {{#each judul}}
+              {{#each title}}
               <div class='font-semibold line-clamp-2'>{{this}}</div>
               {{/each}}
             </td>
