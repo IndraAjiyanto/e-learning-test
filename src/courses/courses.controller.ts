@@ -739,25 +739,7 @@ export class CoursesController {
         }
       }
       if (isUserInKelas) {
-        const updatedWeek = await this.coursesService.findWeeks(
-          id,
-          req.user.id,
-        );
-        const userCourses = await this.coursesService.getUserCourseRelation(
-          req.user.id,
-          course.id,
-        );
-        const portfolio = await this.coursesService.findOnePortfolio(
-          req.user.id,
-          course.id,
-        );
-        res.render('course/detail', {
-          userCourses,
-          portfolio,
-          user: req.user,
-          course,
-          weeks: updatedWeek,
-        });
+        res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
       } else {
         const course = await this.coursesService.findOneUserCourse(id);
         // const courseQuestions = await this.coursesService.findCourseQuestions(id);

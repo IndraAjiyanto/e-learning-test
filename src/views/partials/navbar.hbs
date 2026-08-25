@@ -84,18 +84,7 @@ isProgramActive() {
     return str.substring(0, length) + '...';
   },
 
-  getIcon(name) {
-    if (!name) return 'fas fa-graduation-cap';
-    const lowerName = name.toLowerCase();
-    if (lowerName.includes('bootcamp')) return 'fas fa-user-graduate';
-    if (lowerName.includes('short')) return 'fas fa-chalkboard-teacher';
-    if (lowerName.includes('house')) return 'fas fa-users';
-    if (lowerName.includes('intern')) return 'fas fa-cube';
-    if (lowerName.includes('japan')) return 'fas fa-torii-gate';
-    return 'fas fa-graduation-cap';
-  },
-      
-      isUserActive() {
+  isUserActive() {
         const currentPath = this.active;
         return currentPath.includes('/users/') || 
                currentPath.includes('/program/myProgram') || 
@@ -280,7 +269,7 @@ isProgramActive() {
                     <div
                       class='w-10 h-10 bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
                     >
-                      <i :class="getIcon(kat.name)" class='text-gray-900 text-lg'></i>
+                      <img :src="kat.icon ? (kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon) : ''" class='w-5 h-5 object-contain' alt='' />
                     </div>
                     <div class='flex-1 ml-3'>
                       <p
@@ -412,7 +401,7 @@ isProgramActive() {
                     <div
                       class='w-10 h-10 bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
                     >
-                      <i :class="getIcon(kat.name)" class='text-gray-900 text-lg'></i>
+                      <img :src="kat.icon ? (kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon) : ''" class='w-5 h-5 object-contain' alt='' />
                     </div>
                     <div class='flex-1 ml-3'>
                       <p
@@ -623,7 +612,7 @@ isProgramActive() {
                     <div
                       class='w-14 h-14 bg-[#70B8E8] rounded-full flex items-center justify-center flex-shrink-0 shadow-inner'
                     >
-                      <i :class="getIcon(kat.name)" class='text-gray-900 text-2xl'></i>
+                      <img :src="kat.icon ? (kat.icon.startsWith('/') ? kat.icon : '/' + kat.icon) : ''" class='w-7 h-7 object-contain' alt='' />
                     </div>
                     <div class='flex-1'>
                       <p
