@@ -1,20 +1,82 @@
 <!-- Quiz Tab Content -->
-        <div class="px-4 sm:px-8 md:px-14 py-10 space-y-4">
-          <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060]">Quiz</h1>
-          <p class="font-sans text-[20px] text-[#003060]">Complete the quiz to assess your understanding of the learning material.</p>
+<div
+  x-data="{
+    weeksData: {{json course.weeks}},
+    quizStatus: {},
+    activeWeekId: null,
+    async loadWeekQuiz(weekId) {
+      this.quizStatus[weekId] = { loading: true, record: null, unlocked: false };
+      try {
+        const res = await fetch('/program/quiz/' + weekId);
+        if (!res.ok) throw new Error('Request failed');
+        const data = await res.json();
+        const record = Array.isArray(data) ? data[0] : null;
+        const unlocked = !!(record && record.quizProgresses && record.quizProgresses[0] && record.quizProgresses[0].process === true);
+        this.quizStatus[weekId] = { loading: false, record, unlocked };
 
-          <!-- Quiz List Section -->
-          <div class="space-y-3">
-            <div class="bg-white border border-[#D9D9D9] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div class="flex items-center justify-between px-5 py-3.5 gap-4">
-                <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
-                  Quiz Week 1 : Minggu Pertama
-                </span>
-                <a href="#"
-                   @click.prevent="toggleActiveSection('quizDetail')"
-                   class="inline-flex items-center justify-center px-4 py-2 bg-[#003060] text-white rounded-lg font-montserrat font-medium text-[20px] hover:bg-[#001F3F] transition-colors whitespace-nowrap flex-shrink-0 cursor-pointer">Take Quiz
-                </a>
-              </div>
-            </div>
-          </div>
+        const targetWeekId = Number(new URLSearchParams(window.location.search).get('weekId'));
+        if (targetWeekId === weekId && unlocked) {
+          this.openQuiz(weekId);
+        }
+      } catch (e) {
+        this.quizStatus[weekId] = { loading: false, record: null, unlocked: false };
+      }
+    },
+    weekMeta(weekId) {
+      return this.weeksData.find((w) => w.id === weekId) || null;
+    },
+    openQuiz(weekId) {
+      const status = this.quizStatus[weekId];
+      if (!status || !status.unlocked) return;
+      this.activeWeekId = weekId;
+    },
+    closeQuiz() {
+      this.activeWeekId = null;
+    },
+    get activeMeta() {
+      return this.activeWeekId ? this.weekMeta(this.activeWeekId) : null;
+    },
+    get activeStatus() {
+      return this.activeWeekId ? (this.quizStatus[this.activeWeekId] || { loading: true, record: null, unlocked: false }) : { loading: false, record: null, unlocked: false };
+    },
+    get activeRecord() {
+      return this.activeStatus.record;
+    }
+  }"
+  x-init="{{#each course.weeks}}{{#if quiz.[0].id}}loadWeekQuiz({{id}});{{/if}}{{/each}}"
+>
+  <!-- Quiz List View -->
+  <div x-show="!activeWeekId" class="px-4 sm:px-8 md:px-14 py-10 space-y-4">
+    <h1 class="font-montserrat font-semibold text-2xl sm:text-3xl text-[#003060]">Quiz</h1>
+    <p class="font-sans text-[20px] text-[#003060]">Complete the quiz to assess your understanding of the learning material.</p>
+
+    <!-- Quiz List Section -->
+    <div class="space-y-3">
+      {{#each course.weeks}}
+      {{#if quiz.[0].id}}
+      <div class="bg-white border border-[#D9D9D9] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between px-5 py-3.5 gap-4">
+          <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
+            {{description}} : {{quiz.[0].quizName}}
+          </span>
+          <a href="#"
+             @click.prevent="openQuiz({{id}})"
+             :class="quizStatus[{{id}}] && quizStatus[{{id}}].unlocked ? 'bg-[#003060] hover:bg-[#001F3F] cursor-pointer' : 'bg-[#9CA3AF] cursor-not-allowed'"
+             class="inline-flex items-center justify-center px-4 py-2 text-white rounded-lg font-montserrat font-medium text-[20px] transition-colors whitespace-nowrap flex-shrink-0">Take Quiz
+          </a>
         </div>
+      </div>
+      {{/if}}
+      {{/each}}
+
+      <div x-show="!weeksData.some((w) => w.quiz && w.quiz[0] && w.quiz[0].id)" class="bg-white border border-[#D9D9D9] rounded-xl p-6 text-center">
+        <p class="font-montserrat text-base text-[#003060]">No quizzes available yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Detail View -->
+  <div x-show="activeWeekId" class="!mt-0">
+    {{> user/sidebar_user_profile/my_learning/start_learning/quiz/week/index }}
+  </div>
+</div>

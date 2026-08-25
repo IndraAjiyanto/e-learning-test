@@ -20,7 +20,7 @@
     logbookImageErrors: {},
     handledSections: [
       'profile', 'learning', 'uiux', 'portfolio', 'history-payment',
-      'assignment', 'logbook', 'quiz', 'certificate',
+      'assignment', 'logbook', 'quiz', 'quiz-start', 'certificate',
       'group-class', 'presentation'
     ],
     sectionFragmentConfig: {
@@ -449,6 +449,11 @@
 
         <!-- Quiz Tab Content (loaded per course via loadCourseFragment) -->
         <div x-show="activeSection === 'quiz'" id="quiz-container"></div>
+
+        <!-- Quiz Start Tab Content (direct quiz-taking page from /quiz/start/:quizId) -->
+        <div x-show="activeSection === 'quiz-start'">
+          {{> user/sidebar_user_profile/my_learning/start_learning/quiz/week/start/index }}
+        </div>
 
         <!-- Join Group Class Tab Content -->
         <div x-show="activeSection === 'group-class'">

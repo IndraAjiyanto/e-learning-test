@@ -124,22 +124,6 @@ export class UsersService {
     return { userCourses: completedCourses };
   }
 
-  async findCompletedCoursesByUser(userId: number) {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['userCourses', 'userCourses.course', 'userCourses.course.category'],
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const completedCourses = user.userCourses.filter(
-      uc => uc.progress === true && uc.course && uc.course.process === 'approved',
-    );
-    return { userCourses: completedCourses };
-  }
-
   async findAllLogbooks(userId: number) {
     return await this.logbookRepository.find({
       where: { user: { id: userId } },

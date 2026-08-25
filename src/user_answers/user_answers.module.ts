@@ -13,6 +13,7 @@ import { Weeks } from 'src/entities/weeks.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { Session } from 'src/entities/session.entity';
+import { QuizModule } from 'src/quiz/quiz.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { Session } from 'src/entities/session.entity';
       SessionProgress,
       Session,
     ]),
+    QuizModule,
   ],
   controllers: [UserAnswersController],
   providers: [UserAnswersService],
