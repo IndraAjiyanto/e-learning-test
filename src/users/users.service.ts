@@ -33,14 +33,17 @@ export class UsersService {
     private readonly logbookRepository: Repository<Logbook>,
 
     private readonly emailService: EmailService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const cekEmail = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
     if (!cekEmail) {
-      const user = await this.userRepository.create({ ...createUserDto, isVerified: true });
+      const user = await this.userRepository.create({
+        ...createUserDto,
+        isVerified: true,
+      });
       return await this.userRepository.save(user);
     } else {
       throw new NotFoundException('Email is already registered');
@@ -64,13 +67,14 @@ export class UsersService {
     page: number;
     limit: number;
   }) {
-    const query = this.userRepository.createQueryBuilder('user')
+    const query = this.userRepository
+      .createQueryBuilder('user')
       .orderBy('user.id', 'DESC');
 
     if (params.search) {
       query.where(
         '(user.username ILIKE :search OR user.email ILIKE :search OR CAST(user.role AS text) ILIKE :search)',
-        { search: `%${params.search}%` }
+        { search: `%${params.search}%` },
       );
     }
 
@@ -80,11 +84,44 @@ export class UsersService {
     return { data, total };
   }
 
+  async findWithCourses(userId: number): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: { id: userId },
+      relations: {
+        userCourses: {
+          course: true,
+        },
+      },
+    });
+  }
+
   async findPortfolio(userId: number) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
-      relations: ['user', 'course', 'course.courseType', 'course.category', 'course.technologies'],
+      relations: [
+        'user',
+        'course',
+        'course.courseType',
+        'course.category',
+        'course.technologies',
+      ],
     });
+  }
+
+  async findCompletedCoursesByUser(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['userCourses', 'userCourses.course', 'userCourses.course.category'],
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const completedCourses = user.userCourses.filter(
+      uc => uc.progress === true && uc.course && uc.course.process === 'approved',
+    );
+    return { userCourses: completedCourses };
   }
 
   async findCompletedCoursesByUser(userId: number) {
@@ -137,9 +174,7 @@ export class UsersService {
   }
 
   async updatePassword(id: number, updatePaaswordDto: UpdatePasswordDto) {
-    if (
-      updatePaaswordDto.newPassword !== updatePaaswordDto.confirmPassword
-    ) {
+    if (updatePaaswordDto.newPassword !== updatePaaswordDto.confirmPassword) {
       throw new BadRequestException('confirm password wrong');
     }
     const user = await this.userRepository.findOne({ where: { id } });
@@ -161,10 +196,7 @@ export class UsersService {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(
-      updatePaaswordDto.newPassword,
-      10,
-    );
+    const hashedPassword = await bcrypt.hash(updatePaaswordDto.newPassword, 10);
     user.password = hashedPassword;
 
     await this.userRepository.save(user);
@@ -185,7 +217,7 @@ export class UsersService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async remove(id: number) {
