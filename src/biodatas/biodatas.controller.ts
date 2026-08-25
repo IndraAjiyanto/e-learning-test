@@ -21,7 +21,7 @@ import { Request, Response } from 'express';
 export class BiodatasController {
   constructor(private readonly biodatasService: BiodatasService) {}
 
-  @Roles('user')
+  @Roles('user', 'admin', 'super_admin')
   @Post()
   async create(
     @Body() createBiodataDto: CreateBiodataDto,
@@ -58,7 +58,7 @@ export class BiodatasController {
     res.render('user/biodata/edit', { user: req.user, biodata });
   }
 
-  @Roles('user')
+  @Roles('user', 'admin', 'super_admin')
   @Patch(':biodataId')
   async update(
     @Param('biodataId') biodataId: number,

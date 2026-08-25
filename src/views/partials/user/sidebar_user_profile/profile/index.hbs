@@ -169,6 +169,7 @@
     <form 
       class="space-y-[30px] max-w-[1146px]"
       x-data="{
+        biodataId: {{#if user.biodata}}{{user.biodata.id}}{{else}}null{{/if}},
         originalValues: {
           fullName: '{{user.biodata.fullName}}',
           city: '{{user.biodata.city}}',
@@ -209,8 +210,9 @@
           if (!this.hasChanges || this.saving) return;
           this.saving = true;
           try {
-            const res = await fetch('/biodata/{{user.biodata.id}}', {
-              method: 'PATCH',
+            const isUpdate = this.biodataId !== null;
+            const res = await fetch(isUpdate ? `/biodata/${this.biodataId}` : '/biodata', {
+              method: isUpdate ? 'PATCH' : 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 fullName: this.currentValues.fullName,
