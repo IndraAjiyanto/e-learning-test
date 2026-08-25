@@ -33,8 +33,10 @@
       </button>
 
       <!-- Button 2: Free Consultation -->
-      <a 
-        href="/dashboard/about" @click="scrollToSection('about-section')"
+      <a
+        x-data="{ formatWa(nomor) { if (!nomor) return ''; nomor = nomor.replace(/\D/g, ''); if (nomor.startsWith('0')) return '62' + nomor.slice(1); if (nomor.startsWith('8')) return '62' + nomor; if (nomor.startsWith('62')) return nomor; return nomor; } }"
+        :href="'https://wa.me/' + formatWa('{{social.[0].number}}')"
+        target="_blank" rel="noopener noreferrer"
         class="flex items-center justify-center gap-[10px] w-full h-[48px] py-[14px] border-[1.5px] border-[#003060] text-[#003060] hover:bg-slate-50 rounded-[12px] font-montserrat font-semibold text-[16px] leading-none transition-all shadow-sm cursor-pointer"
       >
         <svg class="w-5 h-5 fill-[#003060]" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -117,8 +119,10 @@
           <span>{{t 'test.home.heroSection.buttonExplorePrograms'}}</span>
         </button>
 
-        <a 
-          href="/dashboard/about" @click="scrollToSection('about-section')"
+        <a
+          x-data="{ formatWa(nomor) { if (!nomor) return ''; nomor = nomor.replace(/\D/g, ''); if (nomor.startsWith('0')) return '62' + nomor.slice(1); if (nomor.startsWith('8')) return '62' + nomor; if (nomor.startsWith('62')) return nomor; return nomor; } }"
+          :href="'https://wa.me/' + formatWa('{{social.[0].number}}')"
+          target="_blank" rel="noopener noreferrer"
           class="flex items-center justify-center gap-[15px] w-[370px] h-[85px] p-[10px] bg-transparent hover:bg-white/10 text-white rounded-[12px] font-semibold text-lg xl:text-xl transition-all duration-300 border border-white shadow-lg hover:shadow-xl hover:-translate-y-1 opacity-100 cursor-pointer"
         >
           <img src="/public/image/dashboard/hugeicons_customer-support.svg" alt="Consultation" class="w-6 h-6 xl:w-8 xl:h-8">
