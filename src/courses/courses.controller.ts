@@ -485,7 +485,7 @@ export class CoursesController {
       course.find((c) => c.id === selectedCourseId) ?? course[0];
     const logbooks = await this.usersService.findAllLogbooks(id);
 
-    const userWithCourses = await this.coursesService.findCompletedCoursesByUser(req.user!.id);
+    // const userWithCourses = await this.coursesService.findCompletedCoursesByUser(req.user!.id);
     const portfolio = await this.coursesService.findPortfolio(req.user!.id);
 
     res.render('user/user_profile/index', {
@@ -497,7 +497,7 @@ export class CoursesController {
       userWithCourses,
       logbooks,
       activeSection: courseId ? 'uiux' : 'learning',
-      userWithCourses,
+      // userWithCourses,
       portfolio,
     });
   }

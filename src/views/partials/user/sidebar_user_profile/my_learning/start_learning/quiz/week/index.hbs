@@ -7,41 +7,47 @@
   </div>
 
   <!-- Score Result Cards (one per attempt) -->
-  <div class="bg-white shadow-sm flex flex-col h-[198px] overflow-hidden rounded-2xl p-6 sm:p-3 mb-4 border border-slate-200 hover:shadow-lg transition-all duration-300 relative">
-    <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
-      <div class="flex items-center justify-between gap-4">
-        <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
-          Quiz Week 1 : Minggu Pertama
-        </span>
-        <span class="font-montserrat text-[25px] text-[#003060] whitespace-nowrap">Score:
-          <span class="font-semibold">0/100</span>
-        </span>
+  <template x-for="scoreItem in (activeRecord && activeRecord.scores) || []" :key="scoreItem.id">
+    <div class="bg-white shadow-sm flex flex-col h-[198px] overflow-hidden rounded-2xl p-6 sm:p-3 mb-4 border border-slate-200 hover:shadow-lg transition-all duration-300 relative">
+      <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
+        <div class="flex items-center justify-between gap-4">
+          <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate" x-text="(activeMeta ? activeMeta.description : '') + ' : ' + (activeRecord ? activeRecord.quizName : '')">
+          </span>
+          <span class="font-montserrat text-[25px] text-[#003060] whitespace-nowrap">Score:
+            <span class="font-semibold" x-text="scoreItem.score + '/100'">0/100</span>
+          </span>
+        </div>
       </div>
-    </div>
-    <div class="flex items-center space-x-2">
-      <i class="fa-regular fa-calendar-days text-[20px] text-gray-900"></i>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center space-x-2">
+        <i class="fa-regular fa-calendar-days text-[20px] text-gray-900"></i>
+        <div class="flex items-center gap-2">
+          <p class="text-[#003060] text-[20px] font-semibold font-sans">
+            {{t "test.quiz.totalQuestions"}} :
+          </p>
+          <p class="text-[#003060] font-sans text-[20px]" x-text="(activeRecord && activeRecord.questions) ? activeRecord.questions.length : 0"></p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <i class="fa-regular fa-clock text-[20px] text-gray-900"></i>
         <p class="text-[#003060] text-[20px] font-semibold font-sans">
-          {{t "test.quiz.totalQuestions"}} :
+          Duration :
         </p>
-        <p class="text-[#003060] font-sans text-[20px]">2</p>
+        <p class="text-[#003060] font-sans text-[20px]" x-text="(activeRecord ? activeRecord.duration : 0) + ' minutes'"></p>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <i class="fa-regular fa-clock text-[20px] text-gray-900"></i>
+        <p class="text-[#003060] text-[20px] font-semibold font-sans">
+          {{t "test.quiz.minimumScore"}} :
+        </p>
+        <p class="text-[#003060] font-sans text-[20px]" x-text="(activeRecord ? activeRecord.minScore : 0) + ' Poin'"></p>
       </div>
     </div>
-    <div class="flex items-center space-x-2">
-      <i class="fa-regular fa-clock text-[20px] text-gray-900"></i>
-      <p class="text-[#003060] text-[20px] font-semibold font-sans">
-        Duration :
-      </p>
-      <p class="text-[#003060] font-sans text-[20px]">60 minutes</p>
-    </div>
+  </template>
 
-    <div class="flex items-center space-x-2">
-      <i class="fa-regular fa-clock text-[20px] text-gray-900"></i>
-      <p class="text-[#003060] text-[20px] font-semibold font-sans">
-        {{t "test.quiz.minimumScore"}} :
-      </p>
-      <p class="text-[#003060] font-sans text-[20px]">50 Poin</p>
-    </div>
+  <!-- No attempts yet -->
+  <div x-show="!activeRecord || !activeRecord.scores || activeRecord.scores.length === 0" class="bg-white shadow-sm rounded-2xl p-6 mb-4 border border-slate-200 text-center">
+    <p class="font-montserrat text-base text-[#003060]">No attempts yet.</p>
   </div>
 
   <!-- Info Quiz Card with Start Button -->
@@ -49,8 +55,7 @@
   <div class="grid grid-cols-1 md:grid-cols-1 gap-2">
 
       <div class="flex items-center justify-between gap-4">
-        <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate">
-          Quiz Week 1 : Minggu Pertama
+        <span class="font-montserrat font-semibold text-[25px] text-[#003060] truncate" x-text="(activeMeta ? activeMeta.description : '') + ' : ' + (activeRecord ? activeRecord.quizName : '')">
         </span>
       </div>
     <div class="flex items-center space-x-2">
@@ -59,7 +64,7 @@
         <p class="text-[#003060] text-[20px] font-semibold font-sans">
           {{t "test.quiz.totalQuestions"}} :
         </p>
-        <p class="text-[#003060] font-sans text-[20px]">2</p>
+        <p class="text-[#003060] font-sans text-[20px]" x-text="(activeRecord && activeRecord.questions) ? activeRecord.questions.length : 0"></p>
       </div>
     </div>
 
@@ -68,7 +73,7 @@
       <p class="text-[#003060] text-[20px] font-semibold font-sans">
         Duration :
       </p>
-      <p class="text-[#003060] font-sans text-[20px]">60 minutes</p>
+      <p class="text-[#003060] font-sans text-[20px]" x-text="(activeRecord ? activeRecord.duration : 0) + ' minutes'"></p>
     </div>
 
     <div class="flex items-center space-x-2">
@@ -76,13 +81,13 @@
       <p class="text-[#003060] text-[20px] font-semibold font-sans">
         {{t "test.quiz.minimumScore"}} :
       </p>
-      <p class="text-[#003060] font-sans text-[20px]">50 Poin</p>
+      <p class="text-[#003060] font-sans text-[20px]" x-text="(activeRecord ? activeRecord.minScore : 0) + ' Poin'"></p>
     </div>
 
   </div>
 
   <!-- Button kanan bawah -->
-  <a href="#"
+  <a :href="activeRecord ? '/quiz/start/' + activeRecord.id : '#'"
    class="btn self-end mt-auto relative bottom-12 bg-[#003060] hover:bg-[#003060] text-white inline-flex items-center gap-2 px-5 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 font-semibold text-[15px] focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"><span>{{t "test.quiz.startQuiz"}}</span>
    </a>
 
@@ -90,7 +95,7 @@
 
 
   <div class="mb-8 flex items-center">
-  <button @click="toggleActiveSection('quiz')"
+  <button @click="closeQuiz()"
      class="w-12 h-12 aspect-square p-0 rounded-full bg-white inline-flex items-center justify-center border border-slate-300 shadow-md hover:shadow-lg text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 cursor-pointer">
 
     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

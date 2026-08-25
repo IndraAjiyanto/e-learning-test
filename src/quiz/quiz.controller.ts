@@ -16,11 +16,15 @@ import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
+import { UsersService } from 'src/users/users.service';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('quiz')
 export class QuizController {
-  constructor(private readonly quizService: QuizService) {}
+  constructor(
+    private readonly quizService: QuizService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Roles('admin')
   @Post(':weeksId')
@@ -105,9 +109,24 @@ export class QuizController {
       quizId,
     );
     const questions = await this.quizService.findQuestions(quizId);
+    const quiz = await this.quizService.findOne(quizId);
+    const userWithCourses = await this.usersService.findWithCourses(
+      req.user!.id,
+    );
+    const logbooks = await this.usersService.findAllLogbooks(req.user!.id);
+    const portfolio = await this.usersService.findPortfolio(req.user!.id);
+    const activeCourse = userWithCourses?.userCourses.find(
+      (userCourse) => userCourse.course?.id === quiz?.weeks?.course?.id,
+    )?.course;
+
     if (check) {
-      res.render('user/quiz/start', {
+      res.render('user/user_profile/index', {
         user: req.user,
+        userWithCourses,
+        logbooks,
+        portfolio,
+        activeCourse,
+        activeSection: 'quiz-start',
         quizId,
         questions,
         check,
@@ -117,8 +136,13 @@ export class QuizController {
         req.user!.id,
         quizId,
       );
-      res.render('user/quiz/start', {
+      res.render('user/user_profile/index', {
         user: req.user,
+        userWithCourses,
+        logbooks,
+        portfolio,
+        activeCourse,
+        activeSection: 'quiz-start',
         quizId,
         questions,
         remainingTime,
