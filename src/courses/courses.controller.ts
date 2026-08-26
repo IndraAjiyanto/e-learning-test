@@ -600,7 +600,12 @@ export class CoursesController {
       req.user!.id,
     );
     const kelass = await this.coursesService.allClassExcept(course.id);
-    // const courseQuestions = await this.coursesService.findCourseQuestions(courseId);
+    const courseQuestions =
+      await this.coursesService.findCourseQuestions(courseId);
+    const faqs = courseQuestions.map((cq) => ({
+      question: cq.questions,
+      answer: cq.answers,
+    }));
     // const course_flows = await this.coursesService.findCourseFlows(courseId);
     // const mentor = await this.coursesService.findCourseMentors(courseId);
     // const course_benefits = await this.coursesService.findProgramBenefit(courseId);
@@ -639,7 +644,7 @@ export class CoursesController {
         kelass,
         check_user,
         studentList,
-        // courseQuestions,
+        faqs,
         // course_flows,
         // mentor,
         // course_benefits,
@@ -790,6 +795,7 @@ export class CoursesController {
             technologies,
             userCourses,
             installments,
+            faqs,
             currentStatusOptions: statusOptions,
             referalSourceOptions: referalOptions,
           });
