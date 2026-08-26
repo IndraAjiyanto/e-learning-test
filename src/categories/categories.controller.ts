@@ -137,8 +137,7 @@ export class CategoriesController {
         gallery,
       });
     } else if (category?.type === 'Paid Program') {
-      const portfolio =
-        await this.categoriesService.findPortfolioByCategory(category.id);
+      const portfolio = await this.categoriesService.findPortfolioByCategory(category.id);
       res.render('paid_program', {
         category,
         user: req.user,

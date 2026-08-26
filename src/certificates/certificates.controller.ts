@@ -24,7 +24,7 @@ export class CertificatesController {
           courseId,
           req.user.id,
         );
-        res.redirect(certificates.certificate);
+        res.render('user/certificates/detail', { user: req.user, certificates });
       }
     }
   }

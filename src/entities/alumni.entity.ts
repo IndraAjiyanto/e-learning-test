@@ -24,9 +24,6 @@ export class Alumni {
   message: string[];
 
   @Column('jsonb', { nullable: true })
-  program: string[];
-
-  @Column('jsonb', { nullable: true })
   currentPosition: string[];
 
   @ManyToOne(() => Course, (course) => course.alumni, { onDelete: 'CASCADE' })
