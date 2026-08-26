@@ -1,69 +1,140 @@
 <!-- ADVANTAGE SECTION (CORE KNOWLEDGE FIRST) -->
-<section id="advantage" class="py-16 bg-[#FAFAFA] font-montserrat">
-  <div class="container mx-auto px-6 lg:px-12 max-w-[1260px]">
-    
-    <!-- Yellow Advantage Card -->
-    <div class="w-full bg-[#FFFBCB] rounded-[24px] px-8 py-12 sm:px-14 sm:py-16 lg:px-16 lg:py-16 min-h-[500px] lg:min-h-[669px] shadow-xs relative overflow-hidden flex flex-col justify-center">
+<section id="advantage" class="w-full bg-[#FAFAFA] font-montserrat">
+  
+  <!-- 1. KONTEN KHUSUS MOBILE (< 640px) -->
+  <div class="block sm:hidden w-full py-10 px-5">
+    <!-- Yellow Advantage Card Mobile -->
+    <div class="w-full bg-[#FFFBCB] rounded-[20px] p-5 shadow-xs relative overflow-hidden flex flex-col justify-center gap-6">
       
-      <!-- Header -->
-      <div class="flex items-center gap-4 mb-8">
-        <div class="w-[65px] h-[65px] rounded-[100px] bg-[#EFF4FE] flex items-center justify-center shrink-0">
-          <img src="/public/image/paidProgram/Vector.svg" alt="Core Knowledge" class="w-[40px] h-[40px] object-contain" />
+      <!-- Header Mobile -->
+      <div class="flex items-center gap-3">
+        <div class="w-[48px] h-[48px] rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+          <img src="/public/image/paidProgram/Vector.svg" alt="Core Knowledge" class="w-[28px] h-[28px] object-contain" />
         </div>
-        <h3 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-[30px] leading-none text-black">
+        <h3 class="font-montserrat font-bold text-lg leading-tight text-black">
           Core Knowledge First
         </h3>
       </div>
 
-      <!-- Content (Indented to align with Core Knowledge First title) -->
-      <div class="sm:pl-[82px]">
+      <!-- Description Mobile -->
+      <p class="font-sans font-normal text-sm leading-relaxed text-black/85">
+        Learn from the ground up with a structured, mentor-guided approach. Progress from fundamental concepts to advanced skills through interactive learning experiences, expert reviews, and hands-on projects that prepare you for real industry demands.
+      </p>
+
+      <!-- 4 Advantage List Items Mobile -->
+      <div class="space-y-4 w-full">
+        <!-- Item 1 -->
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+            <img src="/public/image/paidProgram/Vector-1.svg" alt="Affordable Investment" class="w-4 h-4 object-contain" />
+          </div>
+          <p class="font-sans font-semibold text-[13px] leading-none tracking-normal text-[#000000CC]">
+            More affordable investment compared to similar training programs.
+          </p>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+            <img src="/public/image/paidProgram/Group-1.svg" alt="Expert Mentors" class="w-4 h-4 object-contain" />
+          </div>
+          <p class="font-sans font-semibold text-[13px] leading-none tracking-normal text-[#000000CC]">
+            Guided by experienced industry professionals and expert mentors.
+          </p>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+            <img src="/public/image/paidProgram/Group.svg" alt="Industry Projects" class="w-4 h-4 object-contain" />
+          </div>
+          <p class="font-sans font-semibold text-[13px] leading-none tracking-normal text-[#000000CC]">
+            Training is built around real-world, industry-based capstone projects.
+          </p>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+            <img src="/public/image/icons/paid_program/benefit/industry.svg" alt="Portfolio" class="w-4 h-4 object-contain" />
+          </div>
+          <p class="font-sans font-semibold text-[13px] leading-none tracking-normal text-[#000000CC]">
+            Graduate with a portfolio that meets current industry expectations.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. KONTEN KHUSUS DESKTOP (>= 640px / Figma Baseline W1728) -->
+  <div class="hidden sm:block py-16">
+    <div class="container mx-auto px-6 lg:px-12 max-w-[1260px]">
+      
+      <!-- Yellow Advantage Card Desktop (100% Fixed & Untouched) -->
+      <div class="w-full bg-[#FFFBCB] rounded-[24px] px-8 py-12 sm:px-14 sm:py-16 lg:px-16 lg:py-16 min-h-[500px] lg:min-h-[669px] shadow-xs relative overflow-hidden flex flex-col justify-center">
         
-        <!-- Description Subtitle -->
-        <p class="font-sans font-normal text-base sm:text-xl lg:text-[25px] text-black/85 mb-10 max-w-4xl leading-relaxed lg:leading-[40px]">
-          Learn from the ground up with a structured, mentor-guided approach. Progress from fundamental concepts to advanced skills through interactive learning experiences, expert reviews, and hands-on projects that prepare you for real industry demands.
-        </p>
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-[65px] h-[65px] rounded-[100px] bg-[#EFF4FE] flex items-center justify-center shrink-0">
+            <img src="/public/image/paidProgram/Vector.svg" alt="Core Knowledge" class="w-[40px] h-[40px] object-contain" />
+          </div>
+          <h3 class="font-montserrat font-semibold text-2xl sm:text-3xl lg:text-[30px] leading-none text-black">
+            Core Knowledge First
+          </h3>
+        </div>
 
-        <!-- 4 Advantage List Items -->
-        <div class="space-y-6 sm:space-y-7 max-w-4xl">
+        <!-- Content (Indented to align with Core Knowledge First title) -->
+        <div class="sm:pl-[82px]">
           
-          <!-- Item 1 -->
-          <div class="flex items-center gap-4 sm:gap-5">
-            <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-              <img src="/public/image/paidProgram/Vector-1.svg" alt="Affordable Investment" class="w-5 h-5 object-contain" />
-            </div>
-            <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-              More affordable investment compared to similar training programs.
-            </p>
-          </div>
+          <!-- Description Subtitle -->
+          <p class="font-sans font-normal text-base sm:text-xl lg:text-[25px] text-black/85 mb-10 max-w-4xl leading-relaxed lg:leading-[40px]">
+            Learn from the ground up with a structured, mentor-guided approach. Progress from fundamental concepts to advanced skills through interactive learning experiences, expert reviews, and hands-on projects that prepare you for real industry demands.
+          </p>
 
-          <!-- Item 2 -->
-          <div class="flex items-center gap-4 sm:gap-5">
-            <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-              <img src="/public/image/paidProgram/Group-1.svg" alt="Expert Mentors" class="w-5 h-5 object-contain" />
+          <!-- 4 Advantage List Items -->
+          <div class="space-y-6 sm:space-y-7 max-w-4xl">
+            
+            <!-- Item 1 -->
+            <div class="flex items-center gap-4 sm:gap-5">
+              <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+                <img src="/public/image/paidProgram/Vector-1.svg" alt="Affordable Investment" class="w-5 h-5 object-contain" />
+              </div>
+              <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
+                More affordable investment compared to similar training programs.
+              </p>
             </div>
-            <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-              Guided by experienced industry professionals and expert mentors.
-            </p>
-          </div>
 
-          <!-- Item 3 -->
-          <div class="flex items-center gap-4 sm:gap-5">
-            <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-              <img src="/public/image/paidProgram/Group.svg" alt="Industry Projects" class="w-5 h-5 object-contain" />
+            <!-- Item 2 -->
+            <div class="flex items-center gap-4 sm:gap-5">
+              <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+                <img src="/public/image/paidProgram/Group-1.svg" alt="Expert Mentors" class="w-5 h-5 object-contain" />
+              </div>
+              <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
+                Guided by experienced industry professionals and expert mentors.
+              </p>
             </div>
-            <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-              Training is built around real-world, industry-based capstone projects.
-            </p>
-          </div>
 
-          <!-- Item 4 -->
-          <div class="flex items-center gap-4 sm:gap-5">
-            <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
-              <img src="/public/image/icons/paid_program/benefit/industry.svg" alt="Portfolio" class="w-5 h-5 object-contain" />
+            <!-- Item 3 -->
+            <div class="flex items-center gap-4 sm:gap-5">
+              <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+                <img src="/public/image/paidProgram/Group.svg" alt="Industry Projects" class="w-5 h-5 object-contain" />
+              </div>
+              <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
+                Training is built around real-world, industry-based capstone projects.
+              </p>
             </div>
-            <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
-              Graduate with a portfolio that meets current industry expectations.
-            </p>
+
+            <!-- Item 4 -->
+            <div class="flex items-center gap-4 sm:gap-5">
+              <div class="w-10 h-10 rounded-full bg-[#EFF4FE] flex items-center justify-center shrink-0">
+                <img src="/public/image/icons/paid_program/benefit/industry.svg" alt="Portfolio" class="w-5 h-5 object-contain" />
+              </div>
+              <p class="font-sans font-semibold text-base sm:text-xl lg:text-[25px] text-black leading-none">
+                Graduate with a portfolio that meets current industry expectations.
+              </p>
+            </div>
+
           </div>
 
         </div>
@@ -71,6 +142,6 @@
       </div>
 
     </div>
-
   </div>
+
 </section>
