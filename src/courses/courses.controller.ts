@@ -722,7 +722,7 @@ export class CoursesController {
           course,
           kelass,
           studentList,
-          // courseQuestions,
+          courseQuestions,
           // course_flows,
           // mentor,
           course_benefits,
@@ -744,7 +744,12 @@ export class CoursesController {
         res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
       } else {
         const course = await this.coursesService.findOneUserCourse(id);
-        // const courseQuestions = await this.coursesService.findCourseQuestions(id);
+        const courseQuestions =
+          await this.coursesService.findCourseQuestions(id);
+        const faqs = courseQuestions.map((cq) => ({
+          question: cq.questions,
+          answer: cq.answers,
+        }));
         // const course_flows = await this.coursesService.findCourseFlows(id);
         // const mentor = await this.coursesService.findCourseMentors(id);
         // const course_benefits = await this.coursesService.findProgramBenefit(id);
@@ -794,7 +799,8 @@ export class CoursesController {
             course,
             kelass,
             studentList,
-            // courseQuestions,
+            courseQuestions,
+            faqs,
             // course_flows,
             // mentor,
             // course_benefits,
