@@ -44,7 +44,6 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Profile</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Message</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Alumni Status</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Current Position</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
@@ -64,11 +63,6 @@
             <td class="px-6 py-4 text-sm text-gray-800">
               <template x-for="message in alumni.message">
               <div class="line-clamp-3" x-text="message"></div>
-              </template>
-            </td>
-            <td class="px-6 py-4 text-sm text-gray-800">
-              <template x-for="status in alumni.program">
-              <div class="line-clamp-3" x-text="status"></div>
               </template>
             </td>
             <td class="px-6 py-4 text-sm text-gray-800">

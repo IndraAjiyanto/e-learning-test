@@ -16,19 +16,16 @@
         formData: {
           name: { id: `{{alumni.name.id}}`, en: `{{alumni.name.en}}`, ja: `{{alumni.name.ja}}` },
           message: { id: `{{alumni.message.id}}`, en: `{{alumni.message.en}}`, ja: `{{alumni.message.ja}}` },
-          program: { id: `{{alumni.program.id}}`, en: `{{alumni.program.en}}`, ja: `{{alumni.program.ja}}` },
           currentPosition: { id: `{{alumni.currentPosition.id}}`, en: `{{alumni.currentPosition.en}}`, ja: `{{alumni.currentPosition.ja}}` }
         },
         formErrors: {
           name: { id: '', en: '', ja: '' },
           message: { id: '', en: '', ja: '' },
-          program: { id: '', en: '', ja: '' },
           currentPosition: { id: '', en: '', ja: '' }
         },
         formValid: {
           name: { id: true, en: true, ja: true },
           message: { id: true, en: true, ja: true },
-          program: { id: true, en: true, ja: true },
           currentPosition: { id: true, en: true, ja: true }
         },
 
@@ -124,19 +121,6 @@
               }
               break;
               
-            case 'program':
-              if (!value.trim()) {
-                this.formErrors.program[lang] = 'Alumni status is required';
-                this.formValid.program[lang] = false;
-              } else if (value.trim().length < 2) {
-                this.formErrors.program[lang] = 'Alumni status must be at least 2 characters';
-                this.formValid.program[lang] = false;
-              } else {
-                this.formErrors.program[lang] = '';
-                this.formValid.program[lang] = true;
-              }
-              break;
-              
             case 'currentPosition':
               if (!value.trim()) {
                 this.formErrors.currentPosition[lang] = 'Current position is required';
@@ -168,15 +152,13 @@
           const imageValid = !this.hasFile || this.isValid;
           const namaValid = Object.values(this.formValid.name).every(v => v);
           const pesanValid = Object.values(this.formValid.message).every(v => v);
-          const alumniValid = Object.values(this.formValid.program).every(v => v);
           const posisiValid = Object.values(this.formValid.currentPosition).every(v => v);
-          return imageValid && namaValid && pesanValid && alumniValid && posisiValid;
+          return imageValid && namaValid && pesanValid && posisiValid;
         },
 
         hasFormErrors() {
           return Object.values(this.formErrors.name).some(e => e !== '') || 
                  Object.values(this.formErrors.message).some(e => e !== '') ||
-                 Object.values(this.formErrors.program).some(e => e !== '') ||
                  Object.values(this.formErrors.currentPosition).some(e => e !== '');
         }
       }"
@@ -193,8 +175,6 @@
 {{> super_admin/alumni/edit/name_input }}
 
 {{> super_admin/alumni/edit/message_input }}
-
-{{> super_admin/alumni/edit/alumni_status_input }}
 
 {{> super_admin/alumni/edit/current_position_input }}
 

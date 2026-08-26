@@ -35,19 +35,16 @@
         formData: {
           name: { id: '', en: '', ja: '' },
           message: { id: '', en: '', ja: '' },
-          program: { id: '', en: '', ja: '' },
           currentPosition: { id: '', en: '', ja: '' }
         },
         formErrors: {
           name: { id: '', en: '', ja: '' },
           message: { id: '', en: '', ja: '' },
-          program: { id: '', en: '', ja: '' },
           currentPosition: { id: '', en: '', ja: '' }
         },
         formValid: {
           name: { id: false, en: false, ja: false },
           message: { id: false, en: false, ja: false },
-          program: { id: false, en: false, ja: false },
           currentPosition: { id: false, en: false, ja: false }
         },
 
@@ -141,19 +138,6 @@
               }
               break;
               
-            case 'program':
-              if (!value.trim()) {
-                this.formErrors.program[lang] = 'Alumni status is required';
-                this.formValid.program[lang] = false;
-              } else if (value.trim().length < 2) {
-                this.formErrors.program[lang] = 'Alumni status must be at least 2 characters';
-                this.formValid.program[lang] = false;
-              } else {
-                this.formErrors.program[lang] = '';
-                this.formValid.program[lang] = true;
-              }
-              break;
-              
             case 'currentPosition':
               if (!value.trim()) {
                 this.formErrors.currentPosition[lang] = 'Current position is required';
@@ -186,15 +170,13 @@
           const kelasValid = this.selectedKelas !== null;
           const namaValid = Object.values(this.formValid.name).every(v => v);
           const pesanValid = Object.values(this.formValid.message).every(v => v);
-          const alumniValid = Object.values(this.formValid.program).every(v => v);
           const posisiValid = Object.values(this.formValid.currentPosition).every(v => v);
-          return imageValid && kelasValid && namaValid && pesanValid && alumniValid && posisiValid;
+          return imageValid && kelasValid && namaValid && pesanValid && posisiValid;
         },
 
         hasFormErrors() {
           return Object.values(this.formErrors.name).some(e => e !== '') || 
                  Object.values(this.formErrors.message).some(e => e !== '') ||
-                 Object.values(this.formErrors.program).some(e => e !== '') ||
                  Object.values(this.formErrors.currentPosition).some(e => e !== '');
         }
       }"
@@ -218,8 +200,6 @@
 {{> super_admin/alumni/createAlumni/name_input }}
 
 {{> super_admin/alumni/createAlumni/message_input }}
-
-{{> super_admin/alumni/createAlumni/alumni_status_input }}
 
 {{> super_admin/alumni/createAlumni/current_position_input }}
 

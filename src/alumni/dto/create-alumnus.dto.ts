@@ -11,9 +11,6 @@ export class CreateAlumnusDto {
   message: string[];
 
   @IsArray()
-  program: string[];
-
-  @IsArray()
   currentPosition: string[];
 
   @IsInt()
