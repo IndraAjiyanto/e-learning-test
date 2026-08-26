@@ -29,7 +29,7 @@ export class Participants {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Course, {
+  @ManyToOne(() => Course, (course) => course.participants, {
     onDelete: 'CASCADE',
   })
   @Exclude()
