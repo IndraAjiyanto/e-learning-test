@@ -2,6 +2,24 @@
 
   <h2 class='text-3xl font-bold text-gray-900 mb-8'>{{gallery.title}}</h2>
 
+  {{#if error}}
+    <div class="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
+      </svg>
+      <span class="text-sm font-medium">{{error}}</span>
+    </div>
+  {{/if}}
+
+  {{#if success}}
+    <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="text-sm font-medium">{{success}}</span>
+    </div>
+  {{/if}}
+
   <form
     id='gallery-form'
     action='/gallery/{{gallery.id}}?_method=PATCH'
@@ -37,52 +55,33 @@
           class='hidden'
         />
       </label>
-      <p id='file-name' class='text-xs text-gray-500 mt-2 hidden'></p>
       <p class='text-xs text-gray-400 mt-2'>Leave empty to keep current image.
-        If replacing: JPG/PNG, 1900–1920 × 1000–1080px, max 10MB.</p>
+        If replacing: JPG/PNG, min 300×300 – max 2000×2000px, max 5MB.</p>
 
       <!-- Pesan error validasi gambar -->
       <div
         id='image-error'
-        class='hidden mt-2 flex items-start gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-3 py-2 rounded-lg'
+        class='hidden mt-2 flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
       >
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          class='w-4 h-4 mt-0.5 shrink-0'
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='currentColor'
-          stroke-width='2'
-        >
-          <path
-            stroke-linecap='round'
-            stroke-linejoin='round'
-            d='M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z'
-          />
-        </svg>
-        <span id='image-error-text'></span>
+        <i class='fas fa-exclamation-circle text-red-500 mt-0.5 flex-shrink-0'></i>
+        <div class='flex-1 min-w-0'>
+          <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
+          <p id='image-error-text' class='text-xs text-red-700 break-words'></p>
+        </div>
       </div>
 
       <!-- Konfirmasi valid -->
       <div
         id='image-valid'
-        class='hidden mt-2 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm px-3 py-2 rounded-lg'
+        class='hidden mt-2 flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-lg'
       >
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          class='w-4 h-4 shrink-0'
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='currentColor'
-          stroke-width='2'
-        >
-          <path
-            stroke-linecap='round'
-            stroke-linejoin='round'
-            d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
-          />
-        </svg>
-        <span id='image-valid-text'>New image looks good</span>
+        <div class='flex items-center gap-2 flex-1 min-w-0'>
+          <i class='fas fa-check-circle text-green-500 flex-shrink-0'></i>
+          <div class='min-w-0 flex-1'>
+            <p id='valid-file-name' class='text-sm font-semibold text-green-800 truncate'></p>
+            <p id='valid-file-size' class='text-xs text-green-700'></p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -94,7 +93,6 @@
       <select
         id='no'
         name='no'
-        required
         class='w-full border border-gray-300 text-gray-900 bg-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900'
       >
         <option value='' disabled>Select No</option>
@@ -105,6 +103,8 @@
         <option value='5' {{#if (eq gallery.no '5')}}selected{{/if}}>5</option>
         <option value='6' {{#if (eq gallery.no '6')}}selected{{/if}}>6</option>
       </select>
+      <p id='no-error' class='hidden mt-1 text-sm text-red-600'></p>
+      <p id='no-valid' class='hidden mt-1 text-sm text-green-600'>Valid</p>
     </div>
 
     <div>
@@ -116,10 +116,11 @@
         type='text'
         id='title'
         name='title'
-        required
         value='{{gallery.title}}'
         class='w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 bg-white text-sm'
       />
+      <p id='title-error' class='hidden mt-1 text-sm text-red-600'></p>
+      <p id='title-valid' class='hidden mt-1 text-sm text-green-600'>Valid</p>
     </div>
 
     <div>
@@ -131,9 +132,10 @@
         id='description'
         name='description'
         rows='4'
-        required
         class='w-full border border-gray-300 text-gray-900 bg-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none'
       >{{gallery.description}}</textarea>
+      <p id='description-error' class='hidden mt-1 text-sm text-red-600'></p>
+      <p id='description-valid' class='hidden mt-1 text-sm text-green-600'>Valid</p>
     </div>
 
     <div>
@@ -172,23 +174,23 @@
 
 {{!-- prettier-ignore --}}
 <script>
-function () {
+(function () {
     const RULES = {
-      minWidth: 1900,
-      maxWidth: 1920,
-      minHeight: 1000,
-      maxHeight: 1080,
-      maxSize: 10 * 1024 * 1024, // 10MB
+      minWidth: 300,
+      maxWidth: 2000,
+      minHeight: 300,
+      maxHeight: 2000,
+      maxSize: 5 * 1024 * 1024, // 5MB
       allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     };
 
     const input = document.getElementById('gambar-input');
     const previewImg = document.getElementById('preview-img');
-    const fileName = document.getElementById('file-name');
     const errorBox = document.getElementById('image-error');
     const errorText = document.getElementById('image-error-text');
     const validBox = document.getElementById('image-valid');
-    const validText = document.getElementById('image-valid-text');
+    const validFileName = document.getElementById('valid-file-name');
+    const validFileSize = document.getElementById('valid-file-size');
     const submitBtn = document.getElementById('submit-btn');
     const originalSrc = previewImg.src;
 
@@ -199,9 +201,10 @@ function () {
       submitBtn.disabled = true;
     }
 
-    function showValid(width, height) {
+    function showValid(file, width, height) {
       errorBox.classList.add('hidden');
-      validText.textContent = `New image looks good (${width}×${height}px)`;
+      validFileName.textContent = file.name;
+      validFileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB (' + width + 'x' + height + 'px)';
       validBox.classList.remove('hidden');
       submitBtn.disabled = false;
     }
@@ -211,7 +214,6 @@ function () {
       validBox.classList.add('hidden');
       submitBtn.disabled = false; // gambar lama tetap valid, jadi tombol boleh aktif lagi
       previewImg.src = originalSrc;
-      fileName.classList.add('hidden');
     }
 
     input.addEventListener('change', () => {
@@ -221,9 +223,6 @@ function () {
         resetToOriginal();
         return;
       }
-
-      fileName.textContent = file.name + ' · ' + (file.size / 1024 / 1024).toFixed(2) + ' MB';
-      fileName.classList.remove('hidden');
 
       // 1. Cek tipe file
       if (!RULES.allowedTypes.includes(file.type)) {
@@ -236,45 +235,77 @@ function () {
       // 2. Cek ukuran file
       if (file.size > RULES.maxSize) {
         const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-        showError(`File is too large (${sizeMB}MB). Maximum allowed size is 10MB.`);
+        showError(`File is too large (${sizeMB}MB). Maximum allowed size is 5MB.`);
         input.value = '';
         previewImg.src = originalSrc;
         return;
       }
 
-      // 3. Cek resolusi gambar
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const { width, height } = img;
-          previewImg.src = e.target.result;
+      // 3. Cek resolusi gambar menggunakan URL.createObjectURL
+      const url = URL.createObjectURL(file);
+      
+      // Update preview secara instan
+      previewImg.src = url;
 
-          const widthOk = width >= RULES.minWidth && width <= RULES.maxWidth;
-          const heightOk = height >= RULES.minHeight && height <= RULES.maxHeight;
+      const img = new Image();
+      img.onload = () => {
+        const { width, height } = img;
+        const widthOk = width >= RULES.minWidth && width <= RULES.maxWidth;
+        const heightOk = height >= RULES.minHeight && height <= RULES.maxHeight;
 
-          if (!widthOk || !heightOk) {
-            showError(
-              `Image resolution is ${width}×${height}px. Required: width ${RULES.minWidth}–${RULES.maxWidth}px and height ${RULES.minHeight}–${RULES.maxHeight}px.`
-            );
-            return;
-          }
-
-          showValid(width, height);
-        };
-        img.onerror = () => {
-          showError('Could not read this image file. Please try a different file.');
+        if (!widthOk || !heightOk) {
+          showError(
+            `Image resolution is ${width}x${height}px. Required: width ${RULES.minWidth}-${RULES.maxWidth}px and height ${RULES.minHeight}-${RULES.maxHeight}px.`
+          );
           input.value = '';
           previewImg.src = originalSrc;
-        };
-        img.src = e.target.result;
+          return;
+        }
+
+        showValid(file, width, height);
       };
-      reader.readAsDataURL(file);
+      img.onerror = () => {
+        showError('Could not read this image file. Please try a different file.');
+        input.value = '';
+        previewImg.src = originalSrc;
+      };
+      img.src = url;
+    });
+
+    // ================== VALIDASI FIELD WAJIB ==================
+    const requiredFields = [
+      { el: document.getElementById('no'), label: 'No' },
+      { el: document.getElementById('title'), label: 'Title' },
+      { el: document.getElementById('description'), label: 'Description' },
+    ];
+
+    function checkRequiredField(field) {
+      const errorEl = document.getElementById(field.el.id + '-error');
+      const validEl = document.getElementById(field.el.id + '-valid');
+      const value = field.el.value.trim();
+
+      if (!value) {
+        errorEl.textContent = field.label + ' wajib diisi.';
+        errorEl.classList.remove('hidden');
+        validEl.classList.add('hidden');
+        return false;
+      }
+
+      errorEl.classList.add('hidden');
+      validEl.classList.remove('hidden');
+      return true;
+    }
+
+    requiredFields.forEach((field) => {
+      field.el.addEventListener('input', () => checkRequiredField(field));
+      field.el.addEventListener('change', () => checkRequiredField(field));
     });
 
     document.getElementById('gallery-form').addEventListener('submit', (e) => {
-      if (submitBtn.disabled) {
+      const fieldsValid = requiredFields.every(checkRequiredField);
+      if (submitBtn.disabled || !fieldsValid) {
         e.preventDefault();
       }
     });
   })();
+</script>
