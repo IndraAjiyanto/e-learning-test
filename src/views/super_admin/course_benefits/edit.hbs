@@ -6,7 +6,7 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit Benefit Class</h2>
 
     <form
-      action='/benefit-program/{{program_title.id}}/{{program_title.course.id}}?_method=PATCH'
+      action='/benefit-program/{{program_benefit.id}}/{{program_benefit.course.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
       x-data="{ loading: false }"
@@ -29,7 +29,7 @@
           <span x-show="!loading">Update</span>
         </button>
         <a
-          href='/program/detail/program/admin/{{program_title.course.id}}'
+          href='/program/detail/program/admin/{{program_benefit.course.id}}'
             :disabled='loading'
         :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='bg-white px-6 py-2 rounded-lg border border-gray-300  transition'>
@@ -58,16 +58,16 @@
     return {
       formData: {
         title: {
-          id: `{{program_title.title.id}}`,
-          en: `{{program_title.title.en}}`,
-          ja: `{{program_title.title.ja}}`
+          id: `{{program_benefit.benefit.id}}`,
+          en: `{{program_benefit.benefit.en}}`,
+          ja: `{{program_benefit.benefit.ja}}`
         },
         description: {
-          id: `{{program_title.description.id}}`,
-          en: `{{program_title.description.en}}`,
-          ja: `{{program_title.description.ja}}`
+          id: `{{program_benefit.description.id}}`,
+          en: `{{program_benefit.description.en}}`,
+          ja: `{{program_benefit.description.ja}}`
         },
-        icon: `{{program_title.icon}}`
+        icon: `{{program_benefit.icon}}`
       },
       formErrors: {
         title: { id: '', en: '', ja: '' },
