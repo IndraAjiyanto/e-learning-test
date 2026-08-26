@@ -70,6 +70,7 @@ export class CoursesController {
       if (createCourseDto.paid_check === 'true') {
         createCourseDto.form = '';
         createCourseDto.checkPaid = true;
+        createCourseDto.promo = createCourseDto.promo || 0;
         if (req.user!.role === 'super_admin') {
           createCourseDto.process = 'approved';
         } else if (req.user!.role === 'admin') {
@@ -138,6 +139,7 @@ export class CoursesController {
       if (createCourseDto.paid_check === 'true') {
         createCourseDto.form = '';
         createCourseDto.checkPaid = true;
+        createCourseDto.promo = createCourseDto.promo || 0;
         if (req.user!.role === 'super_admin') {
           createCourseDto.process = 'approved';
         } else if (req.user!.role === 'admin') {
@@ -254,7 +256,7 @@ export class CoursesController {
     @Req() req: Request,
     @Param('categoryId') categoryId: number,
   ) {
-    const category = await this.coursesService.findOneCategory(categoryId);
+    const category = await this.coursesService.findCategory();
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
