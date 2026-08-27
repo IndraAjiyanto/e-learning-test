@@ -918,6 +918,7 @@ export class CoursesService {
         'technologies',
         'userCourses',
         'weeks',
+        'programBenefits',
         'participants',
       ],
     });
@@ -1161,14 +1162,24 @@ export class CoursesService {
   async findPortfolio(userId: number) {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
-      relations: ['user', 'course', 'course.courseType', 'course.category', 'course.technologies'],
+      relations: [
+        'user',
+        'course',
+        'course.courseType',
+        'course.category',
+        'course.technologies',
+      ],
     });
   }
 
   async findCompletedCoursesByUser(userId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['userCourses', 'userCourses.course', 'userCourses.course.category'],
+      relations: [
+        'userCourses',
+        'userCourses.course',
+        'userCourses.course.category',
+      ],
     });
 
     if (!user) {
@@ -1176,7 +1187,8 @@ export class CoursesService {
     }
 
     const completedCourses = user.userCourses.filter(
-      uc => uc.progress === true && uc.course && uc.course.process === 'approved',
+      (uc) =>
+        uc.progress === true && uc.course && uc.course.process === 'approved',
     );
     return { userCourses: completedCourses };
   }

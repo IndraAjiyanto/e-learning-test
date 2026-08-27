@@ -7,20 +7,20 @@
           <!-- ID Description -->
           <div>
             <label
-              for='deskripsi_id'
+              for='description_id'
               class='block text-xs text-gray-600 mb-1'
             >ID</label>
             <textarea
-              id='deskripsi_id'
+              id='description_id'
               x-model='formData.description.id'
               @blur="validateField('description', 'id')"
               rows='3'
               placeholder='Tulis description dalam bahasa Indonesia...'
-              :class="borderClass('deskripsi_id')"
+              :class="borderClass('description_id')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             ></textarea>
             <div
-              id='deskripsi_id_error'
+              id='description_id_error'
               class='hidden text-red-500 text-xs mt-1'
             >Deskripsi bahasa Indonesia wajib diisi</div>
           </div>
@@ -28,20 +28,20 @@
           <!-- EN Description -->
           <div>
             <label
-              for='deskripsi_en'
+              for='description_en'
               class='block text-xs text-gray-600 mb-1'
             >EN</label>
             <textarea
-              id='deskripsi_en'
+              id='description_en'
               x-model='formData.description.en'
               @blur="validateField('description', 'en')"
               rows='3'
               placeholder='Write description in English...'
-              :class="borderClass('deskripsi_en')"
+              :class="borderClass('description_en')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             ></textarea>
             <div
-              id='deskripsi_en_error'
+              id='description_en_error'
               class='hidden text-red-500 text-xs mt-1'
             >English description is required</div>
           </div>
@@ -49,20 +49,20 @@
           <!-- JP Description -->
           <div>
             <label
-              for='deskripsi_ja'
+              for='description_ja'
               class='block text-xs text-gray-600 mb-1'
             >JP</label>
             <textarea
-              id='deskripsi_ja'
+              id='description_ja'
               x-model='formData.description.ja'
               @blur="validateField('description', 'ja')"
               rows='3'
               placeholder='日本語で説明を書いてください...'
-              :class="borderClass('deskripsi_ja')"
+              :class="borderClass('description_ja')"
               class='w-full border bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700'
             ></textarea>
             <div
-              id='deskripsi_ja_error'
+              id='description_ja_error'
               class='hidden text-red-500 text-xs mt-1'
             >日本語の説明が必要です</div>
           </div>

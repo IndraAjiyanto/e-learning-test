@@ -1,10 +1,14 @@
 {{#if (eq jenis_file 'pdf')}}
   <div class='py-10'>
     <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-      <h2 class='text-2xl font-bold mb-6 text-gray-900'>Add PDF Material</h2>
+      <h2 class='text-2xl font-bold mb-6 text-gray-900'>{{#if editMode}}Edit PDF Material{{else}}Add PDF Material{{/if}}</h2>
 
       <form
+        {{#if editMode}}
+        action='/learning-material/pdf/{{material.id}}?_method=PATCH'
+        {{else}}
         action='/learning-material/pdf/{{sessionId}}'
+        {{/if}}
         method='POST'
         enctype='multipart/form-data'
         class='space-y-6'
@@ -15,26 +19,29 @@
         fileName: '',
         fileSize: 0,
         hasFile: false,
+        editMode: {{#if editMode}}true{{else}}false{{/if}},
         maxSize: 10 * 1024 * 1024,
         validateFile(file) {
           if (!file) {
             this.hasFile = false;
+            this.isValid = true;
+            this.errorMessage = '';
             return;
           }
-          
+
           this.hasFile = true;
           this.fileName = file.name;
           this.fileSize = file.size;
           this.errorMessage = '';
           this.isValid = true;
-          
+
           // Validasi tipe file
           if (file.type !== 'application/pdf') {
             this.errorMessage = 'Only PDF files are allowed';
             this.isValid = false;
             return;
           }
-          
+
           // Validasi ukuran file
           if (file.size > this.maxSize) {
             this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum ${(this.maxSize / 1024 / 1024).toFixed(0)}MB`;
@@ -54,7 +61,7 @@
           if (this.hasFile) {
             return this.isValid;
           }
-          return false;
+          return this.editMode;
         }
       }"
         @submit.prevent="if(canSubmit()) { loading = true;  $el.submit(); } else { alert('Please select a valid PDF file before submitting.'); }"
@@ -70,6 +77,7 @@
             id="title"
             name="title"
             required
+            value='{{material.title}}'
             placeholder='Enter PDF material title...'
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900'
           />
@@ -81,7 +89,11 @@
             class='block text-sm font-semibold text-gray-700 mb-1'
           >
             Upload PDF File
+            {{#if editMode}}
+            <span class='text-xs text-gray-500 font-normal'>(max 10MB, PDF only &mdash; leave blank to keep the current file)</span>
+            {{else}}
             <span class='text-xs text-gray-500 font-normal'>(max 10MB, PDF only)</span>
+            {{/if}}
           </label>
 
           <input
@@ -89,7 +101,7 @@
             id='file'
             name='file'
             accept='.pdf'
-            required
+            {{#unless editMode}}required{{/unless}}
             x-ref='fileInput'
             :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
@@ -145,7 +157,7 @@
             class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
           >
             <span x-show='loading' class="loading loading-spinner loading-sm"></span>
-            <span x-show='!loading'>Create PDF</span>
+            <span x-show='!loading'>{{#if editMode}}Update PDF{{else}}Create PDF{{/if}}</span>
           </button>
           <a
             href='/session/{{sessionId}}'
@@ -176,10 +188,14 @@
 {{else if (eq jenis_file 'ppt')}}
 <div class='py-10'>
   <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-    <h2 class='text-2xl font-bold mb-6 text-gray-900'>Add PPT Material</h2>
+    <h2 class='text-2xl font-bold mb-6 text-gray-900'>{{#if editMode}}Edit PPT Material{{else}}Add PPT Material{{/if}}</h2>
 
     <form
+      {{#if editMode}}
+      action='/learning-material/ppt/{{material.id}}?_method=PATCH'
+      {{else}}
       action='/learning-material/ppt/{{sessionId}}'
+      {{/if}}
       method='POST'
       class='space-y-6'
       x-data="{
@@ -188,6 +204,7 @@
         isValid: false,
         slideUrl: '',
         hasInput: false,
+        editMode: {{#if editMode}}true{{else}}false{{/if}},
         validateLink(value) {
           this.errorMessage = '';
           this.slideUrl = value;
@@ -214,7 +231,10 @@
           this.isValid = true;
         },
         canSubmit() {
-          return this.hasInput && this.isValid;
+          if (this.hasInput) {
+            return this.isValid;
+          }
+          return this.editMode;
         }
       }"
       @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please enter a valid Google Slides URL before submitting.'); }"
@@ -229,6 +249,7 @@
           id="title"
           name="title"
           required
+          value='{{material.title}}'
           placeholder='Enter PPT material title...'
           class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900'
         />
@@ -244,7 +265,8 @@
           type='url'
           id='file'
           name='file'
-          required
+          {{#unless editMode}}required{{/unless}}
+          value='{{material.file}}'
           :class="hasInput && !isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
           class='w-full bg-white border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 transition-colors'
           @input='validateLink($event.target.value)'
@@ -291,7 +313,7 @@
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
           <span x-show='loading' class="loading loading-spinner loading-sm"></span>
-          <span x-show='!loading'>Create PPT</span>
+          <span x-show='!loading'>{{#if editMode}}Update PPT{{else}}Create PPT{{/if}}</span>
         </button>
         <a
           href='/session/{{sessionId}}'
@@ -321,10 +343,14 @@
 {{else if (eq jenis_file 'video')}}
   <div class='py-10'>
     <div class='max-w-2xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'>
-      <h2 class='text-2xl font-bold mb-6 text-gray-900'>Add Video Material</h2>
+      <h2 class='text-2xl font-bold mb-6 text-gray-900'>{{#if editMode}}Edit Video Material{{else}}Add Video Material{{/if}}</h2>
 
       <form
+        {{#if editMode}}
+        action='/learning-material/video/{{material.id}}?_method=PATCH'
+        {{else}}
         action='/learning-material/video/{{sessionId}}'
+        {{/if}}
         method='POST'
         class='space-y-6'
         x-data="{
@@ -333,16 +359,17 @@
         isValid: false,
         videoUrl: '',
         hasInput: false,
+        editMode: {{#if editMode}}true{{else}}false{{/if}},
         validateLink(value) {
           this.errorMessage = '';
           this.videoUrl = value;
           this.hasInput = value.length > 0;
-          
+
           if (!value) {
             this.isValid = false;
             return;
           }
-          
+
           // Validasi URL
 const urlPattern = /^(https?:\/\/)[\w.-]+\.[a-z]{2,}/i;
 
@@ -352,11 +379,14 @@ if (!urlPattern.test(value)) {
   return;
 }
 
-          
+
           this.isValid = true;
         },
         canSubmit() {
-          return this.hasInput && this.isValid;
+          if (this.hasInput) {
+            return this.isValid;
+          }
+          return this.editMode;
         }
       }"
         @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please enter a valid YouTube URL before submitting.'); }"
@@ -372,6 +402,7 @@ if (!urlPattern.test(value)) {
             id="title"
             name="title"
             required
+            value='{{material.title}}'
             placeholder='Enter video material title...'
             class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900'
           />
@@ -390,7 +421,8 @@ if (!urlPattern.test(value)) {
             type='url'
             id='file'
             name='file'
-            required
+            {{#unless editMode}}required{{/unless}}
+            value='{{material.file}}'
             :class="hasInput && !isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
             class='w-full bg-white border rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 transition-colors'
             @input='validateLink($event.target.value)'
@@ -431,7 +463,7 @@ if (!urlPattern.test(value)) {
             class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
           >
             <span x-show='loading' class="loading loading-spinner loading-sm"></span>
-            <span x-show='!loading'>Create Video</span>
+            <span x-show='!loading'>{{#if editMode}}Update Video{{else}}Create Video{{/if}}</span>
           </button>
           <a
             href='/session/{{sessionId}}'

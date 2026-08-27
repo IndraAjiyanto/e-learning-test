@@ -74,7 +74,14 @@ export class CourseQuestionsService {
       courseQuestion.course = course;
     }
 
-    Object.assign(courseQuestion, updateCourseQuestionDto);
+    if (updateCourseQuestionDto.questions !== undefined) {
+      courseQuestion.questions = updateCourseQuestionDto.questions;
+    }
+
+    if (updateCourseQuestionDto.answer !== undefined) {
+      courseQuestion.answers = updateCourseQuestionDto.answer;
+    }
+
     return await this.courseQuestionRepository.save(courseQuestion);
   }
 

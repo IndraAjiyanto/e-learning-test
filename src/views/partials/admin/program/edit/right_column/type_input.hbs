@@ -47,7 +47,7 @@
                           </template>
                         </div>
                         
-                        <input type='hidden' name='jenis_kelasId' x-model='selectedJenisKelas ? selectedJenisKelas.id : ""' />
+                        <input type='hidden' name='jenis_kelasId' :value='selectedJenisKelas ? selectedJenisKelas.id : ""' />
                       </div>
                       <div id='jenis_kelasId_error' class='hidden text-red-500 text-xs mt-1'></div>
                     </div>

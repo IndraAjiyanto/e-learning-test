@@ -5,14 +5,14 @@
     // Form validation states
     formData: {
       question: {
-        id: `{{pertanyaanKelas.question.id}}`,
-        en: `{{pertanyaanKelas.question.en}}`,
-        ja: `{{pertanyaanKelas.question.ja}}`
+        id: `{{courseQuestion.questions.id}}`,
+        en: `{{courseQuestion.questions.en}}`,
+        ja: `{{courseQuestion.questions.ja}}`
       },
       answer: {
-        id: `{{pertanyaanKelas.answer.id}}`,
-        en: `{{pertanyaanKelas.answer.en}}`,
-        ja: `{{pertanyaanKelas.answer.ja}}`
+        id: `{{courseQuestion.answers.id}}`,
+        en: `{{courseQuestion.answers.en}}`,
+        ja: `{{courseQuestion.answers.ja}}`
       }
     },
     formErrors: {
@@ -81,7 +81,7 @@
     <h2 class='text-2xl font-semibold mb-6 text-gray-900'>Edit FAQ</h2>
 
     <form
-      action='/question-program/{{pertanyaanKelas.id}}/{{pertanyaanKelas.course.id}}?_method=PATCH'
+      action='/question-program/{{courseQuestion.id}}/{{courseQuestion.course.id}}?_method=PATCH'
       method='post'
       class='space-y-6'
       x-data ="{ loading: false }"
@@ -102,7 +102,7 @@
           Update
         </button>
         <a
-          href='/program/detail/program/admin/{{pertanyaanKelas.course.id}}'
+          href='/program/detail/program/admin/{{courseQuestion.course.id}}'
 :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300  transition'>
           Cancel

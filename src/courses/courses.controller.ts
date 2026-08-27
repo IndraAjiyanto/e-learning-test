@@ -70,6 +70,7 @@ export class CoursesController {
       if (createCourseDto.paid_check === 'true') {
         createCourseDto.form = '';
         createCourseDto.checkPaid = true;
+        createCourseDto.promo = createCourseDto.promo || 0;
         if (req.user!.role === 'super_admin') {
           createCourseDto.process = 'approved';
         } else if (req.user!.role === 'admin') {
@@ -138,6 +139,7 @@ export class CoursesController {
       if (createCourseDto.paid_check === 'true') {
         createCourseDto.form = '';
         createCourseDto.checkPaid = true;
+        createCourseDto.promo = createCourseDto.promo || 0;
         if (req.user!.role === 'super_admin') {
           createCourseDto.process = 'approved';
         } else if (req.user!.role === 'admin') {
@@ -254,7 +256,7 @@ export class CoursesController {
     @Req() req: Request,
     @Param('categoryId') categoryId: number,
   ) {
-    const category = await this.coursesService.findOneCategory(categoryId);
+    const category = await this.coursesService.findCategory();
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
@@ -609,7 +611,12 @@ export class CoursesController {
       req.user!.id,
     );
     const kelass = await this.coursesService.allClassExcept(course.id);
-    // const courseQuestions = await this.coursesService.findCourseQuestions(courseId);
+    const courseQuestions =
+      await this.coursesService.findCourseQuestions(courseId);
+    const faqs = courseQuestions.map((cq) => ({
+      question: cq.questions,
+      answer: cq.answers,
+    }));
     // const course_flows = await this.coursesService.findCourseFlows(courseId);
     // const mentor = await this.coursesService.findCourseMentors(courseId);
     // const course_benefits = await this.coursesService.findProgramBenefit(courseId);
@@ -648,7 +655,7 @@ export class CoursesController {
         kelass,
         check_user,
         studentList,
-        // courseQuestions,
+        faqs,
         // course_flows,
         // mentor,
         // course_benefits,
@@ -731,7 +738,7 @@ export class CoursesController {
           course,
           kelass,
           studentList,
-          // courseQuestions,
+          courseQuestions,
           // course_flows,
           // mentor,
           course_benefits,
@@ -753,7 +760,12 @@ export class CoursesController {
         res.redirect(`/program/myProgram/${req.user.id}?courseId=${course.id}`);
       } else {
         const course = await this.coursesService.findOneUserCourse(id);
-        // const courseQuestions = await this.coursesService.findCourseQuestions(id);
+        const courseQuestions =
+          await this.coursesService.findCourseQuestions(id);
+        const faqs = courseQuestions.map((cq) => ({
+          question: cq.questions,
+          answer: cq.answers,
+        }));
         // const course_flows = await this.coursesService.findCourseFlows(id);
         // const mentor = await this.coursesService.findCourseMentors(id);
         // const course_benefits = await this.coursesService.findProgramBenefit(id);
@@ -794,6 +806,7 @@ export class CoursesController {
             technologies,
             userCourses,
             installments,
+            faqs,
             currentStatusOptions: statusOptions,
             referalSourceOptions: referalOptions,
           });
@@ -803,7 +816,8 @@ export class CoursesController {
             course,
             kelass,
             studentList,
-            // courseQuestions,
+            courseQuestions,
+            faqs,
             // course_flows,
             // mentor,
             // course_benefits,

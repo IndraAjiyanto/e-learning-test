@@ -48,7 +48,7 @@
                           </template>
                         </div>
                         
-                        <input type='hidden' name="categoryId" x-model='selectedCategory ? selectedCategory.id : ""' />
+                        <input type='hidden' name="categoryId" :value='selectedCategory ? selectedCategory.id : ""' />
                       </div>
                       <div id='categoryId_error' class='hidden text-red-500 text-xs mt-1'></div>
                     </div>

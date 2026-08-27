@@ -1,1281 +1,586 @@
+<script>
+function programData(mode) {
+  return {
+    mode: mode,
+    loading: false,
+    submitAttempted: false,
+    touched: {},
+    paidClass: false,
+    coverHasFile: false,
+    coverValid: true,
+    categorySelected: null,
+    formComplete: false,
+    fieldStatus: {},
+    _scheduleTimer: null,
+    _lastHidden: {},
+
+    formData: {
+      description: { id: '', en: '', ja: '' },
+      location: { id: '', en: '', ja: '' },
+      locationLink: ''
+    },
+    formErrors: { locationLink: '' },
+    formValid: { locationLink: false },
+
+    /* ================= VALIDATION HELPERS ================= */
+
+    val(elId) {
+      const el = document.getElementById(elId);
+      return el ? el.value.trim() : '';
+    },
+
+    hiddenValue(nameAttr) {
+      const el = document.querySelector('input[name="' + nameAttr + '"]');
+      return el ? String(el.value).trim() : '';
+    },
+
+    setFieldError(elId, message) {
+      const errEl = document.getElementById(elId + '_error');
+      if (!errEl) return;
+      const show = message && (this.submitAttempted || this.touched[elId]);
+      if (show) {
+        errEl.textContent = message;
+        errEl.classList.remove('hidden');
+      } else {
+        errEl.textContent = '';
+        errEl.classList.add('hidden');
+      }
+    },
+
+    nonEmpty(value, label) {
+      const v = (value === null || value === undefined) ? '' : String(value).trim();
+      return v !== '' ? '' : label + ' is required';
+    },
+
+    setFieldStatus(elId, ok) {
+      const show = this.submitAttempted || this.touched[elId];
+      this.fieldStatus[elId] = show ? (ok ? 'valid' : 'error') : '';
+      this.showSuccess(elId, this.fieldStatus[elId] === 'valid');
+    },
+
+    successText(elId) {
+      const messages = {
+        name: 'Program Name looks good!',
+        group: 'Group looks good!',
+        description_id: 'Indonesian description looks good!',
+        description_en: 'English description looks good!',
+        description_ja: 'Japanese description looks good!',
+        lokasi_id: 'Location (ID) looks good!',
+        lokasi_en: 'Location (EN) looks good!',
+        lokasi_ja: 'Location (JP) looks good!',
+        month: 'Valid month (1-12)',
+        day: 'Valid day (1-31)',
+        time_start: 'Valid start time',
+        time_end: 'Valid end time',
+        date_registration: 'Valid registration date',
+        startDate: 'Valid start date',
+        endDate: 'Valid end date',
+        harga1: 'Valid price amount',
+        promo1: 'Valid promo amount',
+        kuota1: 'Valid quota amount',
+        form: 'Valid URL',
+        categoryId: 'Category selected',
+        jenis_kelasId: 'Program Type selected',
+        mentoringId: 'Mentoring selected'
+      };
+      return messages[elId] || 'Valid';
+    },
+
+    showSuccess(elId, visible) {
+      let el = document.getElementById(elId + '_success');
+      if (!el) {
+        const errEl = document.getElementById(elId + '_error');
+        if (!errEl || !errEl.parentElement) return;
+        el = document.createElement('div');
+        el.id = elId + '_success';
+        errEl.parentElement.insertBefore(el, errEl.nextSibling);
+      }
+      if (visible) {
+        el.innerHTML =
+          '<div class="flex items-start gap-2 p-2 bg-green-50 border border-green-300 rounded-lg mt-1">' +
+          '<i class="fas fa-check-circle text-green-500 mt-0.5"></i>' +
+          '<p class="text-xs text-green-700">' + this.successText(elId) + '</p>' +
+          '</div>';
+      } else {
+        el.innerHTML = '';
+      }
+    },
+
+    clearField(elId) {
+      this.setFieldError(elId, '');
+      this.fieldStatus[elId] = '';
+      this.showSuccess(elId, false);
+    },
+
+    borderClass(elId) {
+      const s = this.fieldStatus[elId];
+      if (s === 'error') return 'border-red-500 focus:ring-red-500 focus:border-red-500';
+      if (s === 'valid') return 'border-green-500 focus:ring-green-500 focus:border-green-500';
+      return 'border-gray-300 focus:ring-gray-900';
+    },
+
+    validateTextField(elId, label) {
+      const msg = this.nonEmpty(this.val(elId), label);
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateNumberField(elId, label, min, max) {
+      const raw = this.val(elId);
+      let msg = this.nonEmpty(raw, label);
+      if (!msg && !/^\d+$/.test(raw)) {
+        msg = label + ' must contain numbers only';
+      }
+      if (!msg) {
+        const n = parseInt(raw, 10);
+        if (n < min || n > max) {
+          msg = label + ' must be between ' + min + ' and ' + max;
+        }
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateDateField(elId, label, compareId, compareLabel) {
+      const raw = this.val(elId);
+      let msg = this.nonEmpty(raw, label);
+      if (!msg && isNaN(new Date(raw).getTime())) {
+        msg = label + ' must be a valid date';
+      }
+      if (!msg && compareId) {
+        const other = this.val(compareId);
+        if (other && !isNaN(new Date(other).getTime())) {
+          if (new Date(raw) < new Date(other)) {
+            msg = label + ' must be on or after ' + compareLabel;
+          }
+        }
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateTimeFields() {
+      const startMsg = this.nonEmpty(this.val('time_start'), 'Time Start');
+      this.setFieldError('time_start', startMsg);
+      this.setFieldStatus('time_start', !startMsg);
+      let endMsg = this.nonEmpty(this.val('time_end'), 'Time End');
+      if (!endMsg && !startMsg && this.val('time_end') <= this.val('time_start')) {
+        endMsg = 'Time End must be later than Time Start';
+      }
+      this.setFieldError('time_end', endMsg);
+      this.setFieldStatus('time_end', !endMsg);
+      return !startMsg && !endMsg;
+    },
+
+    clearTimeErrors() {
+      this.setFieldError('time_start', '');
+      this.setFieldError('time_end', '');
+    },
+
+    validateDropdown(hiddenName, elId, label) {
+      const value = this.hiddenValue(hiddenName);
+      let msg = this.nonEmpty(value, label);
+      if (!msg && (!/^\d+$/.test(value) || parseInt(value, 10) <= 0)) {
+        msg = label + ' must be selected from the list';
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateList(nameAttr, elId, label, numericOnly) {
+      const inputs = document.querySelectorAll('input[name="' + nameAttr + '"]');
+      const values = Array.from(inputs)
+        .map(function (i) { return i.value.trim(); })
+        .filter(function (v) { return v !== ''; });
+      let msg = '';
+      if (values.length === 0) {
+        msg = 'At least one ' + label + ' is required';
+      } else if (numericOnly && values.some(function (v) { return !/^\d+$/.test(v); })) {
+        msg = label + ' must be selected from the list';
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateMethod() {
+      const checked = document.querySelector('input[name="method"]:checked');
+      const msg = checked ? '' : 'Method is required';
+      this.setFieldError('method', msg);
+      return !!checked;
+    },
+
+    validateMultiLang(objKey, prefix, labels) {
+      const langs = ['id', 'en', 'ja'];
+      const self = this;
+      langs.forEach(function (lang) {
+        const value = self.formData[objKey][lang] || '';
+        const msg = self.nonEmpty(value, labels[lang]);
+        self.setFieldError(prefix + '_' + lang, msg);
+        self.setFieldStatus(prefix + '_' + lang, !msg);
+      });
+      return langs.every(function (lang) {
+        return (self.formData[objKey][lang] || '').trim() !== '';
+      });
+    },
+
+    validateLocationLink() {
+      const value = this.formData.locationLink || '';
+      let msg = this.nonEmpty(value, 'Link Location');
+      if (!msg) {
+        try {
+          new URL(value.trim());
+        } catch (e) {
+          msg = 'Please enter a valid URL';
+        }
+      }
+      const show = this.submitAttempted || this.touched.locationLink;
+      this.formErrors.locationLink = show ? msg : '';
+      this.formValid.locationLink = !msg;
+      return !msg;
+    },
+
+    validateMoneyInput(nameAttr, elId, label, optional) {
+      const raw = this.hiddenValue(nameAttr);
+      let msg = '';
+      if (!raw) {
+        if (!optional) msg = label + ' is required';
+      } else if (!/^\d+$/.test(raw)) {
+        msg = label + ' must contain numbers only';
+      }
+      this.setFieldError(elId, msg);
+      this.setFieldStatus(elId, !msg);
+      return !msg;
+    },
+
+    validateOptionalUrl(elId, label) {
+      const el = document.getElementById(elId);
+      if (!el) return true;
+      const raw = el.value.trim();
+      if (!raw) return true;
+      try {
+        new URL(raw);
+      } catch (e) {
+        this.setFieldError(elId, label + ' must be a valid URL');
+        this.setFieldStatus(elId, false);
+        return false;
+      }
+      this.setFieldError(elId, '');
+      this.setFieldStatus(elId, true);
+      return true;
+    },
+
+    /* ================= FORM STATE ================= */
+
+    updateCoverValidation(isValid, hasFile) {
+      this.coverValid = isValid;
+      this.coverHasFile = hasFile;
+    },
+
+    validateField(field, valueOrLang) {
+      if (field === 'locationLink') {
+        this.touched.locationLink = true;
+      } else if (field === 'description' || field === 'location') {
+        const prefix = field === 'description' ? 'description' : 'lokasi';
+        this.touched[prefix + '_' + valueOrLang] = true;
+      }
+      this.updateCompleteness();
+    },
+
+    onBlurCapture(e) {
+      const t = e.target || {};
+      if (t.id) this.touched[t.id] = true;
+      const gid = this.groupElId(t.name);
+      if (gid) this.touched[gid] = true;
+      this.updateCompleteness();
+    },
+
+    onInputCapture(e) {
+      const t = e.target || {};
+      if (t.id) this.touched[t.id] = true;
+      const gid = this.groupElId(t.name);
+      if (gid) this.touched[gid] = true;
+      this.updateCompleteness();
+    },
+
+    groupElId(nameAttr) {
+      const map = {
+        'materialsId[]': 'materis_id',
+        'materialsEn[]': 'materis_en',
+        'materialsJa[]': 'materis_ja',
+        'learningTargetsId[]': 'targets_id',
+        'learningTargetsEn[]': 'targets_en',
+        'learningTargetsJa[]': 'targets_ja',
+        'criteriaId[]': 'criterias_id',
+        'criteriaEn[]': 'criterias_en',
+        'criteriaJa[]': 'criterias_ja'
+      };
+      return (nameAttr && map[nameAttr]) || null;
+    },
+
+    trackHiddenChanges() {
+      const keys = [
+        { name: 'categoryId', elId: 'categoryId' },
+        { name: 'jenis_kelasId', elId: 'jenis_kelasId' },
+        { name: 'mentoringsId', elId: 'mentoringId' }
+      ];
+      const self = this;
+      keys.forEach(function (k) {
+        const value = self.hiddenValue(k.name);
+        const last = self._lastHidden[k.name];
+        if (value !== last) {
+          if (value) self.touched[k.elId] = true;
+          self._lastHidden[k.name] = value;
+        }
+      });
+    },
+
+    scheduleUpdate() {
+      clearTimeout(this._scheduleTimer);
+      const self = this;
+      this._scheduleTimer = setTimeout(function () {
+        self.updateCompleteness();
+      }, 50);
+    },
+
+    updateCompleteness() {
+      this.trackHiddenChanges();
+      this.formComplete = this.canSubmit();
+    },
+
+    hasVisibleErrors() {
+      return Object.values(this.fieldStatus).some(function (s) { return s === 'error'; });
+    },
+
+    /* ================= SUBMIT GATE ================= */
+
+    canSubmit() {
+      const results = [];
+
+      // Cover image
+      if (this.mode === 'create') {
+        const coverOk = this.coverHasFile && this.coverValid;
+        this.setFieldError('image', coverOk ? '' : 'Cover Program is required');
+        results.push(coverOk);
+      } else {
+        // Edit: keep old photo when no new file is selected
+        results.push(!(this.coverHasFile && !this.coverValid));
+      }
+
+      // Basic text fields
+      results.push(this.validateTextField('name', 'Program Name'));
+      results.push(this.validateTextField('group', 'Group'));
+      results.push(this.validateMultiLang('description', 'description', {
+        id: 'Indonesian description',
+        en: 'English description',
+        ja: 'Japanese description'
+      }));
+      results.push(this.validateMultiLang('location', 'lokasi', {
+        id: 'Location (ID)',
+        en: 'Location (EN)',
+        ja: 'Location (JP)'
+      }));
+      results.push(this.validateMethod());
+
+      // Dropdowns / chips
+      results.push(this.validateDropdown('categoryId', 'categoryId', 'Category'));
+      results.push(this.validateDropdown('jenis_kelasId', 'jenis_kelasId', 'Program Type'));
+      results.push(this.validateList('technologiesIds[]', 'technologies', 'technology', true));
+
+      // Mentoring only exists for super_admin
+      if (document.querySelector('input[name="mentoringsId"]')) {
+        results.push(this.validateDropdown('mentoringsId', 'mentoringId', 'Mentoring'));
+      }
+
+      // super_admin-only pricing fields (price/promo only apply when Paid Program is on)
+      if (document.getElementById('harga1')) {
+        if (this.paidClass) {
+          results.push(this.validateMoneyInput('price', 'harga1', 'Price', false));
+        } else {
+          this.clearField('harga1');
+        }
+      }
+      if (document.getElementById('promo1')) {
+        if (this.paidClass) {
+          results.push(this.validateMoneyInput('promo', 'promo1', 'Promo', true));
+        } else {
+          this.clearField('promo1');
+        }
+      }
+      if (document.getElementById('kuota1')) {
+        results.push(this.validateMoneyInput('quota', 'kuota1', 'Program Quota', false));
+      }
+
+      // Conditional schedule: month (paid) OR day + time (free)
+      if (this.paidClass) {
+        results.push(this.validateNumberField('month', 'Month', 1, 12));
+        this.clearField('day');
+        this.clearField('time_start');
+        this.clearField('time_end');
+      } else {
+        results.push(this.validateNumberField('day', 'Day', 1, 31));
+        this.clearField('month');
+        results.push(this.validateTimeFields());
+      }
+
+      // Dates
+      results.push(this.validateDateField('date_registration', 'Date Registration'));
+      results.push(this.validateDateField('startDate', 'Start Date'));
+      results.push(this.validateDateField('endDate', 'End Date', 'startDate', 'Start Date'));
+
+      // Optional registration form link (super_admin free program)
+      if (document.getElementById('form')) {
+        results.push(this.validateOptionalUrl('form', 'Registration Form Link'));
+      }
+
+      // Link location
+      results.push(this.validateLocationLink());
+
+      // Dynamic lists: at least one entry per language
+      results.push(this.validateList('materialsId[]', 'materis_id', 'lesson (ID)'));
+      results.push(this.validateList('materialsEn[]', 'materis_en', 'lesson (EN)'));
+      results.push(this.validateList('materialsJa[]', 'materis_ja', 'lesson (JP)'));
+      results.push(this.validateList('learningTargetsId[]', 'targets_id', 'learning target (ID)'));
+      results.push(this.validateList('learningTargetsEn[]', 'targets_en', 'learning target (EN)'));
+      results.push(this.validateList('learningTargetsJa[]', 'targets_ja', 'learning target (JP)'));
+      results.push(this.validateList('criteriaId[]', 'criterias_id', 'criteria (ID)'));
+      results.push(this.validateList('criteriaEn[]', 'criterias_en', 'criteria (EN)'));
+      results.push(this.validateList('criteriaJa[]', 'criterias_ja', 'criteria (JP)'));
+
+      // TEMP DEBUG: log which fields are blocking submit (remove after diagnosis)
+      console.log('[canSubmit] paidClass=', this.paidClass,
+        'coverHasFile=', this.coverHasFile, 'coverValid=', this.coverValid,
+        'methodChecked=', !!document.querySelector('input[name="method"]:checked'),
+        'locationLinkValid=', this.formValid.locationLink,
+        'failing fields=', Object.keys(this.fieldStatus).filter((k) => this.fieldStatus[k] === 'error'),
+        'result=', results.every(Boolean));
+
+      return results.every(Boolean);
+    },
+
+    hasFormErrors() {
+      return !this.formComplete;
+    }
+  };
+}
+</script>
+
 <div class='py-10'>
   <div
     class='max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-lg'
-    x-data='{ 
-            coverValid: true,
-            coverHasFile: false,
-            categorySelected: {{json category}},
-            formData: { description: { id: "", en: "", ja: "" },
-                        location: { id: "", en: "", ja: "" } },
-            updateCoverValidation(isValid, hasFile) {
-                this.coverValid = isValid;
-                this.coverHasFile = hasFile;
-            },
-            validateField(field, lang) {
-                const value = this.formData[field][lang];
-                const fieldName = `${field}_${lang}`;
-                const errorElement = document.getElementById(`${fieldName}_error`);
-                if (errorElement) {
-                    if (!value || value.trim() === "") {
-                        errorElement.classList.remove("hidden");
-                    } else {
-                        errorElement.classList.add("hidden");
-                    }
-                }
-            }
-        }'
+    x-data='programData("create")'
+
+    x-init='paidClass = false; $nextTick(() => scheduleUpdate()); setTimeout(() => scheduleUpdate(), 400);'
   >
     <h2 class='text-3xl font-bold mb-8 text-gray-900 text-center'>Create Program</h2>
 
     <form
       method='POST'
-      action='/program/{{category.id}}'
-      class='grid grid-cols-1 lg:grid-cols-2 gap-8'
+      action='/program/{{categoryId}}'
       enctype='multipart/form-data'
-      x-data='{loading:false}'
-      @submit='loading = true'
+      class='grid grid-cols-1 lg:grid-cols-2 gap-8'
+      @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { submitAttempted = true; updateCompleteness(); }"
+      @input.capture="onInputCapture($event)"
+      @change="updateCompleteness()"
+      @click="scheduleUpdate()"
+      @focusout.capture="onBlurCapture($event)"
     >
 
       <!-- LEFT COLUMN -->
       <div class='space-y-6'>
-        <!-- Cover -->
-        <div
-          x-data="{ 
-                        previewUrl: null,
-                        errorMessage: '',
-                        isValid: true,
-                        fileName: '',
-                        fileSize: 0,
-                        imageWidth: 0,
-                        imageHeight: 0,
-                        hasFile: false,
-                        validateImage(file) {
-                            if (!file) {
-                                this.hasFile = false;
-                                $dispatch('cover-validation', { isValid: true, hasFile: false });
-                                return;
-                            }
-                            
-                            this.hasFile = true;
-                            this.fileName = file.name;
-                            this.fileSize = file.size;
-                            this.errorMessage = '';
-                            this.isValid = true;
+{{> admin/program/create/left_column/cover_input}}
 
-                            // Validasi tipe file
-                            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                            if (!allowedTypes.includes(file.type)) {
-                                this.errorMessage = 'Only JPEG, JPG, and PNG formats are allowed';
-                                this.isValid = false;
-                                this.previewUrl = null;
-                                $dispatch('cover-validation', { isValid: false, hasFile: true });
-                                return;
-                            }
+{{> admin/program/create/left_column/name_program_input}}
 
-                            // Validasi ukuran file (10MB max berdasarkan multer config umum)
-                            const maxSize = 10 * 1024 * 1024; // 10MB
-                            if (file.size > maxSize) {
-                                this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 10MB`;
-                                this.isValid = false;
-                                this.previewUrl = null;
-                                $dispatch('cover-validation', { isValid: false, hasFile: true });
-                                return;
-                            }
+{{> admin/program/create/left_column/group_input}}
 
-                            // Validasi dimensi gambar
-                            const img = new Image();
-                            const objectUrl = URL.createObjectURL(file);
-                            
-                            img.onload = () => {
-                                this.imageWidth = img.width;
-                                this.imageHeight = img.height;
-                                
-                                if (img.width < 1900 || img.width > 1920 || img.height < 1000 || img.height > 1080) {
-                                    this.errorMessage = `Image dimensions ${img.width}x${img.height}px. Required: 1900x1000 to 1920x1080 pixels`;
-                                    this.isValid = false;
-                                    this.previewUrl = null;
-                                    URL.revokeObjectURL(objectUrl);
-                                    $dispatch('cover-validation', { isValid: false, hasFile: true });
-                                } else {
-                                    this.previewUrl = objectUrl;
-                                    this.isValid = true;
-                                    this.errorMessage = '';
-                                    $dispatch('cover-validation', { isValid: true, hasFile: true });
-                                }
-                            };
-                            
-                            img.onerror = () => {
-                                this.errorMessage = 'Failed to load image';
-                                this.isValid = false;
-                                this.previewUrl = null;
-                                URL.revokeObjectURL(objectUrl);
-                                $dispatch('cover-validation', { isValid: false, hasFile: true });
-                            };
-                            
-                            img.src = objectUrl;
-                        },
-                        clearFile() {
-                            this.previewUrl = null;
-                            this.errorMessage = '';
-                            this.isValid = true;
-                            this.fileName = '';
-                            this.fileSize = 0;
-                            this.imageWidth = 0;
-                            this.imageHeight = 0;
-                            this.hasFile = false;
-                            $refs.fileInput.value = null;
-                            $dispatch('cover-validation', { isValid: true, hasFile: false });
-                        }
-                    }"
-          @cover-validation.window='updateCoverValidation($event.detail.isValid, $event.detail.hasFile)'
-          @category-selected.window='categorySelected = $event.detail.category'
-          class='space-y-3'
-        >
-          <label
-            for="image"
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >
-            Cover Program
-            <span class='text-xs text-gray-500 font-normal'>(1900x1000 -
-              1920x1080px, max 10MB, JPG/PNG)</span>
-          </label>
-          <input
-            type='file'
-            id="image"
-            name="image"
-            accept='image/jpeg,image/jpg,image/png'
-            x-ref='fileInput'
-            :class="!isValid && errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-900'"
-            class='w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-gray-700 file:cursor-pointer'
-            @change='validateImage($event.target.files[0])'
-          />
+{{> admin/program/create/left_column/description_input}}
 
-          <!-- Error Message -->
-          <template x-if='!isValid && errorMessage'>
-            <div
-              class='flex items-start gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
-            >
-              <i class='fas fa-exclamation-circle text-red-500 mt-0.5'></i>
-              <div>
-                <p class='text-sm font-semibold text-red-800'>Invalid Image</p>
-                <p class='text-xs text-red-700' x-text='errorMessage'></p>
-              </div>
-            </div>
-          </template>
+{{> admin/program/create/left_column/metode_input}}
 
-          <!-- Preview with validation success -->
-          <template x-if='previewUrl && isValid'>
-            <div class='space-y-2'>
-              <!-- Success Message -->
-              <div
-                class='flex items-center gap-2 p-2 bg-green-50 border border-green-300 rounded-lg'
-              >
-                <i class='fas fa-check-circle text-green-500'></i>
-                <div class='text-xs text-green-700'>
-                  <span class='font-semibold'>Valid image:</span>
-                  <span
-                    x-text='`${imageWidth}x${imageHeight}px, ${(fileSize / 1024 / 1024).toFixed(2)}MB`'
-                  ></span>
-                </div>
-              </div>
+{{> admin/program/create/left_column/location_input}}
 
-              <!-- Image Preview -->
-              <div class='relative w-full max-w-md'>
-                <img
-                  :src='previewUrl'
-                  alt='Preview'
-                  class='w-full h-auto object-cover rounded-lg border-2 border-green-500 shadow-sm'
-                />
+{{> admin/program/create/left_column/link_location_input}}
 
-                <button
-                  type='button'
-                  class='absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors'
-                  @click='clearFile()'
-                >
-                  <i class='fas fa-times'></i>
-                </button>
-              </div>
-            </div>
-          </template>
-        </div>
-
-        <!-- Class Name -->
-        <div>
-          <label
-            for='name'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Program Name</label>
-          <input
-            type='text'
-            id='name'
-            name='name'
-            placeholder='Enter class name'
-            required
-            class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          />
-        </div>
-
-        <!-- Group -->
-        <div>
-          <label
-            for='group'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Group</label>
-          <input
-            type='text'
-            id='group'
-            name='group'
-            placeholder='Enter group name'
-            required
-            class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          />
-        </div>
-
-        <!-- Description -->
-        <div class='space-y-4'>
-          <label
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Description</label>
-
-          <!-- ID Description -->
-          <div>
-            <label
-              for='description_id'
-              class='block text-xs text-gray-600 mb-1'
-            >ID</label>
-            <textarea
-              id='description_id'
-              x-model='formData.description.id'
-              @blur="validateField('description', 'id')"
-              rows='3'
-              placeholder='Tulis description dalam bahasa Indonesia...'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            ></textarea>
-            <div
-              id='description_id_error'
-              class='hidden text-red-500 text-xs mt-1'
-            >Deskripsi bahasa Indonesia wajib diisi</div>
-          </div>
-
-          <!-- EN Description -->
-          <div>
-            <label
-              for='description_en'
-              class='block text-xs text-gray-600 mb-1'
-            >EN</label>
-            <textarea
-              id='description_en'
-              x-model='formData.description.en'
-              @blur="validateField('description', 'en')"
-              rows='3'
-              placeholder='Write description in English...'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            ></textarea>
-            <div
-              id='description_en_error'
-              class='hidden text-red-500 text-xs mt-1'
-            >English description is required</div>
-          </div>
-
-          <!-- JP Description -->
-          <div>
-            <label
-              for='description_ja'
-              class='block text-xs text-gray-600 mb-1'
-            >JP</label>
-            <textarea
-              id='description_ja'
-              x-model='formData.description.ja'
-              @blur="validateField('description', 'ja')"
-              rows='3'
-              placeholder='日本語で説明を書いてください...'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            ></textarea>
-            <div
-              id='description_ja_error'
-              class='hidden text-red-500 text-xs mt-1'
-            >日本語の説明が必要です</div>
-          </div>
-
-          <!-- Hidden inputs for form submission -->
-          <input
-            type='hidden'
-            name='description[id]'
-            x-model='formData.description.id'
-          />
-          <input
-            type='hidden'
-            name='description[en]'
-            x-model='formData.description.en'
-          />
-          <input
-            type='hidden'
-            name='description[ja]'
-            x-model='formData.description.ja'
-          />
-        </div>
-
-        <!-- Method -->
-        <div>
-          <span
-            class='block text-sm font-semibold text-gray-700 mb-2'
-          >Method</span>
-          <div class='grid grid-cols-2 gap-4'>
-            <label class='cursor-pointer'>
-              <input
-                type='radio'
-                name='method'
-                value='online'
-                required
-                class='hidden peer'
-              />
-              <div
-                class='flex items-center justify-center px-4 py-3 border rounded-lg transition peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white'
-              >
-                <span class='font-semibold'>Online</span>
-              </div>
-            </label>
-            <label class='cursor-pointer'>
-              <input
-                type='radio'
-                name='method'
-                value='offline'
-                required
-                class='hidden peer'
-              />
-              <div
-                class='flex items-center justify-center px-4 py-3 border rounded-lg transition peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white'
-              >
-                <span class='font-semibold'>Offline</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Location -->
-        <div class='space-y-4'>
-          <label class='block text-sm font-semibold text-gray-700 mb-1'>Name
-            Location</label>
-          <div>
-            <label class='block text-xs text-gray-600 my-2'>ID</label>
-            <input
-              type='text'
-              x-model='formData.location.id'
-              name='locations[]'
-              placeholder='Enter location'
-              required
-              class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            />
-          </div>
-          <div>
-            <label class='block text-xs text-gray-600 my-2'>EN</label>
-            <input
-              type='text'
-              x-model='formData.location.en'
-              name='locations[]'
-              placeholder='Enter location'
-              required
-              class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            />
-          </div>
-          <div>
-            <label class='block text-xs text-gray-600 my-2'>JP</label>
-            <input
-              type='text'
-              x-model='formData.location.ja'
-              name='locations[]'
-              placeholder='Enter location'
-              required
-              class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            />
-          </div>
-        </div>
-
-        <div>
-          <label
-            for='locationLink'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Link Location</label>
-          <input
-            type='text'
-            id='locationLink'
-            name='locationLink'
-            placeholder='Enter location link'
-            required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-          />
-        </div>
-
-        <!-- Paid Class Toggle -->
-        <div x-data='{ paidClass: false }' class='space-y-6'>
-          <div class='flex items-center gap-3'>
-            <label class='relative inline-flex items-center cursor-pointer'>
-              <input type='checkbox' x-model='paidClass' class='sr-only' />
-
-              <div
-                :class="paidClass ? 'bg-green-500' : 'bg-gray-300'"
-                class='w-11 h-6 rounded-full transition-colors'
-              ></div>
-
-              <div
-                :class="paidClass ? 'translate-x-5' : 'translate-x-0'"
-                class='absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform'
-              ></div>
-            </label>
-
-            <span class='text-sm text-gray-700 font-semibold'>Paid Program</span>
-
-            <input type='hidden' name='paid_check' :value='paidClass' />
-          </div>
-
-          {{#if (roles user.role 'super_admin')}}
-            <!-- Fields that appear when paid_check is true -->
-            <div x-show='paidClass' x-transition class='space-y-6'>
-              <!-- Price -->
-              <div
-                x-data="{
-                          display: '',
-                          value: '',
-                          formatHarga(event) {
-                              let angka = event.target.value.replace(/\D/g, ''); 
-                              this.value = angka;
-                              this.display = new Intl.NumberFormat('id-ID').format(angka);
-                          }
-                      }"
-              >
-                <label
-                  for='harga1'
-                  class='block text-sm font-semibold text-gray-700 mb-1'
-                >Price</label>
-                <input
-                  type='text'
-                  id='harga1'
-                  x-model='display'
-                  @input='formatHarga($event)'
-                  placeholder='Enter price'
-                  class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
-                />
-                <input type='hidden' name='price' x-model='value' />
-              </div>
-
-              <!-- Promo -->
-              <div
-                x-data="{
-                          display: '',
-                          value: '',
-                          formatPromo(event) {
-                              let angka = event.target.value.replace(/\D/g, ''); 
-                              this.value = angka;
-                              this.display = new Intl.NumberFormat('id-ID').format(angka);
-                          }
-                      }"
-              >
-                <label
-                  for='promo1'
-                  class='block text-sm font-semibold text-gray-700 mb-1'
-                >Promo</label>
-                <input
-                  type='text'
-                  id='promo1'
-                  x-model='display'
-                  @input='formatPromo($event)'
-                  placeholder='Enter promo price'
-                  class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
-                />
-                <input type='hidden' name='promo' x-model='value' />
-              </div>
-            </div>
-
-            <!-- Fields that appear when paid_check is false (not active) -->
-            <div x-show='!paidClass' x-transition class='space-y-6'>
-              <!-- Form -->
-              <div>
-                <label
-                  for='form'
-                  class='block text-sm font-semibold text-gray-700 mb-1'
-                >Registration Form Link</label>
-                <input
-                  type='url'
-                  id='form'
-                  placeholder='https://forms.google.com/...'
-                  name='form'
-                  class='w-full border border-gray-300 bg-yellow-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700'
-                />
-              </div>
-            </div>
-
-            <!-- Quota - Always visionsble below Paid Class Toggle -->
-            <div
-              x-data="{
-                        display: '',
-                        value: '',
-                        formatKuota(event) {
-                            let angka = event.target.value.replace(/\D/g, ''); 
-                            this.value = angka;
-                            this.display = new Intl.NumberFormat('id-ID').format(angka);
-                        }
-                    }"
-            >
-              <label
-                for='kuota1'
-                class='block text-sm font-semibold text-gray-700 mb-1'
-              >Program Quota</label>
-              <input
-                type='text'
-                id='kuota1'
-                x-model='display'
-                @input='formatKuota($event)'
-                placeholder='Enter quota'
-                class='w-full border border-gray-300 bg-blue-50 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700'
-              />
-              <input type='hidden' name='quota' x-model='value' />
-            </div>
-          {{/if}}
-        </div>
+{{> admin/program/create/left_column/toggle_input}}
       </div>
 
       <!-- RIGHT COLUMN -->
       <div class='space-y-6'>
+{{> admin/program/create/right_column/category_input}}
 
-        <!-- Class Type -->
-        <div
-          x-data="{
-          search: '',
-          selectedJenisKelas: null,
-          showDropdown: false,
-          availableJenisKelas: {{json courseType}},
-          get filteredJenisKelas() {
-            return this.availableJenisKelas.filter(j => 
-              j.nameClassesType.toLowerCase().includes(this.search.toLowerCase())
-            );
-          },
-          selectJenisKelas(jenisKelas) {
-            this.selectedJenisKelas = jenisKelas;
-            this.search = jenisKelas.nameClassesType;
-            this.showDropdown = false;
-          },
-          clearJenisKelas() {
-            this.selectedJenisKelas = null;
-            this.search = '';
-          }
-        }"
-          @click.away='showDropdown = false'
-        >
-          <label
-            for='jenis_kelasId'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Program Type</label>
+{{> admin/program/create/right_column/type_input}}
 
-          <div class='relative'>
-            <input
-              type='text'
-              x-model='search'
-              @focus='showDropdown = true'
-              @input='showDropdown = true'
-              placeholder='Search and select program type...'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            />
-            <i
-              class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-            ></i>
+{{> admin/program/create/right_column/month_input}}
 
-            <!-- Dropdown -->
-            <div
-              x-show='showDropdown && filteredJenisKelas.length > 0'
-              class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
-            >
-              <template
-                x-for='jenisKelas in filteredJenisKelas'
-                :key='jenisKelas.id'
-              >
-                <button
-                  type='button'
-                  @click='selectJenisKelas(jenisKelas)'
-                  class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
-                >
-                  <span
-                    class='text-sm font-medium text-gray-700'
-                    x-text='jenisKelas.nameClassesType'
-                  ></span>
-                </button>
-              </template>
-            </div>
+{{> admin/program/create/right_column/day_input}}
 
-            <input
-              type='hidden'
-              name='jenis_kelasId'
-              x-model='selectedJenisKelas ? selectedJenisKelas.id : ""'
-            />
-          </div>
-        </div>
+{{> admin/program/create/right_column/time_start_input}}
 
-        <!-- Month -->
-        <div
-          x-show="!categorySelected || categorySelected.name !== 'Short Class'"
-        >
-          <label
-            for='month'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Month</label>
-          <div
-            x-data="{
-            display: '',
-            value: '',
-            formatBulan(event) {
-              let angka = event.target.value.replace(/\D/g, '');
-              this.value = angka;
-              this.display = angka;
-            }
-          }"
-            x-init="
-            value = '';
-            display = value;
-          "
-          >
-            <input
-              type='text'
-              id='month'
-              x-model='display'
-              @input='formatBulan($event)'
-              placeholder='Enter month (1-12)'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            />
-            <input type='hidden' name='month' x-model='value' />
-          </div>
-        </div>
+{{> admin/program/create/right_column/time_end_input}}
 
-        <!-- Day -->
-        <div
-          x-show="categorySelected && categorySelected.name === 'Short Class'"
-        >
-          <label
-            for='day'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Day</label>
-          <div
-            x-data="{
-            display: '',
-            value: '',
-            formatHari(event) {
-              let angka = event.target.value.replace(/\D/g, '');
-              this.value = angka;
-              this.display = angka;
-            }
-          }"
-            x-init="
-            value = '';
-            display = value;
-          "
-          >
-            <input
-              type='text'
-              id='day'
-              x-model='display'
-              @input='formatHari($event)'
-              placeholder='Enter day (1-31)'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            />
-            <input type='hidden' name='day' x-model='value' />
-          </div>
-        </div>
+{{> admin/program/create/right_column/date_registration_input}}
 
-        <!-- Date Registration -->
-        <div>
-          <label
-            for='date_registration'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Date Registration</label>
-          <input
-            type='date'
-            id='date_registration'
-            name='date_registration'
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
-            style='color-scheme: light;'
-          />
-        </div>
+{{> admin/program/create/right_column/start_date_input}}
 
+{{> admin/program/create/right_column/end_date_input}}
 
-        <!-- Start Date -->
-        <div>
-          <label
-            for='startDate'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >Start Date</label>
-          <input
-            type='date'
-            id='startDate'
-            name='startDate'
-            required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
-            style='color-scheme: light;'
-          />
-        </div>
+{{> admin/program/create/right_column/mentor_input}}
 
-        <!-- End Date -->
-        <div>
-          <label
-            for='endDate'
-            class='block text-sm font-semibold text-gray-700 mb-1'
-          >End Date</label>
-          <input
-            type='date'
-            id='endDate'
-            name='endDate'
-            required
-            class='w-full border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700 cursor-pointer'
-            style='color-scheme: light;'
-          />
-        </div>
+{{> admin/program/create/right_column/technology_input}}
 
-        <!-- Mentoring -->
-        {{#if (roles user.role 'super_admin' 'admin')}}
-          <div
-            x-data="{
-            search: '',
-            selectedMentoring: null,
-            selectedMentoringId: '',
-            showDropdown: false,
-            availableMentoring: {{json mentorings}},
-            get filteredMentoring() {
-              return this.availableMentoring.filter(m =>
-                m.username.toLowerCase().includes(this.search.toLowerCase())
-              );
-            },
-            selectMentoring(mentoring) {
-              console.log('Selected mentoring:', mentoring);
-              this.selectedMentoring = mentoring;
-              this.selectedMentoringId = mentoring.id;
-              this.search = mentoring.username;
-              this.showDropdown = false;
-            },
-            clearMentoring() {
-              this.selectedMentoring = null;
-              this.selectedMentoringId = '';
-              this.search = '';
-            }
-          }"
-            @click.away='showDropdown = false'
-          >
-            <label
-              for='mentoringId'
-              class='block text-sm font-semibold text-gray-700 mb-1'
-            >Mentoring</label>
+{{> admin/program/create/right_column/lessons_input}}
 
-            <div class='relative'>
-              <input
-                type='text'
-                x-model='search'
-                @focus='showDropdown = true'
-                @input='showDropdown = true'
-                placeholder='Search and select mentoring...'
-                class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-              />
-              <i
-                class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-              ></i>
+{{> admin/program/create/right_column/learning_input}}
 
-              <!-- Dropdown -->
-              <div
-                x-show='showDropdown && filteredMentoring.length > 0'
-                class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
-              >
-                <template
-                  x-for='mentoring in filteredMentoring'
-                  :key='mentoring.id'
-                >
-                  <button
-                    type='button'
-                    @click='selectMentoring(mentoring)'
-                    class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
-                  >
-                    <span
-                      class='text-sm font-medium text-gray-700'
-                      x-text='mentoring.username'
-                    ></span>
-                  </button>
-                </template>
-              </div>
-
-              <input
-                type='hidden'
-                name='mentoringId'
-                x-model='selectedMentoringId'
-              />
-            </div>
-          </div>
-        {{/if}}
-
-        <!-- Technologies -->
-        <div
-          x-data="{
-          search: '',
-          selectedTechs: [],
-          showDropdown: false,
-          availableTechs: {{json technologies}},
-          get filteredTechs() {
-            return this.availableTechs.filter(t => 
-              t.name.toLowerCase().includes(this.search.toLowerCase()) &&
-              !this.selectedTechs.find(s => s.id === t.id)
-            );
-          },
-          selectTech(tech) {
-            this.selectedTechs.push(tech);
-            this.search = '';
-            this.showDropdown = false;
-          },
-          removeTech(techId) {
-            this.selectedTechs = this.selectedTechs.filter(t => t.id !== techId);
-          }
-        }"
-          @click.away='showDropdown = false'
-        >
-          <label
-            class='block text-sm font-semibold text-gray-700 mb-2'
-          >
-            Technologies
-            <span class='text-xs text-gray-500 font-normal italic ml-1'>(Optional)</span>
-          </label>
-
-          <!-- Selected Technologies -->
-          <div
-            class='flex flex-wrap gap-2 mb-3'
-            x-show='selectedTechs.length > 0'
-          >
-            <template x-for='tech in selectedTechs' :key='tech.id'>
-              <div
-                class='flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2'
-              >
-                <div class='w-6 h-6 flex items-center justify-center'>
-                  <template x-if="tech.svg">
-                    <div x-html="tech.svg" class="w-full h-full flex items-center justify-center"></div>
-                  </template>
-                  <template x-if="!tech.svg && tech.imgUrl">
-                    <img :src="tech.imgUrl" class="w-full h-full object-contain" />
-                  </template>
-                  <template x-if="!tech.svg && !tech.imgUrl">
-                    <i class="fas fa-code text-gray-400"></i>
-                  </template>
-                </div>
-                <span
-                  class='text-sm font-medium text-gray-700'
-                  x-text='tech.name'
-                ></span>
-                <button
-                  type='button'
-                  @click='removeTech(tech.id)'
-                  class='text-red-500 hover:text-red-700 ml-2'
-                >
-                  <i class='fas fa-times'></i>
-                </button>
-                <input type='hidden' name='technologiesIds[]' :value='tech.id' />
-              </div>
-            </template>
-          </div>
-
-          <!-- Search Input -->
-          <div class='relative'>
-            <input
-              type='text'
-              x-model='search'
-              @focus='showDropdown = true'
-              @input='showDropdown = true'
-              placeholder='Search and select technologies...'
-              class='w-full border border-gray-300 bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-            />
-            <i
-              class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-            ></i>
-
-            <!-- Dropdown -->
-            <div
-              x-show='showDropdown && filteredTechs.length > 0'
-              class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
-            >
-              <template x-for='tech in filteredTechs' :key='tech.id'>
-                <button
-                  type='button'
-                  @click='selectTech(tech)'
-                  class='w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-0'
-                >
-                  <div class='w-8 h-8 flex items-center justify-center flex-shrink-0'>
-                    <template x-if="tech.svg">
-                      <div x-html="tech.svg" class="w-full h-full flex items-center justify-center"></div>
-                    </template>
-                    <template x-if="!tech.svg && tech.imgUrl">
-                      <img :src="tech.imgUrl" class="w-full h-full object-contain" />
-                    </template>
-                    <template x-if="!tech.svg && !tech.imgUrl">
-                      <i class="fas fa-code text-gray-400 text-lg"></i>
-                    </template>
-                  </div>
-                  <span
-                    class='text-sm font-medium text-gray-700'
-                    x-text='tech.name'
-                  ></span>
-                </button>
-              </template>
-            </div>
-          </div>
-
-          <p class='text-xs text-gray-500 mt-2'>Click to select technologies
-            from the list</p>
-        </div>
-
-        <!-- Lessons -->
-        <div>
-          <label
-            class='block text-sm font-semibold text-gray-700 mb-2'
-          >Lessons</label>
-          <div x-data="{ materis_id: [''] }">
-
-            <label class='block text-xs text-gray-600 mb-1'>ID</label>
-            <template x-for='(materialsId, index) in materis_id' :key='index'>
-              <div class='flex items-center gap-3 mb-3'>
-                <input
-                  type='text'
-                  x-model='materis_id[index]'
-                  name='materialsId[]'
-                  placeholder='Enter a lesson'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                />
-                <button
-                  type='button'
-                  @click='materis_id.splice(index,1)'
-                  x-show='materis_id.length > 1'
-                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
-                >
-                 <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                   <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/>
-                 </svg>
-                </button>
-              </div>
-            </template>
-            <button
-              type='button'
-              @click="materis_id.push('')"
-              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
-            >
-              + Add Lesson
-            </button>
-          </div>
-
-          <div x-data="{ materis_en: [''] }">
-            <label class='block text-xs text-gray-600 mb-1'>EN</label>
-            <template x-for='(materialsEn, index) in materis_en' :key='index'>
-              <div class='flex items-center gap-3 mb-3'>
-                <input
-                  type='text'
-                  x-model='materis_en[index]'
-                  name='materialsEn[]'
-                  placeholder='Enter a lesson'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                />
-                <button
-                  type='button'
-                  @click='materis_en.splice(index,1)'
-                  x-show='materis_en.length > 1'
-                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
-                >
-                 <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                   <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/>
-                 </svg>
-                </button>
-              </div>
-            </template>
-            <button
-              type='button'
-              @click="materis_en.push('')"
-              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
-            >
-              + Add Lesson
-            </button>
-          </div>
-
-          <div x-data="{ materis_ja: [''] }">
-            <label class='block text-xs text-gray-600 mb-1'>JP</label>
-            <template x-for='(materialsJa, index) in materis_ja' :key='index'>
-              <div class='flex items-center gap-3 mb-3'>
-                <input
-                  type='text'
-                  x-model='materis_ja[index]'
-                  name='materialsJa[]'
-                  placeholder='Enter a lesson'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                />
-                <button
-                  type='button'
-                  @click='materis_ja.splice(index,1)'
-                  x-show='materis_ja.length > 1'
-                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
-                >
-                 <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                   <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/>
-                 </svg>
-                </button>
-              </div>
-            </template>
-            <button
-              type='button'
-              @click="materis_ja.push('')"
-              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
-            >
-              + Add Lesson
-            </button>
-          </div>
-        </div>
-
-        <!-- Learning Targets -->
-        <div>
-          <label class='block text-sm font-semibold text-gray-700 mb-2'>Learning
-            Targets</label>
-          <div x-data="{ targets_id: [''] }">
-
-            <label class='block text-xs text-gray-600 mb-1'>ID</label>
-            <template x-for='(target_id, index) in targets_id' :key='index'>
-              <div class='flex items-center gap-3 mb-3'>
-                <input
-                  type='text'
-                  x-model='targets_id[index]'
-                  name='learningTargetsId[]'
-                  placeholder='Enter a learning target'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                />
-                <button
-                  type='button'
-                  @click='targets_id.splice(index,1)'
-                  x-show='targets_id.length > 1'
-                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
-                >
-                 <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                   <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/>
-                 </svg>
-                </button>
-              </div>
-            </template>
-            <button
-              type='button'
-              @click="targets_id.push('')"
-              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
-            >
-              + Add Target
-            </button>
-          </div>
-
-          <div x-data="{ targets_en: [''] }">
-
-            <label class='block text-xs text-gray-600 mb-1'>EN</label>
-            <template x-for='(target_en, index) in targets_en' :key='index'>
-              <div class='flex items-center gap-3 mb-3'>
-                <input
-                  type='text'
-                  x-model='targets_en[index]'
-                  name='learningTargetsEn[]'
-                  placeholder='Enter a learning target'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                />
-                <button
-                  type='button'
-                  @click='targets_en.splice(index,1)'
-                  x-show='targets_en.length > 1'
-                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
-                >
-                 <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                   <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/>
-                 </svg>
-                </button>
-              </div>
-            </template>
-            <button
-              type='button'
-              @click="targets_en.push('')"
-              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
-            >
-              + Add Target
-            </button>
-          </div>
-
-          <div x-data="{ targets_ja: [''] }">
-
-            <label class='block text-xs text-gray-600 mb-1'>JP</label>
-            <template x-for='(target_ja, index) in targets_ja' :key='index'>
-              <div class='flex items-center gap-3 mb-3'>
-                <input
-                  type='text'
-                  x-model='targets_ja[index]'
-                  name='learningTargetsJa[]'
-                  placeholder='Enter a learning target'
-                  class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                />
-                <button
-                  type='button'
-                  @click='targets_ja.splice(index,1)'
-                  x-show='targets_ja.length > 1'
-                  class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
-                >
-                 <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                   <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/>
-                 </svg>
-                </button>
-              </div>
-            </template>
-            <button
-              type='button'
-              @click="targets_ja.push('')"
-              class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
-            >
-              + Add Target
-            </button>
-          </div>
-
-          <!-- Criteria -->
-          <div>
-            <label
-              class='block text-sm font-semibold text-gray-700 mb-2'
-            >Criteria</label>
-            <div x-data="{ criterias_id: [''] }">
-
-              <label class='block text-xs text-gray-600 mb-1'>ID</label>
-              <template
-                x-for='(criteriaId, index) in criterias_id'
-                :key='index'
-              >
-                <div class='flex items-center gap-3 mb-3'>
-                  <input
-                    type='text'
-                    x-model='criterias_id[index]'
-                    name='criteriaId[]'
-                    placeholder='Enter criteria'
-                    class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                  />
-                  <button
-                    type='button'
-                    @click='criterias_id.splice(index,1)'
-                    x-show='criterias_id.length > 1'
-                    class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
-                  >
-                   <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                     <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/>
-                   </svg>
-                  </button>
-                </div>
-              </template>
-              <button
-                type='button'
-                @click="criterias_id.push('')"
-                class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
-              >
-                + Add Criteria
-              </button>
-            </div>
-
-            <div x-data="{ criterias_en: [''] }">
-
-              <label class='block text-xs text-gray-600 mb-1'>EN</label>
-              <template
-                x-for='(criteriaEn, index) in criterias_en'
-                :key='index'
-              >
-                <div class='flex items-center gap-3 mb-3'>
-                  <input
-                    type='text'
-                    x-model='criterias_en[index]'
-                    name='criteriaEn[]'
-                    placeholder='Enter criteria'
-                    class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                  />
-                  <button
-                    type='button'
-                    @click='criterias_en.splice(index,1)'
-                    x-show='criterias_en.length > 1'
-                    class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
-                  >
-                   <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                     <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/>
-                   </svg>
-                  </button>
-                </div>
-              </template>
-              <button
-                type='button'
-                @click="criterias_en.push('')"
-                class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
-              >
-                + Add Criteria
-              </button>
-            </div>
-
-            <div x-data="{ criterias_ja: [''] }">
-
-              <label class='block text-xs text-gray-600 mb-1'>JP</label>
-              <template
-                x-for='(criteriaJa, index) in criterias_ja'
-                :key='index'
-              >
-                <div class='flex items-center gap-3 mb-3'>
-                  <input
-                    type='text'
-                    x-model='criterias_ja[index]'
-                    name='criteriaJa[]'
-                    placeholder='Enter criteria'
-                    class='flex-1 border border-gray-300 bg-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 text-gray-700'
-                  />
-                  <button
-                    type='button'
-                    @click='criterias_ja.splice(index,1)'
-                    x-show='criterias_ja.length > 1'
-                    class='text-red-500 hover:text-red-700 font-bold text-lg w-8 h-8 flex items-center justify-center'
-                  >
-                   <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'>
-                     <path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/>
-                   </svg>
-                  </button>
-                </div>
-              </template>
-              <button
-                type='button'
-                @click="criterias_ja.push('')"
-                class='w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-gray-500 hover:text-gray-700 flex items-center justify-center transition'
-              >
-                + Add Criteria
-              </button>
-            </div>
-          </div>
-        </div>
-
+{{> admin/program/create/right_column/criteria_input}}
       </div>
+
       <!-- BUTTONS - Full Width -->
       <div class='lg:col-span-2 space-y-4'>
-        <!-- Submit Warning -->
-        <template x-if='!coverHasFile || !coverValid'>
+        <!-- Cover Warning -->
+        <template x-if='coverHasFile && !coverValid'>
           <div
             class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
           >
             <i class='fas fa-exclamation-triangle text-red-500'></i>
             <p class='text-sm text-red-800'>
               <span class='font-semibold'>Cannot submit:</span>
-              <span
-                x-text="!coverHasFile ? 'Please upload a cover image first.' : 'Please fix the cover image validation errors above.'"
-              ></span>
+              Please fix the cover image validation errors above.
             </p>
           </div>
         </template>
 
+        <!-- Submit Warning -->
+        <template x-if='hasVisibleErrors()'>
+          <div
+            class='flex items-center gap-2 p-3 bg-red-50 border border-red-300 rounded-lg'
+          >
+            <i class='fas fa-exclamation-triangle text-red-500'></i>
+            <p class='text-sm text-red-800'>
+              <span class='font-semibold'>Cannot submit:</span>
+              Please fix all validation errors above.
+            </p>
+          </div>
+        </template>
       </div>
+
       <div class='flex space-x-4'>
         <button
           type='submit'
-          :disabled='coverHasFile && !coverValid || loading'
-          :class="coverHasFile && !coverValid || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
+          :disabled='!formComplete || loading'
+          :class="!formComplete || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-600'"
           class='text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2'
         >
-          <span
-            x-show='loading'
-            class='loading loading-spinner loading-sm'
-          ></span>
+          <span x-show='loading' class='loading loading-spinner loading-sm'></span>
           <span x-show='!loading'>Create</span>
         </button>
         <a
-          href='/category/{{category.id}}'
+          href='/category/{{categoryId}}'
           :disabled='loading'
           :class="loading ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-700'"
           class='px-6 py-2 rounded-lg border border-gray-300 transition'
@@ -1285,6 +590,4 @@
       </div>
     </form>
   </div>
-
-
 </div>
