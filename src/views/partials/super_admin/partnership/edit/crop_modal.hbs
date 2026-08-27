@@ -1,0 +1,126 @@
+    <!-- Crop Modal -->
+    <div
+      x-show='showCropModal'
+      x-cloak
+      class='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'
+      @click.self='closeCropModal()'
+    >
+      <div
+        class='bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden'
+      >
+        <div class='p-6 border-b border-gray-200'>
+          <h3 class='text-xl font-semibold text-gray-900'>Crop Image</h3>
+          <p class='text-sm text-gray-600 mt-1'>Adjust the cropping area to fit
+            your image</p>
+        </div>
+
+        <div class='p-6 overflow-auto max-h-[60vh]'>
+          <div class='w-full h-96'>
+            <img
+              id='cropImage'
+              :src='tempImageUrl'
+              class='w-full h-full'
+              style='display: block;'
+            />
+          </div>
+        </div>
+
+        <div class='p-6 border-t border-gray-200 flex justify-end gap-3'>
+          <button
+            type='button'
+            class='px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition'
+            @click='cancelCrop()'
+          >
+            Cancel
+          </button>
+          <button
+            type='button'
+            class='px-6 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition'
+            @click='applyCrop()'
+          >
+            Apply Crop
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <style>
+  [x-cloak] {
+    display: none !important;
+  }
+
+  /* Circular crop area */
+  .cropper-view-box,
+  .cropper-face {
+    border-radius: 50% !important;
+    outline: 0;
+    border: 3px solid #10b981 !important; /* Green border */
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3); /* Glow effect */
+  }
+
+  /* Dark overlay outside circle */
+  .cropper-modal {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Show the square crop box border */
+  .cropper-crop-box {
+    border: 2px solid #3b82f6; /* Blue border for square */
+  }
+
+  /* Show grid lines inside crop box */
+  .cropper-dashed {
+    display: block !important;
+    border: 0 dashed rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .cropper-dashed.dashed-h {
+    border-top-width: 1px !important;
+    border-bottom-width: 1px !important;
+  }
+
+  .cropper-dashed.dashed-v {
+    border-left-width: 1px !important;
+    border-right-width: 1px !important;
+  }
+
+  /* Line handles for resizing */
+  .cropper-line {
+    display: block !important;
+    background-color: #10b981;
+    opacity: 0.5;
+  }
+
+  /* Corner points */
+  .cropper-point {
+    width: 10px !important;
+    height: 10px !important;
+    background-color: #10b981 !important;
+    border: 2px solid #fff !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    opacity: 1 !important;
+  }
+
+  /* Make center point more visionsble */
+  .cropper-center {
+    opacity: 1;
+    width: 8px !important;
+    height: 8px !important;
+    background-color: #10b981 !important;
+    border: 2px solid #fff !important;
+    border-radius: 50% !important;
+  }
+
+  .cropper-center:before,
+  .cropper-center:after {
+    background-color: #10b981 !important;
+  }
+
+  /* Circular preview */
+  .circular-preview {
+    border-radius: 50%;
+    overflow: hidden;
+  }
+</style>

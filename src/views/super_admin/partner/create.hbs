@@ -10,14 +10,17 @@
     imageWidth: 0,
     imageHeight: 0,
     hasFile: false,
+    cropper: null,
+    showCropModal: false,
+    tempImageUrl: null,
+    croppedBlob: null,
     categoryPartnerId: '',
     validateImage(file) {
       if (!file) {
         this.hasFile = false;
         return;
       }
-      
-      this.hasFile = true;
+
       this.fileName = file.name;
       this.fileSize = file.size;
       this.errorMessage = '';
@@ -32,6 +35,7 @@
         return;
       }
 
+      // Validasi ukuran file (5MB)
       const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
         this.errorMessage = `File size too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum 5MB`;
@@ -54,9 +58,13 @@
           this.previewUrl = null;
           URL.revokeObjectURL(objectUrl);
         } else {
-          this.previewUrl = objectUrl;
-          this.isValid = true;
-          this.errorMessage = '';
+          // Buka crop modal
+          this.tempImageUrl = objectUrl;
+          this.showCropModal = true;
+
+          this.$nextTick(() => {
+            this.initCropper();
+          });
         }
       };
       
@@ -69,6 +77,97 @@
       
       img.src = objectUrl;
     },
+
+    initCropper() {
+      const image = document.getElementById('cropImage');
+      if (this.cropper) {
+        this.cropper.destroy();
+      }
+
+      this.cropper = new Cropper(image, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 0.8,
+        restore: false,
+        guides: false,
+        center: true,
+        highlight: false,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: false,
+        ready() {
+          const cropper = this.cropper;
+          const containerData = cropper.getContainerData();
+          const cropBoxData = cropper.getCropBoxData();
+
+          // Make crop box circular
+          const cropBox = cropper.cropBox;
+          cropBox.querySelector('.cropper-view-box').style.borderRadius = '50%';
+          cropBox.querySelector('.cropper-face').style.borderRadius = '50%';
+        }
+      });
+    },
+
+    async applyCrop() {
+      if (!this.cropper) return;
+
+      const canvas = this.cropper.getCropBoxData();
+      this.cropper.getCroppedCanvas({
+        width: 400,
+        height: 400,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high',
+      }).toBlob((blob) => {
+        this.croppedBlob = blob;
+        this.previewUrl = URL.createObjectURL(blob);
+        this.hasFile = true;
+        this.isValid = true;
+        this.errorMessage = '';
+        this.closeCropModal();
+      }, 'image/jpeg', 0.9);
+    },
+
+    closeCropModal() {
+      this.showCropModal = false;
+      if (this.cropper) {
+        this.cropper.destroy();
+        this.cropper = null;
+      }
+      if (this.tempImageUrl) {
+        URL.revokeObjectURL(this.tempImageUrl);
+        this.tempImageUrl = null;
+      }
+      this.$refs.fileInput.value = null;
+    },
+
+    async handleSubmit(e) {
+      if (!this.canSubmit()) {
+        e.preventDefault();
+        alert('Please upload a valid image before submitting.');
+        return;
+      }
+
+      // If there's a cropped image, convert blob to file and update input
+      if (this.croppedBlob) {
+        e.preventDefault();
+
+        // Create a new File from the cropped blob
+        const file = new File([this.croppedBlob], this.fileName, { 
+          type: this.croppedBlob.type 
+        });
+
+        // Create a new DataTransfer to set the file input
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        this.$refs.fileInput.files = dataTransfer.files;
+
+        // Now submit the form normally
+        e.target.submit();
+      }
+      // If no cropped image, form will submit normally (we don't prevent default)
+    },
+
     clearFile() {
       this.previewUrl = null;
       this.errorMessage = '';
@@ -78,6 +177,7 @@
       this.imageWidth = 0;
       this.imageHeight = 0;
       this.hasFile = false;
+      this.croppedBlob = null;
       $refs.fileInput.value = null;
     },
     canSubmit() {
@@ -94,7 +194,7 @@
       enctype='multipart/form-data'
       class='space-y-6'
       x-data='{ loading: false }'
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please upload a valid image before submitting.'); }"
+      @submit='handleSubmit; if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
     >
 
       <div>
@@ -155,5 +255,7 @@
         </div>
       </template>
     </form>
+
+{{> super_admin/partnership/create/crop_modal}}
   </div>
 </div>

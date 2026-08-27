@@ -405,6 +405,17 @@ export class CoursesController {
   }
 
   @Roles('admin', 'super_admin')
+  @Get('/participants/:courseId')
+  async getProgramParticipants(
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Res() res: Response,
+  ) {
+    const participants =
+      await this.coursesService.findCourseParticipants(courseId);
+    res.json(participants);
+  }
+
+  @Roles('admin', 'super_admin')
   @Get('/faq/:courseId')
   async getCourseQuestions(
     @Param('courseId') courseId: number,

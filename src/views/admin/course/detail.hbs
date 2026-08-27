@@ -255,6 +255,12 @@
       Benefit
     </button>
 
+    <button @click="toggleFetch('/program/participants/{{course.id}}', 'participants')" 
+            :class="tab === 'participants' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
+            class="px-4 py-2 rounded-lg shadow transition">
+      Participants
+    </button>
+
     <button @click="toggleFetch('/program/flow/{{course.id}}', 'flow')" 
             :class="tab === 'flow' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'" 
             class="px-4 py-2 rounded-lg shadow transition">
@@ -328,6 +334,10 @@
 
   <div x-show="tab === 'benefit'" x-data="benefitData()" x-init="fetchBenefit()">
     {{> course/benefit_tab}}
+  </div>
+
+  <div x-show="tab === 'participants'" x-data="participantData()" x-init="fetchParticipants()">
+    {{> course/participants_tab}}
   </div>
 
   <div x-show="tab === 'faq'" x-data="faqData()" x-init="fetchFaqs()">

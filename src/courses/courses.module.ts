@@ -29,6 +29,7 @@ import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { Installment } from 'src/entities/installment.entity';
 import { CourseQuestions } from 'src/entities/course_question.entity';
 import { ProgramBenefits } from 'src/entities/course_benefit.entity';
+import { Participants } from 'src/entities/participants.entity';
 import { CourseFlow } from 'src/entities/course_flow.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
@@ -63,6 +64,7 @@ import { QuestionsModule } from 'src/questions/questions.module';
       MentorLogbook,
       CourseQuestions,
       ProgramBenefits,
+      Participants,
       CourseFlow,
       Installment,
       Alumni,

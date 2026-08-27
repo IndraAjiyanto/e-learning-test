@@ -59,13 +59,19 @@
             >
               Edit
             </a>
-            <button
-              @click='removeGallery(item.id)'
-              type='button'
-              class='flex-1 text-sm font-medium border border-red-200 text-red-600 rounded-lg py-2 hover:bg-red-600 hover:text-white transition'
+            <form
+              :action="'/gallery/' + item.id + '?_method=DELETE'"
+              method='post'
+              class='flex-1'
             >
-              Delete
-            </button>
+              <button
+                type='button'
+                onclick='confirmDelete(this)'
+                class='w-full text-sm font-medium border border-red-200 text-red-600 rounded-lg py-2 hover:bg-red-600 hover:text-white transition'
+              >
+                Delete
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -98,25 +104,6 @@ function galleryData() {
       } catch (e) {
         console.error(e);
         this.data = [];
-      }
-    },
-    async removeGallery(id) {
-      if (!confirm('Delete this gallery item?')) return;
-      try {
-        const response = await fetch('/gallery/' + id, {
-          method: 'DELETE',
-          headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to delete gallery item');
-        }
-        this.data = this.data.filter(function (item) {
-          return item.id !== id;
-        });
-        localStorage.setItem('galleryData', JSON.stringify(this.data));
-      } catch (e) {
-        console.error(e);
-        alert('Failed to delete gallery item.');
       }
     }
   }

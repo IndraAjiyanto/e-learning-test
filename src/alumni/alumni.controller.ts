@@ -142,7 +142,14 @@ export class AlumniController {
     @Req() req: Request,
   ) {
     const alumni = await this.alumniService.findOne(alumniId);
-    res.render('super_admin/alumni/editAlumni', { user: req.user, alumni });
+    const course = await this.alumniService.findCourseByKategori(
+      alumni.course.category.id,
+    );
+    res.render('super_admin/alumni/editAlumni', {
+      user: req.user,
+      alumni,
+      course,
+    });
   }
 
   @Roles('super_admin')
