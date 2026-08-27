@@ -4,9 +4,17 @@
           search: '',
           selectedCategory: null,
           showDropdown: false,
+          categoryLocked: {{#if categoryId}}true{{else}}false{{/if}},
+          initialCategoryId: {{#if categoryId}}{{categoryId}}{{else}}null{{/if}},
           availableCategories: {{json category}},
+          init() {
+            if (this.initialCategoryId) {
+              const preselected = this.availableCategories.find(c => c.id == this.initialCategoryId);
+              if (preselected) this.selectCategory(preselected);
+            }
+          },
           get filteredCategories() {
-            return this.availableCategories.filter(c => 
+            return this.availableCategories.filter(c =>
               c.name.toLowerCase().includes(this.search.toLowerCase())
             );
           },
@@ -17,6 +25,7 @@
             $dispatch('category-selected', { category });
           },
           clearCategory() {
+            if (this.categoryLocked) return;
             this.selectedCategory = null;
             this.search = '';
             $dispatch('category-selected', { category: null });
@@ -33,19 +42,17 @@
             <input
               type='text'
               x-model='search'
-              @focus='showDropdown = true'
-              @input='showDropdown = true'
+              @focus='if (!categoryLocked) showDropdown = true'
+              @input='if (!categoryLocked) showDropdown = true'
+              :disabled='categoryLocked'
               placeholder='Search and select category...'
-              :class="borderClass('categoryId')"
-              class='w-full border bg-white rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 text-gray-700'
+              :class="[borderClass('categoryId'), categoryLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-700']"
+              class='w-full border rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2'
             />
-            <i
-              class='fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-            ></i>
-
+            
             <!-- Dropdown -->
             <div
-              x-show='showDropdown && filteredCategories.length > 0'
+              x-show='!categoryLocked && showDropdown && filteredCategories.length > 0'
               class='absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto'
             >
               <template

@@ -56,7 +56,7 @@
       <!-- Tombol Edit dan Delete di Bawah (Samping Kanan Kiri) -->
       <div class="flex items-center gap-2">
         <!-- Tombol Edit (Kiri) -->
-        <a href="/program/edit/{{course.id}}"
+        <a href="/program/edit/{{course.id}}{{#if categoryId}}/{{categoryId}}{{/if}}"
            class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition shadow-sm"
            title="Edit Class">
           <svg xmlns="http://www.w3.org/2000/svg"
