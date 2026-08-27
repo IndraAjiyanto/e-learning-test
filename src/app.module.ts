@@ -40,6 +40,7 @@ import { BenefitModule } from './benefit/benefit.module';
 import { MentorModule } from './mentor/mentor.module';
 import { CourseFlowsModule } from './course_flows/course_flows.module';
 import { ProgramBenefitModule } from './course_benefits/course_benefits.module';
+import { ParticipantsModule } from './participants/participants.module';
 import { TeamModule } from './team/team.module';
 import { VisionsModule } from './visions/visions.module';
 import { SocialModule } from './social/social.module';
@@ -164,6 +165,7 @@ const TABLES_WITH_SEQUENCE = [
     MentorModule,
     CourseFlowsModule,
     ProgramBenefitModule,
+    ParticipantsModule,
     TeamModule,
     VisionsModule,
     SocialModule,

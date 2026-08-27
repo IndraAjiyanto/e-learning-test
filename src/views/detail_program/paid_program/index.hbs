@@ -97,14 +97,14 @@
     <!-- Cards Grid (2x2) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 w-full max-w-[1000px]">
       
-      {{#each course.criteriaId}}
+      {{#each course.participants}}
       <div class="bg-white border border-[#E0E0E0] rounded-[16px] p-8 flex gap-6 hover:shadow-lg transition-shadow duration-300">
         <div class="text-[#0F0F0F] text-[32px] mt-1">
-          <i class="fas fa-check-circle"></i>
+          <i class="fas {{this.icon}}"></i>
         </div>
         <div>
-           <h3 class="text-[#0F0F0F] font-[700] text-[17px] mb-2">Students & Fresh Graduates</h3>
-          <p class="text-[#545454] text-[14px] leading-[1.6]">{{this}}</p>
+           <h3 class="text-[#0F0F0F] font-[700] text-[17px] mb-2">{{getByLang this.title ../lang}}</h3>
+          <p class="text-[#545454] text-[14px] leading-[1.6]">{{getByLang this.description ../lang}}</p>
         </div>
       </div>
       {{/each}}

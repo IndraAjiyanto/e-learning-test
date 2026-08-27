@@ -24,6 +24,7 @@ import { Installment } from './installment.entity';
 import { Technology } from './technology.entity';
 import { CourseFlow } from './course_flow.entity';
 import { ProgramBenefits } from './course_benefit.entity';
+import { Participants } from './participants.entity';
 import { Mentorings } from './mentoring.entity';
 import { Registration } from './registration.entity';
 import { Voucher } from './voucher.entity';
@@ -227,6 +228,10 @@ export class Course {
   @OneToMany(() => ProgramBenefits, (programBenefits) => programBenefits.course)
   @Exclude()
   programBenefits: ProgramBenefits[];
+
+  @OneToMany(() => Participants, (participants) => participants.course)
+  @Exclude()
+  participants: Participants[];
 
   @OneToMany(() => Registration, (registrations) => registrations.course, {
     cascade: true,

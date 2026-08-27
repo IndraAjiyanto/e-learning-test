@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import { Gallery } from './../entities/gallery.entity';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
@@ -57,6 +59,7 @@ export class GalleryService {
     updateGalleryDto: UpdateGalleryDto & { filePath?: string },
   ): Promise<Gallery> {
     const gallery = await this.findOne(galleryId);
+    const oldFilePath = gallery.filePath;
     const { categoryId, ...rest } = updateGalleryDto;
 
     Object.assign(gallery, rest);
@@ -65,11 +68,28 @@ export class GalleryService {
       gallery.category = categoryId ? ({ id: categoryId } as any) : null;
     }
 
-    return this.galleryRepository.save(gallery);
+    const saved = await this.galleryRepository.save(gallery);
+
+    // Hapus file lama hanya jika gambar diganti dengan yang baru
+    if (rest.filePath && oldFilePath && rest.filePath !== oldFilePath) {
+      await this.deleteFile(oldFilePath);
+    }
+
+    return saved;
   }
 
   async remove(id: number): Promise<void> {
     const gallery = await this.findOne(id);
     await this.galleryRepository.remove(gallery);
+    await this.deleteFile(gallery.filePath);
+  }
+
+  private async deleteFile(url?: string): Promise<void> {
+    if (!url) return;
+    try {
+      await fs.unlink(path.join(process.cwd(), 'public', url));
+    } catch (error) {
+      // file tidak ada / sudah terhapus — abaikan
+    }
   }
 }

@@ -67,12 +67,12 @@ export class GalleryController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 1900,
-    maxWidth: 1920,
-    minHeight: 1000,
-    maxHeight: 1080,
+    minWidth: 300,
+    maxWidth: 2000,
+    minHeight: 300,
+    maxHeight: 2000,
     folder: 'program',
-    maxSize: 10 * 1024 * 1024,
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async create(
@@ -137,12 +137,12 @@ export class GalleryController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 1900,
-    maxWidth: 1920,
-    minHeight: 1000,
-    maxHeight: 1080,
+    minWidth: 300,
+    maxWidth: 2000,
+    minHeight: 300,
+    maxHeight: 2000,
     folder: 'program',
-    maxSize: 10 * 1024 * 1024,
+    maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
   })
   async update(
@@ -166,9 +166,10 @@ export class GalleryController {
 
       res.redirect(`/category/${gallery.category.id}`);
     } catch (error: any) {
+      console.error('[Gallery Update Failed]', error.message || error);
       req.flash('error', error.message || 'Gallery failed to update');
 
-      res.redirect('/categoryId');
+      res.redirect(`/category/${updateGalleryDto.categoryId ?? ''}`);
     }
   }
 

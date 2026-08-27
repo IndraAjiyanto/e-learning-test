@@ -26,6 +26,7 @@ import { Registration } from 'src/entities/registration.entity';
 import { MentorLogbook } from 'src/entities/mentor_logbook.entity';
 import { CourseQuestions } from 'src/entities/course_question.entity';
 import { ProgramBenefits } from 'src/entities/course_benefit.entity';
+import { Participants } from 'src/entities/participants.entity';
 import { CourseFlow } from 'src/entities/course_flow.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Installment } from 'src/entities/installment.entity';
@@ -72,6 +73,8 @@ export class CoursesService {
     private readonly courseQuestionRepository: Repository<CourseQuestions>,
     @InjectRepository(ProgramBenefits)
     private readonly programBenefitRepository: Repository<ProgramBenefits>,
+    @InjectRepository(Participants)
+    private readonly participantsRepository: Repository<Participants>,
     @InjectRepository(CourseFlow)
     private readonly courseFlowRepository: Repository<CourseFlow>,
     @InjectRepository(Alumni)
@@ -892,6 +895,13 @@ export class CoursesService {
     });
   }
 
+  async findCourseParticipants(courseId: number) {
+    return await this.participantsRepository.find({
+      where: { course: { id: courseId } },
+      order: { id: 'ASC' },
+    });
+  }
+
   async findCourseFlows(courseId: number) {
     return await this.courseFlowRepository.find({
       where: { course: { id: courseId } },
@@ -909,6 +919,7 @@ export class CoursesService {
         'userCourses',
         'weeks',
         'programBenefits',
+        'participants',
       ],
     });
     if (!course) {
@@ -927,6 +938,7 @@ export class CoursesService {
         'userCourses',
         'userCourses.user',
         'programBenefits',
+        'participants',
         'courseFlow',
       ],
     });
