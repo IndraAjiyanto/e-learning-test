@@ -289,10 +289,11 @@ export class CoursesController {
   }
 
   @Roles('admin', 'super_admin')
-  @Get('/edit/:courseId')
+  @Get('/edit/:courseId{/:categoryId}')
   async formEdit(
     @Res() res: Response,
     @Param('courseId', ParseIntPipe) courseId: number,
+    @Param('categoryId') categoryId: number,
     @Req() req: Request,
   ) {
     const course = await this.coursesService.findOne(courseId);
@@ -308,6 +309,7 @@ export class CoursesController {
       courseType,
       technologies,
       mentorings,
+      categoryId,
     });
   }
 
@@ -459,7 +461,7 @@ export class CoursesController {
   @Get('/detail/program/admin/:courseId')
   async detailKelas(
     @Param('courseId', ParseIntPipe) courseId: number,
-
+    @Query('categoryId') categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -470,12 +472,14 @@ export class CoursesController {
         user: req.user,
         course,
         lastWeek,
+        categoryId,
       });
     } else if (req.user!.role === 'super_admin') {
       const course = await this.coursesService.findOne(courseId);
       res.render('admin/course/detail', {
         user: req.user,
         course,
+        categoryId,
       });
     }
   }
