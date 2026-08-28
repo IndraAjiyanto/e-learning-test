@@ -127,6 +127,23 @@ export class MaterialController {
     });
   }
 
+  @Roles('admin')
+  @Get('formEdit/:id')
+  async formEdit(
+    @Param('id') id: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const material = await this.materialService.findOne(id);
+    res.render('admin/materi/create', {
+      user: req.user,
+      sessionId: material.session.id,
+      jenis_file: material.fileType,
+      editMode: true,
+      material,
+    });
+  }
+
   @Roles('admin', 'user')
   @Get(':id')
   findOne(@Param('id') id: number) {
@@ -192,15 +209,24 @@ export class MaterialController {
     @UploadedFile() file: Express.Multer.File,
     @Body() updateMaterialDto: UpdateMaterialDto,
     @Req() req: Request,
+    @Res() res: Response,
   ) {
     const material = await this.materialService.findOne(id);
+    const sessionId = material.session.id;
 
-    if (file) {
-      await this.materialService.deleteFile(material.file);
-      updateMaterialDto.file = req.body.uploadedFileUrls?.[0];
+    try {
+      if (file) {
+        await this.materialService.deleteFile(material.file);
+        updateMaterialDto.file = req.body.uploadedFileUrls?.[0];
+      }
+
+      await this.materialService.update(id, updateMaterialDto);
+      req.flash('success', 'Successfully updated PDF material');
+      res.redirect(`/session/${sessionId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to update PDF material');
+      res.redirect(`/session/${sessionId}`);
     }
-
-    return await this.materialService.update(id, updateMaterialDto);
   }
 
   @Roles('admin')
@@ -209,9 +235,40 @@ export class MaterialController {
     @Param('id') id: number,
     @Body() updateMaterialDto: UpdateMaterialDto,
     @Req() req: Request,
+    @Res() res: Response,
   ) {
     const material = await this.materialService.findOne(id);
-    return await this.materialService.update(id, updateMaterialDto);
+    const sessionId = material.session.id;
+
+    try {
+      await this.materialService.update(id, updateMaterialDto);
+      req.flash('success', 'Successfully updated PPT material');
+      res.redirect(`/session/${sessionId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to update PPT material');
+      res.redirect(`/session/${sessionId}`);
+    }
+  }
+
+  @Roles('admin')
+  @Patch('video/:id')
+  async updateVideo(
+    @Param('id') id: number,
+    @Body() updateMaterialDto: UpdateMaterialDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const material = await this.materialService.findOne(id);
+    const sessionId = material.session.id;
+
+    try {
+      await this.materialService.update(id, updateMaterialDto);
+      req.flash('success', 'Successfully updated video material');
+      res.redirect(`/session/${sessionId}`);
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to update video material');
+      res.redirect(`/session/${sessionId}`);
+    }
   }
 
   @Roles('admin')

@@ -62,9 +62,9 @@ function programData(mode) {
       const messages = {
         name: 'Program Name looks good!',
         group: 'Group looks good!',
-        deskripsi_id: 'Indonesian description looks good!',
-        deskripsi_en: 'English description looks good!',
-        deskripsi_ja: 'Japanese description looks good!',
+        description_id: 'Indonesian description looks good!',
+        description_en: 'English description looks good!',
+        description_ja: 'Japanese description looks good!',
         lokasi_id: 'Location (ID) looks good!',
         lokasi_en: 'Location (EN) looks good!',
         lokasi_ja: 'Location (JP) looks good!',
@@ -285,7 +285,7 @@ function programData(mode) {
       if (field === 'locationLink') {
         this.touched.locationLink = true;
       } else if (field === 'description' || field === 'location') {
-        const prefix = field === 'description' ? 'deskripsi' : 'lokasi';
+        const prefix = field === 'description' ? 'description' : 'lokasi';
         this.touched[prefix + '_' + valueOrLang] = true;
       }
       this.updateCompleteness();
@@ -367,7 +367,7 @@ function programData(mode) {
       // Basic text fields
       results.push(this.validateTextField('name', 'Program Name'));
       results.push(this.validateTextField('group', 'Group'));
-      results.push(this.validateMultiLang('description', 'deskripsi', {
+      results.push(this.validateMultiLang('description', 'description', {
         id: 'Indonesian description',
         en: 'English description',
         ja: 'Japanese description'
@@ -389,12 +389,20 @@ function programData(mode) {
         results.push(this.validateDropdown('mentoringsId', 'mentoringId', 'Mentoring'));
       }
 
-      // super_admin-only pricing fields
+      // super_admin-only pricing fields (price/promo only apply when Paid Program is on)
       if (document.getElementById('harga1')) {
-        results.push(this.validateMoneyInput('price', 'harga1', 'Price', false));
+        if (this.paidClass) {
+          results.push(this.validateMoneyInput('price', 'harga1', 'Price', false));
+        } else {
+          this.clearField('harga1');
+        }
       }
       if (document.getElementById('promo1')) {
-        results.push(this.validateMoneyInput('promo', 'promo1', 'Promo', true));
+        if (this.paidClass) {
+          results.push(this.validateMoneyInput('promo', 'promo1', 'Promo', true));
+        } else {
+          this.clearField('promo1');
+        }
       }
       if (document.getElementById('kuota1')) {
         results.push(this.validateMoneyInput('quota', 'kuota1', 'Program Quota', false));

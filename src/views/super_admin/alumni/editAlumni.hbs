@@ -13,11 +13,11 @@
         existingImage: `{{alumni.profile}}`,
 
         searchKelas: `{{alumni.course.name}}`,
-        selectedKelas: `{{json alumni.course}}`,
+        selectedKelas: {{json alumni.course}},
         showKelasDropdown: false,
-        availableKelas: `{{json course}}`,
+        availableKelas: {{json course}},
         get filteredKelas() {
-          return this.availableKelas.filter(k => 
+          return (Array.isArray(this.availableKelas) ? this.availableKelas : []).filter(k => 
             k.name.toLowerCase().includes(this.searchKelas.toLowerCase())
           );
         },

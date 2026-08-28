@@ -12,6 +12,10 @@
     imageHeight: 0,
     hasFile: false,
     hasNewImage: false,
+    cropper: null,
+    showCropModal: false,
+    tempImageUrl: null,
+    croppedBlob: null,
     categoryPartnerId: '{{partner.categoryPartner.id}}',
     validateImage(file) {
       if (!file) {
@@ -20,8 +24,6 @@
         return;
       }
       
-      this.hasFile = true;
-      this.hasNewImage = true;
       this.fileName = file.name;
       this.fileSize = file.size;
       this.errorMessage = '';
@@ -59,9 +61,13 @@
           this.previewUrl = null;
           URL.revokeObjectURL(objectUrl);
         } else {
-          this.previewUrl = objectUrl;
-          this.isValid = true;
-          this.errorMessage = '';
+          // Buka crop modal
+          this.tempImageUrl = objectUrl;
+          this.showCropModal = true;
+
+          this.$nextTick(() => {
+            this.initCropper();
+          });
         }
       };
       
@@ -74,6 +80,110 @@
       
       img.src = objectUrl;
     },
+
+    initCropper() {
+      const image = document.getElementById('cropImage');
+      if (this.cropper) {
+        this.cropper.destroy();
+      }
+
+      this.cropper = new Cropper(image, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 0.8,
+        restore: false,
+        guides: false,
+        center: true,
+        highlight: false,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: false,
+        ready() {
+          const cropper = this.cropper;
+          const containerData = cropper.getContainerData();
+          const cropBoxData = cropper.getCropBoxData();
+
+          // Make crop box circular
+          const cropBox = cropper.cropBox;
+          cropBox.querySelector('.cropper-view-box').style.borderRadius = '50%';
+          cropBox.querySelector('.cropper-face').style.borderRadius = '50%';
+        }
+      });
+    },
+
+    async applyCrop() {
+      if (!this.cropper) return;
+
+      const canvas = this.cropper.getCropBoxData();
+      this.cropper.getCroppedCanvas({
+        width: 400,
+        height: 400,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high',
+      }).toBlob((blob) => {
+        this.croppedBlob = blob;
+        this.previewUrl = URL.createObjectURL(blob);
+        this.hasFile = true;
+        this.hasNewImage = true;
+        this.isValid = true;
+        this.errorMessage = '';
+        this.closeCropModal();
+      }, 'image/jpeg', 0.9);
+    },
+
+    closeCropModal() {
+      this.showCropModal = false;
+      if (this.cropper) {
+        this.cropper.destroy();
+        this.cropper = null;
+      }
+      if (this.tempImageUrl) {
+        URL.revokeObjectURL(this.tempImageUrl);
+        this.tempImageUrl = null;
+      }
+      this.$refs.fileInput.value = null;
+    },
+
+    cancelCrop() {
+      // Kembali ke kondisi gambar lama saat modal dibatalkan
+      this.previewUrl = null;
+      this.hasFile = false;
+      this.hasNewImage = false;
+      this.croppedBlob = null;
+      this.isValid = true;
+      this.errorMessage = '';
+      this.fileName = '';
+      this.fileSize = 0;
+      this.closeCropModal();
+    },
+
+    async handleSubmit(e) {
+      if (!this.canSubmit()) {
+        e.preventDefault();
+        alert('Please fix the image validation errors before submitting.');
+        return;
+      }
+
+      // If there's a cropped image, convert blob to file and update input
+      if (this.croppedBlob) {
+        e.preventDefault();
+
+        // Create a new File from the cropped blob
+        const file = new File([this.croppedBlob], this.fileName, { 
+          type: this.croppedBlob.type 
+        });
+
+        // Create a new DataTransfer to set the file input
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        this.$refs.fileInput.files = dataTransfer.files;
+
+        // Now submit the form normally
+        e.target.submit();
+      }
+      // If no cropped image, form will submit normally (we don't prevent default)
+    },
     clearFile() {
       this.previewUrl = null;
       this.errorMessage = '';
@@ -84,6 +194,7 @@
       this.imageHeight = 0;
       this.hasFile = false;
       this.hasNewImage = false;
+      this.croppedBlob = null;
       $refs.fileInput.value = null;
     },
     canSubmit() {
@@ -108,7 +219,7 @@
       enctype='multipart/form-data'
       class='space-y-6'
       x-data='{ loading: false }'
-      @submit.prevent="if(canSubmit()) { loading = true; $el.submit(); } else { alert('Please fix the image validation errors before submitting.'); }"
+      @submit='handleSubmit; if (!canSubmit()) { $event.preventDefault(); return false; } loading = true;'
     >
 
       <!-- Pilih Kategori Partner -->
@@ -170,5 +281,7 @@
         </div>
       </template>
     </form>
+
+{{> super_admin/partnership/edit/crop_modal}}
   </div>
 </div>

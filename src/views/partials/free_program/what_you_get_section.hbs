@@ -13,14 +13,16 @@
     <!-- Dibatasi max-w-[800px] agar 4 kartu mengelompok rapi di tengah -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8 w-full max-w-[800px]">
       
-      <!-- KARTU 1: E-Certificate -->
-       {{#each course.materialsId}}
+      {{#each course.programBenefits}}
       <div class="bg-white border border-gray-200 rounded-[12px] py-12 px-8 flex flex-col items-center justify-center text-center hover:shadow-md transition-shadow">
         <div class="text-black mb-6 flex items-center justify-center h-[50px]">
-          <i class="fa-solid fa-certificate text-[42px]"></i>
+          <i class="fas {{this.icon}} text-[42px]"></i>
         </div>
         <p class="text-black font-semibold text-[17px]">
-          {{this}}
+          {{getByLang this.benefit ../lang}}
+        </p>
+        <p class="text-black font-normal text-[14px] mt-2">
+          {{getByLang this.description ../lang}}
         </p>
       </div>
       {{/each}}

@@ -7,62 +7,62 @@
         <style>
           @keyframes scrollUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
           @keyframes scrollDown { from { transform: translateY(-50%); } to { transform: translateY(0); } }
-          .animate-scroll-up { animation: scrollUp 5s linear infinite; }
-          .animate-scroll-down { animation: scrollDown 5s linear infinite; }
+          .animate-scroll-up { animation: scrollUp 5s linear infinite; will-change: transform; }
+          .animate-scroll-down { animation: scrollDown 5s linear infinite; will-change: transform; }
         </style>
         <!-- Kolom 1 -->
-        <div class="flex flex-col gap-4 animate-scroll-up">
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+        <div class="flex flex-col self-start animate-scroll-up">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
           <!-- Duplikasi untuk looping mulus -->
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
         </div>
         <!-- Kolom 2 -->
-        <div class="flex flex-col gap-4 animate-scroll-down">
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+        <div class="flex flex-col self-start animate-scroll-down">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
           <!-- Duplikasi untuk looping mulus -->
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
-          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200">
+          <div class="relative w-[150px] lg:w-[250px] flex-shrink-0 h-[300px] aspect-[727/467] rounded-xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] bg-gray-200 mb-4">
             <img src="/public/image/mpp/hero_section.png" alt="" class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"/>
           </div>
         </div>
