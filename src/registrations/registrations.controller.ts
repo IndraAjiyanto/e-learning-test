@@ -45,7 +45,13 @@ export class RegistrationsController {
     @Req() req: Request,
   ) {
     try {
-      console.log('🔵 [Registration] Attempt:', { userId, courseId, file: req.file, body: req.body, uploadedImageUrls: req.body.uploadedImageUrls });
+      console.log('🔵 [Registration] Attempt:', {
+        userId,
+        courseId,
+        file: req.file,
+        body: req.body,
+        uploadedImageUrls: req.body.uploadedImageUrls,
+      });
       createRegistrationDto.file = req.body.uploadedImageUrls?.[0];
       console.log('🔵 [Registration] File URL:', createRegistrationDto.file);
       createRegistrationDto.courseId = courseId;
@@ -57,15 +63,13 @@ export class RegistrationsController {
       createRegistrationDto.current_status = req.body.current_status;
       createRegistrationDto.referal_source = req.body.referal_source;
       createRegistrationDto.attend_program = req.body.attend_program === 'true';
-      const registration =
-        await this.registrationsService.create(createRegistrationDto);
+      const registration = await this.registrationsService.create(
+        createRegistrationDto,
+      );
       console.log('🔵 [Registration] Result:', registration);
       if (registration == false) {
         await this.registrationsService.deleteFile(createRegistrationDto.file);
-        req.flash(
-          'info',
-          'you have already registered for this program',
-        );
+        req.flash('info', 'you have already registered for this program');
         res.redirect(`/users/profile?tab=history-payment#pendaftaran`);
       } else {
         try {
@@ -100,7 +104,8 @@ export class RegistrationsController {
     @Req() req: Request,
   ) {
     try {
-      const registration = await this.registrationsService.findOne(registrationId);
+      const registration =
+        await this.registrationsService.findOne(registrationId);
       if (!registration) {
         return null;
       }
@@ -145,9 +150,12 @@ export class RegistrationsController {
         );
       }
     } catch (error: any) {
-      const registration = await this.registrationsService.findOne(registrationId);
+      const registration =
+        await this.registrationsService.findOne(registrationId);
       req.flash('error', error.message || 'Failed to update process');
-      res.redirect(`/program/detail/program/admin/${registration['course']['id']}`);
+      res.redirect(
+        `/program/detail/program/admin/${registration['course']['id']}`,
+      );
     }
   }
 }

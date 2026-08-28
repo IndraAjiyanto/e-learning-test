@@ -13,7 +13,8 @@ export class BackgroundService {
   ) {}
 
   async create(createBackgroundDto: CreateBackgroundDto): Promise<Background> {
-    const background = await this.backgroundRepository.create(createBackgroundDto);
+    const background =
+      await this.backgroundRepository.create(createBackgroundDto);
     return await this.backgroundRepository.save(background);
   }
 

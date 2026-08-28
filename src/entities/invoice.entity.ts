@@ -5,7 +5,7 @@ import {
   OneToOne,
   JoinColumn,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 import { Payment } from './payment.entity';
 
@@ -23,7 +23,13 @@ export class Invoice {
   @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
   subtotal: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true, default: 0 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    nullable: true,
+    default: 0,
+  })
   discount_amount: number;
 
   @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
@@ -41,7 +47,9 @@ export class Invoice {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => Payment, (payment) => payment.invoice, { onDelete: 'CASCADE' })
+  @OneToOne(() => Payment, (payment) => payment.invoice, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'paymentId' })
   payment: Payment;
 }

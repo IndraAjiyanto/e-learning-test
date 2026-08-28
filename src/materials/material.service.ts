@@ -118,8 +118,7 @@ export class MaterialService {
       const filePath = path.join(process.cwd(), 'public', url);
 
       await fs.unlink(filePath);
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   async update(id: number, updateMaterialDto: UpdateMaterialDto) {

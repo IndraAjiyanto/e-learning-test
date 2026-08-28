@@ -32,13 +32,13 @@ export class BenefitService {
   }
 
   async findNo() {
-        const benefit = await this.findAll();
-      const usedNumbers = benefit.map((b) => Number(b.no));
-      
-      const availableNumbers = [1, 2, 3, 4, 5].filter(
-        (n) => !usedNumbers.includes(n)
-      );
-      return availableNumbers;
+    const benefit = await this.findAll();
+    const usedNumbers = benefit.map((b) => Number(b.no));
+
+    const availableNumbers = [1, 2, 3, 4, 5].filter(
+      (n) => !usedNumbers.includes(n),
+    );
+    return availableNumbers;
   }
 
   async findNoForEdit(benefitId: number) {
@@ -57,16 +57,16 @@ export class BenefitService {
       throw new NotFoundException('benefit not found');
     }
 
-      // Cek apakah no yang diinginkan sudah dipakai data lain
-  const no_used = await this.benefitRepository.findOne({
-    where: { no: updateBenefitDto.no },
-  });
+    // Cek apakah no yang diinginkan sudah dipakai data lain
+    const no_used = await this.benefitRepository.findOne({
+      where: { no: updateBenefitDto.no },
+    });
 
-  // Kalau sudah dipakai dan bukan data yang sama, swap nomor
-  if (no_used && no_used.id !== benefitId) {
-    no_used.no = benefit.no; // data lain ambil no lama
-    await this.benefitRepository.save(no_used);
-  }
+    // Kalau sudah dipakai dan bukan data yang sama, swap nomor
+    if (no_used && no_used.id !== benefitId) {
+      no_used.no = benefit.no; // data lain ambil no lama
+      await this.benefitRepository.save(no_used);
+    }
 
     Object.assign(benefit, updateBenefitDto);
     return await this.benefitRepository.save(benefit);

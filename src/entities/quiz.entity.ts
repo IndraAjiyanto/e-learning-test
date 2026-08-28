@@ -1,4 +1,5 @@
-import { JoinColumn,
+import {
+  JoinColumn,
   Column,
   CreateDateColumn,
   Entity,

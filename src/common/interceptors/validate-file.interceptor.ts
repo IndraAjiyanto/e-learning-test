@@ -109,7 +109,6 @@ export class ValidateFileInterceptor implements NestInterceptor {
           request.body.uploadedFileUrls = [];
         }
         request.body.uploadedFileUrls.push(fileUrl);
-
       } else {
         throw new Error('Invalid file: no buffer or path');
       }

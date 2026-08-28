@@ -25,7 +25,6 @@ import { InvoiceService } from 'src/invoice/invoice.service';
 
 @Injectable()
 export class PaymentsService {
-
   constructor(
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
@@ -49,8 +48,7 @@ export class PaymentsService {
     private readonly sessionRepository: Repository<Session>,
     private readonly voucherService: VoucherService,
     private readonly invoiceService: InvoiceService,
-  ) {
-  }
+  ) {}
 
   async create(createPaymentDto: CreatePaymentDto) {
     const user = await this.userRepository.findOne({
@@ -149,13 +147,12 @@ export class PaymentsService {
         where: { course: { id: courseId }, isFinal: true },
       });
       if (weeks) {
-        const existingWeekProgress =
-          await this.weekProgressRepository.findOne({
-            where: {
-              week: { id: weeks.id },
-              user: { id: userId },
-            },
-          });
+        const existingWeekProgress = await this.weekProgressRepository.findOne({
+          where: {
+            week: { id: weeks.id },
+            user: { id: userId },
+          },
+        });
         if (existingWeekProgress) {
           await this.weekProgressRepository.save({
             id: existingWeekProgress.id,
@@ -187,14 +184,14 @@ export class PaymentsService {
               id: existingSessionProgress.id,
               session: session,
               user: user,
-                isAttended: true,
+              isAttended: true,
               logbook: false,
             });
           } else {
             await this.sessionProgressRepository.save({
               session: session,
               user: user,
-                isAttended: true,
+              isAttended: true,
               logbook: false,
             });
           }
@@ -217,7 +214,10 @@ export class PaymentsService {
     }
   }
 
-  async removeCourseUser(userId: number, courseId: number): Promise<UserCourse> {
+  async removeCourseUser(
+    userId: number,
+    courseId: number,
+  ): Promise<UserCourse> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -312,7 +312,13 @@ export class PaymentsService {
   async findAllInstallments() {
     return await this.paymentRepository.find({
       where: { installment: Not(IsNull()) },
-      relations: ['user', 'course', 'course.category', 'installment', 'invoice'],
+      relations: [
+        'user',
+        'course',
+        'course.category',
+        'installment',
+        'invoice',
+      ],
     });
   }
 
@@ -353,7 +359,13 @@ export class PaymentsService {
     } catch (error) {}
   }
 
-  async createXenditInvoice(userId: number, courseId: number, paymentMethod: string, promoCode?: string, formData?: any) {
+  async createXenditInvoice(
+    userId: number,
+    courseId: number,
+    paymentMethod: string,
+    promoCode?: string,
+    formData?: any,
+  ) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['installments'],
@@ -363,7 +375,8 @@ export class PaymentsService {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) throw new Error('User not found');
 
-    let basePrice = course.promo && course.promo > 0 ? course.promo : course.price;
+    let basePrice =
+      course.promo && course.promo > 0 ? course.promo : course.price;
     if (paymentMethod === 'Installment') {
       if (!course.installments || course.installments.length === 0) {
         throw new Error('Installment plan is not available for this course');
@@ -376,16 +389,21 @@ export class PaymentsService {
     let appliedVoucherCode: string | undefined = undefined;
 
     if (promoCode) {
-       const validationResult = await this.voucherService.validateVoucher(promoCode, courseId, basePrice, userId);
-       discountAmount = validationResult.discountAmount;
-       finalTotal = validationResult.finalTotal;
-       appliedVoucherCode = promoCode; 
+      const validationResult = await this.voucherService.validateVoucher(
+        promoCode,
+        courseId,
+        basePrice,
+        userId,
+      );
+      discountAmount = validationResult.discountAmount;
+      finalTotal = validationResult.finalTotal;
+      appliedVoucherCode = promoCode;
     }
 
     const payment = this.paymentRepository.create({
       user: user,
       course: course,
-      process: finalTotal <= 0 ? 'approved' : 'process', 
+      process: finalTotal <= 0 ? 'approved' : 'process',
       no: `INV-${Date.now()}`,
       // Simpan data dari form
       user_fullname: formData?.user_fullname || null,
@@ -393,23 +411,31 @@ export class PaymentsService {
       user_no: formData?.user_no || formData?.no || null,
       current_status: formData?.current_status || null,
       referalSource: formData?.referal_source || null,
-      attend_program: formData?.attend_program ? true : false
+      attend_program: formData?.attend_program ? true : false,
     });
-    
+
     await this.paymentRepository.save(payment);
 
     if (finalTotal <= 0) {
       await this.addUserToCourse(userId, courseId);
     }
 
-    return this.invoiceService.createInvoiceForPayment(payment, finalTotal, user.email, course.name, paymentMethod, basePrice, discountAmount);
+    return this.invoiceService.createInvoiceForPayment(
+      payment,
+      finalTotal,
+      user.email,
+      course.name,
+      paymentMethod,
+      basePrice,
+      discountAmount,
+    );
   }
 
   // Get payment by No
   async getPaymentByNo(no: string) {
     return this.paymentRepository.findOne({
       where: { no },
-      relations: ['course', 'user', 'invoice']
+      relations: ['course', 'user', 'invoice'],
     });
   }
 
@@ -417,5 +443,4 @@ export class PaymentsService {
   async findCourseById(courseId: number) {
     return this.courseRepository.findOneBy({ id: courseId });
   }
-
 }

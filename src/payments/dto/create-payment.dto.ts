@@ -24,7 +24,17 @@ export class CreatePaymentDto {
   @IsOptional()
   no: string;
 
-  @IsEnum(['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'])
+  @IsEnum([
+    'Instagram',
+    'TikTok',
+    'LinkedIn',
+    'Friends',
+    'University',
+    'WhatsApp Group',
+    'Webinar/Event',
+    'Website',
+    'Other',
+  ])
   @IsOptional()
   referalSource: string;
 }

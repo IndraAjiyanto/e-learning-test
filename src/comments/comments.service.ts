@@ -27,7 +27,10 @@ export class CommentsService {
     return await this.commentRepository.save(comment);
   }
 
-  async updateAssignmentAnswer(assignment_answerId: number, process: ProcessStatus) {
+  async updateAssignmentAnswer(
+    assignment_answerId: number,
+    process: ProcessStatus,
+  ) {
     const taskAnswers = await this.assignmentAnswerRepository.findOne({
       where: { id: assignment_answerId },
     });

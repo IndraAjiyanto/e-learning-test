@@ -1,4 +1,18 @@
-import { Controller, Post, Body, Headers, Param, Res, Req, Get, HttpCode, HttpStatus, HttpException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Headers,
+  Param,
+  Res,
+  Req,
+  Get,
+  HttpCode,
+  HttpStatus,
+  HttpException,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { InvoiceService } from './invoice.service';
 
@@ -8,7 +22,10 @@ export class InvoiceController {
 
   @Post('webhook/xendit')
   @HttpCode(HttpStatus.OK)
-  async handleWebhook(@Body() payload: any, @Headers('x-callback-token') callbackToken: string) {
+  async handleWebhook(
+    @Body() payload: any,
+    @Headers('x-callback-token') callbackToken: string,
+  ) {
     try {
       await this.invoiceService.handleXenditWebhook(payload, callbackToken);
       return { status: 'success' };
@@ -17,15 +34,23 @@ export class InvoiceController {
       if (error instanceof UnauthorizedException) {
         throw error;
       }
-      throw new InternalServerErrorException(error.message || 'Internal Server Error');
+      throw new InternalServerErrorException(
+        error.message || 'Internal Server Error',
+      );
     }
   }
 
   @Post('simulate-success/:no')
-  async simulateSuccess(@Param('no') no: string, @Res() res: Response, @Req() req: Request) {
+  async simulateSuccess(
+    @Param('no') no: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
       const payment = await this.invoiceService.simulatePaymentSuccess(no);
-      const course = await this.invoiceService.findCourseById(payment.course.id);
+      const course = await this.invoiceService.findCourseById(
+        payment.course.id,
+      );
       return res.render('payments/index', {
         layout: 'main',
         user: req.user,

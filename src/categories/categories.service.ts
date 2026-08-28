@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
 import { UpdateCategoriesDto } from './dto/update-categories.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -184,10 +188,7 @@ export class CategoriesService {
       );
     }
 
-    if (
-      options.allowedTypes &&
-      !options.allowedTypes.includes(file.mimetype)
-    ) {
+    if (options.allowedTypes && !options.allowedTypes.includes(file.mimetype)) {
       throw new BadRequestException(
         `File type not allowed. Only: ${options.allowedTypes.join(', ')}`,
       );
@@ -228,16 +229,8 @@ export class CategoriesService {
     }
   }
 
-  async saveFile(
-    file: Express.Multer.File,
-    folder: string,
-  ): Promise<string> {
-    const uploadDir = path.join(
-      process.cwd(),
-      'public',
-      'asset',
-      folder,
-    );
+  async saveFile(file: Express.Multer.File, folder: string): Promise<string> {
+    const uploadDir = path.join(process.cwd(), 'public', 'asset', folder);
 
     await fs.mkdir(uploadDir, { recursive: true });
 

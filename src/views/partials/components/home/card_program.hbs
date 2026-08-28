@@ -1,0 +1,44 @@
+{{!-- 
+  Komponen: Card Program (Fitur Global)
+  Lokasi: src/views/partials/components/home/card_program.hbs
+  
+  Props:
+  - image   : URL gambar kursus
+  - name    : Nama kursus
+  - text    : Deskripsi kursus (string)
+  - lang    : Bahasa aktif (string)
+  - desktop : boolean (true untuk styling desktop, false/kosong untuk mobile)
+--}}
+
+<div class="
+  w-full flex flex-col overflow-hidden
+  {{#if desktop}}
+    max-w-[433px] min-h-[552px] h-full mx-auto group card bg-[#F5F5F5]/50 backdrop-blur-[6.6px] border-2 border-white/10 rounded-[12px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)]
+  {{else}}
+    bg-white border border-[#D9D9D9] rounded-[16px] shadow-[0px_4px_12px_0px_#00000010]
+  {{/if}}
+">
+  <img src="{{image}}" alt="{{name}}" class="w-full object-cover {{#if desktop}}h-[278px]{{else}}h-[190px]{{/if}}" />
+  
+  <div class="flex flex-col flex-1 {{#if desktop}}card-body p-6{{else}}p-5 gap-2.5{{/if}}">
+    <h3 class="font-montserrat text-[#0B1F3B] {{#if desktop}}font-[600] text-[35px] mb-2{{else}}font-bold text-[20px] text-left{{/if}}">
+      {{name}}
+    </h3>
+    
+    <p class="font-sans text-left flex-1 {{#if desktop}}font-[400] text-base leading-[30px] text-black/80 mb-4{{else}}font-normal text-[13px] leading-[20px] text-[#2D2D2D] mb-2{{/if}}">
+      {{getByLang text lang}}
+    </p>
+    
+    <div class="mt-auto {{#if desktop}}card-actions flex justify-end{{else}}flex items-center justify-between pt-2 border-t border-slate-100{{/if}}">
+      {{#unless desktop}}
+        <a href="/category/program/{{name}}" class="font-montserrat font-bold text-[14px] text-[#003060] flex items-center gap-1.5 hover:underline">
+          Learn More
+        </a>
+      {{/unless}}
+      
+      <a href="/category/program/{{name}}" class="rounded-full bg-[#003060] text-white flex items-center justify-center shadow-sm shrink-0 hover:bg-[#001f3f] transition-colors {{#if desktop}}w-[50px] h-[50px]{{else}}w-9 h-9{{/if}}">
+        <i class="fas fa-arrow-right {{#if desktop}}text-[18px]{{else}}text-xs{{/if}}"></i>
+      </a>
+    </div>
+  </div>
+</div>

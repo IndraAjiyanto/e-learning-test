@@ -10,7 +10,7 @@ import {
   Res,
   Req,
   UseInterceptors,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
 import { TechnologiesService } from './technologies.service';
 import { CreateTechnologiesDto } from './dto/create-technologies.dto';
@@ -55,7 +55,9 @@ export class TechnologiesController {
       }
 
       if (!createTechnologiesDto.svg && !createTechnologiesDto.imgUrl) {
-        throw new BadRequestException('SVG atau Gambar (Image) wajib diisi salah satunya!');
+        throw new BadRequestException(
+          'SVG atau Gambar (Image) wajib diisi salah satunya!',
+        );
       }
 
       await this.technologiesService.create(createTechnologiesDto);
@@ -71,7 +73,10 @@ export class TechnologiesController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const technologies = await this.technologiesService.findAll();
-    res.render('super_admin/technologies/index', { user: req.user, technologies });
+    res.render('super_admin/technologies/index', {
+      user: req.user,
+      technologies,
+    });
   }
 
   @Roles('super_admin')
@@ -88,7 +93,10 @@ export class TechnologiesController {
     @Req() req: Request,
   ) {
     const technologies = await this.technologiesService.findOne(id);
-    res.render('super_admin/technologies/edit', { user: req.user, technologies });
+    res.render('super_admin/technologies/edit', {
+      user: req.user,
+      technologies,
+    });
   }
 
   @Roles('super_admin')
@@ -114,18 +122,26 @@ export class TechnologiesController {
       } else if (req.body.remove_image === 'true') {
         updateTechnologiesDto.imgUrl = null;
       }
-      
+
       const existingTech = await this.technologiesService.findOne(id);
       if (!existingTech) {
         throw new BadRequestException('Tech not found');
       }
 
       const isSvgEmpty = updateTechnologiesDto.svg === '';
-      const finalSvg = updateTechnologiesDto.svg !== undefined ? updateTechnologiesDto.svg : existingTech.svg;
-      const finalImgUrl = updateTechnologiesDto.imgUrl !== undefined ? updateTechnologiesDto.imgUrl : existingTech.imgUrl;
+      const finalSvg =
+        updateTechnologiesDto.svg !== undefined
+          ? updateTechnologiesDto.svg
+          : existingTech.svg;
+      const finalImgUrl =
+        updateTechnologiesDto.imgUrl !== undefined
+          ? updateTechnologiesDto.imgUrl
+          : existingTech.imgUrl;
 
       if ((isSvgEmpty || !finalSvg) && !finalImgUrl) {
-         throw new BadRequestException('SVG atau Gambar (Image) wajib diisi salah satunya!');
+        throw new BadRequestException(
+          'SVG atau Gambar (Image) wajib diisi salah satunya!',
+        );
       }
 
       // Ensure empty string SVG is saved as null to prevent Handlebars issues

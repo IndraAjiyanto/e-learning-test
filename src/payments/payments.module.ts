@@ -6,11 +6,11 @@ import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
 import { Payment } from 'src/entities/payment.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
-import { Registration} from 'src/entities/registration.entity';
+import { Registration } from 'src/entities/registration.entity';
 import { Installment } from 'src/entities/installment.entity';
 import { CommonModule } from 'src/common/common.module';
 import { WeekProgress } from 'src/entities/week_progress.entity';
-import { SessionProgress} from 'src/entities/session_progress.entity';
+import { SessionProgress } from 'src/entities/session_progress.entity';
 import { Weeks } from 'src/entities/weeks.entity';
 import { Session } from 'src/entities/session.entity';
 import { VoucherModule } from 'src/voucher/voucher.module';
@@ -35,7 +35,7 @@ import { InvoiceModule } from 'src/invoice/invoice.module';
     VoucherModule,
     InvoiceModule,
   ],
-  controllers: [PaymentsController, ApiPaymentController, ],
+  controllers: [PaymentsController, ApiPaymentController],
   providers: [PaymentsService],
   exports: [PaymentsService],
 })

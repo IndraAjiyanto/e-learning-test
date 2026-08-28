@@ -7,9 +7,13 @@ import { Collaboration } from 'src/entities/collaboration.entity';
 import { PartnerModule } from 'src/partner/partner.module';
 import { CategoryPartnerModule } from 'src/category_partner/category_partner.module';
 
-
 @Module({
-  imports: [TypeOrmModule.forFeature([Collaboration]), CommonModule, PartnerModule, CategoryPartnerModule],
+  imports: [
+    TypeOrmModule.forFeature([Collaboration]),
+    CommonModule,
+    PartnerModule,
+    CategoryPartnerModule,
+  ],
   controllers: [PartnerController],
   providers: [CollaborationsService],
 })

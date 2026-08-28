@@ -23,7 +23,7 @@ export class Material {
   file: string;
 
   @Column({ type: 'enum', enum: ['video', 'pdf', 'ppt'] })
- fileType: FileType;
+  fileType: FileType;
 
   @CreateDateColumn()
   createdAt: Date;

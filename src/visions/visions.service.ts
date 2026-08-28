@@ -10,7 +10,7 @@ export class VisionsService {
   constructor(
     @InjectRepository(Vision)
     private readonly visionRepository: Repository<Vision>,
-  ) { }
+  ) {}
 
   async create(createVisionDto: CreateVisionsDto) {
     const vision = await this.visionRepository.create(createVisionDto);

@@ -29,7 +29,9 @@ export class CourseFlow {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Course, (course) => course.courseFlow, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.courseFlow, {
+    onDelete: 'CASCADE',
+  })
   @Exclude()
   course: Course;
 }

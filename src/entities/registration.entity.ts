@@ -38,7 +38,15 @@ export class Registration {
 
   @Column({
     type: 'enum',
-    enum: ['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'],
+    enum: [
+      'University Student',
+      'Fresh Graduate',
+      'Job Seeker',
+      'Employee',
+      'Freelancer',
+      'Entrepreneur',
+      'Other',
+    ],
     nullable: true,
   })
   current_status: string;
@@ -48,7 +56,17 @@ export class Registration {
 
   @Column({
     type: 'enum',
-    enum: ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'],
+    enum: [
+      'Instagram',
+      'TikTok',
+      'LinkedIn',
+      'Friends',
+      'University',
+      'WhatsApp Group',
+      'Webinar/Event',
+      'Website',
+      'Other',
+    ],
     nullable: true,
   })
   referal_source: string;
@@ -64,7 +82,9 @@ export class Registration {
   @Exclude()
   user: User;
 
-  @ManyToOne(() => Course, (course) => course.registrations, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.registrations, {
+    onDelete: 'CASCADE',
+  })
   @Exclude()
   course: Course;
 }

@@ -25,13 +25,10 @@
     <!-- Category Filter Pills -->
     <div class="flex flex-wrap items-center justify-center gap-2 max-w-[340px] mx-auto mb-6">
       {{#each categoryPartner}}
-      <button
-        @click="activeTab = '{{this.category}}'"
-        :class="activeTab === '{{this.category}}' ? 'bg-[#6EB6E5] text-white' : 'bg-[#003060] text-white'"
-        class="rounded-[50px] px-4 py-2 text-[13px] font-montserrat font-medium transition-all shadow-sm"
-      >
-        {{this.category}}
-      </button>
+        {{> components/ui/tab_filter_btn 
+            text=this.category 
+            targetValue=this.category
+        }}
       {{/each}}
     </div>
 
@@ -105,14 +102,11 @@
     <!-- Category Tabs -->
     <div class="flex justify-center flex-wrap gap-4 mb-14">
       {{#each categoryPartner}}
-      <!-- Category Button -->
-      <button
-        @click="activeTab = '{{this.category}}'"
-        :class="activeTab === '{{this.category}}' ? 'bg-[#6EB6E5]' : 'bg-[#003060]'"
-        class="w-[428px] h-[62px] rounded-[24px] text-white font-montserrat text-[17px] font-medium transition-all duration-300 shadow-[0px_0px_8px_0px_rgba(0,0,0,0.5)] backdrop-blur-[6.6px] flex items-center justify-center opacity-100 text-center"
-      >
-        {{this.category}}
-      </button>
+        {{> components/ui/tab_filter_btn 
+            text=this.category 
+            targetValue=this.category
+            desktop=true
+        }}
       {{/each}}
     </div>
 

@@ -109,18 +109,16 @@ export class QuizService {
     if (!quiz) {
       throw new NotFoundException('quiz not found');
     }
-    if(user.countdownQuiz !== null) {
+    if (user.countdownQuiz !== null) {
+      const startTime = user.countdownQuiz.getTime();
+      const duration = quiz.duration * 60000;
 
-    const startTime = user.countdownQuiz.getTime();
-    const duration = quiz.duration * 60000;
-
-    if(startTime + duration <= Date.now() && user.quizStart === true) {
-      return true;
-    }else{
-      return false;
+      if (startTime + duration <= Date.now() && user.quizStart === true) {
+        return true;
+      } else {
+        return false;
+      }
     }
-    }
-
   }
 
   async findUserScore(userId: number, quziId: number) {
@@ -143,33 +141,29 @@ export class QuizService {
       throw new NotFoundException('quiz not found');
     }
 
-    if(user.quizStart){
-const now = Date.now();
-const durationMs = quiz.duration * 60000;
+    if (user.quizStart) {
+      const now = Date.now();
+      const durationMs = quiz.duration * 60000;
 
-let startTime = user.countdownQuiz?.getTime();
+      let startTime = user.countdownQuiz?.getTime();
 
-if (!startTime || now - startTime > durationMs) {
-  startTime = now;
-  user.countdownQuiz = new Date(startTime);
-  await this.userRepository.save(user);
-}
+      if (!startTime || now - startTime > durationMs) {
+        startTime = now;
+        user.countdownQuiz = new Date(startTime);
+        await this.userRepository.save(user);
+      }
 
-const remainingMs = durationMs - (now - startTime);
-const remainingSecond = Math.ceil(remainingMs / 1000);
-    return remainingSecond;
-    }else{
-
+      const remainingMs = durationMs - (now - startTime);
+      const remainingSecond = Math.ceil(remainingMs / 1000);
+      return remainingSecond;
+    } else {
       user.countdownQuiz = new Date();
       user.quizStart = true;
 
-      await this.userRepository.save(user)
+      await this.userRepository.save(user);
 
       return quiz.duration * 60;
-
     }
-
-
   }
 
   async findQuestions(quizId: number) {

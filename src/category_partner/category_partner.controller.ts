@@ -57,10 +57,7 @@ export class CategoryPartnerController {
 
       return res.redirect('/category-partner');
     } catch (error: any) {
-      req.flash(
-        'error',
-        error.message || 'Category partner failed to create',
-      );
+      req.flash('error', error.message || 'Category partner failed to create');
 
       return res.redirect('/category-partner');
     }
@@ -96,10 +93,7 @@ export class CategoryPartnerController {
 
       return res.redirect('/category-partner');
     } catch (error: any) {
-      req.flash(
-        'error',
-        error.message || 'Category partner failed to update',
-      );
+      req.flash('error', error.message || 'Category partner failed to update');
 
       return res.redirect('/category-partner');
     }
@@ -134,10 +128,7 @@ export class CategoryPartnerController {
 
       return res.redirect('/category-partner');
     } catch (error: any) {
-      req.flash(
-        'error',
-        error.message || 'Category partner failed to remove',
-      );
+      req.flash('error', error.message || 'Category partner failed to remove');
 
       return res.redirect('/category-partner');
     }

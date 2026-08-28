@@ -100,8 +100,6 @@ export class PaymentsController {
 
   // Simulasi webhook (khusus localhost / test mode)
   @Roles('user')
-
-
   @Roles('user')
   @Post(':userId/:courseId')
   async create(
@@ -118,7 +116,7 @@ export class PaymentsController {
         Number(courseId),
         paymentMethod,
         undefined, // promoCode
-        body // kirim sisa form data ke service
+        body, // kirim sisa form data ke service
       );
 
       if (orderData.process === 'approved') {
@@ -158,8 +156,7 @@ export class PaymentsController {
       createPaymentDto.courseId = courseId;
       createPaymentDto.userId = userId;
       createPaymentDto.process = 'process';
-      const payment =
-        await this.paymentsService.create(createPaymentDto);
+      const payment = await this.paymentsService.create(createPaymentDto);
       if (payment == false) {
         await this.paymentsService.deleteFile(createPaymentDto.file);
         req.flash(
@@ -180,27 +177,35 @@ export class PaymentsController {
     }
   }
 
+  @Roles('user')
+  @Get('api/payment/:userId')
+  async getPayment(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Res() res: Response,
+  ) {
+    const payment = await this.paymentsService.findPayment(userId);
+    return res.json({ data: payment });
+  }
 
- @Roles('user')
-@Get('api/payment/:userId')
-async getPayment(@Param('userId', ParseIntPipe) userId: number, @Res() res: Response) {
-  const payment = await this.paymentsService.findPayment(userId);
-  return res.json({ data: payment });
-}
+  @Roles('user')
+  @Get('api/registration/:userId')
+  async getRegistration(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Res() res: Response,
+  ) {
+    const registration = await this.paymentsService.findRegistration(userId);
+    return res.json({ data: registration });
+  }
 
-@Roles('user')
-@Get('api/registration/:userId')
-async getRegistration(@Param('userId', ParseIntPipe) userId: number, @Res() res: Response) {
-  const registration = await this.paymentsService.findRegistration(userId);
-  return res.json({ data: registration });
-}
-
-@Roles('user')
-@Get('api/installment/:userId')
-async getInstallment(@Param('userId', ParseIntPipe) userId: number, @Res() res: Response) {
-  const installments = await this.paymentsService.findInstallments(userId);
-  return res.json({ data: installments });
-}
+  @Roles('user')
+  @Get('api/installment/:userId')
+  async getInstallment(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Res() res: Response,
+  ) {
+    const installments = await this.paymentsService.findInstallments(userId);
+    return res.json({ data: installments });
+  }
 
   @Roles('user')
   @Get('history/:userId')
@@ -211,7 +216,7 @@ async getInstallment(@Param('userId', ParseIntPipe) userId: number, @Res() res: 
   ) {
     res.render('user/riwayat', {
       user: req.user,
-      userId
+      userId,
     });
   }
 
@@ -293,7 +298,9 @@ async getInstallment(@Param('userId', ParseIntPipe) userId: number, @Res() res: 
         } catch (error: any) {}
 
         req.flash('success', 'proces successfully change acc');
-        res.redirect(`/program/detail/program/admin/${payment['course']['id']}`);
+        res.redirect(
+          `/program/detail/program/admin/${payment['course']['id']}`,
+        );
       } else if (proses === 'rejected') {
         updatePaymentDto.file = payment['file'];
         updatePaymentDto.userId = payment['user']['id'];
@@ -307,7 +314,9 @@ async getInstallment(@Param('userId', ParseIntPipe) userId: number, @Res() res: 
           );
         } catch (error: any) {}
         req.flash('success', 'proces successfully change rejected');
-        res.redirect(`/program/detail/program/admin/${payment['course']['id']}`);
+        res.redirect(
+          `/program/detail/program/admin/${payment['course']['id']}`,
+        );
       }
     } catch (error: any) {
       const payment = await this.paymentsService.findOne(paymentId);

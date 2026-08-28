@@ -34,12 +34,14 @@ export class Installment {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Course, (course) => course.installments, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.installments, {
+    onDelete: 'CASCADE',
+  })
   @Exclude()
   course: Course;
 
   @OneToOne(() => Payment, (payments) => payments.installment, {
-  onDelete: 'CASCADE',
+    onDelete: 'CASCADE',
   })
   @Exclude()
   payment: Payment;

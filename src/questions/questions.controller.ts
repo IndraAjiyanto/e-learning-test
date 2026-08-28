@@ -57,8 +57,7 @@ export class QuestionsController {
       createQuestionDto.quizId = quizId;
       createQuestionDto.image = req.body.uploadedImageUrls?.[0];
 
-      const questions =
-        await this.questionsService.create(createQuestionDto);
+      const questions = await this.questionsService.create(createQuestionDto);
       for (let i = 0; i < createQuestionDto.options.length; i++) {
         await this.answersService.create({
           questionsId: questions['id'],
@@ -106,8 +105,7 @@ export class QuestionsController {
     @Res() res: Response,
   ) {
     const session = await this.sessionService.findOne(sessionId);
-    const questions =
-      await this.questionsService.findQuestions(sessionId);
+    const questions = await this.questionsService.findQuestions(sessionId);
     res.render('user/quiz/quiz', {
       user: req.user,
       questions,
@@ -125,10 +123,8 @@ export class QuestionsController {
     @Res() res: Response,
   ) {
     const session = await this.sessionService.findOne(sessionId);
-    const questions =
-      await this.questionsService.findQuestions(sessionId);
-    const userAnswers =
-      await this.userAnswersService.findAnswersByUser(userId);
+    const questions = await this.questionsService.findQuestions(sessionId);
+    const userAnswers = await this.userAnswersService.findAnswersByUser(userId);
     const scores = await this.userAnswersService.calculateScore(
       sessionId,
       userId,

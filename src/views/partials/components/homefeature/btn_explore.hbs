@@ -1,0 +1,17 @@
+{{!-- 
+  Komponen: Button Explore (Fitur Halaman Home)
+  Lokasi: src/views/partials/homefeature/btn_explore.hbs
+  
+  Props:
+  - target      : ID section tujuan scroll (contoh: '#courses-section')
+  - text        : Label teks pada tombol
+  - customClass : Kelas spesifik untuk layout/ukuran (w, h, gap, text-size)
+  - iconClass   : Kelas spesifik untuk ukuran icon roket
+--}}
+<a
+  href="{{target}}"
+  class="inline-flex items-center justify-center bg-[#003060] hover:bg-[#001f3f] text-white font-semibold rounded-[12px] border border-[#003060] transition-all duration-300 shadow-md active:scale-95 {{customClass}}"
+>
+  <i class="fas fa-rocket {{iconClass}}"></i>
+  <span>{{text}}</span>
+</a>

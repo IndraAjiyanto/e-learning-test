@@ -58,8 +58,7 @@ export class FaqsController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const faqs =
-      await this.faqsService.findOne(faqsId);
+    const faqs = await this.faqsService.findOne(faqsId);
     res.render('super_admin/faqs/edit', {
       user: req.user,
       faqs,
@@ -76,10 +75,7 @@ export class FaqsController {
     @Res() res: Response,
   ) {
     try {
-      await this.faqsService.update(
-        faqsId,
-        updateFaqDto,
-      );
+      await this.faqsService.update(faqsId, updateFaqDto);
       req.flash('success', 'FAQ successfully updated');
       res.redirect('/category/' + categoryId);
     } catch (error: any) {
