@@ -4,7 +4,7 @@ import { CoursesController } from './courses.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
-import { Session} from 'src/entities/session.entity';
+import { Session } from 'src/entities/session.entity';
 import { Attendance } from 'src/entities/attendance.entity';
 import { Category } from 'src/entities/category.entity';
 import { UserAnswersModule } from 'src/user_answers/user_answers.module';

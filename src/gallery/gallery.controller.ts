@@ -46,7 +46,11 @@ export class GalleryController {
     const gallery = await this.galleryService.findAll();
     const programs = await this.kategorisService.findAll();
 
-    res.render('super_admin/gallery/index', { user: req.user, gallery, programs });
+    res.render('super_admin/gallery/index', {
+      user: req.user,
+      gallery,
+      programs,
+    });
   }
 
   @Roles('super_admin')
@@ -164,7 +168,7 @@ export class GalleryController {
 
       req.flash('success', 'Gallery successfully updated');
 
-      res.redirect(`/category/${gallery.category.id}`);
+      res.redirect(`/category/${gallery.category?.id}`);
     } catch (error: any) {
       console.error('[Gallery Update Failed]', error.message || error);
       req.flash('error', error.message || 'Gallery failed to update');
@@ -191,7 +195,7 @@ export class GalleryController {
 
       req.flash('success', 'Gallery successfully deleted');
 
-      return res.redirect(`/category/${gallery.category.id}`);
+      return res.redirect(`/category/${gallery.category?.id}`);
     } catch (error: any) {
       if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
         return res.status(400).json({

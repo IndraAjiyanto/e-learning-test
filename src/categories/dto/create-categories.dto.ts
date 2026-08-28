@@ -8,7 +8,7 @@ import {
 
 export class CreateCategoriesDto {
   @IsString()
- name: string;
+  name: string;
 
   @IsString()
   icon: string;

@@ -22,13 +22,13 @@
 
       <!-- Button -->
       <div class="w-full">
-        <a
-          href="#courses-section-mobile"
-          class="inline-flex items-center justify-center gap-[12px] w-full h-[56px] bg-[#003060] hover:bg-[#001f3f] text-white font-montserrat font-semibold text-sm rounded-[12px] border border-[#003060] transition-all duration-300 shadow-md active:scale-95"
-        >
-          <i class="fas fa-rocket text-lg"></i>
-          <span>{{t 'test.home.exploreProgram.exploreButton'}}</span>
-        </a>
+        {{> components/ui/btn_action 
+            href="#courses-section-mobile" 
+            text=(t 'test.home.exploreProgram.exploreButton')
+            icon="fas fa-rocket text-lg"
+            variant="primary"
+            class="gap-[12px] w-full h-[56px] font-montserrat text-sm"
+        }}
       </div>
 
     </div>
@@ -59,13 +59,13 @@
 
       <!-- Button -->
       <div class="w-auto">
-        <a
-          href="#courses-section"
-          class="inline-flex items-center justify-center gap-[15px] w-[370px] h-[85px] p-[10px] bg-[#003060] hover:bg-[#001f3f] text-white font-semibold text-xl rounded-[12px] border border-[#003060] transition-all duration-300 shadow-md opacity-100 active:scale-95"
-        >
-          <i class="fas fa-rocket text-2xl"></i>
-          <span>{{t 'test.home.exploreProgram.exploreButton'}}</span>
-        </a>
+        {{> components/ui/btn_action 
+            href="#courses-section" 
+            text=(t 'test.home.exploreProgram.exploreButton')
+            icon="fas fa-rocket text-2xl"
+            variant="primary"
+            class="gap-[15px] w-[370px] h-[85px] p-[10px] text-xl opacity-100"
+        }}
       </div>
 
     </div>

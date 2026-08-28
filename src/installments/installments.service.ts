@@ -60,14 +60,12 @@ export class InstallmentsService {
     });
   }
 
-    async findNo(courseId: number) {
-        const installment = await this.findByKelas(courseId);
-      const usedNumbers = installment.map((i) => Number(i.month));
-      
-      const availableNumbers = [3].filter(
-        (n) => !usedNumbers.includes(n)
-      );
-      return availableNumbers;
+  async findNo(courseId: number) {
+    const installment = await this.findByKelas(courseId);
+    const usedNumbers = installment.map((i) => Number(i.month));
+
+    const availableNumbers = [3].filter((n) => !usedNumbers.includes(n));
+    return availableNumbers;
   }
 
   async update(id: number, updateCicilanDto: UpdateInstallmentsDto) {

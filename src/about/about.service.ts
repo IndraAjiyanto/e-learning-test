@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAboutDto } from './dto/create-about.dto';
 import { UpdateAboutDto } from './dto/update-about.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,12 +26,15 @@ export class AboutService {
   }
 
   async findAll() {
-  try {
-    return await this.aboutRepository.find();
-  } catch (error) {
-    throw new InternalServerErrorException('Gagal mengambil data about', error.message);
+    try {
+      return await this.aboutRepository.find();
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Gagal mengambil data about',
+        error.message,
+      );
+    }
   }
-}
 
   async findOne(id: number) {
     const about = await this.aboutRepository.findOne({ where: { id } });

@@ -22,7 +22,7 @@ export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   name: string;
 
   @Column('jsonb', { nullable: true })
@@ -57,10 +57,7 @@ export class Category {
   @Exclude()
   courses: Course[];
 
-  @OneToMany(
-    () => CategoryFaq,
-    (faq) => faq.category,
-  )
+  @OneToMany(() => CategoryFaq, (faq) => faq.category)
   @Exclude()
   faqs: CategoryFaq[];
 
@@ -72,11 +69,11 @@ export class Category {
   benefit_category: BenefitCategory[];
 
   @ManyToMany(() => CourseType, (courseType) => courseType.categories)
-  @JoinTable({name:'category_course_types'})
+  @JoinTable({ name: 'category_course_types' })
   @Exclude()
   courseTypes: CourseType[];
 
-   @OneToMany(() => Gallery, (gallery) => gallery.category)
+  @OneToMany(() => Gallery, (gallery) => gallery.category)
   @Exclude()
   gallery: Gallery[];
 }

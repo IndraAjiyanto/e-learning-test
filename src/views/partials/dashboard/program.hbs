@@ -26,25 +26,12 @@
     <!-- Cards Stack -->
     <div class="flex flex-col gap-6 w-full">
       {{#each category}}
-      <div class="w-full bg-white border border-[#D9D9D9] rounded-[16px] overflow-hidden shadow-[0px_4px_12px_0px_#00000010] flex flex-col">
-        <img src="{{icon}}" alt="{{this.name}}" class="h-[190px] w-full object-cover" />
-        <div class="p-5 flex flex-col flex-1 gap-2.5">
-          <h3 class="font-montserrat font-bold text-[20px] text-[#0B1F3B] text-left">
-            {{this.name}}
-          </h3>
-          <p class="font-sans font-normal text-[13px] leading-[20px] text-[#2D2D2D] text-left flex-1 mb-2">
-            {{getByLang this.text ../lang}}
-          </p>
-          <div class="flex items-center justify-between pt-2 border-t border-slate-100 mt-auto">
-            <a href="/category/program/{{this.name}}" class="font-montserrat font-bold text-[14px] text-[#003060] flex items-center gap-1.5 hover:underline">
-              Learn More
-            </a>
-            <a href="/category/program/{{this.name}}" class="w-9 h-9 rounded-full bg-[#003060] text-white flex items-center justify-center shadow-sm shrink-0 hover:bg-[#001f3f] transition-colors">
-              <i class="fas fa-arrow-right text-xs"></i>
-            </a>
-          </div>
-        </div>
-      </div>
+        {{> components/home/card_program
+            image=this.icon
+            name=this.name
+            text=this.text
+            lang=../lang
+        }}
       {{/each}}
     </div>
   </div>
@@ -79,22 +66,13 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
       
       {{#each category}}
-      <div class="w-full max-w-[433px] min-h-[552px] h-full mx-auto group card bg-[#F5F5F5]/50 backdrop-blur-[6.6px] border-2 border-white/10 rounded-[12px] overflow-hidden shadow-[0px_0px_4px_0px_rgba(0,0,0,0.25)] flex flex-col">
-        <img src="{{icon}}" alt="{{this.name}}" class="h-[278px] w-full object-cover" />
-        <div class="card-body p-6 flex flex-col flex-1">
-          <h3 class="font-montserrat font-[600] text-[35px] text-[#0B1F3B] mb-2">
-            {{this.name}}
-          </h3>
-          <p class="font-sans font-[400] text-base leading-[30px] text-black/80 flex-1 mb-4">
-            {{getByLang this.text ../lang}}
-          </p>
-          <div class="card-actions mt-auto flex justify-end">
-            <a href="category/program/{{this.name}}" class="w-[50px] h-[50px] rounded-full bg-[#003060] text-white flex items-center justify-center hover:bg-[#003060] transition-colors shadow-md">
-              <i class="fas fa-arrow-right text-[18px]"></i>
-            </a>
-          </div>
-        </div>
-      </div>
+        {{> components/home/card_program
+            image=this.icon
+            name=this.name
+            text=this.text
+            lang=../lang
+            desktop=true
+        }}
       {{/each}}
 
     </div>

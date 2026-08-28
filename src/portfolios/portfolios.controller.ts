@@ -72,8 +72,10 @@ export class PortfoliosController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'));
-    
+    const isAjax =
+      req.xhr ||
+      (req.headers.accept && req.headers.accept.includes('application/json'));
+
     try {
       const editorjsData = await this.portfoliosService.ChangeImageEditorJS(
         createPortfolioDto.content,
@@ -84,7 +86,7 @@ export class PortfoliosController {
 
       createPortfolioDto.content = editorjsData;
 
-      let html = editorjsHTML.parse(JSON.parse(editorjsData));
+      const html = editorjsHTML.parse(JSON.parse(editorjsData));
 
       createPortfolioDto.contentHtml = html;
 
@@ -93,19 +95,27 @@ export class PortfoliosController {
       if (req.user) {
         createPortfolioDto.userId = req.user.id;
       }
-      const newPortfolio = await this.portfoliosService.create(createPortfolioDto);
-      
+      const newPortfolio =
+        await this.portfoliosService.create(createPortfolioDto);
+
       if (isAjax) {
-        return res.status(201).json({ success: true, message: 'Portfolio successfully created', data: newPortfolio });
+        return res.status(201).json({
+          success: true,
+          message: 'Portfolio successfully created',
+          data: newPortfolio,
+        });
       }
 
       req.flash('success', 'portofolios successfully upload');
       res.redirect(`/program/${courseId}`);
     } catch (error: any) {
       if (isAjax) {
-        return res.status(400).json({ success: false, message: error.message || 'Failed to upload portofolios' });
+        return res.status(400).json({
+          success: false,
+          message: error.message || 'Failed to upload portofolios',
+        });
       }
-      
+
       req.flash('error', error.message || 'Failed to upload portofolios');
       res.redirect(`/program/${createPortfolioDto.courseId || ''}`);
     }
@@ -131,8 +141,10 @@ export class PortfoliosController {
     @Res() res: Response,
     @Param('userId') userId: number,
   ) {
-    const category = await this.portfoliosService.findCategoryMyPortfolio(userId);
-    const courseType = await this.portfoliosService.findMyPortfolioCourseTypes(userId);
+    const category =
+      await this.portfoliosService.findCategoryMyPortfolio(userId);
+    const courseType =
+      await this.portfoliosService.findMyPortfolioCourseTypes(userId);
     // const portfolio = await this.portfoliosService.findByUser(userId);
     res.render('user/myportfolio', {
       user: req.user,
@@ -161,7 +173,11 @@ export class PortfoliosController {
     @Req() req: Request,
   ) {
     const portfolio = await this.portfoliosService.findOne(portofolioId);
-    res.render('user/portofolios/detail', { user: req.user, portfolio, courseId });
+    res.render('user/portofolios/detail', {
+      user: req.user,
+      portfolio,
+      courseId,
+    });
   }
 
   @Roles('user')
@@ -173,7 +189,11 @@ export class PortfoliosController {
     @Req() req: Request,
   ) {
     const portfolio = await this.portfoliosService.findOne(portfolioId);
-    res.render('user/portofolios/edit', { user: req.user, portfolio, courseId });
+    res.render('user/portofolios/edit', {
+      user: req.user,
+      portfolio,
+      courseId,
+    });
   }
 
   @Roles('user')

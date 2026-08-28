@@ -13,13 +13,13 @@ export class CreateLogbookDto {
   @IsString()
   documentation?: string | null;
 
-  @IsUrl({require_protocol: true})
+  @IsUrl({ require_protocol: true })
   otherDocumentation: string;
 
   @IsString()
   obstacles: string;
-  
-@IsOptional() // Tambahkan opsional untuk update
+
+  @IsOptional() // Tambahkan opsional untuk update
   @Type(() => Number) // <--- 2. Tambahkan ini agar string "1" jadi angka 1
   @IsInt()
   userId: number;
@@ -28,7 +28,7 @@ export class CreateLogbookDto {
   @IsEnum(['approved', 'process', 'rejected'])
   process: ProcessStatus;
 
- @IsOptional() // Tambahkan opsional untuk update
+  @IsOptional() // Tambahkan opsional untuk update
   @Type(() => Number) // <--- 3. Tambahkan ini juga
   @IsInt()
   sessionId: number;

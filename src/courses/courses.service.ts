@@ -797,7 +797,7 @@ export class CoursesService {
     }
 
     const usedIds = [courseId];
-    let results: any[] = [];
+    const results: any[] = [];
 
     // 1. category & courseType sama (1 data)
     const sameAll = await this.courseRepository.find({

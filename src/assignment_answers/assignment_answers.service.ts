@@ -100,7 +100,10 @@ export class AnswerTasksService {
     return taskAnswers;
   }
 
-  async update(id: number, updateAssignmentAnswerDto: UpdateAssignmentAnswersDto) {
+  async update(
+    id: number,
+    updateAssignmentAnswerDto: UpdateAssignmentAnswersDto,
+  ) {
     const taskAnswers = await this.findOne(id);
     if (!taskAnswers) {
       throw new NotFoundException('answer not found');

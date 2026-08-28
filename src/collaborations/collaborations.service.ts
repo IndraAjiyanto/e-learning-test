@@ -15,8 +15,9 @@ export class CollaborationsService {
   ) {}
 
   async create(createCollaborationsDto: CreateCollaborationsDto) {
-    const collaborations =
-      await this.kerjaSamaRepository.create(createCollaborationsDto);
+    const collaborations = await this.kerjaSamaRepository.create(
+      createCollaborationsDto,
+    );
     return await this.kerjaSamaRepository.save(collaborations);
   }
 
@@ -34,7 +35,10 @@ export class CollaborationsService {
     return collaborations;
   }
 
-  async update(collaborationsId: number, updateKerjaSamaDto: UpdateCollaborationsDto) {
+  async update(
+    collaborationsId: number,
+    updateKerjaSamaDto: UpdateCollaborationsDto,
+  ) {
     const collaborations = await this.findOne(collaborationsId);
     if (!collaborations) {
       throw new NotFoundException('partnership not found');

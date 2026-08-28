@@ -56,7 +56,12 @@ export class CategoriesController {
       if (iconFile && iconFile.size > 0) {
         await this.categoriesService.validateImage(iconFile, {
           maxSize: 5 * 1024 * 1024,
-          allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+          allowedTypes: [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/svg+xml',
+          ],
         });
 
         if (!iconFile.mimetype.includes('svg')) {
@@ -77,7 +82,12 @@ export class CategoriesController {
       if (heroFile && heroFile.size > 0) {
         await this.categoriesService.validateImage(heroFile, {
           maxSize: 5 * 1024 * 1024,
-          allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+          allowedTypes: [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/svg+xml',
+          ],
         });
 
         createCategoriesDto.hero_section_image =
@@ -114,7 +124,7 @@ export class CategoriesController {
     @Res() res: Response,
   ) {
     const category = await this.categoriesService.findOneCategory(categoryName);
-    category.contact = category.contact?.replace(/^0/, '62')
+    category.contact = category.contact?.replace(/^0/, '62');
     const benefit_category = await this.categoriesService.findBenefitByCategory(
       category.id,
     );
@@ -125,7 +135,9 @@ export class CategoriesController {
     const alumni = await this.categoriesService.findAlumniByCategory(
       category.id,
     );
-    const courses = await this.categoriesService.findCourseByCategory(category.id);
+    const courses = await this.categoriesService.findCourseByCategory(
+      category.id,
+    );
     if (category?.type === 'Special Program') {
       res.render('special_program', {
         category,
@@ -137,7 +149,9 @@ export class CategoriesController {
         gallery,
       });
     } else if (category?.type === 'Paid Program') {
-      const portfolio = await this.categoriesService.findPortfolioByCategory(category.id);
+      const portfolio = await this.categoriesService.findPortfolioByCategory(
+        category.id,
+      );
       res.render('paid_program', {
         category,
         user: req.user,
@@ -149,8 +163,14 @@ export class CategoriesController {
         gallery,
       });
     } else if (category?.type === 'Free Program') {
-        res.render('free_program', { category, user: req.user, courses, benefit_category,alumni, gallery });
-      
+      res.render('free_program', {
+        category,
+        user: req.user,
+        courses,
+        benefit_category,
+        alumni,
+        gallery,
+      });
     }
   }
 
@@ -259,7 +279,12 @@ export class CategoriesController {
       if (iconFile && iconFile.size > 0) {
         await this.categoriesService.validateImage(iconFile, {
           maxSize: 5 * 1024 * 1024,
-          allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+          allowedTypes: [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/svg+xml',
+          ],
         });
 
         if (!iconFile.mimetype.includes('svg')) {
@@ -284,7 +309,12 @@ export class CategoriesController {
       if (heroFile && heroFile.size > 0) {
         await this.categoriesService.validateImage(heroFile, {
           maxSize: 5 * 1024 * 1024,
-          allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'],
+          allowedTypes: [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/svg+xml',
+          ],
         });
 
         if (category.hero_section_image) {

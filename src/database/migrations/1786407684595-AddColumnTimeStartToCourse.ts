@@ -1,34 +1,32 @@
-import { MigrationInterface, QueryRunner, TableColumn } from "typeorm";
+import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
 export class AddColumnTimeStartToCourse1786407684595 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        if (!(await queryRunner.hasColumn("course", "time_start"))) {
-            await queryRunner.addColumn(
-                "course",
-                new TableColumn({
-                    name: "time_start",
-                    type: "time",
-                    isNullable: true,
-                })
-            );
-        }
-
-        if (!(await queryRunner.hasColumn("course", "time_end"))) {
-            await queryRunner.addColumn(
-                "course",
-                new TableColumn({
-                    name: "time_end",
-                    type: "time",
-                    isNullable: true,
-                })
-            );
-        }
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    if (!(await queryRunner.hasColumn('course', 'time_start'))) {
+      await queryRunner.addColumn(
+        'course',
+        new TableColumn({
+          name: 'time_start',
+          type: 'time',
+          isNullable: true,
+        }),
+      );
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropColumn("course", "time_end");
-        await queryRunner.dropColumn("course", "time_start");
+    if (!(await queryRunner.hasColumn('course', 'time_end'))) {
+      await queryRunner.addColumn(
+        'course',
+        new TableColumn({
+          name: 'time_end',
+          type: 'time',
+          isNullable: true,
+        }),
+      );
     }
+  }
 
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropColumn('course', 'time_end');
+    await queryRunner.dropColumn('course', 'time_start');
+  }
 }

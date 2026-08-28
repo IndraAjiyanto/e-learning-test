@@ -23,7 +23,9 @@ export class TechnologiesService {
   }
 
   async create(createTechnologiesDto: CreateTechnologiesDto) {
-    const technologies = this.technologiesRepository.create(createTechnologiesDto);
+    const technologies = this.technologiesRepository.create(
+      createTechnologiesDto,
+    );
     return await this.technologiesRepository.save(technologies);
   }
 
@@ -46,8 +48,10 @@ export class TechnologiesService {
   async update(id: number, updateTechnologiesDto: UpdateTechnologiesDto) {
     const technologies = await this.findOne(id);
 
-    if (updateTechnologiesDto.imgUrl !== undefined &&
-        updateTechnologiesDto.imgUrl !== technologies.imgUrl) {
+    if (
+      updateTechnologiesDto.imgUrl !== undefined &&
+      updateTechnologiesDto.imgUrl !== technologies.imgUrl
+    ) {
       await this.deleteFile(technologies.imgUrl);
     }
 

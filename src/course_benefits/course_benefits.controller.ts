@@ -48,7 +48,10 @@ export class ProgramBenefitController {
     @Req() req: Request,
     @Param('courseId') courseId: number,
   ) {
-    res.render('super_admin/course_benefits/create', { user: req.user, courseId });
+    res.render('super_admin/course_benefits/create', {
+      user: req.user,
+      courseId,
+    });
   }
 
   @Roles('super_admin')

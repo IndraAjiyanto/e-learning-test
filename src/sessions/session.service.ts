@@ -182,24 +182,14 @@ export class SessionService {
   async findLogBook(sessionId: number) {
     return await this.logBookRepository.find({
       where: { session: { id: sessionId } },
-      relations: [
-        'user',
-        'session',
-        'session.weeks',
-        'session.weeks.course',
-      ],
+      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
     });
   }
 
   async findLogBookMentor(sessionId: number) {
     return await this.mentorLogbookRepository.find({
       where: { session: { id: sessionId } },
-      relations: [
-        'user',
-        'session',
-        'session.weeks',
-        'session.weeks.course',
-      ],
+      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
     });
   }
 

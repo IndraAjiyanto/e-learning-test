@@ -138,7 +138,10 @@ export class RegistrationsService {
     return await this.userCourseRepository.save(userCourses);
   }
 
-  async removeCourseUser(userId: number, courseId: number): Promise<UserCourse> {
+  async removeCourseUser(
+    userId: number,
+    courseId: number,
+  ): Promise<UserCourse> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });

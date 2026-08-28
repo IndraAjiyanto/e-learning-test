@@ -37,7 +37,10 @@ export class MissionService {
     return await this.missionRepository.findOneBy({ id });
   }
 
-  async update(id: number, updateMissionDto: UpdateMissionDto): Promise<Mission | null> {
+  async update(
+    id: number,
+    updateMissionDto: UpdateMissionDto,
+  ): Promise<Mission | null> {
     await this.missionRepository.update(id, updateMissionDto);
     return await this.findOne(id);
   }

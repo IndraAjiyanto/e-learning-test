@@ -1,0 +1,80 @@
+{{!-- 
+  Komponen: Smart Button Action (Level 1 - UI Dasar)
+  Lokasi: src/views/partials/components/ui/btn_action.hbs
+
+  Smart Tag: Otomatis render <a> jika prop `href` diisi, <button> jika tidak.
+  
+  Props:
+  - href        : URL tujuan. Jika diisi → render <a>, jika kosong → render <button>
+  - text        : Label teks pada tombol
+  - icon        : Kelas ikon FontAwesome (contoh: "fas fa-rocket text-2xl")
+  - iconSrc     : URL ikon gambar (SVG/PNG). Jika diisi, render <img> bukan <i>
+  - iconClass   : Kelas tambahan untuk ikon gambar (contoh: "w-5 h-5 brightness-0 invert")
+  - variant     : primary | secondary | outline (default: primary)
+  - type        : button | submit | reset (hanya untuk <button>, default: button)
+  - class       : Kelas tambahan KHUSUS untuk layout/spacing (mt-4, w-full, gap-3, dll)
+  - onClick     : Standard JavaScript onclick (opsional)
+  - xClick      : Alpine.js @click expression (opsional)
+  - xDisabled   : Alpine.js :disabled expression (opsional)
+--}}
+
+{{#if href}}
+{{!-- MODE LINK (<a>) --}}
+<a
+  href="{{href}}"
+  {{#if onClick}}onclick="{{onClick}}"{{/if}}
+  {{#if xClick}}@click="{{xClick}}"{{/if}}
+  class="
+    inline-flex items-center justify-center font-semibold rounded-[12px] transition-all duration-300 shadow-md active:scale-95
+
+    {{#if (eq variant 'secondary')}}
+      bg-gray-200 text-gray-800 hover:bg-gray-300
+    {{else}}
+      {{#if (eq variant 'outline')}}
+        bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
+      {{else}}
+        bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+      {{/if}}
+    {{/if}}
+
+    {{class}}
+  "
+>
+  {{#if iconSrc}}<img src="{{iconSrc}}" alt="" class="{{iconClass}}">{{else}}{{#if icon}}<i class="{{icon}}"></i>{{/if}}{{/if}}
+  <span>{{text}}</span>
+</a>
+
+{{else}}
+{{!-- MODE BUTTON (<button>) --}}
+<button
+  type="{{#if type}}{{type}}{{else}}button{{/if}}"
+  {{#if onClick}}onclick="{{onClick}}"{{/if}}
+  {{#if xClick}}@click="{{xClick}}"{{/if}}
+  {{#if xDisabled}}:disabled="{{xDisabled}}"{{/if}}
+  class="
+    inline-flex items-center justify-center font-semibold rounded-[12px] transition-all duration-300 shadow-md active:scale-95
+
+    {{#if (eq variant 'secondary')}}
+      bg-gray-200 text-gray-800 hover:bg-gray-300
+    {{else}}
+      {{#if (eq variant 'outline')}}
+        bg-transparent text-[#003060] border-2 border-[#003060] hover:bg-[#003060] hover:text-white
+      {{else}}
+        bg-[#003060] hover:bg-[#001f3f] text-white border border-[#003060]
+      {{/if}}
+    {{/if}}
+
+    {{#if xDisabled}}
+      {{xDisabled}} ? 'opacity-50 cursor-not-allowed' : ''
+    {{/if}}
+
+    {{class}}
+  "
+>
+  {{#if iconSrc}}<img src="{{iconSrc}}" alt="" class="{{iconClass}}">{{else}}{{#if icon}}<i class="{{icon}}"></i>{{/if}}{{/if}}
+  <span>{{text}}</span>
+  {{#if xDisabled}}
+    <span x-show="{{xDisabled}}" class="loading loading-spinner loading-sm ml-2"></span>
+  {{/if}}
+</button>
+{{/if}}

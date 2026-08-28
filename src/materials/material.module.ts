@@ -9,7 +9,10 @@ import { LibreOfficeService } from 'src/common/config/libreoffice.service';
 import { CommonModule } from 'src/common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Material, Course, Session]), CommonModule],
+  imports: [
+    TypeOrmModule.forFeature([Material, Course, Session]),
+    CommonModule,
+  ],
   controllers: [MaterialController],
   providers: [MaterialService, LibreOfficeService],
   exports: [MaterialService],

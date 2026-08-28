@@ -114,7 +114,8 @@ export class MentorLogbookController {
     @Req() req: Request,
   ) {
     try {
-      const logbooks = await this.mentorLogbookService.findOne(mentor_logbookId);
+      const logbooks =
+        await this.mentorLogbookService.findOne(mentor_logbookId);
       if (documentation) {
         await this.mentorLogbookService.deleteFile(logbooks.documentation);
         updateMentorLogbookDto.documentation = req.body.uploadedImageUrls?.[0];
@@ -126,7 +127,8 @@ export class MentorLogbookController {
       req.flash('success', 'logbooks successfully updated');
       res.redirect(`/session/${logbooks.session.id}`);
     } catch (error: any) {
-      const logbooks = await this.mentorLogbookService.findOne(mentor_logbookId);
+      const logbooks =
+        await this.mentorLogbookService.findOne(mentor_logbookId);
       req.flash('error', error.message || 'logbooks failed to updated');
       res.redirect(`/session/${logbooks.session.id}`);
     }
@@ -141,7 +143,8 @@ export class MentorLogbookController {
     @Req() req: Request,
   ) {
     try {
-      const logbooks = await this.mentorLogbookService.findOne(mentor_logbookId);
+      const logbooks =
+        await this.mentorLogbookService.findOne(mentor_logbookId);
       await this.mentorLogbookService.deleteFile(logbooks.documentation);
       await this.mentorLogbookService.remove(mentor_logbookId);
       req.flash('success', 'logbooks successfully deleted');

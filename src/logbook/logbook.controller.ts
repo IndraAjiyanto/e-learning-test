@@ -54,7 +54,7 @@ export class LogbookController {
 
       createLogbookDto.documentation = req.body.uploadedImageUrls?.[0] ?? null;
       if (req.user?.role === 'user') {
-        createLogbookDto.userId = req.user!.id;
+        createLogbookDto.userId = req.user.id;
         createLogbookDto.process = 'process';
       } else if (req.user?.role === 'admin') {
         createLogbookDto.process = 'approved';

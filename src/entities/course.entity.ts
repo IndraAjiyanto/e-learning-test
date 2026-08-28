@@ -77,8 +77,8 @@ export class Course {
   @Column({ default: false })
   launch: boolean;
 
-  @Column({nullable:true})
-  date_registration: Date
+  @Column({ nullable: true })
+  date_registration: Date;
 
   @ManyToMany(() => Technology, (technologies) => technologies.course)
   @JoinTable({
@@ -245,9 +245,9 @@ export class Course {
   @Exclude()
   vouchers: Voucher[];
 
-  @Column({name: 'time_start', nullable:true , type:'time'})
-  time_start: string
+  @Column({ name: 'time_start', nullable: true, type: 'time' })
+  time_start: string;
 
-  @Column({name: 'time_end', nullable:true , type:'time'})
-  time_end: string
+  @Column({ name: 'time_end', nullable: true, type: 'time' })
+  time_end: string;
 }

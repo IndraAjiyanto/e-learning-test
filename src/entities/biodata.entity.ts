@@ -22,22 +22,22 @@ export class Biodata {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable:true})
+  @Column({ nullable: true })
   fullName: string;
 
   @Column()
   no: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   gender: Gender;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   city: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   education: Education;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   studyProgram: string;
 
   @CreateDateColumn()

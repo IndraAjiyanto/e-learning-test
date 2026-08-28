@@ -16,7 +16,14 @@ import { Invoice } from './invoice.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 
-export type currentStatus = 'University Student'| 'Fresh Graduate'| 'Job Seeker'| 'Employee'| 'Freelancer'| 'Entrepreneur'| 'Other';
+export type currentStatus =
+  | 'University Student'
+  | 'Fresh Graduate'
+  | 'Job Seeker'
+  | 'Employee'
+  | 'Freelancer'
+  | 'Entrepreneur'
+  | 'Other';
 
 @Entity('payments')
 export class Payment {
@@ -31,7 +38,17 @@ export class Payment {
 
   @Column({
     type: 'enum',
-    enum: ['Instagram', 'TikTok', 'LinkedIn', 'Friends', 'University', 'WhatsApp Group', 'Webinar/Event', 'Website', 'Other'],
+    enum: [
+      'Instagram',
+      'TikTok',
+      'LinkedIn',
+      'Friends',
+      'University',
+      'WhatsApp Group',
+      'Webinar/Event',
+      'Website',
+      'Other',
+    ],
     nullable: true,
   })
   referalSource: string;
@@ -44,9 +61,17 @@ export class Payment {
   process: ProcessStatus;
 
   @Column({
-    type:'enum',
-    enum:['University Student', 'Fresh Graduate', 'Job Seeker', 'Employee', 'Freelancer', 'Entrepreneur', 'Other'],
-    nullable:true,
+    type: 'enum',
+    enum: [
+      'University Student',
+      'Fresh Graduate',
+      'Job Seeker',
+      'Employee',
+      'Freelancer',
+      'Entrepreneur',
+      'Other',
+    ],
+    nullable: true,
   })
   current_status: currentStatus;
 
@@ -59,7 +84,7 @@ export class Payment {
   @Column({ nullable: true })
   user_no: string;
 
-  @Column({nullable:true,})
+  @Column({ nullable: true })
   attend_program: boolean;
 
   @OneToOne(() => Invoice, (invoice) => invoice.payment)

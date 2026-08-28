@@ -1,0 +1,33 @@
+{{!-- 
+  Komponen: Card Alumni (Khusus Halaman Home - Mobile)
+  Lokasi: src/views/partials/components/home/card_alumni.hbs
+  
+  Props:
+  - message         : Teks ulasan/testimonial (multibahasa)
+  - profile         : URL gambar profil (opsional, fallback ke orang.png)
+  - name            : Nama alumni (multibahasa)
+  - currentPosition : Jabatan/posisi (multibahasa)
+  - courseName      : Nama kursus/program yang diikuti (opsional)
+  - lang            : Bahasa yang aktif
+--}}
+
+<div class="w-full bg-white rounded-[16px] p-6 shadow-[0px_4px_12px_0px_#00000010] border border-white/80 flex flex-col">
+  <span class="text-4xl text-[#0B1F3B] font-serif leading-none mb-3 select-none">❝</span>
+  <p class="font-sans font-normal text-[14px] leading-[22px] text-[#2D2D2D] text-left flex-1 mb-4">
+    "{{getByLang message lang}}"
+  </p>
+  
+  <div class="w-full h-px bg-slate-200/80 mb-4"></div>
+  
+  <div class="flex items-center gap-3.5">
+    <img src="{{default profile '/public/image/orang.png'}}" alt="{{getByLang name lang}}" class="w-11 h-11 rounded-full object-cover shadow-sm shrink-0"/>
+    <div class="text-left">
+      <h4 class="font-montserrat font-semibold text-[14px] leading-none text-[#0B1F3B]">
+        {{getByLang name lang}}
+      </h4>
+      <p class="font-sans font-normal text-[12px] leading-[16px] text-[#2D2D2D] mt-1">
+        {{getByLang currentPosition lang}} {{#if courseName}}at {{courseName}}{{/if}}
+      </p>
+    </div>
+  </div>
+</div>

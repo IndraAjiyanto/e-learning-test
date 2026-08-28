@@ -4,7 +4,7 @@ const parser = edjsHTML({
   image: (block) => {
     const { file, withBorder, withBackground, stretched, caption } = block.data;
 
-    let classList: string[] = [];
+    const classList: string[] = [];
 
     if (withBorder) classList.push('rounded-md');
     if (withBackground)

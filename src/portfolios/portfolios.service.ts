@@ -75,11 +75,15 @@ export class PortfoliosService {
   }
 
   async findCategoryMyPortfolio(userId: number) {
-    return await this.categoryRepository.find({where: { courses: { userCourses: { user: { id: userId } } } } });
+    return await this.categoryRepository.find({
+      where: { courses: { userCourses: { user: { id: userId } } } },
+    });
   }
 
   async findMyPortfolioCourseTypes(userId: number) {
-    return await this.courseTypeRepository.find({where: { classes: { userCourses: { user: { id: userId } } } } });
+    return await this.courseTypeRepository.find({
+      where: { classes: { userCourses: { user: { id: userId } } } },
+    });
   }
 
   async findAll(

@@ -21,7 +21,7 @@ export class GalleryService {
     const { categoryId, ...rest } = createGalleryDto;
     const gallery = this.galleryRepository.create({
       ...rest,
-      category: categoryId ? ({ id: categoryId } as any) : null,
+      category: categoryId ? { id: categoryId } : null,
     });
     return this.galleryRepository.save(gallery);
   }
