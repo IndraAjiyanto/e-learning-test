@@ -451,14 +451,6 @@ function programData(mode) {
       results.push(this.validateList('criteriaEn[]', 'criterias_en', 'criteria (EN)'));
       results.push(this.validateList('criteriaJa[]', 'criterias_ja', 'criteria (JP)'));
 
-      // TEMP DEBUG: log which fields are blocking submit (remove after diagnosis)
-      console.log('[canSubmit] paidClass=', this.paidClass,
-        'coverHasFile=', this.coverHasFile, 'coverValid=', this.coverValid,
-        'methodChecked=', !!document.querySelector('input[name="method"]:checked'),
-        'locationLinkValid=', this.formValid.locationLink,
-        'failing fields=', Object.keys(this.fieldStatus).filter((k) => this.fieldStatus[k] === 'error'),
-        'result=', results.every(Boolean));
-
       return results.every(Boolean);
     },
 
