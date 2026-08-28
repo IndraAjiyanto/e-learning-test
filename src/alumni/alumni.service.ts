@@ -71,7 +71,18 @@ export class AlumniService {
       throw new NotFoundException('Alumni not found');
     }
 
-    Object.assign(alumni, updateAlumnusDto);
+    const { courseId, ...rest } = updateAlumnusDto;
+    Object.assign(alumni, rest);
+
+    if (courseId) {
+      const course = await this.courseRepository.findOne({
+        where: { id: Number(courseId) },
+      });
+      if (!course) {
+        throw new NotFoundException('Program not found');
+      }
+      alumni.course = course;
+    }
 
     return await this.alumniRepository.save(alumni);
   }
