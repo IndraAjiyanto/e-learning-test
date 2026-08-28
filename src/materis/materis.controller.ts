@@ -176,6 +176,28 @@ export class MaterisController {
   }
 
   @Roles('admin')
+  @Get('formEdit/:jenis_file/:id')
+  async formEditMateriById(
+    @Param('jenis_file') jenis_file: JenisFile,
+    @Param('id') id: number,
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
+    try {
+      const materi = await this.materisService.findOne(id);
+      res.render('admin/materi/edit', {
+        user: req.user,
+        materi,
+        jenis_file: materi.jenis_file,
+        pertemuanId: materi.pertemuan.id,
+      });
+    } catch (error: any) {
+      req.flash('error', error.message || 'Materi tidak ditemukan');
+      res.redirect('/dashboard');
+    }
+  }
+
+  @Roles('admin')
   @Patch('pdf/:id')
   @UseInterceptors(
     FileInterceptor('file', multerConfigMemoryOnly),
@@ -191,16 +213,26 @@ export class MaterisController {
     @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,
     @Body() updateMaterisDto: UpdateMaterisDto,
-    @Req() req: Request,
+    @Req() req: any,
+    @Res() res: Response,
   ) {
     const materi = await this.materisService.findOne(id);
+    const pertemuanId = materi.pertemuan.id;
 
-    if (file) {
-      await this.materisService.deleteFile(materi.file);
-      updateMaterisDto.file = req.body.uploadedFileUrls?.[0];
+    try {
+      if (file) {
+        await this.materisService.deleteFile(materi.file);
+        updateMaterisDto.file = req.body.uploadedFileUrls?.[0];
+      } else {
+        delete updateMaterisDto.file;
+      }
+
+      await this.materisService.update(id, updateMaterisDto);
+      req.flash('success', 'Successfully updated PDF material');
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to update PDF material');
     }
-
-    return await this.materisService.update(id, updateMaterisDto);
+    res.redirect(`/session/${pertemuanId}`);
   }
 
   @Roles('admin')
@@ -208,10 +240,39 @@ export class MaterisController {
   async updatePpt(
     @Param('id') id: number,
     @Body() updateMaterisDto: UpdateMaterisDto,
-    @Req() req: Request,
+    @Req() req: any,
+    @Res() res: Response,
   ) {
     const materi = await this.materisService.findOne(id);
-    return await this.materisService.update(id, updateMaterisDto);
+    const pertemuanId = materi.pertemuan.id;
+
+    try {
+      await this.materisService.update(id, updateMaterisDto);
+      req.flash('success', 'Successfully updated PPT material');
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to update PPT material');
+    }
+    res.redirect(`/session/${pertemuanId}`);
+  }
+
+  @Roles('admin')
+  @Patch('video/:id')
+  async updateVideo(
+    @Param('id') id: number,
+    @Body() updateMaterisDto: UpdateMaterisDto,
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
+    const materi = await this.materisService.findOne(id);
+    const pertemuanId = materi.pertemuan.id;
+
+    try {
+      await this.materisService.update(id, updateMaterisDto);
+      req.flash('success', 'Successfully updated video material');
+    } catch (error: any) {
+      req.flash('error', error.message || 'Failed to update video material');
+    }
+    res.redirect(`/session/${pertemuanId}`);
   }
 
   @Roles('admin')
