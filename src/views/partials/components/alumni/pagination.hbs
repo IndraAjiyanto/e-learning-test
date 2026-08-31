@@ -1,0 +1,49 @@
+{{!-- 
+  Komponen: Pagination
+  Lokasi: src/views/partials/components/alumni/pagination.hbs
+
+  Props:
+  - currentPage  : Expression Alpine untuk halaman aktif
+  - totalPages   : Expression Alpine untuk total halaman
+  - onPageChange : Nama method Alpine untuk mengganti halaman
+--}}
+
+<div
+  x-show="{{totalPages}} > 1"
+  class="flex items-center justify-center gap-2 mt-auto pt-10 lg:gap-3"
+>
+
+  <!-- Previous -->
+  <button
+    type="button"
+    @click="{{onPageChange}}(Math.max(1, {{currentPage}} - 1))"
+    :disabled="{{currentPage}} === 1"
+    class="flex size-9 items-center justify-center text-gray-700 bg-white border border-gray-300 rounded-full shadow-sm transition hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed lg:size-[52px]"
+  >
+    <i class="fas fa-chevron-left text-xs lg:text-base"></i>
+  </button>
+
+  <!-- Page Numbers -->
+  <template x-for="page in {{totalPages}}" :key="page">
+    <button
+      type="button"
+      @click="{{onPageChange}}(page)"
+      class="flex size-9 items-center justify-center font-sans font-semibold text-xs border rounded-full shadow-sm transition lg:size-[52px] lg:text-base"
+      :class="{{currentPage}} === page
+        ? 'bg-[#0B1F3B] text-white border-[#0B1F3B]'
+        : 'text-[#0B1F3B] bg-white border-[#0B1F3B] hover:bg-[#0B1F3B]/10'"
+      x-text="page"
+    ></button>
+  </template>
+
+  <!-- Next -->
+  <button
+    type="button"
+    @click="{{onPageChange}}(Math.min({{totalPages}}, {{currentPage}} + 1))"
+    :disabled="{{currentPage}} === {{totalPages}}"
+    class="flex size-9 items-center justify-center text-gray-700 bg-white border border-gray-300 rounded-full shadow-sm transition hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed lg:size-[52px]"
+  >
+    <i class="fas fa-chevron-right text-xs lg:text-base"></i>
+  </button>
+
+</div>
