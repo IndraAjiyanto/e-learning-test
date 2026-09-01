@@ -24,20 +24,7 @@
         >
           <div class='flex items-start gap-3'>
             <div class='flex-shrink-0 mt-0.5'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                class='h-5 w-5 text-red-400'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                stroke-width='2'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                />
-              </svg>
+              <i class='fa-solid fa-circle-exclamation text-red-400'></i>
             </div>
             <div class='flex-1'>
               <p class='text-sm font-medium text-red-200'>{{error}}</p>
@@ -47,19 +34,7 @@
               onclick="this.parentElement.parentElement.style.display='none'"
               class='flex-shrink-0 text-red-400 hover:text-red-300 transition-colors'
             >
-              <svg
-                class='h-4 w-4'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                stroke-width='2'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M6 18L18 6M6 6l12 12'
-                />
-              </svg>
+              <i class='fa-solid fa-xmark'></i>
             </button>
           </div>
         </div>
@@ -70,8 +45,31 @@
         action='/register'
         method='post'
         class='space-y-6'
-        x-data='{ loading: false }'
-        @submit='loading = true'
+        x-data="{
+          loading: false,
+          password: '',
+          confirm: '',
+          touched: false,
+          get rules() {
+            return {
+              minLength: this.password.length >= 8,
+              uppercase: /[A-Z]/.test(this.password),
+              lowercase: /[a-z]/.test(this.password),
+              number: /[0-9]/.test(this.password),
+              special: /[^A-Za-z0-9]/.test(this.password),
+            }
+          },
+          get passwordValid() {
+            return Object.values(this.rules).every(Boolean)
+          },
+          get matched() {
+            return this.confirm.length > 0 && this.password === this.confirm
+          },
+          get formValid() {
+            return this.passwordValid && this.matched
+          }
+        }"
+        @submit="if (!formValid) { $event.preventDefault(); touched = true; return } loading = true"
       >
 
         <!-- Name -->
@@ -111,6 +109,8 @@
             <input
               :type="show ? 'text' : 'password'"
               name='password'
+              x-model='password'
+              @blur='touched = true'
               placeholder='{{t "test.signUp.placeholderPassword"}}'
               required
               class='w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white pr-10'
@@ -121,57 +121,69 @@
               class='absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-800'
             >
               <!-- Eye icons -->
-              <svg
-                x-show='!show'
-                xmlns='http://www.w3.org/2000/svg'
-                class='h-5 w-5'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                stroke-width='2'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
-                />
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 
-                     0 8.268 2.943 9.542 7-1.274 4.057-5.064 
-                     7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
-                />
-              </svg>
-              <svg
-                x-show='show'
-                xmlns='http://www.w3.org/2000/svg'
-                class='h-5 w-5'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                stroke-width='2'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 
-                     0-8.268-2.943-9.542-7a9.973 
-                     9.973 0 012.042-3.362M6.223 
-                     6.223A9.956 9.956 0 0112 5c4.478 
-                     0 8.268 2.943 9.542 7a9.978 
-                     9.978 0 01-4.121 4.592M15 
-                     12a3 3 0 11-6 0 3 3 0 016 
-                     0z'
-                />
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M3 3l18 18'
-                />
-              </svg>
+              <i x-show='!show' class='fa-solid fa-eye'></i>
+              <i x-show='show' class='fa-solid fa-eye-slash'></i>
             </button>
           </div>
+        </div>
+
+        <!-- Password Requirements -->
+        <div class='-mt-2'>
+          <p class='text-sm text-gray-300 mb-2'>{{t
+              'test.signUp.passwordRules'
+            }}</p>
+          <ul class='space-y-1 text-sm'>
+            <li
+              class='flex items-center gap-2'
+              :class="rules.minLength ? 'text-green-400' : (touched ? 'text-red-400' : 'text-gray-400')"
+            >
+              <i
+                class='fa-fw w-4 text-center'
+                :class="rules.minLength ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'"
+              ></i>
+              <span>{{t 'test.signUp.ruleMinLength'}}</span>
+            </li>
+            <li
+              class='flex items-center gap-2'
+              :class="rules.uppercase ? 'text-green-400' : (touched ? 'text-red-400' : 'text-gray-400')"
+            >
+              <i
+                class='fa-fw w-4 text-center'
+                :class="rules.uppercase ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'"
+              ></i>
+              <span>{{t 'test.signUp.ruleUppercase'}}</span>
+            </li>
+            <li
+              class='flex items-center gap-2'
+              :class="rules.lowercase ? 'text-green-400' : (touched ? 'text-red-400' : 'text-gray-400')"
+            >
+              <i
+                class='fa-fw w-4 text-center'
+                :class="rules.lowercase ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'"
+              ></i>
+              <span>{{t 'test.signUp.ruleLowercase'}}</span>
+            </li>
+            <li
+              class='flex items-center gap-2'
+              :class="rules.number ? 'text-green-400' : (touched ? 'text-red-400' : 'text-gray-400')"
+            >
+              <i
+                class='fa-fw w-4 text-center'
+                :class="rules.number ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'"
+              ></i>
+              <span>{{t 'test.signUp.ruleNumber'}}</span>
+            </li>
+            <li
+              class='flex items-center gap-2'
+              :class="rules.special ? 'text-green-400' : (touched ? 'text-red-400' : 'text-gray-400')"
+            >
+              <i
+                class='fa-fw w-4 text-center'
+                :class="rules.special ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'"
+              ></i>
+              <span>{{t 'test.signUp.ruleSpecial'}}</span>
+            </li>
+          </ul>
         </div>
 
         <!-- Confirm Password -->
@@ -183,6 +195,7 @@
             <input
               :type="show ? 'text' : 'password'"
               name='confirm_password'
+              x-model='confirm'
               placeholder='{{t "test.signUp.placeholderConfirmPassword"}}'
               required
               class='w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white pr-10'
@@ -193,62 +206,22 @@
               class='absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-800'
             >
               <!-- Eye icons -->
-              <svg
-                x-show='!show'
-                xmlns='http://www.w3.org/2000/svg'
-                class='h-5 w-5'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                stroke-width='2'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
-                />
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 
-                     0 8.268 2.943 9.542 7-1.274 4.057-5.064 
-                     7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
-                />
-              </svg>
-              <svg
-                x-show='show'
-                xmlns='http://www.w3.org/2000/svg'
-                class='h-5 w-5'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                stroke-width='2'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 
-                     0-8.268-2.943-9.542-7a9.973 
-                     9.973 0 012.042-3.362M6.223 
-                     6.223A9.956 9.956 0 0112 5c4.478 
-                     0 8.268 2.943 9.542 7a9.978 
-                     9.978 0 01-4.121 4.592M15 
-                     12a3 3 0 11-6 0 3 3 0 016 
-                     0z'
-                />
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M3 3l18 18'
-                />
-              </svg>
+              <i x-show='!show' class='fa-solid fa-eye'></i>
+              <i x-show='show' class='fa-solid fa-eye-slash'></i>
             </button>
           </div>
         </div>
 
+        <p
+          x-show='confirm.length > 0 && !matched'
+          x-cloak
+          class='-mt-4 text-sm text-red-400'
+        >{{t 'test.signUp.passwordNotMatch'}}</p>
+
         <!-- Submit Button -->
         <button
-          :disabled='loading'
+          :disabled='loading || !formValid'
+          :class="(loading || !formValid) ? 'opacity-60 cursor-not-allowed' : ''"
           type='submit'
           class='btn border-0 w-full py-3 rounded-lg bg-gradient-to-br from-primary via-secondary to-gray-900 hover:from-primary hover:to-secondary text-white font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl text-base'
         >

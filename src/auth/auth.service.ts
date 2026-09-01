@@ -7,6 +7,7 @@ import { KelassService } from 'src/kelass/kelass.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { EmailService } from 'src/common/email/email.service';
 import { InjectRepository } from '@nestjs/typeorm';
+import { validatePasswordStrength } from 'src/common/utils/password.util';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -29,10 +30,8 @@ export class AuthService {
   }
 
   async createAcount(createUserDto: CreateUserDto) {
-    const isMatch = await bcrypt.compare(
-      createUserDto.password,
-      createUserDto.confirm_password,
-    );
+    validatePasswordStrength(createUserDto.password);
+    const isMatch = createUserDto.password === createUserDto.confirm_password;
     const resetToken = crypto.randomBytes(32).toString('hex');
 
     const hashedToken = crypto
